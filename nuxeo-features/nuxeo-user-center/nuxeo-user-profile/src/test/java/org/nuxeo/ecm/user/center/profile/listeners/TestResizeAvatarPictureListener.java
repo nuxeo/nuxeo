@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,20 +63,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.rendition.core")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.user.center.profile")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.tag")
 public class TestResizeAvatarPictureListener {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Inject
-    UserWorkspaceService userWorkspaceService;
+    protected UserWorkspaceService userWorkspaceService;
 
     @Inject
-    MimetypeRegistry mimeypeRegistry;
+    protected MimetypeRegistry mimeypeRegistry;
 
-    ResizeAvatarPictureListener underTest;
+    protected ResizeAvatarPictureListener underTest;
 
     @Test
     public void testResizeAvatar() {
@@ -99,7 +98,7 @@ public class TestResizeAvatarPictureListener {
 
         ImageInfo imageInfo = imagingService.getImageInfo(resizedImage);
         assertTrue(imageInfo.getWidth() < RESIZED_IMAGE_WIDTH);
-        assertEquals(imageInfo.getHeight(), RESIZED_IMAGE_HEIGHT);
+        assertEquals(RESIZED_IMAGE_HEIGHT, imageInfo.getHeight());
 
         Blob limitSizeAvatar = lookForAvatarBlob("data/MediumAvatar.jpg");
         assertNotNull(tooBigAvatar);
@@ -113,8 +112,8 @@ public class TestResizeAvatarPictureListener {
 
         imageInfo = imagingService.getImageInfo(resizedImage);
 
-        assertEquals(imageInfo.getWidth(), RESIZED_IMAGE_WIDTH);
-        assertEquals(imageInfo.getHeight(), RESIZED_IMAGE_HEIGHT);
+        assertEquals(RESIZED_IMAGE_WIDTH, imageInfo.getWidth());
+        assertEquals(RESIZED_IMAGE_HEIGHT, imageInfo.getHeight());
 
         Blob underLimitSizeAvatar = lookForAvatarBlob("data/SmallAvatar.jpg");
         assertNotNull(tooBigAvatar);

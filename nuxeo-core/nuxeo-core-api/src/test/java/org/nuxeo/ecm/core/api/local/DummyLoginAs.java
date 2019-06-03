@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,37 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Contributors:
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
-package org.nuxeo.ecm.core.bulk;
-
-import java.security.Principal;
+package org.nuxeo.ecm.core.api.local;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginAs;
 
 /**
- * Computation rely on Framework.loginAsUser(String username).
- * <p>
- * This Framework wrapper method relies on the LoginAs service, thus we have to provide an implementation that allows
- * tests to be executed.
+ * Dummy {@link LoginAs} implementation which logs the given user into the application.
  *
- * @since 10.3
+ * @since 11.1
  */
 public class DummyLoginAs implements LoginAs {
 
     @Override
     public LoginContext loginAs(String username) throws LoginException {
-        Principal principal = new UserPrincipal(username, null, false, false);
-        ClientLoginModule.getThreadLocalLogin().push(principal, null, null);
-        return new LoginContext("nuxeo-client-login") {
-            @Override
-            public void logout() throws LoginException {
-                ClientLoginModule.getThreadLocalLogin().pop();
-            }
-        };
+        return Framework.login(username, username);
     }
 }

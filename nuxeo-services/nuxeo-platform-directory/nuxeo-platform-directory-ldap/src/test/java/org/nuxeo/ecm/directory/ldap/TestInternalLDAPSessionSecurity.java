@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.naming.directory.DirContext;
-import javax.security.auth.login.LoginException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -39,9 +38,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -58,9 +57,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestInternalLDAPSessionSecurity {
 
     public static final String READER_USER = "readerUser";
-
-    @Inject
-    ClientLoginFeature dummyLogin;
 
     @Inject
     DirectoryService dirService;
@@ -105,39 +101,35 @@ public class TestInternalLDAPSessionSecurity {
     }
 
     @Test
-    public void readerUserCanGetEntry() throws Exception {
-        dummyLogin.login(READER_USER);
+    @WithUser(READER_USER)
+    public void readerUserCanGetEntry() {
         DocumentModel entry = userDirSession.getEntry("Administrator");
         assertNotNull(entry);
         assertEquals("Administrator", entry.getId());
-        dummyLogin.logout();
     }
 
     @Test
-    public void readerUserCanQuery() throws LoginException {
-        dummyLogin.login(READER_USER);
+    @WithUser(READER_USER)
+    public void readerUserCanQuery() {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("lastName", "Manager");
         DocumentModelList entries = userDirSession.query(filter);
         assertEquals(1, entries.size());
-        dummyLogin.logout();
     }
 
     @Test
-    public void unauthorizedUserCantGetEntry() throws Exception {
-        dummyLogin.login("unauthorizedUser");
+    @WithUser("unauthorizedUser")
+    public void unauthorizedUserCantGetEntry() {
         DocumentModel entry = userDirSession.getEntry("Administrator");
         Assert.assertNull(entry);
-        dummyLogin.logout();
     }
 
     @Test
-    public void everyoneGroupCanGetEntry() throws Exception {
-        dummyLogin.login("anEveryoneUser");
+    @WithUser("anEveryoneUser")
+    public void everyoneGroupCanGetEntry() {
         DocumentModel entry = groupDirSession.getEntry("members");
         assertNotNull(entry);
         assertEquals("members", entry.getId());
-        dummyLogin.logout();
     }
 
 }

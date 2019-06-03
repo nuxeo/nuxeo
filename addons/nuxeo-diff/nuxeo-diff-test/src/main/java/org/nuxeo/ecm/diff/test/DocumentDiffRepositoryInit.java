@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,13 +41,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
-    public static String getLeftDocPath() {
-        return "/leftDoc";
-    }
+    public static final String LEFT_DOC_PATH = "/leftDoc";
 
-    public static String getRightDocPath() {
-        return "/rightDoc";
-    }
+    public static final String RIGHT_DOC_PATH = "/rightDoc";
 
     @Override
     public void populate(CoreSession session) {
@@ -85,39 +81,16 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         // -----------------------
         // file
         // -----------------------
-        Blob blob = Blobs.createBlob("Joe is rich.");
-        blob.setFilename("Joe.txt");
-        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc.setPropertyValue("file:content", createBlob("Joe is rich.", "Joe.txt"));
 
         // -----------------------
         // files
         // -----------------------
-        List<Map<String, Serializable>> files = new ArrayList<>();
-
-        Map<String, Serializable> file = new HashMap<>();
-        blob = Blobs.createBlob("Content of the first blob");
-        blob.setFilename("first_attachement.txt");
-        file.put("file", (Serializable) blob);
-        files.add(file);
-
-        file = new HashMap<>();
-        blob = Blobs.createBlob("Content of the second blob");
-        blob.setFilename("second_attachement.txt");
-        file.put("file", (Serializable) blob);
-        files.add(file);
-
-        file = new HashMap<>();
-        blob = Blobs.createBlob("Content of the third blob");
-        blob.setFilename("third_attachement.txt");
-        file.put("file", (Serializable) blob);
-        files.add(file);
-
-        file = new HashMap<>();
-        blob = Blobs.createBlob("Content of the fourth blob");
-        blob.setFilename("fourth_attachement.txt");
-        file.put("file", (Serializable) blob);
-        files.add(file);
-
+        List<Map<String, Serializable>> files = List.of(
+                createFileMetadata("Content of the first blob", "first_attachement.txt"),
+                createFileMetadata("Content of the second blob", "second_attachement.txt"),
+                createFileMetadata("Content of the third blob", "third_attachement.txt"),
+                createFileMetadata("Content of the fourth blob", "fourth_attachement.txt"));
         doc.setPropertyValue("files:files", (Serializable) files);
 
         // -----------------------
@@ -201,33 +174,15 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         // -----------------------
         // file
         // -----------------------
-        Blob blob = Blobs.createBlob("Joe is rich, Jack is not.");
-        blob.setFilename("Jack.txt");
-        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc.setPropertyValue("file:content", createBlob("Joe is rich, Jack is not.", "Jack.txt"));
 
         // -----------------------
         // files
         // -----------------------
-        List<Map<String, Serializable>> files = new ArrayList<>();
-
-        Map<String, Serializable> file = new HashMap<>();
-        blob = Blobs.createBlob("Content of the first blob");
-        blob.setFilename("first_attachement.txt");
-        file.put("file", (Serializable) blob);
-        files.add(file);
-
-        file = new HashMap<>();
-        blob = Blobs.createBlob("Content of the second blob");
-        blob.setFilename("the_file_name_is_different.txt");
-        file.put("file", (Serializable) blob);
-        files.add(file);
-
-        file = new HashMap<>();
-        blob = Blobs.createBlob("Different content of the third blob");
-        blob.setFilename("third_attachement.txt");
-        file.put("file", (Serializable) blob);
-        files.add(file);
-
+        List<Map<String, Serializable>> files = List.of(
+                createFileMetadata("Content of the first blob", "first_attachement.txt"),
+                createFileMetadata("Content of the second blob", "the_file_name_is_different.txt"),
+                createFileMetadata("Different content of the third blob", "third_attachement.txt"));
         doc.setPropertyValue("files:files", (Serializable) files);
 
         // -----------------------
@@ -318,6 +273,18 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
         cal.set(Calendar.MILLISECOND, 0);
 
         return cal;
+    }
+
+    protected Map<String, Serializable> createFileMetadata(String content, String filename) {
+        Blob blob = createBlob(content, filename);
+        return Map.of("file", (Serializable) blob);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <B extends Blob & Serializable> B createBlob(String content, String filename) {
+        Blob blob = Blobs.createBlob(content);
+        blob.setFilename(filename);
+        return (B) blob;
     }
 
 }

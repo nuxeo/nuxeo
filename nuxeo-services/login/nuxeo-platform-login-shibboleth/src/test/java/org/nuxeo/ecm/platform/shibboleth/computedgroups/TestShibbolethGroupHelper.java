@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,19 +42,18 @@ import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
+import org.nuxeo.ecm.platform.test.UserManagerFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class })
+@Features({ CoreFeature.class, DirectoryFeature.class, UserManagerFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.content.template")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
-@Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.login.shibboleth")
-@Deploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethGroupHelper {
 
     protected static final String CORRECT_EL = "empty currentUser";
@@ -69,7 +68,7 @@ public class TestShibbolethGroupHelper {
     protected DirectoryService directoryService;
 
     @Test
-    public void testCreateGroup() throws Exception {
+    public void testCreateGroup() {
         assertEquals(0, ShibbolethGroupHelper.getGroups().size());
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
 
@@ -83,7 +82,7 @@ public class TestShibbolethGroupHelper {
     }
 
     @Test
-    public void testSearchGroup() throws Exception {
+    public void testSearchGroup() {
         createShibbGroup("group2");
         createShibbGroup("group3");
         createShibbGroup("group4");
@@ -98,7 +97,7 @@ public class TestShibbolethGroupHelper {
     }
 
     @Test
-    public void testGetReference() throws Exception {
+    public void testGetReference() {
         DocumentModel group = userManager.getBareGroupModel();
         group.setPropertyValue("group:groupname", "testRef");
         group = userManager.createGroup(group);
@@ -135,7 +134,7 @@ public class TestShibbolethGroupHelper {
     }
 
     @Test
-    public void testSubGroups() throws Exception {
+    public void testSubGroups() {
         DocumentModel group = userManager.getBareGroupModel();
         group.setPropertyValue("group:groupname", "trueGroup1");
         group = userManager.createGroup(group);
@@ -193,7 +192,7 @@ public class TestShibbolethGroupHelper {
         deleteShibbGroups();
     }
 
-    protected DocumentModel createShibbGroup(String name) throws Exception {
+    protected DocumentModel createShibbGroup(String name) {
         DocumentModel group = ShibbolethGroupHelper.getBareGroupModel(session);
         group.setPropertyValue("shibbolethGroup:groupName", name);
         group.setPropertyValue("shibbolethGroup:expressionLanguage", CORRECT_EL);
@@ -203,7 +202,7 @@ public class TestShibbolethGroupHelper {
         return group;
     }
 
-    protected void deleteShibbGroups() throws Exception {
+    protected void deleteShibbGroups() {
         for (DocumentModel group : ShibbolethGroupHelper.getGroups()) {
             ShibbolethGroupHelper.deleteGroup(group);
         }

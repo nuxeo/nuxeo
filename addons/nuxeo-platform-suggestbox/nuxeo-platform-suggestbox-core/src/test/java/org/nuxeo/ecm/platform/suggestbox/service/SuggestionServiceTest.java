@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,27 @@ import static org.junit.Assume.assumeTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.directory.memory.MemoryDirectoryDescriptor;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.ecm.platform.suggestbox.service.suggesters.I18nHelper;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,82 +52,42 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, ClientLoginFeature.class })
+@Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.types.api")
 @Deploy("org.nuxeo.ecm.platform.types.core")
 @Deploy("org.nuxeo.ecm.platform.webapp.types")
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
-@Deploy("org.nuxeo.ecm.platform.usermanager")
-@Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.platform.suggestbox.core")
+@WithUser("Administrator")
 public class SuggestionServiceTest {
-
-    @Inject
-    DirectoryService directoryService;
 
     @Inject
     protected CoreFeature coreFeature;
 
     @Inject
-    protected ClientLoginFeature loginFeature;
-
-    @Inject
     protected CoreSession session;
 
+    @Inject
     protected SuggestionService suggestionService;
 
-    protected Directory userdir;
+    @Inject
+    @Named("userDirectory")
+    protected Directory userDir;
 
+    @Inject
+    @Named("groupDirectory")
     protected Directory groupDir;
 
-    protected MemoryDirectoryDescriptor userDesc;
-
-    protected MemoryDirectoryDescriptor groupDesc;
-
     @Before
-    public void setUp() throws Exception {
-        Set<String> userSet = new HashSet<>(Arrays.asList("username", "password", "firstName", "lastName"));
-        userDesc = new MemoryDirectoryDescriptor();
-        userDesc.name = "userDirectory";
-        userDesc.schemaName = "user";
-        userDesc.schemaSet = userSet;
-        userDesc.idField = "username";
-        userDesc.passwordField = "password";
-        directoryService.registerDirectoryDescriptor(userDesc);
-        userdir = directoryService.getDirectory("userDirectory");
-
-        Set<String> groupSet = new HashSet<>(Arrays.asList("groupname", "grouplabel", "members"));
-        groupDesc = new MemoryDirectoryDescriptor();
-        groupDesc.name = "groupDirectory";
-        groupDesc.schemaName = "group";
-        groupDesc.schemaSet = groupSet;
-        groupDesc.idField = "groupname";
-        directoryService.registerDirectoryDescriptor(groupDesc);
-        groupDir = directoryService.getDirectory("groupDirectory");
-
+    public void setUp() {
         // create some documents to be looked up
         makeSomeDocuments();
-
-        // login as admin and stay logged in for the tests
-        loginFeature.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
         // create some users and groups
         makeSomeUsersAndGroups();
-
-        suggestionService = Framework.getService(SuggestionService.class);
-        assertNotNull(suggestionService);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        directoryService.unregisterDirectoryDescriptor(userDesc);
-        directoryService.unregisterDirectoryDescriptor(groupDesc);
     }
 
     protected void makeSomeUsersAndGroups() {
-        try (Session userSession = userdir.getSession()) {
+        try (Session userSession = userDir.getSession()) {
             Map<String, Object> john = new HashMap<>();
             john.put("username", "john");
             john.put("firstName", "John");
@@ -199,8 +155,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // perform some test lookups to check the deployment of extension points
         List<Suggestion> suggestions = suggestionService.suggest("superuni", context);
@@ -227,8 +184,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // 2009 matches a date and no title
         List<Suggestion> suggestions = suggestionService.suggest("2009", context);
@@ -262,7 +220,7 @@ public class SuggestionServiceTest {
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
         Framework.doPrivileged(() -> {
-            try (Session userSession = userdir.getSession()) {
+            try (Session userSession = userDir.getSession()) {
                 for (int i = 0; i < 10; i++) {
                     Map<String, Object> user = new HashMap<>();
                     user.put("username", String.format("user%d", i));
@@ -276,8 +234,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // count user suggestions only
         int count = 0;
@@ -299,8 +258,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // perform some test lookups to check the deployment of extension points
         List<Suggestion> suggestions = suggestionService.suggest("marl", context);
@@ -376,8 +336,9 @@ public class SuggestionServiceTest {
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
         Map<String, String> messages = getTestMessages();
-        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US).withSession(session).withMessages(
-                messages);
+        SuggestionContext context = new SuggestionContext("searchbox", admin).withLocale(Locale.US)
+                                                                             .withSession(session)
+                                                                             .withMessages(messages);
 
         // smoke test to perform suggestion against suggesters registered by
         // default
@@ -389,7 +350,7 @@ public class SuggestionServiceTest {
     }
 
     @Test
-    public void testSpecialCharacterHandlingInInterpolation() throws SuggestionException {
+    public void testSpecialCharacterHandlingInInterpolation() {
         // check the escaping of regexp replacement special chars
         String interpolated = I18nHelper.interpolate("A {1} interpolated message {0}", "\\", "$");
         assertEquals("A $ interpolated message \\", interpolated);

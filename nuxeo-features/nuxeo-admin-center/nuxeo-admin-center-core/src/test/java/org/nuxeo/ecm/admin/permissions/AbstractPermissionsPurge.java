@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -35,11 +34,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.transientstore.test.TransientStoreFeature;
 
 /**
@@ -51,10 +49,10 @@ import org.nuxeo.transientstore.test.TransientStoreFeature;
 public abstract class AbstractPermissionsPurge {
 
     @Inject
-    protected CoreSession session;
+    protected TransactionalFeature txFeature;
 
     @Inject
-    protected WorkManager workManager;
+    protected CoreSession session;
 
     public abstract void scheduleWork(List<String> username) throws Exception;
 
@@ -76,11 +74,7 @@ public abstract class AbstractPermissionsPurge {
 
         scheduleWork(Collections.singletonList("leela"));
 
-        TransactionHelper.commitOrRollbackTransaction();
-
-        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
-
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
 
         doc = session.getDocument(doc.getRef());
         acp = doc.getACP();

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@
  */
 package org.nuxeo.ecm.core.schema;
 
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.nuxeo.runtime.model.Extension;
 
 /**
  * The TypeService is the component dealing with registration of schemas and document types (and facets and prefetch
@@ -43,92 +44,91 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
+        super.activate(context);
         schemaManager = new SchemaManagerImpl();
     }
 
     @Override
     public void deactivate(ComponentContext context) {
+        super.deactivate(context);
         schemaManager = null;
     }
 
     @Override
-    public void registerExtension(Extension extension) {
-        String xp = extension.getExtensionPoint();
-        Object[] contribs = extension.getContributions();
+    public void registerContribution(Object contribution, String xp, ComponentInstance component) {
         switch (xp) {
         case XP_DOCTYPE:
-            for (Object contrib : contribs) {
-                if (contrib instanceof DocumentTypeDescriptor) {
-                    schemaManager.registerDocumentType((DocumentTypeDescriptor) contrib);
-                } else if (contrib instanceof FacetDescriptor) {
-                    schemaManager.registerFacet((FacetDescriptor) contrib);
-                } else if (contrib instanceof ProxiesDescriptor) {
-                    schemaManager.registerProxies((ProxiesDescriptor) contrib);
-                }
+            if (contribution instanceof DocumentTypeDescriptor) {
+                schemaManager.registerDocumentType((DocumentTypeDescriptor) contribution);
+            } else if (contribution instanceof FacetDescriptor) {
+                schemaManager.registerFacet((FacetDescriptor) contribution);
+            } else if (contribution instanceof ProxiesDescriptor) {
+                schemaManager.registerProxies((ProxiesDescriptor) contribution);
             }
             break;
         case XP_SCHEMA:
-            for (Object contrib : contribs) {
-                // use the context of the bundle contributing the extension
-                // to load schemas
-                SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contrib;
-                sbd.context = extension.getContext();
+            if (contribution instanceof SchemaBindingDescriptor) {
+                // use the context of the bundle contributing the extension to load schemas
+                SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contribution;
+                sbd.context = component.getContext();
                 schemaManager.registerSchema(sbd);
+            } else if (contribution instanceof PropertyDescriptor) {
+                xp = computeSchemaExtensionPoint(contribution.getClass());
+                super.registerContribution(contribution, xp, component);
             }
             break;
         case XP_CONFIGURATION:
-            for (Object contrib : contribs) {
-                schemaManager.registerConfiguration((TypeConfiguration) contrib);
-            }
+            schemaManager.registerConfiguration((TypeConfiguration) contribution);
             break;
         case XP_DEPRECATION:
-            for (Object contrib : contribs) {
-                schemaManager.registerPropertyDeprecation((PropertyDeprecationDescriptor) contrib);
-            }
+            schemaManager.registerPropertyDeprecation((PropertyDeprecationDescriptor) contribution);
             break;
+        default:
+            throw new RuntimeServiceException("Unknown extension point: " + xp);
         }
     }
 
     @Override
-    public void unregisterExtension(Extension extension) {
-        String xp = extension.getExtensionPoint();
-        Object[] contribs = extension.getContributions();
+    public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
         switch (xp) {
         case XP_DOCTYPE:
-            for (Object contrib : contribs) {
-                if (contrib instanceof DocumentTypeDescriptor) {
-                    schemaManager.unregisterDocumentType((DocumentTypeDescriptor) contrib);
-                } else if (contrib instanceof FacetDescriptor) {
-                    schemaManager.unregisterFacet((FacetDescriptor) contrib);
-                } else if (contrib instanceof ProxiesDescriptor) {
-                    schemaManager.unregisterProxies((ProxiesDescriptor) contrib);
-                }
+            if (contribution instanceof DocumentTypeDescriptor) {
+                schemaManager.unregisterDocumentType((DocumentTypeDescriptor) contribution);
+            } else if (contribution instanceof FacetDescriptor) {
+                schemaManager.unregisterFacet((FacetDescriptor) contribution);
+            } else if (contribution instanceof ProxiesDescriptor) {
+                schemaManager.unregisterProxies((ProxiesDescriptor) contribution);
             }
             break;
         case XP_SCHEMA:
-            for (Object contrib : contribs) {
-                schemaManager.unregisterSchema((SchemaBindingDescriptor) contrib);
+            if (contribution instanceof SchemaBindingDescriptor) {
+                schemaManager.unregisterSchema((SchemaBindingDescriptor) contribution);
+            } else if (contribution instanceof PropertyDescriptor) {
+                xp = computeSchemaExtensionPoint(contribution.getClass());
+                super.unregisterContribution(contribution, xp, component);
             }
             break;
         case XP_CONFIGURATION:
-            for (Object contrib : contribs) {
-                schemaManager.unregisterConfiguration((TypeConfiguration) contrib);
-            }
+            schemaManager.unregisterConfiguration((TypeConfiguration) contribution);
             break;
         case XP_DEPRECATION:
-            for (Object contrib : contribs) {
-                schemaManager.unregisterPropertyDeprecation((PropertyDeprecationDescriptor) contrib);
-            }
+            schemaManager.unregisterPropertyDeprecation((PropertyDeprecationDescriptor) contribution);
             break;
+        default:
+            throw new RuntimeServiceException("Unknown extension point: " + xp);
         }
+    }
+
+    protected String computeSchemaExtensionPoint(Class<?> klass) {
+        return String.format("%s-%s", XP_SCHEMA, klass.getSimpleName());
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getAdapter(Class<T> adapter) {
-        if (SchemaManager.class.isAssignableFrom(adapter)) {
-            return (T) schemaManager;
-        } else if (TypeProvider.class.isAssignableFrom(adapter)) {
+        if (SchemaManager.class.isAssignableFrom(adapter)
+                || PropertyCharacteristicHandler.class.isAssignableFrom(adapter)
+                || TypeProvider.class.isAssignableFrom(adapter)) {
             return (T) schemaManager;
         }
         return null;
@@ -136,7 +136,13 @@ public class TypeService extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        schemaManager.registerSecuredProperty(getDescriptors(computeSchemaExtensionPoint(PropertyDescriptor.class)));
         schemaManager.flushPendingsRegistration();
+    }
+
+    @Override
+    public void stop(ComponentContext context) {
+        schemaManager.clearSecuredProperty();
     }
 
     @Override

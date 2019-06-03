@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -55,7 +56,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ DirectoryFeature.class, PlatformFeature.class })
+@Features({ DirectoryFeature.class, NuxeoLoginFeature.class, PlatformFeature.class })
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.multi.tenant")

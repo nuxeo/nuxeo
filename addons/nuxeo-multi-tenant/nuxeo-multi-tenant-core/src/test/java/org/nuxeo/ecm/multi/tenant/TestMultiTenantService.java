@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import static org.nuxeo.ecm.multi.tenant.Constants.TENANT_ID_PROPERTY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,6 +62,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
@@ -71,23 +71,18 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-import junit.framework.Assert;
-
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
+@Features({ PlatformFeature.class, NuxeoLoginFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.multi.tenant")
-@Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.default.config")
-@Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
 public class TestMultiTenantService {
 
@@ -223,7 +218,7 @@ public class TestMultiTenantService {
         session.save();
 
         // trash the domain, which incidentally changes its name
-        trashService.trashDocuments(Collections.singletonList(newDomain));
+        trashService.trashDocuments(List.of(newDomain));
 
         multiTenantService.enableTenantIsolation(session);
 
@@ -252,7 +247,7 @@ public class TestMultiTenantService {
         }
 
         // trash the domain, which incidentally changes its name
-        trashService.trashDocuments(Collections.singletonList(newDomain));
+        trashService.trashDocuments(List.of(newDomain));
 
         // not considered a tenant anymore
         newDomain = session.getDocument(newDomain.getRef());
@@ -281,7 +276,7 @@ public class TestMultiTenantService {
         }
         loginContext.logout();
 
-        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY, (Serializable) Arrays.asList("bender"));
+        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY, (Serializable) List.of("bender"));
         session.saveDocument(domain);
         session.save();
 
@@ -330,7 +325,7 @@ public class TestMultiTenantService {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
-        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY, (Serializable) Arrays.asList("fry"));
+        domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY, (Serializable) List.of("fry"));
         session.saveDocument(domain);
         session.save();
 
@@ -354,7 +349,7 @@ public class TestMultiTenantService {
 
         // bender is part of the supermembers group
         NuxeoPrincipal bender = createUser("bender", false, domain.getName());
-        bender.setGroups(Arrays.asList(nuxeoGroup.getName()));
+        bender.setGroups(List.of(nuxeoGroup.getName()));
         userManager.updateUser(bender.getModel());
         bender = createUser("bender", false, domain.getName());
         loginContext = Framework.loginAsUser("bender");
@@ -458,10 +453,10 @@ public class TestMultiTenantService {
             principals.add(ace.getUsername());
         }
 
-        Assert.assertTrue(principals.contains("toto"));
-        Assert.assertTrue(principals.contains("tenant-newDomain_tenantMembers"));
-        Assert.assertFalse(principals.contains("members"));
-        Assert.assertFalse(principals.contains("Everyone"));
+        assertTrue(principals.contains("toto"));
+        assertTrue(principals.contains("tenant-newDomain_tenantMembers"));
+        assertFalse(principals.contains("members"));
+        assertFalse(principals.contains("Everyone"));
     }
 
     protected CloseableCoreSession openSession() {

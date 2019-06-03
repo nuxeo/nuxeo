@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit.LEFT_DOC_PATH;
+import static org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit.RIGHT_DOC_PATH;
 
 import javax.inject.Inject;
 
@@ -63,15 +65,13 @@ public class TestDocumentDiffNotSameType extends DiffTestCase {
 
     /**
      * Tests doc diff.
-     *
      */
     @Test
     public void testDocDiffNotSameType() {
 
         // Get left and right docs
-        DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffNotSameTypeRepositoryInit.getLeftDocPath()));
-        DocumentModel rightDoc = session.getDocument(new PathRef(
-                DocumentDiffNotSameTypeRepositoryInit.getRightDocPath()));
+        DocumentModel leftDoc = session.getDocument(new PathRef(LEFT_DOC_PATH));
+        DocumentModel rightDoc = session.getDocument(new PathRef(RIGHT_DOC_PATH));
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);

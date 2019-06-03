@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,17 +37,15 @@ import com.google.inject.Binder;
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
-@Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.automation.scripting")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.automation.scripting:automation-scripting-contrib.xml")
 @Deploy("org.nuxeo.ecm.automation.scripting:core-types-contrib.xml")
 public class AutomationScriptingFeature implements RunnerFeature {
 
     @Inject
-    AutomationScriptingService scripting;
+    protected AutomationScriptingService scripting;
 
-    FeaturesRunner runner;
+    protected FeaturesRunner runner;
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
@@ -70,7 +68,8 @@ public class AutomationScriptingFeature implements RunnerFeature {
      *
      * @since 10.2
      */
-    public <T> T run(AutomationScriptingService scripting, String location, CoreSession session, Class<T> typeof) throws Exception {
+    public <T> T run(AutomationScriptingService scripting, String location, CoreSession session, Class<T> typeof)
+            throws Exception {
         try (AutomationScriptingService.Session context = scripting.get(session)) {
             return typeof.cast(context.run(load(location)));
         }

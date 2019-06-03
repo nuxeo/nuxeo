@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,57 +37,49 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.local.WithUser;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExprs;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
-import org.nuxeo.ecm.platform.login.test.DummyNuxeoLoginModule;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
-
-import com.google.inject.Inject;
 
 /**
  * @author Florent Guillaume
  */
 @RunWith(FeaturesRunner.class)
-@Features({RuntimeFeature.class, ClientLoginFeature.class})
+@Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.directory")
 @Deploy("org.nuxeo.ecm.directory.core.tests:test-schema.xml")
+@WithUser("Administrator")
 public class TestMemoryDirectory {
 
-    MemoryDirectory memDir;
+    protected MemoryDirectory memDir;
 
-    MemoryDirectorySession dir;
+    protected MemoryDirectorySession dir;
 
-    DocumentModel entry;
-
-    @Inject
-    protected ClientLoginFeature loginFeature;
+    protected DocumentModel entry;
 
     static final String SCHEMA_NAME = "myschema";
 
     @Before
-    public void before() throws Exception {
-
-        loginFeature.login(DummyNuxeoLoginModule.ADMINISTRATOR_USERNAME);
+    public void before() {
 
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "mydir";
@@ -107,13 +99,8 @@ public class TestMemoryDirectory {
         entry = dir.createEntry(e1);
     }
 
-    @After
-    public void after() throws Exception {
-        loginFeature.logout();
-    }
-
     @Test
-    public void testSchemaIntrospection() throws Exception {
+    public void testSchemaIntrospection() {
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "adir";
         descr.schemaName = SCHEMA_NAME;
@@ -124,7 +111,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         // created in setUp
         assertEquals("1", entry.getProperty(SCHEMA_NAME, "i"));
         assertNull(entry.getProperty(SCHEMA_NAME, "pw"));
@@ -139,11 +126,12 @@ public class TestMemoryDirectory {
             entry = dir.createEntry(e2);
             fail("Should raise an error, entry already exists");
         } catch (DirectoryException e) {
+            assertEquals("Entry with id 1 already exists in directory mydir", e.getMessage());
         }
     }
 
     @Test
-    public void testCreateFromModel() throws Exception {
+    public void testCreateFromModel() {
         entry = BaseSession.createEntryModel(null, SCHEMA_NAME, null, null);
         entry.setProperty(SCHEMA_NAME, "i", "yo");
 
@@ -157,31 +145,32 @@ public class TestMemoryDirectory {
             entry = dir.createEntry(entry);
             fail("Should raise an error, entry already exists");
         } catch (DirectoryException e) {
+            assertEquals("Entry with id 1 already exists in directory mydir", e.getMessage());
         }
     }
 
     @Test
-    public void testHasEntry() throws Exception {
+    public void testHasEntry() {
         assertTrue(dir.hasEntry("1"));
         assertFalse(dir.hasEntry("foo"));
     }
 
     @Test
-    public void testAuthenticate() throws Exception {
+    public void testAuthenticate() {
         assertTrue(dir.authenticate("1", "secr"));
         assertFalse(dir.authenticate("1", "haha"));
         assertFalse(dir.authenticate("2", "any"));
     }
 
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         DocumentModel entry = dir.getEntry("1");
         assertEquals("AAA", entry.getProperty(SCHEMA_NAME, "a"));
         assertNull(dir.getEntry("no-such-entry"));
     }
 
     @Test
-    public void testGetEntries() throws Exception {
+    public void testGetEntries() {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         entry = dir.createEntry(e2);
@@ -192,7 +181,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testUpdateEntry() throws Exception {
+    public void testUpdateEntry() {
         DocumentModel e = dir.getEntry("1");
         assertEquals("BCD", e.getProperty(SCHEMA_NAME, "b"));
         e.setProperty(SCHEMA_NAME, "b", "babar");
@@ -212,7 +201,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testDeleteEntry() throws Exception {
+    public void testDeleteEntry() {
         DocumentModelList l = dir.getEntries();
         assertEquals(1, l.size());
         dir.deleteEntry("1");
@@ -221,7 +210,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery() {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
@@ -288,7 +277,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testQueryFts() throws Exception {
+    public void testQueryFts() {
         Map<String, Serializable> filter = new HashMap<>();
         Set<String> fulltext = new HashSet<>();
 
@@ -328,7 +317,7 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testQueryWithBuilder() throws Exception {
+    public void testQueryWithBuilder() {
         Map<String, Object> map;
         map = new HashMap<>();
         map.put("i", "2");
@@ -426,9 +415,8 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testGetProjection() throws Exception {
+    public void testGetProjection() {
         List<String> list;
-        Map<String, Serializable> filter = new HashMap<>();
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
@@ -437,35 +425,28 @@ public class TestMemoryDirectory {
         dir.createEntry(e2);
 
         // empty filter
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of(), "a");
         assertEquals(2, list.size());
 
         // XXX test projection on unknown column
 
         // simple query
-        filter.put("a", "AAA");
-        list = dir.getProjection(filter, "b");
+        list = dir.getProjection(Map.of("a", "AAA"), "b");
         assertEquals(1, list.size());
         assertEquals("BCD", list.get(0));
 
         // add unknown field
-        filter.put("bobo", "bibi");
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of("a", "AAA", "bobo", "bibi"), "a");
         assertEquals(1, list.size());
         assertEquals("AAA", list.get(0));
 
         // two criteria
-        filter.clear();
-        filter.put("a", "AAA");
-        filter.put("b", "BCD");
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of("a", "AAA", "b", "BCD"), "a");
         assertEquals(1, list.size());
         assertEquals("AAA", list.get(0));
 
         // query not matching although each criterion matches one entry
-        filter.put("a", "AAA");
-        filter.put("pw", "guess");
-        list = dir.getProjection(filter, "a");
+        list = dir.getProjection(Map.of("a", "AAA", "b", "BCD", "pw", "guess"), "a");
         assertEquals(0, list.size());
     }
 
@@ -479,7 +460,7 @@ public class TestMemoryDirectory {
 
     // actually tests AbstractDirectory.orderEntry
     @Test
-    public void testOrderBy() throws Exception {
+    public void testOrderBy() {
         Map<String, Object> e2 = new HashMap<>();
         e2.put("i", "2");
         e2.put("pw", "guess");
@@ -619,13 +600,13 @@ public class TestMemoryDirectory {
     }
 
     @Test
-    public void testServiceUnregistration() throws Exception {
+    public void testServiceUnregistration() {
         MemoryDirectoryDescriptor descr = new MemoryDirectoryDescriptor();
         descr.name = "mydir";
         descr.schemaName = SCHEMA_NAME;
         descr.idField = "i";
         descr.passwordField = "pw";
-        descr.schemaSet = new HashSet<>(Arrays.asList("i"));
+        descr.schemaSet = Set.of("i");
 
         DirectoryService service = Framework.getService(DirectoryService.class);
         service.registerDirectoryDescriptor(descr);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.nuxeo.ecm.platform.ui.web.keycloak.KeycloakRequestAuthenticator.KEYCLOAK_ACCESS_TOKEN;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +41,8 @@ import org.apache.catalina.core.StandardContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
+import org.keycloak.adapters.spi.AuthOutcome;
 import org.keycloak.representations.AccessToken;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -53,9 +54,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.usermapper.test.UserMapperFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({PlatformFeature.class, UserMapperFeature.class})
-@Deploy("org.nuxeo.usermapper")
-@Deploy("org.nuxeo.ecm.platform.web.common")
+@Features({ PlatformFeature.class, UserMapperFeature.class })
 @Deploy("org.nuxeo.ecm.platform.login.keycloak.test:OSGI-INF/keycloak-descriptor-bundle.xml")
 public class TestKeycloakAuthenticationPlugin {
 
@@ -78,13 +77,13 @@ public class TestKeycloakAuthenticationPlugin {
     private static final String INVALID_BEARER_TOKEN = "Bearer invalid";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 
         Mockito.when(requestMock.getConnector()).thenReturn(connectorMock);
         Mockito.when(requestMock.getMethod()).thenReturn("GET");
         Mockito.when(requestMock.getRequestURI()).thenReturn("/foo/path/to/resource");
-        Mockito.when(requestMock.getRequestURL()).thenReturn(
-                new StringBuffer().append("https://example.com:443/foo/path/to/resource"));
+        Mockito.when(requestMock.getRequestURL())
+               .thenReturn(new StringBuffer().append("https://example.com:443/foo/path/to/resource"));
         Mockito.when(requestMock.getScheme()).thenReturn("https");
         Mockito.when(requestMock.getServerName()).thenReturn("example.com");
         Mockito.when(requestMock.getServerPort()).thenReturn(443);
@@ -95,7 +94,7 @@ public class TestKeycloakAuthenticationPlugin {
     }
 
     @Test
-    public void testKeycloakBearerAuthenticationSucceeding() throws Exception {
+    public void testKeycloakBearerAuthenticationSucceeding() {
         KeycloakAuthenticationPlugin keycloakAuthenticationPlugin = new KeycloakAuthenticationPlugin();
         initPlugin(keycloakAuthenticationPlugin);
 
@@ -107,8 +106,8 @@ public class TestKeycloakAuthenticationPlugin {
         Mockito.when(requestMock.getAttribute(KEYCLOAK_ACCESS_TOKEN)).thenReturn(accessToken);
         Mockito.when(authenticatorMock.authenticate()).thenReturn(AuthOutcome.AUTHENTICATED);
 
-        Mockito.when(providerMock.provide(any(HttpServletRequest.class), any(HttpServletResponse.class))).thenReturn(
-                authenticatorMock);
+        Mockito.when(providerMock.provide(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+               .thenReturn(authenticatorMock);
         KeycloakDeployment deployment = new KeycloakDeployment();
         deployment.setResourceName("test");
         Mockito.when(providerMock.getResolvedDeployment()).thenReturn(deployment);
@@ -123,7 +122,7 @@ public class TestKeycloakAuthenticationPlugin {
     }
 
     @Test
-    public void testKeycloakBearerAuthenticationFailing() throws Exception {
+    public void testKeycloakBearerAuthenticationFailing() throws IOException {
         KeycloakAuthenticationPlugin keycloakAuthenticationPlugin = new KeycloakAuthenticationPlugin();
         initPlugin(keycloakAuthenticationPlugin);
 
@@ -131,8 +130,8 @@ public class TestKeycloakAuthenticationPlugin {
         Mockito.when(responseMock.getCoyoteResponse()).thenReturn(coyoteResponseMock);
 
         // No need to mock, just try the invalid bearer token
-        Mockito.when(requestMock.getHeaders(Matchers.matches("Authorization"))).thenReturn(
-                Collections.enumeration(Collections.singletonList(INVALID_BEARER_TOKEN)));
+        Mockito.when(requestMock.getHeaders(Matchers.matches("Authorization")))
+               .thenReturn(Collections.enumeration(Collections.singletonList(INVALID_BEARER_TOKEN)));
 
         UserIdentificationInfo identity = keycloakAuthenticationPlugin.handleRetrieveIdentity(requestFacade,
                 responseFacade);
@@ -143,7 +142,7 @@ public class TestKeycloakAuthenticationPlugin {
     }
 
     @Test
-    public void testKeycloakSiteAuthenticationFailing() throws Exception {
+    public void testKeycloakSiteAuthenticationFailing() {
         KeycloakAuthenticationPlugin keycloakAuthenticationPlugin = new KeycloakAuthenticationPlugin();
         initPlugin(keycloakAuthenticationPlugin);
 
@@ -157,15 +156,15 @@ public class TestKeycloakAuthenticationPlugin {
         assertNull(identity);
 
         Mockito.verify(responseMock).setStatus(302);
-        Mockito.verify(responseMock).setHeader(
-                Matchers.matches("Location"),
-                Matchers.startsWith("https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/auth?"
-                        + "response_type=code&" + "client_id=customer-portal&"
-                        + "redirect_uri=https%3A%2F%2Fexample.com%3A443%2Ffoo%2Fpath%2Fto%2Fresource"));
+        Mockito.verify(responseMock)
+               .setHeader(Matchers.matches("Location"),
+                       Matchers.startsWith("https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/auth?"
+                               + "response_type=code&" + "client_id=customer-portal&"
+                               + "redirect_uri=https%3A%2F%2Fexample.com%3A443%2Ffoo%2Fpath%2Fto%2Fresource"));
     }
 
     @Test
-    public void testKeycloakSiteLogout() throws Exception {
+    public void testKeycloakSiteLogout() throws IOException {
         KeycloakAuthenticationPlugin keycloakAuthenticationPlugin = new KeycloakAuthenticationPlugin();
         initPlugin(keycloakAuthenticationPlugin);
 
@@ -178,8 +177,8 @@ public class TestKeycloakAuthenticationPlugin {
         assertNotNull(result);
         assertEquals(true, result);
 
-        Mockito.verify(responseMock).sendRedirect(
-                "https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/logout?redirect_uri=https://example.com:443/foo/home.html");
+        String location = "https://127.0.0.1:8443/auth/realms/demo/protocol/openid-connect/logout?redirect_uri=https://example.com:443/foo/home.html";
+        Mockito.verify(responseMock).sendRedirect(location);
     }
 
     private KeycloakAuthenticationPlugin initPlugin(KeycloakAuthenticationPlugin keycloakAuthenticationPlugin) {

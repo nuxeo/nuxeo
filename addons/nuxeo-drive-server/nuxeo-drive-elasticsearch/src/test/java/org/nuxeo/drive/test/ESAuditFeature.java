@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
@@ -85,7 +86,7 @@ public class ESAuditFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         cleanUpAuditLog();
     }
 

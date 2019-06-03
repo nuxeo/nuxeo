@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,12 @@ package org.nuxeo.ecm.admin.permissions;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @since 7.10
@@ -33,12 +35,14 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 public class TestPermissionsPurge extends AbstractPermissionsPurge {
 
+    @Inject
+    protected WorkManager workManager;
+
     @Override
     public void scheduleWork(List<String> usernames) {
         DocumentModel searchDocument = session.createDocumentModel("PermissionsSearch");
         searchDocument.setPropertyValue("rs:ace_username", (Serializable) usernames);
 
-        TransactionHelper.commitOrRollbackTransaction();
         workManager.schedule(new PermissionsPurgeWork(searchDocument));
     }
 }

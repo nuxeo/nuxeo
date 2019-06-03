@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.groups.audit.tests;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,31 +36,23 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.groups.audit.service.ExcelExportService;
+import org.nuxeo.ecm.platform.test.UserManagerFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test excel export of groups
  */
 @RunWith(FeaturesRunner.class)
-@Features({CoreFeature.class, DirectoryFeature.class})
+@Features({ CoreFeature.class, DirectoryFeature.class, UserManagerFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.core",
-        "org.nuxeo.ecm.core.api",
-        "org.nuxeo.runtime.management",
-        "org.nuxeo.ecm.directory.sql",
-        "org.nuxeo.ecm.permissions",
-        "org.nuxeo.ecm.platform.usermanager",
-        "org.nuxeo.ecm.platform.usermanager.api",
-        "nuxeo-groups-rights-audit",
-        "org.nuxeo.ecm.automation.core" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/directory-config.xml",
-        "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/schemas-config.xml",
-        "org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/test-chain-export-operation.xml" })
+@Deploy("org.nuxeo.ecm.permissions")
+@Deploy("nuxeo-groups-rights-audit")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.groups.audit.tests:OSGI-INF/test-chain-export-operation.xml")
 public class TestExcelExportGroups {
 
     @Inject
@@ -74,11 +65,10 @@ public class TestExcelExportGroups {
     private AutomationService automationService;
 
     @Test
-    public void testExcelExportService() throws Exception {
+    public void testExcelExportService() {
         DocumentModel g1 = getGroup("test_g1");
         DocumentModel g2 = getGroup("test_g2");
-        List<String> g2Groups = Arrays.asList("test_g1");
-        g2.setProperty("group", "subGroups", g2Groups);
+        g2.setProperty("group", "subGroups", List.of("test_g1"));
         DocumentModel u1 = getUser("test_u1");
         // Set user properties
         u1.setProperty("user", "username", "test_u1");
@@ -86,7 +76,7 @@ public class TestExcelExportGroups {
         u1.setProperty("user", "lastName", "_u1");
         u1.setProperty("user", "email", "test@u1");
         // Set user/subgroup/group bindings
-        u1.setProperty("user", "groups", Arrays.asList("test_g1"));
+        u1.setProperty("user", "groups", List.of("test_g1"));
         userManager.createGroup(g1);
         userManager.createUser(u1);
         userManager.createGroup(g2);
@@ -102,13 +92,13 @@ public class TestExcelExportGroups {
         }
     }
 
-    private DocumentModel getGroup(String groupId) throws Exception {
+    private DocumentModel getGroup(String groupId) {
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setProperty("group", "groupname", groupId);
         return newGroup;
     }
 
-    private DocumentModel getUser(String userId) throws Exception {
+    private DocumentModel getUser(String userId) {
         DocumentModel newUser = userManager.getBareUserModel();
         newUser.setProperty("user", "username", userId);
         return newUser;

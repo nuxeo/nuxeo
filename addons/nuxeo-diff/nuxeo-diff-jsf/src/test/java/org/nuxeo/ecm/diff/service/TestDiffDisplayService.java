@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit.LEFT_DOC_PATH;
+import static org.nuxeo.ecm.diff.test.DocumentDiffRepositoryInit.RIGHT_DOC_PATH;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -91,7 +91,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
      * Tests diff display block schemas.
      */
     @Test
-    public void testDiffDisplayBlockSchemas() throws ParseException {
+    public void testDiffDisplayBlockSchemas() {
 
         // --------------------------------------------------------------------
         // Check diff display for 2 documents of a different type: Note / File
@@ -126,7 +126,7 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // Check diff display blocks
         DiffDisplayBlock diffDisplayBlockCreator = diffDisplayBlocks.get(0);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, Arrays.asList("description", "creator"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, List.of("description", "creator"));
         DiffDisplayBlock diffDisplayBlockMinorVersion = diffDisplayBlocks.get(1);
         checkDiffDisplayBlock(diffDisplayBlockMinorVersion, "label.diffBlock.uid", 1);
         checkDiffDisplayBlockSchema(diffDisplayBlockMinorVersion, "uid", 1, Collections.singletonList("minor_version"));
@@ -159,11 +159,11 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // Check diff display blocks
         diffDisplayBlockCreator = diffDisplayBlocks.get(0);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 1, Arrays.asList("description"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 1, List.of("description"));
 
         diffDisplayBlockCreator = diffDisplayBlocks.get(1);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.simpletypes", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "simpletypes", 1, Arrays.asList("boolean"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "simpletypes", 1, List.of("boolean"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of the same type: Note with a
@@ -195,11 +195,11 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // Check diff display blocks
         diffDisplayBlockCreator = diffDisplayBlocks.get(0);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, Arrays.asList("description", "creator"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, List.of("description", "creator"));
 
         diffDisplayBlockCreator = diffDisplayBlocks.get(1);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.note", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "note", 2, Arrays.asList("note"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "note", 2, List.of("note"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of the same type: ExtendedNote
@@ -231,11 +231,11 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // Check diff display blocks
         diffDisplayBlockCreator = diffDisplayBlocks.get(0);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, Arrays.asList("description", "creator"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, List.of("description", "creator"));
 
         diffDisplayBlockCreator = diffDisplayBlocks.get(1);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.note", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "note", 2, Arrays.asList("note"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "note", 2, List.of("note"));
 
         // -----------------------------------------------------------------
         // Check diff display for 2 documents of a different type:
@@ -267,11 +267,11 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
         // Check diff display blocks
         diffDisplayBlockCreator = diffDisplayBlocks.get(0);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.dublincore", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, Arrays.asList("description", "creator"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "dublincore", 2, List.of("description", "creator"));
 
         diffDisplayBlockCreator = diffDisplayBlocks.get(1);
         checkDiffDisplayBlock(diffDisplayBlockCreator, "label.diffBlock.note", 1);
-        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "note", 2, Arrays.asList("note"));
+        checkDiffDisplayBlockSchema(diffDisplayBlockCreator, "note", 2, List.of("note"));
     }
 
     /**
@@ -281,8 +281,8 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
     public void testDiffDisplayBlocks() {
 
         // Get left and right docs
-        DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getLeftDocPath()));
-        DocumentModel rightDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getRightDocPath()));
+        DocumentModel leftDoc = session.getDocument(new PathRef(LEFT_DOC_PATH));
+        DocumentModel rightDoc = session.getDocument(new PathRef(RIGHT_DOC_PATH));
 
         // Do doc diff
         DocumentDiff docDiff = docDiffService.diff(session, leftDoc, rightDoc);

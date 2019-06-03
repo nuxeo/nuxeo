@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.convert")
 @Deploy("org.nuxeo.ecm.platform.url.core")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 @Deploy("org.nuxeo.ecm.platform.thumbnail:test-thumbnail-factories-contrib.xml")
 public class TestThumbnailFactories {
 
@@ -62,7 +61,7 @@ public class TestThumbnailFactories {
     protected static Blob defaultThumbnail = Blobs.createBlob("default");
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
 
     @Test
     public void testThumbnailFactoryContribution() throws IOException {

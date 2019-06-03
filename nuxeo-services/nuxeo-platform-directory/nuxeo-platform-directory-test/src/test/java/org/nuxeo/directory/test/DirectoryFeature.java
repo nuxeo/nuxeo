@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.SystemPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -41,7 +39,6 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.multi.MultiDirectory;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -55,11 +52,10 @@ import com.google.inject.name.Names;
 /**
  * @since 9.2
  */
-@Features({ CoreFeature.class, ClientLoginFeature.class })
+@Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.directory.api")
 @Deploy("org.nuxeo.ecm.directory")
-@Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.directory.sql")
 @Deploy("org.nuxeo.directory.mongodb")
@@ -76,8 +72,6 @@ public class DirectoryFeature implements RunnerFeature {
     protected Granularity granularity;
 
     protected Map<String, Map<String, Map<String, Object>>> allDirectoryData;
-
-    protected LoginStack loginStack;
 
     @Override
     public void beforeRun(FeaturesRunner runner) {
@@ -103,7 +97,7 @@ public class DirectoryFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (granularity != Granularity.METHOD) {
             return;
         }
@@ -111,10 +105,7 @@ public class DirectoryFeature implements RunnerFeature {
         allDirectoryData = new HashMap<>();
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
 
-        loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(new SystemPrincipal(null), null, null);
-
-        try {
+        TransactionHelper.runInTransaction(() -> Framework.doPrivileged(() -> {
             for (Directory dir : directoryService.getDirectories()) {
                 // Do not save multi-directories as subdirectories will be saved
                 if (dir.isReadOnly() || dir instanceof MultiDirectory) {
@@ -124,23 +115,18 @@ public class DirectoryFeature implements RunnerFeature {
                     session.setReadAllColumns(true); // needs to fetch the password too
                     List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
                             Collections.emptyMap(), true); // fetch references
-                    Map<String, Map<String, Object>> data = entries.stream().collect(
-                            Collectors.toMap(DocumentModel::getId, entry -> entry.getProperties(dir.getSchema())));
+                    Map<String, Map<String, Object>> data = entries.stream()
+                                                                   .collect(Collectors.toMap(DocumentModel::getId,
+                                                                           entry -> entry.getProperties(
+                                                                                   dir.getSchema())));
                     allDirectoryData.put(dir.getName(), data);
                 }
             }
-            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-            }
-        } catch (Exception e) {
-            loginStack.pop();
-            throw e;
-        }
+        }));
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (granularity != Granularity.METHOD) {
             return;
         }
@@ -150,7 +136,7 @@ public class DirectoryFeature implements RunnerFeature {
         }
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        try {
+        TransactionHelper.runInTransaction(() -> Framework.doPrivileged(() -> {
             // clear all directories
             boolean isAllClear;
             do {
@@ -191,15 +177,14 @@ public class DirectoryFeature implements RunnerFeature {
                     }
                 }
             }
-        } finally {
-            loginStack.pop();
-        }
+        }));
         allDirectoryData = null;
     }
 
     protected void bindDirectory(Binder binder, final String name) {
-        binder.bind(Directory.class).annotatedWith(Names.named(name)).toProvider(
-                () -> Framework.getService(DirectoryService.class).getDirectory(name));
+        binder.bind(Directory.class)
+              .annotatedWith(Names.named(name))
+              .toProvider(() -> Framework.getService(DirectoryService.class).getDirectory(name));
     }
 
 }

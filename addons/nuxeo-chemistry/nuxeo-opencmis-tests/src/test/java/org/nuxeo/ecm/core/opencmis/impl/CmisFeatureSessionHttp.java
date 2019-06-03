@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -39,9 +40,8 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
  * <p>
  * This is abstract, so subclasses can specify if AtomPub or Browser Bindings are used
  */
-@Features(ServletContainerFeature.class)
+@Features({ ServletContainerFeature.class, NuxeoLoginFeature.class })
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/servletcontainer-base-config.xml")
-@Deploy("org.nuxeo.ecm.platform.web.common")
 public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
     public static final String BASE_RESOURCE = "web";
@@ -64,7 +64,7 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) {
         tearDownCmisSession();
     }
 

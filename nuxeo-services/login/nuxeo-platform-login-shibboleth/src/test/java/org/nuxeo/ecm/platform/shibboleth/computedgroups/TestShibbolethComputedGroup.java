@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -47,26 +46,23 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.computedgroups.GroupComputer;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
+import org.nuxeo.ecm.platform.test.UserManagerFeature;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, DirectoryFeature.class })
+@Features({ CoreFeature.class, DirectoryFeature.class, UserManagerFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.content.template")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
-@Deploy("org.nuxeo.ecm.platform.usermanager")
 @Deploy("org.nuxeo.ecm.platform.el")
-@Deploy("org.nuxeo.ecm.platform.usermanager.api")
 @Deploy("org.nuxeo.ecm.platform.login.shibboleth")
-@Deploy("org.nuxeo.ecm.platform.web.common")
-@Deploy("org.nuxeo.ecm.platform.login.shibboleth:OSGI-INF/test-sql-directory.xml")
 public class TestShibbolethComputedGroup {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         userDir = directoryService.open("userDirectory");
         groupDir = directoryService.open("shibbGroup");
         groupDir.deleteEntry("group1");
@@ -76,7 +72,7 @@ public class TestShibbolethComputedGroup {
     }
 
     @After
-    public void setDown() throws Exception {
+    public void setDown() {
         if (userDir != null) {
             userDir.close();
         }
@@ -85,9 +81,6 @@ public class TestShibbolethComputedGroup {
             groupDir.close();
         }
     }
-
-    @Inject
-    protected CoreSession session;
 
     @Inject
     protected DirectoryService directoryService;
@@ -109,7 +102,7 @@ public class TestShibbolethComputedGroup {
     }
 
     @Test
-    public void testELOnDocumentModel() throws Exception {
+    public void testELOnDocumentModel() {
         DocumentModel user = createUser("user1");
         user.setProperty("user", "company", "test");
         user.setProperty("user", "email", "mail");
@@ -119,7 +112,7 @@ public class TestShibbolethComputedGroup {
     }
 
     @Test
-    public void testComputedGroupGetAll() throws Exception {
+    public void testComputedGroupGetAll() {
         GroupComputer gc = new ShibbolethGroupComputer();
 
         assertSame(0, gc.getAllGroupIds().size());
@@ -132,7 +125,7 @@ public class TestShibbolethComputedGroup {
     }
 
     @Test
-    public void testComputedGroupGetGroupForUser() throws Exception {
+    public void testComputedGroupGetGroupForUser() {
         DocumentModel user = createUser("John");
         user.setProperty("user", "firstName", "test");
         user.setProperty("user", "email", "test");
@@ -164,16 +157,14 @@ public class TestShibbolethComputedGroup {
         assertTrue(ELGroupComputerHelper.isValidEL("empty currentUser"));
     }
 
-    protected DocumentModel createUser(String username) throws Exception {
-        DocumentModel doc = userDir.createEntry(Collections.singletonMap("username", username));
-        return doc;
+    protected DocumentModel createUser(String username) {
+        return userDir.createEntry(Collections.singletonMap("username", username));
     }
 
-    protected DocumentModel createShibbGroup(String name, String el) throws Exception {
+    protected DocumentModel createShibbGroup(String name, String el) {
         Map<String, Object> group = new HashMap<>();
         group.put("groupName", name);
         group.put("expressionLanguage", el);
-        DocumentModel doc = groupDir.createEntry(group);
-        return doc;
+        return groupDir.createEntry(group);
     }
 }

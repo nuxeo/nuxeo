@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.junit.runners.model.FrameworkMethod;
+import org.nuxeo.ecm.core.api.local.DummyLoginFeature;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -38,12 +39,13 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  *
  *
  * @since 8.3
+ * @deprecated since 11.1, use {@link DummyLoginFeature} instead. Note: {@link CoreFeature} depends on it
  */
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.platform.login")
 @Deploy("org.nuxeo.ecm.platform.login:dummy-client-login-config.xml")
+@Deprecated(since = "11.1")
 public class ClientLoginFeature implements RunnerFeature {
 
     protected LoginContext logContext = null;

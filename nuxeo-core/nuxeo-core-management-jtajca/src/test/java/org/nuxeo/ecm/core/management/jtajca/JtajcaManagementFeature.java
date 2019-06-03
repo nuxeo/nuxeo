@@ -30,6 +30,7 @@ import javax.management.ObjectName;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.LogFactory;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -158,7 +159,7 @@ public class JtajcaManagementFeature implements RunnerFeature {
     TxChecker txChecker;
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (core == null) {
             return;
         }
@@ -166,7 +167,7 @@ public class JtajcaManagementFeature implements RunnerFeature {
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (txChecker == null) {
             return;
         }

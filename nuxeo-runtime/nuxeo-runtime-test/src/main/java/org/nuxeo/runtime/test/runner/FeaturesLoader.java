@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Stephane Lacoin
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.runtime.test.runner;
 
@@ -29,7 +30,7 @@ import java.util.Map;
 
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.runners.model.TestClass;
-import com.google.inject.Binder;
+
 import com.google.inject.Module;
 
 class FeaturesLoader {
@@ -44,9 +45,6 @@ class FeaturesLoader {
 
     private final FeaturesRunner runner;
 
-    /**
-     * @param featuresRunner
-     */
     FeaturesLoader(FeaturesRunner featuresRunner) {
         runner = featuresRunner;
     }
@@ -80,30 +78,23 @@ class FeaturesLoader {
     }
 
     Iterable<RunnerFeature> features() {
-        return new Iterable<RunnerFeature>() {
+        return () -> new Iterator<>() {
+
+            Iterator<Holder> iterator = holders.iterator();
 
             @Override
-            public Iterator<RunnerFeature> iterator() {
-                return new Iterator<RunnerFeature>() {
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
 
-                    Iterator<Holder> iterator = holders.iterator();
+            @Override
+            public RunnerFeature next() {
+                return iterator.next().feature;
+            }
 
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
-                    }
-
-                    @Override
-                    public RunnerFeature next() {
-                        return iterator.next().feature;
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-
-                };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
             }
 
         };
@@ -126,12 +117,12 @@ class FeaturesLoader {
                 callable.call(each);
             } catch (AssumptionViolatedException cause) {
                 throw cause;
-            } catch (Throwable cause) {
+            } catch (InterruptedException cause) {
                 errors.addSuppressed(cause);
-                if (cause instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                    throw new AssertionError("Interrupted on invoke features", errors);
-                }
+                Thread.currentThread().interrupt();
+                throw new AssertionError("Interrupted on invoke features", errors);
+            } catch (Throwable cause) { // NOSONAR
+                errors.addSuppressed(cause);
             }
         }
         if (errors.getSuppressed().length > 0) {
@@ -150,7 +141,7 @@ class FeaturesLoader {
         if (annos != null) {
             for (Features anno : annos) {
                 for (Class<? extends RunnerFeature> cl : anno.value()) {
-                    loadFeature(new HashSet<Class<?>>(), cl);
+                    loadFeature(new HashSet<>(), cl);
                 }
             }
         }
@@ -186,19 +177,14 @@ class FeaturesLoader {
         return aType.cast(index.get(aType).feature);
     }
 
+    @SuppressWarnings("unchecked")
     protected Module onModule() {
-        return new Module() {
-
-            @SuppressWarnings({ "unchecked", "rawtypes" })
-            @Override
-            public void configure(Binder aBinder) {
-                for (Holder each : holders) {
-                    each.feature.configure(runner, aBinder);
-                    aBinder.bind((Class) each.feature.getClass()).toInstance(each.feature);
-                    aBinder.requestInjection(each.feature);
-                }
+        return aBinder -> {
+            for (Holder each : holders) {
+                each.feature.configure(runner, aBinder);
+                aBinder.bind((Class) each.feature.getClass()).toInstance(each.feature);
+                aBinder.requestInjection(each.feature);
             }
-
         };
     }
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,10 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.IExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.AclAuditWork;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -64,9 +62,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
-@LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+@Deploy("nuxeo-groups-rights-audit")
 @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreLongRunning.class)
 public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
 
@@ -86,9 +82,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
             // verify
             try {
                 assertProcessInterruptStatusInOutputFile();
-            } catch (InvalidFormatException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
+            } catch (InvalidFormatException | IOException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -110,22 +104,19 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
         }
     }
 
-    @Inject
-    CoreSession session;
-
-    @Inject
-    UserManager userManager;
-
-    @Inject
-    EventService eventService;
-
-    @Inject
-    WorkManager workManager;
-
     private final static Log log = LogFactory.getLog(TestAclProcessingExceedingTimeout.class);
 
     protected static File testFile = new File(
             folder + TestAclProcessingExceedingTimeout.class.getSimpleName() + ".xls");
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected EventService eventService;
+
+    @Inject
+    protected WorkManager workManager;
 
     @Test
     public void testTimeout() throws Exception {

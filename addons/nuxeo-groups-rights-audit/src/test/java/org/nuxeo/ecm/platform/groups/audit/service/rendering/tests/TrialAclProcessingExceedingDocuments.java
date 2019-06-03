@@ -42,11 +42,9 @@ import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessor.Proces
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test excel export of groups
@@ -54,20 +52,16 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.platform.query.api", "nuxeo-groups-rights-audit" })
-@LocalDeploy({ "nuxeo-groups-rights-audit:OSGI-INF/directory-config.xml",
-        "nuxeo-groups-rights-audit:OSGI-INF/schemas-config.xml" })
+@Deploy("nuxeo-groups-rights-audit")
 public class TrialAclProcessingExceedingDocuments extends AbstractAclLayoutTest {
-    @Inject
-    CoreSession session;
-
-    @Inject
-    UserManager userManager;
 
     private final static Log log = LogFactory.getLog(TrialAclProcessingExceedingDocuments.class);
 
-    protected static File testFile = new File(folder + TrialAclProcessingExceedingDocuments.class.getSimpleName()
-            + ".xls");
+    protected static File testFile = new File(
+            folder + TrialAclProcessingExceedingDocuments.class.getSimpleName() + ".xls");
+
+    @Inject
+    protected CoreSession session;
 
     @Test
     @Ignore

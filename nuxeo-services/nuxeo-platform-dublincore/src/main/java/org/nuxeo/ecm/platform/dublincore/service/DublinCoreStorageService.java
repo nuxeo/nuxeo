@@ -43,8 +43,10 @@ public interface DublinCoreStorageService {
      *
      * @deprecated since 10.2, use directly {@link DublinCoreStorageService#setCreationDate(DocumentModel, Calendar)}
      */
-    @Deprecated
-    void setCreationDate(DocumentModel doc, Calendar creationDate, Event event);
+    @Deprecated(since = "10.2")
+    default void setCreationDate(DocumentModel doc, Calendar creationDate, @SuppressWarnings("unused") Event event) {
+        setCreationDate(doc, creationDate);
+    }
 
     /**
      * Sets the document's issued date.
@@ -62,8 +64,11 @@ public interface DublinCoreStorageService {
      * @deprecated since 10.2, use directly
      *             {@link DublinCoreStorageService#setModificationDate(DocumentModel, Calendar)}
      */
-    @Deprecated
-    void setModificationDate(DocumentModel doc, Calendar modificationDate, Event event);
+    @Deprecated(since = "10.2")
+    default void setModificationDate(DocumentModel doc, Calendar modificationDate,
+            @SuppressWarnings("unused") Event event) {
+        setModificationDate(doc, modificationDate);
+    }
 
     /**
      * Adds a contributor to the document.

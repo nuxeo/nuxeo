@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 package org.nuxeo.wopi;
 
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -26,8 +27,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 /**
  * @since 10.3
  */
-@Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.platform.web.common")
+@Features({ PlatformFeature.class, NuxeoLoginFeature.class })
 @Deploy("org.nuxeo.wopi")
 public class WOPIFeature implements RunnerFeature {
 }

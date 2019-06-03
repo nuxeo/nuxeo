@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -43,6 +44,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.api.local.DummyLoginFeature;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -71,6 +73,8 @@ import com.google.inject.Binder;
 
 /**
  * The core feature provides a default {@link CoreSession} that can be injected.
+ * <p>
+ * The provided {@link CoreSession} is opened for the principal logged in by the {@link DummyLoginFeature}.
  * <p>
  * In addition, by injecting the feature itself, some helper methods are available to open new sessions.
  */
@@ -103,10 +107,11 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Features({ RuntimeFeature.class,
-        TransactionalFeature.class,
-        RuntimeStreamFeature.class,
-        WorkManagerFeature.class,
+@Features({ RuntimeFeature.class, //
+        TransactionalFeature.class, //
+        RuntimeStreamFeature.class, //
+        DummyLoginFeature.class, //
+        WorkManagerFeature.class, //
         CoreBulkFeature.class })
 public class CoreFeature implements RunnerFeature {
 
@@ -121,11 +126,14 @@ public class CoreFeature implements RunnerFeature {
     protected Granularity granularity;
 
     // this value gets injected
-    protected CoreSession session;
+    protected CloseableCoreSession session;
 
     protected boolean cleaned;
 
+    // no injection on features because we need it during beforeRun (injection has not been done at this stage)
     protected TransactionalFeature txFeature;
+
+    protected DummyLoginFeature loginFeature;
 
     public StorageConfiguration getStorageConfiguration() {
         return storageConfiguration;
@@ -137,6 +145,7 @@ public class CoreFeature implements RunnerFeature {
 
         storageConfiguration = new StorageConfiguration(this);
         txFeature = runner.getFeature(TransactionalFeature.class);
+        loginFeature = runner.getFeature(DummyLoginFeature.class);
         // init from RepositoryConfig annotations
         RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);
         if (repositoryConfig == null) {
@@ -185,7 +194,7 @@ public class CoreFeature implements RunnerFeature {
             // we need a transaction to properly initialize the session
             // but it hasn't been started yet by TransactionalFeature
             TransactionHelper.startTransaction();
-            initializeSession(runner);
+            initializeSession(); // create the session for us
             TransactionHelper.commitOrRollbackTransaction();
         }
     }
@@ -199,15 +208,12 @@ public class CoreFeature implements RunnerFeature {
     public void afterRun(FeaturesRunner runner) {
         waitForAsyncCompletion(); // fulltext and various workers
         if (granularity != Granularity.METHOD) {
-            cleanupSession(runner);
-        }
-        if (session != null) {
-            releaseCoreSession();
+            cleanupSession(); // close the session for us
         }
 
         List<CoreSessionRegistrationInfo> leakedInfos = Framework.getService(CoreSessionService.class)
                                                                  .getCoreSessionRegistrationInfos();
-        if (leakedInfos.size() == 0) {
+        if (leakedInfos.isEmpty()) {
             return;
         }
         AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));
@@ -223,18 +229,17 @@ public class CoreFeature implements RunnerFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) {
+    public void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) {
         if (granularity == Granularity.METHOD) {
-            initializeSession(runner);
+            initializeSession(); // create the session for us
         }
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) {
+    public void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) {
+        waitForAsyncCompletion();
         if (granularity == Granularity.METHOD) {
-            cleanupSession(runner);
-        } else {
-            waitForAsyncCompletion();
+            cleanupSession(); // close the session for us
         }
     }
 
@@ -242,40 +247,38 @@ public class CoreFeature implements RunnerFeature {
         txFeature.nextTransaction();
     }
 
-    protected void cleanupSession(FeaturesRunner runner) {
-        waitForAsyncCompletion();
-        if (session == null) {
-            createCoreSession();
-        }
+    protected void cleanupSession() {
+        releaseCoreSession(); // release session for tests
+        // open an administrator session to cleanup repository
         TransactionHelper.runInNewTransaction(() -> {
-            try {
+            try (var adminSession = openCoreSession(createAdministrator())) {
                 log.trace("remove everything except root");
                 // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
-                try (IterableQueryResult results = session.queryAndFetch(
+                try (IterableQueryResult results = adminSession.queryAndFetch(
                         "SELECT ecm:uuid FROM Document WHERE ecm:isProxy = 1", NXQL.NXQL)) {
-                    batchRemoveDocuments(results);
+                    batchRemoveDocuments(adminSession, results);
                 } catch (QueryParseException e) {
                     // ignore, proxies disabled
                 }
                 // remove non-proxies
-                session.removeChildren(new PathRef("/"));
+                adminSession.removeChildren(new PathRef("/"));
                 waitForAsyncCompletion();
                 log.trace(
                         "remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
                 // remove remaining placeless documents
-                try (IterableQueryResult results = session.queryAndFetch("SELECT ecm:uuid FROM Document, Relation",
+                try (IterableQueryResult results = adminSession.queryAndFetch("SELECT ecm:uuid FROM Document, Relation",
                         NXQL.NXQL)) {
-                    batchRemoveDocuments(results);
+                    batchRemoveDocuments(adminSession, results);
                 }
                 waitForAsyncCompletion();
 
                 // set original ACP on root
-                DocumentModel root = session.getRootDocument();
+                DocumentModel root = adminSession.getRootDocument();
                 root.setACP(rootAcp, true);
 
-                session.save();
+                adminSession.save();
                 waitForAsyncCompletion();
-                if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
+                if (!adminSession.query("SELECT * FROM Document, Relation").isEmpty()) {
                     log.error("Fail to cleanupSession, repository will not be empty for the next test.");
                 }
             } catch (NuxeoException e) {
@@ -284,12 +287,11 @@ public class CoreFeature implements RunnerFeature {
                 CoreScope.INSTANCE.exit();
             }
         });
-        releaseCoreSession();
         cleaned = true;
     }
 
-    protected void batchRemoveDocuments(IterableQueryResult results) {
-        String rootDocumentId = session.getRootDocument().getId();
+    protected void batchRemoveDocuments(CoreSession adminSession, IterableQueryResult results) {
+        String rootDocumentId = adminSession.getRootDocument().getId();
         List<DocumentRef> ids = new ArrayList<>();
         for (Map<String, Serializable> result : results) {
             String id = (String) result.get("ecm:uuid");
@@ -298,31 +300,31 @@ public class CoreFeature implements RunnerFeature {
             }
             ids.add(new IdRef(id));
             if (ids.size() >= 100) {
-                batchRemoveDocuments(ids);
+                batchRemoveDocuments(adminSession, ids);
                 ids.clear();
             }
         }
         if (!ids.isEmpty()) {
-            batchRemoveDocuments(ids);
+            batchRemoveDocuments(adminSession, ids);
         }
     }
 
-    protected void batchRemoveDocuments(List<DocumentRef> ids) {
+    protected void batchRemoveDocuments(CoreSession adminSession, List<DocumentRef> ids) {
         List<DocumentRef> deferredIds = new ArrayList<>();
         for (DocumentRef id : ids) {
-            if (!session.exists(id)) {
+            if (!adminSession.exists(id)) {
                 continue;
             }
-            if (session.canRemoveDocument(id)) {
-                session.removeDocument(id);
+            if (adminSession.canRemoveDocument(id)) {
+                adminSession.removeDocument(id);
             } else {
                 deferredIds.add(id);
             }
         }
-        session.removeDocuments(deferredIds.toArray(new DocumentRef[0]));
+        adminSession.removeDocuments(deferredIds.toArray(new DocumentRef[0]));
     }
 
-    protected void initializeSession(FeaturesRunner runner) {
+    protected void initializeSession() {
         if (cleaned) {
             // reinitialize repositories content
             RepositoryService repositoryService = Framework.getService(RepositoryService.class);
@@ -330,15 +332,21 @@ public class CoreFeature implements RunnerFeature {
             cleaned = false;
         }
         CoreScope.INSTANCE.enter();
+        // populate repository and get root acp
+        Framework.doPrivileged(() -> {
+            try (var adminSession = openCoreSession(createAdministrator())) {
+                if (repositoryInit != null) {
+                    repositoryInit.populate(adminSession);
+                    adminSession.save();
+                    waitForAsyncCompletion();
+                }
+                // save current root acp
+                DocumentModel root = adminSession.getRootDocument();
+                rootAcp = root.getACP();
+            }
+        });
+        // open session for test
         createCoreSession();
-        if (repositoryInit != null) {
-            repositoryInit.populate(session);
-            session.save();
-            waitForAsyncCompletion();
-        }
-        // save current root acp
-        DocumentModel root = session.getRootDocument();
-        rootAcp = root.getACP();
     }
 
     public String getRepositoryName() {
@@ -362,9 +370,9 @@ public class CoreFeature implements RunnerFeature {
     }
 
     public CloseableCoreSession createCoreSession() {
-        UserPrincipal principal = new UserPrincipal("Administrator", new ArrayList<>(), false, true);
+        NuxeoPrincipal principal = loginFeature.getPrincipal();
         session = CoreInstance.openCoreSession(getRepositoryName(), principal);
-        return (CloseableCoreSession) session;
+        return session;
     }
 
     public CoreSession getCoreSession() {
@@ -372,8 +380,10 @@ public class CoreFeature implements RunnerFeature {
     }
 
     public void releaseCoreSession() {
-        ((CloseableCoreSession) session).close();
-        session = null;
+        if (session != null) {
+            session.close();
+            session = null;
+        }
     }
 
     public CoreSession reopenCoreSession() {
@@ -383,6 +393,10 @@ public class CoreFeature implements RunnerFeature {
         NuxeoContainer.resetConnectionManager();
         createCoreSession();
         return session;
+    }
+
+    protected NuxeoPrincipal createAdministrator() {
+        return new UserPrincipal("Administrator", List.of(), false, true);
     }
 
     public class CoreDeployer extends HotDeployer.ActionHandler {

@@ -24,9 +24,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.nuxeo.ecm.core.api.SystemPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -110,8 +107,6 @@ public class LDAPDirectoryFeature implements RunnerFeature {
 
     protected MockLdapServer server;
 
-    protected LoginStack loginStack;
-
     @Override
     public void initialize(FeaturesRunner runner) {
         harness = runner.getFeature(RuntimeFeature.class).getHarness();
@@ -151,17 +146,6 @@ public class LDAPDirectoryFeature implements RunnerFeature {
     @Override
     public void start(FeaturesRunner runner) throws Exception {
         harness.deployContrib("org.nuxeo.ecm.directory.ldap.tests", getSetupFile());
-    }
-
-    @Override
-    public void beforeSetup(FeaturesRunner runner) {
-        loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(new SystemPrincipal(null), null, null);
-    }
-
-    @Override
-    public void afterTeardown(FeaturesRunner runner) {
-        loginStack.pop();
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,36 +23,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import javax.inject.Inject;
-
-import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
+import org.nuxeo.ecm.core.api.local.WithUser;
 
+@WithUser(CoreDirectoryFeature.USER1_NAME)
 public class TestCoreDirectoryUser extends TestCoreDirectory {
 
-    @Inject
-    ClientLoginFeature login;
-
-    @Override
-    public void setUp() throws Exception {
-        login.login(CoreDirectoryFeature.USER1_NAME);
-        dirSession = coreDir.getSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        try {
-            dirSession.close();
-        } finally {
-            login.logout();
-        }
-    }
-
     @Test
-    public void testGetEntry() throws Exception {
+    public void testGetEntry() {
         DocumentModel entry;
         entry = dirSession.getEntry(CoreDirectoryInit.DOC_ID_USER1);
         assertEquals("foo1", entry.getPropertyValue(FOO_FIELD));
