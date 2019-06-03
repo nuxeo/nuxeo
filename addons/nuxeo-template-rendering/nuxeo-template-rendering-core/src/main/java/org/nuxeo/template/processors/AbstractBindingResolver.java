@@ -136,14 +136,18 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                         return handleHtmlField(param.getName(), (String) getDocPropertyValue(doc, propKey));
                 }
             case PictureProperty:
-                Serializable docPropertyValue = getDocPropertyValue(doc, propKey);
-                if (isBlob(docPropertyValue)) {
-                    Blob blob = (Blob) getDocPropertyValue(doc, propKey);
-                    addDefaultMimetypeIfRequired(blob);
-                    return handlePictureField(param.getName(), blob);
+                try {
+                    Serializable docPropertyValue = getDocPropertyValue(doc, propKey);
+                    if (isBlob(docPropertyValue)) {
+                        Blob blob = (Blob) getDocPropertyValue(doc, propKey);
+                        addDefaultMimetypeIfRequired(blob);
+                        return handlePictureField(param.getName(), blob);
+                    }
+                } catch (ValueNotFound e) {
+                    return handlePictureField(param.getName(), null);
                 }
             default:
-                docPropertyValue = getDocPropertyValue(doc, propKey);
+                Serializable docPropertyValue = getDocPropertyValue(doc, propKey);
                 if (docPropertyValue == null)
                     return extractDefaultValue(doc, param);
                 if (isBlob(getDocPropertyValue(doc, propKey)))

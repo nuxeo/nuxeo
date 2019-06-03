@@ -181,6 +181,26 @@ public class TestFMBindingResolver extends TestFMBindingAbstract {
     }
 
     @Test
+    public void whenParamIsPicturePropertyAndSourceDocPropThrowException_shouldAddWrappedValue() {
+        when(doc.getProperty("my:fieldThatNotExists")).thenThrow(new PropertyException());
+        when(doc.getPropertyValue("my:fieldThatNotExists")).thenThrow(new PropertyException());
+
+        inputParam.add(TemplateInput.factory("pictureException", PictureProperty, "my:fieldThatNotExists"));
+
+        resolver.resolve(inputParam, ctx, templateBasedDoc);
+
+        assertEquals(1, ctx.size());
+        assertTrue(ctx.containsKey("pictureException"));
+        assertNull(ctx.get("pictureNotBlob"));
+
+        verify(resolver, times(0)).handleLoop(any(), any());
+        verify(resolver, times(1)).handlePictureField(any(), any());
+        verify(resolver, times(0)).handleBlobField(any(), any());
+        verify(resolver, times(0)).handleHtmlField(any(), any());
+
+    }
+
+    @Test
     public void whenParamIsDocumentPropertyAndSourceDocPropIsBlob_shouldAddWrappedValue() {
         definePropertyInDoc(doc, "my:field", new StringBlob("Should be wrapped"));
 
