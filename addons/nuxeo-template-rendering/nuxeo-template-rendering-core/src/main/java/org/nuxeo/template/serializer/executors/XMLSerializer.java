@@ -3,7 +3,6 @@ package org.nuxeo.template.serializer.executors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.*;
-import org.dom4j.tree.DefaultElement;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
@@ -11,7 +10,11 @@ import org.nuxeo.template.api.TemplateInput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.nuxeo.template.api.InputType.StringValue;
 
 /**
  * {@link TemplateInput} parameters are stored in the {@link DocumentModel} as a single String Property via XML
@@ -44,52 +47,81 @@ public class XMLSerializer implements Serializer {
 
         Document xmlDoc = DocumentHelper.parseText(xml);
 
-        @SuppressWarnings("rawtypes")
-        List nodes = xmlDoc.getRootElement().elements(fieldTag);
+        List<Element> nodes = xmlDoc.getRootElement().elements(fieldTag);
 
-        for (Object node : nodes) {
-
-            DefaultElement elem = (DefaultElement) node;
-            Attribute name = elem.attribute("name");
-            TemplateInput param = new TemplateInput(name.getValue());
-
-            InputType type = InputType.StringValue;
-
-            if (elem.attribute("type") != null) {
-                type = InputType.getByValue(elem.attribute("type").getValue());
-                param.setType(type);
-            }
-
-            String strValue = elem.attributeValue("value");
-            if (InputType.StringValue.equals(type)) {
-                param.setStringValue(strValue);
-            } else if (InputType.DateValue.equals(type)) {
-                try {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-                    param.setDateValue(dateFormat.parse(strValue));
-                } catch (ParseException e) {
-                    throw new DocumentException(e);
-                }
-            } else if (InputType.BooleanValue.equals(type)) {
-                param.setBooleanValue(Boolean.valueOf(strValue));
-            } else {
-                param.setSource(elem.attributeValue("source"));
-            }
-
-            if (elem.attribute("readonly") != null) {
-                param.setReadOnly(Boolean.parseBoolean(elem.attributeValue("readonly")));
-            }
-
-            if (elem.attribute("autoloop") != null) {
-                param.setAutoLoop(Boolean.parseBoolean(elem.attributeValue("autoloop")));
-            }
-
-            param.setDesciption(elem.getText());
-
-            result.add(param);
+        for (Element node : nodes) {
+            result.add(extractTemplateInputFromXMLNode(node));
         }
 
         return result;
+    }
+
+    protected TemplateInput extractTemplateInputFromXMLNode(Element node) throws DocumentException {
+        String paramName = getNameFromXMLNode(node);
+        InputType paramType = getTypeFromXMLNode(node);
+        String paramDesc = node.getText();
+        Boolean isReadonly = getIsReadonlyFromXMLNode(node);
+        Boolean isAutoloop = getIsAutoloopFromXMLNode(node);
+
+        Object paramValue = node.attributeValue("value");
+        switch (paramType) {
+            case StringValue:
+            case BooleanValue:
+                break;
+            case DateValue:
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+                    paramValue = dateFormat.parse((String) paramValue);
+                } catch (ParseException e) {
+                    throw new DocumentException(e);
+                }
+                break;
+           case MapValue:
+                Map<String, TemplateInput> listValue = new HashMap<>();
+                for (Element childNode : node.elements()) {
+                    TemplateInput childParam = extractTemplateInputFromXMLNode(childNode);
+                    if (childNode != null) {
+                        listValue.put(childParam.getName(), childParam);
+                    }
+                }
+                paramValue = listValue;
+                break;
+            default:
+                paramValue = node.attributeValue("source");
+        }
+        return TemplateInput.factory(paramName, paramType, paramValue, paramDesc, isReadonly, isAutoloop);
+    }
+
+
+    protected Boolean getIsReadonlyFromXMLNode(Element elem) {
+        Attribute readonly = elem.attribute("readonly");
+        return readonly != null ?
+                Boolean.parseBoolean(readonly.getValue()) :
+                null;
+    }
+
+    protected Boolean getIsAutoloopFromXMLNode(Element elem) {
+        Attribute autoloop = elem.attribute("autoloop");
+        return autoloop != null ?
+                Boolean.parseBoolean(autoloop.getValue()) :
+                null;
+    }
+
+    protected String getNameFromXMLNode(Element elem) {
+        Attribute name = elem.attribute("name");
+        return name != null ?
+                name.getValue() :
+                null;
+    }
+
+    protected InputType getTypeFromXMLNode(Element elem) {
+        InputType type = null;
+        Attribute typeAtt = elem.attribute("type");
+        if (typeAtt != null) {
+            type = InputType.getByValue(typeAtt.getValue());
+        }
+
+        return type == null ? StringValue : type;
     }
 
     @Override
@@ -117,7 +149,7 @@ public class XMLSerializer implements Serializer {
                 field.addAttribute("autoloop", "true");
             }
 
-            if (InputType.StringValue.equals(type)) {
+            if (StringValue.equals(type)) {
                 field.addAttribute("value", input.getStringValue());
             } else if (InputType.DateValue.equals(type)) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);

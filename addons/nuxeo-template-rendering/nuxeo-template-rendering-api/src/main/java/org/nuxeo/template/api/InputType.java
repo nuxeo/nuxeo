@@ -20,8 +20,10 @@
 
 package org.nuxeo.template.api;
 
-import java.util.EnumSet;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Enum for types of {@link TemplateInput}
@@ -30,8 +32,12 @@ import java.util.Date;
  */
 public enum InputType {
 
-    StringValue(String.class.getSimpleName()), BooleanValue(Boolean.class.getSimpleName()), DateValue(
-            Date.class.getSimpleName()), DocumentProperty("source"), PictureProperty("picture"), Content("content");
+    StringValue(String.class.getSimpleName()),
+    BooleanValue(Boolean.class.getSimpleName()),
+    DateValue(Date.class.getSimpleName()),
+    DocumentProperty("source"),
+    PictureProperty("picture"),
+    Content("content");
 
     private final String value;
 

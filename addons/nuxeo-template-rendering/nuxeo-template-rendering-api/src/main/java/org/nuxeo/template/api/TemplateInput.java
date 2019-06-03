@@ -22,6 +22,10 @@ package org.nuxeo.template.api;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.nuxeo.template.api.InputType.StringValue;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -43,7 +47,7 @@ public class TemplateInput implements Serializable {
 
     protected Date dateValue;
 
-    protected InputType type = InputType.StringValue;
+    protected InputType type = StringValue;
 
     protected String source;
 
@@ -62,7 +66,7 @@ public class TemplateInput implements Serializable {
         this.name = name;
         if (value instanceof String) {
             stringValue = (String) value;
-            type = InputType.StringValue;
+            type = StringValue;
         } else if (value instanceof Date) {
             dateValue = (Date) value;
             type = InputType.DateValue;
@@ -117,7 +121,7 @@ public class TemplateInput implements Serializable {
     @Override
     public String toString() {
         String str = name + " (" + type + ") : '";
-        if (InputType.StringValue.equals(type) && stringValue != null) {
+        if (StringValue.equals(type) && stringValue != null) {
             str = str + stringValue;
         } else if (InputType.DateValue.equals(type) && dateValue != null) {
             str = str + dateValue.toString();
@@ -141,8 +145,8 @@ public class TemplateInput implements Serializable {
         return stringValue;
     }
 
-    public void setStringValue(String stringValue) {
-        this.stringValue = stringValue;
+    public void setStringValue(Object stringValue) {
+        this.stringValue = (String) stringValue;
     }
 
     public Boolean getBooleanValue() {
@@ -152,7 +156,17 @@ public class TemplateInput implements Serializable {
         return booleanValue;
     }
 
-    public void setBooleanValue(Boolean booleanValue) {
+    public void setBooleanValue(Object booleanValue) {
+        if (booleanValue == null) {
+            this.booleanValue = Boolean.FALSE;
+        } else if (booleanValue instanceof String) {
+            this.booleanValue = Boolean.valueOf((String) booleanValue);
+        } else {
+            this.booleanValue = (Boolean) booleanValue;
+        }
+    }
+
+    public void setBooleanValue(boolean booleanValue) {
         this.booleanValue = booleanValue;
     }
 
@@ -163,8 +177,9 @@ public class TemplateInput implements Serializable {
         return dateValue;
     }
 
-    public void setDateValue(Date dateValue) {
-        this.dateValue = dateValue;
+    public void setDateValue(Object dateValue) {
+        this.dateValue = (Date) dateValue;
+    }
     }
 
     public InputType getType() {
@@ -213,6 +228,35 @@ public class TemplateInput implements Serializable {
 
     public void setAutoLoop(boolean autoLoop) {
         this.autoLoop = autoLoop;
+    }
+
+    public static TemplateInput factory(String name,
+                                        InputType type,
+                                        Object value,
+                                        String description,
+                                        Boolean isReadonly,
+                                        Boolean isAutoloop) {
+        TemplateInput param = new TemplateInput(name);
+        param.setType(type);
+        param.setReadOnly(isReadonly == null ? false : isReadonly);
+        param.setAutoLoop(isAutoloop == null ? false : isAutoloop);
+        param.setDesciption(description);
+        switch (type) {
+            case StringValue:
+                param.setStringValue(value);
+                break;
+            case BooleanValue:
+                param.setBooleanValue(value);
+                break;
+            case DateValue:
+                param.setDateValue(value);
+                break;
+            case DocumentProperty:
+            case PictureProperty:
+            case Content:
+                param.setSource((String) value);
+        }
+        return param;
     }
 
 }
