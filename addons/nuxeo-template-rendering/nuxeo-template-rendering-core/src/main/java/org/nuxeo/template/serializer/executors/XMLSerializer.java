@@ -1,19 +1,28 @@
 package org.nuxeo.template.serializer.executors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.dom4j.*;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.template.api.InputType;
-import org.nuxeo.template.api.TemplateInput;
+import static org.nuxeo.template.api.InputType.MapValue;
+import static org.nuxeo.template.api.InputType.StringValue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.nuxeo.template.api.InputType.StringValue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.Namespace;
+import org.dom4j.QName;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.template.api.InputType;
+import org.nuxeo.template.api.TemplateInput;
 
 /**
  * {@link TemplateInput} parameters are stored in the {@link DocumentModel} as a single String Property via XML
@@ -26,19 +35,14 @@ import static org.nuxeo.template.api.InputType.StringValue;
  */
 public class XMLSerializer implements Serializer {
 
-    protected static final Log log = LogFactory.getLog(XMLSerializer.class);
-
     public static final String XML_NAMESPACE = "http://www.nuxeo.org/DocumentTemplate";
-
     public static final String XML_NAMESPACE_PREFIX = "nxdt";
-
     public static final Namespace ns = new Namespace(XML_NAMESPACE_PREFIX, XML_NAMESPACE);
-
     public static final QName fieldsTag = DocumentFactory.getInstance().createQName("templateParams", ns);
-
     public static final QName fieldTag = DocumentFactory.getInstance().createQName("field", ns);
-
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+
+    private static final Log log = LogFactory.getLog(XMLSerializer.class);
 
     @Override
     public List<TemplateInput> doDeserialization(String xml) throws DocumentException {
@@ -175,10 +179,24 @@ public class XMLSerializer implements Serializer {
                 break;
             case BooleanValue:
                 field.addAttribute("value", param.getBooleanValue().toString());
+                break;
+            case MapValue:
+            case ListValue:
+                Map<String, TemplateInput> map = param.getMapValue();
+                for (String childParamName : map.keySet()) {
+                    TemplateInput childParam = map.get(childParamName);
+                    if (MapValue.equals(type) && childParamName.equals(childParam.getName())) {
+                        log.warn("Child param in map and child param name doesn't match, get child param name as key: " + childParam.toString());
+                    }
+                    Element subfield = field.addElement(fieldTag);
+                    doSerialization(subfield, childParam);
+                }
+                break;
             case DocumentProperty:
             case PictureProperty:
             case Content:
                 field.addAttribute("source", param.getSource());
+                break;
         }
     }
 

@@ -5,6 +5,8 @@ import static org.nuxeo.template.api.InputType.BooleanValue;
 import static org.nuxeo.template.api.InputType.Content;
 import static org.nuxeo.template.api.InputType.DateValue;
 import static org.nuxeo.template.api.InputType.DocumentProperty;
+import static org.nuxeo.template.api.InputType.ListValue;
+import static org.nuxeo.template.api.InputType.MapValue;
 import static org.nuxeo.template.api.InputType.PictureProperty;
 import static org.nuxeo.template.api.InputType.StringValue;
 
@@ -12,7 +14,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -111,6 +115,72 @@ public class TestXMLSerialization {
         String xml = serializer.doSerialization(params);
 
         assertXMLEquals("<nxdt:field name=\"field6\" type=\"content\" source=\"note:note\"/>", xml);
+    }
+
+    @Test
+    public void whenValueHasMap_shouldReturnListWithTheMapValue() {
+        List<TemplateInput> params = new ArrayList<>();
+
+        Map<String, TemplateInput> map = new LinkedHashMap<>();
+        Date date = createDate(2017, Calendar.JULY, 14, 13, 14, 15, 678);
+        map.put("almost_field1", TemplateInput.factory("field1", StringValue, "Value1"));
+        map.put("almost_field2", TemplateInput.factory("field2", DateValue, date));
+        map.put("almost_field3", TemplateInput.factory("field3", BooleanValue, true));
+        map.put("almost_field4", TemplateInput.factory("field4", DocumentProperty, "dc:description"));
+        map.put("almost_field5", TemplateInput.factory("field5", PictureProperty, "file:content"));
+        map.put("almost_field6", TemplateInput.factory("field6", Content, "note:note"));
+
+        List<TemplateInput> childList = new ArrayList<>();
+        childList.add(TemplateInput.factory("field8", StringValue, "Value8"));
+        map.put("almost_field7", TemplateInput.factory("field7", ListValue, childList));
+
+        params.add(TemplateInput.factory("field7", MapValue, map));
+        String xml = serializer.doSerialization(params);
+
+        assertXMLEquals("<nxdt:field name=\"field7\" type=\"Map\">" +
+                  "<nxdt:field name=\"field1\" type=\"String\" value=\"Value1\"/>" +
+                  "<nxdt:field name=\"field2\" type=\"Date\" value=\"2017-07-14 13:14:15.678\"/>" +
+                  "<nxdt:field name=\"field3\" type=\"Boolean\" value=\"true\"/>" +
+                  "<nxdt:field name=\"field4\" type=\"source\" source=\"dc:description\"/>" +
+                  "<nxdt:field name=\"field5\" type=\"picture\" source=\"file:content\"/>" +
+                  "<nxdt:field name=\"field6\" type=\"content\" source=\"note:note\"/>" +
+                  "<nxdt:field name=\"field7\" type=\"List\">" +
+                    "<nxdt:field name=\"field8\" type=\"String\" value=\"Value8\"/>" +
+                  "</nxdt:field>" +
+                "</nxdt:field>", xml);
+    }
+
+    @Test
+    public void whenValueHasList_shouldReturnListWithTheListValue() {
+        List<TemplateInput> params = new ArrayList<>();
+
+        List<TemplateInput> map = new ArrayList<>();
+        Date date = createDate(2017, Calendar.JULY, 14, 13, 14, 15, 678);
+        map.add(TemplateInput.factory("field1", StringValue, "Value1"));
+        map.add(TemplateInput.factory("field2", DateValue, date));
+        map.add(TemplateInput.factory("field3", BooleanValue, true));
+        map.add(TemplateInput.factory("field4", DocumentProperty, "dc:description"));
+        map.add(TemplateInput.factory("field5", PictureProperty, "file:content"));
+        map.add(TemplateInput.factory("field6", Content, "note:note"));
+
+        Map<String, TemplateInput> childMap = new LinkedHashMap<>();
+        childMap.put("almost_field8", TemplateInput.factory("field8", StringValue, "Value8"));
+        map.add(TemplateInput.factory("field7", MapValue, childMap));
+
+        params.add(TemplateInput.factory("field7", ListValue, map));
+        String xml = serializer.doSerialization(params);
+
+        assertXMLEquals("<nxdt:field name=\"field7\" type=\"List\">" +
+                  "<nxdt:field name=\"field1\" type=\"String\" value=\"Value1\"/>" +
+                  "<nxdt:field name=\"field2\" type=\"Date\" value=\"2017-07-14 13:14:15.678\"/>" +
+                  "<nxdt:field name=\"field3\" type=\"Boolean\" value=\"true\"/>" +
+                  "<nxdt:field name=\"field4\" type=\"source\" source=\"dc:description\"/>" +
+                  "<nxdt:field name=\"field5\" type=\"picture\" source=\"file:content\"/>" +
+                  "<nxdt:field name=\"field6\" type=\"content\" source=\"note:note\"/>" +
+                  "<nxdt:field name=\"field7\" type=\"Map\">" +
+                    "<nxdt:field name=\"field8\" type=\"String\" value=\"Value8\"/>" +
+                  "</nxdt:field>" +
+                "</nxdt:field>", xml);
     }
 
     private Date createDate(int year, int july, int dayOfMonth, int hourOfDay, int minute, int second, int millisec) {
