@@ -25,12 +25,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -44,6 +47,10 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 import freemarker.template.TemplateModelException;
+
+import static org.nuxeo.template.api.ContentInputType.BlobContent;
+import static org.nuxeo.template.api.ContentInputType.HtmlPreview;
+import static org.nuxeo.template.api.InputType.Content;
 
 public abstract class AbstractBindingResolver implements InputBindingResolver {
 
@@ -70,106 +77,165 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
     }
 
     @Override
-    public void resolve(List<TemplateInput> inputParams, Map<String, Object> context,
-            TemplateBasedDocument templateBasedDocument) {
-
+    public void resolve(List<TemplateInput> inputParams, Map<String, Object> context, TemplateBasedDocument templateBasedDocument) {
         for (TemplateInput param : inputParams) {
             try {
-                if (param.isSourceValue()) {
-                    if (param.getType() == InputType.Content) {
-                        if (ContentInputType.HtmlPreview.getValue().equals(param.getSource())) {
-                            BlobHolder bh = templateBasedDocument.getAdaptedDoc().getAdapter(BlobHolder.class);
-                            String htmlValue = handleHtmlField(param.getName(), getHtmlValue(bh));
-                            context.put(param.getName(), htmlValue);
-                            continue;
-                        } else if (ContentInputType.BlobContent.getValue().equals(param.getSource())) {
-                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(param.getSource());
-                            if (propValue != null && propValue instanceof Blob) {
-                                Blob blobValue = (Blob) propValue;
-                                context.put(param.getName(), blobValue.getString());
-                                handleBlobField(param.getName(), blobValue);
-                            }
-                        } else {
-                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(param.getSource());
-                            if (propValue instanceof String) {
-                                String stringContent = (String) propValue;
-                                String htmlValue = handleHtmlField(param.getName(), stringContent);
-                                context.put(param.getName(), htmlValue);
-                            }
-                        }
-                    }
-                    Property property = null;
-                    try {
-                        property = templateBasedDocument.getAdaptedDoc().getProperty(param.getSource());
-                    } catch (PropertyException e) {
-                        log.warn("Unable to ready property " + param.getSource(), e);
-                    }
-
-                    Serializable value = null;
-                    if (property != null) {
-                        value = property.getValue();
-                    }
-
-                    if (value != null) {
-                        if (param.getType() != InputType.Content) {
-                            if (Blob.class.isAssignableFrom(value.getClass())) {
-                                Blob blob = (Blob) value;
-                                if (param.getType() == InputType.PictureProperty) {
-                                    if (blob.getMimeType() == null || "".equals(blob.getMimeType().trim())) {
-                                        blob.setMimeType("image/jpeg");
-                                    }
-                                    context.put(param.getName(), handlePictureField(param.getName(), blob));
-                                }
-                            } else {
-                                if (param.isAutoLoop()) {
-                                    // should do the same on all children
-                                    // properties ?
-                                    Object loopVal = handleLoop(param.getName(), property);
-                                    context.put(param.getName(), loopVal);
-                                } else {
-                                    context.put(param.getName(), nuxeoWrapper.wrap(property));
-                                }
-                            }
-                        }
-                    } else {
-                        // no available value, try to find a default one ...
-                        if (property != null) {
-                            Type pType = property.getType();
-                            if (pType.getName().equals(BooleanType.ID)) {
-                                context.put(param.getName(), Boolean.FALSE);
-                            } else if (pType.getName().equals(DateType.ID)) {
-                                context.put(param.getName(), new Date());
-                            } else if (pType.getName().equals(StringType.ID)) {
-                                context.put(param.getName(), "");
-                            } else if (pType.getName().equals(InputType.Content.getValue())) {
-                                context.put(param.getName(), "");
-                            } else {
-                                context.put(param.getName(), "!NOVALUE!");
-                            }
-                            // handle special case for pictures
-                            if (param.getType() == InputType.PictureProperty) {
-                                context.put(param.getName(), handlePictureField(param.getName(), null));
-                            }
-                        } else {
-                            if (param.getType().equals(InputType.PictureProperty)) {
-                                context.put(param.getName(), handlePictureField(param.getName(), null));
-                            }
-                        }
-                    }
-
-                } else {
-                    if (InputType.StringValue.equals(param.getType())) {
-                        context.put(param.getName(), param.getStringValue());
-                    } else if (InputType.BooleanValue.equals(param.getType())) {
-                        context.put(param.getName(), param.getBooleanValue());
-                    } else if (InputType.DateValue.equals(param.getType())) {
-                        context.put(param.getName(), param.getDateValue());
-                    }
-                }
-            } catch (TemplateModelException | IOException e) {
+                Object value = extractValueFromParam(templateBasedDocument, param);
+                context.put(param.getName(), value);
+            } catch (ValueNotFound e) {
                 log.warn("Unable to handle binding for param " + param.getName(), e);
+            } catch (NoValueToAddInContext e) {
+
             }
         }
+    }
+
+    protected Object extractValueFromParam(TemplateBasedDocument templateBasedDocument, TemplateInput param) throws ValueNotFound, NoValueToAddInContext {
+        DocumentModel doc = templateBasedDocument.getAdaptedDoc();
+        String propKey = param.getSource();
+
+        switch (param.getType()) {
+            case BooleanValue:
+                return param.getBooleanValue();
+            case DateValue:
+                return param.getDateValue();
+            case StringValue:
+                return param.getStringValue();
+            case Content:
+                ContentInputType contentInput = ContentInputType.getByValue(param.getSource());
+                if (BlobContent.equals(contentInput))
+                    return extractBlobContent(doc, param);
+                else if (HtmlPreview.equals(contentInput))
+                    return extractHTMLPreview(doc, param);
+                else {
+                    Serializable docPropertyValue = getDocPropertyValue(doc, propKey);
+                    if (docPropertyValue instanceof String)
+                        return handleHtmlField(param.getName(), (String) getDocPropertyValue(doc, propKey));
+                }
+            case PictureProperty:
+                Serializable docPropertyValue = getDocPropertyValue(doc, propKey);
+                if (isBlob(docPropertyValue)) {
+                    Blob blob = (Blob) getDocPropertyValue(doc, propKey);
+                    addDefaultMimetypeIfRequired(blob);
+                    return handlePictureField(param.getName(), blob);
+                }
+            default:
+                docPropertyValue = getDocPropertyValue(doc, propKey);
+                if (docPropertyValue == null)
+                    return extractDefaultValue(doc, param);
+                if (isBlob(getDocPropertyValue(doc, propKey)))
+                    throw new NoValueToAddInContext();
+
+                Property property = getDocProperty(param, doc);
+                if (param.isAutoLoop())
+                    return extractAutoLoop(param, property);
+                else {
+                    try {
+                        return nuxeoWrapper.wrap(property);
+                    } catch (TemplateModelException e) {
+                        throw new ValueNotFound(e);
+                    }
+                }
+        }
+    }
+
+    protected Object extractValueFromParamCatchingException(TemplateBasedDocument templateBasedDocument, TemplateInput param) {
+        try {
+            return extractValueFromParam(templateBasedDocument, param);
+        } catch (ValueNotFound e) {
+            log.warn("Unable to handle binding for param " + param.getName(), e);
+        } catch (NoValueToAddInContext e) {
+
+        }
+        return "";
+    }
+
+    protected void addDefaultMimetypeIfRequired(Blob blob) {
+        if (StringUtils.isBlank(blob.getMimeType())) {
+            blob.setMimeType("image/jpeg");
+        }
+    }
+
+    protected Object extractAutoLoop(TemplateInput param, Property property) {
+        // should do the same on all children properties ?
+        return handleLoop(param.getName(), property);
+    }
+
+    protected Object extractBlobContent(DocumentModel doc, TemplateInput param) throws ValueNotFound {
+        Object propValue = getDocPropertyValue(doc, param.getSource());
+        if (propValue instanceof Blob) {
+            Blob blobValue = (Blob) propValue;
+            handleBlobField(param.getName(), blobValue);
+            try {
+                return blobValue.getString();
+            } catch (IOException e) {
+                log.warn("Unable to handle binding for param " + param.getName(), e);
+                return "";
+            }
+        }
+        return extractDefaultValue(doc, param);
+    }
+
+    protected String extractHTMLPreview(DocumentModel doc, TemplateInput param) {
+        try {
+            BlobHolder bh = doc.getAdapter(BlobHolder.class);
+            return handleHtmlField(param.getName(), getHtmlValue(bh));
+        } catch (IOException e) {
+            log.warn("Unable to handle binding for param " + param.getName(), e);
+            return null;
+        }
+    }
+
+    protected Object extractDefaultValue(DocumentModel doc, TemplateInput param) throws ValueNotFound {
+
+        // handle special case for pictures
+        if (param.getType().equals(InputType.PictureProperty)) {
+            return handlePictureField(param.getName(), null);
+        }
+
+        try {
+            Property property = doc.getProperty(param.getSource());
+
+            if (property != null) {
+                Type pType = property.getType();
+                if (pType.getName().equals(BooleanType.ID)) {
+                    return new Boolean(false);
+                } else if (pType.getName().equals(DateType.ID)) {
+                    return new Date();
+                } else if (pType.getName().equals(StringType.ID)) {
+                    return "";
+                } else if (pType.getName().equals(Content.getValue())) {
+                    return "";
+                } else {
+                    return "!NOVALUE!";
+                }
+            }
+        } catch (PropertyNotFoundException e) {
+            throw new ValueNotFound(e);
+        }
+        throw new ValueNotFound();
+    }
+
+    protected Property getDocProperty(TemplateInput param, DocumentModel doc) throws ValueNotFound {
+        Property property = null;
+        try {
+            property = doc.getProperty(param.getSource());
+        } catch (PropertyException e) {
+            throw new ValueNotFound(e);
+        }
+        return property;
+    }
+
+    protected Serializable getDocPropertyValue(DocumentModel doc, String propKey) throws ValueNotFound {
+        try {
+            return doc.getPropertyValue(propKey);
+        } catch (PropertyException e) {
+            throw new ValueNotFound(e);
+        }
+    }
+
+    protected boolean isBlob(Serializable propValue) {
+        return propValue != null && Blob.class.isAssignableFrom(propValue.getClass());
     }
 
     protected String getHtmlValue(BlobHolder bh) throws IOException {
@@ -193,6 +259,19 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
         }
 
         return "";
+    }
+
+    protected static class ValueNotFound extends Throwable {
+        public ValueNotFound(Exception e) {
+            super(e);
+        }
+
+        public ValueNotFound() {
+
+        }
+    }
+
+    protected static class NoValueToAddInContext extends Throwable {
     }
 
 }
