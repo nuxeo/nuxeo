@@ -95,7 +95,7 @@ public class CloudFrontBinaryManager extends S3BinaryManager {
 
             if (isBooleanPropertyTrue(ENABLE_CF_ENCODING_FIX)) {
                 String trimmedChars = " ";
-                uriBuilder.getQueryParams().stream().filter(s -> s.getValue().contains(trimmedChars)).forEach(
+                uriBuilder.getQueryParams().stream().filter(s -> (s.getValue() != null && s.getValue().contains(trimmedChars))).forEach(
                         s -> uriBuilder.setParameter(s.getName(), s.getValue().replace(trimmedChars, "")));
             }
 
