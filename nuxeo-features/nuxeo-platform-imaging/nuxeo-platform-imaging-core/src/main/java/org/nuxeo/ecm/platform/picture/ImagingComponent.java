@@ -65,6 +65,7 @@ import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.PictureViewImpl;
 import org.nuxeo.ecm.platform.picture.core.libraryselector.LibrarySelector;
 import org.nuxeo.ecm.platform.picture.magick.utils.ImageIdentifier;
+import org.nuxeo.ecm.platform.picture.magick.utils.ImageResizer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -292,7 +293,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
          * will be used.
          */
         if (pictureConversion.getMaxSize() != null) {
-            size = getSize(size, pictureConversion.getMaxSize());
+            size = ImageResizer.scaleToMax(size.x, size.y, pictureConversion.getMaxSize());
         }
 
         pictureViewMap.put(PictureView.FIELD_WIDTH, size.x);
@@ -415,6 +416,9 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         return view;
     }
 
+    /**
+     * @deprecated 11.1 use {@link ImageResizer#scaleToMax(int, int, int)} instead.
+     */
     protected static Point getSize(Point current, int max) {
         int x = current.x;
         int y = current.y;
