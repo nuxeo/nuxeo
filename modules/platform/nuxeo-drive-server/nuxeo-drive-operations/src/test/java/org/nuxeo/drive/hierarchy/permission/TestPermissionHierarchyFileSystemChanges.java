@@ -532,8 +532,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected void cleanUpAuditLog() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime()
-                                                                            .getComponent(NXAuditEventsService.NAME);
+        NXAuditEventsService auditService = Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
         ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(true, entityManager -> {
             entityManager.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
             entityManager.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();

@@ -71,7 +71,7 @@ import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.mongodb.MongoDBComponent;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -124,8 +124,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
 
     @Override
     public int getApplicationStartedOrder() {
-        DefaultComponent component = (DefaultComponent) Framework.getRuntime()
-                                                                 .getComponent(MongoDBComponent.COMPONENT_NAME);
+        Component component = Framework.getRuntime().getComponent(MongoDBComponent.COMPONENT_NAME);
         return component.getApplicationStartedOrder() + 1;
     }
 

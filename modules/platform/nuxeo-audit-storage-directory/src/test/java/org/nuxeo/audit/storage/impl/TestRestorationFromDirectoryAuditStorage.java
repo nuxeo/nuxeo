@@ -72,8 +72,7 @@ public class TestRestorationFromDirectoryAuditStorage {
             jsonEntries.add(mapper.writeValueAsString(logEntryJson));
         }
 
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
+        NXAuditEventsService audit = Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
         DirectoryAuditStorage storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
 
         storage.append(jsonEntries);

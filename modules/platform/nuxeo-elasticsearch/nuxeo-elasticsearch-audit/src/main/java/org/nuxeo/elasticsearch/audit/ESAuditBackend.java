@@ -105,7 +105,7 @@ import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.query.NxqlQueryConverter;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Component;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -177,10 +177,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public int getApplicationStartedOrder() {
-        int elasticOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
-                "org.nuxeo.elasticsearch.ElasticSearchComponent")).getApplicationStartedOrder();
-        int uidgenOrder = ((DefaultComponent) Framework.getRuntime().getComponent(
-                "org.nuxeo.ecm.core.uidgen.UIDGeneratorService")).getApplicationStartedOrder();
+        int elasticOrder = Framework.getRuntime()
+                                    .<Component>getComponent("org.nuxeo.elasticsearch.ElasticSearchComponent")
+                                    .getApplicationStartedOrder();
+        int uidgenOrder = Framework.getRuntime()
+                                   .<Component>getComponent("org.nuxeo.ecm.core.uidgen.UIDGeneratorService")
+                                   .getApplicationStartedOrder();
         return Integer.max(elasticOrder, uidgenOrder) + 1;
     }
 

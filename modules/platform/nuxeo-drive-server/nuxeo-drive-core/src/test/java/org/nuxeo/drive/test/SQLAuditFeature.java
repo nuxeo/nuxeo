@@ -40,8 +40,7 @@ public class SQLAuditFeature extends AuditFeature {
 
     protected void cleanUpAuditLog() {
 
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime()
-                                                                            .getComponent(NXAuditEventsService.NAME);
+        NXAuditEventsService auditService = Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
         AuditBackend auditBackend = auditService.getBackend();
         if (!(auditBackend instanceof DefaultAuditBackend)) {
             return;
