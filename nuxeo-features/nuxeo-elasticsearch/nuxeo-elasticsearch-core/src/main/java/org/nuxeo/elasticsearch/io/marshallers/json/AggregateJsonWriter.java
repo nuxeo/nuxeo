@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
@@ -60,7 +60,6 @@ import org.nuxeo.elasticsearch.aggregate.SingleBucketAggregate;
 import org.nuxeo.elasticsearch.aggregate.SingleValueMetricAggregate;
 import org.nuxeo.elasticsearch.aggregate.TermAggregate;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
@@ -74,7 +73,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
 
     public static final String FETCH_KEY = "key";
 
-    private static final Log log = LogFactory.getLog(AggregateJsonWriter.class);
+    private static final Logger log = LogManager.getLogger(AggregateJsonWriter.class);
 
     /** Fake schema for system properties usable as a page provider aggregate */
     protected static final Schema SYSTEM_SCHEMA = new SchemaImpl("system", null);
@@ -126,7 +125,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         if (fieldName.startsWith("ecm:")) {
             field = getSystemField(fieldName);
             if (field == null) {
-                log.warn(String.format("%s is not a valid field for aggregates", fieldName));
+                log.warn("Field: {} is not a valid field for aggregates", fieldName);
                 return;
             }
         } else {
@@ -162,7 +161,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                     writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
                 }
             } else {
-                log.warn(String.format("Could not resolve field %s for aggregate %s", fieldName, agg.getId()));
+                log.warn("Could not resolve field: {} for aggregate: {}", fieldName, agg.getId());
                 jg.writeObjectField("buckets", agg.getBuckets());
                 jg.writeObjectField("extendedBuckets", agg.getExtendedBuckets());
             }
@@ -170,7 +169,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
     }
 
     protected void writeBuckets(String fieldName, List<Bucket> buckets, Field field, JsonGenerator jg)
-            throws IOException, JsonGenerationException {
+            throws IOException {
         // prepare document part in order to use property
         Schema schema = field.getDeclaringType().getSchema();
         DocumentPartImpl part = new DocumentPartImpl(schema);
@@ -187,8 +186,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                 t.getField();
                 prop = PropertyFactory.createProperty(part, t.getField(), Property.NONE);
             }
-            log.debug(String.format("Writing %s for field %s resolved to %s", fieldName, field.getName().toString(),
-                    prop.getName()));
+            log.debug("Writing value: {} for field: {} resolved to: {}", fieldName, field.getName(), prop.getName());
             prop.setValue(bucket.getKey());
 
             writeEntityField("fetchedKey", prop, jg);
