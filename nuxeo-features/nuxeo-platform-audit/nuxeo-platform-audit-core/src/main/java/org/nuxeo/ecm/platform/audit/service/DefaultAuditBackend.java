@@ -49,7 +49,7 @@ import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AuditBackendDescriptor;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Component;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,8 +81,8 @@ public class DefaultAuditBackend extends AbstractAuditBackend {
 
     @Override
     public int getApplicationStartedOrder() {
-        DefaultComponent component = (DefaultComponent) Framework.getRuntime().getComponent(
-                "org.nuxeo.ecm.core.persistence.PersistenceComponent");
+        Component component = Framework.getRuntime()
+                                       .getComponent("org.nuxeo.ecm.core.persistence.PersistenceComponent");
         return component.getApplicationStartedOrder() + 1;
     }
 

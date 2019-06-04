@@ -117,8 +117,7 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
                 log.debug(String.format("Writing %d log entries to the directory audit storage %s.", jsonEntries.size(),
                         DirectoryAuditStorage.NAME));
             }
-            NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                         .getComponent(NXAuditEventsService.NAME);
+            NXAuditEventsService audit = Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
             DirectoryAuditStorage storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
             storage.append(jsonEntries);
             jsonEntries.clear();

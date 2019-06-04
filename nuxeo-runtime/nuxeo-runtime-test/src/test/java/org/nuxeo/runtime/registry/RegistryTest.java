@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
@@ -43,39 +42,39 @@ public class RegistryTest {
     public void testReload() throws Exception {
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompA.xml");
 
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompA")));
+        assertNull(Framework.getRuntime().getComponent("CompA"));
 
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompB.xml");
 
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompA")));
+        assertNull(Framework.getRuntime().getComponent("CompA"));
 
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompC.xml");
 
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompA")));
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompB")));
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompC")));
+        assertNotNull(Framework.getRuntime().getComponent("CompA"));
+        assertNotNull(Framework.getRuntime().getComponent("CompB"));
+        assertNotNull(Framework.getRuntime().getComponent("CompC"));
 
         // test the unregister methods - without doing a registry reset
         hotDeployer.undeploy("org.nuxeo.runtime.test.tests:CompC.xml", "org.nuxeo.runtime.test.tests:CompA.xml",
                 "org.nuxeo.runtime.test.tests:CompB.xml");
 
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompA")));
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompB")));
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompC")));
+        assertNull(Framework.getRuntime().getComponent("CompA"));
+        assertNull(Framework.getRuntime().getComponent("CompB"));
+        assertNull(Framework.getRuntime().getComponent("CompC"));
 
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompA.xml");
 
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompA")));
+        assertNull(Framework.getRuntime().getComponent("CompA"));
 
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompB.xml");
 
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompA")));
+        assertNull(Framework.getRuntime().getComponent("CompA"));
 
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompC.xml");
 
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompA")));
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompB")));
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompC")));
+        assertNotNull(Framework.getRuntime().getComponent("CompA"));
+        assertNotNull(Framework.getRuntime().getComponent("CompB"));
+        assertNotNull(Framework.getRuntime().getComponent("CompC"));
 
     }
 
@@ -89,17 +88,17 @@ public class RegistryTest {
 
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompC.xml");
 
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompC")));
+        assertNotNull(Framework.getRuntime().getComponent("CompC"));
 
         // test the reset instead of unregsitering each component
         Framework.getRuntime().getComponentManager().reset();
         Framework.getRuntime().getComponentManager().start();
 
-        assertNull(Framework.getRuntime().getComponent(new ComponentName("CompC")));
+        assertNull(Framework.getRuntime().getComponent("CompC"));
 
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:CompC.xml");
 
-        assertNotNull(Framework.getRuntime().getComponent(new ComponentName("CompC")));
+        assertNotNull(Framework.getRuntime().getComponent("CompC"));
     }
 
 }

@@ -86,8 +86,7 @@ public class TestDirectoryAuditStorage {
 
     @BeforeClass
     public static void before() throws IOException {
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
+        NXAuditEventsService audit = Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
         storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
 
         Map<String, Object> jsonEntryMap1 = new HashMap<>();

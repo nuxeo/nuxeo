@@ -23,11 +23,12 @@ import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.audit.service.AuditBackend;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Component;
 
 /**
  * Descriptor to configure / contribute a Backend for Audit service
@@ -49,7 +50,7 @@ public class AuditBackendDescriptor implements Serializable {
         if (StringUtils.isEmpty(requiredComponent)) {
             return 1000;
         }
-        return ((DefaultComponent)Framework.getRuntime().getComponent(requiredComponent)).getApplicationStartedOrder()+1;
+        return Framework.getRuntime().<Component>getComponent(requiredComponent).getApplicationStartedOrder() + 1;
     }
 
     public Class<? extends AuditBackend> getKlass() {
@@ -60,7 +61,7 @@ public class AuditBackendDescriptor implements Serializable {
         try {
             return klass.getDeclaredConstructor(NXAuditEventsService.class, AuditBackendDescriptor.class).newInstance(component, this);
         } catch (ReflectiveOperationException cause) {
-            throw new RuntimeException("Cannot create audit backend of type " + klass.getName(), cause);
+            throw new NuxeoException("Cannot create audit backend of type " + klass.getName(), cause);
         }
     }
 

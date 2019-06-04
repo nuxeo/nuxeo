@@ -237,7 +237,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
     protected NuxeoPrincipal validateUserIdentity() throws LoginException {
         UserManager manager = Framework.getService(UserManager.class);
         final RuntimeService runtime = Framework.getRuntime();
-        LoginPluginRegistry loginPluginManager = (LoginPluginRegistry) runtime.getComponent(LoginPluginRegistry.NAME);
+        LoginPluginRegistry loginPluginManager = runtime.getComponent(LoginPluginRegistry.NAME);
         String loginPluginName = userIdent.getLoginPluginName();
         if (loginPluginName == null) {
             // we don't use a specific plugin

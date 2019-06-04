@@ -52,8 +52,7 @@ public class TestStreamAuditStorageWriter {
 
     @Test
     public void testWriteJsonEntriesToAudit() {
-        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime()
-                                                                     .getComponent(NXAuditEventsService.NAME);
+        NXAuditEventsService audit = Framework.getRuntime().getComponent(NXAuditEventsService.NAME);
         DirectoryAuditStorage storage = (DirectoryAuditStorage) audit.getAuditStorage(DirectoryAuditStorage.NAME);
 
         QueryBuilder queryBuilder = new AuditQueryBuilder();

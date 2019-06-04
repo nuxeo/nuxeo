@@ -20,15 +20,23 @@
 
 package org.nuxeo.runtime.model.impl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.common.xmap.XValueFactory;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.runtime.model.StreamRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -76,6 +84,29 @@ public class ComponentDescriptorReader {
             return (RegistrationInfoImpl) result[0];
         }
         return null;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<RegistrationInfoImpl> createRegistrationInfo(RuntimeContext ctx, StreamRef ref) throws IOException {
+        String source;
+        try (InputStream stream = ref.getStream()) {
+            source = IOUtils.toString(stream, UTF_8);
+        }
+        // do something about props / should be retrieved from context (as ctx == bundle and bundle could have props)
+        String expanded = new TextTemplate(new HashMap<>()).processText(source);
+        try (InputStream in = new ByteArrayInputStream(expanded.getBytes())) {
+            RegistrationInfoImpl ri = read(ctx, in);
+            if (ri == null || ri.getName() == null) {
+                // not parsed correctly, e.g., faces-config.xml
+                return Optional.empty();
+            }
+            ri.sourceId = ref.getId(); // for byLocation backward in manager
+            ri.context = ctx;
+            ri.xmlFileUrl = ref.asURL();
+            return Optional.of(ri);
+        }
     }
 
 }

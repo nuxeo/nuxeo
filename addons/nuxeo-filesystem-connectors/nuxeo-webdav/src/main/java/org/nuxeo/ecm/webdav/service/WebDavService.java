@@ -34,7 +34,7 @@ public class WebDavService extends DefaultComponent {
     protected BackendFactory backendFactory = new SearchBackendFactory();
 
     public static WebDavService instance() {
-        return (WebDavService) Framework.getRuntime().getComponent(WebDavService.NAME);
+        return Framework.getRuntime().getComponent(WebDavService.NAME);
     }
 
     public BackendFactory getBackendFactory() {

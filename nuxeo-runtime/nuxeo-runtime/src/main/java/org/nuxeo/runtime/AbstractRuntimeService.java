@@ -210,6 +210,9 @@ public abstract class AbstractRuntimeService implements RuntimeService {
         return properties;
     }
 
+    /**
+     * Can't be removed because freemarker doesn't handle default methods.
+     */
     @Override
     public String getProperty(String name) {
         return getProperty(name, null);
@@ -233,12 +236,6 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     @Override
     public String toString() {
         return getName() + " version " + getVersion();
-    }
-
-    @Override
-    public Object getComponent(ComponentName name) {
-        ComponentInstance co = getComponentInstance(name);
-        return co != null ? co.getInstance() : null;
     }
 
     @Override

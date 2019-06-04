@@ -90,16 +90,12 @@ public class PartialDeployTest extends NXRuntimeTestCase {
     }
 
     protected void assertNumberOfExtensionsEquals(int length, String name) {
-        RegistrationInfo ri = runtime.getComponentManager().getRegistrationInfo(toCompName(name));
+        RegistrationInfo ri = runtime.getComponentManager().getRegistrationInfo(new ComponentName(name));
         assertEquals(length, ri.getExtensions().length);
     }
 
     protected ComponentInstance getComponent(String name) {
-        return (ComponentInstance) runtime.getComponent(toCompName(name));
-    }
-
-    protected ComponentName toCompName(String name) {
-        return new ComponentName(name);
+        return runtime.getComponentInstance(name);
     }
 
     protected class TestTargetExtensions extends TargetExtensions {

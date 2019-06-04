@@ -82,7 +82,7 @@ public class ComponentAliasTest {
         assertNotNull(co);
         assertEquals(new ComponentName("my.comp4"), co.getName());
 
-        ComponentWithXPoint c = (ComponentWithXPoint) runtime.getComponent(new ComponentName("my.comp3"));
+        ComponentWithXPoint c = runtime.getComponent(new ComponentName("my.comp3"));
         DummyContribution[] contribs = c.getContributions();
         assertEquals(ncontrib, contribs.length);
     }

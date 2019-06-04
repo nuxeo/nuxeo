@@ -134,6 +134,13 @@ public class ComponentManagerImpl implements ComponentManager {
      */
     protected volatile boolean changed = false;
 
+    /**
+     * @since 11.1
+     */
+    public ComponentManagerImpl() {
+        this(null);
+    }
+
     public ComponentManagerImpl(RuntimeService runtime) {
         registry = new ComponentRegistry();
         pendingExtensions = new ConcurrentHashMap<>();

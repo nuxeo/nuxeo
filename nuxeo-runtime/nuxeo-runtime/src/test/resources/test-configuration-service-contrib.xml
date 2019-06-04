@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.test.configuration.contrib">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.runtime.service.test">true</property>
+  </extension>
+
+</component>

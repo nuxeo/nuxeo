@@ -48,6 +48,7 @@ public class TestSystemLoginRestriction {
 
     @After
     public void tearDown() throws Exception {
+        Framework.shutdown();
         if (oldProperty != null) {
             System.setProperty(Framework.NUXEO_TESTING_SYSTEM_PROP, oldProperty);
         } else {

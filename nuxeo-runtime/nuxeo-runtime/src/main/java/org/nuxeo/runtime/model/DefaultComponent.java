@@ -23,6 +23,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 
 /**
@@ -49,9 +50,7 @@ public class DefaultComponent implements Component, Adaptable {
 
     @Override
     public void activate(ComponentContext context) {
-        registry = ((ComponentManagerImpl) context.getRuntimeContext()
-                                                  .getRuntime()
-                                                  .getComponentManager()).getDescriptors();
+        registry = ((ComponentManagerImpl) Framework.getRuntime().getComponentManager()).getDescriptors();
         setModifiedNow();
     }
 
