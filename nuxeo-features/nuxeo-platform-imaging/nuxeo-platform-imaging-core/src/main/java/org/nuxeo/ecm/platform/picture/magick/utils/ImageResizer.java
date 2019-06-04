@@ -63,10 +63,8 @@ public class ImageResizer extends MagickExecutor {
         if (outputFile.endsWith(JPEG_CONVERSATION_FORMAT)) {
             commandName = "jpegResizer";
             Point size = scaleToMax(targetWidth, targetHeight, MAX_JEPG_DIMENSION);
-            if (size != null) {
-                params.addNamedParameter("targetWidth", String.valueOf(size.getX()));
-                params.addNamedParameter("targetHeight", String.valueOf(size.getY()));
-            }
+            params.addNamedParameter("targetWidth", String.valueOf(size.getX()));
+            params.addNamedParameter("targetHeight", String.valueOf(size.getY()));
         }
         ExecResult res = cles.execCommand(commandName, params);
         if (!res.isSuccessful()) {
@@ -83,6 +81,7 @@ public class ImageResizer extends MagickExecutor {
      * Adapts width and height to a max conserving ratio.
      *
      * @since 10.3
+     * @return new Point to scale or the original one if none is > max.
      */
     public static Point scaleToMax(int width, int height, int max) {
         if (max > 0 && (width > max || height > max)) {
@@ -90,7 +89,7 @@ public class ImageResizer extends MagickExecutor {
             float ratio = maxSide / max;
             return new Point(Math.round(width / ratio), Math.round(height / ratio));
         }
-        return null;
+        return new Point(width, height);
     }
 
 }
