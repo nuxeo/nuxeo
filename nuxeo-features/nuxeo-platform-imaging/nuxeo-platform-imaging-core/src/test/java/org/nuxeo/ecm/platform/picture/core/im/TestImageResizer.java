@@ -40,8 +40,8 @@ public class TestImageResizer {
 
     protected void test(int originalW, int originalH, int max, int expectedW, int expectedH) {
         Point p = ImageResizer.scaleToMax(originalW, originalH, max);
-        assertEquals(expectedW, p == null ? originalW : p.getX(), 0d);
-        assertEquals(expectedH, p == null ? originalH : p.getY(), 0d);
+        assertEquals(expectedW, p.getX(), 0d);
+        assertEquals(expectedH, p.getY(), 0d);
     }
 
 }
