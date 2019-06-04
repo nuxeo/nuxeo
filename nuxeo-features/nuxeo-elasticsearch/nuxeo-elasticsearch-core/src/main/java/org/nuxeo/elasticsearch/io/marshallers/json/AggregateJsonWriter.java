@@ -30,10 +30,13 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.model.impl.PropertyFactory;
@@ -58,6 +61,7 @@ import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
 import org.nuxeo.elasticsearch.aggregate.SingleBucketAggregate;
 import org.nuxeo.elasticsearch.aggregate.SingleValueMetricAggregate;
 import org.nuxeo.elasticsearch.aggregate.TermAggregate;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -156,9 +160,21 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                                                      "label")
                                              .with(MAX_DEPTH_PARAM, "max")
                                              .open()) {
-
-                    writeBuckets("buckets", agg.getBuckets(), field, jg);
-                    writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
+                    // write buckets with privilege because we create a property to leverage marshallers
+                    // copy the Framework#doPrivileged method to not change the IOException stack trace
+                    try {
+                        LoginContext loginContext = Framework.login();
+                        try {
+                            writeBuckets("buckets", agg.getBuckets(), field, jg);
+                            writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
+                        } finally {
+                            if (loginContext != null) { // may be null in tests
+                                loginContext.logout();
+                            }
+                        }
+                    } catch (LoginException e) {
+                        throw new NuxeoException(e);
+                    }
                 }
             } else {
                 log.warn(String.format("Could not resolve field %s for aggregate %s", fieldName, agg.getId()));
