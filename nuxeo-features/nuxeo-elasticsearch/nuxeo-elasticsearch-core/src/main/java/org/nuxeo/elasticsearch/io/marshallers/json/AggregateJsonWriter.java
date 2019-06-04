@@ -59,6 +59,7 @@ import org.nuxeo.elasticsearch.aggregate.SignificantTermAggregate;
 import org.nuxeo.elasticsearch.aggregate.SingleBucketAggregate;
 import org.nuxeo.elasticsearch.aggregate.SingleValueMetricAggregate;
 import org.nuxeo.elasticsearch.aggregate.TermAggregate;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -156,9 +157,11 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                                                      "label")
                                              .with(MAX_DEPTH_PARAM, "max")
                                              .open()) {
-
-                    writeBuckets("buckets", agg.getBuckets(), field, jg);
-                    writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
+                    // write buckets with privilege because we create a property to leverage marshallers
+                    Framework.doPrivileged(() -> {
+                        writeBuckets("buckets", agg.getBuckets(), field, jg);
+                        writeBuckets("extendedBuckets", agg.getExtendedBuckets(), field, jg);
+                    });
                 }
             } else {
                 log.warn("Could not resolve field: {} for aggregate: {}", fieldName, agg.getId());
