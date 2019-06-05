@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static java.lang.Math.min;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
@@ -123,7 +124,9 @@ public class BulkScrollerComputation extends AbstractComputation {
                 }
             }
             updateStatusAsScrolling(context, commandId);
-            LoginContext loginContext = Framework.loginAsUser(command.getUsername());
+            String username = command.getUsername();
+            LoginContext loginContext = SYSTEM_USERNAME.equals(username) ? Framework.login()
+                    : Framework.loginAsUser(username);
             try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
                 // scroll documents
                 ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollSize, scrollKeepAliveSeconds);
@@ -157,7 +160,9 @@ public class BulkScrollerComputation extends AbstractComputation {
                 log.error("Invalid query results in an empty document set: {}", command, e);
                 updateStatusAfterScroll(context, commandId, "Invalid query");
             } finally {
-                loginContext.logout();
+                if (loginContext != null) {
+                    loginContext.logout();
+                }
             }
         } catch (NuxeoException | LoginException e) {
             if (command != null) {
