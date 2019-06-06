@@ -9,7 +9,7 @@
   </extension>
 
   <extension point="healthCheck" target="org.nuxeo.ecm.core.management.CoreManagementComponent">
-    <probe name="elasticSearchStatus" enabled="true" />
+    <probe name="elasticSearchStatus" enabled="${elasticsearch.enabled:=true}" />
   </extension>
 
 </component>
