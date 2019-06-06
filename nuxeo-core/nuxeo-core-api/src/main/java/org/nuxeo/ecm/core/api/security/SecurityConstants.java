@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.api.security;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
@@ -106,5 +107,29 @@ public interface SecurityConstants {
      * Flag that can be used as principal to mark an unsupported ACL.
      */
     String UNSUPPORTED_ACL = "_UNSUPPORTED_ACL_";
+
+    /**
+     * Permission needed to turn a document into a record.
+     *
+     * @see CoreSession#makeRecord
+     * @since 11.1
+     */
+    String MAKE_RECORD = "MakeRecord";
+
+    /**
+     * Permission needed to set the retention date of a record.
+     *
+     * @see CoreSession#setRetainUntil
+     * @since 11.1
+     */
+    String SET_RETENTION = "SetRetention";
+
+    /**
+     * Permission needed to manage the legal hold of a record.
+     *
+     * @see CoreSession#setLegalHold
+     * @since 11.1
+     */
+    String MANAGE_LEGAL_HOLD = "ManageLegalHold";
 
 }

@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -129,6 +130,17 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String KEY_READ_ACL = "ecm:racl";
 
+    /** @since 11.1 */
+    public static final String KEY_IS_RECORD = "ecm:isRecord";
+
+    /** @since 11.1 */
+    public static final String KEY_RETAIN_UNTIL = "ecm:retainUntil";
+
+    /** @since 11.1 */
+    public static final String KEY_HAS_LEGAL_HOLD = "ecm:hasLegalHold";
+
+    /** @deprecated since 11.1 */
+    @Deprecated
     public static final String KEY_IS_RETENTION_ACTIVE = "ecm:isRetentionActive";
 
     public static final String KEY_IS_CHECKED_IN = "ecm:isCheckedIn";
@@ -487,6 +499,48 @@ public class DBSDocument extends BaseDocument<State> {
             // fall through for proxy schemas
         }
         visitBlobs(docState.getState(), blobVisitor, docState::markDirty);
+    }
+
+    @Override
+    public void makeRecord() {
+        DBSDocumentState docState = getStateOrTarget();
+        docState.put(KEY_IS_RECORD, TRUE);
+    }
+
+    @Override
+    public boolean isRecord() {
+        DBSDocumentState docState = getStateOrTarget();
+        return TRUE.equals(docState.get(KEY_IS_RECORD));
+    }
+
+    @Override
+    public void setRetainUntil(Calendar retainUntil) throws PropertyException {
+        DBSDocumentState docState = getStateOrTarget();
+        Calendar current = (Calendar) docState.get(KEY_RETAIN_UNTIL);
+        if (!allowNewRetention(current, retainUntil)) {
+            throw new PropertyException(
+                    "Cannot reduce retention time from: " + (current == null ? "null" : current.toInstant()) + " to: "
+                            + (retainUntil == null ? "null" : retainUntil.toInstant()));
+        }
+        docState.put(KEY_RETAIN_UNTIL, retainUntil);
+    }
+
+    @Override
+    public Calendar getRetainUntil() {
+        DBSDocumentState docState = getStateOrTarget();
+        return (Calendar) docState.get(KEY_RETAIN_UNTIL);
+    }
+
+    @Override
+    public void setLegalHold(boolean hold) {
+        DBSDocumentState docState = getStateOrTarget();
+        docState.put(KEY_HAS_LEGAL_HOLD, hold ? TRUE : null);
+    }
+
+    @Override
+    public boolean hasLegalHold() {
+        DBSDocumentState docState = getStateOrTarget();
+        return TRUE.equals(docState.get(KEY_HAS_LEGAL_HOLD));
     }
 
     @Override

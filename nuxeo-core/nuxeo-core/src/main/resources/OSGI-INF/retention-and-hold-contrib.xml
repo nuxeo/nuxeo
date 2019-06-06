@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.retention.contrib" version="1.0.0">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService" point="policies">
+    <documentation>
+      The retention and hold security policy prevents deletion of a document
+      when it is under retention or has a legal hold.
+    </documentation>
+    <policy name="retentionAndHold" class="org.nuxeo.ecm.core.security.RetentionAndHoldSecurityPolicy"
+      order="1" />
+  </extension>
+
+</component>

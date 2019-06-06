@@ -265,6 +265,9 @@ public class DocumentModelFactory {
             refresh.isVersionSeriesCheckedOut = doc.isVersionSeriesCheckedOut();
             refresh.versionSeriesId = doc.getVersionSeriesId();
             refresh.checkinComment = doc.getCheckinComment();
+            refresh.isRecord = doc.isRecord();
+            refresh.retainUntil = doc.getRetainUntil();
+            refresh.hasLegalHold = doc.hasLegalHold();
         }
 
         if ((flags & DocumentModel.REFRESH_CONTENT) != 0) {
