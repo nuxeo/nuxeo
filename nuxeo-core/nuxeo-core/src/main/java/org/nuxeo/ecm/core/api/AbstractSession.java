@@ -26,6 +26,9 @@ import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.MAKE_RECORD;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.MANAGE_LEGAL_HOLD;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SET_RETENTION;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_LIFE_CYCLE;
@@ -46,6 +49,7 @@ import static org.nuxeo.ecm.core.trash.LifeCycleTrashService.FROM_LIFE_CYCLE_TRA
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -2022,6 +2027,104 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             log.warn("Cannot resolve docRef={}", docRef);
         }
         return null;
+    }
+
+    @Override
+    public void makeRecord(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        if (isRecord(docRef)) {
+            // already a record, don't do anything
+            return;
+        }
+        checkPermission(doc, MAKE_RECORD);
+        DocumentModel docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.BEFORE_MAKE_RECORD, docModel, null, null, null, true, false);
+        doc.makeRecord();
+        docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.AFTER_MAKE_RECORD, docModel, null, null, null, true, false);
+    }
+
+    @Override
+    public boolean isRecord(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.isRecord();
+    }
+
+    @Override
+    public void setRetainUntil(DocumentRef docRef, Calendar retainUntil, String comment) throws PropertyException {
+        Document doc = resolveReference(docRef);
+        if (!isRecord(docRef)) {
+            throw new PropertyException("Document is not a record");
+        }
+        Calendar current = doc.getRetainUntil();
+        if (Objects.equals(current, retainUntil)) {
+            // unchanged, don't do anything
+            return;
+        }
+        checkPermission(doc, SET_RETENTION);
+        Map<String, Serializable> options = new HashMap<>();
+        options.put(CoreEventConstants.RETAIN_UNTIL, retainUntil);
+        String commentStart = retainUntil == null ? null : retainUntil.toInstant().toString();
+        if (comment == null) {
+            comment = commentStart;
+        } else if (commentStart != null) {
+            comment = commentStart + " " + comment;
+        }
+        options.put("comment", comment);
+        DocumentModel docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.BEFORE_SET_RETENTION, docModel, options, null, null, true, false);
+        doc.setRetainUntil(retainUntil);
+        docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.AFTER_SET_RETENTION, docModel, options, null, null, true, false);
+    }
+
+    @Override
+    public Calendar getRetainUntil(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.getRetainUntil();
+    }
+
+    @Override
+    public void setLegalHold(DocumentRef docRef, boolean hold, String comment) {
+        Document doc = resolveReference(docRef);
+        if (!isRecord(docRef)) {
+            throw new PropertyException("Document is not a record");
+        }
+        if (hasLegalHold(docRef) == hold) {
+            // unchanged, don't do anything
+            return;
+        }
+        checkPermission(doc, MANAGE_LEGAL_HOLD);
+        DocumentModel docModel = readModel(doc);
+        Map<String, Serializable> options = new HashMap<>();
+        options.put(CoreEventConstants.LEGAL_HOLD, Boolean.valueOf(hold));
+        String commentStart = Boolean.toString(hold);
+        if (comment == null) {
+            comment = commentStart;
+        } else {
+            comment = commentStart + " " + comment;
+        }
+        options.put("comment", comment);
+        notifyEvent(DocumentEventTypes.BEFORE_SET_LEGAL_HOLD, docModel, options, null, null, true, false);
+        doc.setLegalHold(hold);
+        docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.AFTER_SET_LEGAL_HOLD, docModel, options, null, null, true, false);
+    }
+
+    @Override
+    public boolean hasLegalHold(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.hasLegalHold();
+    }
+
+    @Override
+    public boolean isUnderRetentionOrLegalHold(DocumentRef docRef) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.isUnderRetentionOrLegalHold();
     }
 
     @Override

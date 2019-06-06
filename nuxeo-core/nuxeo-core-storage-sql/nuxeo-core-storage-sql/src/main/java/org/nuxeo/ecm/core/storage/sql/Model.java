@@ -102,8 +102,30 @@ public class Model {
 
     public static final String MAIN_MIXIN_TYPES_KEY = "mixintypes";
 
+    /** @since 11.1 */
+    public static final String MAIN_IS_RECORD_PROP = "ecm:isRecord";
+
+    /** @since 11.1 */
+    public static final String MAIN_IS_RECORD_KEY = "isrecord";
+
+    /** @since 11.1 */
+    public static final String MAIN_RETAIN_UNTIL_PROP = "ecm:retainUntil";
+
+    /** @since 11.1 */
+    public static final String MAIN_RETAIN_UNTIL_KEY = "retainuntil";
+
+    /** @since 11.1 */
+    public static final String MAIN_HAS_LEGAL_HOLD_PROP = "ecm:hasLegalHold";
+
+    /** @since 11.1 */
+    public static final String MAIN_HAS_LEGAL_HOLD_KEY = "haslegalhold";
+
+    /** @deprecated since 11.1 */
+    @Deprecated
     public static final String MAIN_IS_RETENTION_ACTIVE_PROP = "ecm:isRetentionActive";
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     public static final String MAIN_IS_RETENTION_ACTIVE_KEY = "isretentionactive";
 
     public static final String MAIN_BASE_VERSION_PROP = "ecm:baseVersion";
@@ -1266,6 +1288,12 @@ public class Model {
         addPropertyInfo(MAIN_MINOR_VERSION_PROP, PropertyType.LONG, HIER_TABLE_NAME, MAIN_MINOR_VERSION_KEY, false,
                 LongType.INSTANCE, ColumnType.INTEGER);
         addPropertyInfo(MAIN_IS_VERSION_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_VERSION_KEY, false,
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(MAIN_IS_RECORD_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_RECORD_KEY, false,
+                BooleanType.INSTANCE, ColumnType.BOOLEAN);
+        addPropertyInfo(MAIN_RETAIN_UNTIL_PROP, PropertyType.DATETIME, HIER_TABLE_NAME, MAIN_RETAIN_UNTIL_KEY, false,
+                DateType.INSTANCE, ColumnType.TIMESTAMP);
+        addPropertyInfo(MAIN_HAS_LEGAL_HOLD_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_HAS_LEGAL_HOLD_KEY, false,
                 BooleanType.INSTANCE, ColumnType.BOOLEAN);
         addPropertyInfo(MAIN_IS_RETENTION_ACTIVE_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME,
                 MAIN_IS_RETENTION_ACTIVE_KEY, false, BooleanType.INSTANCE, ColumnType.BOOLEAN);

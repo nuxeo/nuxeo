@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -120,6 +121,15 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     public static final String LOCK_OWNER_PROP = "ecm:lockOwner";
 
     public static final String LOCK_CREATED_PROP = "ecm:lockCreated";
+
+    /** @since 11.1 */
+    public static final String IS_RECORD_PROP = "ecm:isRecord";
+
+    /** @since 11.1 */
+    public static final String RETAIN_UNTIL_PROP = "ecm:retainUntil";
+
+    /** @since 11.1 */
+    public static final String HAS_LEGAL_HOLD_PROP = "ecm:hasLegalHold";
 
     public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<>(Arrays.asList( //
             FULLTEXT_JOBID_PROP, //
@@ -1158,6 +1168,28 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      */
     public static Long updateChangeToken(Long changeToken) {
         return Long.valueOf(changeToken.longValue() + 1);
+    }
+
+    @Override
+    public boolean isUnderRetentionOrLegalHold() {
+        Calendar retainUntil;
+        return hasLegalHold()
+                || (((retainUntil = getRetainUntil()) != null) && Calendar.getInstance().before(retainUntil));
+    }
+
+    protected boolean allowNewRetention(Calendar current, Calendar retainUntil) {
+        if (current == null) {
+            return true;
+        }
+        if (current.compareTo(CoreSession.RETAIN_UNTIL_INDETERMINATE) == 0) {
+            return true;
+        }
+        if (retainUntil == null) {
+            // setting back to null is allowed if retention has already expired
+            return Calendar.getInstance().after(current);
+        }
+        // can only extend retention
+        return retainUntil.after(current);
     }
 
 }
