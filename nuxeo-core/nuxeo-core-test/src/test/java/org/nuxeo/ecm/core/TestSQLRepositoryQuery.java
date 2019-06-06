@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -93,6 +94,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -3851,6 +3853,102 @@ public class TestSQLRepositoryQuery {
         DocumentModelList dml = session.query(
                 "SELECT * FROM MyDocType WHERE my:complex/testDefault = 'the default value'");
         assertEquals(1, dml.size());
+    }
+
+    @Test
+    public void testIsRecord() {
+        String queryRecords = "SELECT * FROM MyDocType WHERE ecm:isRecord = 1";
+        String queryNotRecord = "SELECT * FROM MyDocType WHERE ecm:isRecord = 0";
+        DocumentModelList dml;
+
+        // no record present initially
+        dml = session.query(queryRecords);
+        assertEquals(0, dml.size());
+        dml = session.query(queryNotRecord) ;
+        assertEquals(0, dml.size());
+
+        // create a document
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // still no record
+        dml = session.query(queryRecords);
+        assertEquals(0, dml.size());
+        dml = session.query(queryNotRecord) ;
+        assertEquals(1, dml.size()); // 1 doc that isn't a record
+
+        // make a record
+        session.makeRecord(doc.getRef());
+        session.save();
+
+        // check that we can find the record
+        dml = session.query(queryRecords);
+        assertEquals(1, dml.size());
+        assertEquals(doc.getId(), dml.get(0).getId());
+        dml = session.query(queryNotRecord) ;
+        assertEquals(0, dml.size());
+    }
+
+    @Test
+    public void testRetainUntil() {
+        Calendar fiveSeconds = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        fiveSeconds.add(Calendar.SECOND, 5);
+        String query = String.format("SELECT * FROM MyDocType WHERE ecm:retainUntil > TIMESTAMP '%s'",
+                DateParser.formatW3CDateTime(fiveSeconds));
+        DocumentModelList dml = session.query(query);
+        assertEquals(0, dml.size());
+
+        // create a record
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc = session.createDocument(doc);
+        session.makeRecord(doc.getRef());
+        // retain one hour
+        Calendar oneHour = Calendar.getInstance();
+        oneHour.add(Calendar.HOUR, 1);
+        session.setRetainUntil(doc.getRef(), oneHour, null);
+        session.save();
+
+        // check that we can find the record by its retention date
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+        assertEquals(doc.getId(), dml.get(0).getId());
+    }
+
+    @Test
+    public void testHasLegalHold() {
+        String queryHolds = "SELECT * FROM MyDocType WHERE ecm:hasLegalHold = 1";
+        String queryNoHold = "SELECT * FROM MyDocType WHERE ecm:hasLegalHold = 0";
+        DocumentModelList dml;
+
+        // no hold present initially
+        dml = session.query(queryHolds);
+        assertEquals(0, dml.size());
+        dml = session.query(queryNoHold) ;
+        assertEquals(0, dml.size());
+
+        // create a document
+        DocumentModel doc = session.createDocumentModel("/", "doc", "MyDocType");
+        doc = session.createDocument(doc);
+        session.makeRecord(doc.getRef());
+        session.save();
+
+        // still no hold
+        dml = session.query(queryHolds);
+        assertEquals(0, dml.size());
+        dml = session.query(queryNoHold) ;
+        assertEquals(1, dml.size()); // 1 doc that has no hold
+
+        // add hold
+        session.setLegalHold(doc.getRef(), true, null);
+        session.save();
+
+        // check that we can find the hold
+        dml = session.query(queryHolds);
+        assertEquals(1, dml.size());
+        assertEquals(doc.getId(), dml.get(0).getId());
+        dml = session.query(queryNoHold) ;
+        assertEquals(0, dml.size());
     }
 
 }
