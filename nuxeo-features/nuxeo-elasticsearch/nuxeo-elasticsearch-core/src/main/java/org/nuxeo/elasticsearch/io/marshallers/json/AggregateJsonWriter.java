@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.SchemaImpl;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
@@ -86,6 +87,9 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
         SYSTEM_SCHEMA.addField("ecm:currentLifeCycleState", StringType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField("ecm:versionLabel", StringType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField("ecm:isProxy", BooleanType.INSTANCE, null, 0, null);
+        SYSTEM_SCHEMA.addField("ecm:isRecord", BooleanType.INSTANCE, null, 0, null);
+        SYSTEM_SCHEMA.addField("ecm:retainUntil", DateType.INSTANCE, null, 0, null);
+        SYSTEM_SCHEMA.addField("ecm:hasLegalHold", BooleanType.INSTANCE, null, 0, null);
         SYSTEM_SCHEMA.addField("ecm:isTrashed", BooleanType.INSTANCE, null, 0, null);
     }
 
