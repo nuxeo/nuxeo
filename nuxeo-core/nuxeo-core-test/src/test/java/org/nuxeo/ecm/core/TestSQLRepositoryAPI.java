@@ -33,6 +33,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.INCREMENT_BEFORE_U
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -100,6 +101,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
@@ -108,6 +110,7 @@ import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -120,6 +123,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.security.RetentionExpiredFinderListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -161,6 +165,9 @@ public class TestSQLRepositoryAPI {
 
     @Inject
     protected RepositoryService repositoryService;
+
+    @Inject
+    protected BulkService bulkService;
 
     protected CloseableCoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(session.getRepositoryName(), username);
@@ -4465,6 +4472,184 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testRecord() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+
+        assertFalse(session.isRecord(docRef));
+        assertFalse(doc.isRecord());
+        session.makeRecord(docRef);
+        assertTrue(session.isRecord(docRef));
+        doc.refresh();
+        assertTrue(doc.isRecord());
+
+        // still available when freshly detached
+        doc = session.getDocument(doc.getRef());
+        doc.detach(true);
+        assertTrue(doc.isRecord());
+    }
+
+    @Test
+    public void testRetainUntil() {
+        DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
+        folder = session.createDocument(folder);
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("bob", "Remove", true));
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+        DocumentModel subFolder = session.createDocumentModel("/fold", "subfold", "Folder");
+        session.createDocument(subFolder);
+        DocumentModel doc = session.createDocumentModel("/fold/subfold", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // must be a record
+        try {
+            session.setRetainUntil(doc.getRef(), null, null);
+            fail("Should fail because document is not a record");
+        } catch (PropertyException e) {
+            assertEquals("Document is not a record", e.getMessage());
+        }
+
+        // make it a record
+        session.makeRecord(doc.getRef());
+        // bob can delete it
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
+            assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
+        }
+
+        // first, set inderminate retention
+        assertNull(session.getRetainUntil(doc.getRef()));
+        assertNull(doc.getRetainUntil());
+        session.setRetainUntil(doc.getRef(), CoreSession.RETAIN_UNTIL_INDETERMINATE, null);
+        assertEquals(CoreSession.RETAIN_UNTIL_INDETERMINATE, session.getRetainUntil(doc.getRef()));
+        doc.refresh();
+        assertEquals(CoreSession.RETAIN_UNTIL_INDETERMINATE, doc.getRetainUntil());
+
+        // cannot be deleted
+        checkUndeletable(folder, doc);
+        // bob cannot delete it
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
+            assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
+        }
+
+        // then reduce retention to an actual date in the future
+        Calendar retainUntil = Calendar.getInstance();
+        retainUntil.add(Calendar.HOUR, 1);
+        session.setRetainUntil(doc.getRef(), retainUntil, null);
+        assertEquals(retainUntil, session.getRetainUntil(doc.getRef()));
+        doc.refresh();
+        assertEquals(retainUntil, doc.getRetainUntil());
+
+        // still available when freshly detached
+        doc = session.getDocument(doc.getRef());
+        doc.detach(true);
+        assertEquals(retainUntil, doc.getRetainUntil());
+        doc.attach(session.getSessionId());
+
+        // cannot be deleted
+        checkUndeletable(folder, doc);
+        // bob cannot delete it
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
+            assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
+        }
+
+        // cannot reduce retention
+        Calendar retainUntilEarlier = Calendar.getInstance();
+        retainUntilEarlier.add(Calendar.MINUTE, 5);
+        try {
+            session.setRetainUntil(doc.getRef(), retainUntilEarlier, null);
+            fail("Should fail because cannot reduce retention time");
+        } catch (PropertyException e) {
+            assertTrue(e.getMessage(), e.getMessage().startsWith("Cannot reduce retention time"));
+        }
+    }
+
+    @Test
+    public void testLegalHold() {
+        DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
+        folder = session.createDocument(folder);
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("bob", "Remove", true));
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+        DocumentModel subFolder = session.createDocumentModel("/fold", "subfold", "Folder");
+        session.createDocument(subFolder);
+        DocumentModel doc = session.createDocumentModel("/fold/subfold", "doc", "File");
+        doc = session.createDocument(doc);
+        assertFalse(doc.hasLegalHold());
+
+        // must be a record
+        try {
+            session.setRetainUntil(doc.getRef(), null, null);
+            fail("Should fail because document is not a record");
+        } catch (PropertyException e) {
+            assertEquals("Document is not a record", e.getMessage());
+        }
+
+        // make it a record
+        session.makeRecord(doc.getRef());
+        // bob can delete it
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
+            assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
+        }
+
+        // set legal hold
+        assertFalse(session.hasLegalHold(doc.getRef()));
+        session.setLegalHold(doc.getRef(), true, null);
+        assertTrue(session.hasLegalHold(doc.getRef()));
+        doc.refresh();
+        assertTrue(doc.hasLegalHold());
+
+        // still available when freshly detached
+        doc = session.getDocument(doc.getRef());
+        doc.detach(true);
+        assertTrue(doc.hasLegalHold());
+        doc.attach(session.getSessionId());
+
+        checkUndeletable(folder, doc);
+        // bob cannot delete it
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
+            assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
+        }
+
+        // unset legal hold, can now delete
+        session.setLegalHold(doc.getRef(), false, null);
+        doc.refresh();
+        assertFalse(doc.hasLegalHold());
+        // bob can delete it
+        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
+            assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
+        }
+        session.removeDocument(doc.getRef());
+    }
+
+    protected void checkUndeletable(DocumentModel folder, DocumentModel doc) {
+        // check that the document cannot be deleted now, even by system user
+        assertTrue(session.getPrincipal().isAdministrator());
+        try {
+            session.removeDocument(doc.getRef());
+            fail("remove should fail");
+        } catch (DocumentExistsException e) {
+            assertEquals("Cannot remove " + doc.getId() + ", it is under retention / hold", e.getMessage());
+        }
+
+        // check that the document cannot be deleted through a parent
+        assertTrue(session.getPrincipal().isAdministrator());
+        try {
+            session.removeDocument(folder.getRef());
+            fail("remove should fail");
+        } catch (DocumentExistsException e) {
+            assertEquals(
+                    "Cannot remove " + folder.getId() + ", subdocument " + doc.getId() + " is under retention / hold",
+                    e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
     public void testRetentionActive() {
         DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
         folder = session.createDocument(folder);
@@ -4478,25 +4663,7 @@ public class TestSQLRepositoryAPI {
         session.setRetentionActive(docRef, true);
         assertTrue(session.isRetentionActive(docRef));
 
-        // check that the document cannot be deleted now, even by system user
-        assertTrue(session.getPrincipal().isAdministrator());
-        try {
-            session.removeDocument(docRef);
-            fail("remove should fail");
-        } catch (DocumentExistsException e) {
-            assertEquals("Cannot remove " + doc.getId() + ", it is under active retention", e.getMessage());
-        }
-
-        // check that the document cannot be deleted through a parent
-        assertTrue(session.getPrincipal().isAdministrator());
-        try {
-            session.removeDocument(folder.getRef());
-            fail("remove should fail");
-        } catch (DocumentExistsException e) {
-            assertEquals(
-                    "Cannot remove " + folder.getId() + ", subdocument " + doc.getId() + " is under active retention",
-                    e.getMessage());
-        }
+        checkUndeletable(folder, doc);
     }
 
     @Test

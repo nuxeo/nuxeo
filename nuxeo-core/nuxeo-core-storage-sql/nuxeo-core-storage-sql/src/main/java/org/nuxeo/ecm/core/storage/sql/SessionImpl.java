@@ -967,17 +967,21 @@ public class SessionImpl implements Session, XAResource {
         // find all descendants
         List<NodeInfo> nodeInfos = context.getNodeAndDescendantsInfo(node.getHierFragment());
 
-        // check that there is no active retention
-        Set<Serializable> retentionActiveIds = nodeInfos.stream() //
-                                                        .filter(info -> info.isRetentionActive)
-                                                        .map(info -> info.id)
-                                                        .collect(Collectors.toSet());
-        if (!retentionActiveIds.isEmpty()) {
-            if (retentionActiveIds.contains(id)) {
-                throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
-            } else {
-                throw new DocumentExistsException("Cannot remove " + id + ", subdocument "
-                        + retentionActiveIds.iterator().next() + " is under active retention");
+        // check that there is no retention / hold
+        Set<Serializable> undeletableIds = nodeInfos.stream() //
+                                                    .filter(info -> info.isUndeletable)
+                                                    .map(info -> info.id)
+                                                    .collect(Collectors.toSet());
+        if (!undeletableIds.isEmpty()) {
+            // in tests we may want to delete everything
+            boolean allowDeleteUndeletable = Framework.isBooleanPropertyTrue("allowDeleteUndeletableDocuments");
+            if (!allowDeleteUndeletable) {
+                if (undeletableIds.contains(id)) {
+                    throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
+                } else {
+                    throw new DocumentExistsException("Cannot remove " + id + ", subdocument "
+                            + undeletableIds.iterator().next() + " is under retention / hold");
+                }
             }
         }
 

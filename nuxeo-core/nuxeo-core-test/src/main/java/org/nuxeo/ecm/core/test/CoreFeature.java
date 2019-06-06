@@ -261,8 +261,13 @@ public class CoreFeature implements RunnerFeature {
                     // ignore, proxies disabled
                 }
                 // remove non-proxies
-                adminSession.removeChildren(new PathRef("/"));
-                waitForAsyncCompletion();
+                Framework.getProperties().put("allowDeleteUndeletableDocuments", "true");
+                try {
+                    adminSession.removeChildren(new PathRef("/"));
+                    waitForAsyncCompletion();
+                } finally {
+                    Framework.getProperties().remove("allowDeleteUndeletableDocuments");
+                }
                 log.trace(
                         "remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");
                 // remove remaining placeless documents

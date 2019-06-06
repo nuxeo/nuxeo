@@ -298,8 +298,43 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     /*
-     * ----- Retention -----
+     * ----- Retention and Hold -----
      */
+
+    @Override
+    public void makeRecord() {
+        target.makeRecord();
+    }
+
+    @Override
+    public boolean isRecord() {
+        return target.isRecord();
+    }
+
+    @Override
+    public void setRetainUntil(Calendar retainUntil) {
+        target.setRetainUntil(retainUntil);
+    }
+
+    @Override
+    public Calendar getRetainUntil() {
+        return target.getRetainUntil();
+    }
+
+    @Override
+    public void setLegalHold(boolean hold) {
+        target.setLegalHold(hold);
+    }
+
+    @Override
+    public boolean hasLegalHold() {
+        return target.hasLegalHold();
+    }
+
+    @Override
+    public boolean isUnderRetentionOrLegalHold() {
+        return target.isUnderRetentionOrLegalHold();
+    }
 
     @Override
     public void setRetentionActive(boolean retentionActive) {

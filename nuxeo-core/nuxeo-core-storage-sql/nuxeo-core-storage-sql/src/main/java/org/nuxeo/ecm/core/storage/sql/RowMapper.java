@@ -23,6 +23,7 @@ import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -342,20 +343,23 @@ public interface RowMapper {
 
         public final Serializable targetId;
 
-        public final boolean isRetentionActive;
+        public final boolean isUndeletable;
 
         /**
          * Creates node info for a node that may also be a proxy.
          */
         public NodeInfo(Serializable id, Serializable parentId, String primaryType, Boolean isProperty,
-                Serializable versionSeriesId, Serializable targetId, boolean isRetentionActive) {
+                Serializable versionSeriesId, Serializable targetId, Calendar retainUntil, boolean hasLegalHold,
+                boolean isRetentionActive) {
             this.id = id;
             this.parentId = parentId;
             this.primaryType = primaryType;
             this.isProperty = isProperty;
             this.versionSeriesId = versionSeriesId;
             this.targetId = targetId;
-            this.isRetentionActive = isRetentionActive;
+            isUndeletable = hasLegalHold //
+                    || (retainUntil != null && Calendar.getInstance().before(retainUntil)) //
+                    || isRetentionActive;
         }
 
         /**
@@ -376,7 +380,12 @@ public interface RowMapper {
                 versionSeriesId = ps;
                 targetId = proxyFragment.get(Model.PROXY_TARGET_KEY);
             }
-            isRetentionActive = TRUE.equals(hierFragment.get(Model.MAIN_IS_RETENTION_ACTIVE_KEY));
+            Serializable hasLegalHold = hierFragment.get(Model.MAIN_HAS_LEGAL_HOLD_KEY);
+            Serializable retainUntil = hierFragment.get(Model.MAIN_RETAIN_UNTIL_KEY);
+            Serializable isRetentionActive = hierFragment.get(Model.MAIN_IS_RETENTION_ACTIVE_KEY);
+            isUndeletable = TRUE.equals(hasLegalHold)
+                    || (retainUntil != null && Calendar.getInstance().before(retainUntil))
+                    || TRUE.equals(isRetentionActive);
         }
     }
 

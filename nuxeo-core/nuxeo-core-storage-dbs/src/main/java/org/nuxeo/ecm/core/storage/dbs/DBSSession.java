@@ -39,11 +39,13 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_HAS_LEGAL_HOLD;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_CHECKED_IN;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_MAJOR_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_LATEST_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RECORD;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_RETENTION_ACTIVE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_TRASHED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_VERSION;
@@ -63,6 +65,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_RETAIN_UNTIL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_DESCRIPTION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_LABEL;
@@ -161,8 +164,8 @@ public class DBSSession implements Session<QueryFilter> {
 
     private static final Log log = LogFactory.getLog(DBSSession.class);
 
-    protected static final Set<String> KEYS_RETENTION_ACTIVE_AND_PROXIES = new HashSet<>(
-            Arrays.asList(KEY_IS_RETENTION_ACTIVE, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS));
+    protected static final Set<String> KEYS_RETENTION_HOLD_AND_PROXIES = new HashSet<>(Arrays.asList(KEY_RETAIN_UNTIL,
+            KEY_HAS_LEGAL_HOLD, KEY_IS_RETENTION_ACTIVE, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS));
 
     protected final DBSRepository repository;
 
@@ -890,15 +893,24 @@ public class DBSSession implements Session<QueryFilter> {
 
         // find all sub-docs
         Set<String> removedIds = new HashSet<>();
-        Set<String> retentionActiveIds = new HashSet<>();
+        Set<String> undeletableIds = new HashSet<>();
         Set<String> targetIds = new HashSet<>();
         Map<String, Object[]> targetProxies = new HashMap<>();
+        Calendar now = Calendar.getInstance();
 
         Consumer<State> collector = state -> {
             String id = (String) state.get(KEY_ID);
             removedIds.add(id);
+            if (TRUE.equals(state.get(KEY_HAS_LEGAL_HOLD))) {
+                undeletableIds.add(id);
+            } else {
+                Calendar retainUntil = (Calendar) state.get(KEY_RETAIN_UNTIL);
+                if (retainUntil != null && now.before(retainUntil)) {
+                    undeletableIds.add(id);
+                }
+            }
             if (TRUE.equals(state.get(KEY_IS_RETENTION_ACTIVE))) {
-                retentionActiveIds.add(id);
+                undeletableIds.add(id);
             }
             if (TRUE.equals(state.get(KEY_IS_PROXY))) {
                 String targetId = (String) state.get(KEY_PROXY_TARGET_ID);
@@ -910,17 +922,21 @@ public class DBSSession implements Session<QueryFilter> {
             }
         };
         collector.accept(rootState); // add the root node too
-        try (Stream<State> states = transaction.getDescendants(rootId, KEYS_RETENTION_ACTIVE_AND_PROXIES, 0)) {
+        try (Stream<State> states = transaction.getDescendants(rootId, KEYS_RETENTION_HOLD_AND_PROXIES, 0)) {
             states.forEach(collector);
         }
 
-        // if a subdocument is under active retention, removal fails
-        if (!retentionActiveIds.isEmpty()) {
-            if (retentionActiveIds.contains(rootId)) {
-                throw new DocumentExistsException("Cannot remove " + rootId + ", it is under active retention");
-            } else {
-                throw new DocumentExistsException("Cannot remove " + rootId + ", subdocument "
-                        + retentionActiveIds.iterator().next() + " is under active retention");
+        // if a subdocument is under retention / hold, removal fails
+        if (!undeletableIds.isEmpty()) {
+            // in tests we may want to delete everything
+            boolean allowDeleteUndeletable = Framework.isBooleanPropertyTrue("allowDeleteUndeletableDocuments");
+            if (!allowDeleteUndeletable) {
+                if (undeletableIds.contains(rootId)) {
+                    throw new DocumentExistsException("Cannot remove " + rootId + ", it is under retention / hold");
+                } else {
+                    throw new DocumentExistsException("Cannot remove " + rootId + ", subdocument "
+                            + undeletableIds.iterator().next() + " is under retention / hold");
+                }
             }
         }
 
@@ -1138,6 +1154,18 @@ public class DBSSession implements Session<QueryFilter> {
             if (importLockCreatedProp != null) {
                 props.put(KEY_LOCK_CREATED, importLockCreatedProp);
             }
+
+            Boolean isRecord = trueOrNull(properties.get(CoreSession.IMPORT_IS_RECORD));
+            props.put(KEY_IS_RECORD, isRecord);
+            if (TRUE.equals(isRecord)) {
+                Calendar retainUntil = (Calendar) properties.get(CoreSession.IMPORT_RETAIN_UNTIL);
+                if (retainUntil != null) {
+                    props.put(KEY_RETAIN_UNTIL, retainUntil);
+                }
+                Boolean hasLegalHold = trueOrNull(properties.get(CoreSession.IMPORT_HAS_LEGAL_HOLD));
+                props.put(KEY_HAS_LEGAL_HOLD, hasLegalHold);
+            }
+
             Serializable isRetentionActiveProp = properties.get(CoreSession.IMPORT_IS_RETENTION_ACTIVE);
             if (TRUE.equals(isRetentionActiveProp)) {
                 props.put(KEY_IS_RETENTION_ACTIVE, TRUE);
@@ -1499,6 +1527,13 @@ public class DBSSession implements Session<QueryFilter> {
 
         State state = transaction.getStateForRead(id);
 
+        Calendar retainUntil = (Calendar) state.get(KEY_RETAIN_UNTIL);
+        if (retainUntil != null && Calendar.getInstance().before(retainUntil)) {
+            throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
+        }
+        if (TRUE.equals(state.get(KEY_HAS_LEGAL_HOLD))) {
+            throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
+        }
         if (TRUE.equals(state.get(KEY_IS_RETENTION_ACTIVE))) {
             throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
         }
@@ -2082,11 +2117,14 @@ public class DBSSession implements Session<QueryFilter> {
         case KEY_IS_PROXY:
         case KEY_ACE_GRANT:
         case KEY_IS_TRASHED:
+        case KEY_IS_RECORD:
+        case KEY_HAS_LEGAL_HOLD:
             return BooleanType.INSTANCE;
         case KEY_VERSION_CREATED:
         case KEY_LOCK_CREATED:
         case KEY_ACE_BEGIN:
         case KEY_ACE_END:
+        case KEY_RETAIN_UNTIL:
             return DateType.INSTANCE;
         case KEY_MIXIN_TYPES:
         case KEY_ANCESTOR_IDS:
