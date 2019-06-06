@@ -20,9 +20,12 @@
 package org.nuxeo.ecm.platform.csv.export.io;
 
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.CHANGE_TOKEN_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.HAS_LEGAL_HOLD_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_CHECKED_OUT_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_PROXY_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_RECORD_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_TRASHED_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_UNDER_RETENTION_OR_LEGAL_HOLD_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.IS_VERSION_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LAST_MODIFIED_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.LOCK_CREATED_FIELD;
@@ -31,6 +34,7 @@ import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PAREN
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PATH_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.PROXY_TARGET_ID_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.REPOSITORY_FIELD;
+import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.RETAIN_UNTIL_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.STATE_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.TITLE_FIELD;
 import static org.nuxeo.ecm.core.io.marshallers.csv.CSVMarshallerConstants.TYPE_FIELD;
@@ -67,10 +71,12 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentModelCSVHelper {
 
+    /* Make sure this is kept in sync with DocumentModelCSVWriter.writeSystem */
     public static final String[] SYSTEM_PROPERTIES_HEADER_FIELDS = new String[] { REPOSITORY_FIELD, UID_FIELD,
             PATH_FIELD, TYPE_FIELD, STATE_FIELD, PARENT_REF_FIELD, IS_CHECKED_OUT_FIELD, IS_VERSION_FIELD,
             IS_PROXY_FIELD, PROXY_TARGET_ID_FIELD, VERSIONABLE_ID_FIELD, CHANGE_TOKEN_FIELD, IS_TRASHED_FIELD,
-            TITLE_FIELD, VERSION_LABEL_FIELD, LOCK_OWNER_FIELD, LOCK_CREATED_FIELD, LAST_MODIFIED_FIELD };
+            TITLE_FIELD, VERSION_LABEL_FIELD, LOCK_OWNER_FIELD, LOCK_CREATED_FIELD, LAST_MODIFIED_FIELD,
+            IS_RECORD_FIELD, RETAIN_UNTIL_FIELD, HAS_LEGAL_HOLD_FIELD, IS_UNDER_RETENTION_OR_LEGAL_HOLD_FIELD };
 
     public static final List<String> VOCABULARY_TYPES = Arrays.asList("vocabulary", "xvocabulary", "l10nxvocabulary");
 
