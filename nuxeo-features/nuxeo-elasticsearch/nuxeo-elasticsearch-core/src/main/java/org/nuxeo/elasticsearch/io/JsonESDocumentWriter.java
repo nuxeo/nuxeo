@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +98,12 @@ public class JsonESDocumentWriter {
         jg.writeBooleanField("ecm:isVersion", doc.isVersion());
         jg.writeBooleanField("ecm:isLatestVersion", doc.isLatestVersion());
         jg.writeBooleanField("ecm:isLatestMajorVersion", doc.isLatestMajorVersion());
+        jg.writeBooleanField("ecm:isRecord", doc.isRecord());
+        Calendar retainUntil = doc.getRetainUntil();
+        if (retainUntil != null) {
+            jg.writeStringField("ecm:retainUntil", retainUntil.toInstant().toString());
+        }
+        jg.writeBooleanField("ecm:hasLegalHold", doc.hasLegalHold());
         jg.writeArrayFieldStart("ecm:mixinType");
         for (String facet : doc.getFacets()) {
             jg.writeString(facet);
