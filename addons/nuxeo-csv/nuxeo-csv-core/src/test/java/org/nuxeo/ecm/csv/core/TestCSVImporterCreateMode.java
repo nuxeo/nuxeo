@@ -185,7 +185,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         expectedMap.put("arrayProp", null);
         resultMap.put("arrayProp", null);
         assertEquals(expectedMap, resultMap);
-        List<Map<String, Object>> resultMapList = (List<Map<String, Object>>) doc.getPropertyValue("complexTest:listItem");
+        List<Map<String, Object>> resultMapList = (List<Map<String, Object>>) doc.getPropertyValue(
+                "complexTest:listItem");
         assertEquals(2, resultMapList.size());
         resultMap = resultMapList.get(0);
         assertEquals("1", ((String[]) resultMap.get("arrayProp"))[0]);
