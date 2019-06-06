@@ -18,38 +18,41 @@
  */
 package org.nuxeo.runtime.stream;
 
-import java.util.Date;
+import static org.nuxeo.lib.stream.computation.log.ComputationRunner.GLOBAL_FAILURE_COUNT_REGISTRY_NAME;
+import static org.nuxeo.lib.stream.computation.log.ComputationRunner.NUXEO_METRICS_REGISTRY_NAME;
 
-import org.nuxeo.common.utils.DateUtils;
-import org.nuxeo.lib.stream.computation.log.ComputationRunnerTerminated;
-import org.nuxeo.lib.stream.computation.log.ComputationRunnerTerminated.ComputationRunnerTerminatedContext;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.api.Probe;
 import org.nuxeo.runtime.management.api.ProbeStatus;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+
+/**
+ * A probe to detect when computation has been terminated due to failure.
+ *
+ * @since 11.1
+ */
 public class StreamProbe implements Probe {
 
-    public static final String ACTIVATION_PROPERTY = "nuxeo.stream.probe.enabled";
+    protected static final String FAILURE_MESSAGE = "%d computations have been terminated after failure. This Nuxeo instance must be restarted within the stream retention period.";
 
-    protected static final String MESSAGE = "ComputationRunner '%s' responsible for partitions %s is blocked since %s after %d retries";
+    protected Counter globalFailureCount;
 
     @Override
     public ProbeStatus run() {
-        if (!Boolean.parseBoolean(Framework.getProperty(ACTIVATION_PROPERTY))) {
-            return ProbeStatus.newSuccess("Stream probing is not enabled");
+        long failures = getFailures();
+        if (failures > 0) {
+            return ProbeStatus.newFailure(String.format(FAILURE_MESSAGE, failures));
         }
-        if (ComputationRunnerTerminated.hasBlockedStream()) {
-            StringBuilder message = new StringBuilder();
-            for (ComputationRunnerTerminatedContext context : ComputationRunnerTerminated.getErrors()) {
-                String line = String.format(MESSAGE, //
-                        context.name, //
-                        context.partitions.toString(), //
-                        DateUtils.formatISODateTime(new Date(context.timestamp)), //
-                        context.retryPolicy.getMaxRetries());
-                message.append(line).append("\n");
-            }
-            return ProbeStatus.newFailure(message.toString());
+        return ProbeStatus.newSuccess("No failure");
+    }
+
+    protected long getFailures() {
+        if (globalFailureCount == null) {
+            MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
+            globalFailureCount = registry.counter(GLOBAL_FAILURE_COUNT_REGISTRY_NAME);
         }
-        return ProbeStatus.newSuccess("Stream are running fine");
+        return globalFailureCount.getCount();
     }
 }

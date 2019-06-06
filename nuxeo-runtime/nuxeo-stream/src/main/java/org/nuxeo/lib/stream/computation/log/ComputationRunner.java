@@ -107,6 +107,8 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     // Use the Nuxeo registry name without adding dependency on nuxeo-runtime
     public static final String NUXEO_METRICS_REGISTRY_NAME = "org.nuxeo.runtime.metrics.MetricsService";
 
+    public static final String GLOBAL_FAILURE_COUNT_REGISTRY_NAME = MetricRegistry.name("nuxeo", "stream", "failure");
+
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
 
     protected Counter globalFailureCount;
@@ -120,6 +122,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected Timer processRecordTimer;
 
     protected Timer processTimerTimer;
+
 
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
@@ -204,7 +207,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void registerMetrics() {
-        globalFailureCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "failure"));
+        globalFailureCount = registry.counter(GLOBAL_FAILURE_COUNT_REGISTRY_NAME);
         runningCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "running"));
         failureCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "failure"));
         recordSkippedCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "skippedRecord"));
@@ -368,12 +371,6 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             context.askForTermination();
             globalFailureCount.inc();
             failureCount.inc();
-            ComputationRunnerTerminated.registerTerminated( //
-                    metadata.name(), //
-                    defaultAssignment, //
-                    context.getLastOffset(), //
-                    policy.getRetryPolicy(), //
-                    System.currentTimeMillis());
         }
     }
 

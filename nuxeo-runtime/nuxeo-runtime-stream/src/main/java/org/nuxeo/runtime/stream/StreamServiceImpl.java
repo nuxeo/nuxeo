@@ -35,7 +35,6 @@ import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
-import org.nuxeo.lib.stream.computation.log.ComputationRunnerTerminated;
 import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
@@ -234,7 +233,6 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         public void beforeStop(ComponentManager mgr, boolean isStandby) {
             // this is called before components are stopped
             stopComputations();
-            ComputationRunnerTerminated.clear();
             Framework.getRuntime().getComponentManager().removeListener(this);
         }
     }
