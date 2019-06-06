@@ -43,6 +43,11 @@ import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+
 import net.jodah.failsafe.Failsafe;
 
 /**
@@ -98,6 +103,24 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected List<LogPartition> defaultAssignment;
 
+    //@since 11.1
+    // Use the Nuxeo registry name without adding dependency on nuxeo-runtime
+    public static final String NUXEO_METRICS_REGISTRY_NAME = "org.nuxeo.runtime.metrics.MetricsService";
+
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
+
+    protected Counter globalFailureCount;
+
+    protected Counter failureCount;
+
+    protected Counter recordSkippedCount;
+
+    protected Counter runningCount;
+
+    protected Timer processRecordTimer;
+
+    protected Timer processTimerTimer;
+
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
             List<LogPartition> defaultAssignment, LogStreamManager streamManager, ComputationPolicy policy) {
@@ -145,6 +168,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         boolean interrupted = false;
         computation = supplier.get();
         log.debug(metadata.name() + ": Init");
+        registerMetrics();
         try {
             computation.init(context);
             log.debug(metadata.name() + ": Start");
@@ -177,6 +201,15 @@ public class ComputationRunner implements Runnable, RebalanceListener {
                 }
             }
         }
+    }
+
+    protected void registerMetrics() {
+        globalFailureCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "failure"));
+        runningCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "running"));
+        failureCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "failure"));
+        recordSkippedCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "skippedRecord"));
+        processRecordTimer = registry.timer(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processRecord"));
+        processTimerTimer = registry.timer(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processTimer"));
     }
 
     protected void closeTailer() {
@@ -258,11 +291,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processTimerWithRetry(String key, Long value) {
-        Failsafe.with(policy.getRetryPolicy())
-                .onRetry(failure -> computation.processRetry(context, failure))
-                .onFailure(failure -> computation.processFailure(context, failure))
-                .withFallback(() -> processFallback(context))
-                .run(() -> computation.processTimer(context, key, value));
+        try (Timer.Context ignored = processTimerTimer.time()) {
+            Failsafe.with(policy.getRetryPolicy())
+                    .onRetry(failure -> computation.processRetry(context, failure))
+                    .onFailure(failure -> computation.processFailure(context, failure))
+                    .withFallback(() -> processFallback(context))
+                    .run(() -> computation.processTimer(context, key, value));
+        }
     }
 
     protected boolean processRecord() throws InterruptedException {
@@ -310,21 +345,29 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processRecordWithRetry(String from, Record record) {
-        Failsafe.with(policy.getRetryPolicy())
-                .onRetry(failure -> computation.processRetry(context, failure))
-                .onFailure(failure -> computation.processFailure(context, failure))
-                .withFallback(() -> processFallback(context))
-                .run(() -> computation.processRecord(context, from, record));
+        runningCount.inc();
+        try (Timer.Context ignored = processRecordTimer.time()) {
+            Failsafe.with(policy.getRetryPolicy())
+                    .onRetry(failure -> computation.processRetry(context, failure))
+                    .onFailure(failure -> computation.processFailure(context, failure))
+                    .withFallback(() -> processFallback(context))
+                    .run(() -> computation.processRecord(context, from, record));
+        } finally {
+            runningCount.dec();
+        }
     }
 
     protected void processFallback(ComputationContextImpl context) {
         if (policy.continueOnFailure()) {
             log.error(String.format("Skip record after failure: %s", context.getLastOffset()));
             context.askForCheckpoint();
+            recordSkippedCount.inc();
         } else {
             log.error(String.format("Terminate computation: %s due to previous failure", metadata.name()));
             context.cancelAskForCheckpoint();
             context.askForTermination();
+            globalFailureCount.inc();
+            failureCount.inc();
             ComputationRunnerTerminated.registerTerminated( //
                     metadata.name(), //
                     defaultAssignment, //
