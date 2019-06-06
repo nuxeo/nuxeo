@@ -182,6 +182,9 @@ public class CSVImporterWork extends TransientStoreWork {
 
     protected long total = -1L;
 
+    /** @since 11.1 */
+    protected long docsProcessedCount;
+
     protected long docsCreatedCount;
 
     public CSVImporterWork(String id) {
@@ -244,7 +247,8 @@ public class CSVImporterWork extends TransientStoreWork {
         try {
             super.cleanUp(ok, e);
         } finally {
-            getStore().putParameter(id, "status", new CSVImportStatus(CSVImportStatus.State.COMPLETED, total, total));
+            getStore().putParameter(id, "status",
+                    new CSVImportStatus(CSVImportStatus.State.COMPLETED, docsCreatedCount, docsProcessedCount));
         }
     }
 
@@ -310,6 +314,7 @@ public class CSVImporterWork extends TransientStoreWork {
                 }
             }
             for (CSVRecord record : it) {
+                docsProcessedCount++;
                 if (record.size() == 0) {
                     // empty record
                     importLogs.add(new CSVImportLog(getLineNumber(record), Status.SKIPPED, "Empty record",
