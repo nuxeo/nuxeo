@@ -123,6 +123,7 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.security.RetentionExpiredFinderListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -4588,6 +4589,41 @@ public class TestSQLRepositoryAPI {
         try (CloseableCoreSession bobSession = openSessionAs("bob")) {
             assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
         }
+        session.removeDocument(doc.getRef());
+    }
+
+    @Test
+    public void testRetentionExpiresAutomatically() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel subFolder = session.createDocumentModel("/fold", "subfold", "Folder");
+        session.createDocument(subFolder);
+        DocumentModel doc = session.createDocumentModel("/fold/subfold", "doc", "File");
+        doc = session.createDocument(doc);
+        session.makeRecord(doc.getRef());
+
+        // set retention to two seconds in the future
+        Calendar twoSeconds = Calendar.getInstance();
+        twoSeconds.add(Calendar.SECOND, 2);
+        session.setRetainUntil(doc.getRef(), twoSeconds, null);
+        session.save();
+
+        checkUndeletable(folder, doc);
+
+        // wait 3s to pass retention expiration date
+        nextTransaction();
+        Thread.sleep(3_000);
+        // trigger manually instead of waiting for scheduler
+        new RetentionExpiredFinderListener().handleEvent(null);
+        // wait for all bulk commands to be executed
+        assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
+
+        // re-acquire the doc in a new transaction
+        nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        // it has no retention anymore and can be deleted
+        assertNull(session.getRetainUntil(doc.getRef()));
         session.removeDocument(doc.getRef());
     }
 
