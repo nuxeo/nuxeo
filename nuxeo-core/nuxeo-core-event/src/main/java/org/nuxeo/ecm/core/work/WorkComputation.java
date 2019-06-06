@@ -124,12 +124,21 @@ public class WorkComputation extends AbstractComputation {
                         work.getId(), work.getTitle(), record));
                 context.askForCheckpoint();
             }
-            // Cleanup should take care of logging error, but better to dup this in debug
+            // Cleanup should take care of logging error except if exception comes from the cleanup
             log.debug("Exception during work " + work.getId(), e);
-            work.cleanUp(false, e);
+            // Try to cleanup after an exception, if exception comes from the previous cleanup it is a duplicate cleanup
+            cleanupWorkInFailure(work, e);
         } finally {
             workTimer.update(work.getCompletionTime() - work.getStartTime(), TimeUnit.MILLISECONDS);
             work = null;
+        }
+    }
+
+    protected void cleanupWorkInFailure(Work work, Exception exception) {
+        try {
+            work.cleanUp(false, exception);
+        } catch (Exception e) {
+            log.error("Error during cleanup work: " + work.getId(), e);
         }
     }
 

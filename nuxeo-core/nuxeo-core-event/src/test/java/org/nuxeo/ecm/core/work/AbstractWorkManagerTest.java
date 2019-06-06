@@ -117,6 +117,24 @@ public abstract class AbstractWorkManagerTest {
         }
     }
 
+    /**
+     * @since 11.1
+     */
+    protected static class SleepAndFailAtCleanupWork extends SleepWork {
+        private static final long serialVersionUID = 1L;
+
+        public SleepAndFailAtCleanupWork(long durationMillis) {
+            super(durationMillis);
+        }
+
+        @Override
+        public void cleanUp(boolean ok, Exception e) {
+            super.cleanUp(ok, e);
+            throw new RuntimeException("Simulated failure during cleanup:" + getTitle());
+        }
+    }
+
+
     protected class MetricsTracker {
         protected String queueId;
 
@@ -549,4 +567,17 @@ public abstract class AbstractWorkManagerTest {
         assertTrue(service.awaitCompletion(getDurationMillis() * 200, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 3, 0);
     }
+
+    @Test
+    public void testWorkFailureOnCleanup() throws Exception {
+        SleepWork work1 = new SleepAndFailAtCleanupWork(200);
+        SleepWork work2 = new SleepAndFailWork(200);
+
+        service.schedule(work1);
+        service.schedule(work2);
+
+        assertTrue(service.awaitCompletion(2000, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 2, 0);
+    }
+
 }
