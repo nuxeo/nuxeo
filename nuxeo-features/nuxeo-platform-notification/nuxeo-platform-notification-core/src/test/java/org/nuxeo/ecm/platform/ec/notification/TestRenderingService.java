@@ -37,11 +37,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.notification.core")
-@Deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib.xml")
+@LocalDeploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib.xml")
 public class TestRenderingService {
 
     private static final String MYDESCRIPTION = "mydescription";
