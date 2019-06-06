@@ -91,6 +91,12 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
 
     private static final String DOCS_WITH_CUSTOM_DATE_FORMAT_CSV = "docs_with_custom_date_format.csv";
 
+    /** @since 11.1 **/
+    public static final String FILE_GREATER_THAN_THE_LENGTH_THRESHOLD = "file_greater_than_threshold.csv";
+
+    /** @since 11.1 **/
+    public static final String FILE_BELOW_THE_LENGTH_THRESHOLD = "file_below_the_threshold.csv";
+
     @Inject
     protected CoreFeature coreFeature;
 
@@ -642,6 +648,49 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertEquals("My Note", doc.getTitle());
         issueDate = (Calendar) doc.getPropertyValue("dc:issued");
         assertEquals("2012/12/12", options.getDateFormat().format(issueDate.getTime()));
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void whenFileIsGreaterThanThresholdTotalDocsShouldBeAvailableWhenImportIsCompleted()
+            throws IOException, InterruptedException {
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_GREATER_THAN_THE_LENGTH_THRESHOLD),
+                options);
+        workManager.awaitCompletion(1, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
+        assertNotNull(importStatus);
+        assertFalse(importStatus.isComplete());
+        assertEquals(-1, importStatus.getTotalNumberOfDocument());
+
+        workManager.awaitCompletion(10000, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        importStatus = csvImporter.getImportStatus(importId);
+        assertTrue(importStatus.isComplete());
+        assertEquals(10999, importStatus.getTotalNumberOfDocument());
+        assertEquals(10999, importStatus.getNumberOfProcessedDocument());
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void whenFileIsSmallerThanThresholdTotalDocsShouldBeAvailableWhenImportIsRunningOrScheduled()
+            throws IOException, InterruptedException {
+        CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
+        String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_BELOW_THE_LENGTH_THRESHOLD), options);
+        workManager.awaitCompletion(1, TimeUnit.SECONDS);
+        TransactionHelper.startTransaction();
+
+        CSVImportStatus importStatus = csvImporter.getImportStatus(importId);
+        assertNotNull(importStatus);
+        assertFalse(importStatus.isComplete());
+        assertEquals(999, importStatus.getTotalNumberOfDocument());
     }
 
     public CloseableCoreSession openSessionAs(String username) {
