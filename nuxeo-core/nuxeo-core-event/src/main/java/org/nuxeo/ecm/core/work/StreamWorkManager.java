@@ -48,6 +48,8 @@ import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.computation.ComputationPolicy;
+import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.RecordFilter;
 import org.nuxeo.lib.stream.computation.RecordFilterChain;
@@ -349,9 +351,10 @@ public class StreamWorkManager extends WorkManagerImpl {
                    .forEach(d -> builderDisabled.addComputation(() -> new WorkComputation(d.getId()),
                            Collections.singletonList("i1:" + d.getId())));
         topologyDisabled = builderDisabled.build();
-
+        // The retry policy is handled at AbstractWork level, but we want to skip failure
+        ComputationPolicy policy = new ComputationPolicyBuilder().continueOnFailure(true).build();
         RecordFilterChain filter = getRecordFilter();
-        settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), getCodec(), null, filter);
+        settings = new Settings(DEFAULT_CONCURRENCY, getPartitions(DEFAULT_CONCURRENCY), getCodec(), policy, filter);
         descriptors.forEach(item -> settings.setConcurrency(item.getId(), item.getMaxThreads()));
         descriptors.forEach(item -> settings.setPartitions(item.getId(), getPartitions(item.getMaxThreads())));
     }
