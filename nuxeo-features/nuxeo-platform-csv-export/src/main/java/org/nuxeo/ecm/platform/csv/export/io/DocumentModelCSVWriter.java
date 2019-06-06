@@ -81,6 +81,7 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         printer.println();
     }
 
+    /* Make sure this is kept in sync with DocumentModelCSVHelper.SYSTEM_PROPERTIES_HEADER_FIELDS */
     protected void writeSystem(DocumentModel doc, CSVPrinter printer) throws IOException {
         printer.print(doc.getRepositoryName());
         printer.print(doc.getId());
@@ -115,6 +116,15 @@ public class DocumentModelCSVWriter extends AbstractCSVWriter<DocumentModel> {
         } else {
             printer.print(null);
         }
+        Calendar retainUntil = doc.getRetainUntil();
+        printer.print(doc.isRecord());
+        if (retainUntil != null) {
+            printCalendar(retainUntil, printer);
+        } else {
+            printer.print(null);
+        }
+        printer.print(doc.hasLegalHold());
+        printer.print(doc.isUnderRetentionOrLegalHold());
     }
 
     protected void writeSchema(DocumentModel entity, Schema schema, CSVPrinter printer) throws IOException {
