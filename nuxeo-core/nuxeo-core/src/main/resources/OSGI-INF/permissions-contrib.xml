@@ -83,6 +83,10 @@
       project before pluggable permission definitions -->
     <permission name="RestrictedRead" />
 
+    <permission name="MakeRecord" />
+    <permission name="SetRetention" />
+    <permission name="ManageLegalHold" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.security.SecurityService"

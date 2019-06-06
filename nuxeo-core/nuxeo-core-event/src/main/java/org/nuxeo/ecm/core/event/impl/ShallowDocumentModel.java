@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.event.impl;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -545,6 +546,26 @@ public class ShallowDocumentModel implements DocumentModel {
     @Override
     public boolean isVersionSeriesCheckedOut() {
         return true;
+    }
+
+    @Override
+    public boolean isRecord() {
+        return false;
+    }
+
+    @Override
+    public Calendar getRetainUntil() {
+        return null;
+    }
+
+    @Override
+    public boolean hasLegalHold() {
+        return false;
+    }
+
+    @Override
+    public boolean isUnderRetentionOrLegalHold() {
+        return false;
     }
 
     @Override

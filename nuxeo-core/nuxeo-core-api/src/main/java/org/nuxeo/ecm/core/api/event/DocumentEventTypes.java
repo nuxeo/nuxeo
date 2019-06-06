@@ -169,10 +169,72 @@ public final class DocumentEventTypes {
     public static final String ACE_STATUS_UPDATED = "ACEStatusUpdated";
 
     /**
+     * Event triggered when a document is about to be turned into a record.
+     *
+     * @since 11.1
+     */
+    public static final String BEFORE_MAKE_RECORD = "beforeMakeRecord";
+
+    /**
+     * Event triggered when a document has been turned into a record.
+     *
+     * @since 11.1
+     */
+    public static final String AFTER_MAKE_RECORD = "afterMakeRecord";
+
+    /**
+     * Event triggered when a retention is about to be set or updated on a document.
+     * <p>
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link Calendar} object).
+     *
+     * @since 11.1
+     */
+    public static final String BEFORE_SET_RETENTION = "beforeSetRetention";
+
+    /**
+     * Event triggered after a retention has been set or updated on a document.
+     * <p>
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link Calendar} object).
+     *
+     * @since 11.1
+     */
+    public static final String AFTER_SET_RETENTION = "afterSetRetention";
+
+    /**
+     * Event triggered (some time) after the retention of a document has expired.
+     * <p>
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link Calendar} object), which
+     * was the previous retention date.
+     *
+     * @since 11.1
+     */
+    public static final String RETENTION_EXPIRED = "retentionExpired";
+
+    /**
+     * Event triggered when a legal hold is about to be set or removed on a document.
+     * <p>
+     * The event's options map contains {@link CoreEventConstants#LEGAL_HOLD} (a {@link Boolean} object).
+     *
+     * @since 11.1
+     */
+    public static final String BEFORE_SET_LEGAL_HOLD = "beforeSetLegalHold";
+
+    /**
+     * Event triggered after a legal hold has been set or removed on a document.
+     * <p>
+     * The event's options map contains {@link CoreEventConstants#LEGAL_HOLD} (a {@link Boolean} object).
+     *
+     * @since 11.1
+     */
+    public static final String AFTER_SET_LEGAL_HOLD = "afterSetLegalHold";
+
+    /**
      * Event triggered when the active state of the retention changes.
      *
      * @since 9.3
+     * @deprecated since 11.1
      */
+    @Deprecated
     public static final String RETENTION_ACTIVE_CHANGED = "retentionActiveChanged";
 
     // Constant utility class
