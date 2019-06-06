@@ -56,6 +56,14 @@ public class CSVMarshallerConstants {
 
     public static final String VERSION_LABEL_FIELD = "versionLabel";
 
+    public static final String IS_RECORD_FIELD = "isRecord";
+
+    public static final String RETAIN_UNTIL_FIELD = "retainUntil";
+
+    public static final String HAS_LEGAL_HOLD_FIELD = "hasLegalHold";
+
+    public static final String IS_UNDER_RETENTION_OR_LEGAL_HOLD_FIELD = "isUnderRetentionOrLegalHold";
+
     public static final String LOCK_OWNER_FIELD = "lockOwner";
 
     public static final String LOCK_CREATED_FIELD = "lockCreated";

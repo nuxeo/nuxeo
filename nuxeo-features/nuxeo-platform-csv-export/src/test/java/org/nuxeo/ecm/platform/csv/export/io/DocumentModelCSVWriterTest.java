@@ -26,6 +26,8 @@ import static org.nuxeo.ecm.platform.csv.export.io.DocumentModelCSVWriter.XPATHS
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -56,6 +58,8 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
     @Inject
     protected CoreSession session;
 
+    protected Calendar retainUntil;
+
     public DocumentModelCSVWriterTest() {
         super(DocumentModelCSVWriter.class, DocumentModel.class);
     }
@@ -71,6 +75,12 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         document.putContextData(DocumentValidationService.CTX_MAP_KEY, DocumentValidationService.Forcing.TURN_OFF);
         document.setPropertyValue("dc:subjects", new String[] { "art", "toto" });
         document = session.createDocument(document);
+        session.makeRecord(document.getRef());
+        retainUntil = Calendar.getInstance();
+        retainUntil.add(Calendar.HOUR, -1); // 1 hour ago
+        session.setRetainUntil(document.getRef(), retainUntil, null);
+        session.setLegalHold(document.getRef(), true, null);
+        document.refresh();
     }
 
     @Test
@@ -96,6 +106,11 @@ public class DocumentModelCSVWriterTest extends AbstractCSVWriterTest.Local<Docu
         csv.has("dc:nature[label]").isEquals("Article EN");
         csv.has("dc:subjects[label]").isEquals("Art | unknown translated value");
         csv.has("dc:coverage[label]").isEquals("France");
+        csv.has("isRecord").isTrue();
+        String expectedRetainUntil = ((GregorianCalendar) retainUntil).toZonedDateTime().toString();
+        csv.has("retainUntil").isEquals(expectedRetainUntil );
+        csv.has("hasLegalHold").isTrue();
+        csv.has("isUnderRetentionOrLegalHold").isTrue();
     }
 
     @Test
