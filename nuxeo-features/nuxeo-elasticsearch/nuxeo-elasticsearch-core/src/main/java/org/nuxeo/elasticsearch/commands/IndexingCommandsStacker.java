@@ -20,6 +20,9 @@
 package org.nuxeo.elasticsearch.commands;
 
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CHECKIN;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.AFTER_MAKE_RECORD;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.AFTER_SET_LEGAL_HOLD;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.AFTER_SET_RETENTION;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
@@ -139,6 +142,9 @@ public abstract class IndexingCommandsStacker {
         case DOCUMENT_TRASHED:
         case DOCUMENT_UNTRASHED:
         case DOCUMENT_RESTORED:
+        case AFTER_MAKE_RECORD:
+        case AFTER_SET_RETENTION:
+        case AFTER_SET_LEGAL_HOLD:
             if (doc.isProxy() && !doc.isImmutable()) {
                 stackCommand(doc.getCoreSession().getDocument(new IdRef(doc.getSourceId())), BEFORE_DOC_UPDATE, false);
             }
