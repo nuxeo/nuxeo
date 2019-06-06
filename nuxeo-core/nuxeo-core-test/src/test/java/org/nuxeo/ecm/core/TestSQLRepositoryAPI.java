@@ -4626,6 +4626,41 @@ public class TestSQLRepositoryAPI {
         session.removeDocument(doc.getRef());
     }
 
+    @Test
+    public void testRetentionExpiresAutomatically() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel subFolder = session.createDocumentModel("/fold", "subfold", "Folder");
+        session.createDocument(subFolder);
+        DocumentModel doc = session.createDocumentModel("/fold/subfold", "doc", "File");
+        doc = session.createDocument(doc);
+        session.makeRecord(doc.getRef());
+
+        // set retention to two seconds in the future
+        Calendar twoSeconds = Calendar.getInstance();
+        twoSeconds.add(Calendar.SECOND, 2);
+        session.setRetainUntil(doc.getRef(), twoSeconds, null);
+        session.save();
+
+        checkUndeletable(folder, doc);
+
+        // wait 3s to pass retention expiration date
+        nextTransaction();
+        Thread.sleep(3_000);
+        // trigger manually instead of waiting for scheduler
+        new RetentionExpiredFinderListener().handleEvent(null);
+        // wait for all bulk commands to be executed
+        assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
+
+        // re-acquire the doc in a new transaction
+        nextTransaction();
+        doc = session.getDocument(doc.getRef());
+
+        // it has no retention anymore and can be deleted
+        assertNull(session.getRetainUntil(doc.getRef()));
+        session.removeDocument(doc.getRef());
+    }
+
     protected void checkUndeletable(DocumentModel folder, DocumentModel doc) {
         // check that the document cannot be deleted now, even by system user
         assertTrue(session.getPrincipal().isAdministrator());
