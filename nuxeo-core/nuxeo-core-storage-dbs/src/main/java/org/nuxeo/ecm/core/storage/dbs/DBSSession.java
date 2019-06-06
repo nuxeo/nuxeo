@@ -1989,6 +1989,12 @@ public class DBSSession implements Session<QueryFilter> {
             return KEY_VERSION_DESCRIPTION;
         case NXQL.ECM_VERSION_VERSIONABLEID:
             return KEY_VERSION_SERIES_ID;
+        case NXQL.ECM_ISRECORD:
+            return KEY_IS_RECORD;
+        case NXQL.ECM_RETAINUNTIL:
+            return KEY_RETAIN_UNTIL;
+        case NXQL.ECM_HASLEGALHOLD:
+            return KEY_HAS_LEGAL_HOLD;
         case NXQL.ECM_ANCESTORID:
         case ExpressionEvaluator.NXQL_ECM_ANCESTOR_IDS:
             return KEY_ANCESTOR_IDS;
@@ -2084,6 +2090,12 @@ public class DBSSession implements Session<QueryFilter> {
             return NXQL.ECM_VERSIONDESCRIPTION;
         case KEY_VERSION_SERIES_ID:
             return NXQL.ECM_VERSION_VERSIONABLEID;
+        case KEY_IS_RECORD:
+            return NXQL.ECM_ISRECORD;
+        case KEY_RETAIN_UNTIL:
+            return NXQL.ECM_RETAINUNTIL;
+        case KEY_HAS_LEGAL_HOLD:
+            return NXQL.ECM_HASLEGALHOLD;
         case KEY_MAJOR_VERSION:
             return "major_version"; // TODO XXX constant
         case KEY_MINOR_VERSION:

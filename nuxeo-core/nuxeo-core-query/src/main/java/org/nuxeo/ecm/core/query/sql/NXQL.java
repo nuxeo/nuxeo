@@ -219,6 +219,15 @@ public class NXQL {
      */
     public static final String ECM_ISTRASHED = "ecm:isTrashed";
 
+    /** @since 11.1 */
+    public static final String ECM_ISRECORD = "ecm:isRecord";
+
+    /** @since 11.1 */
+    public static final String ECM_RETAINUNTIL = "ecm:retainUntil";
+
+    /** @since 11.1 */
+    public static final String ECM_HASLEGALHOLD = "ecm:hasLegalHold";
+
     /**
      * The function returning the current datetime. It can optionally have as an argument a duration that will be added
      * to the current datetime, expressed as a ISO 8601 period.

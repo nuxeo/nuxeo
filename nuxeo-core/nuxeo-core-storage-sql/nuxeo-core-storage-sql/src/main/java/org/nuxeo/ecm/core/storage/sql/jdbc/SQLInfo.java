@@ -793,6 +793,7 @@ public class SQLInfo {
         maker.table.addIndex(Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY);
         // don't index parent+name+isprop, a simple isprop scan will suffice
         maker.table.addIndex(Model.MAIN_PRIMARY_TYPE_KEY);
+        maker.table.addIndex(Model.MAIN_RETAIN_UNTIL_KEY);
 
         if (model.getRepositoryDescriptor().getSoftDeleteEnabled()) {
             maker.table.addIndex(Model.MAIN_IS_DELETED_KEY);
