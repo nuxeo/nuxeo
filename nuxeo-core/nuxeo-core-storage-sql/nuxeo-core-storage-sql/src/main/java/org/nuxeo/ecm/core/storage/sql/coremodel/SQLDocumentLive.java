@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -360,8 +361,44 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     /*
-     * ----- Retention -----
+     * ----- Retention and Hold -----
      */
+
+    @Override
+    public void makeRecord() {
+        setPropertyValue(Model.MAIN_IS_RECORD_PROP, Boolean.TRUE);
+    }
+
+    @Override
+    public boolean isRecord() {
+        return Boolean.TRUE.equals(getPropertyValue(Model.MAIN_IS_RECORD_PROP));
+    }
+
+    @Override
+    public void setRetainUntil(Calendar retainUntil) {
+        Calendar current = (Calendar) getPropertyValue(Model.MAIN_RETAIN_UNTIL_PROP);
+        if (!allowNewRetention(current, retainUntil)) {
+            throw new PropertyException(
+                    "Cannot reduce retention time from: " + (current == null ? "null" : current.toInstant()) + " to: "
+                            + (retainUntil == null ? "null" : retainUntil.toInstant()));
+        }
+        setPropertyValue(Model.MAIN_RETAIN_UNTIL_PROP, retainUntil);
+    }
+
+    @Override
+    public Calendar getRetainUntil() {
+        return (Calendar) getPropertyValue(Model.MAIN_RETAIN_UNTIL_PROP);
+    }
+
+    @Override
+    public void setLegalHold(boolean hold) {
+        setPropertyValue(Model.MAIN_HAS_LEGAL_HOLD_PROP, hold ? Boolean.TRUE : null);
+    }
+
+    @Override
+    public boolean hasLegalHold() {
+        return Boolean.TRUE.equals(getPropertyValue(Model.MAIN_HAS_LEGAL_HOLD_PROP));
+    }
 
     @Override
     public void setRetentionActive(boolean retentionActive) {

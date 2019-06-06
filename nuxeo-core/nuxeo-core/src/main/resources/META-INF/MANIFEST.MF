@@ -43,7 +43,8 @@ Nuxeo-Component: OSGI-INF/CoreService.xml,
   OSGI-INF/uidgenerator-service.xml,
   OSGI-INF/uidgenerator-keyvalue-config.xml,
   OSGI-INF/CoreSessionService.xml,
-  OSGI-INF/scheduler-contrib.xml
+  OSGI-INF/scheduler-contrib.xml,
+  OSGI-INF/retention-and-hold-contrib.xml
 Bundle-ManifestVersion: 2
 Import-Package: javax.naming,
  javax.transaction;version="1.1",

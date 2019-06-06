@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -430,6 +431,53 @@ public interface DocumentModel extends Serializable {
      * @since 5.4
      */
     boolean isVersionSeriesCheckedOut();
+
+    /**
+     * Checks if the document is a record.
+     *
+     * @return {@code true} if the document is a record, {@code false} otherwise
+     * @since 11.1
+     */
+    default boolean isRecord() {
+        return false;
+    }
+
+    /**
+     * Gets the retention date for the document.
+     *
+     * @return the retention date, or {@value org.nuxeo.ecm.core.api.security.SecurityConstants#SET_RETENTION} for a
+     *         retention in the indeterminate future, or {@code null} if there is no retention date
+     * @see #RETAIN_UNTIL_INDETERMINATE
+     * @see #isUnderRetentionOrLegalHold
+     * @since 11.1
+     */
+    default Calendar getRetainUntil() {
+        return null;
+    }
+
+    /**
+     * Checks if the document has a legal hold set.
+     *
+     * @return {@code true} if a legal hold has been set on the document, {@code false} otherwise
+     * @see #isUnderRetentionOrLegalHold
+     * @since 11.1
+     */
+    default boolean hasLegalHold() {
+        return false;
+    }
+
+    /**
+     * Checks if the document has a retention date in the future or has a legal hold.
+     *
+     * @return {@code true} if the document has a retention date in the future or if it has a legal hold, {@code false}
+     *         otherwise
+     * @see #getRetainUntil
+     * @see #hasLegalHold
+     * @since 11.1
+     */
+    default boolean isUnderRetentionOrLegalHold() {
+        return false;
+    }
 
     /**
      * Gets the access control policy (ACP) for this document.
@@ -876,6 +924,12 @@ public interface DocumentModel extends Serializable {
         public DocumentPart[] documentParts;
 
         public boolean isTrashed;
+
+        public boolean isRecord;
+
+        public Calendar retainUntil;
+
+        public boolean hasLegalHold;
     }
 
     /**
