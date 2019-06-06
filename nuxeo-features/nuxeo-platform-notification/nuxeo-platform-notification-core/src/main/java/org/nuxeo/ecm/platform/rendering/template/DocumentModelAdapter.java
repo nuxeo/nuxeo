@@ -23,8 +23,10 @@ package org.nuxeo.ecm.platform.rendering.template;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -74,9 +76,22 @@ public class DocumentModelAdapter implements TemplateHashModelEx, AdapterTemplat
         // may be a schema name (doc.dublincore.title)
         Map<String, Object> properties = doc.getProperties(key);
         if (properties != null) {
-            return wrapper.wrap(properties);
+            return wrapper.wrap(unPrefixedMap(properties));
         }
         return wrapper.wrap(null);
+    }
+
+    private static Map<String, Object> unPrefixedMap(Map<String, Object> props) {
+        Map<String, Object> res = new HashMap<String, Object>();
+        for (Entry<String, Object> e : props.entrySet()) {
+            String key = e.getKey();
+            int pos = key.indexOf(':');
+            if (pos > -1) {
+                key = key.substring(pos + 1);
+            }
+            res.put(key, e.getValue());
+        }
+        return res;
     }
 
     /**
