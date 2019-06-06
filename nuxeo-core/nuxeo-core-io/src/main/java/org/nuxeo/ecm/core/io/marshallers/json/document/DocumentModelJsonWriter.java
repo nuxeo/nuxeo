@@ -78,6 +78,10 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
  *   "state": "DOCUMENT_STATE",
  *   "parentRef": "PARENT_DOCUMENT_UID",
  *   "isCheckedOut": true|false,
+ *   "isRecord": true|false,
+ *   "retainUntil": "RETAIN_UNTIL_DATE", <-- or null
+ *   "hasLegalHold": true|false,
+ *   "isUnderRetentionOrLegalHold": true|false,
  *   "changeToken": null|"CHANGE_TOKEN",
  *   "isCheckedOut": true|false,
  *   "title": "DOCUMENT_TITLE",
@@ -147,6 +151,12 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         jg.writeStringField("state", doc.getRef() != null ? doc.getCurrentLifeCycleState() : null);
         jg.writeStringField("parentRef", doc.getParentRef() != null ? doc.getParentRef().toString() : null);
         jg.writeBooleanField("isCheckedOut", doc.isCheckedOut());
+        jg.writeBooleanField("isRecord", doc.isRecord());
+        Calendar retainUntil = doc.getRetainUntil();
+        jg.writeStringField("retainUntil",
+                retainUntil == null ? null : ISODateTimeFormat.dateTime().print(new DateTime(retainUntil)));
+        jg.writeBooleanField("hasLegalHold", doc.hasLegalHold());
+        jg.writeBooleanField("isUnderRetentionOrLegalHold", doc.isUnderRetentionOrLegalHold());
         boolean isVersion = doc.isVersion();
         jg.writeBooleanField("isVersion", isVersion);
         boolean isProxy = doc.isProxy();
