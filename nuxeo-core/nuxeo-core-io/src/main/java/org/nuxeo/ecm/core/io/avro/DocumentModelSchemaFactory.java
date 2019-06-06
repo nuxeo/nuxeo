@@ -58,6 +58,8 @@ public class DocumentModelSchemaFactory extends AvroSchemaFactory<DocumentModel>
                 new Field(AvroConstants.IS_CHECKEDIN, Schema.create(Type.BOOLEAN), null, (Object) null),
                 new Field(AvroConstants.IS_LATEST_VERSION, Schema.create(Type.BOOLEAN), null, (Object) null),
                 new Field(AvroConstants.IS_LATEST_MAJOR_VERSION, Schema.create(Type.BOOLEAN), null, (Object) null),
+                new Field(AvroConstants.IS_RECORD, Schema.create(Type.BOOLEAN), null, (Object) null),
+                new Field(AvroConstants.HAS_LEGAL_HOLD, Schema.create(Type.BOOLEAN), null, (Object) null),
                 // nullable
                 new Field(AvroConstants.PARENT_ID, nullable(Schema.create(Type.STRING)), null, (Object) null),
                 new Field(AvroConstants.VERSION_LABEL, nullable(Schema.create(Type.STRING)), null, (Object) null),
@@ -68,6 +70,7 @@ public class DocumentModelSchemaFactory extends AvroSchemaFactory<DocumentModel>
                         (Object) null),
                 new Field(AvroConstants.TAGS, nullable(Schema.createArray(Schema.create(Type.STRING))), null,
                         (Object) null),
+                new Field(AvroConstants.RETAIN_UNTIL, nullable(Schema.create(Type.LONG)), null, (Object) null),
                 new Field(AvroConstants.DOCUMENT_TYPE, typeSchema, null, (Object) null)));
         return schema;
     }

@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.core.io.avro;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +103,18 @@ public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord
                 null, facets, null, repositoryName, isProxy);
         doc.setIsVersion((Boolean) input.get(AvroConstants.IS_VERSION));
         doc.prefetchCurrentLifecycleState((String) input.get(AvroConstants.CURRENT_LIFE_CYCLE_STATE));
+        Boolean isRecord = (Boolean) input.get(AvroConstants.IS_RECORD);
+        if (isRecord) {
+            doc.makeRecord();
+            Long retainUntilMillis = (Long) input.get(AvroConstants.RETAIN_UNTIL);
+            if (retainUntilMillis != null) {
+                Calendar retainUntil = Calendar.getInstance();
+                retainUntil.setTimeInMillis(retainUntilMillis);
+                doc.setRetainUntil(retainUntil);
+            }
+            Boolean hasLegalHold = (Boolean) input.get(AvroConstants.HAS_LEGAL_HOLD);
+            doc.setLegalHold(hasLegalHold);
+        }
         return doc;
     }
 
@@ -125,6 +140,12 @@ public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord
         record.put(AvroConstants.IS_CHECKEDIN, !doc.isCheckedOut());
         record.put(AvroConstants.IS_LATEST_VERSION, doc.isLatestVersion());
         record.put(AvroConstants.IS_LATEST_MAJOR_VERSION, doc.isLatestMajorVersion());
+        record.put(AvroConstants.IS_RECORD, doc.isRecord());
+        Calendar retainUntil = doc.getRetainUntil();
+        if (retainUntil != null) {
+            record.put(AvroConstants.RETAIN_UNTIL, retainUntil.toInstant().toEpochMilli());
+        }
+        record.put(AvroConstants.HAS_LEGAL_HOLD, doc.hasLegalHold());
         record.put(AvroConstants.CHANGE_TOKEN, doc.getChangeToken());
         if (doc.getPos() != null) {
             record.put(AvroConstants.POS, doc.getPos());

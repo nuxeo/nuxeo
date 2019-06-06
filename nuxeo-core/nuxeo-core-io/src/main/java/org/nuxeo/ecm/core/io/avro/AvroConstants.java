@@ -63,6 +63,12 @@ public class AvroConstants {
 
     public static final String IS_VERSION = "isVersion";
 
+    public static final String IS_RECORD = "isRecord";
+
+    public static final String RETAIN_UNTIL = "retainUntil";
+
+    public static final String HAS_LEGAL_HOLD = "hasLegalHold";
+
     public static final String MIME_TYPE = "mime-type";
 
     public static final String MIXIN_TYPES = "mixinType";
