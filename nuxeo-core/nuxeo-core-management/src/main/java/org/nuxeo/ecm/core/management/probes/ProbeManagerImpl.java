@@ -236,12 +236,8 @@ public class ProbeManagerImpl implements ProbeManager {
     public void registerProbeForHealthCheck(HealthCheckProbesDescriptor descriptor) {
         String name = descriptor.getName();
         if (!descriptor.isEnabled()) {
-            if (probesForHealthCheck.containsKey(name)) {
-                probesForHealthCheck.remove(name);
-                return;
-            }
-        }
-        if (infosByShortcuts.containsKey(name)) {
+            probesForHealthCheck.remove(name);
+        } else if (infosByShortcuts.containsKey(name)) {
             probesForHealthCheck.put(name, getProbeInfo(name));
         }
     }
