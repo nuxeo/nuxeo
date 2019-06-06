@@ -23,6 +23,8 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -67,6 +69,8 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
+import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.security.RetentionExpiredFinderListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.tag.FacetedTagService;
@@ -120,6 +124,9 @@ public class TestAutomaticIndexing {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected BulkService bulkService;
 
     @Inject
     ElasticSearchAdmin esa;
@@ -1075,4 +1082,120 @@ public class TestAutomaticIndexing {
         waitForCompletion();
         startTransaction();
     }
+
+    @Test
+    public void shouldIndexUpdatedRecord() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        // no record found in index
+        String nxql = "SELECT * FROM Document WHERE ecm:isRecord = 1";
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(0, ret.totalSize());
+
+        // make the doc a record
+        session.makeRecord(doc.getRef());
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1); // update
+        startTransaction();
+
+        // record is now found
+        ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(1, ret.totalSize());
+
+    }
+
+    @Test
+    public void shouldIndexUpdatedRetention() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // no retention found in index
+        String nxql1 = "SELECT * FROM Document WHERE ecm:retainUntil IS NOT NULL";
+        DocumentModelList ret1 = ess.query(new NxQueryBuilder(session).nxql(nxql1));
+        Assert.assertEquals(0, ret1.totalSize());
+
+        // set retention to five seconds in the future
+        Calendar fiveSeconds = Calendar.getInstance();
+        fiveSeconds.add(Calendar.SECOND, 5);
+        session.makeRecord(doc.getRef());
+        session.setRetainUntil(doc.getRef(), fiveSeconds, null);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1); // update
+        startTransaction();
+
+        // retention is now found
+        ret1 = ess.query(new NxQueryBuilder(session).nxql(nxql1));
+        Assert.assertEquals(1, ret1.totalSize());
+
+        // wait 8s to pass retention expiration date
+        Thread.sleep(8_000);
+        // trigger manually instead of waiting for scheduler
+        new RetentionExpiredFinderListener().handleEvent(null);
+        // wait for all bulk commands to be executed
+        Assert.assertTrue("Bulk action didn't finish", bulkService.await(Duration.ofSeconds(60)));
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1); // update
+        startTransaction();
+
+        // null retention is not found anymore
+        ret1 = ess.query(new NxQueryBuilder(session).nxql(nxql1));
+        Assert.assertEquals(0, ret1.totalSize());
+    }
+
+    @Test
+    public void shouldIndexUpdatedLegalHold() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "mydoc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // no retention found in index
+        String nxql = "SELECT * FROM Document WHERE ecm:hasLegalHold = 1";
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(0, ret.totalSize());
+
+        // set legal hold
+        session.makeRecord(doc.getRef());
+        session.setLegalHold(doc.getRef(), true, null);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1); // update
+        startTransaction();
+
+        // legal hold is now found
+        ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(1, ret.totalSize());
+
+        // remove legal hold
+        session.setLegalHold(doc.getRef(), false, null);
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        assertNumberOfCommandProcessed(1); // update
+        startTransaction();
+
+        // legal hold is not found anymore
+        ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(0, ret.totalSize());
+    }
+
 }

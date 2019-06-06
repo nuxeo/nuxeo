@@ -357,6 +357,8 @@ public final class NxqlQueryConverter {
         case NXQL.ECM_ISTRASHED:
         case NXQL.ECM_ISVERSION:
         case NXQL.ECM_ISVERSION_OLD:
+        case NXQL.ECM_ISRECORD:
+        case NXQL.ECM_HASLEGALHOLD:
         case NXQL.ECM_ISLATESTMAJORVERSION:
         case NXQL.ECM_ISLATESTVERSION:
             break;

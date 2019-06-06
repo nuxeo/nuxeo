@@ -85,6 +85,15 @@
     "ecm:isVersion": {
       "type": "boolean"
     },
+    "ecm:isRecord": {
+      "type": "boolean"
+    },
+    "ecm:retainUntil": {
+      "type": "date"
+    },
+    "ecm:hasLegalHold": {
+      "type": "boolean"
+    },
     "common:icon": {
       "index": false,
       "type": "keyword"
