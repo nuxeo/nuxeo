@@ -25,6 +25,9 @@
       <event>childrenOrderChanged</event>
       <event>documentTrashed</event>
       <event>documentUntrashed</event>
+      <event>afterMakeRecord</event>
+      <event>afterSetRetention</event>
+      <event>afterSetLegalHold</event>
     </listener>
 
   </extension>
