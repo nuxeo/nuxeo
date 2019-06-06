@@ -23,12 +23,14 @@ package org.nuxeo.ecm.core.io.marshallers.json.document;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter.OMIT_PHANTOM_SECURED_PROPERTY;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -72,6 +74,8 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
 
     public static final String REPO = "test";
 
+    protected static final int BASE_PROPERTIES = 19;
+
     public DocumentModelJsonWriterTest() {
         super(DocumentModelJsonWriter.class, DocumentModel.class);
     }
@@ -94,7 +98,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     public void testDefault() throws Exception {
         JsonAssert json = jsonAssert(document);
         json.isObject();
-        json.properties(15);
+        json.properties(BASE_PROPERTIES);
         json.has("entity-type").isEquals("document");
         json.has("repository").isEquals(REPO);
         json.has("uid").isEquals(document.getId());
@@ -109,6 +113,10 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         json.has("changeToken").isNull();
         json.has("title").isEquals("myDoc");
         json.has("facets").contains("Folderish");
+        json.has("isRecord").isFalse();
+        json.has("retainUntil").isNull();
+        json.has("hasLegalHold").isFalse();
+        json.has("isUnderRetentionOrLegalHold").isFalse();
     }
 
     /**
@@ -158,7 +166,7 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
     public void testWithVersion() throws Exception {
         JsonAssert json = jsonAssert(document, CtxBuilder.fetchInDoc("versionLabel").get());
         json.isObject();
-        json.properties(16);
+        json.properties(BASE_PROPERTIES + 1);
         json.has("versionLabel").isEquals("");
     }
 
@@ -167,8 +175,25 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         document.setPropertyValue("dc:modified", new Date());
         JsonAssert json = jsonAssert(document);
         json.isObject();
-        json.properties(16);
+        json.properties(BASE_PROPERTIES + 1);
         json.has("lastModified").isText();
+    }
+
+    @Test
+    public void testRetentionAndHold() throws Exception {
+        session.makeRecord(document.getRef());
+        Calendar retainUntil = Calendar.getInstance();
+        retainUntil.add(Calendar.HOUR, -1); // one hour ago
+        session.setRetainUntil(document.getRef(), retainUntil, null);
+        session.setLegalHold(document.getRef(), true, null);
+        document.refresh();
+        JsonAssert json = jsonAssert(document);
+        json.isObject();
+        json.has("isRecord").isTrue();
+        String expectedRetainUntil = DateUtils.formatISODateTime(retainUntil);
+        json.has("retainUntil").isEquals(expectedRetainUntil);
+        json.has("hasLegalHold").isTrue();
+        json.has("isUnderRetentionOrLegalHold").isTrue();
     }
 
     @Test
