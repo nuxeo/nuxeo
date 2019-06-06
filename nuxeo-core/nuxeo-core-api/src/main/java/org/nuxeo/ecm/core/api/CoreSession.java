@@ -20,8 +20,11 @@
 package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -62,6 +65,17 @@ public interface CoreSession {
 
     String IMPORT_VERSION_MINOR = "ecm:minorVersion";
 
+    /** @since 11.1 */
+    String IMPORT_IS_RECORD = "ecm:isRecord";
+
+    /** @since 11.1 */
+    String IMPORT_RETAIN_UNTIL = "ecm:retainUntil";
+
+    /** @since 11.1 */
+    String IMPORT_HAS_LEGAL_HOLD = "ecm:hasLegalHold";
+
+    /** @deprecated since 11.1 */
+    @Deprecated
     String IMPORT_IS_RETENTION_ACTIVE = "ecm:isRetentionActive";
 
     String IMPORT_PROXY_TARGET_ID = "ecm:proxyTargetId";
@@ -1149,12 +1163,122 @@ public interface CoreSession {
     List<String> getAvailableSecurityPermissions();
 
     /**
+     * Turns the document into a record.
+     * <p>
+     * A record is a document with specific capabilities related to mandatory retention until a given date, and legal
+     * holds. In addition, its main blob receives special treatment from the document blob manager to make sure it's
+     * never shared with another blob at the storage level, and is deleted as soon as the record is deleted.
+     * <p>
+     * If the document is already a record, this method has no effect.
+     * <p>
+     * The permission {@value org.nuxeo.ecm.core.api.security.SecurityConstants#MAKE_RECORD} is required.
+     *
+     * @param docRef the document
+     * @see #isRecord
+     * @since 11.1
+     */
+    void makeRecord(DocumentRef docRef);
+
+    /**
+     * Checks if the document is a record.
+     *
+     * @param docRef the document
+     * @return {@code true} if the document is a record, {@code false} otherwise
+     * @see #makeRecord
+     * @since 11.1
+     */
+    boolean isRecord(DocumentRef docRef);
+
+    /**
+     * The special date that corresponds to a retention date in the indeterminate future.
+     *
+     * @see #setRetainUntil
+     * @since 11.1
+     */
+    Calendar RETAIN_UNTIL_INDETERMINATE = GregorianCalendar.from(ZonedDateTime.parse("9999-01-01T00:00Z"));
+
+    /**
+     * Sets a retention date to the given value.
+     * <p>
+     * If no previous retention date was set, or if the previous retention date was
+     * {@linkplain #RETAIN_UNTIL_INDETERMINATE indeterminate}, or if the previous retention date was <em>before</em>
+     * the given value, then the retention date is set to the given value.
+     * <p>
+     * If the previous retention date was <em>after</em> the given value (that is, if trying to reduce the retention
+     * time), an exception is thrown.
+     * <p>
+     * If the given value is {@code null} and the previous retention date is in the past (it has already expired), then
+     * the retention date is set to {@code null}.
+     * <p>
+     * The permission {@value org.nuxeo.ecm.core.api.security.SecurityConstants#SET_RETENTION} is required.
+     *
+     * @param docRef the document (a record)
+     * @param retainUntil the new retention date
+     * @param comment an optional comment passed to the associated events
+     * @throws PropertyException if trying to reduce the retention time, or if the document is not a record
+     * @see #getRetainUntil
+     * @see #RETAIN_UNTIL_INDETERMINATE
+     * @since 11.1
+     */
+    void setRetainUntil(DocumentRef docRef, Calendar retainUntil, String comment) throws PropertyException;
+
+    /**
+     * Gets the retention date for the document.
+     *
+     * @param docRef the document
+     * @return the retention date, or {@value org.nuxeo.ecm.core.api.security.SecurityConstants#SET_RETENTION} for a
+     *         retention in the indeterminate future, or {@code null} if there is no retention date
+     * @see #setRetainUntil
+     * @see #RETAIN_UNTIL_INDETERMINATE
+     * @since 11.1
+     */
+    Calendar getRetainUntil(DocumentRef docRef);
+
+    /**
+     * Sets or removes a legal hold on a record.
+     * <p>
+     * The permission {@value org.nuxeo.ecm.core.api.security.SecurityConstants#MANAGE_LEGAL_HOLD} is required.
+     *
+     * @param docRef the document (a record)
+     * @param hold {@code true} to set a legal hold, {@code false} to remove it
+     * @param comment an optional comment passed to the associated events
+     * @see #hasLegalHold
+     * @throws PropertyException if the document is not a record
+     * @since 11.1
+     */
+    void setLegalHold(DocumentRef docRef, boolean hold, String comment);
+
+    /**
+     * Checks if the document has a legal hold set.
+     *
+     * @param docRef the document
+     * @return {@code true} if a legal hold has been set on the document, {@code false} otherwise
+     * @see #setLegalHold
+     * @since 11.1
+     */
+    boolean hasLegalHold(DocumentRef docRef);
+
+    /**
+     * Checks if the document has a retention date in the future or has a legal hold.
+     *
+     * @param docRef the document
+     * @return {@code true} if the document has a retention date in the future or if it has a legal hold, {@code false}
+     *         otherwise
+     * @see #getRetainUntil
+     * @see #hasLegalHold
+     * @since 11.1
+     */
+    boolean isUnderRetentionOrLegalHold(DocumentRef docRef);
+
+    /**
      * Checks whether a document is under active retention.
      *
      * @param docRef the document reference
      * @return {@code true} if the document is under active retention
      * @since 9.3
+     * @deprecated since 11.1, unused, use {@link #hasLegalHold} instead
      */
+    @Deprecated
     boolean isRetentionActive(DocumentRef docRef);
 
     /**
@@ -1163,7 +1287,9 @@ public interface CoreSession {
      * @param docRef the document reference
      * @param retentionActive whether the retention should be set or unset as active
      * @since 9.3
+     * @deprecated since 11.1, unused, use {@link #setLegalHold} instead
      */
+    @Deprecated
     void setRetentionActive(DocumentRef docRef, boolean retentionActive);
 
     /**

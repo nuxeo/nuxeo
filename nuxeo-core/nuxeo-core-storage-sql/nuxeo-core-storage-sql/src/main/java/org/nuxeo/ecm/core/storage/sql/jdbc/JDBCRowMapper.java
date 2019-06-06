@@ -1380,6 +1380,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         Boolean isProperty = null;
         Serializable targetId = null;
         Serializable versionableId = null;
+        Calendar retainUntil = null;
+        boolean hasLegalHold = false;
         boolean isRetentionActive = false;
         int i = 1;
         for (Column column : columns) {
@@ -1397,14 +1399,18 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 targetId = value;
             } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
                 versionableId = value;
+            } else if (key.equals(Model.MAIN_RETAIN_UNTIL_KEY)) {
+                retainUntil = (Calendar) value;
+            } else if (key.equals(Model.MAIN_HAS_LEGAL_HOLD_KEY)) {
+                hasLegalHold = Boolean.TRUE.equals(value);
             } else if (key.equals(Model.MAIN_IS_RETENTION_ACTIVE_KEY)) {
                 isRetentionActive = Boolean.TRUE.equals(value);
             }
             // no mixins (not useful to caller)
             // no versions (not fileable)
         }
-        NodeInfo nodeInfo = new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId,
-                isRetentionActive);
+        NodeInfo nodeInfo = new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId, retainUntil,
+                hasLegalHold, isRetentionActive);
         return nodeInfo;
     }
 
