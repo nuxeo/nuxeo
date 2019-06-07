@@ -85,13 +85,15 @@ public class AutomationRenderer {
                 }
             }
 
-            Blob blob = (Blob) as.run(oc, definition.getOperationChain());
-            if (blob != null && StringUtils.isBlank(blob.getFilename())) {
-                String filename = getFilenameWithExtension(doc.getTitle(), blob.getMimeType(), "bin");
-                blob.setFilename(filename);
-            }
             List<Blob> blobs = new ArrayList<>();
-            blobs.add(blob);
+            Blob blob = (Blob) as.run(oc, definition.getOperationChain());
+            if (blob != null) {
+                if (StringUtils.isBlank(blob.getFilename())) {
+                    String filename = getFilenameWithExtension(doc.getTitle(), blob.getMimeType(), "bin");
+                    blob.setFilename(filename);
+                }
+                blobs.add(blob);
+            }
             return blobs;
 
         } catch (Exception e) {
