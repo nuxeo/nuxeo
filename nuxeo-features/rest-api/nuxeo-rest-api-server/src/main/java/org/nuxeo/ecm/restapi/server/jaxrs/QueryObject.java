@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,7 +175,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         // Ordered Parameters
         Object[] parameters = null;
         if (orderedParams != null && !orderedParams.isEmpty()) {
-            parameters = orderedParams.toArray(new String[orderedParams.size()]);
+            parameters = orderedParams.toArray(new String[0]);
             // expand specific parameters
             for (int idx = 0; idx < parameters.length; idx++) {
                 String value = (String) parameters[idx];
@@ -204,7 +204,7 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
             }
             for (int i = 0; i < sorts.length; i++) {
                 String sort = sorts[i];
-                boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
+                boolean sortAscending = (orders != null && orders.length > i && "asc".equalsIgnoreCase(orders[i]));
                 sortInfoList.add(new SortInfo(sort, sortAscending));
             }
         }

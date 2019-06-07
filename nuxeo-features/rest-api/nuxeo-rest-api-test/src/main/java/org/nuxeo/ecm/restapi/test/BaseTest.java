@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
@@ -86,7 +87,7 @@ public class BaseTest {
         return "http://localhost:" + port;
     }
 
-    protected String getRestApiUrl () {
+    protected String getRestApiUrl() {
         return getBaseURL() + "/api/v1/";
     }
 
@@ -163,8 +164,8 @@ public class BaseTest {
 
         // Adding some headers if needed
         if (headers != null && !headers.isEmpty()) {
-            for (String headerKey : headers.keySet()) {
-                builder.header(headerKey, headers.get(headerKey));
+            for (Entry<String, String> header : headers.entrySet()) {
+                builder.header(header.getKey(), header.getValue());
             }
         }
         ClientResponse response;
@@ -197,7 +198,7 @@ public class BaseTest {
             response = builder.delete(ClientResponse.class, data);
             break;
         default:
-            throw new RuntimeException();
+            throw new UnsupportedOperationException("Type: " + requestType + " is not handled");
         }
 
         // Make the ClientResponse AutoCloseable by wrapping it in a CloseableClientResponse.
