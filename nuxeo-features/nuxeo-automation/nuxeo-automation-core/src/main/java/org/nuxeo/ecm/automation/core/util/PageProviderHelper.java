@@ -22,7 +22,8 @@ import static org.nuxeo.ecm.platform.query.api.PageProviderService.NAMED_PARAMET
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,6 +65,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,6 +74,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since 10.3
  */
 public class PageProviderHelper {
+
+    private static final Logger log = LogManager.getLogger(PageProviderHelper.class);
 
     final static class QueryAndFetchProviderDescriptor extends GenericPageProviderDescriptor {
         private static final long serialVersionUID = 1L;
@@ -204,19 +208,34 @@ public class PageProviderHelper {
     public static DocumentModel getSearchDocumentModel(CoreSession session, String providerName,
             Map<String, String> namedParameters) {
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-        PageProviderDefinition def = pageProviderService.getPageProviderDefinition(providerName);
+        return getSearchDocumentModel(session, pageProviderService, providerName, namedParameters);
+    }
 
+    /**
+     * Returns a {@link DocumentModel searchDocumentModel} if the given {@code providerName} is not null and has a valid
+     * {@link PageProviderDefinition definition}, or if the given {@code namedParameters} is not empty.
+     * <p/>
+     * {@link PageProviderDefinition Definition} is valid if either it has a type or if it declares where clause.
+     * 
+     * @since 11.1
+     */
+    public static DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps,
+            String providerName, Map<String, String> namedParameters) {
         // generate search document model if type specified on the definition
         DocumentModel searchDocumentModel = null;
-
-        if (def != null) {
-            String searchDocType = def.getSearchDocumentType();
-            if (searchDocType != null) {
-                searchDocumentModel = session.createDocumentModel(searchDocType);
-            } else if (def.getWhereClause() != null) {
-                // avoid later error on null search doc, in case where clause is only referring to named parameters
-                // (and no namedParameters are given)
-                searchDocumentModel = new SimpleDocumentModel();
+        if (StringUtils.isNotBlank(providerName)) {
+            PageProviderDefinition def = pps.getPageProviderDefinition(providerName);
+            if (def != null) {
+                String searchDocType = def.getSearchDocumentType();
+                if (searchDocType != null) {
+                    searchDocumentModel = session.createDocumentModel(searchDocType);
+                } else if (def.getWhereClause() != null) {
+                    // avoid later error on null search doc, in case where clause is only referring to named parameters
+                    // (and no namedParameters are given)
+                    searchDocumentModel = new SimpleDocumentModel();
+                }
+            } else {
+                log.error("No page provider definition found for provider: {}", providerName);
             }
         }
 
@@ -225,19 +244,29 @@ public class PageProviderHelper {
             if (searchDocumentModel == null) {
                 searchDocumentModel = new SimpleDocumentModel();
             }
+            fillSearchDocument(session, searchDocumentModel, namedParameters);
+        }
+        return searchDocumentModel;
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected static void fillSearchDocument(CoreSession session, @NotNull DocumentModel searchDoc,
+            @NotNull Map<String, String> namedParameters) {
+        // we might search on secured properties
+        Framework.doPrivileged(() -> {
             for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 try {
-                    DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
+                    DocumentHelper.setProperty(session, searchDoc, key, value, true);
                 } catch (PropertyNotFoundException | IOException e) {
                     // assume this is a "pure" named parameter, not part of the search doc schema
-                    continue;
                 }
             }
-            searchDocumentModel.putContextData(NAMED_PARAMETERS, (Serializable) namedParameters);
-        }
-        return searchDocumentModel;
+            searchDoc.putContextData(NAMED_PARAMETERS, (Serializable) namedParameters);
+        });
     }
 
     public static String buildQueryString(PageProvider provider) {
