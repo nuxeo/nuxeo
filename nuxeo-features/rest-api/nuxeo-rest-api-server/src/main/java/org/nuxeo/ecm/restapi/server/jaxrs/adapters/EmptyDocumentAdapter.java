@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter.OMIT_PHANTOM_SECURED_PROPERTY;
+
+import java.util.Optional;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -27,6 +31,9 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.webengine.jaxrs.context.RequestContext;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.RenderingContextWebUtils;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -48,6 +55,12 @@ public class EmptyDocumentAdapter extends DefaultAdapter {
         if (StringUtils.isBlank(type)) {
             throw new IllegalParameterException("Missing type parameter");
         }
+        // as the returned document is intended to be POSTed for creation we remove secured properties
+        Optional.ofNullable(RequestContext.getActiveContext())
+                .map(RequestContext::getRequest)
+                .map(RenderingContextWebUtils::getContext)
+                .orElseThrow(() -> new NuxeoException("No RenderingContext in the request")) // shouldn't happen
+                .addParameterValues(OMIT_PHANTOM_SECURED_PROPERTY, true);
 
         DocumentModel emptyDoc = session.createDocumentModel(doc != null ? doc.getPathAsString() : null, name, type);
         emptyDoc.detach(false);
