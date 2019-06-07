@@ -19,14 +19,18 @@
 
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter.OMIT_PHANTOM_SECURED_PROPERTY;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
@@ -40,6 +44,9 @@ public class EmptyDocumentAdapter extends DefaultAdapter {
 
     public static final String NAME = "emptyWithDefault";
 
+    @Context
+    protected RenderingContext renderingCtx;
+
     @GET
     public DocumentModel getEmptyDocumentModel(@QueryParam("type") String type, @QueryParam("name") String name) {
         DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
@@ -48,6 +55,8 @@ public class EmptyDocumentAdapter extends DefaultAdapter {
         if (StringUtils.isBlank(type)) {
             throw new IllegalParameterException("Missing type parameter");
         }
+        // as the returned document is intended to be POSTed for creation we remove secured properties
+        renderingCtx.addParameterValues(OMIT_PHANTOM_SECURED_PROPERTY, true);
 
         DocumentModel emptyDoc = session.createDocumentModel(doc != null ? doc.getPathAsString() : null, name, type);
         emptyDoc.detach(false);

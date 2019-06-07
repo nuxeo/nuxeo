@@ -50,6 +50,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.multipart.MultiPart;
 import com.sun.jersey.multipart.MultiPartMediaTypes;
 
@@ -266,7 +267,8 @@ public class BaseTest {
      */
     protected String getErrorMessage(JsonNode node) {
         assertTrue(hasErrorMessage(node));
-        assertTrue(node.get("message").isTextual());
+        assertTrue("Exception message is not present in response", node.has("message"));
+        assertTrue("Exception message is not textual", node.get("message").isTextual());
         return node.get("message").asText();
     }
 
@@ -282,5 +284,34 @@ public class BaseTest {
      */
     protected boolean hasErrorMessage(JsonNode node) {
         return node.get("entity-type").asText().equals("exception");
+    }
+
+    /**
+     * Builds and returns a {@link MultivaluedMap} filled with the given simple values.
+     *
+     * @since 11.1
+     */
+    protected MultivaluedMap<String, String> multiOf(String k1, String v1) {
+        return multiOf(Map.of(k1, v1));
+    }
+
+    /**
+     * Builds and returns a {@link MultivaluedMap} filled with the given simple values.
+     *
+     * @since 11.1
+     */
+    protected MultivaluedMap<String, String> multiOf(String k1, String v1, String k2, String v2) {
+        return multiOf(Map.of(k1, v1, k2, v2));
+    }
+
+    /**
+     * Builds and returns a {@link MultivaluedMap} filled with the given simple values.
+     *
+     * @since 11.1
+     */
+    protected MultivaluedMap<String, String> multiOf(Map<String, String> map) {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        map.forEach(queryParams::putSingle);
+        return queryParams;
     }
 }

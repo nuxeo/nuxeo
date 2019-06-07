@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.OutputStreamWithJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.Enriched;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.Writer;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.context.WrappedContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -89,6 +90,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
+
+    /**
+     * Whether we should omit to write phantom secured properties.
+     *
+     * @since 11.1
+     */
+    public static final String OMIT_PHANTOM_SECURED_PROPERTY = "omitPhantomSecuredProperty";
 
     private static final Log log = LogFactory.getLog(DocumentPropertyJsonWriter.class);
 
@@ -203,8 +211,10 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
     protected void writeComplexProperty(JsonGenerator jg, Property prop) throws IOException {
         jg.writeStartObject();
         for (Property p : prop.getChildren()) {
-            jg.writeFieldName(p.getName());
-            writeProperty(jg, p);
+            if (!DocumentPropertyJsonWriter.skipProperty(ctx, p)) {
+                jg.writeFieldName(p.getName());
+                writeProperty(jg, p);
+            }
         }
         jg.writeEndObject();
     }
@@ -299,6 +309,10 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
 
         String filename = ((Blob) prop.getValue()).getFilename();
         return ctx.getBaseUrl() + downloadService.getDownloadUrl(doc, xpath, filename);
+    }
+
+    protected static boolean skipProperty(RenderingContext ctx, Property property) {
+        return ctx.getBooleanParameter(OMIT_PHANTOM_SECURED_PROPERTY) && property.isSecured() && property.isPhantom();
     }
 
 }
