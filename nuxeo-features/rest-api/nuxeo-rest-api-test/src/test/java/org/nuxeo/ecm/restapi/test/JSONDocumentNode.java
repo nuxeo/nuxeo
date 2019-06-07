@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Consumer;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -32,9 +33,16 @@ import org.codehaus.jackson.node.ObjectNode;
  */
 public class JSONDocumentNode {
 
-    private ObjectNode node;
+    public ObjectNode node;
 
     private ObjectMapper mapper = new ObjectMapper();
+
+    /**
+     * @since 11.1
+     */
+    public JSONDocumentNode(String content) throws IOException {
+        node = (ObjectNode) mapper.readTree(content);
+    }
 
     /**
      * @param in
@@ -42,7 +50,6 @@ public class JSONDocumentNode {
      */
     public JSONDocumentNode(InputStream in) throws IOException {
         node = (ObjectNode) mapper.readTree(in);
-
     }
 
     /**
@@ -66,11 +73,26 @@ public class JSONDocumentNode {
      * @since 5.9.2
      */
     public void setPropertyArray(String key, String... values) {
-        ObjectNode on = (ObjectNode) node.findValue("properties");
-        ArrayNode array = on.putArray(key);
-        for (String value : values) {
-            array.add(value);
-        }
+        consumePropertiesNode(on -> {
+            ArrayNode array = on.putArray(key);
+            for (String value : values) {
+                array.add(value);
+            }
+        });
+    }
+
+    /**
+     * Removes a property value on the JSON object.
+     *
+     * @since 11.1
+     */
+    public void removePropertyValue(String key) {
+        consumePropertiesNode(on -> on.remove(key));
+    }
+
+    protected void consumePropertiesNode(Consumer<ObjectNode> consumer) {
+        ObjectNode on = (ObjectNode) node.get("properties");
+        consumer.accept(on);
         node.put("properties", on);
     }
 

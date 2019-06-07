@@ -328,8 +328,16 @@ public abstract class AbstractProperty implements Property {
     /**
      * Returns whether or not current user can edit this property.
      */
-    protected boolean isSecured() {
-        return areFlagsSet(IS_SECURED) && !ClientLoginModule.isCurrentAdministrator();
+    protected boolean isSecuredForContext() {
+        return isSecured() && !ClientLoginModule.isCurrentAdministrator();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSecured() {
+        return areFlagsSet(IS_SECURED);
     }
 
     @Override
@@ -340,7 +348,7 @@ public abstract class AbstractProperty implements Property {
     @Override
     public void setValue(Object value) throws PropertyException {
         // 1. check the read only flag or security flag
-        if (isReadOnly() || isSecured()) {
+        if (isReadOnly() || isSecuredForContext()) {
             throw new ReadOnlyPropertyException(
                     String.format("Cannot set the value of property: %s since it is readonly", getXPath()));
         }

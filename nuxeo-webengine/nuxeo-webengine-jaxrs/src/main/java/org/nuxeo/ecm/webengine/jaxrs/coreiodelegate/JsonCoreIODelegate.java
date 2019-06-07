@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.io.registry.Reader;
 import org.nuxeo.ecm.core.io.registry.Writer;
 
 /**
- * A JAX-RS {@link MessageBodyWriter} that try to delegate marshalling to all nuxeo-core-io {@link Writer} and
+ * A JAX-RS {@link MessageBodyWriter} that try to delegate the marshalling to all nuxeo-core-io {@link Writer} and
  * {@link Reader}.
  *
  * @since 7.2
