@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -171,7 +172,7 @@ public class DirectoryTest extends BaseTest {
         // When I try to delete an entry which has contraints
         try (CloseableClientResponse response = getResponse(RequestType.DELETE, "/directory/continent/europe")) {
             // It should fail
-            assertEquals(SC_BAD_REQUEST, response.getStatus());
+            assertEquals(SC_CONFLICT, response.getStatus());
         }
 
         // When I remove all the contraints

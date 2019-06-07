@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.nuxeo.ecm.restapi.server.jaxrs.directory.DirectorySessionRunner.withDirectorySession;
 
 import java.util.List;
@@ -101,7 +102,7 @@ public class DirectoryEntryObject extends DefaultObject {
         if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
             for (DirectoryDeleteConstraint deleteConstraint : deleteConstraints) {
                 if (!deleteConstraint.canDelete(directoryService, entryId)) {
-                    throw new NuxeoException("This entry is referenced in another vocabulary.", SC_BAD_REQUEST);
+                    throw new NuxeoException("This entry is referenced in another vocabulary.", SC_CONFLICT);
                 }
             }
         }
