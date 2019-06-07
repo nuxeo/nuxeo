@@ -127,17 +127,22 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     @Override
     public void cleanUp(boolean ok, Exception e) {
-        if (ok) {
+        try {
+            if (!ok) {
+                storeAnErrorRendition();
+            }
+        } finally {
             super.cleanUp(ok, e);
-            return;
         }
+    }
 
-        // Fetch document and compute its modification date before cleaning up which closes the session
+    protected void storeAnErrorRendition() {
+        if (session == null) {
+            // The session should be available before cleanup but it depends when the error has been raised
+            openUserSession();
+        }
         DocumentModel doc = session.getDocument(docRef);
         String sourceDocumentModificationDate = getSourceDocumentModificationDate(doc);
-
-        super.cleanUp(ok, e);
-
         List<Blob> blobs = new ArrayList<Blob>();
         StringBlob emptyBlob = new StringBlob("");
         emptyBlob.setFilename("error");
