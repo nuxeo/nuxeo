@@ -23,28 +23,69 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.registry.Reader;
 import org.nuxeo.ecm.core.io.registry.Writer;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.ecm.platform.web.common.RequestContext;
+
+import com.sun.jersey.core.spi.component.ComponentContext;
+import com.sun.jersey.core.spi.component.ComponentScope;
+import com.sun.jersey.spi.inject.Injectable;
+import com.sun.jersey.spi.inject.InjectableProvider;
 
 /**
- * A JAX-RS {@link MessageBodyWriter} that try to delegate marshalling to all nuxeo-core-io {@link Writer} and
+ * A JAX-RS {@link MessageBodyWriter} that try to delegate the marshalling to all nuxeo-core-io {@link Writer} and
  * {@link Reader}.
  *
  * @since 7.2
+ * @implNote since 11.1, this singleton is also registering an injection of {@link RenderingContext}
  */
 @Provider
 @Produces(APPLICATION_JSON)
-public final class JsonCoreIODelegate extends PartialCoreIODelegate {
+public final class JsonCoreIODelegate extends PartialCoreIODelegate
+        implements InjectableProvider<Context, Type>, Injectable<RenderingContext> {
 
     @Override
     protected boolean accept(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return true;
     }
 
+    /**
+     * @since 11.1
+     */
+    @Override
+    public RenderingContext getValue() {
+        return Optional.ofNullable(RequestContext.getActiveContext())
+                       .map(RequestContext::getRequest)
+                       .map(RenderingContextWebUtils::getContext)
+                       .orElseThrow(() -> new NuxeoException("No RenderingContext in the request")); // shouldn't happen
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public ComponentScope getScope() {
+        return ComponentScope.PerRequest;
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public Injectable getInjectable(ComponentContext ic, Context a, Type c) {
+        if (!c.equals(RenderingContext.class)) {
+            return null;
+        }
+        return this;
+    }
 }

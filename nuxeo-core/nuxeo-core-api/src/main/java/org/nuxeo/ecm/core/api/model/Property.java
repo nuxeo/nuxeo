@@ -279,6 +279,13 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     void setReadOnly(boolean value);
 
     /**
+     * Returns {@code true} if this property is flagged as secured in system.
+     *
+     * @since 11.1
+     */
+    boolean isSecured();
+
+    /**
      * Tests whether this property is of a map (complex) type.
      *
      * @return true if the property is of map type, false otherwise
