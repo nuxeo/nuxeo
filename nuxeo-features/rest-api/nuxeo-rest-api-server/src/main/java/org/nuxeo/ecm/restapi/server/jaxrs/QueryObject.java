@@ -20,7 +20,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -36,9 +35,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.core.util.DocumentHelper;
+import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -46,8 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -91,8 +86,6 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
      * @since 8.4
      */
     public static final String QUICK_FILTERS = "quickFilters";
-
-    private static final Log log = LogFactory.getLog(QueryObject.class);
 
     protected EnumMap<QueryParams, String> queryParametersMap;
 
@@ -190,8 +183,8 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 
-        DocumentModel searchDocumentModel = getSearchDocumentModel(ctx.getCoreSession(), pageProviderService,
-                providerName, namedParameters);
+        DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(),
+                pageProviderService, providerName, namedParameters);
 
         // Sort Info Management
         List<SortInfo> sortInfoList = null;
@@ -253,44 +246,15 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
         return res;
     }
 
+    /**
+     * @deprecated since 11.1, use
+     *             {@link PageProviderHelper#getSearchDocumentModel(CoreSession, PageProviderService, String, Map)}
+     *             instead
+     */
+    @Deprecated(since = "11.1")
     protected DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps, String providerName,
             Properties namedParameters) {
-        // generate search document model if type specified on the definition
-        DocumentModel searchDocumentModel = null;
-        if (!StringUtils.isBlank(providerName)) {
-            PageProviderDefinition pageProviderDefinition = pps.getPageProviderDefinition(providerName);
-            if (pageProviderDefinition != null) {
-                String searchDocType = pageProviderDefinition.getSearchDocumentType();
-                if (searchDocType != null) {
-                    searchDocumentModel = session.createDocumentModel(searchDocType);
-                } else if (pageProviderDefinition.getWhereClause() != null) {
-                    // avoid later error on null search doc, in case where clause is only referring to named parameters
-                    // (and no namedParameters are given)
-                    searchDocumentModel = new SimpleDocumentModel();
-                }
-            } else {
-                log.error("No page provider definition found for " + providerName);
-            }
-        }
-
-        if (namedParameters != null && !namedParameters.isEmpty()) {
-            // fall back on simple document if no type defined on page provider
-            if (searchDocumentModel == null) {
-                searchDocumentModel = new SimpleDocumentModel();
-            }
-            for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                try {
-                    DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
-                } catch (PropertyNotFoundException | IOException e) {
-                    // assume this is a "pure" named parameter, not part of the search doc schema
-                    continue;
-                }
-            }
-            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
-        }
-        return searchDocumentModel;
+        return PageProviderHelper.getSearchDocumentModel(session, pps, providerName, namedParameters);
     }
 
     /**
