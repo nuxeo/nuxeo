@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,15 +73,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class PageProviderHelper {
 
-    final static class QueryAndFetchProviderDescriptor extends GenericPageProviderDescriptor {
+    static final class QueryAndFetchProviderDescriptor extends GenericPageProviderDescriptor {
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("unchecked")
         public QueryAndFetchProviderDescriptor() {
             super();
             try {
                 klass = (Class<PageProvider<?>>) Class.forName(CoreQueryAndFetchPageProvider.class.getName());
             } catch (ClassNotFoundException e) {
-                // log.error(e, e);
+                // ignore
             }
         }
     }
@@ -100,7 +101,8 @@ public class PageProviderHelper {
         return getQueryAndFetchProviderDefinition(query, null);
     }
 
-    public static PageProviderDefinition getQueryAndFetchProviderDefinition(String query, Map<String, String> properties) {
+    public static PageProviderDefinition getQueryAndFetchProviderDefinition(String query,
+            Map<String, String> properties) {
         QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();
         desc.setName(StringUtils.EMPTY);
         desc.setPattern(query);
@@ -137,16 +139,15 @@ public class PageProviderHelper {
     }
 
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
-            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder,
-            Long pageSize, Long currentPageIndex, Object... queryParams) {
-        return getPageProvider(session, def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex,
-                null, null, queryParams);
+            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
+            Long currentPageIndex, Object... queryParams) {
+        return getPageProvider(session, def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex, null, null,
+                queryParams);
     }
 
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
-            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder,
-            Long pageSize, Long currentPageIndex, List<String> highlights, List<String> quickFilters,
-            Object... parameters) {
+            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
+            Long currentPageIndex, List<String> highlights, List<String> quickFilters, Object... parameters) {
 
         // Ordered parameters
         if (ArrayUtils.isNotEmpty(parameters)) {
@@ -168,8 +169,8 @@ public class PageProviderHelper {
             for (int i = 0; i < sortBy.size(); i++) {
                 String sort = sortBy.get(i);
                 if (StringUtils.isNotBlank(sort)) {
-                    boolean sortAscending = (sortOrder != null && !sortOrder.isEmpty() && ASC.equalsIgnoreCase(
-                            sortOrder.get(i).toLowerCase()));
+                    boolean sortAscending = (sortOrder != null && !sortOrder.isEmpty()
+                            && ASC.equalsIgnoreCase(sortOrder.get(i).toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -195,8 +196,8 @@ public class PageProviderHelper {
 
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
 
-        return pageProviderService.getPageProvider(def.getName(), def,
-                searchDocumentModel, sortInfos, pageSize, currentPageIndex, props, highlights, quickFilterList, parameters);
+        return pageProviderService.getPageProvider(def.getName(), def, searchDocumentModel, sortInfos, pageSize,
+                currentPageIndex, props, highlights, quickFilterList, parameters);
     }
 
     public static DocumentModel getSearchDocumentModel(CoreSession session, String providerName,
@@ -246,7 +247,6 @@ public class PageProviderHelper {
         return buildQueryStringWithPageProvider(provider, provider.hasAggregateSupport());
     }
 
-    @SuppressWarnings("unchecked")
     protected static String buildQueryStringWithPageProvider(PageProvider<?> provider, boolean useAggregates) {
         String quickFiltersClause = "";
         List<QuickFilter> quickFilters = provider.getQuickFilters();
@@ -281,8 +281,9 @@ public class PageProviderHelper {
                     def.getEscapePatternParameters(), searchDocumentModel, null);
         } else {
             if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot build query of provider '%s': " + "no search document model is set", provider.getName()));
+                throw new NuxeoException(
+                        String.format("Cannot build query of provider '%s': " + "no search document model is set",
+                                provider.getName()));
             }
             String additionalClause = StringUtils.isEmpty(quickFiltersClause) ? aggregatesClause
                     : NXQLQueryBuilder.appendClause(aggregatesClause, quickFiltersClause);
@@ -360,11 +361,9 @@ public class PageProviderHelper {
         Double from = bucketRangeDate.getFrom();
         Double to = bucketRangeDate.getTo();
         if (from == null && to != null) {
-            return field + " < TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getToAsDate()))
-                    + "'";
+            return field + " < TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getToAsDate())) + "'";
         } else if (from != null && to == null) {
-            return field + " >= TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getFromAsDate()))
-                    + "'";
+            return field + " >= TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getFromAsDate())) + "'";
         }
         return field + " BETWEEN TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getFromAsDate()))
                 + "' AND TIMESTAMP '" + formatISODateTime(nowIfNull(bucketRangeDate.getToAsDate())) + "'";
@@ -407,5 +406,9 @@ public class PageProviderHelper {
             resolvedParams[i + j] = ve.getValue(elContext);
         }
         return resolvedParams;
+    }
+
+    private PageProviderHelper() {
+        // utility class
     }
 }
