@@ -41,14 +41,10 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.restapi.server.jaxrs.search.QueryExecutor;
 import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
-import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -64,16 +60,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class, PlatformFeature.class })
-@Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.core")
-@Deploy("org.nuxeo.ecm.platform.userworkspace.types")
-@Deploy("org.nuxeo.ecm.platform.webapp.types")
-@Deploy("org.nuxeo.ecm.platform.contentview.jsf")
-@Deploy("org.nuxeo.search.ui")
-@Deploy("org.nuxeo.ecm.platform.search.core")
-@Deploy("org.nuxeo.ecm.platform.restapi.server.search")
-@Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
+@Features(SearchRestFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class SearchTest extends BaseTest {
 
