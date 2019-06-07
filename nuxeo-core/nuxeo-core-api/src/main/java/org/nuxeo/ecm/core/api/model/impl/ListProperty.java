@@ -224,7 +224,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     @Override
     public void setValue(Object value) throws PropertyException {
-        if (isReadOnly() || isSecured()) {
+        if (isReadOnly() || isSecuredForContext()) {
             throw new ReadOnlyPropertyException(
                     String.format("Cannot set the value of property: %s since it is readonly", getXPath()));
         }

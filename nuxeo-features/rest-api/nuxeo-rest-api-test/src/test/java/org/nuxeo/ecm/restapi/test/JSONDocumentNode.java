@@ -40,9 +40,15 @@ public class JSONDocumentNode {
 
     private ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * @since 11.1
+     */
+    public JSONDocumentNode(String content) throws IOException {
+        node = (ObjectNode) mapper.readTree(content);
+    }
+
     public JSONDocumentNode(InputStream in) throws IOException {
         node = (ObjectNode) mapper.readTree(in);
-
     }
 
     /**
@@ -88,7 +94,7 @@ public class JSONDocumentNode {
     }
 
     protected void consumePropertiesNode(Consumer<ObjectNode> consumer) {
-        ObjectNode on = (ObjectNode) node.findValue("properties");
+        ObjectNode on = (ObjectNode) node.get("properties");
         consumer.accept(on);
         node.set("properties", on);
     }

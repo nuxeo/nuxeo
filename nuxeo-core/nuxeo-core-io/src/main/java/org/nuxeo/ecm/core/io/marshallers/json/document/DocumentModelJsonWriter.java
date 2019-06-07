@@ -216,10 +216,12 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
             prefix = prefix + ":";
             for (Field field : schema.getFields()) {
                 String prefixedName = prefix + field.getName().getLocalName();
-                jg.writeFieldName(prefixedName);
                 Property property = doc.getProperty(prefixedName);
-                OutputStream out = new OutputStreamWithJsonWriter(jg);
-                propertyWriter.write(property, Property.class, Property.class, APPLICATION_JSON_TYPE, out);
+                if (!DocumentPropertyJsonWriter.skipProperty(ctx, property)) {
+                    jg.writeFieldName(prefixedName);
+                    OutputStream out = new OutputStreamWithJsonWriter(jg);
+                    propertyWriter.write(property, Property.class, Property.class, APPLICATION_JSON_TYPE, out);
+                }
             }
         }
     }

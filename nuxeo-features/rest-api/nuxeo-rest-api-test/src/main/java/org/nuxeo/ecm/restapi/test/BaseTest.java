@@ -18,12 +18,14 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.multipart.MultiPart;
 import com.sun.jersey.multipart.MultiPartMediaTypes;
 
@@ -280,5 +283,41 @@ public class BaseTest {
         JsonNode node = mapper.readTree(in);
         assertNodeEqualsDoc(node, doc);
 
+    }
+
+    /**
+     * Builds and returns a {@link MultivaluedMap} filled with the given simple values.
+     *
+     * @since 11.1
+     */
+    protected MultivaluedMap<String, String> multiOf(String k1, String v1) {
+        return multiOf(singletonMap(k1, v1));
+    }
+
+    /**
+     * Builds and returns a {@link MultivaluedMap} filled with the given simple values.
+     *
+     * @since 11.1
+     */
+    protected MultivaluedMap<String, String> multiOf(String k1, String v1, String k2, String v2) {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        if (k1 != null) {
+            queryParams.putSingle(k1, v1);
+        }
+        if (k2 != null) {
+            queryParams.putSingle(k2, v2);
+        }
+        return queryParams;
+    }
+
+    /**
+     * Builds and returns a {@link MultivaluedMap} filled with the given simple values.
+     *
+     * @since 11.1
+     */
+    protected MultivaluedMap<String, String> multiOf(Map<String, String> map) {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        map.forEach(queryParams::putSingle);
+        return queryParams;
     }
 }

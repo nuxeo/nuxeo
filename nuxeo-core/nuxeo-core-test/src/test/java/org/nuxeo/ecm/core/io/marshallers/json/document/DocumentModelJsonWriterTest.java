@@ -19,6 +19,10 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
+
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertyJsonWriter.OMIT_PHANTOM_SECURED_PROPERTY;
+
+import java.io.IOException;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -454,6 +458,59 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         jsonMax = jsonMax.has("contextParameters.children.entries[0]");
         jsonMax.hasNot("properties");
         jsonMax.hasNot("contextParameters");
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-secured-types-contrib.xml")
+    public void testDetachedEmptyDocWithDefault() throws IOException {
+        testDetachedEmptyDoc(null);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-secured-types-contrib.xml")
+    public void testDetachedEmptyDocWithEmptySecuredProperties() throws IOException {
+        testDetachedEmptyDoc(false);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-documentmodel-secured-types-contrib.xml")
+    public void testDetachedEmptyDocWithoutEmptySecuredProperties() throws IOException {
+        testDetachedEmptyDoc(true);
+    }
+
+    protected void testDetachedEmptyDoc(Boolean omitPhantomSecured) throws IOException {
+        DocumentModel emptyDoc = session.createDocumentModel("/", "myEmptyDoc", "Secured");
+        emptyDoc.detach(false);
+        JsonAssert json = jsonAssert(emptyDoc,
+                CtxBuilder.properties("*").param(OMIT_PHANTOM_SECURED_PROPERTY, omitPhantomSecured).get());
+        json = json.has("properties");
+        json.isObject();
+        int nbProperties = 0;
+        for (String schemaName : emptyDoc.getSchemas()) {
+            Schema schema = schemaManager.getSchema(schemaName);
+            for (Field field : schema.getFields()) {
+                // filter out secured properties
+                if (!(Boolean.TRUE.equals(omitPhantomSecured)
+                        && schemaManager.isSecured(schemaName, field.getName().getLocalName()))) {
+                    nbProperties++;
+                    String prefixedName = field.getName().getPrefixedName();
+                    if (!prefixedName.contains(":")) {
+                        prefixedName = schemaName + ":" + prefixedName;
+                    }
+                    json.has(prefixedName);
+                }
+            }
+        }
+        json.properties(nbProperties);
     }
 
 }
