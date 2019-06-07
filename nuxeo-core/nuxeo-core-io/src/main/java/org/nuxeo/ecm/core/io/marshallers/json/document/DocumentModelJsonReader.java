@@ -119,7 +119,9 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
                 if (!propertyName.contains(":")) {
                     propertyName = property.getField().getDeclaringType().getName() + ":" + propertyName;
                 }
-                simpleDoc.setPropertyValue(propertyName, property.getValue());
+                String pn = propertyName;
+                // security has been applied in previous step while reading properties
+                Framework.doPrivileged(() -> simpleDoc.setPropertyValue(pn, property.getValue()));
             }
         }
 
