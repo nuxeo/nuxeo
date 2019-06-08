@@ -19,16 +19,20 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.search.test;
 
+import static java.util.Collections.singletonList;
+
 import java.io.IOException;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.platform.search.core.SavedSearch;
 import org.nuxeo.ecm.platform.search.core.SavedSearchService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
 import org.nuxeo.runtime.api.Framework;
@@ -38,6 +42,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 8.3
  */
 public class RestServerInit implements RepositoryInit {
+
+    /** @since 11.1 */
+    public static final String USER_1 = "user1";
 
     @Override
     public void populate(CoreSession session) {
@@ -107,6 +114,12 @@ public class RestServerInit implements RepositoryInit {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
+
+        UserManager um = Framework.getService(UserManager.class);
+        // Create some user1
+        if (um != null) {
+            Framework.doPrivileged(() -> createUser(um));
+        }
     }
 
     public static DocumentModel getFolder(int index, CoreSession session) {
@@ -117,6 +130,24 @@ public class RestServerInit implements RepositoryInit {
         UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
         DocumentModel uws = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
         return session.getDocument(new PathRef(uws.getPathAsString() + "/my saved search " + index)).getId();
+    }
+
+    protected void createUser(UserManager userManager) {
+        NuxeoPrincipal principal = userManager.getPrincipal(USER_1);
+        if (principal != null) {
+            userManager.deleteUser(principal.getModel());
+        }
+
+        DocumentModel userModel = userManager.getBareUserModel();
+        String schemaName = userManager.getUserSchemaName();
+        userModel.setProperty(schemaName, "username", USER_1);
+        userModel.setProperty(schemaName, "firstName", USER_1);
+        userModel.setProperty(schemaName, "lastName", USER_1);
+        userModel.setProperty(schemaName, "password", USER_1);
+        userManager.createUser(userModel);
+        principal = userManager.getPrincipal(USER_1);
+        principal.setGroups(singletonList("members"));
+        userManager.updateUser(principal.getModel());
     }
 
 }

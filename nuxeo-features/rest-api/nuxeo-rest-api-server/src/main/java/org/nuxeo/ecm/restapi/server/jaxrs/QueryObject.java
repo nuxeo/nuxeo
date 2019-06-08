@@ -279,6 +279,17 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
             if (searchDocumentModel == null) {
                 searchDocumentModel = new SimpleDocumentModel();
             }
+            fillSearchDocument(session, searchDocumentModel, namedParameters);
+        }
+        return searchDocumentModel;
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected static void fillSearchDocument(CoreSession session, DocumentModel searchDocumentModel,
+            Map<String, String> namedParameters) {
+        Framework.doPrivileged(() -> {
             for (Map.Entry<String, String> entry : namedParameters.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
@@ -286,12 +297,10 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                     DocumentHelper.setProperty(session, searchDocumentModel, key, value, true);
                 } catch (PropertyNotFoundException | IOException e) {
                     // assume this is a "pure" named parameter, not part of the search doc schema
-                    continue;
                 }
             }
-            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, namedParameters);
-        }
-        return searchDocumentModel;
+            searchDocumentModel.putContextData(PageProviderService.NAMED_PARAMETERS, (Serializable) namedParameters);
+        });
     }
 
     /**
