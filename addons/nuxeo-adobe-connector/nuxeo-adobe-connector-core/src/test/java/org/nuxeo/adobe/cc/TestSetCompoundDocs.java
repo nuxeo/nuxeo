@@ -57,11 +57,11 @@ public class TestSetCompoundDocs {
     @Test
     public void shouldsetCompoundDocs() throws OperationException {
         DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "folder", "Folder");
-        doc = session.createDocument(doc);
+        session.createDocument(doc);
         List<String> compoundDocs = new ArrayList<>();
 
         DocumentModel file = session.createDocumentModel("/default-domain/workspaces/folder/", "file", "File");
-        file = session.createDocument(doc);
+        file = session.createDocument(file);
         compoundDocs.add(file.getId());
 
         doc = session.createDocumentModel("/default-domain/workspaces/folder/", "compoundDoc", "File");
