@@ -20,6 +20,7 @@
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="templates">
     <template name="test-template" src="templates/test-template.ftl" />
+    <template name="test-template-doc" src="templates/test-template-doc.ftl" />
   </extension>
 
   <extension
