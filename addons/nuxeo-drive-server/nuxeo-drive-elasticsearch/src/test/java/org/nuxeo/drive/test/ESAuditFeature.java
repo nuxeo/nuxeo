@@ -18,9 +18,7 @@
  */
 package org.nuxeo.drive.test;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -64,20 +62,11 @@ public class ESAuditFeature implements RunnerFeature {
             long elapsed = System.currentTimeMillis() - before;
             duration = duration.minusMillis(elapsed);
 
-            // Wait for ES indexing
-            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-            if (esa == null) {
-                return true;
-            }
-
-            try {
-                esa.prepareWaitForIndexing().get(duration.toMillis(), TimeUnit.MILLISECONDS);
-            } catch (ExecutionException | TimeoutException cause) {
+            if (!runner.getFeature(RepositoryElasticSearchFeature.class).await(duration)) {
                 return false;
             }
 
-            // Explicit refresh
-            esa.refresh();
+            ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             // Explicit refresh for the audit index until it is handled by esa.refresh
             esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
             return true;
