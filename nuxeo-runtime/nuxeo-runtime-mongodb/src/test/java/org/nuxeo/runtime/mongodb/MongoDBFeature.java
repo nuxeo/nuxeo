@@ -74,9 +74,11 @@ public class MongoDBFeature implements RunnerFeature {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        // finally clear the DB
-        try (MongoClient client = MongoDBConnectionHelper.newMongoClient(server)) {
-            MongoDBConnectionHelper.getDatabase(client, dbname).drop();
+        if (!IgnoreNoMongoDB.test()) {
+            // finally clear the DB
+            try (MongoClient client = MongoDBConnectionHelper.newMongoClient(server)) {
+                MongoDBConnectionHelper.getDatabase(client, dbname).drop();
+            }
         }
     }
 
