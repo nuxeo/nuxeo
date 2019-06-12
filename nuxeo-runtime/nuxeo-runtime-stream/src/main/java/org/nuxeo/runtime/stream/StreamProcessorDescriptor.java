@@ -34,12 +34,16 @@ import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.RecordFilter;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Descriptor;
 
 import net.jodah.failsafe.RetryPolicy;
 
 @XObject("streamProcessor")
 public class StreamProcessorDescriptor implements Descriptor {
+
+    // @since 11.1
+    public static String RECOVERY_SKIP_FIRST_FAILURES_OPTION = "nuxeo.stream.recovery.skipFirstFailures";
 
     // @since 11.1
     @XNode("@enabled")
@@ -141,6 +145,10 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@continueOnFailure")
         public Boolean continueOnFailure = Boolean.FALSE;
 
+        // @since 11.1 can be used for recovery in order to skip the n first failures
+        @XNode("@skipFirstFailures")
+        public Integer skipFirstFailures = 0;
+
         @Override
         public String getId() {
             return name;
@@ -224,7 +232,13 @@ public class StreamProcessorDescriptor implements Descriptor {
                                              .batchPolicy(policyDescriptor.batchCapacity,
                                                      policyDescriptor.batchThreshold)
                                              .continueOnFailure(policyDescriptor.continueOnFailure)
+                                             .skipFirstFailures(getSkipFirstFailures(policyDescriptor))
                                              .build();
+    }
+
+    protected int getSkipFirstFailures(PolicyDescriptor policyDescriptor) {
+        return Integer.parseInt(Framework.getProperty(RECOVERY_SKIP_FIRST_FAILURES_OPTION,
+                Integer.toString(policyDescriptor.skipFirstFailures)));
     }
 
     public ComputationPolicy getDefaultPolicy() {
