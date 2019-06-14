@@ -203,7 +203,7 @@ public class BulkStatus implements AsyncStatus<String> {
             setUsername(getUsername());
         }
         if (update.errorCount > 0) {
-            errorCount++;
+            errorCount += update.errorCount;
         }
         if (update.errorMessage != null && errorMessage == null) {
             errorMessage = update.errorMessage;
