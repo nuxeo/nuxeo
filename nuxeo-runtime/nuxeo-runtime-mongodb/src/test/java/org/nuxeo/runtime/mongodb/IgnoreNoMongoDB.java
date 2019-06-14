@@ -35,10 +35,6 @@ public final class IgnoreNoMongoDB implements ConditionalIgnoreRule.Condition {
 
     @Override
     public boolean shouldIgnore() {
-        return test();
-    }
-
-    protected static boolean test() {
         if (MONGODB_FORCE) {
             return false;
         }
@@ -48,4 +44,8 @@ public final class IgnoreNoMongoDB implements ConditionalIgnoreRule.Condition {
         return true;
     }
 
+    @Override
+    public boolean supportsClassRule() {
+        return true;
+    }
 }

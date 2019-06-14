@@ -64,6 +64,19 @@ public class ConditionalIgnoreTest {
         }
     }
 
+    /** @since 11.1 */
+    public static class AlwaysWithClassRule implements ConditionalIgnoreRule.Condition {
+        @Override
+        public boolean shouldIgnore() {
+            return true;
+        }
+
+        @Override
+        public boolean supportsClassRule() {
+            return true;
+        }
+    }
+
     public static class Never implements ConditionalIgnoreRule.Condition {
         @Override
         public boolean shouldIgnore() {
@@ -97,12 +110,32 @@ public class ConditionalIgnoreTest {
     }
 
     /**
-     * Expected tests result: 1 run, 1 skip (the whole suite)
+     * Expected tests result: 2 run, 2 skip (because ignore condition doesn't support classRule behavior)
      */
     @RunWith(FeaturesRunner.class)
     @Features(ConditionalIgnoreRule.Feature.class)
     @ConditionalIgnoreRule.Ignore(condition = Always.class, cause = "ignored for tests")
     public static class ShouldIgnoreSuite {
+        @Test
+        public void ignored() {
+            fail("should not be called");
+        }
+
+        @Test
+        public void ran() {
+            fail("should not be called");
+        }
+    }
+
+    /**
+     * Expected tests result: 0 run, 1 skip (the whole class)
+     *
+     * @since 11.1
+     */
+    @RunWith(FeaturesRunner.class)
+    @Features(ConditionalIgnoreRule.Feature.class)
+    @ConditionalIgnoreRule.Ignore(condition = AlwaysWithClassRule.class, cause = "ignored for tests")
+    public static class ShouldIgnoreSuiteAtClassLevel {
         @Test
         public void ignored() {
             fail("should not be called");
@@ -137,8 +170,12 @@ public class ConditionalIgnoreTest {
 
     @Test
     public void shouldIgnoreSuite() {
-        // in class context assertions on count are for the class and not method
         runAndAssert(ShouldIgnoreSuite.class, 2, 2);
+    }
+
+    @Test
+    public void shouldIgnoreSuiteAtClassLevel() {
+        runAndAssert(ShouldIgnoreSuiteAtClassLevel.class, 0, 1);
     }
 
     @Test
