@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.junit.AfterClass;
 import org.junit.Assume;
 import org.junit.BeforeClass;
@@ -30,9 +33,6 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertEquals;
-
 import org.nuxeo.runtime.test.Failures;
 
 public class ConditionalIgnoreTest {
@@ -132,35 +132,28 @@ public class ConditionalIgnoreTest {
 
     @Test
     public void shouldIgnoreTest() {
-        Result result = JUnitCore.runClasses(ShouldIgnoreTest.class);
-        if (!result.wasSuccessful()) {
-            Failures failures = new Failures(result.getFailures());
-            fail("Unexpected failure\n" + failures.toString());
-        }
-        assertEquals(3, result.getRunCount());
-        assertEquals(1, result.getIgnoreCount());
+        runAndAssert(ShouldIgnoreTest.class, 3, 1);
     }
 
     @Test
     public void shouldIgnoreSuite() {
-        Result result = JUnitCore.runClasses(ShouldIgnoreSuite.class);
-        if (!result.wasSuccessful()) {
-            Failures failures = new Failures(result.getFailures());
-            fail("Unexpected failure\n" + failures.toString());
-        }
-        assertEquals(2, result.getRunCount()); // NXP-17586: Should value 1 for consistency with @Ignore
-        assertEquals(2, result.getIgnoreCount());
+        // in class context assertions on count are for the class and not method
+        runAndAssert(ShouldIgnoreSuite.class, 2, 2);
     }
 
     @Test
     public void shouldNotIgnoreSuite() {
-        Result result = JUnitCore.runClasses(ShouldNotIgnoreSuite.class);
+        runAndAssert(ShouldNotIgnoreSuite.class, 2, 0);
+    }
+
+    protected void runAndAssert(Class<?> classToRun, int expectedRunCount, int expectedIgnoreCount) {
+        Result result = JUnitCore.runClasses(classToRun);
         if (!result.wasSuccessful()) {
             Failures failures = new Failures(result.getFailures());
             fail("Unexpected failure\n" + failures.toString());
         }
-        assertEquals(2, result.getRunCount());
-        assertEquals(0, result.getIgnoreCount());
+        assertEquals(expectedRunCount, result.getRunCount());
+        assertEquals(expectedIgnoreCount, result.getIgnoreCount());
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -78,9 +77,8 @@ public class PostCommitEventListenerTest {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreIsolated.class)
     @Deploy("org.nuxeo.ecm.core.test.tests:test-PostCommitListeners.xml")
-    public void testScripts() throws Exception {
+    public void testScripts() {
         // TODO: PostCommitEventListenerTest.testScripts:77 expected:<0> but was:<2>
         assertEquals(0, SCRIPT_CNT);
 
@@ -110,7 +108,7 @@ public class PostCommitEventListenerTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:test-ShallowFilteringPostCommitListeners.xml")
-    public void testShallowFiltering() throws Exception {
+    public void testShallowFiltering() {
         DocumentModel doc = session.createDocumentModel("/", "empty", "Document");
         doc = session.createDocument(doc);
         ShallowFilterPostCommitEventListener.handledCount = 0;
