@@ -37,6 +37,7 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.nuxeo.runtime.RuntimeServiceException;
 
 public class ConditionalIgnoreRule implements TestRule, MethodRule {
     @Inject
@@ -75,6 +76,10 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
         boolean shouldIgnore();
     }
 
+    /**
+     * @deprecated since 11.1, {@code IsolatedClassloader} doesn't exist anymore
+     */
+    @Deprecated(since = "11.1")
     public static final class IgnoreIsolated implements Condition {
         boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(
                 getClass().getClassLoader().getClass().getName());
@@ -147,20 +152,19 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
     }
 
     protected Condition newCondition(Class<?> type, Method method, Object target,
-            Class<? extends Condition> conditionType) throws Error {
+            Class<? extends Condition> conditionType) {
         Condition condition;
         try {
             condition = conditionType.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException cause) {
-            throw new Error("Cannot instantiate condition of type " + conditionType, cause);
+            throw new RuntimeServiceException("Cannot instantiate condition of type " + conditionType, cause);
         }
         injectCondition(type, method, target, condition);
         return condition;
     }
 
-    protected void injectCondition(Class<?> type, Method method, Object target, Condition condition)
-            throws SecurityException, Error {
-        Error errors = new Error("Cannot inject condition parameters in " + condition.getClass());
+    protected void injectCondition(Class<?> type, Method method, Object target, Condition condition) {
+        var errors = new RuntimeServiceException("Cannot inject condition parameters in " + condition.getClass());
         for (Field eachField : condition.getClass().getDeclaredFields()) {
             if (!eachField.isAnnotationPresent(Inject.class)) {
                 continue;
@@ -192,7 +196,7 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
             try {
                 eachField.set(condition, eachValue);
             } catch (IllegalArgumentException | IllegalAccessException cause) {
-                errors.addSuppressed(new Error("Cannot inject " + eachField.getName(), cause));
+                errors.addSuppressed(new RuntimeServiceException("Cannot inject " + eachField.getName(), cause));
             }
         }
         if (errors.getSuppressed().length > 0) {
