@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
@@ -38,6 +39,7 @@ import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 import org.nuxeo.runtime.RuntimeServiceException;
+import org.nuxeo.runtime.test.runner.FeaturesRunner.BeforeClassStatement;
 
 public class ConditionalIgnoreRule implements TestRule, MethodRule {
     @Inject
@@ -54,7 +56,7 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
             return rule;
         }
 
-        @Rule
+        @ClassRule
         public static TestRule testRule() {
             return rule;
         }
@@ -74,6 +76,19 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
 
     public interface Condition {
         boolean shouldIgnore();
+
+        /**
+         * Returns whether this condition supports check at class level. Note: A condition supporting the class rule
+         * behavior will be called before the {@link BeforeClassStatement}, at this moment Nuxeo Runtime is not fully
+         * initialized and injection is not performed yet.
+         * <p/>
+         * By default, conditions don't support it in order to keep backward compatibility.
+         *
+         * @since 11.1
+         */
+        default boolean supportsClassRule() {
+            return false;
+        }
     }
 
     /**
@@ -102,6 +117,11 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
         public boolean shouldIgnore() {
             return SystemUtils.IS_OS_WINDOWS;
         }
+
+        @Override
+        public boolean supportsClassRule() {
+            return true;
+        }
     }
 
     @Override
@@ -115,11 +135,11 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
 
             @Override
             public void evaluate() throws Throwable {
-                // as this is a TestRule / Rule (see Feature#testRule) runtime was already started
-                // because we are here after BeforeClassStatement (runtime start) and before
-                // the MethodRule / Rule execution which cause processing of method annotations, but here we just want
-                // to check condition on the class which doesn't depend on method annotations
-                if (newCondition(null, null, null, conditionType).shouldIgnore()) {
+                // as this is a @ClassRule / TestRule, built statement is evaluated just before @BeforeClass annotations
+                // and thus before Nuxeo Runtime initialization. Condition should explicitly support the ClassRule
+                // behavior to ignore tests there. If it doesn't, check will be done before test (former behavior)
+                Condition condition = instantiateCondition(conditionType);
+                if (condition.supportsClassRule() && condition.shouldIgnore()) {
                     runNotifier.fireTestIgnored(description);
                 } else {
                     base.evaluate();
@@ -153,13 +173,18 @@ public class ConditionalIgnoreRule implements TestRule, MethodRule {
 
     protected Condition newCondition(Class<?> type, Method method, Object target,
             Class<? extends Condition> conditionType) {
+        Condition condition = instantiateCondition(conditionType);
+        injectCondition(type, method, target, condition);
+        return condition;
+    }
+
+    protected Condition instantiateCondition(Class<? extends Condition> conditionType) {
         Condition condition;
         try {
             condition = conditionType.getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException cause) {
             throw new RuntimeServiceException("Cannot instantiate condition of type " + conditionType, cause);
         }
-        injectCondition(type, method, target, condition);
         return condition;
     }
 
