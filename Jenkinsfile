@@ -34,6 +34,14 @@ pipeline {
   agent {
     label 'jenkins-maven-java11-nuxeo'
   }
+  environment {
+    HELM_CHART_REPOSITORY_NAME = 'local-jenkins-x'
+    HELM_CHART_REPOSITORY_URL = 'http://jenkins-x-chartmuseum:8080'
+    HELM_CHART_NUXEO_REDIS = 'nuxeo-redis'
+    HELM_RELEASE_REDIS = 'redis'
+    SERVICE_REDIS = 'redis-master'
+    SERVICE_ACCOUNT = 'jenkins'
+  }
   stages {
     stage('Compile, package and install') {
       steps {
@@ -55,6 +63,48 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('compile', 'Compile, package and install', 'FAILURE')
+        }
+      }
+    }
+    stage('Run "dev" unit tests') {
+      steps {
+        setGitHubBuildStatus('utests/dev', 'Unit tests - dev environment', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Install Redis
+          ----------------------------------------"""
+          // initialize Helm without installing Tiller
+          sh "helm init --client-only --service-account ${SERVICE_ACCOUNT}"
+
+          // add local chart repository
+          sh "helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}"
+
+          // install the nuxeo-redis chart
+          // use 'jx step helm install' to avoid 'Error: incompatible versions' when running 'helm install'
+          sh """
+            jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO_REDIS} --name ${HELM_RELEASE_REDIS}
+          """
+
+          echo """
+          ----------------------------------------
+          Run "dev" unit tests
+          ----------------------------------------"""
+          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms3072m -Xmx3072m"]) {
+            echo "MAVEN_OPTS=$MAVEN_OPTS"
+            sh "mvn -B -Dnuxeo.test.redis.host=${SERVICE_REDIS} test"
+          }
+        }
+      }
+      post {
+        always {
+          junit testResults: '**/target/surefire-reports/*.xml'
+        }
+        success {
+          setGitHubBuildStatus('utests/dev', 'Unit tests - dev environment', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('utests/dev', 'Unit tests - dev environment', 'FAILURE')
         }
       }
     }
