@@ -9,6 +9,7 @@
   <artifactId>nuxeo-admin-center-analytics</artifactId>
   <name>Nuxeo Administration Center Analytics</name>
   <description>Analytics dashboards for Admin Center</description>
+  <!--
   <build>
     <plugins>
       <plugin>
@@ -31,4 +32,5 @@
       </plugin>
     </plugins>
   </build>
+  -->
 </project>
