@@ -34,6 +34,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,6 +50,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+@Ignore
 @RunWith(FeaturesRunner.class)
 @Features(MongoDBAuditFeature.class)
 public class TestAuditWithMongoDB extends AbstractAuditStorageTest {

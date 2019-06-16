@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,6 +51,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * Test User and Group auditing.
  */
+@Ignore
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.admin.center")
 @RunWith(FeaturesRunner.class)

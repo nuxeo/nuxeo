@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
@@ -50,6 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * @since 10.1
  */
+@Ignore
 @RunWith(FeaturesRunner.class)
 @Features({ DirectoryFeature.class, MongoDBAuditFeature.class })
 @Deploy("org.nuxeo.audit.storage.directory")
