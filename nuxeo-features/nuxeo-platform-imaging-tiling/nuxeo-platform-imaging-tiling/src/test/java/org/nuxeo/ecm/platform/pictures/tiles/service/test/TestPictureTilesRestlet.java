@@ -35,6 +35,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -49,6 +50,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
+@Ignore(value = " NXP-27577")
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.types.api")
