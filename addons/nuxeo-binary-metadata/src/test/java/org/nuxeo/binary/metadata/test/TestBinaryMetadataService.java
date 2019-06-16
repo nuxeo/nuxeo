@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -54,6 +55,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * @since 7.1
  */
+@Ignore(value = "NXP-27576")
 @RunWith(FeaturesRunner.class)
 @Features(BinaryMetadataFeature.class)
 @Deploy("org.nuxeo.binary.metadata:binary-metadata-contrib-test.xml")
