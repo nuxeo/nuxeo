@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -61,6 +62,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * @since 8.4
  */
+@Ignore(value = "NXP-27578")
 @RunWith(FeaturesRunner.class)
 @Features({ CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
