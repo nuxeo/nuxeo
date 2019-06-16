@@ -38,6 +38,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Assume;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -67,6 +68,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * Tests that the VideoImporter class works by importing a sample video and that the VideoChangedListener schedules the
  * different works to update the Video document info, storyboard, previews and conversions.
  */
+@Ignore(value = "NXP-27578")
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
