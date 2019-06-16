@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -57,6 +58,7 @@ import com.google.inject.Inject;
 /**
  * @since 7.2
  */
+@Ignore(value = "NXP-27578")
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
