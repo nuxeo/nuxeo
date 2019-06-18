@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,8 @@ import java.util.stream.StreamSupport;
 import javax.resource.spi.ConnectionManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -70,8 +70,8 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.lock.LockManager;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
-import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -110,7 +110,7 @@ import com.mongodb.client.result.UpdateResult;
  */
 public class MongoDBRepository extends DBSRepositoryBase {
 
-    private static final Log log = LogFactory.getLog(MongoDBRepository.class);
+    private static final Logger log = LogManager.getLogger(MongoDBRepository.class);
 
     /**
      * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
@@ -223,7 +223,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending(KEY_PRIMARY_TYPE));
         coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
         coll.createIndex(Indexes.ascending(KEY_IS_TRASHED));
-        if(!isFulltextDisabled()) {
+        if (!isFulltextDisabled()) {
             coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
         }
         coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER));
@@ -245,7 +245,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             coll.createIndex(indexKeys, indexOptions);
         }
         // check root presence
-        if (coll.count(Filters.eq(idKey, getRootId())) > 0) {
+        if (coll.countDocuments(Filters.eq(idKey, getRootId())) > 0) {
             return;
         }
         // create basic repository structure needed
@@ -294,9 +294,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void createState(State state) {
         Document doc = converter.stateToBson(state);
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: CREATE " + doc.get(idKey) + ": " + doc);
-        }
+        log.trace("MongoDB: CREATE {}: {}", doc.get(idKey), doc);
         coll.insertOne(doc);
         // TODO dupe exception
         // throw new DocumentException("Already exists: " + id);
@@ -305,11 +303,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void createStates(List<State> states) {
         List<Document> docs = states.stream().map(converter::stateToBson).collect(Collectors.toList());
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: CREATE ["
-                    + docs.stream().map(doc -> doc.get(idKey).toString()).collect(Collectors.joining(", "))
-                    + "]: " + docs);
-        }
+        log.trace("MongoDB: CREATE [{}]: {}",
+                () -> docs.stream().map(doc -> doc.get(idKey).toString()).collect(Collectors.joining(", ")),
+                () -> docs);
         coll.insertMany(docs);
     }
 
@@ -336,9 +332,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         for (Document update : updates) {
             Document filter = new Document(idKey, id);
             if (changeTokenUpdater == null) {
-                if (log.isTraceEnabled()) {
-                    log.trace("MongoDB: UPDATE " + id + ": " + update);
-                }
+                log.trace("MongoDB: UPDATE {}: {}", id, update);
             } else {
                 // assume bson is identical to dbs internals
                 // condition works even if value is null
@@ -351,14 +345,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     set.putAll(tokenUpdates);
                     update.put(MONGODB_SET, set);
                 }
-                if (log.isTraceEnabled()) {
-                    log.trace("MongoDB: UPDATE " + id + ": IF " + conditions + " THEN " + update);
-                }
+                log.trace("MongoDB: UPDATE {}: IF {} THEN {}", id, conditions, update);
                 filter.putAll(conditions);
             }
             UpdateResult w = coll.updateMany(filter, update);
             if (w.getModifiedCount() != 1) {
-                log.trace("MongoDB:    -> CONCURRENT UPDATE: " + id);
+                log.trace("MongoDB:    -> CONCURRENT UPDATE: {}", id);
                 throw new ConcurrentUpdateException(id);
             }
             // TODO dupe exception
@@ -369,14 +361,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public void deleteStates(Set<String> ids) {
         Bson filter = Filters.in(idKey, ids);
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: REMOVE " + ids);
-        }
+        log.trace("MongoDB: REMOVE {}", ids);
         DeleteResult w = coll.deleteMany(filter);
         if (w.getDeletedCount() != ids.size()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Removed " + w.getDeletedCount() + " docs for " + ids.size() + " ids: " + ids);
-            }
+            log.debug("Removed {} docs for {} ids: {}", w::getDeletedCount, ids::size, () -> ids);
         }
     }
 
@@ -392,15 +380,19 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void logQuery(Bson filter, Bson fields) {
         if (fields == null) {
-            log.trace("MongoDB: QUERY " + filter);
+            log.trace("MongoDB: QUERY {}", filter);
         } else {
-            log.trace("MongoDB: QUERY " + filter + " KEYS " + fields);
+            log.trace("MongoDB: QUERY {} KEYS {}", filter, fields);
         }
     }
 
     protected void logQuery(Bson query, Bson fields, Bson orderBy, int limit, int offset) {
-        log.trace("MongoDB: QUERY " + query + " KEYS " + fields + (orderBy == null ? "" : " ORDER BY " + orderBy)
-                + " OFFSET " + offset + " LIMIT " + limit);
+        if (orderBy == null) {
+            log.trace("MongoDB: QUERY {} KEYS {} OFFSET {} LIMIT {}", query, fields, offset, limit);
+        } else {
+            log.trace("MongoDB: QUERY {} KEYS {} ORDER BY {} OFFSET {} LIMIT {}", query, fields, orderBy, offset,
+                    limit);
+        }
     }
 
     @Override
@@ -468,9 +460,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected boolean exists(Bson filter, Bson projection) {
-        if (log.isTraceEnabled()) {
-            logQuery(filter, projection);
-        }
+        logQuery(filter, projection);
         return coll.find(filter).projection(projection).first() != null;
     }
 
@@ -514,9 +504,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             filter = new Document();
         }
         // it's ok if projection is null
-        if (log.isTraceEnabled()) {
-            logQuery(filter, projection);
-        }
+        logQuery(filter, projection);
 
         boolean completedAbruptly = true;
         MongoCursor<Document> cursor = coll.find(filter).limit(limit).projection(projection).iterator();
@@ -566,9 +554,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             evaluator.parse();
         }
 
-        if (log.isTraceEnabled()) {
-            logQuery(filter, keys, orderBy, limit, offset);
-        }
+        logQuery(filter, keys, orderBy, limit, offset);
 
         List<Map<String, Serializable>> projections;
         long totalSize;
@@ -597,7 +583,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else if (manualProjection) {
                 totalSize = -1; // unknown due to manual projection
             } else {
-                totalSize = coll.count(filter);
+                totalSize = coll.countDocuments(filter);
             }
         } else if (countUpTo == 0) {
             // no count
@@ -609,14 +595,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else if (manualProjection) {
                 totalSize = -1; // unknown due to manual projection
             } else {
-                totalSize = coll.count(filter, new CountOptions().limit(countUpTo + 1));
+                totalSize = coll.countDocuments(filter, new CountOptions().limit(countUpTo + 1));
             }
             if (totalSize > countUpTo) {
                 totalSize = -2; // truncated
             }
         }
-        if (log.isTraceEnabled() && projections.size() != 0) {
-            log.trace("MongoDB:    -> " + projections.size());
+        if (!projections.isEmpty()) {
+            log.trace("MongoDB:    -> {}", projections::size);
         }
         return new PartialList<>(projections, totalSize);
     }
@@ -631,12 +617,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (builder.hasFulltext && isFulltextSearchDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
-        Bson filter = builder.getQuery();
-        addPrincipals((Document) filter, evaluator.principals);
+        Document filter = builder.getQuery();
+        addPrincipals(filter, evaluator.principals);
         Bson keys = builder.getProjection();
-        if (log.isTraceEnabled()) {
-            logQuery(filter, keys, null, 0, 0);
-        }
+        logQuery(filter, keys, null, 0, 0);
 
         MongoCursor<Document> cursor = coll.find(filter).projection(keys).batchSize(batchSize).iterator();
         String scrollId = cursorService.registerCursor(cursor, batchSize, keepAliveSeconds);
@@ -680,16 +664,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void markReferencedBinaries() {
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         // TODO add a query to not scan all documents
-        if (log.isTraceEnabled()) {
-            logQuery(new Document(), binaryKeys);
-        }
+        logQuery(new Document(), binaryKeys);
         Block<Document> block = doc -> markReferencedBinaries(doc, blobManager);
         coll.find().projection(binaryKeys).forEach(block);
     }
 
     protected void markReferencedBinaries(Document ob, DocumentBlobManager blobManager) {
-        for (String key : ob.keySet()) {
-            Object value = ob.get(key);
+        for (var value : ob.values()) {
             if (value instanceof List) {
                 @SuppressWarnings("unchecked")
                 List<Object> list = (List<Object>) value;
@@ -727,9 +708,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Lock getLock(String id) {
-        if (log.isTraceEnabled()) {
-            logQuery(id, LOCK_FIELDS);
-        }
+        logQuery(id, LOCK_FIELDS);
         Document res = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
         if (res == null) {
             // document not found
@@ -754,9 +733,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 Updates.set(KEY_LOCK_OWNER, lock.getOwner()), //
                 Updates.set(KEY_LOCK_CREATED, converter.serializableToBson(lock.getCreated())) //
         );
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: FINDANDMODIFY " + filter + " UPDATE " + setLock);
-        }
+        log.trace("MongoDB: FINDANDMODIFY {} UPDATE {}", filter, setLock);
         Document res = coll.findOneAndUpdate(filter, setLock);
         if (res != null) {
             // found a doc to lock
@@ -764,9 +741,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } else {
             // doc not found, or lock owner already set
             // get the old lock
-            if (log.isTraceEnabled()) {
-                logQuery(id, LOCK_FIELDS);
-            }
+            logQuery(id, LOCK_FIELDS);
             Document old = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
@@ -791,11 +766,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // implements LockManager.canLockBeRemoved inside MongoDB
             Object ownerOrNull = Arrays.asList(owner, null);
             filter.put(KEY_LOCK_OWNER, new Document(QueryOperators.IN, ownerOrNull));
-        } // else unconditional remove
-        // remove the lock
-        if (log.isTraceEnabled()) {
-            log.trace("MongoDB: FINDANDMODIFY " + filter + " UPDATE " + UNSET_LOCK_UPDATE);
         }
+        // else unconditional remove
+        // remove the lock
+        log.trace("MongoDB: FINDANDMODIFY {} UPDATE {}", filter, UNSET_LOCK_UPDATE);
         Document old = coll.findOneAndUpdate(filter, UNSET_LOCK_UPDATE);
         if (old != null) {
             // found a doc and removed the lock, return previous lock
@@ -811,9 +785,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         } else {
             // doc not found, or lock owner didn't match
             // get the old lock
-            if (log.isTraceEnabled()) {
-                logQuery(id, LOCK_FIELDS);
-            }
+            logQuery(id, LOCK_FIELDS);
             old = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
@@ -838,11 +810,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void closeLockManager() {
-
+        // nothing to do
     }
 
     @Override
     public void clearLockManagerCaches() {
+        // nothing to do
     }
 
 }
