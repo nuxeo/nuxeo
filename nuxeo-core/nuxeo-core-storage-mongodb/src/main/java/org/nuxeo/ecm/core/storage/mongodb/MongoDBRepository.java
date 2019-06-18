@@ -206,6 +206,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected void initRepository() {
+        // check root presence
+        if (coll.count(Filters.eq(idKey, getRootId())) > 0) {
+            return;
+        }
         // create required indexes
         // code does explicit queries on those
         if (useCustomId) {
@@ -239,10 +243,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
             );
             IndexOptions indexOptions = new IndexOptions().name(FULLTEXT_INDEX_NAME).languageOverride(LANGUAGE_FIELD);
             coll.createIndex(indexKeys, indexOptions);
-        }
-        // check root presence
-        if (coll.count(Filters.eq(idKey, getRootId())) > 0) {
-            return;
         }
         // create basic repository structure needed
         if (idType == IdType.sequence || DEBUG_UUIDS) {
