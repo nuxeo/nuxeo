@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected List<LogPartition> defaultAssignment;
 
-    //@since 11.1
+    // @since 11.1
     // Use the Nuxeo registry name without adding dependency on nuxeo-runtime
     public static final String NUXEO_METRICS_REGISTRY_NAME = "org.nuxeo.runtime.metrics.MetricsService";
 
@@ -122,7 +122,6 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected Timer processRecordTimer;
 
     protected Timer processTimerTimer;
-
 
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
@@ -208,11 +207,16 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void registerMetrics() {
         globalFailureCount = registry.counter(GLOBAL_FAILURE_COUNT_REGISTRY_NAME);
-        runningCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "running"));
-        failureCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "failure"));
-        recordSkippedCount = registry.counter(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "skippedRecord"));
-        processRecordTimer = registry.timer(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processRecord"));
-        processTimerTimer = registry.timer(MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processTimer"));
+        runningCount = registry.counter(
+                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "running"));
+        failureCount = registry.counter(
+                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "failure"));
+        recordSkippedCount = registry.counter(
+                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "skippedRecord"));
+        processRecordTimer = registry.timer(
+                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processRecord"));
+        processTimerTimer = registry.timer(
+                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processTimer"));
     }
 
     protected void closeTailer() {
@@ -375,8 +379,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected Duration getTimeoutDuration() {
+        // lastReadTime could have been updated by another thread calling onPartitionsAssigned when doing minus
+        // no need to synchronize it, we don't want an accurate value there
+        long adaptedReadTimeout = Math.max(0, System.currentTimeMillis() - lastReadTime);
         // Adapt the duration so we are not throttling when one of the input stream is empty
-        return Duration.ofMillis(Math.min(READ_TIMEOUT.toMillis(), System.currentTimeMillis() - lastReadTime));
+        return Duration.ofMillis(Math.min(READ_TIMEOUT.toMillis(), adaptedReadTimeout));
     }
 
     protected void checkSourceLowWatermark() {
