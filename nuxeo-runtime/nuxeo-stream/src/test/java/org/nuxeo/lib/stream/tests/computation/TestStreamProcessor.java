@@ -305,6 +305,7 @@ public abstract class TestStreamProcessor {
         testComplexTopo(100, 6, 8);
     }
 
+    @Ignore(value = "NXP-27559")
     @Test
     public void testStopAndResume() throws Exception {
         final long targetTimestamp = System.currentTimeMillis();
