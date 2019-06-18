@@ -14,8 +14,7 @@
           <field schema="adobe-connector-all-images_pp" name="system_fulltext" />
         </predicate>
         <fixedPart>
-          ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
-          'deleted' AND (ecm:primaryType = 'Picture' OR ecm:mixinType = 'Picture')
+          ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND (ecm:primaryType = 'Picture' OR ecm:mixinType = 'Picture')
         </fixedPart>
       </whereClause>
       <searchDocumentType>adobe-connector-all-images_pp</searchDocumentType>
@@ -27,7 +26,7 @@
       <property name="coreSession">#{documentManager}</property>
       <pattern quoteParameters="false">
         SELECT * FROM Document WHERE ecm:parentId = '?' AND ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation'
-        AND ecm:isVersion = 0
+        AND ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
       <pageSize>10</pageSize>
     </genericPageProvider>
@@ -37,7 +36,7 @@
       <property name="coreSession">#{documentManager}</property>
       <pattern quoteParameters="false">
         SELECT * FROM Document WHERE (ecm:mixinType = 'Collection' AND ecm:isProxy = 0
-        AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0AND ecm:currentLifeCycleState != 'deleted')
+        AND ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 0)
       </pattern>
       <pageSize>10</pageSize>
     </genericPageProvider>
@@ -47,7 +46,7 @@
       <property name="coreSession">#{documentManager}</property>
       <pattern quoteParameters="false">
         SELECT * FROM Document WHERE (ecm:mixinType != 'HiddenInNavigation' AND
-        collectionMember:collectionIds/* = '?' AND ecm:currentLifeCycleState != 'deleted')
+        collectionMember:collectionIds/* = '?' AND ecm:isTrashed = 0)
       </pattern>
       <pageSize>10</pageSize>
     </genericPageProvider>
@@ -63,8 +62,7 @@
           <field schema="adobe-connector-search_pp" name="system_parentId" />
         </predicate>
         <fixedPart>
-          ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
-          'deleted'
+          ecm:mixinType != 'HiddenInNavigation' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0
         </fixedPart>
       </whereClause>
       <searchDocumentType>adobe-connector-search_pp</searchDocumentType>
