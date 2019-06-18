@@ -23,6 +23,7 @@ import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 import java.io.File;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -31,6 +32,7 @@ import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 /**
  * @since 9.3
  */
+@Ignore("NXP-27559")
 public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
 
     @Rule
