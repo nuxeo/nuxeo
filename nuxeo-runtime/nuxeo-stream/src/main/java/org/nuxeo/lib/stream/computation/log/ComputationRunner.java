@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -293,8 +293,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected Duration getTimeoutDuration() {
+        // lastReadTime could have been updated by another thread calling onPartitionsAssigned when doing minus
+        // no need to synchronize it, we don't want an accurate value there
+        long adaptedReadTimeout = Math.max(0, System.currentTimeMillis() - lastReadTime);
         // Adapt the duration so we are not throttling when one of the input stream is empty
-        return Duration.ofMillis(Math.min(READ_TIMEOUT.toMillis(), System.currentTimeMillis() - lastReadTime));
+        return Duration.ofMillis(Math.min(READ_TIMEOUT.toMillis(), adaptedReadTimeout));
     }
 
     protected void checkSourceLowWatermark() {
