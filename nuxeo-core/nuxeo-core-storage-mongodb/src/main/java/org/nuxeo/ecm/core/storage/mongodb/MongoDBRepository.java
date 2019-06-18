@@ -552,6 +552,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected void initRepository() {
+        // check root presence
+        DBObject query = new BasicDBObject(idKey, getRootId());
+        if (coll.findOne(query, justPresenceField()) != null) {
+            return;
+        }
         // create required indexes
         // code does explicit queries on those
         if (useCustomId) {
@@ -588,11 +593,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
             indexOptions.put(MONGODB_INDEX_NAME, FULLTEXT_INDEX_NAME);
             indexOptions.put(MONGODB_LANGUAGE_OVERRIDE, LANGUAGE_FIELD);
             coll.createIndex(indexKeys, indexOptions);
-        }
-        // check root presence
-        DBObject query = new BasicDBObject(idKey, getRootId());
-        if (coll.findOne(query, justPresenceField()) != null) {
-            return;
         }
         // create basic repository structure needed
         if (idType == IdType.sequence || DEBUG_UUIDS) {
