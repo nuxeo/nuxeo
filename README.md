@@ -54,7 +54,6 @@ Building the Nuxeo Platform requires the following tools:
 * Apache Maven 3.1.1+ (3.2+ recommended)
 * Apache Ant 1.7.1+
 * Git (obviously)
-* NodeJS 0.10.32, npm, yo, grunt-cli, gulp, bower
 
 # QA
 
