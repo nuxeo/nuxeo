@@ -22,9 +22,6 @@ bin
 
 # build artifacts
 target/
-bower_components/
-node_modules/
-package-lock.json
 nashorn_code_cache/
 chromedriver.log
 *.log
