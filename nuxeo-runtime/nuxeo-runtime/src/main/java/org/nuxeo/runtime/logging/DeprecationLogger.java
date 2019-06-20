@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
 package org.nuxeo.runtime.logging;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DeprecationLogger {
 
-    private static final Log log = LogFactory.getLog(DeprecationLogger.class);
+    private static final Logger log = LogManager.getLogger(DeprecationLogger.class);
 
     public static void log(String message, String deprecatedVersion) {
         StringBuilder finalMessage = new StringBuilder();
