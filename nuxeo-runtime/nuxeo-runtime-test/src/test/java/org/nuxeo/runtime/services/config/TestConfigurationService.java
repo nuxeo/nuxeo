@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ public class TestConfigurationService {
 
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml")
-    public void testProperties() throws Exception {
+    public void testProperties() {
         assertTrue(cs.getBoolean("nuxeo.test.dummyBooleanProperty").orElseThrow(AssertionError::new));
         assertFalse(cs.getBoolean("nuxeo.test.anotherDummyBooleanProperty").orElseThrow(AssertionError::new));
         assertEquals("dummyValue", cs.getString("nuxeo.test.dummyStringProperty", null));
@@ -141,7 +141,7 @@ public class TestConfigurationService {
      */
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:configuration-namespace-contrib.xml")
-    public void testByNamespace() throws Exception {
+    public void testByNamespace() {
         assertEquals(3, cs.getProperties("nuxeo.namespace.test").size());
         assertEquals(2, cs.getProperties("nuxeo.namespace.anothertest").size());
         assertEquals(7, cs.getProperties("nuxeo.namespace").size());
@@ -173,19 +173,29 @@ public class TestConfigurationService {
     @Test
     @Deploy("org.nuxeo.runtime.test.tests:configuration-namespace-contrib.xml")
     public void testToJson() throws Exception {
-        String expected =
-                "{\"namespace\":{" +
-                    "\"test\":{" +
-                        "\"anotherDummyBooleanProperty\":\"false\"," +
-                        "\"dummyBooleanProperty\":\"true\"," +
-                        "\"dummyStringProperty\":[\"dummyValue\"," +
-                        "\"anotherDummyValue\"]}," +
-                    "\"anothertest\":{" +
-                        "\"dummyBooleanProperty\":\"true\"," +
-                        "\"pouet\":\"toto\"}," +
-                    "\"yetanothertest\":{" +
-                        "\"pouet\":\"bar\"," +
-                        "\"truc\":[\"foo\",\"bar\"]}}}}";
+        String expected = "{\n" + //
+                "   \"namespace\": {\n" + //
+                "      \"test\": {\n" + //
+                "         \"anotherDummyBooleanProperty\": \"false\",\n" + //
+                "         \"dummyBooleanProperty\": \"true\",\n" + //
+                "         \"dummyStringProperty\": [\n" + //
+                "            \"dummyValue\",\n" + //
+                "            \"anotherDummyValue\"\n" + //
+                "         ]\n" + //
+                "      },\n" + //
+                "      \"anothertest\": {\n" + //
+                "         \"dummyBooleanProperty\": \"true\",\n" + //
+                "         \"pouet\": \"toto\"\n" + //
+                "      },\n" + //
+                "      \"yetanothertest\": {\n" + //
+                "         \"pouet\": \"bar\",\n" + //
+                "         \"truc\": [\n" + //
+                "            \"foo\",\n" + //
+                "            \"bar\"\n" + //
+                "         ]\n" + //
+                "      }\n" + //
+                "   }\n" + //
+                "}";
         String json = cs.getPropertiesAsJson("nuxeo");
         JSONAssert.assertEquals(expected, json, false);
     }
