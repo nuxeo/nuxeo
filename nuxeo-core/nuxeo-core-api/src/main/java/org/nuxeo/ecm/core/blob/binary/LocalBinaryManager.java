@@ -79,6 +79,28 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
+        File base = getStorageBase(properties);
+
+        log.info("Registering binary manager '" + blobProviderId + "' using "
+                + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))
+                + "binary store: " + base);
+        storageDir = new File(base, DATA);
+        tmpDir = new File(base, TMP);
+        storageDir.mkdirs();
+        tmpDir.mkdirs();
+        setDescriptor(getDescriptor(new File(base, CONFIG_FILE)));
+        createGarbageCollector();
+
+        // be sure FileTracker won't steal our files !
+        FileEventTracker.registerProtectedPath(storageDir.getAbsolutePath());
+    }
+
+    /**
+     * Gets the storage base to use, based on the properties.
+     *
+     * @since 11.1
+     */
+    public static File getStorageBase(Map<String, String> properties) throws IOException {
         String path = properties.get(BinaryManager.PROP_PATH);
         if (StringUtils.isBlank(path)) {
             path = DEFAULT_PATH;
@@ -108,19 +130,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         if (StringUtils.isNotBlank(namespace)) {
             base = new File(base.getParentFile(), base.getName() + "_" + namespace.trim());
         }
-
-        log.info("Registering binary manager '" + blobProviderId + "' using "
-                + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))
-                + "binary store: " + base);
-        storageDir = new File(base, DATA);
-        tmpDir = new File(base, TMP);
-        storageDir.mkdirs();
-        tmpDir.mkdirs();
-        setDescriptor(getDescriptor(new File(base, CONFIG_FILE)));
-        createGarbageCollector();
-
-        // be sure FileTracker won't steal our files !
-        FileEventTracker.registerProtectedPath(storageDir.getAbsolutePath());
+        return base;
     }
 
     @Override
