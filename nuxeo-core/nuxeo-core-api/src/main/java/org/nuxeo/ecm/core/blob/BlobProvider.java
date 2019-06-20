@@ -60,6 +60,25 @@ public interface BlobProvider {
     void close();
 
     /**
+     * Checks whether this blob provider uses "record mode".
+     * <p>
+     * Record mode has the following characteristics:
+     * <ul>
+     * <li>transactional (blobs aren't actually written/deleted until the transaction commits, and transaction rollback
+     * is possible),
+     * <li>doesn't do de-duplication, each blob is stored individually,
+     * <li>stores only one blob per document (the main blob, file:content),
+     * <li>can replace or delete a document's blob,
+     * <li>has hooks to store additional metadata alongside the blob (for diagnostics/recovery).
+     * </ul>
+     *
+     * @since 11.1
+     */
+    default boolean isRecordMode() {
+        return false;
+    }
+
+    /**
      * Checks whether this blob provider is transient: blobs may disappear after a while, so a caller should not rely on
      * them being available forever.
      *
@@ -83,10 +102,37 @@ public interface BlobProvider {
      * Called to store a user-created blob.
      *
      * @param blob the blob
+     * @param id the document id
+     * @param xpath the blob xpath
+     * @return the blob key
+     * @since 11.1
+     */
+    default String writeBlob(Blob blob, String id, String xpath) throws IOException {
+        return writeBlob(blob);
+    }
+
+    /**
+     * Writes a {@link Blob} to storage and returns information about it.
+     * <p>
+     * Called to store a user-created blob.
+     *
+     * @param blob the blob
      * @return the blob key
      * @since 9.2
      */
     String writeBlob(Blob blob) throws IOException;
+
+    /**
+     * Deletes a blob from storage. Only meaningful for a record blob provider.
+     *
+     * @param id the document id
+     * @param xpath the blob xpath
+     * @see #isRecordMode
+     * @since 11.1
+     */
+    default void deleteBlob(String id, String xpath) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Checks if user update is supported.
