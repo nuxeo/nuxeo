@@ -25,9 +25,10 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Logger for deprecation warnings.
+ * Logger for deprecation that can hold the version from which this deprecation starts.
  * <p>
- * Can be activated only when dev mode is set, and can hold the version from which deprecation starts.
+ * If the dev mode is set to {@code true} then logs the message as warning, otherwise logs as info if this level is
+ * enabled, for more details see <a href="https://doc.nuxeo.com/nxdoc/logs-analysis/">documentation</a>
  *
  * @since 7.4
  */
@@ -45,8 +46,10 @@ public class DeprecationLogger {
     }
 
     public static void log(String message) {
-        if (Framework.isDevModeSet()) {
+        if (Framework.isDevModeSet() || Framework.isTestModeSet()) {
             log.warn(message);
+        } else {
+            log.info(message);
         }
     }
 
