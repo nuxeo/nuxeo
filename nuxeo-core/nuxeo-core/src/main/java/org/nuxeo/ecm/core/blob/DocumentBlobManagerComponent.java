@@ -183,7 +183,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (blobProvider == null) {
             throw new NuxeoException("No registered blob provider with id: " + dispatch.providerId);
         }
-        String key = blobProvider.writeBlob(blob);
+        String key = blobProvider.writeBlob(blob, doc.getUUID(), xpath);
         if (dispatch.addPrefix) {
             key = dispatch.providerId + ':' + key;
         }
