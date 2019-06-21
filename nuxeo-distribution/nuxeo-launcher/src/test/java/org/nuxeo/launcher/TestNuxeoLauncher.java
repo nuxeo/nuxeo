@@ -179,13 +179,11 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
 
     /**
      * Command "register-trial" is deprecated since 9.3.
-     * <p>
-     * Set timeout to 1 second, {@code timeout = 1000}, to prevent this test takes too long time to finish. The only
-     * case it can happen is when Nuxeo Launcher waits for user value from standard input (stdin). It means somebody has
-     * changed the implementation of #registerTrial.
+     * 
+     * @deprecated since 9.3
      */
-    @Test(timeout = 1000) // 1s. Explanation in Javadoc.
-    @SuppressWarnings("deprecation")
+    @Test
+    @Deprecated
     public void testRegisterTrialIsDeprecated() throws Exception {
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("deprecated");
