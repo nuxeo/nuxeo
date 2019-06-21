@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ import org.junit.rules.ExpectedException;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.launcher.config.AbstractConfigurationTest;
-import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.info.InstanceInfo;
@@ -165,8 +164,8 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         InstanceInfo info = launcher.getInfo();
         assertNotNull("Failed to get instance info", info);
         List<String> clidLines = Files.readAllLines(instanceClid, UTF_8);
-        LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(clidLines.get(0)
-                + LogicalInstanceIdentifier.ID_SEP + clidLines.get(1), "expected clid");
+        LogicalInstanceIdentifier expectedClid = new LogicalInstanceIdentifier(
+                clidLines.get(0) + LogicalInstanceIdentifier.ID_SEP + clidLines.get(1), "expected clid");
         assertEquals("Not the right instance.clid file: ", expectedClid.getCLID(), info.clid);
     }
 
@@ -181,10 +180,9 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     /**
      * Command "register-trial" is deprecated since 9.3.
      * <p>
-     * Set timeout to 1 second, {@code timeout = 1000}, to prevent this test takes too long time to finish.
-     * The only case it can happen is when Nuxeo Launcher waits for user
-     * value from standard input (stdin). It means somebody has changed
-     * the implementation of #registerTrial.
+     * Set timeout to 1 second, {@code timeout = 1000}, to prevent this test takes too long time to finish. The only
+     * case it can happen is when Nuxeo Launcher waits for user value from standard input (stdin). It means somebody has
+     * changed the implementation of #registerTrial.
      */
     @Test(timeout = 1000) // 1s. Explanation in Javadoc.
     @SuppressWarnings("deprecation")
@@ -204,7 +202,8 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     @Test
     public void testParamSeparator() throws Exception {
         // failing syntax: "value1" is parsed as an argument to "--encrypt" option
-        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "value1", "value2" });
+        NuxeoLauncher launcher = NuxeoLauncher.createLauncher(
+                new String[] { "encrypt", "--encrypt", "value1", "value2" });
         assertTrue(launcher.commandIs("encrypt"));
         assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_ENCRYPT));
         assertEquals("value1", launcher.cmdLine.getOptionValue(NuxeoLauncher.OPTION_ENCRYPT));
@@ -221,8 +220,8 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "value1", "value2", "--encrypt" });
         checkParsing(launcher);
         // 2) option with an argument
-        launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "AES/ECB/PKCS5Padding",
-                "value1", "value2" });
+        launcher = NuxeoLauncher.createLauncher(
+                new String[] { "encrypt", "--encrypt", "AES/ECB/PKCS5Padding", "value1", "value2" });
         checkParsing(launcher);
         // 3) option without argument separated with "--"
         launcher = NuxeoLauncher.createLauncher(new String[] { "encrypt", "--encrypt", "--", "value1", "value2" });
@@ -248,7 +247,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         assertArrayEquals(new String[] { "someKey" }, launcher.params);
     }
 
-    private void checkParsing(NuxeoLauncher launcher) throws ConfigurationException, GeneralSecurityException {
+    private void checkParsing(NuxeoLauncher launcher) throws GeneralSecurityException {
         assertTrue(launcher.commandIs("encrypt"));
         assertTrue(launcher.cmdLine.hasOption(NuxeoLauncher.OPTION_ENCRYPT));
         assertEquals("AES/ECB/PKCS5Padding",
