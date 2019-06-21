@@ -7,44 +7,29 @@
     <version>11.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
-  <artifactId>nuxeo-platform-error-web</artifactId>
-  <name>Nuxeo web error addon</name>
-  <description>
-    Addon performing errors on the web side for automated testing of the
-    exception handling system
-  </description>
+  <artifactId>nuxeo-platform-error-web-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo web error addon parent</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-directory-sql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-audit-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.webengine</groupId>
-      <artifactId>nuxeo-webengine-core</artifactId>
-    </dependency>
+  <modules>
+    <module>nuxeo-platform-error-web</module>
+  </modules>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.seam</groupId>
-      <artifactId>jboss-seam</artifactId>
-    </dependency>
-  </dependencies>
+  <profiles>
+    <profile>
+      <!-- Activate to unzip a Nuxeo and run IT tests against it -->
+      <id>itest</id>
+      <modules>
+        <module>ftest/webdriver</module>
+      </modules>
+    </profile>
+    <profile>
+      <!-- Additional profile to select these tests to be run during test&push -->
+      <id>itestplatform</id>
+      <modules>
+        <module>ftest/webdriver</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>
