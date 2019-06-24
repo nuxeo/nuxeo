@@ -18,11 +18,11 @@
  */
 package org.nuxeo.runtime.management.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProbeStatus {
 
