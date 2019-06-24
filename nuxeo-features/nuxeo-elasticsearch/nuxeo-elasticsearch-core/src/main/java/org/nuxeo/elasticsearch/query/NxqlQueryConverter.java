@@ -23,8 +23,11 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_SCORE_FIELD;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
 import java.io.StringReader;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -55,6 +58,7 @@ import org.nuxeo.ecm.core.query.sql.model.EsHint;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.FromClause;
 import org.nuxeo.ecm.core.query.sql.model.FromList;
+import org.nuxeo.ecm.core.query.sql.model.Function;
 import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
@@ -65,10 +69,12 @@ import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.query.sql.model.SelectClause;
+import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -172,6 +178,22 @@ public final class NxqlQueryConverter {
                     String value = null;
                     if (node.rvalue instanceof Literal) {
                         value = ((Literal) node.rvalue).asString();
+                    } else if (node.rvalue instanceof Function) {
+                        Function function = (Function) node.rvalue;
+                        String func = function.name;
+                        if (NXQL.NOW_FUNCTION.equalsIgnoreCase(func)) {
+                            String periodAndDurationText;
+                            if (function.args == null || function.args.size() != 1) {
+                                periodAndDurationText = null;
+                            } else {
+                                periodAndDurationText = ((StringLiteral) function.args.get(0)).value;
+                            }
+                            ZonedDateTime dateTime = NXQL.nowPlusPeriodAndDuration(periodAndDurationText);
+                            Calendar calendar = GregorianCalendar.from(dateTime);
+                            value = DateParser.formatW3CDateTime(calendar);
+                        } else {
+                            throw new IllegalArgumentException("Unknown function: " + func);
+                        }
                     } else if (node.rvalue != null) {
                         value = node.rvalue.toString();
                     }

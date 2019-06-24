@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,6 +33,7 @@ import java.util.regex.Pattern;
 import org.bson.Document;
 import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
@@ -494,7 +496,25 @@ public abstract class MongoDBAbstractQueryBuilder {
     }
 
     public Object walkFunction(Function func) {
-        throw new UnsupportedOperationException(func.name);
+        String name = func.name;
+        if (NXQL.NOW_FUNCTION.equalsIgnoreCase(name)) {
+            String periodAndDurationText;
+            if (func.args == null || func.args.size() != 1) {
+                periodAndDurationText = null;
+            } else {
+                periodAndDurationText = ((StringLiteral) func.args.get(0)).value;
+            }
+            ZonedDateTime dateTime;
+            try {
+                dateTime = NXQL.nowPlusPeriodAndDuration(periodAndDurationText);
+            } catch (IllegalArgumentException e) {
+                throw new QueryParseException(e);
+            }
+            DateLiteral dateLiteral = new DateLiteral(dateTime);
+            return walkDateLiteral(dateLiteral);
+        } else {
+            throw new QueryParseException("Function not supported: " + func);
+        }
     }
 
     protected FieldInfo walkReference(Operand value) {

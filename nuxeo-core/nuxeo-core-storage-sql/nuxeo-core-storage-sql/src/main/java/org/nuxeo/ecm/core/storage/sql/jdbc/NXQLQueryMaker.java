@@ -25,6 +25,8 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS
 
 import java.io.Serializable;
 import java.sql.Types;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,6 +45,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FullTextUtils;
+import org.nuxeo.common.utils.PeriodAndDuration;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.trash.TrashService;
@@ -1435,16 +1438,29 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitFunction(Function node) {
-            if (!inSelect) {
-                throw new QueryParseException("Function not supported in WHERE clause: " + node);
-            }
             String func = node.name.toUpperCase();
-            Operand arg;
-            if (!AGGREGATE_FUNCTIONS.contains(func) || node.args.size() != 1
-                    || !((arg = node.args.get(0)) instanceof Reference)) {
-                throw new QueryParseException("Function not supported: " + node);
-            }
-            visitReference((Reference) arg);
+            if (inSelect) {
+                Operand arg;
+                if (!AGGREGATE_FUNCTIONS.contains(func) || node.args.size() != 1
+                        || !((arg = node.args.get(0)) instanceof Reference)) {
+                    throw new QueryParseException("Function not supported in SELECT clause: " + node);
+                }
+                visitReference((Reference) arg);
+            } else if (inOrderBy) {
+                throw new QueryParseException("Function not supported in ORDER BY clause: " + node);
+            } else {
+                if (NXQL.NOW_FUNCTION.equals(func)) {
+                    if (node.args == null || node.args.isEmpty()) {
+                        // ok, no arg
+                    } else if (node.args.size() == 1 && node.args.get(0) instanceof StringLiteral) {
+                        // ok, one string arg
+                    } else {
+                        throw new QueryParseException("Function not supported in WHERE clause: " + node);
+                    }
+                } else {
+                    throw new QueryParseException("Function not supported in WHERE clause: " + node);
+                }
+             }
         }
 
         @Override
@@ -2532,36 +2548,57 @@ public class NXQLQueryMaker implements QueryMaker {
 
         @Override
         public void visitFunction(Function node) {
-            String func = node.name.toUpperCase();
-            Reference ref = (Reference) node.args.get(0);
-            ref.accept(this); // whatColumns / whatKeys for column
+            if (inSelect) {
+                // AGGREGATE_FUNCTIONS
+                String func = node.name.toUpperCase();
+                Reference ref = (Reference) node.args.get(0);
+                ref.accept(this); // whatColumns / whatKeys for column
 
-            // replace column info with aggregate
-            Column col = whatColumns.removeLast();
-            String key = whatKeys.removeLast();
-            final String aggFQN = func + "(" + col.getFullQuotedName() + ")";
-            final ColumnType aggType = getAggregateType(func, col.getType());
-            final int aggJdbcType = dialect.getJDBCTypeAndString(aggType).jdbcType;
-            Column cc = new Column(col, col.getTable()) {
-                private static final long serialVersionUID = 1L;
+                // replace column info with aggregate
+                Column col = whatColumns.removeLast();
+                String key = whatKeys.removeLast();
+                final String aggFQN = func + "(" + col.getFullQuotedName() + ")";
+                final ColumnType aggType = getAggregateType(func, col.getType());
+                final int aggJdbcType = dialect.getJDBCTypeAndString(aggType).jdbcType;
+                Column cc = new Column(col, col.getTable()) {
+                    private static final long serialVersionUID = 1L;
 
-                @Override
-                public String getFullQuotedName() {
-                    return aggFQN;
+                    @Override
+                    public String getFullQuotedName() {
+                        return aggFQN;
+                    }
+
+                    @Override
+                    public ColumnType getType() {
+                        return aggType;
+                    }
+
+                    @Override
+                    public int getJdbcType() {
+                        return aggJdbcType;
+                    }
+                };
+                whatColumns.add(cc);
+                whatKeys.add(func + "(" + key + ")");
+            } else if (inOrderBy) {
+                throw new AssertionError(); // case already caught by QueryAnalyzer
+            } else {
+                // NOW_FUNCTION
+                String periodAndDurationText;
+                if (node.args == null || node.args.size() != 1) {
+                    periodAndDurationText = null;
+                } else {
+                    periodAndDurationText = ((StringLiteral) node.args.get(0)).value;
                 }
-
-                @Override
-                public ColumnType getType() {
-                    return aggType;
+                ZonedDateTime dateTime;
+                try {
+                    dateTime = NXQL.nowPlusPeriodAndDuration(periodAndDurationText);
+                } catch (IllegalArgumentException e) {
+                    throw new QueryParseException(e);
                 }
-
-                @Override
-                public int getJdbcType() {
-                    return aggJdbcType;
-                }
-            };
-            whatColumns.add(cc);
-            whatKeys.add(func + "(" + key + ")");
+                DateLiteral dateLiteral = new DateLiteral(dateTime);
+                visitDateLiteral(dateLiteral);
+            }
         }
 
         protected void visitScore() {
