@@ -21,6 +21,7 @@ package org.nuxeo.runtime.management.api;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,6 +124,13 @@ public class ProbeStatus {
         }
         sb.append("</dl>");
         return sb.toString();
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Map<String, String> getInfos() {
+        return Collections.unmodifiableMap(infos);
     }
 
 }
