@@ -2538,6 +2538,26 @@ public class TestSQLRepositoryQuery {
     }
 
     @Test
+    public void testQueryNow() throws Exception {
+        setupDocTest();
+        // sleep a second to be sure that the document is found
+        nextTransaction();
+        Thread.sleep(1000); // 1s
+
+        String testQuery = "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < NOW() AND ecm:isProxy = 0";
+        DocumentModelList docs = session.query(testQuery);
+        assertEquals(1, docs.size());
+        // test with a period
+        testQuery = "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < NOW('PT1H') AND ecm:isProxy = 0";
+        docs = session.query(testQuery);
+        assertEquals(1, docs.size());
+        // negative period
+        testQuery = "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified > NOW('-PT1H') AND ecm:isProxy = 0";
+        docs = session.query(testQuery);
+        assertEquals(1, docs.size());
+    }
+
+    @Test
     public void testQueryIsNull() throws Exception {
         DocumentModelList dml;
         createDocs();

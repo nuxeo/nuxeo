@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -660,6 +661,41 @@ public class TestNxqlConversion {
                 "    \"boost\" : 1.0\n" +
                 "  }\n" +
                 "}", es);
+    }
+
+    @Test
+    public void testConverterNOW() {
+        // force NXQL.nowPlusPeriodAndDuration to return a known date/time, for tests
+        Framework.getProperties().put(NXQL.TEST_NXQL_NOW, "2001-02-03T04:05:06.007Z");
+        String es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 = NOW()").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"term\" : {\n" +
+                "        \"f1\" : {\n" +
+                "          \"value\" : \"2001-02-03T04:05:06.007Z\",\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
+                "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 = NOW('-P1D')").toString();
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"constant_score\" : {\n" +
+                "    \"filter\" : {\n" +
+                "      \"term\" : {\n" +
+                "        \"f1\" : {\n" +
+                "          \"value\" : \"2001-02-02T04:05:06.007Z\",\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"boost\" : 1.0\n" +
+                "  }\n" +
+                "}", es);
+        Framework.getProperties().remove(NXQL.TEST_NXQL_NOW);
     }
 
     @Test
