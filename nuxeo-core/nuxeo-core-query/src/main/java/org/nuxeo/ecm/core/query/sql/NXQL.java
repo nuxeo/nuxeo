@@ -18,12 +18,28 @@
  */
 package org.nuxeo.ecm.core.query.sql;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+
+import org.nuxeo.common.utils.PeriodAndDuration;
+import org.nuxeo.runtime.api.Framework;
+
 /**
  * This defines the constants for NXQL queries.
  *
  * @author Florent Guillaume
  */
 public class NXQL {
+
+    /**
+     * Property containing the test value of the current date for {@link #nowPlusPeriodAndDuration}.
+     * <p>
+     * Only for tests, not a public API.
+     *
+     * @since 11.1
+     */
+    public static final String TEST_NXQL_NOW = "test.nxql.now";
 
     // constant utility class
     private NXQL() {
@@ -204,6 +220,17 @@ public class NXQL {
     public static final String ECM_ISTRASHED = "ecm:isTrashed";
 
     /**
+     * The function returning the current datetime. It can optionally have as an argument a duration that will be added
+     * to the current datetime, expressed as a ISO 8601 period.
+     * <p>
+     * See {@link PeriodAndDuration#parse} for the exact format.
+     *
+     * @see PeriodAndDuration#parse
+     * @since 11.1
+     */
+    public static final String NOW_FUNCTION = "NOW";
+
+    /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>
      * Any single quote or backslash characters are escaped with a backslash.
@@ -230,6 +257,49 @@ public class NXQL {
         // quote -> backslash quote
         // newline -> backslash n
         return s.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'").replaceAll("\n", "\\\\n");
+    }
+
+    /**
+     * Returns the current dateTime to which the period and duration (if present) has been added.
+     *
+     * @param periodAndDurationText the period and duration as text, or {@code null}
+     * @return the current dateTime to which the period and duration has been added
+     * @throws IllegalArgumentException if the period and duration cannot be parsed
+     * @since 11.1
+     */
+    // also used by NxqlQueryConverter
+    public static ZonedDateTime nowPlusPeriodAndDuration(String periodAndDurationText) {
+        ZonedDateTime now;
+        if (Framework.getProperty(TEST_NXQL_NOW) != null) {
+            now = ZonedDateTime.parse(Framework.getProperty(TEST_NXQL_NOW));
+        } else {
+            now = ZonedDateTime.now(ZoneOffset.UTC);
+        }
+        if (periodAndDurationText == null) {
+            return now;
+        } else {
+            return addPeriondAndDuration(now, periodAndDurationText);
+        }
+    }
+
+    /**
+     * Adds to the given dateTime the period and duration, expressed as text.
+     *
+     * @param dateTime the dateTime
+     * @param text the period and duration, as text
+     * @return the dateTime to which the period and duration has been added
+     * @throws IllegalArgumentException if the period and duration cannot be parsed
+     * @since 11.1
+     */
+    // public for tests
+    public static ZonedDateTime addPeriondAndDuration(ZonedDateTime dateTime, String text) {
+        PeriodAndDuration pd;
+        try {
+            pd = PeriodAndDuration.parse(text);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid period: " + text, e);
+        }
+        return dateTime.plus(pd.period).plus(pd.duration);
     }
 
 }
