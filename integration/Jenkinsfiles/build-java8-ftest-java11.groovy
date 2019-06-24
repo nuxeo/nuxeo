@@ -24,15 +24,15 @@ properties([
         [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
         [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
                 // branch hardcoded for now
-                [$class: 'StringParameterDefinition', name: 'BRANCH', description: '', defaultValue: 'master'],
-                [$class: 'StringParameterDefinition', name: 'PARENT_BRANCH', description: '', defaultValue: 'master'],
+                [$class: 'StringParameterDefinition', name: 'BRANCH', description: '', defaultValue: '10.10'],
+                [$class: 'StringParameterDefinition', name: 'PARENT_BRANCH', description: '', defaultValue: '10.10'],
                 [$class: 'BooleanParameterDefinition', name: 'CLEAN', description: '', defaultValue: true],
         ]],
         pipelineTriggers([
             triggers: [
                 [
                     $class          : 'ReverseBuildTrigger',
-                    upstreamProjects: "/master/nuxeo-distribution-master",
+                    upstreamProjects: "/10.10/nuxeo-distribution-10.10",
                     threshold       : hudson.model.Result.SUCCESS
                 ]
             ]
