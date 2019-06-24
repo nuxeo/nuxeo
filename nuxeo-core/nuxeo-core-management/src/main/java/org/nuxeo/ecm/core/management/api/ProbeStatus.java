@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.management.api;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,4 +126,10 @@ public class ProbeStatus {
         return sb.toString();
     }
 
+    /**
+     * @since 11.1
+     */
+    public Map<String, String> getInfos() {
+        return Collections.unmodifiableMap(infos);
+    }
 }
