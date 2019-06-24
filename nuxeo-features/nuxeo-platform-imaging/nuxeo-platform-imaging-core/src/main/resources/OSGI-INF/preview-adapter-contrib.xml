@@ -13,11 +13,4 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManagerComponent"
-    point="MimeTypePreviewer">
-    <previewer class="org.nuxeo.ecm.platform.picture.preview.adapter.PicturePreviewer">
-      <pattern>image.*</pattern>
-    </previewer>
-  </extension>
-
 </component>
