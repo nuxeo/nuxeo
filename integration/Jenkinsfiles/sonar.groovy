@@ -25,9 +25,9 @@ properties([
     [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/nuxeo/nuxeo/'],
     [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false],
     [$class: 'ParametersDefinitionProperty', parameterDefinitions: [
-        [$class: 'StringParameterDefinition', defaultValue: 'master', name: 'BRANCH',
+        [$class: 'StringParameterDefinition', defaultValue: '10.10', name: 'BRANCH',
             description: 'Branch to build. It must exist on the root repository.'],
-        [$class: 'StringParameterDefinition', defaultValue: 'master', name: 'PARENT_BRANCH',
+        [$class: 'StringParameterDefinition', defaultValue: '10.10', name: 'PARENT_BRANCH',
             description: """Fallback branch (aka parent or target branch. It is the branch to use on repositories
 without BRANCH. That's the branch target for the final merge."""]
     ]],
