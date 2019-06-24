@@ -8,7 +8,7 @@
   <service>
     <provide interface="org.nuxeo.usermapper.service.UserMapperService" />
   </service>
-  
+
   <require>org.nuxeo.automation.scripting.internals.AutomationScriptingComponent</require>
 
   <documentation>
@@ -49,7 +49,7 @@
         <mapper name="javaDummy"
           class="org.nuxeo.usermapper.test.dummy.DummyUserMapper">
           <parameters>
-            <param name="param1">value1</param>
+            <parameter name="param1">value1</parameter>
           </parameters>
         </mapper>
 
