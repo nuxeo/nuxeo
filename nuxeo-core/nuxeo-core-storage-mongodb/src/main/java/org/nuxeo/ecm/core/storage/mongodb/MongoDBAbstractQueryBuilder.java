@@ -32,7 +32,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.bson.Document;
+import org.joda.time.DateTime;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DoubleLiteral;
@@ -495,7 +497,25 @@ public abstract class MongoDBAbstractQueryBuilder {
     }
 
     public Object walkFunction(Function func) {
-        throw new UnsupportedOperationException(func.name);
+        String name = func.name;
+        if (NXQL.NOW_FUNCTION.equalsIgnoreCase(name)) {
+            String periodAndDurationText;
+            if (func.args == null || func.args.size() != 1) {
+                periodAndDurationText = null;
+            } else {
+                periodAndDurationText = ((StringLiteral) func.args.get(0)).value;
+            }
+            DateTime dateTime;
+            try {
+                dateTime = NXQL.nowPlusPeriodAndDuration(periodAndDurationText);
+            } catch (IllegalArgumentException e) {
+                throw new QueryParseException(e);
+            }
+            DateLiteral dateLiteral = new DateLiteral(dateTime);
+            return walkDateLiteral(dateLiteral);
+        } else {
+            throw new QueryParseException("Function not supported: " + func);
+        }
     }
 
     protected FieldInfo walkReference(Operand value) {
