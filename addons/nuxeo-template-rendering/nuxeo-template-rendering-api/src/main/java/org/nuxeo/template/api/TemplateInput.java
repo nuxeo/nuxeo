@@ -20,12 +20,18 @@
 
 package org.nuxeo.template.api;
 
+import static org.nuxeo.template.api.InputType.BooleanValue;
+import static org.nuxeo.template.api.InputType.DateValue;
+import static org.nuxeo.template.api.InputType.ListValue;
+import static org.nuxeo.template.api.InputType.MapValue;
+import static org.nuxeo.template.api.InputType.StringValue;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.nuxeo.template.api.InputType.StringValue;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -57,6 +63,8 @@ public class TemplateInput implements Serializable {
 
     protected boolean autoLoop = false;
 
+    private Map<String, TemplateInput> mapValue;
+
     public TemplateInput(String name) {
         this.name = name;
         this.stringValue = "";
@@ -83,6 +91,7 @@ public class TemplateInput implements Serializable {
         item.source = source;
         item.desciption = desciption;
         item.stringValue = stringValue;
+        item.mapValue = mapValue;
         item.type = type;
         item.readOnly = readOnly;
         item.autoLoop = autoLoop;
@@ -95,6 +104,7 @@ public class TemplateInput implements Serializable {
         this.autoLoop = other.autoLoop;
         this.booleanValue = other.booleanValue;
         this.dateValue = other.dateValue;
+        this.mapValue = other.mapValue;
         this.desciption = other.desciption;
         this.readOnly = other.readOnly;
         this.source = other.source;
@@ -123,10 +133,13 @@ public class TemplateInput implements Serializable {
         String str = name + " (" + type + ") : '";
         if (StringValue.equals(type) && stringValue != null) {
             str = str + stringValue;
-        } else if (InputType.DateValue.equals(type) && dateValue != null) {
+        } else if (DateValue.equals(type) && dateValue != null) {
             str = str + dateValue.toString();
-        } else if (InputType.BooleanValue.equals(type) && booleanValue != null) {
+        } else if (BooleanValue.equals(type) && booleanValue != null) {
             str = str + booleanValue.toString();
+        } else if ((MapValue.equals(type) || (ListValue == type))
+                && mapValue != null) {
+            str = str + mapValue.toString();
         } else {
             str = str + source;
         }
@@ -180,6 +193,24 @@ public class TemplateInput implements Serializable {
     public void setDateValue(Object dateValue) {
         this.dateValue = (Date) dateValue;
     }
+
+    public void setMapValue(Object value) {
+        if (value instanceof List) {
+            this.mapValue = new LinkedHashMap<>();
+            for (TemplateInput child : (List<TemplateInput>) value) {
+                mapValue.put(child.getName(), child);
+            }
+        } else if (value instanceof Map) {
+            this.mapValue = (Map<String, TemplateInput>) value;
+        }
+    }
+
+    public Map<String, TemplateInput> getMapValue() {
+        return mapValue;
+    }
+
+    public List<TemplateInput> getListValue() {
+        return new ArrayList<>(mapValue.values());
     }
 
     public InputType getType() {
@@ -232,6 +263,12 @@ public class TemplateInput implements Serializable {
 
     public static TemplateInput factory(String name,
                                         InputType type,
+                                        Object value) {
+        return factory(name, type, value, null, false, false);
+    }
+
+    public static TemplateInput factory(String name,
+                                        InputType type,
                                         Object value,
                                         String description,
                                         Boolean isReadonly,
@@ -250,6 +287,10 @@ public class TemplateInput implements Serializable {
                 break;
             case DateValue:
                 param.setDateValue(value);
+                break;
+            case MapValue:
+            case ListValue:
+                param.setMapValue(value);
                 break;
             case DocumentProperty:
             case PictureProperty:

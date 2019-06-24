@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,8 +77,9 @@ public class XMLSerializer implements Serializer {
                     throw new DocumentException(e);
                 }
                 break;
-           case MapValue:
-                Map<String, TemplateInput> listValue = new HashMap<>();
+            case MapValue:
+            case ListValue:
+                Map<String, TemplateInput> listValue = new LinkedHashMap<>();
                 for (Element childNode : node.elements()) {
                     TemplateInput childParam = extractTemplateInputFromXMLNode(childNode);
                     if (childNode != null) {

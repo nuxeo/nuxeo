@@ -1,5 +1,19 @@
 package org.nuxeo.template.serializer.executors;
 
+import static org.junit.Assert.assertEquals;
+import static org.nuxeo.template.api.InputType.BooleanValue;
+import static org.nuxeo.template.api.InputType.Content;
+import static org.nuxeo.template.api.InputType.DateValue;
+import static org.nuxeo.template.api.InputType.DocumentProperty;
+import static org.nuxeo.template.api.InputType.PictureProperty;
+import static org.nuxeo.template.api.InputType.StringValue;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,16 +22,8 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.serializer.service.SerializerService;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class})
@@ -39,71 +45,80 @@ public class TestXMLSerialization {
     @Test
     public void whenValueIsEmpty_shouldReturnEmptyXML() {
         List<TemplateInput> params = new ArrayList<>();
+
         String xml = serializer.doSerialization(params);
+
         assertXMLEquals("", xml);
     }
 
     @Test
     public void whenValueHasOneString_shouldReturnListWithOneString() {
         List<TemplateInput> params = new ArrayList<>();
-        params.add(new TemplateInput("field1", "Value1"));
+        params.add(TemplateInput.factory("field1", StringValue, "Value1"));
+
         String xml = serializer.doSerialization(params);
+
         assertXMLEquals("<nxdt:field name=\"field1\" type=\"String\" value=\"Value1\"/>", xml);
     }
 
     @Test
     public void whenValueHasOneDate_shouldReturnListWithOneDate() {
         List<TemplateInput> params = new ArrayList<>();
-        Calendar cal = Calendar.getInstance();
-        cal.set(2017, Calendar.JULY, 14, 13, 14, 15); // after 12 to check hour format
-        cal.set(Calendar.MILLISECOND, 678);
-        TemplateInput input = new TemplateInput("field2", new Date(cal.getTimeInMillis()));
+        Date date = createDate(2017, Calendar.JULY, 14, 13, 14, 15, 678);
+        TemplateInput input = TemplateInput.factory("field2", DateValue, date);
         params.add(input);
+
         String xml = serializer.doSerialization(params);
+
         assertXMLEquals("<nxdt:field name=\"field2\" type=\"Date\" value=\"2017-07-14 13:14:15.678\"/>", xml);
     }
 
     @Test
     public void whenValueHasOneBoolean_shouldReturnListWithOneBoolean() {
         List<TemplateInput> params = new ArrayList<>();
-        TemplateInput input = new TemplateInput("field3", Boolean.TRUE);
-        params.add(input);
+        params.add(TemplateInput.factory("field3", BooleanValue, true));
+
         String xml = serializer.doSerialization(params);
+
         assertXMLEquals("<nxdt:field name=\"field3\" type=\"Boolean\" value=\"true\"/>", xml);
     }
 
     @Test
     public void whenValueHasOneDocumentProperty_shouldReturnListWithASourceDescription() {
         List<TemplateInput> params = new ArrayList<>();
-        TemplateInput input = new TemplateInput("field4");
-        input.setType(InputType.DocumentProperty);
-        input.setSource("dc:description");
-        params.add(input);
+        params.add(TemplateInput.factory("field4", DocumentProperty, "dc:description"));
+
         String xml = serializer.doSerialization(params);
+
         assertXMLEquals("<nxdt:field name=\"field4\" type=\"source\" source=\"dc:description\"/>", xml);
     }
 
     @Test
     public void whenValueHasOnePictureProperty_shouldReturnListWithThePictureValue() {
         List<TemplateInput> params = new ArrayList<>();
-        TemplateInput input = new TemplateInput("field5");
-        input.setSource("file:content");
-        input.setType(InputType.PictureProperty);
-        params.add(input);
+        params.add(TemplateInput.factory("field5", PictureProperty, "file:content"));
+
         String xml = serializer.doSerialization(params);
+
         assertXMLEquals("<nxdt:field name=\"field5\" type=\"picture\" source=\"file:content\"/>", xml);
     }
 
     @Test
     public void whenValueHasOneContent_shouldReturnListWithTheSourceValue() {
         List<TemplateInput> params = new ArrayList<>();
-        TemplateInput input = new TemplateInput("field6");
-        input.setSource("note:note");
-        input.setType(InputType.Content);
-        params.add(input);
+        params.add(TemplateInput.factory("field6", Content, "note:note"));
+
         String xml = serializer.doSerialization(params);
+
         assertXMLEquals("<nxdt:field name=\"field6\" type=\"content\" source=\"note:note\"/>", xml);
     }
+
+    private Date createDate(int year, int july, int dayOfMonth, int hourOfDay, int minute, int second, int millisec) {
+        Calendar calendar = new GregorianCalendar(year, july, dayOfMonth, hourOfDay, minute, second);
+        calendar.set(Calendar.MILLISECOND, millisec);
+        return calendar.getTime();
+    }
+
 
     private void assertXMLEquals(String expected, String actual) {
         if (expected == null || expected.trim().isEmpty()) {

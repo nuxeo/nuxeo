@@ -35,6 +35,8 @@ public enum InputType {
     StringValue(String.class.getSimpleName()),
     BooleanValue(Boolean.class.getSimpleName()),
     DateValue(Date.class.getSimpleName()),
+    MapValue(Map.class.getSimpleName()),
+    ListValue(List.class.getSimpleName()),
     DocumentProperty("source"),
     PictureProperty("picture"),
     Content("content");
