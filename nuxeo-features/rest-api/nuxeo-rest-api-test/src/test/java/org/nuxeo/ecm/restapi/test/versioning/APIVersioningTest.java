@@ -35,10 +35,10 @@ import org.nuxeo.ecm.core.io.APIVersion;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -60,9 +60,6 @@ public class APIVersioningTest {
 
     @Inject
     protected ServletContainerFeature servletContainerFeature;
-
-    @Inject
-    protected LogFeature logFeature;
 
     protected Client client;
 
@@ -193,13 +190,11 @@ public class APIVersioningTest {
     }
 
     @Test
+    @ConsoleLogLevelThreshold("FATAL")
     public void testNewWriter() throws IOException {
-        logFeature.hideErrorFromConsoleLog();
         try (CloseableClientResponse r = CloseableClientResponse.of(
                 getRESTAPIResource(APIVersion.V1.toInt()).path("foo").path("dummy2").get(ClientResponse.class))) {
             assertEquals(500, r.getStatus());
-        } finally {
-            logFeature.restoreConsoleLog();
         }
 
         ClientResponse response = getRESTAPIResource(APIVersion.V11.toInt()).path("foo")

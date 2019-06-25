@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -59,22 +59,14 @@ public class EmptyDocumentTest extends BaseTest {
 
     protected static final Map<String, String> HEADERS = Collections.singletonMap("properties", "*");
 
-    @Inject
-    protected LogFeature logFeature;
-
     @Test
+    @ConsoleLogLevelThreshold("ERROR")
     public void testEmptyDocumentCreationWithParent() throws IOException {
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
-        try {
-            // hide expected logs of IllegalParameterException
-            logFeature.hideWarningFromConsoleLog();
-            try (CloseableClientResponse response = getResponse(RequestType.GET,
-                    "id/" + folder.getId() + "/@emptyWithDefault")) {
-                assertError(response);
-            }
-        } finally {
-            logFeature.restoreConsoleLog();
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + folder.getId() + "/@emptyWithDefault")) {
+            assertError(response);
         }
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -100,15 +92,10 @@ public class EmptyDocumentTest extends BaseTest {
     }
 
     @Test
+    @ConsoleLogLevelThreshold("ERROR")
     public void testEmptyDocumentCreationWithoutParent() throws IOException {
-        try {
-            // hide expected logs of IllegalParameterException
-            logFeature.hideWarningFromConsoleLog();
-            try (CloseableClientResponse response = getResponse(RequestType.GET, "@emptyWithDefault")) {
-                assertError(response);
-            }
-        } finally {
-            logFeature.restoreConsoleLog();
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "@emptyWithDefault")) {
+            assertError(response);
         }
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();

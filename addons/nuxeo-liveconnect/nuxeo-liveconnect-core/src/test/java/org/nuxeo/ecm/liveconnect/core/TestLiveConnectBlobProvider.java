@@ -53,8 +53,8 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
@@ -71,9 +71,6 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
 
     @Inject
     private BlobManager blobManager;
-
-    @Inject
-    protected LogFeature logFeature;
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
@@ -115,37 +112,35 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
 
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    @ConsoleLogLevelThreshold("FATAL")
     public void testReadBrokenBlob() throws Exception {
-        logFeature.hideErrorFromConsoleLog();
-        try {
-            BlobInfo blobInfo = createBlobInfo(INVALID_FILE_ID);
-            Blob blob = blobProvider.readBlob(blobInfo);
 
-            List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
-            assertEquals(1, caughtEvents.size());
-            assertEquals("Failed to access file: LiveConnectFileInfo{user=tester@example.com, fileId=invalid-file-id}",
-                    caughtEvents.get(0));
-            logCaptureResult.clear();
+        BlobInfo blobInfo = createBlobInfo(INVALID_FILE_ID);
+        Blob blob = blobProvider.readBlob(blobInfo);
 
-            assertTrue(blob instanceof SimpleManagedBlob);
-            assertEquals(blobInfo.key, ((SimpleManagedBlob) blob).getKey());
-            // check error blob returned:
-            assertEquals(ErrorLiveConnectFile.FILENAME, blob.getFilename());
-            assertEquals(ErrorLiveConnectFile.MIME_TYPE, blob.getMimeType());
-            assertNull(blob.getEncoding());
-            assertEquals(0, blob.getLength());
-            byte[] bytes;
-            try (InputStream is = blob.getStream()) {
-                bytes = IOUtils.toByteArray(is);
-            }
-            assertEquals(0, bytes.length);
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals("Failed to access file: LiveConnectFileInfo{user=tester@example.com, fileId=invalid-file-id}",
+                caughtEvents.get(0));
+        logCaptureResult.clear();
 
-            caughtEvents = logCaptureResult.getCaughtEventMessages();
-            assertEquals(1, caughtEvents.size());
-            assertEquals("Failed to access file: core:tester@example.com:invalid-file-id", caughtEvents.get(0));
-        } finally {
-            logFeature.restoreConsoleLog();
+        assertTrue(blob instanceof SimpleManagedBlob);
+        assertEquals(blobInfo.key, ((SimpleManagedBlob) blob).getKey());
+        // check error blob returned:
+        assertEquals(ErrorLiveConnectFile.FILENAME, blob.getFilename());
+        assertEquals(ErrorLiveConnectFile.MIME_TYPE, blob.getMimeType());
+        assertNull(blob.getEncoding());
+        assertEquals(0, blob.getLength());
+        byte[] bytes;
+        try (InputStream is = blob.getStream()) {
+            bytes = IOUtils.toByteArray(is);
         }
+        assertEquals(0, bytes.length);
+
+        caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals("Failed to access file: core:tester@example.com:invalid-file-id", caughtEvents.get(0));
+
     }
 
     @Test(expected = UnsupportedOperationException.class)

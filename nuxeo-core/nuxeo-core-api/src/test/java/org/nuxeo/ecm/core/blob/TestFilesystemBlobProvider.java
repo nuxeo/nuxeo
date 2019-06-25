@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,9 +65,6 @@ public class TestFilesystemBlobProvider {
 
     @Inject
     protected HotDeployer deployer;
-
-    @Inject
-    protected LogFeature logFeature;
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
@@ -134,6 +132,7 @@ public class TestFilesystemBlobProvider {
 
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    @ConsoleLogLevelThreshold("FATAL")
     public void testReadNotFound() throws Exception {
         String path = "/NO_SUCH_FILE_EXISTS";
         assertFalse(Files.exists(Paths.get(path)));
@@ -144,11 +143,8 @@ public class TestFilesystemBlobProvider {
         BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
         ManagedBlob blob = (ManagedBlob) blobProvider.readBlob(blobInfo);
         byte[] bytes;
-        logFeature.hideErrorFromConsoleLog();
         try (InputStream in = blob.getStream()) {
             bytes = IOUtils.toByteArray(in);
-        } finally {
-            logFeature.restoreConsoleLog();
         }
         assertEquals(0, bytes.length);
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
@@ -201,11 +197,8 @@ public class TestFilesystemBlobProvider {
             assertNotNull(blob);
             assertEquals(key, blob.getKey());
             byte[] bytes;
-            logFeature.hideErrorFromConsoleLog();
             try (InputStream in = blob.getStream()) {
                 bytes = IOUtils.toByteArray(in);
-            } finally {
-                logFeature.restoreConsoleLog();
             }
             assertEquals(0, bytes.length);
             List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();

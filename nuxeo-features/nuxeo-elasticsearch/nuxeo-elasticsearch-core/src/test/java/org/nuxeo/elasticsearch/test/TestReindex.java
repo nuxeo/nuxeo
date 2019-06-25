@@ -50,11 +50,11 @@ import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -93,9 +93,6 @@ public class TestReindex {
 
     @Inject
     LogCaptureFeature.Result logCaptureResult;
-
-    @Inject
-    LogFeature logFeature;
 
     private boolean syncMode = false;
 
@@ -205,16 +202,15 @@ public class TestReindex {
 
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = ElasticSearchIndexingImpl.class)
+    @ConsoleLogLevelThreshold("ERROR")
     public void shouldReindexDocumentWithSmallBulkSize() throws Exception {
         try {
-            logFeature.hideWarningFromConsoleLog();
             System.setProperty(INDEX_BULK_MAX_SIZE_PROPERTY, "4096");
             shouldReindexDocument();
             List<String> events = logCaptureResult.getCaughtEventMessages();
             Assert.assertFalse("Expecting warn message", events.isEmpty());
             Assert.assertTrue(events.get(events.size() - 1).contains("Max bulk size reached"));
         } finally {
-            logFeature.restoreConsoleLog();
             System.clearProperty(INDEX_BULK_MAX_SIZE_PROPERTY);
         }
     }

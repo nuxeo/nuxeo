@@ -40,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
@@ -53,9 +54,6 @@ import org.nuxeo.runtime.test.runner.LogFeature;
 public class TestWOPIService {
 
     @Inject
-    protected LogFeature logFeature;
-
-    @Inject
     protected LogCaptureFeature.Result logCaptureResult;
 
     @Inject
@@ -63,6 +61,7 @@ public class TestWOPIService {
 
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    @ConsoleLogLevelThreshold("FATAL")
     public void testInvalidDiscovery() throws IOException {
         WOPIServiceImpl wopiServiceImpl = (WOPIServiceImpl) wopiService;
 
@@ -70,20 +69,15 @@ public class TestWOPIService {
         wopiServiceImpl.extensionAppNames.clear();
         wopiServiceImpl.extensionActionURLs.clear();
 
-        logFeature.hideErrorFromConsoleLog();
-        try {
-            // try to load some invalid XML bytes
-            assertFalse(wopiServiceImpl.loadDiscovery("plain text".getBytes()));
-            assertFalse(wopiService.isEnabled());
+        // try to load some invalid XML bytes
+        assertFalse(wopiServiceImpl.loadDiscovery("plain text".getBytes()));
+        assertFalse(wopiService.isEnabled());
 
-            // try to load an invalid WOPI discovery
-            File invalidDiscoveryFile = FileUtils.getResourceFileFromContext("test-invalid-discovery.xml");
-            assertFalse(wopiServiceImpl.loadDiscovery(
-                    org.apache.commons.io.FileUtils.readFileToByteArray(invalidDiscoveryFile)));
-            assertFalse(wopiService.isEnabled());
-        } finally {
-            logFeature.restoreConsoleLog();
-        }
+        // try to load an invalid WOPI discovery
+        File invalidDiscoveryFile = FileUtils.getResourceFileFromContext("test-invalid-discovery.xml");
+        assertFalse(wopiServiceImpl.loadDiscovery(
+                org.apache.commons.io.FileUtils.readFileToByteArray(invalidDiscoveryFile)));
+        assertFalse(wopiService.isEnabled());
 
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(2, caughtEvents.size());

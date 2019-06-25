@@ -53,10 +53,10 @@ import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.query.PageProviderQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @SuppressWarnings("unchecked")
@@ -66,9 +66,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.elasticsearch.core:schemas-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestPageProvider {
-
-    @Inject
-    protected LogFeature logFeature;
 
     @Inject
     protected CoreSession session;
@@ -316,6 +313,7 @@ public class TestPageProvider {
     }
 
     @Test
+    @ConsoleLogLevelThreshold("ERROR")
     public void ICanUseInvalidPageProvider() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         Assert.assertNotNull(pps);
@@ -326,9 +324,7 @@ public class TestPageProvider {
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<?> pp = pps.getPageProvider("INVALID_PP", ppdef, null, null, 0L, 0L, props);
         assertNotNull(pp);
-        logFeature.hideWarningFromConsoleLog();
         List<?> p = pp.getCurrentPage();
-        logFeature.restoreConsoleLog();
         assertNotNull(p);
         assertEquals(0, p.size());
         assertEquals(

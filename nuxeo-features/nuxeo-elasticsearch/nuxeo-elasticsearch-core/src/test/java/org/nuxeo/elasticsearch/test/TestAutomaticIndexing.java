@@ -76,10 +76,10 @@ import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -96,9 +96,6 @@ public class TestAutomaticIndexing {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected LogFeature logFeature;
 
     @Inject
     protected CoreSession session;
@@ -148,7 +145,6 @@ public class TestAutomaticIndexing {
     public void restoreAsyncAndConsoleLog() {
         ElasticSearchInlineListener.useSyncIndexing.set(false);
         syncMode = false;
-        logFeature.restoreConsoleLog();
     }
 
     protected void startTransaction() {
@@ -648,6 +644,7 @@ public class TestAutomaticIndexing {
     }
 
     @Test
+    @ConsoleLogLevelThreshold("ERROR")
     public void shouldHandleUpdateOnTransientDoc() throws Exception {
         startTransaction();
         DocumentModel tmpDoc = session.createDocumentModel("/", "file", "File");
@@ -663,9 +660,7 @@ public class TestAutomaticIndexing {
         // here we manipulate the transient doc with a null docid
         Assert.assertNull(tmpDoc.getId());
         tmpDoc.setPropertyValue("dc:title", "NewTitle");
-        logFeature.hideWarningFromConsoleLog();
         session.saveDocument(tmpDoc);
-        logFeature.restoreConsoleLog();
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
@@ -678,17 +673,16 @@ public class TestAutomaticIndexing {
     }
 
     @Test
+    @ConsoleLogLevelThreshold("ERROR")
     public void shouldHandleUpdateOnTransientDocBis() throws Exception {
         startTransaction();
         DocumentModel tmpDoc = session.createDocumentModel("/", "file", "File");
         tmpDoc.setPropertyValue("dc:title", "TestMe");
         DocumentModel doc = session.createDocument(tmpDoc); // Send an ES_INSERT cmd
-        logFeature.hideWarningFromConsoleLog();
         session.saveDocument(doc); // Send an ES_UPDATE merged with ES_INSERT
 
         tmpDoc.setPropertyValue("dc:title", "NewTitle"); // ES_UPDATE with transient, merged
         session.saveDocument(tmpDoc);
-        logFeature.restoreConsoleLog();
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
@@ -702,14 +696,12 @@ public class TestAutomaticIndexing {
     }
 
     @Test
+    @ConsoleLogLevelThreshold("ERROR")
     public void shouldHandleUpdateBeforeInsertOnTransientDoc() throws Exception {
         startTransaction();
         DocumentModel folder = session.createDocumentModel("/", "section", "Folder");
         session.createDocument(folder);
-        logFeature.hideWarningFromConsoleLog();
         folder = session.saveDocument(folder); // generate a WARN and an UPDATE command
-        logFeature.restoreConsoleLog();
-
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
         assertNumberOfCommandProcessed(2);
