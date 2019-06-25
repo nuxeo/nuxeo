@@ -57,6 +57,7 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.NuxeoCorsCsrfFilter;
 import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -67,6 +68,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, MockitoFeature.class, LogFeature.class, LogCaptureFeature.class })
 @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = NuxeoCorsCsrfFilter.class)
+@ConsoleLogLevelThreshold("ERROR")
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/web-request-controller-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.web.common:OSGI-INF/cors-configuration.xml")
 public class TestNuxeoCorsCsrfFilter {
@@ -90,9 +92,6 @@ public class TestNuxeoCorsCsrfFilter {
     protected static final String X_FORWARDED_HOST = "x-forwarded-host";
 
     protected static final String X_FORWARDED_PORT = "x-forwarded-port";
-
-    @Inject
-    protected LogFeature logFeature;
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
@@ -374,12 +373,7 @@ public class TestNuxeoCorsCsrfFilter {
             return null;
         }).when(response).sendError(anyInt(), anyString());
 
-        try {
-            logFeature.hideWarningFromConsoleLog();
-            filter.doFilter(request, response, chain);
-        } finally {
-            logFeature.restoreConsoleLog();
-        }
+        filter.doFilter(request, response, chain);
 
         if ("null".equals(origin) && allowNullOrigin) {
             assertTrue(chain.called);

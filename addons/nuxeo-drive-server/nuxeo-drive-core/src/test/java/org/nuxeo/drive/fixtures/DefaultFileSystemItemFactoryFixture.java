@@ -75,6 +75,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -116,9 +117,6 @@ public class DefaultFileSystemItemFactoryFixture {
 
     @Inject
     protected TransactionalFeature txFeature;
-
-    @Inject
-    protected LogFeature logFeature;
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
@@ -1137,13 +1135,9 @@ public class DefaultFileSystemItemFactoryFixture {
     @Test
     @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-blobholder-factory-contrib.xml")
     @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    @ConsoleLogLevelThreshold("FATAL")
     public void testBlobException() {
-        logFeature.hideErrorFromConsoleLog();
-        try {
-            assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
-        } finally {
-            logFeature.restoreConsoleLog();
-        }
+        assertFalse(defaultFileSystemItemFactory.isFileSystemItem(file));
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, caughtEvents.size());
         assertEquals(

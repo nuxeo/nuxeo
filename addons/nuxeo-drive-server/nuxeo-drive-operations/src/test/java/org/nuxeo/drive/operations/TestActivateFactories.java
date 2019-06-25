@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetActiveFactories;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
@@ -56,34 +57,25 @@ public class TestActivateFactories {
     protected Session clientSession;
 
     @Inject
-    protected LogFeature logFeature;
-
-    @Inject
     protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    @ConsoleLogLevelThreshold("ERROR")
     public void testSetActiveFactories() throws IOException {
 
         // Check default factories
         checkDefaultProfile();
 
         // Check unknown profile
-        logFeature.hideWarningFromConsoleLog();
-        try {
-            Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(PROFILE, "unknown").execute();
-            assertFalse((Boolean) result);
-        } finally {
-            logFeature.restoreConsoleLog();
-        }
+        Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(PROFILE, "unknown").execute();
+        assertFalse((Boolean) result);
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, caughtEvents.size());
         assertEquals("No active file system item factory contribution for profile 'unknown'.", caughtEvents.get(0));
 
         // Activate userworkspace factories
-        Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID)
-                                     .set(PROFILE, "userworkspace")
-                                     .execute();
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(PROFILE, "userworkspace").execute();
         assertTrue((Boolean) result);
         checkUserworkspaceProfile();
 

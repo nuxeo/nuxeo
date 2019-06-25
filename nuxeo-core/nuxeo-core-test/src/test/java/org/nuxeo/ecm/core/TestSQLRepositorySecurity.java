@@ -81,6 +81,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -97,9 +98,6 @@ public class TestSQLRepositorySecurity {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected LogFeature logFeature;
 
     @Inject
     protected CoreSession session;
@@ -827,6 +825,7 @@ public class TestSQLRepositorySecurity {
 
     @Test
     @LogCaptureFeature.FilterWith(value = LogDuplicateFilter.class)
+    @ConsoleLogLevelThreshold("ERROR")
     public void shouldRemoveDuplicateACE() throws Exception {
         // Using helper prevent adding duplicates
         ACL acl = new ACLImpl();
@@ -841,12 +840,7 @@ public class TestSQLRepositorySecurity {
 
         // Using setACEs at your own risk
         ACE[] aces = { ace, ace2, ace, acedup };
-        logFeature.hideWarningFromConsoleLog();
-        try {
-            acl.setACEs(aces);
-        } finally {
-            logFeature.restoreConsoleLog();
-        }
+        acl.setACEs(aces);
         assertEquals(4, acl.size());
         // at least we have a warning about duplicate
         logCaptureResults.assertHasEvent();
