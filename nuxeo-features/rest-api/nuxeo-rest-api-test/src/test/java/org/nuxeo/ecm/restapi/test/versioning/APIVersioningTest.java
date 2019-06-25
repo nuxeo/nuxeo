@@ -137,7 +137,9 @@ public class APIVersioningTest {
 
     @Test
     public void testUpdatedEndpoint() {
-        ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo").path("path1").get(ClientResponse.class);
+        ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo")
+                                                                           .path("path1")
+                                                                           .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             String body = r.getEntity(String.class);
@@ -154,7 +156,9 @@ public class APIVersioningTest {
 
     @Test
     public void testNewEndpoint() {
-        ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo").path("path2").get(ClientResponse.class);
+        ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo")
+                                                                           .path("path2")
+                                                                           .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(404, r.getStatus());
         }
@@ -169,7 +173,9 @@ public class APIVersioningTest {
 
     @Test
     public void testUpdatedWriter() throws IOException {
-        ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo").path("dummy").get(ClientResponse.class);
+        ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo")
+                                                                           .path("dummy")
+                                                                           .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             JsonNode jsonNode = MAPPER.readTree(r.getEntityInputStream());
@@ -196,7 +202,9 @@ public class APIVersioningTest {
             logFeature.restoreConsoleLog();
         }
 
-        ClientResponse response = getRESTAPIResource(APIVersion.V11.toInt()).path("foo").path("dummy2").get(ClientResponse.class);
+        ClientResponse response = getRESTAPIResource(APIVersion.V11.toInt()).path("foo")
+                                                                            .path("dummy2")
+                                                                            .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             JsonNode jsonNode = MAPPER.readTree(r.getEntityInputStream());
@@ -213,7 +221,9 @@ public class APIVersioningTest {
             assertEquals("foo - null", r.getEntity(String.class));
         }
 
-        response = getRESTAPIResource(APIVersion.V11.toInt()).path("foo").path("dummy").post(ClientResponse.class, json);
+        response = getRESTAPIResource(APIVersion.V11.toInt()).path("foo")
+                                                             .path("dummy")
+                                                             .post(ClientResponse.class, json);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             assertEquals("foo - bar", r.getEntity(String.class));
@@ -223,9 +233,9 @@ public class APIVersioningTest {
     @Test
     public void testUpdatedEnricher() throws IOException {
         ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo")
-                                                       .path("dummy")
-                                                       .header("enrichers.dummy", "dummy")
-                                                       .get(ClientResponse.class);
+                                                                           .path("dummy")
+                                                                           .header("enrichers.dummy", "dummy")
+                                                                           .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             JsonNode jsonNode = MAPPER.readTree(r.getEntityInputStream());
@@ -234,9 +244,9 @@ public class APIVersioningTest {
         }
 
         response = getRESTAPIResource(APIVersion.V11.toInt()).path("foo")
-                                        .path("dummy")
-                                        .header("enrichers.dummy", "dummy")
-                                        .get(ClientResponse.class);
+                                                             .path("dummy")
+                                                             .header("enrichers.dummy", "dummy")
+                                                             .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             JsonNode jsonNode = MAPPER.readTree(r.getEntityInputStream());
@@ -248,9 +258,9 @@ public class APIVersioningTest {
     @Test
     public void testNewEnricher() throws IOException {
         ClientResponse response = getRESTAPIResource(APIVersion.V1.toInt()).path("foo")
-                                                       .path("dummy")
-                                                       .header("enrichers.dummy", "dummy2")
-                                                       .get(ClientResponse.class);
+                                                                           .path("dummy")
+                                                                           .header("enrichers.dummy", "dummy2")
+                                                                           .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             JsonNode jsonNode = MAPPER.readTree(r.getEntityInputStream());
@@ -258,9 +268,9 @@ public class APIVersioningTest {
         }
 
         response = getRESTAPIResource(APIVersion.V11.toInt()).path("foo")
-                                        .path("dummy")
-                                        .header("enrichers.dummy", "dummy2")
-                                        .get(ClientResponse.class);
+                                                             .path("dummy")
+                                                             .header("enrichers.dummy", "dummy2")
+                                                             .get(ClientResponse.class);
         try (CloseableClientResponse r = CloseableClientResponse.of(response)) {
             assertEquals(200, r.getStatus());
             JsonNode jsonNode = MAPPER.readTree(r.getEntityInputStream());
