@@ -35,9 +35,9 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
-import org.nuxeo.template.serializer.service.SerializerService;
 import org.nuxeo.template.serializer.executors.Serializer;
 import org.nuxeo.template.serializer.executors.XMLSerializer;
+import org.nuxeo.template.serializer.service.SerializerService;
 
 @RunWith(FeaturesRunner.class)
 @Features({CoreFeature.class})

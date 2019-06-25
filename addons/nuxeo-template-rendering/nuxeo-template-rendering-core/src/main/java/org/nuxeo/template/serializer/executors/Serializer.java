@@ -20,11 +20,11 @@
 
 package org.nuxeo.template.serializer.executors;
 
+import java.util.List;
+
 import org.dom4j.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.template.api.TemplateInput;
-
-import java.util.List;
 
 /**
  * (was org.nuxeo.template.XMLSerializer).

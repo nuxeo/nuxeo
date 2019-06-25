@@ -20,33 +20,35 @@
 
 package org.nuxeo.template.processors.fm;
 
-import freemarker.template.SimpleScalar;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.nuxeo.template.api.InputType.BooleanValue;
+import static org.nuxeo.template.api.InputType.Content;
+import static org.nuxeo.template.api.InputType.DateValue;
+import static org.nuxeo.template.api.InputType.DocumentProperty;
+import static org.nuxeo.template.api.InputType.PictureProperty;
+import static org.nuxeo.template.api.InputType.StringValue;
+
+import java.io.IOException;
+import java.util.Date;
+
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.AnyType;
-import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.template.api.TemplateInput;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import static org.nuxeo.template.api.InputType.*;
+import freemarker.template.SimpleScalar;
 
 public class TestFMBindingResolver extends TestFMBindingAbstract {
 

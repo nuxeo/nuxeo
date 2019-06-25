@@ -18,6 +18,10 @@
  */
 package org.nuxeo.template.processors;
 
+import static org.nuxeo.template.api.ContentInputType.BlobContent;
+import static org.nuxeo.template.api.ContentInputType.HtmlPreview;
+import static org.nuxeo.template.api.InputType.Content;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -49,10 +53,6 @@ import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 import freemarker.template.TemplateModelException;
-
-import static org.nuxeo.template.api.ContentInputType.BlobContent;
-import static org.nuxeo.template.api.ContentInputType.HtmlPreview;
-import static org.nuxeo.template.api.InputType.Content;
 
 public abstract class AbstractBindingResolver implements InputBindingResolver {
 

@@ -29,7 +29,6 @@ import static org.nuxeo.template.api.TemplateInput.factory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;

@@ -20,21 +20,31 @@
 
 package org.nuxeo.template.processors.fm;
 
-import freemarker.template.SimpleScalar;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.nuxeo.template.api.InputType.BooleanValue;
+import static org.nuxeo.template.api.InputType.Content;
+import static org.nuxeo.template.api.InputType.DocumentProperty;
+import static org.nuxeo.template.api.InputType.ListValue;
+import static org.nuxeo.template.api.InputType.MapValue;
+import static org.nuxeo.template.api.InputType.PictureProperty;
+import static org.nuxeo.template.api.InputType.StringValue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.template.api.TemplateInput;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-import static org.nuxeo.template.api.InputType.*;
+import freemarker.template.SimpleScalar;
 
 public class TestFMBindingResolverListAndMap extends TestFMBindingAbstract {
 
