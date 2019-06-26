@@ -935,7 +935,7 @@ them). Default: '%default'""")
                           help="""Comma-separated additional Maven profiles.
 Default: '%default'\n
 Those profiles are activated by default (unless overriden by that parameter):\n
- - 'addons,distrib' for all commands executed on nuxeo-ecm,\n
+ - 'distrib' for all commands executed on nuxeo-ecm,\n
  - 'release,-qa' for 'prepare', 'perform' and 'onestep' commands,\n
  - 'qa' for 'package' command,\n
  - 'nightly' if 'deploy' option is used.

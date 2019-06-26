@@ -385,7 +385,7 @@ class Repository(object):
             skip_tests_param += " -DskipITs=true"
         profiles_param = []
         if self.is_nuxeoecm:
-            profiles_param += ["addons", "distrib"]
+            profiles_param += ["distrib"]
         if profiles:
             profiles_param += profiles.split(',')
         if profiles_param:
