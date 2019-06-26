@@ -81,7 +81,7 @@ PKG_RENAMINGS_OPTIONALS = {
 }
 
 PKG_MP = {
-    "nuxeo-distribution/nuxeo-marketplace-jsf-ui/target/nuxeo-marketplace-jsf-ui-%s.zip": "nuxeo-jsf-ui-%s.zip"
+    "nuxeo-jsf-ui/nuxeo-marketplace-jsf-ui/target/nuxeo-marketplace-jsf-ui-%s.zip": "nuxeo-jsf-ui-%s.zip"
 }
 
 NAMESPACES = {"pom": "http://maven.apache.org/POM/4.0.0"}
