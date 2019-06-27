@@ -10,6 +10,24 @@
   <artifactId>nuxeo-platform-forms-layout-demo-webdriver-tests</artifactId>
   <name>Layout Demo Functional Tests with Webdriver</name>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution</artifactId>
+        <type>pom</type>
+        <scope>import</scope>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
+        <type>zip</type>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
