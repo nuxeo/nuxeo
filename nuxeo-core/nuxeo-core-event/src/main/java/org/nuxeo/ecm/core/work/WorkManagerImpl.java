@@ -61,6 +61,9 @@ import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.ecm.core.work.api.WorkQueuingDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.lib.stream.codec.AvroMessageCodec;
+import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
@@ -70,6 +73,7 @@ import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.services.config.ConfigurationService;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.codahale.metrics.Counter;
@@ -108,6 +112,24 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
      * @since 11.1
      */
     public static final String WORKMANAGER_PROCESSING_DISABLE = "nuxeo.work.processing.disable";
+
+    /**
+     * The Log Manager name to use for accessing the dead letter queue stream.
+     *
+     * @since 11.1
+     */
+    public static final String DEFAULT_LOG_MANAGER = "default";
+
+    /**
+     * The dead letter queue stream name.
+     *
+     * @since 11.1
+     */
+    public static final String DEAD_LETTER_QUEUE = "dlq-work";
+
+    // @since 11.1
+    public static final Codec<Record> DEAD_LETTER_QUEUE_CODEC = new AvroMessageCodec<>(Record.class);
+
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -337,7 +359,26 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     @Override
     public void start(ComponentContext context) {
         super.start(context);
+        initDeadLetterQueueStream();
         init();
+    }
+
+    protected void initDeadLetterQueueStream() {
+        StreamService service = Framework.getService(StreamService.class);
+        if (service == null) {
+            return;
+        }
+        try {
+            org.nuxeo.lib.stream.log.LogManager logManager = service.getLogManager(DEFAULT_LOG_MANAGER);
+            if (!logManager.exists(DEAD_LETTER_QUEUE)) {
+                log.info("Initializing dead letter queue to store Work in failure");
+                logManager.createIfNotExists(DEAD_LETTER_QUEUE, 1);
+            }
+            // Needed to initialize the appender with the proper codec
+            logManager.getAppender(DEAD_LETTER_QUEUE, DEAD_LETTER_QUEUE_CODEC);
+        } catch (IllegalArgumentException e) {
+            log.info("No default LogManager found, there will be no dead letter queuing for Work in failure.");
+        }
     }
 
     protected volatile boolean started = false;
