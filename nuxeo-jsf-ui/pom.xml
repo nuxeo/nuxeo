@@ -126,6 +126,58 @@
         <module>nuxeo-jsf-ui-hotreload-tests</module>
         <module>nuxeo-jsf-ui-webdriver-tests</module>
       </modules>
+      <dependencyManagement>
+        <dependencies>
+          <!-- distribution -->
+          <dependency>
+            <groupId>org.nuxeo.ecm.distribution</groupId>
+            <artifactId>nuxeo-distribution</artifactId>
+            <version>${nuxeo.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+          </dependency>
+
+          <dependency>
+            <groupId>org.nuxeo.ecm.distribution</groupId>
+            <artifactId>nuxeo-nxr-jsf-ui</artifactId>
+            <version>${nuxeo.version}</version>
+            <type>pom</type>
+          </dependency>
+          <dependency>
+            <groupId>org.nuxeo.ecm.distribution</groupId>
+            <artifactId>nuxeo-nxr-jsf-ui</artifactId>
+            <version>${nuxeo.version}</version>
+            <type>zip</type>
+          </dependency>
+          <dependency>
+            <groupId>org.nuxeo.ecm.distribution</groupId>
+            <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
+            <version>${nuxeo.version}</version>
+            <type>zip</type>
+          </dependency>
+
+          <!-- test -->
+          <dependency>
+            <groupId>org.nuxeo.ecm.distribution</groupId>
+            <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
+            <version>${nuxeo.version}</version>
+            <scope>test</scope>
+          </dependency>
+          <dependency>
+            <groupId>org.nuxeo.ecm.distribution</groupId>
+            <artifactId>nuxeo-jsf-ui-hotreload-tests</artifactId>
+            <version>${nuxeo.version}</version>
+            <scope>test</scope>
+          </dependency>
+          <dependency>
+            <groupId>org.nuxeo.ecm.distribution</groupId>
+            <artifactId>nuxeo-jsf-ui-webdriver-tests</artifactId>
+            <version>${nuxeo.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
     </profile>
     <profile>
       <id>gwt</id>
@@ -634,57 +686,6 @@
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-web-resources-jsf</artifactId>
         <version>${nuxeo.version}</version>
-      </dependency>
-
-      <!-- distribution -->
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-nxr-jsf-ui</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-nxr-jsf-ui</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>zip</type>
-      </dependency>
-
-      <!-- test -->
-
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-jsf-ui-hotreload-tests</artifactId>
-        <version>${nuxeo.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-jsf-ui-webdriver-tests</artifactId>
-        <version>${nuxeo.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
       </dependency>
 
       <!-- third-party -->
