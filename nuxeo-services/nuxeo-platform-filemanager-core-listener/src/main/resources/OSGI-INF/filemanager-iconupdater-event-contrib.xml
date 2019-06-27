@@ -9,6 +9,7 @@
               class="org.nuxeo.ecm.platform.filemanager.core.listener.MimetypeIconUpdater" priority="120">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
+      <event>aboutToImport</event>
     </listener>
   </extension>
 
