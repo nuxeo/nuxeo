@@ -20,6 +20,19 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution</artifactId>
+        <type>pom</type>
+        <scope>import</scope>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
+        <type>zip</type>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.tools.testing</groupId>
         <artifactId>data-test-les-arbres</artifactId>
         <type>zip</type>
