@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.work;
 
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
+import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEAD_LETTER_QUEUE;
+import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEFAULT_LOG_MANAGER;
 import static org.nuxeo.ecm.core.work.api.Work.Progress.PROGRESS_INDETERMINATE;
 
 import java.io.Serializable;
@@ -52,7 +54,9 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -420,11 +424,28 @@ public abstract class AbstractWork implements Work {
         service.fireEvent(event);
 
         if (exception != null) {
+            appendWorkToDeadLetterQueue();
             String msg = "Work failed after " + getRetryCount() + " " + (getRetryCount() == 1 ? "retry" : "retries") + ", class="
                     + getClass() + " id=" + getId() + " category=" + getCategory() + " title=" + getTitle();
             SequenceTracer.destroy("Work failure " + (completionTime - startTime) + " ms");
             // all retries have been done, throw the exception
             throw new NuxeoException(msg, exception);
+        }
+    }
+
+    protected void appendWorkToDeadLetterQueue() {
+        try {
+            String key = getCategory() + ":" + getId();
+            StreamService service = Framework.getService(StreamService.class);
+            if (service != null) {
+                service.getLogManager(DEFAULT_LOG_MANAGER)
+                        .getAppender(DEAD_LETTER_QUEUE)
+                        .append(key, Record.of(key, WorkComputation.serialize(this)));
+            }
+        } catch (IllegalArgumentException e) {
+            log.debug("No default log manager, don't save work in failure to a dead letter queue");
+        } catch (Exception e) {
+            log.error("Failed to save work: " + getId() + " in dead letter queue", e);
         }
     }
 
