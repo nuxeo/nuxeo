@@ -28,6 +28,8 @@ import static org.junit.Assert.assertNull;
 import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_EXTENSION;
 import static org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry.PDF_MIMETYPE;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -139,7 +142,7 @@ public class TestMimetypeIconUpdater {
 
     /**
      * Ensures that the document blob mime type is normalized if possible, even if the current blob have a mime type.
-     * 
+     *
      * @since 11.1
      */
     @Test
@@ -173,6 +176,53 @@ public class TestMimetypeIconUpdater {
     }
 
     /**
+     * Ensures that if we import a document with an attachment then we should set the mime type.
+     *
+     * @since 11.1
+     */
+    @Test
+    public void shouldDefineMimeTypeWhenImportDocument() {
+        DocumentModel documentModel = importDocument("1239876", "File", PSD_EXTENSION);
+        Blob blob = (Blob) documentModel.getProperty("file", "content");
+        assertEquals(PSD_MIME_TYPE, blob.getMimeType());
+
+        documentModel = importDocument("1239890", "File", PDF_EXTENSION);
+        blob = (Blob) documentModel.getProperty("file", "content");
+        assertEquals(PDF_MIMETYPE, blob.getMimeType());
+    }
+
+    /**
+     * Creates a document.
+     *
+     * @see #createDocumentModel(String, String, String)
+     * @since 11.1
+     */
+    protected DocumentModel createDocument(String documentType, String extension, String mimeType) {
+        DocumentModel documentModel = createDocumentModel(documentType, extension, mimeType);
+
+        documentModel = coreSession.createDocument(documentModel);
+        coreSession.saveDocument(documentModel);
+        coreSession.save();
+
+        return documentModel;
+    }
+
+    /**
+     * Imports a document model for a given {@code id}, {@code documentType} and {@code extension}.
+     *
+     * @param documentId the document id to set, cannot be {@code null} or {@code empty}
+     * @see #createDocumentModel(String, String, String)
+     * @since 11.1
+     */
+    protected DocumentModel importDocument(String documentId, String documentType, String extension) {
+        DocumentModel documentModel = createDocumentModel(documentType, extension, null);
+        ((DocumentModelImpl) documentModel).setId(documentId);
+        coreSession.importDocuments(List.of(documentModel));
+
+        return documentModel;
+    }
+
+    /**
      * Creates a document model for a given {@code documentType}, {@code extension} and {@code mimeType}.
      *
      * @param documentType the document type to create, cannot be {@code null}
@@ -182,7 +232,7 @@ public class TestMimetypeIconUpdater {
      * @throws NullPointerException if {@code documentType} or {@code extension} is {@code null}
      * @since 11.1
      */
-    protected DocumentModel createDocument(String documentType, String extension, String mimeType) {
+    protected DocumentModel createDocumentModel(String documentType, String extension, String mimeType) {
         DocumentModel documentModel = coreSession.createDocumentModel("/", "testFile", requireNonNull(documentType));
         documentModel.setProperty("dublincore", "title", "TestFile");
         Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, String.format("test.%s", requireNonNull(extension)));
@@ -204,11 +254,6 @@ public class TestMimetypeIconUpdater {
                     String.format("Undefined behaviour for document type '%s'", documentType));
 
         }
-
-        documentModel = coreSession.createDocument(documentModel);
-        coreSession.saveDocument(documentModel);
-        coreSession.save();
-
         return documentModel;
     }
 
