@@ -138,7 +138,7 @@ public class TestMimetypeIconUpdater {
     }
 
     /**
-     * Ensure that the document blob mime type is normalized if possible, even if the current blob have a mime type.
+     * Ensures that the document blob mime type is normalized if possible, even if the current blob have a mime type.
      * 
      * @since 11.1
      */
@@ -160,7 +160,7 @@ public class TestMimetypeIconUpdater {
     }
 
     /**
-     * Ensure that if we are not able to normalize the document blob mime type (i.e mime type is unknown in Nuxeo), we should keep
+     * Ensures that if we are not able to normalize the document blob mime type (i.e mime type is unknown in Nuxeo), we should keep
      * the original one.
      *
      * @since 11.1
