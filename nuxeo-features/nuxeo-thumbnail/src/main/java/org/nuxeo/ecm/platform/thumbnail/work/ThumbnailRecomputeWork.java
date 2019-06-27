@@ -28,7 +28,9 @@ import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
  * Work to recompute the thumbnail of the documents resulting from the provided NXQL query.
  *
  * @since 10.10
+ * @deprecated since 11.1. Use {@link RecomputeThumbnailsAction} instead
  */
+@Deprecated
 public class ThumbnailRecomputeWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
