@@ -23,6 +23,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEAD_LETTER_QUEUE;
+import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEFAULT_LOG_MANAGER;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 import static org.nuxeo.ecm.core.work.api.Work.State.UNKNOWN;
@@ -50,7 +52,10 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
+import org.nuxeo.lib.stream.log.LogLag;
+import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -590,6 +595,28 @@ public class WorkManagerTest {
 
         assertTrue(service.awaitCompletion(2000, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 2, 0);
+    }
+
+    @Test
+    @Deploy({ "org.nuxeo.runtime.stream", "org.nuxeo.ecm.core.event:test-work-dead-letter-queue.xml" })
+    public void testWorkInDeadLetterQueue() throws Exception {
+        MetricsTracker tracker = new MetricsTracker();
+        // Ensure the dead letter queue stream exists and it is empty
+        StreamService streamService = Framework.getService(StreamService.class);
+        LogManager logManager = streamService.getLogManager(DEFAULT_LOG_MANAGER);
+        assertTrue(logManager.exists(DEAD_LETTER_QUEUE));
+        LogLag lag = logManager.getLag(DEAD_LETTER_QUEUE, "testDeadLetter");
+        assertEquals(LogLag.of(0), lag);
+
+        // Run a failing work
+        SleepWork work = new SleepAndFailWork(200, false);
+        service.schedule(work);
+        assertTrue(service.awaitCompletion(2000, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+
+        // Check that we have some dead letter
+        lag = logManager.getLag(DEAD_LETTER_QUEUE, "testDeadLetter");
+        assertEquals(LogLag.of(1), lag);
     }
 
 }
