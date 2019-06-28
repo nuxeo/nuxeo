@@ -278,28 +278,14 @@ public class NXQL {
         if (periodAndDurationText == null) {
             return now;
         } else {
-            return addPeriondAndDuration(now, periodAndDurationText);
+            PeriodAndDuration pd;
+            try {
+                pd = PeriodAndDuration.parse(periodAndDurationText);
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException("Invalid period: " + periodAndDurationText, e);
+            }
+            return now.plus(pd);
         }
-    }
-
-    /**
-     * Adds to the given dateTime the period and duration, expressed as text.
-     *
-     * @param dateTime the dateTime
-     * @param text the period and duration, as text
-     * @return the dateTime to which the period and duration has been added
-     * @throws IllegalArgumentException if the period and duration cannot be parsed
-     * @since 11.1
-     */
-    // public for tests
-    public static ZonedDateTime addPeriondAndDuration(ZonedDateTime dateTime, String text) {
-        PeriodAndDuration pd;
-        try {
-            pd = PeriodAndDuration.parse(text);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid period: " + text, e);
-        }
-        return dateTime.plus(pd.period).plus(pd.duration);
     }
 
 }

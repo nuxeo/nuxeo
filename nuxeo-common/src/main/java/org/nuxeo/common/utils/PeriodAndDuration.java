@@ -18,9 +18,19 @@
  */
 package org.nuxeo.common.utils;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MONTHS;
+import static java.time.temporal.ChronoUnit.NANOS;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.time.temporal.ChronoUnit.YEARS;
+
 import java.time.Duration;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,12 +43,18 @@ import java.util.regex.Pattern;
  *
  * @since 11.1
  */
-public final class PeriodAndDuration {
+public final class PeriodAndDuration implements TemporalAmount {
 
     /**
      * A constant for a period and duration of zero.
      */
     public static final PeriodAndDuration ZERO = new PeriodAndDuration(Period.ZERO, Duration.ZERO);
+
+    /**
+     * The set of supported units. This is the concatenation of the units supported by {@link Period} and
+     * {@link Duration}.
+     */
+    protected static final List<TemporalUnit> UNITS = List.of(YEARS, MONTHS, DAYS, SECONDS, NANOS);
 
     protected static final Pattern PATTERN = Pattern.compile("([-+]?)P" //
             + "(?:([-+]?[0-9]+)Y)?" //
@@ -81,6 +97,30 @@ public final class PeriodAndDuration {
      */
     public PeriodAndDuration(Duration duration) {
         this(Period.ZERO, duration);
+    }
+
+    @Override
+    public List<TemporalUnit> getUnits() {
+        return UNITS;
+    }
+
+    @Override
+    public long get(TemporalUnit unit) {
+        if (unit == YEARS || unit == MONTHS || unit == DAYS) {
+            return period.get(unit);
+        } else {
+            return duration.get(unit);
+        }
+    }
+
+    @Override
+    public Temporal addTo(Temporal temporal) {
+        return temporal.plus(period).plus(duration);
+    }
+
+    @Override
+    public Temporal subtractFrom(Temporal temporal) {
+        return temporal.minus(period).minus(duration);
     }
 
     /**
