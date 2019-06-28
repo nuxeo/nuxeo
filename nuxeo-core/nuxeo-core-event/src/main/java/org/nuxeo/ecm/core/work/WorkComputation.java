@@ -99,6 +99,8 @@ public class WorkComputation extends AbstractComputation {
                     }
                     WorkStateHelper.setState(work.getId(), Work.State.RUNNING, stateTTL);
                 }
+                // The running state is needed to activate the DLQ mechanism
+                work.setWorkInstanceState(Work.State.RUNNING);
                 new WorkHolder(work).run();
                 // if the same work id has not been scheduled again, set the state to null for 'completed'
                 if (storeState && WorkStateHelper.getState(work.getId()) == Work.State.RUNNING) {
