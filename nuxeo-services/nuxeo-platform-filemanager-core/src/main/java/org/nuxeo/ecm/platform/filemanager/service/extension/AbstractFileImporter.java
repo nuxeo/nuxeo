@@ -217,8 +217,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         doSecurityCheck(session, path, targetDocType);
 
         Blob blob = context.getBlob();
-        String filename = FileManagerUtils.fetchFileName(
-                StringUtils.defaultIfBlank(context.getFileName(), blob.getFilename()));
+        String filename = FileManagerUtils.fetchFileName(context.getFileName());
         String title = FileManagerUtils.fetchTitle(filename);
         blob.setFilename(filename);
         // look for an existing document with same title or filename

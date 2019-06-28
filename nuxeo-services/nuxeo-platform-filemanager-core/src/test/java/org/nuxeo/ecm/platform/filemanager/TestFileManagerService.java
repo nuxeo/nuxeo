@@ -584,6 +584,22 @@ public class TestFileManagerService {
         assertEquals(docId, newDocId);
     }
 
+    @Test
+    public void fileNameShouldNotBeEmpty() throws IOException {
+        File file = getTestFile("test-data/hello.doc");
+        Blob input = Blobs.createBlob(file, "application/msword");
+
+        // We take the file name if it is provided, otherwise the blob name.
+        FileImporterContext fileImporter = FileImporterContext.builder(coreSession, input, workspace.getPathAsString())
+                                                              .fileName("myOwnFileName")
+                                                              .build();
+        assertEquals("myOwnFileName", fileImporter.getFileName());
+
+        fileImporter = FileImporterContext.builder(coreSession, input, workspace.getPathAsString()).build();
+        assertEquals("hello.doc", fileImporter.getFileName());
+
+    }
+
     private Object getMimeType(DocumentModel doc) {
         return ((Blob) doc.getProperty("file", "content")).getMimeType();
     }

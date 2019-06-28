@@ -348,8 +348,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
 
         // check mime type to be able to select the best importer plugin
         if (context.isMimeTypeCheck()) {
-            String fileName = StringUtils.defaultIfBlank(context.getFileName(), blob.getFilename());
-            blob = checkMimeType(blob, fileName);
+            blob = checkMimeType(blob, context.getFileName());
         }
 
         List<FileImporter> importers = new ArrayList<>(fileImporters.values());
