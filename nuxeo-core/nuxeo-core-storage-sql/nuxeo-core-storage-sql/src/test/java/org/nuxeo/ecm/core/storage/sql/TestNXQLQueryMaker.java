@@ -19,12 +19,8 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ecm.core.query.sql.NXQL.addPeriondAndDuration;
 import static org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.canonicalXPath;
 import static org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker.simpleXPath;
-
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
@@ -47,21 +43,6 @@ public class TestNXQLQueryMaker {
         // prop whose name ends with digits
         assertEquals("abc1", simpleXPath("abc1"));
         assertEquals("abc/def1", simpleXPath("abc/def1"));
-    }
-
-    @Test
-    public void testNowPeriodAndDuration() throws Exception {
-        ZonedDateTime dateTime = ZonedDateTime.of(2001, 2, 3, 4, 5, 6, 7_000_000, ZoneOffset.UTC);
-        assertEquals("2001-02-03T04:05:06.007Z", dateTime.toString());
-        //
-        ZonedDateTime d1 = addPeriondAndDuration(dateTime, "P1Y2M3DT4H5M6S");
-        assertEquals("2002-04-06T08:10:12.007Z", d1.toString());
-        ZonedDateTime d2 = addPeriondAndDuration(dateTime, "P26D");
-        assertEquals("2001-03-01T04:05:06.007Z", d2.toString());
-        ZonedDateTime d3 = addPeriondAndDuration(dateTime, "-P1M");
-        assertEquals("2001-01-03T04:05:06.007Z", d3.toString());
-        ZonedDateTime d4 = addPeriondAndDuration(dateTime, "PT20H");
-        assertEquals("2001-02-04T00:05:06.007Z", d4.toString());
     }
 
 }

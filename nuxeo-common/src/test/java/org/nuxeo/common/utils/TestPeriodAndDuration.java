@@ -18,11 +18,18 @@
  */
 package org.nuxeo.common.utils;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MONTHS;
+import static java.time.temporal.ChronoUnit.NANOS;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.time.temporal.ChronoUnit.YEARS;
 import static org.junit.Assert.assertEquals;
 
 import java.time.Duration;
 import java.time.Period;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -52,6 +59,32 @@ public class TestPeriodAndDuration {
     protected static void checkParseThenToString(String text) {
         PeriodAndDuration pd = PeriodAndDuration.parse(text);
         assertEquals(text, pd.toString());
+    }
+
+    @Test
+    public void testTemporalAmountGetUnits() {
+        assertEquals(List.of(YEARS, MONTHS, DAYS, SECONDS, NANOS), PeriodAndDuration.ZERO.getUnits());
+    }
+
+    @Test
+    public void testTemporalAmountGet() {
+        PeriodAndDuration pd = PeriodAndDuration.parse("P1Y2M3DT4H5M6.007S");
+        assertEquals(1, pd.get(YEARS));
+        assertEquals(2, pd.get(MONTHS));
+        assertEquals(3, pd.get(DAYS));
+        assertEquals(4 * 60 * 60 + 5 * 60 + 6, pd.get(SECONDS));
+        assertEquals(7_000_000, pd.get(NANOS));
+    }
+
+    @Test
+    public void testTemporalAmountAddToSubstractFrom() {
+        PeriodAndDuration pd = PeriodAndDuration.parse("P1Y2M3DT4H5M6.007S");
+        ZonedDateTime dt = ZonedDateTime.parse("2001-02-03T04:05:06.007Z");
+        assertEquals("2002-04-06T08:10:12.014Z", pd.addTo(dt).toString());
+        assertEquals("1999-11-30T00:00Z", pd.subtractFrom(dt).toString());
+        // TemporalAmount.addTo/subtractFrom are indirectly called when using Temporal.plus/minus
+        assertEquals("2002-04-06T08:10:12.014Z", dt.plus(pd).toString());
+        assertEquals("1999-11-30T00:00Z", dt.minus(pd).toString());
     }
 
 }
