@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.filemanager.api;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -56,7 +57,7 @@ public class FileImporterContext {
         overwrite = builder.overwrite;
         mimeTypeCheck = builder.mimeTypeCheck;
         excludeOneToMany = builder.excludeOneToMany;
-        fileName = builder.fileName;
+        fileName = StringUtils.defaultIfEmpty(builder.fileName, blob.getFilename());
         persistDocument = builder.persistDocument;
     }
 

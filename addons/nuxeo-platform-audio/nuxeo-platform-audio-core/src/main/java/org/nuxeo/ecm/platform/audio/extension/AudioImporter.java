@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.audio.extension;
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -57,8 +56,7 @@ public class AudioImporter extends AbstractFileImporter {
         CoreSession session = context.getSession();
         Blob blob = context.getBlob();
 
-        String filename = FileManagerUtils.fetchFileName(
-                StringUtils.defaultIfBlank(context.getFileName(), blob.getFilename()));
+        String filename = FileManagerUtils.fetchFileName(context.getFileName());
         blob.setFilename(filename);
 
         String title = FileManagerUtils.fetchTitle(filename);
