@@ -161,6 +161,8 @@
     <operation class="org.nuxeo.ecm.automation.core.operations.collections.FetchFavorites" />
     <operation class="org.nuxeo.ecm.automation.core.operations.collections.MoveCollectionMemberOperation" />
 
+    <operation class="org.nuxeo.ecm.automation.core.operations.services.workmanager.WorkManagerRunWorkInFailure" />
+
   </extension>
 
   <extension point="chains"
