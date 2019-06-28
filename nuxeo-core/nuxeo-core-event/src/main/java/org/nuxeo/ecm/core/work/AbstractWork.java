@@ -432,13 +432,17 @@ public abstract class AbstractWork implements Work {
     }
 
     protected void appendWorkToDeadLetterQueue() {
+        if (!State.RUNNING.equals(getWorkInstanceState())) {
+            // DLQ is only for Works executed by a WorkManager, in this case they are in RUNNING state.
+            return;
+        }
         try {
             String key = getCategory() + ":" + getId();
             StreamService service = Framework.getService(StreamService.class);
             if (service != null) {
                 service.getLogManager(DEFAULT_LOG_MANAGER)
-                        .getAppender(DEAD_LETTER_QUEUE)
-                        .append(key, Record.of(key, WorkComputation.serialize(this)));
+                       .getAppender(DEAD_LETTER_QUEUE)
+                       .append(key, Record.of(key, WorkComputation.serialize(this)));
             }
         } catch (IllegalArgumentException e) {
             log.debug("No default log manager, don't save work in failure to a dead letter queue");
