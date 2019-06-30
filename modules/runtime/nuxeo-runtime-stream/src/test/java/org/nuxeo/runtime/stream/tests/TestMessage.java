@@ -21,7 +21,7 @@ package org.nuxeo.runtime.stream.tests;
 import java.util.Objects;
 
 /**
- * @since 11.1
+ * @since 11.4
  */
 class TestMessage {
     protected String stringF1;
