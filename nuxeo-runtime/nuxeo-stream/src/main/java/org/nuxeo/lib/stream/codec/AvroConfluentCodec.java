@@ -47,9 +47,9 @@ public class AvroConfluentCodec<T> implements Codec<T> {
 
     public static final String NAME = "avroConfluent";
 
-    protected static final byte MAGIC_BYTE = 0x0;
+    public static final byte MAGIC_BYTE = 0x0;
 
-    protected static final int ID_SIZE = 4;
+    public static final int ID_SIZE = 4;
 
     protected static final int DEFAULT_IDENTITY_MAP_CAPACITY = 10;
 
@@ -77,12 +77,7 @@ public class AvroConfluentCodec<T> implements Codec<T> {
         this.messageClass = messageClass;
         schema = ReflectData.get().getSchema(messageClass);
         schemaName = messageClass.getName();
-        if (schemaRegistryUrls.contains(",")) {
-            client = new CachedSchemaRegistryClient(Arrays.asList(schemaRegistryUrls.split(",")),
-                    DEFAULT_IDENTITY_MAP_CAPACITY);
-        } else {
-            client = new CachedSchemaRegistryClient(schemaRegistryUrls, DEFAULT_IDENTITY_MAP_CAPACITY);
-        }
+        client = getRegistryClient(schemaRegistryUrls);
         try {
             this.schemaId = client.register(messageClass.getName(), schema);
         } catch (RestClientException | IOException e) {
@@ -90,6 +85,15 @@ public class AvroConfluentCodec<T> implements Codec<T> {
         }
         this.serializer = new KafkaAvroSerializer(client);
         this.encoder = new RawMessageEncoder<>(ReflectData.get(), schema);
+    }
+
+    public static SchemaRegistryClient getRegistryClient(String schemaRegistryUrls) {
+        if (schemaRegistryUrls.contains(",")) {
+            return new CachedSchemaRegistryClient(Arrays.asList(schemaRegistryUrls.split(",")),
+                    DEFAULT_IDENTITY_MAP_CAPACITY);
+        } else {
+            return new CachedSchemaRegistryClient(schemaRegistryUrls, DEFAULT_IDENTITY_MAP_CAPACITY);
+        }
     }
 
     @Override

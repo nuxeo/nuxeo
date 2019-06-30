@@ -27,6 +27,9 @@
     <codec name="avroJson" class="org.nuxeo.runtime.codec.AvroCodecFactory">
       <option name="encoding">json</option>
     </codec>
+    <codec name="avroFlatRecord" class="org.nuxeo.runtime.codec.AvroRecordCodecFactory">
+      <option name="messageClass"></option>
+    </codec>
   </extension>
 
 </component>
