@@ -128,6 +128,11 @@ public class Record implements Externalizable {
         this.flagsAsByte = (byte) encodeFlags(flags);
     }
 
+    public void setFlags(byte flagsAsByte) {
+        this.flagsAsByte = flagsAsByte;
+        this.flags = decodeFlags(flagsAsByte);
+    }
+
     public String getKey() {
         return key;
     }
@@ -252,6 +257,10 @@ public class Record implements Externalizable {
         int result = Objects.hash(watermark, flagsAsByte, key);
         result = 31 * result + Arrays.hashCode(data);
         return result;
+    }
+
+    public byte getFlagsAsByte() {
+        return flagsAsByte;
     }
 
     public enum Flag {

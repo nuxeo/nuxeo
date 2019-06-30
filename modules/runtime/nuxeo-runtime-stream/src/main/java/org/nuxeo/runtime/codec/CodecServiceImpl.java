@@ -69,7 +69,7 @@ public class CodecServiceImpl extends DefaultComponent implements CodecService {
     public <T> Codec<T> getCodec(String codecName, Class<T> objectClass) {
         if (!codecFactories.containsKey(codecName)) {
             throw new IllegalArgumentException(
-                    String.format("Invalid codec name: %s, requested for class: %s", codecName, objectClass));
+                    String.format("Codec not found: %s, requested for class: %s", codecName, objectClass));
         }
         // TODO codec are thread safe so we can use a cache codecName, objectClass -> codec
         return codecFactories.get(codecName).newCodec(objectClass);
