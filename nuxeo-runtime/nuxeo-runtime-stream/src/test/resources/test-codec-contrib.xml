@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.stream.tests.codec.contrib">
+
+  <extension target="org.nuxeo.runtime.codec.service" point="codec">
+    <codec name="testMessageFlat" class="org.nuxeo.runtime.codec.AvroRecordCodecFactory">
+      <option name="messageClass">org.nuxeo.runtime.stream.tests.TestMessage</option>
+      <option name="schemaRegistryUrls">http://localhost:8081</option>
+    </codec>
+  </extension>
+
+</component>

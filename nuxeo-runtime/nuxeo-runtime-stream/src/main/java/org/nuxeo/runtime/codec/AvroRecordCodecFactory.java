@@ -36,27 +36,23 @@ public class AvroRecordCodecFactory implements CodecFactory {
 
     public static final String KEY_MESSAGE_CLASS = "messageClass";
 
-    public static final String DEFAULT_MESSAGE_CLASS = "GenericRecord";
-
-    public static final String KEY_SCHEMA_ID = "messageSchemaId";
-
     protected String messageClassName;
-
-    protected String messageSchemaId;
 
     protected String schemaRegistryUrls;
 
     @Override
     public void init(Map<String, String> options) {
-        this.messageClassName = options.get(KEY_MESSAGE_CLASS);
-        this.messageSchemaId = options.get(KEY_SCHEMA_ID);
-        this.schemaRegistryUrls = options.getOrDefault(KEY_SCHEMA_REGISTRY_URLS, DEFAULT_SCHEMA_REGISTRY_URLS);
+        messageClassName = options.get(KEY_MESSAGE_CLASS);
+        if (messageClassName == null) {
+            throw new IllegalArgumentException("AvroRecordCodecFactory requires a messageClass option.");
+        }
+        schemaRegistryUrls = options.getOrDefault(KEY_SCHEMA_REGISTRY_URLS, DEFAULT_SCHEMA_REGISTRY_URLS);
     }
 
     @Override
     public <T> Codec<T> newCodec(Class<T> objectClass) {
         if (!objectClass.isAssignableFrom(Record.class)) {
-            throw new IllegalArgumentException("AvroRecordCodecFactory works with Computation Record not: " + messageClassName);
+            throw new IllegalArgumentException("AvroRecordCodecFactory works only Computation Record not: " + objectClass);
         }
         try {
             return new AvroRecordCodec(messageClassName, schemaRegistryUrls);

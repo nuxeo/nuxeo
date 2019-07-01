@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.EnumSet;
 
-import org.apache.avro.generic.GenericRecord;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.codec.AvroRecordCodec;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -45,6 +43,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.runtime.stream")
+@Deploy("org.nuxeo.runtime.stream:test-codec-contrib.xml")
 public class TestAvroRecordCodec {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -72,13 +71,13 @@ public class TestAvroRecordCodec {
         assumeConfluentRegistryEnabled();
 
         Record src = getRecord();
-        Codec<Record> codec = new AvroRecordCodec<>(TestMessage.class.getName(), getConfluentRegistryUrls());
-        byte[] data = codec.encode(src);
-        System.out.println("msg    : " + src.getData().length + " " + overview(src.getData()));
-        System.out.println("rec+msg: " + data.length + " " + overview(data));
-        Record dest = codec.decode(data);
-        System.out.println(dest);
+        // Codec<Record> codec = new AvroRecordCodec<>(TestMessage.class.getName(), getConfluentRegistryUrls());
+        Codec<Record> codec = Framework.getService(CodecService.class).getCodec("testMessageFlat", Record.class);
 
+        byte[] data = codec.encode(src);
+        // System.out.println("msg : " + src.getData().length + " " + overview(src.getData()));
+        // System.out.println("rec+msg: " + data.length + " " + overview(data));
+        Record dest = codec.decode(data);
         testCodec(src, codec);
     }
 
