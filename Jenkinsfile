@@ -51,7 +51,7 @@ pipeline {
           ----------------------------------------
           Compile, package and install
           ----------------------------------------"""
-          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms3072m -Xmx3072m"]) {
+          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
             echo "MAVEN_OPTS=$MAVEN_OPTS"
             sh 'mvn -B -T0.8C install -DskipTests=true'
           }
@@ -90,7 +90,7 @@ pipeline {
           ----------------------------------------
           Run "dev" unit tests
           ----------------------------------------"""
-          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms3072m -Xmx3072m"]) {
+          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
             echo "MAVEN_OPTS=$MAVEN_OPTS"
             sh "mvn -B -Dnuxeo.test.redis.host=${SERVICE_REDIS} test"
           }
