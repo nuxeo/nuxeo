@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,19 +55,13 @@ public class TestIntIdField {
     @Inject
     protected DirectoryService directoryService;
 
-    @SuppressWarnings("boxing")
     @Test
     public void testIntIdDirectory() {
         try (Session session = directoryService.open(INT_ID_DIRECTORY)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", 1);
-            map.put("label", "toto");
-            DocumentModel entry = session.createEntry(map);
+            DocumentModel entry = session.createEntry(Map.of("id", 1, "label", "toto"));
             assertNotNull(entry);
 
-            map.put("id", 2);
-            map.put("label", "titi");
-            DocumentModel entry2 = session.createEntry(map);
+            DocumentModel entry2 = session.createEntry(Map.of("id", 2, "label", "titi"));
             assertNotNull(entry2);
 
             assertNotNull(session.getEntry("1"));
@@ -85,10 +78,7 @@ public class TestIntIdField {
         try (Session session = directoryService.open(INT_ID_DIRECTORY)) {
             String key = "label";
             String value = "toto";
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", 1);
-            map.put(key, value);
-            session.createEntry(map);
+            session.createEntry(Map.of("id", 1, key, value));
 
             QueryBuilder queryBuilder = new QueryBuilder().predicate(Predicates.eq(key, value));
             List<String> ids = session.queryIds(queryBuilder);
