@@ -119,6 +119,30 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>dockerfile-maven-plugin</artifactId>
+            <configuration>
+              <repository>local/nuxeo</repository>
+              <tag>${project.version}</tag>
+            </configuration>
+            <executions>
+              <execution>
+                <id>default</id>
+                <goals>
+                  <goal>build</goal>
+                  <goal>tag</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <build>
