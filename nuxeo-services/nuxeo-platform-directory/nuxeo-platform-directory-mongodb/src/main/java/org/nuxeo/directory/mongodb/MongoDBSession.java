@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2017-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2017-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -373,10 +373,9 @@ public class MongoDBSession extends BaseSession {
         Map<String, Field> schemaFieldMap = directory.getSchemaFieldMap();
         Document bson = new Document();
         for (Map.Entry<String, Serializable> entry : fieldMap.entrySet()) {
-            Field field = schemaFieldMap.entrySet()
+            Field field = schemaFieldMap.values()
                                         .stream()
-                                        .filter(e -> e.getValue().getName().getPrefixedName().equals(entry.getKey()))
-                                        .map(Map.Entry::getValue)
+                                        .filter(v -> v.getName().getPrefixedName().equals(entry.getKey()))
                                         .findFirst()
                                         .orElse(null);
 
@@ -386,9 +385,7 @@ public class MongoDBSession extends BaseSession {
             String key = entry.getKey();
             if (fulltext != null && fulltext.contains(key)) {
                 String val = String.valueOf(value);
-                if (val != null) {
-                    val = val.replaceAll("%+", ".*");
-                }
+                val = val.replaceAll("%+", ".*");
                 switch (substringMatchType) {
                 case subany:
                     addField(bson, key, Pattern.compile(val, Pattern.CASE_INSENSITIVE));
@@ -486,7 +483,7 @@ public class MongoDBSession extends BaseSession {
             long count;
             if (countTotal) {
                 // we have to do an additional query to count the total number of results
-                count = getCollection().count(filter);
+                count = getCollection().countDocuments(filter);
             } else {
                 count = -2; // unknown
             }
@@ -604,7 +601,7 @@ public class MongoDBSession extends BaseSession {
     @Override
     public boolean hasEntry(String id) {
         String idFieldName = getPrefixedIdField();
-        return getCollection().count(MongoDBSerializationHelper.fieldMapToBson(idFieldName, id)) > 0;
+        return getCollection().countDocuments(MongoDBSerializationHelper.fieldMapToBson(idFieldName, id)) > 0;
     }
 
     /**
