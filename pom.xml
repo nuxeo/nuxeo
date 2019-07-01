@@ -47,7 +47,7 @@
     <module>nuxeo-webengine</module>
     <module>nuxeo-dm</module>
     <module>addons</module>
-    <module>nuxeo-jsf-ui</module>
+    <!--<module>nuxeo-jsf-ui</module>-->
   </modules>
 
   <properties>
