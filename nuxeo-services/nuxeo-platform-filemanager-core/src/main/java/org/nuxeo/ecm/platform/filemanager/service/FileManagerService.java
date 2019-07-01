@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
      *             behaviors from importers
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     private VersioningOption defaultVersioningOption = DEF_VERSIONING_OPTION;
 
     /**
@@ -128,7 +128,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
      *             behaviors from importers
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     private boolean versioningAfterAdd = DEF_VERSIONING_AFTER_ADD;
 
     @Override
@@ -221,9 +221,8 @@ public class FileManagerService extends DefaultComponent implements FileManager 
                     defaultVersioningOption = DEF_VERSIONING_OPTION;
                 }
             }
-            Boolean veradd = versioningDescriptor.versionAfterAdd;
-            if (veradd != null) {
-                versioningAfterAdd = veradd;
+            if (versioningDescriptor.versionAfterAdd != null) {
+                versioningAfterAdd = versioningDescriptor.versionAfterAdd;
             }
         });
     }
@@ -255,7 +254,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     /**
      * @deprecated since 9.1, use {@link #defaultCreateFolder(CoreSession, String, String, boolean)} instead
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path) {
         return defaultCreateFolder(documentManager, fullname, path, true);
     }
@@ -272,7 +271,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      * @deprecated since 9.1, use {@link #defaultCreateFolder(CoreSession, String, String, String, boolean, boolean)}
      *             instead
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
             String containerTypeName, boolean checkAllowedSubTypes) {
         return defaultCreateFolder(documentManager, fullname, path, containerTypeName, checkAllowedSubTypes, true);
@@ -456,7 +455,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      *             behaviors from importers
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "9.1")
     public VersioningOption getVersioningOption() {
         return defaultVersioningOption;
     }
@@ -466,7 +465,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
      *             behaviors from importers
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "9.1")
     public boolean doVersioningAfterAdd() {
         return versioningAfterAdd;
     }

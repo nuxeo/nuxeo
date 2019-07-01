@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
      */
-    @Deprecated
+    @Deprecated(since = "10.3")
     protected transient FileManagerService fileManagerService;
 
     protected AbstractFileImporter() {
@@ -278,7 +278,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
      *             behaviors from importers
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     protected boolean skipCheckInForBlob(Blob blob) {
         return blob == null || blob.getLength() == 0;
     }
@@ -286,7 +286,7 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
      */
-    @Deprecated
+    @Deprecated(since = "10.3")
     public FileManagerService getFileManagerService() {
         return fileManagerService;
     }
@@ -294,7 +294,7 @@ public abstract class AbstractFileImporter implements FileImporter {
     /**
      * @deprecated since 10.3, use {@link Framework#getService(Class)} instead if needed
      */
-    @Deprecated
+    @Deprecated(since = "10.3")
     @Override
     public void setFileManagerService(FileManagerService fileManagerService) {
         this.fileManagerService = fileManagerService;
@@ -350,7 +350,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
      *             behaviors from importers
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     protected void checkIn(DocumentModel doc) {
         VersioningOption option = fileManagerService.getVersioningOption();
         if (option != null && option != VersioningOption.NONE && doc.isCheckedOut()) {
@@ -362,7 +362,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * @deprecated since 9.1 automatic versioning is now handled at versioning service level, remove versioning
      *             behaviors from importers
      */
-    @Deprecated
+    @Deprecated(since = "9.1")
     protected void checkInAfterAdd(DocumentModel doc) {
         if (fileManagerService.doVersioningAfterAdd()) {
             checkIn(doc);
