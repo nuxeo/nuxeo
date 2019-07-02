@@ -28,7 +28,9 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -186,7 +188,7 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
                 jg.writeArrayFieldStart("taskActions");
                 for (Button button : node.getTaskButtons()) {
                     if (StringUtils.isBlank(button.getFilter()) || actionManager.checkFilter(button.getFilter(),
-                            createActionContext(wrapper.getSession()))) {
+                            createActionContext(wrapper.getSession(), node))) {
                         jg.writeStartObject();
                         jg.writeStringField("name", button.getName());
                         jg.writeStringField("url", ctx.getBaseUrl() + "api/v1/task/" + item.getDocument().getId() + "/"
@@ -264,10 +266,23 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
         jg.writeStringField("workflowInitiator", workflowInitiator);
     }
 
+    /**
+     * @deprecated since 11.1 use {@link #createActionContext(CoreSession, GraphNode)} instead
+     */
+    @Deprecated
     protected static ActionContext createActionContext(CoreSession session) {
+        return createActionContext(session, null);
+    }
+
+    protected static ActionContext createActionContext(CoreSession session, GraphNode node) {
         ActionContext actionContext = new ELActionContext();
         actionContext.setDocumentManager(session);
         actionContext.setCurrentPrincipal(session.getPrincipal());
+        if (node != null) {
+            Map<String, Object> workflowContextualInfo = new HashMap<String, Object>();
+            workflowContextualInfo.putAll(node.getWorkflowContextualInfo(session, true));
+            actionContext.putAllLocalVariables(workflowContextualInfo);
+        }
         return actionContext;
     }
 
