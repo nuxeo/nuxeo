@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.work.AbstractWork.GLOBAL_DLQ_COUNT_REGISTRY_NAME;
 import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEAD_LETTER_QUEUE;
 import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEFAULT_LOG_MANAGER;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -60,6 +62,10 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.FileEventsTrackingFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.trackers.files.FileEvent;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
@@ -590,6 +596,10 @@ public abstract class AbstractWorkManagerTest {
     @Deploy("org.nuxeo.runtime.stream")
     @Deploy("org.nuxeo.ecm.core.event:test-work-dead-letter-queue.xml")
     public void testWorkInDeadLetterQueue() throws Exception {
+        MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+        Counter dlqCounter = registry.counter(GLOBAL_DLQ_COUNT_REGISTRY_NAME);
+        long initialDlqCount = dlqCounter.getCount();
+
         // Ensure the dead letter queue stream exists and it is empty
         StreamService streamService = Framework.getService(StreamService.class);
         LogManager logManager = streamService.getLogManager(DEFAULT_LOG_MANAGER);
@@ -606,6 +616,8 @@ public abstract class AbstractWorkManagerTest {
         // Check that we have some dead letter
         lag = logManager.getLag(DEAD_LETTER_QUEUE, "testDeadLetter");
         assertEquals(LogLag.of(1), lag);
+
+        assertEquals(1, dlqCounter.getCount() - initialDlqCount);
     }
 
 }
