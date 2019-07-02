@@ -96,6 +96,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected String threadName;
 
+    // @since 11.1
+    protected boolean recordActivity;
+
     @SuppressWarnings("unchecked")
     public ComputationRunner(Supplier<Computation> supplier, ComputationMetadataMapping metadata,
             List<LogPartition> defaultAssignment, LogStreamManager streamManager, ComputationPolicy policy) {
@@ -183,13 +186,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     }
 
     protected void processLoop() throws InterruptedException {
-        boolean activity;
+        boolean timerActivity;
         while (continueLoop()) {
-            activity = processTimer();
-            activity |= processRecord();
+            timerActivity = processTimer();
+            recordActivity = processRecord();
             counter++;
-            if (!activity) {
-                // no timer nor record to process, take a break
+            if (!timerActivity && !recordActivity) {
+                // no activity take a break
                 Thread.sleep(INACTIVITY_BREAK_MS);
             }
         }
@@ -200,18 +203,16 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             return false;
         } else if (drain) {
             long now = System.currentTimeMillis();
-            // for a source we take lastTimerExecution starvation
             if (metadata.inputStreams().isEmpty()) {
+                // for a source we take lastTimerExecution starvation
                 if (lastTimerExecution > 0 && (now - lastTimerExecution) > STARVING_TIMEOUT_MS) {
                     log.info(metadata.name() + ": End of source drain, last timer " + STARVING_TIMEOUT_MS + " ms ago");
                     return false;
                 }
-            } else {
-                if ((now - lastReadTime) > STARVING_TIMEOUT_MS) {
-                    log.info(metadata.name() + ": End of drain no more input after " + (now - lastReadTime) + " ms, "
+            } else if (!recordActivity && (now - lastReadTime) > STARVING_TIMEOUT_MS) {
+                log.info(metadata.name() + ": End of drain no more input after " + (now - lastReadTime) + " ms, "
                             + inRecords + " records read, " + counter + " reads attempt");
-                    return false;
-                }
+                return false;
             }
         }
         return true;
