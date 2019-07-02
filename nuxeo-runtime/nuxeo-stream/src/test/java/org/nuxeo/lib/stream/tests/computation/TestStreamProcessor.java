@@ -413,6 +413,37 @@ public abstract class TestStreamProcessor {
     }
 
     @Test
+    public void testDrainTimeout() throws Exception {
+        final long targetTimestamp = System.currentTimeMillis();
+        final int nbRecords = 3;
+        final int concurrent = 1;
+        Topology topology1 = Topology.builder()
+                .addComputation(
+                        () -> new ComputationSource("GENERATOR", 1, nbRecords, 1, targetTimestamp),
+                        Collections.singletonList("o1:input"))
+                .addComputation(
+                        () -> new ComputationForwardSlow("SLOW", 1, 1, 1500),
+                        Arrays.asList("i1:input", "o1:output"))
+                .build();
+        Settings settings1 = new Settings(concurrent, concurrent, codec);
+
+        try (LogManager manager = getLogManager()) {
+            StreamManager streamManager = new LogStreamManager(manager);
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor1", topology1, settings1);
+            long start = System.currentTimeMillis();
+            processor.start();
+            assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
+            // no record are processed so far
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
+            double elapsed = (System.currentTimeMillis() - start) / 1000.0;
+            int result = countRecordIn(manager, "output");
+            log.info(
+                    String.format("count: %s in %.2fs, throughput: %.2f records/s", result, elapsed, result / elapsed));
+            assertEquals(settings1.getConcurrency("GENERATOR") * nbRecords, result);
+        }
+    }
+
+    @Test
     public void testSingleSource() throws Exception {
         final int nbRecords = 10;
         final long targetTimestamp = System.currentTimeMillis();
