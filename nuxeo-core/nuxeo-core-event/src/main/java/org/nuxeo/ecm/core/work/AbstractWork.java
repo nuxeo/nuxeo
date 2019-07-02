@@ -56,8 +56,12 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
 
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the details around state change.
@@ -148,6 +152,9 @@ public abstract class AbstractWork implements Work {
     protected WorkSchedulePath schedulePath;
 
     protected String callerThread;
+
+    // @since 11.1
+    public static final String GLOBAL_DLQ_COUNT_REGISTRY_NAME = MetricRegistry.name("nuxeo", "works", "dlq");
 
     /**
      * Constructs a {@link Work} instance with a unique id.
@@ -445,6 +452,8 @@ public abstract class AbstractWork implements Work {
                 service.getLogManager(DEFAULT_LOG_MANAGER)
                        .getAppender(DEAD_LETTER_QUEUE)
                        .append(key, Record.of(key, WorkComputation.serialize(this)));
+                MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+                registry.counter(GLOBAL_DLQ_COUNT_REGISTRY_NAME).inc();
             }
         } catch (IllegalArgumentException e) {
             log.debug("No default log manager, don't save work in failure to a dead letter queue");
