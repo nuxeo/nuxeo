@@ -1,0 +1,57 @@
+<component name="studio.extensions.grenard-SANDBOX" version="1.0.0">
+
+  <require>org.nuxeo.ecm.plateform.task.type</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="test" prefix="test" override="true" src="testRoute/test.xsd"/>
+    <schema name="var_test_Wf-20190702123835056-start-node" prefix="var_test_Wf-20190702123835056-start-node" override="true" src="testRoute/var_test_Wf-20190702123835056-start-node.xsd"/>
+    <schema name="var_test_Wf-20190702123835062-stop-node" prefix="var_test_Wf-20190702123835062-stop-node" override="true" src="testRoute/var_test_Wf-20190702123835062-stop-node.xsd"/>
+    <schema name="var_test_Wf-20190702123904532-stop-node" prefix="var_test_Wf-20190702123904532-stop-node" override="true" src="testRoute/var_test_Wf-20190702123904532-stop-node.xsd"/>
+    <schema name="var_test_Wf-20190702123910190-accept-reject-task" prefix="var_test_Wf-20190702123910190-accept-reject-task" override="true" src="testRoute/var_test_Wf-20190702123910190-accept-reject-task.xsd"/>
+    <schema name="var_global_test_Wf-20190702124044696-approve-task" prefix="var_global_test_Wf-20190702124044696-approve-task" override="true" src="testRoute/var_global_test_Wf-20190702124044696-approve-task.xsd"/>
+    <schema name="var_test_Wf-20190702124044696-approve-task" prefix="var_test_Wf-20190702124044696-approve-task" override="true" src="testRoute/var_test_Wf-20190702124044696-approve-task.xsd"/>
+    <schema name="var_test_Wf" prefix="var_test_Wf" override="true" src="testRoute/var_test_Wf.xsd"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <facet name="facet-var_test_Wf-20190702123835056-start-node">
+      <schema name="var_test_Wf-20190702123835056-start-node"/>
+    </facet>
+    <facet name="facet-var_test_Wf-20190702123835062-stop-node">
+      <schema name="var_test_Wf-20190702123835062-stop-node"/>
+    </facet>
+    <facet name="facet-var_test_Wf-20190702123904532-stop-node">
+      <schema name="var_test_Wf-20190702123904532-stop-node"/>
+    </facet>
+    <facet name="facet-var_test_Wf-20190702123910190-accept-reject-task">
+      <schema name="var_test_Wf-20190702123910190-accept-reject-task"/>
+    </facet>
+    <facet name="facet-var_global_test_Wf-20190702124044696-approve-task">
+      <schema name="var_global_test_Wf-20190702124044696-approve-task"/>
+    </facet>
+    <facet name="facet-var_test_Wf-20190702124044696-approve-task">
+      <schema name="var_test_Wf-20190702124044696-approve-task"/>
+    </facet>
+    <facet name="facet-var_test_Wf">
+      <schema name="var_test_Wf"/>
+    </facet>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.routing.service" point="routeModelImporter">
+    <template-resource id="test_Wf" path="testRoute/test_Wf.zip"/>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="test_filter">
+      <rule grant="true">
+        <condition>#{WorkflowVariables['test_boolean'] == true}</condition>
+      </rule>
+    </filter>
+    <filter id="test_not_filter">
+      <rule grant="true">
+        <condition>#{WorkflowVariables['test_boolean'] != true}</condition>
+      </rule>
+    </filter>
+  </extension>
+
+</component>
