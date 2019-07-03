@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.picture.core.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeFalse;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,10 +41,13 @@ import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.picture.operation.PictureResize;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
@@ -51,10 +55,15 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.picture.convert")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
+@Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.rendition.core")
 public class TestPictureResize {
 
     @Inject
     AutomationService service;
+
+    @Inject
+    protected EventService eventService;
 
     @Inject
     CoreSession session;
@@ -83,6 +92,38 @@ public class TestPictureResize {
         params.put("maxWidth", 150);
         params.put("maxHeight", 300);
         OperationChain chain = new OperationChain("fakeChain");
+        OperationParameters oparams = new OperationParameters(PictureResize.ID, params);
+        chain.add(oparams);
+
+        Blob result = (Blob) service.run(ctx, chain);
+
+        assertNotNull(result);
+    }
+    
+    @Test
+    public void testResizerForDoc() throws Exception{
+        // TODO: NXP-27622
+        assumeFalse(SystemUtils.IS_OS_MAC);
+        
+        DocumentModel pictureDoc = session.createDocumentModel("/", "testpicture", "Picture");
+        Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg");
+        pictureDoc.setPropertyValue("file:content", (Serializable) source);
+        pictureDoc = session.createDocument(pictureDoc);
+        
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        eventService.waitForAsyncCompletion();
+        
+        OperationContext ctx = new OperationContext(session);
+
+        ctx.setInput(pictureDoc);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("maxWidth", 150);
+        params.put("maxHeight", 300);
+        OperationChain chain = new OperationChain("fakeChain2");
         OperationParameters oparams = new OperationParameters(PictureResize.ID, params);
         chain.add(oparams);
 
