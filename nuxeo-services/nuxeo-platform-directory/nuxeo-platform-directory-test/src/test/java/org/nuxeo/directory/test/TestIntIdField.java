@@ -19,26 +19,29 @@
  */
 package org.nuxeo.directory.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @since 9.2
@@ -49,21 +52,20 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 @LocalDeploy("org.nuxeo.ecm.directory.tests:intIdDirectory-contrib.xml")
 public class TestIntIdField {
 
+    protected static final String INT_ID_DIRECTORY = "testIdDirectory";
+
     @Inject
     protected DirectoryService directoryService;
 
     @SuppressWarnings("boxing")
     @Test
     public void testIntIdDirectory() throws Exception {
-        try (Session session = directoryService.open("testIdDirectory")) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", 1);
-            map.put("label", "toto");
+        try (Session session = directoryService.open(INT_ID_DIRECTORY)) {
+            Map<String, Object> map = createMapEntry(1, "toto");
             DocumentModel entry = session.createEntry(map);
             assertNotNull(entry);
 
-            map.put("id", 2);
-            map.put("label", "titi");
+            map = createMapEntry(2, "titi");
             DocumentModel entry2 = session.createEntry(map);
             assertNotNull(entry2);
 
@@ -71,6 +73,43 @@ public class TestIntIdField {
             assertNotNull(session.getEntry("2"));
             assertNull(session.getEntry("3"));
         }
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testIntIdCreateUpdateDelete() {
+        try (Session session = directoryService.open(INT_ID_DIRECTORY)) {
+            session.createEntry(createMapEntry(1, "toto"));
+
+            DocumentModel entry = session.getEntry("1");
+            assertNotNull(entry);
+            assertEquals("toto", entry.getPropertyValue("label"));
+
+            try {
+                session.createEntry(createMapEntry(1, "toto"));
+                fail("An exception should have been thrown");
+            } catch (DirectoryException e) {
+                assertEquals("Entry with id 1 already exists", e.getMessage());
+            }
+
+            entry.setPropertyValue("label", "titi");
+            session.updateEntry(entry);
+            entry = session.getEntry("1");
+            assertEquals("titi", entry.getPropertyValue("label"));
+
+            assertTrue(session.hasEntry("1"));
+            session.deleteEntry("1");
+            assertFalse(session.hasEntry("1"));
+        }
+    }
+
+    protected Map<String, Object> createMapEntry(int id, String label) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("label", label);
+        return map;
     }
 
 }
