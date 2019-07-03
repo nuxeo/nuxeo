@@ -151,7 +151,7 @@ public class MongoDBSession extends BaseSession {
         }
 
         // Check if the entry already exists
-        if (hasEntry(String.valueOf(id))) {
+        if (hasEntry0(id)) {
             throw new DirectoryException(
                     String.format("Entry with id %s already exists in directory %s", id, directory.getName()));
         }
@@ -164,20 +164,7 @@ public class MongoDBSession extends BaseSession {
                     String fieldName = field.getName().getPrefixedName();
                     Object value = newDocMap.get(fieldName);
                     Type type = field.getType();
-                    if (value instanceof String) {
-                        String v = (String) value;
-                        if (type instanceof IntegerType) {
-                            newDocMap.put(fieldName, Integer.valueOf(v));
-                        } else if (type instanceof LongType) {
-                            newDocMap.put(fieldName, Long.valueOf(v));
-                        }
-                    } else if (value instanceof Number) {
-                        if (type instanceof LongType && value instanceof Integer) {
-                            newDocMap.put(fieldName, Long.valueOf((Integer) value));
-                        } else if (type instanceof StringType) {
-                            newDocMap.put(fieldName, value.toString());
-                        }
-                    }
+                    newDocMap.put(fieldName, convertToType(value, type));
                     // Load default values if defined and not present in the map
                     if (!newDocMap.containsKey(fieldName)) {
                         Object defaultValue = field.getDefaultValue();
@@ -198,6 +185,24 @@ public class MongoDBSession extends BaseSession {
             throw new DirectoryException(e);
         }
         return createEntryModel(null, schemaName, String.valueOf(fieldMap.get(idFieldName)), fieldMap, isReadOnly());
+    }
+
+    protected Object convertToType(Object value, Type type) {
+        Object result = value;
+        if (value instanceof String) {
+            if (type instanceof IntegerType) {
+                result = Integer.valueOf((String) value);
+            } else if (type instanceof LongType) {
+                result = Long.valueOf((String) value);
+            }
+        } else if (value instanceof Number) {
+            if (type instanceof LongType && value instanceof Integer) {
+                result = Long.valueOf((Integer) value);
+            } else if (type instanceof StringType) {
+                result = value.toString();
+            }
+        }
+        return result;
     }
 
     @Override
@@ -249,7 +254,8 @@ public class MongoDBSession extends BaseSession {
         }
 
         String id = docModel.getId();
-        Document bson = MongoDBSerializationHelper.fieldMapToBson(idFieldName, autoincrementId ? Long.valueOf(id) : id);
+        Object idFieldValue = convertToType(id, getIdFieldType());
+        Document bson = MongoDBSerializationHelper.fieldMapToBson(idFieldName, idFieldValue);
 
         List<Bson> updates = fieldMap.entrySet()
                                      .stream()
@@ -279,8 +285,9 @@ public class MongoDBSession extends BaseSession {
     public void deleteEntryWithoutReferences(String id) {
         try {
             String idFieldName = getPrefixedIdField();
+            Object idFieldValue = convertToType(id, getIdFieldType());
             DeleteResult result = getCollection().deleteOne(
-                    MongoDBSerializationHelper.fieldMapToBson(idFieldName, autoincrementId ? Long.valueOf(id) : id));
+                    MongoDBSerializationHelper.fieldMapToBson(idFieldName, idFieldValue));
             if (!result.wasAcknowledged()) {
                 throw new DirectoryException(
                         "Error while deleting the entry, the request has not been acknowledged by the server");
@@ -544,6 +551,11 @@ public class MongoDBSession extends BaseSession {
         }
 
         @Override
+        protected Document newDocumentWithField(FieldInfo fieldInfo, Object value) {
+            return new Document(fieldInfo.queryField, convertToType(value, fieldInfo.type));
+        }
+
+        @Override
         protected FieldInfo walkReference(String name) {
             Field field = directory.getSchemaFieldMap().get(name);
             if (field == null) {
@@ -600,8 +612,14 @@ public class MongoDBSession extends BaseSession {
 
     @Override
     public boolean hasEntry(String id) {
+        return hasEntry0(id);
+    }
+
+    protected boolean hasEntry0(Object id) {
         String idFieldName = getPrefixedIdField();
-        return getCollection().countDocuments(MongoDBSerializationHelper.fieldMapToBson(idFieldName, id)) > 0;
+        Type idFieldType = getIdFieldType();
+        Object idFieldValue = convertToType(id, idFieldType);
+        return getCollection().countDocuments(MongoDBSerializationHelper.fieldMapToBson(idFieldName, idFieldValue)) > 0;
     }
 
     /**
@@ -664,6 +682,14 @@ public class MongoDBSession extends BaseSession {
             return null;
         }
         return passwordField.getName().getPrefixedName();
+    }
+
+    protected Type getIdFieldType() {
+        Field idField = directory.getSchemaFieldMap().get(getIdField());
+        if (idField == null) {
+            return null;
+        }
+        return idField.getType();
     }
 
 }
