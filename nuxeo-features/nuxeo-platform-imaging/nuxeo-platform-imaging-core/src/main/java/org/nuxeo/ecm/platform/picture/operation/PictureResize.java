@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
 
 /**
@@ -66,8 +67,14 @@ public class PictureResize {
         Blob pictureBlob = null;
         MultiviewPicture mvp = doc.getAdapter(MultiviewPicture.class);
         if (mvp != null) {
-            pictureBlob = mvp.getView(mvp.getOrigin()).getBlob();
-        } else {
+            // picture:origin is not always set.
+            PictureView pv = mvp.getView(mvp.getOrigin());
+            if (pv != null) {
+                pictureBlob = pv.getBlob();
+            }
+        }
+        
+        if (pictureBlob == null) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {
                 pictureBlob = bh.getBlob();
