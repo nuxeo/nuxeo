@@ -28,16 +28,19 @@ import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.logging.DeprecationLogger;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -45,7 +48,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @since 7.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, LogCaptureFeature.class })
 public class TestConfigurationService {
 
     @Inject
@@ -53,6 +56,9 @@ public class TestConfigurationService {
 
     @Inject
     protected HotDeployer hotDeployer;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     @Test
     public void testExtensionPoint() throws Exception {
@@ -127,16 +133,22 @@ public class TestConfigurationService {
     }
 
     @Test
+    @LogCaptureFeature.FilterOn(loggerClass = DeprecationLogger.class, logLevel = "WARN")
     public void testCompatWarn() throws Exception {
         Framework.getProperties().setProperty("nuxeo.test.dummyStringProperty", "anotherDummyValue");
         assertEquals(0, Framework.getRuntime().getMessageHandler().getWarnings().size());
         // Deploy contribution with properties
         hotDeployer.deploy("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
-        assertEquals(1, Framework.getRuntime().getMessageHandler().getWarnings().size());
-        assertEquals(
-                "Property 'nuxeo.test.dummyStringProperty' should now be contributed to "
-                        + "extension point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'",
-                Framework.getRuntime().getMessageHandler().getWarnings().get(0));
+
+        // The deprecation warning messages should not be appended to the runtime, but logged by the DeprecationLogger class
+        assertEquals(0, Framework.getRuntime().getMessageHandler().getWarnings().size());
+
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        String message = "Since version 7.4: Property 'nuxeo.test.dummyStringProperty' should now be contributed to "
+                + "extension point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'";
+        assertEquals(message, caughtEvents.get(0));
+
         Framework.getProperties().remove("nuxeo.test.dummyStringProperty");
     }
 

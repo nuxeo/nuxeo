@@ -121,7 +121,6 @@ public class ConfigurationServiceImpl extends DefaultComponent implements Config
                 String message = "Property '" + key + "' should now be contributed to extension "
                         + "point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'";
                 DeprecationLogger.log(message, "7.4");
-                Framework.getRuntime().getMessageHandler().addWarning(message);
             }
             super.registerContribution(contribution, extensionPoint, contributor);
         }
