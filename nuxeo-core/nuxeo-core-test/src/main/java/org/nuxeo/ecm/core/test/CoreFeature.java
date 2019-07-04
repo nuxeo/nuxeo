@@ -20,6 +20,8 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import static org.nuxeo.ecm.core.model.Session.PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
@@ -257,11 +259,11 @@ public class CoreFeature implements RunnerFeature {
                     // ignore, proxies disabled
                 }
                 // remove non-proxies
-                Framework.getProperties().put("allowDeleteUndeletableDocuments", "true");
+                Framework.getProperties().put(PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS, "true");
                 try {
                     session.removeChildren(new PathRef("/"));
                 } finally {
-                    Framework.getProperties().remove("allowDeleteUndeletableDocuments");
+                    Framework.getProperties().remove(PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS);
                 }
                 log.trace(
                         "remove orphan versions as OrphanVersionRemoverListener is not triggered by CoreSession#removeChildren");

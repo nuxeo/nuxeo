@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -84,6 +85,46 @@ public interface DocumentBlobManager {
      * @since 7.3
      */
     void notifyChanges(Document doc, Set<String> xpaths);
+
+    /**
+     * Notifies the blob manager that the document was made a record.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    void notifyMakeRecord(Document doc);
+
+    /**
+     * Notifies the blob manager that the document has been copied.
+     *
+     * @param doc the new document, the result of the copy
+     * @since 11.1
+     */
+    void notifyAfterCopy(Document doc);
+
+    /**
+     * Notifies the blob manager that the document is about to be removed.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    void notifyBeforeRemove(Document doc);
+
+    /**
+     * Notifies the blob manager that the document's retention date was changed.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    void notifySetRetainUntil(Document doc, Calendar retainUntil);
+
+    /**
+     * Notifies the blob manager that the document's legal hold status was changed.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    void notifySetLegalHold(Document doc, boolean hold);
 
     /**
      * Garbage collect the unused binaries.

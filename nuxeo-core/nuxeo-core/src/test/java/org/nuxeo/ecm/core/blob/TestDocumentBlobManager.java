@@ -75,6 +75,8 @@ public class TestDocumentBlobManager {
             {
                 allowing(doc).getRepositoryName();
                 will(returnValue(DUMMY));
+                allowing(doc).getUUID();
+                will(returnValue("123"));
 
             }
         });
@@ -119,6 +121,15 @@ public class TestDocumentBlobManager {
         // blob that's not a video gets stored on the first dummy repo
         Blob blob = Blobs.createBlob("foo", "text/plain");
         Document doc = mockery.mock(Document.class, "doc1");
+        mockery.checking(new Expectations() {
+            {
+                allowing(doc).getRepositoryName();
+                will(returnValue(DUMMY));
+                allowing(doc).getUUID();
+                will(returnValue("123"));
+
+            }
+        });
         String key = documentBlobManager.writeBlob(blob, doc, "somexpath");
         assertEquals("dummy:1", key);
         // videos get stored in the second one
@@ -144,6 +155,15 @@ public class TestDocumentBlobManager {
         DummyBlobProvider.resetAllCounters();
         Blob blob = Blobs.createBlob("foo", "text/plain");
         Document doc = mockery.mock(Document.class, "doc1");
+        mockery.checking(new Expectations() {
+            {
+                allowing(doc).getRepositoryName();
+                will(returnValue(DUMMY));
+                allowing(doc).getUUID();
+                will(returnValue("123"));
+
+            }
+        });
         String key = documentBlobManager.writeBlob(blob, doc, "content");
         assertEquals("dummy:1", key);
 

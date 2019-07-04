@@ -274,4 +274,13 @@ public interface Session<T extends QueryFilter> {
      */
     void removeDocument(String id);
 
+    /**
+     * INTERNAL framework property allowing deletion of undeletable documents. Should only be used in tests.
+     * <p>
+     * Note that even when this is set, a low-level blob provider may still disallow blob removal.
+     *
+     * @since 11.1
+     */
+    String PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS = "org.nuxeo.core.allowDeleteUndeletableDocuments";
+
 }
