@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.map.AbstractReferenceMap;
@@ -991,9 +992,8 @@ public class PersistenceContext {
 
         // remove from context and selections
         for (NodeInfo info : nodeInfos) {
-            Serializable id = info.id;
-            for (String fragmentName : model.getTypeFragments(new IdWithTypes(id, info.primaryType, null))) {
-                RowId rowId = new RowId(fragmentName, id);
+            for (String fragmentName : model.getTypeFragments(new IdWithTypes(info))) {
+                RowId rowId = new RowId(fragmentName, info.id);
                 removedFragment(rowId); // remove from context
             }
             removeFromSelections(info);
@@ -1473,9 +1473,10 @@ public class PersistenceContext {
      * @param source the source of the copy
      * @param parentId the destination parent id
      * @param name the new name
+     * @param afterRecordCopy a consumer called on ids of nodes that were records before copy
      * @return the id of the copy
      */
-    public Serializable copy(Node source, Serializable parentId, String name) {
+    public Serializable copy(Node source, Serializable parentId, String name, Consumer<Serializable> afterRecordCopy) {
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
         Serializable oldParentId = hierFragment.get(Model.HIER_PARENT_KEY);
@@ -1511,6 +1512,12 @@ public class PersistenceContext {
         }
         // pos fixup
         copy.put(Model.HIER_CHILD_POS_KEY, pos);
+        // record fixup
+        for (Serializable recordId : copyResult.recordIds) {
+            if (afterRecordCopy != null) {
+                afterRecordCopy.accept(recordId);
+            }
+        }
         return newId;
     }
 
@@ -1615,7 +1622,9 @@ public class PersistenceContext {
             if (key.equals(Model.HIER_PARENT_KEY) || key.equals(Model.HIER_CHILD_NAME_KEY)
                     || key.equals(Model.HIER_CHILD_POS_KEY) || key.equals(Model.HIER_CHILD_ISPROPERTY_KEY)
                     || key.equals(Model.MAIN_PRIMARY_TYPE_KEY) || key.equals(Model.MAIN_CHECKED_IN_KEY)
-                    || key.equals(Model.MAIN_BASE_VERSION_KEY) || key.equals(Model.MAIN_IS_VERSION_KEY)) {
+                    || key.equals(Model.MAIN_BASE_VERSION_KEY) || key.equals(Model.MAIN_IS_VERSION_KEY)
+                    || key.equals(Model.MAIN_IS_RECORD_KEY) || key.equals(Model.MAIN_RETAIN_UNTIL_KEY)
+                    || key.equals(Model.MAIN_HAS_LEGAL_HOLD_KEY)) {
                 continue;
             }
             overwriteRow.putNew(key, versionHier.get(key));
@@ -1623,6 +1632,9 @@ public class PersistenceContext {
         overwriteRow.putNew(Model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
         overwriteRow.putNew(Model.MAIN_BASE_VERSION_KEY, versionId);
         overwriteRow.putNew(Model.MAIN_IS_VERSION_KEY, null);
+        overwriteRow.putNew(Model.MAIN_IS_RECORD_KEY, null);
+        overwriteRow.putNew(Model.MAIN_RETAIN_UNTIL_KEY, null);
+        overwriteRow.putNew(Model.MAIN_HAS_LEGAL_HOLD_KEY, null);
         // exclude special children to avoid duplicates on restore
         boolean excludeSpecialChildren = true;
         CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow,

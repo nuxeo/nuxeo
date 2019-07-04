@@ -622,6 +622,7 @@ public class SQLInfo {
                     || key.equals(Model.HIER_PARENT_KEY) //
                     || key.equals(Model.MAIN_BASE_VERSION_KEY) //
                     || key.equals(Model.MAIN_CHECKED_IN_KEY) //
+                    || key.equals(Model.MAIN_IS_RECORD_KEY) //
                     || (key.equals(Model.MAIN_MINOR_VERSION_KEY) && resetVersion) //
                     || (key.equals(Model.MAIN_MAJOR_VERSION_KEY) && resetVersion) //
                     || (key.equals(Model.HIER_CHILD_NAME_KEY) && explicitName)) {
@@ -1013,6 +1014,9 @@ public class SQLInfo {
             whatColumns.add(column);
             whats.add(column.getQuotedName());
             column = table.getColumn(Model.MAIN_MIXIN_TYPES_KEY);
+            whatColumns.add(column);
+            whats.add(column.getQuotedName());
+            column = table.getColumn(Model.MAIN_IS_RECORD_KEY);
             whatColumns.add(column);
             whats.add(column.getQuotedName());
             Select select = new Select(table);

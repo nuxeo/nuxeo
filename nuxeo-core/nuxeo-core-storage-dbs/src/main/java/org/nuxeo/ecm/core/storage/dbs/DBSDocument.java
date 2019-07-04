@@ -501,10 +501,16 @@ public class DBSDocument extends BaseDocument<State> {
         visitBlobs(docState.getState(), blobVisitor, docState::markDirty);
     }
 
+    protected DocumentBlobManager getDocumentBlobManager() {
+        return Framework.getService(DocumentBlobManager.class);
+    }
+
     @Override
     public void makeRecord() {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_IS_RECORD, TRUE);
+        DBSDocument doc = session.getDocument(docState);
+        getDocumentBlobManager().notifyMakeRecord(doc);
     }
 
     @Override
@@ -523,6 +529,8 @@ public class DBSDocument extends BaseDocument<State> {
                             + (retainUntil == null ? "null" : retainUntil.toInstant()));
         }
         docState.put(KEY_RETAIN_UNTIL, retainUntil);
+        DBSDocument doc = session.getDocument(docState);
+        getDocumentBlobManager().notifySetRetainUntil(doc, retainUntil);
     }
 
     protected boolean allowNewRetention(Calendar current, Calendar retainUntil) {
@@ -550,6 +558,8 @@ public class DBSDocument extends BaseDocument<State> {
     public void setLegalHold(boolean hold) {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_HAS_LEGAL_HOLD, hold ? TRUE : null);
+        DBSDocument doc = session.getDocument(docState);
+        getDocumentBlobManager().notifySetLegalHold(doc, hold);
     }
 
     @Override
@@ -585,8 +595,7 @@ public class DBSDocument extends BaseDocument<State> {
             throw new VersionNotModifiableException();
         } else {
             Document version = session.checkIn(id, label, checkinComment);
-            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-            blobManager.freezeVersion(version);
+            getDocumentBlobManager().freezeVersion(version);
             return version;
         }
     }
@@ -790,8 +799,7 @@ public class DBSDocument extends BaseDocument<State> {
     public void setCurrentLifeCycleState(String lifeCycleState) throws LifeCycleException {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_LIFECYCLE_STATE, lifeCycleState);
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_STATE));
+        getDocumentBlobManager().notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_STATE));
     }
 
     @Override
@@ -804,8 +812,7 @@ public class DBSDocument extends BaseDocument<State> {
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
         DBSDocumentState docState = getStateOrTarget();
         docState.put(KEY_LIFECYCLE_POLICY, policy);
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_POLICY));
+        getDocumentBlobManager().notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_POLICY));
     }
 
     // TODO generic

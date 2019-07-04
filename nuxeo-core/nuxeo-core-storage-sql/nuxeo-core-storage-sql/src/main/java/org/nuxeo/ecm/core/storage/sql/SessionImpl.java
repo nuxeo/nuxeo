@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.resource.ResourceException;
@@ -55,6 +56,7 @@ import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -947,16 +949,18 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node copy(Node source, Node parent, String name) {
+    public Node copy(Node source, Node parent, String name, Consumer<Node> afterRecordCopy) {
         checkLive();
         flush();
-        Serializable id = context.copy(source, parent.getId(), name);
+        Consumer<Serializable> afterRecordCopyWithId = afterRecordCopy == null ? null
+                : recId -> afterRecordCopy.accept(getNodeById(recId));
+        Serializable id = context.copy(source, parent.getId(), name, afterRecordCopyWithId);
         requireReadAclsUpdate();
         return getNodeById(id);
     }
 
     @Override
-    public void removeNode(Node node) {
+    public void removeNode(Node node, Consumer<Node> beforeRecordRemove) {
         checkLive();
         flush();
         // remove the lock using the lock manager
@@ -982,6 +986,14 @@ public class SessionImpl implements Session, XAResource {
                             + undeletableIds.iterator().next() + " is under retention / hold");
                 }
             }
+        }
+
+        // pre-processing before record removal (notify the record blob manager)
+        if (beforeRecordRemove != null) {
+            nodeInfos.stream() //
+                     .filter(info -> info.isRecord)
+                     .map(info -> getNodeById(info.id))
+                     .forEach(beforeRecordRemove::accept);
         }
 
         // if a proxy target is removed, check that all proxies to it are removed

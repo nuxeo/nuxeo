@@ -101,6 +101,19 @@ public interface BlobProvider {
      * <p>
      * Called to store a user-created blob.
      *
+     * @param blobContext the blob context
+     * @return the blob key
+     * @since 11.1
+     */
+    default String writeBlob(BlobContext blobContext) throws IOException {
+        return writeBlob(blobContext.blob);
+    }
+
+    /**
+     * Writes a {@link Blob} to storage and returns information about it.
+     * <p>
+     * Called to store a user-created blob.
+     *
      * @param blob the blob
      * @param id the document id
      * @param xpath the blob xpath
@@ -125,12 +138,11 @@ public interface BlobProvider {
     /**
      * Deletes a blob from storage. Only meaningful for a record blob provider.
      *
-     * @param id the document id
-     * @param xpath the blob xpath
+     * @param blobContext the blob context
      * @see #isRecordMode
      * @since 11.1
      */
-    default void deleteBlob(String id, String xpath) {
+    default void deleteBlob(BlobContext blobContext) {
         throw new UnsupportedOperationException();
     }
 

@@ -446,7 +446,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     public void remove(Serializable rootId, List<NodeInfo> nodeInfos) {
         rowMapper.remove(rootId, nodeInfos);
         for (NodeInfo info : nodeInfos) {
-            for (String fragmentName : model.getTypeFragments(new IdWithTypes(info.id, info.primaryType, null))) {
+            for (String fragmentName : model.getTypeFragments(new IdWithTypes(info))) {
                 RowId rowId = new RowId(fragmentName, info.id);
                 cacheRemove(rowId);
                 localInvalidations.addDeleted(rowId);
