@@ -46,9 +46,7 @@
       point="configuration">
     <documentation>The default type manager configuration</documentation>
     <configuration>
-      <!--prefetch>common, dublincore</prefetch-->
-      <prefetch>common.icon, dc:title, dc:description, dc:created, dc:modified,
-        dc:lastContributor, dc:creator</prefetch>
+      <prefetch>common, dublincore</prefetch>
       <clearComplexPropertyBeforeSet>true</clearComplexPropertyBeforeSet> <!-- false is DEPRECATED since 9.3 -->
       <allowVersionWriteForDublinCore>false</allowVersionWriteForDublinCore> <!-- true is DEPRECATED since 10.3 -->
     </configuration>
