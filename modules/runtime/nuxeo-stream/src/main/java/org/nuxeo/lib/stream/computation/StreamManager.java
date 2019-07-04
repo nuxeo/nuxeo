@@ -18,6 +18,8 @@
  */
 package org.nuxeo.lib.stream.computation;
 
+import java.util.List;
+
 import org.nuxeo.lib.stream.log.LogOffset;
 
 /**
@@ -44,6 +46,13 @@ public interface StreamManager {
         register(processorName, topology, settings);
         return createStreamProcessor(processorName);
     }
+
+    /**
+     * Registers some source Streams without any processors.
+     *
+     * @since 11.4
+     */
+    void register(List<String> streams, Settings settings);
 
     /**
      * Appends a record to a processor's source stream.

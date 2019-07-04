@@ -50,7 +50,6 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.kv.KeyValueStoreProvider;
@@ -86,9 +85,11 @@ public class BulkServiceImpl implements BulkService {
     // @since 11.1
     public static final Name DONE_STREAM_NAME = Name.ofUrn(DONE_STREAM);
 
-    public static final String RECORD_CODEC = "avro";
-
     public static final String COMMAND_PREFIX = "command:";
+
+    // @deprecated since 11.4 not needed anymore
+    @Deprecated(since = "11.4")
+    public static final String RECORD_CODEC = "avro";
 
     public static final String STATUS_PREFIX = "status:";
 
@@ -184,8 +185,7 @@ public class BulkServiceImpl implements BulkService {
     @SuppressWarnings("resource") // LogManager not ours to close
     protected String submit(String shardKey, String key, byte[] bytes) {
         LogManager logManager = Framework.getService(StreamService.class).getLogManager();
-        LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM_NAME,
-                Framework.getService(CodecService.class).getCodec(RECORD_CODEC, Record.class));
+        LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM_NAME);
         Record record = Record.of(key, bytes);
         log.debug("Append shardKey: {}, record: {}", shardKey, record);
         logAppender.append(shardKey, record);
