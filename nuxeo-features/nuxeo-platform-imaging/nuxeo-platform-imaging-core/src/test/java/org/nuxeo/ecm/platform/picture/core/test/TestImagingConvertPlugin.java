@@ -44,7 +44,6 @@ import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
@@ -66,7 +65,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * @author Laurent Doguin
  */
-@Ignore(value = "NXP-27575")
 @RunWith(FeaturesRunner.class)
 @Features(AutomationFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
