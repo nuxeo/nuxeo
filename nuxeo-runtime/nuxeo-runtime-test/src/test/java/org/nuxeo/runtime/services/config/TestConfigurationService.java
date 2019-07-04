@@ -105,11 +105,11 @@ public class TestConfigurationService extends NXRuntimeTestCase {
         // Deploy contribution with properties
         pushInlineDeployments("org.nuxeo.runtime.test.tests:configuration-test-contrib.xml");
         postSetUp();
-        assertEquals(1, Framework.getRuntime().getMessageHandler().getWarnings().size());
-        assertEquals(
-                "Property 'nuxeo.test.dummyStringProperty' should now be contributed to "
-                        + "extension point 'org.nuxeo.runtime.ConfigurationService', using target 'configuration'",
-                Framework.getRuntime().getMessageHandler().getWarnings().get(0));
+
+        // The deprecation warning messages should not be appended to the runtime, but logged by the
+        // DeprecationLogger class
+        assertEquals(0, Framework.getRuntime().getMessageHandler().getWarnings().size());
+
         Framework.getProperties().remove("nuxeo.test.dummyStringProperty");
     }
 
