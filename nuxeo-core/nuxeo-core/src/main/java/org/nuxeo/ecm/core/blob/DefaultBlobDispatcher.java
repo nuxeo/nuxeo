@@ -18,10 +18,10 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Document;
@@ -71,6 +72,12 @@ import org.nuxeo.runtime.api.Framework;
  * &lt;property name="ecm:path^.*&#47images&#47.*">fifth&lt;/property>
  * &lt;property name="default">other&lt;/property>
  * </pre>
+ * <p>
+ * You can make use of a record blob provider by using:
+ * <pre>
+ * &lt;property name="records">records&lt;/property>
+ * &lt;property name="default">other&lt;/property>
+ * </pre>
  *
  * @since 7.3
  */
@@ -80,6 +87,14 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     protected static final String NAME_DEFAULT = "default";
 
+    protected static final String NAME_RECORDS = "records";
+
+    // this is a low-level xpath, without schema prefix
+    protected static final String MAIN_BLOB_XPATH = "content";
+
+    // name="records" is equivalent to the following clause:
+    protected static final String RECORDS_CLAUSE = "ecm:isRecord=true,blob:xpath=" + MAIN_BLOB_XPATH;
+
     protected static final Pattern NAME_PATTERN = Pattern.compile("(.*)(=|!=|<|>|~|\\^)(.*)");
 
     /** Pseudo-property for the repository name. */
@@ -87,6 +102,13 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     /** Pseudo-property for the document path. */
     protected static final String PATH = "ecm:path";
+
+    /**
+     * Pseudo-property for the record state.
+     *
+     * @since 11.1
+     */
+    protected static final String IS_RECORD = "ecm:isRecord";
 
     protected static final String BLOB_PREFIX = "blob:";
 
@@ -153,6 +175,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             String clausesString = en.getKey();
             String providerId = en.getValue();
             providerIds.add(providerId);
+            if (clausesString.equals(NAME_RECORDS)) {
+                clausesString = RECORDS_CLAUSE;
+            }
             if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
@@ -238,6 +263,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                     value = doc.getRepositoryName();
                 } else if (xpath.equals(PATH)) {
                     value = doc.getPath();
+                } else if (xpath.equals(IS_RECORD)) {
+                    value = Boolean.valueOf(doc.isRecord());
                 } else if (xpath.startsWith(BLOB_PREFIX)) {
                     switch (xpath.substring(BLOB_PREFIX.length())) {
                     case BLOB_NAME:
@@ -345,27 +372,79 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         }
     }
 
+    /**
+     * Checks if the blob is stored in the expected blob provider to which it's supposed to be dispatched. If not,
+     * store it in the correct one (and maybe remove it from the previous one if it makes sense).
+     */
     protected void checkBlob(Document doc, BlobAccessor accessor) {
         Blob blob = accessor.getBlob();
         if (!(blob instanceof ManagedBlob)) {
             return;
         }
+        String xpath = accessor.getXPath();
         // compare current provider with expected
-        String expectedProviderId = getProviderId(doc, blob, accessor.getXPath());
-        if (((ManagedBlob) blob).getProviderId().equals(expectedProviderId)) {
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        String previousProviderId = managedBlob.getProviderId();
+        String expectedProviderId = getProviderId(doc, blob, xpath);
+        if (previousProviderId.equals(expectedProviderId)) {
             return;
         }
-        // re-write blob
-        // TODO add APIs so that blob providers can copy blobs efficiently from each other
-        Blob newBlob;
-        try (InputStream in = blob.getStream()) {
-            newBlob = Blobs.createBlob(in, blob.getMimeType(), blob.getEncoding());
-            newBlob.setFilename(blob.getFilename());
-            newBlob.setDigest(blob.getDigest());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        // re-dispatch blob to new blob provider
+        // this calls back into blobProvider.writeBlob for the expected blob provider
+        accessor.setBlob(blob);
+        // if old blob provider is in record mode, delete from it
+        deleteBlobIfRecord(previousProviderId, doc, xpath);
+    }
+
+    @Override
+    public void notifyMakeRecord(Document doc) {
+        notifyChanges(doc, Collections.singleton(IS_RECORD));
+    }
+
+    @Override
+    public void notifyAfterCopy(Document doc) {
+        notifyChanges(doc, Collections.singleton(IS_RECORD));
+    }
+
+    @Override
+    public void notifyBeforeRemove(Document doc) {
+        String xpath = MAIN_BLOB_XPATH;
+        Blob blob;
+        try {
+            blob = (Blob) doc.getValue(xpath);
+        } catch (PropertyNotFoundException e) {
+            return;
         }
-        accessor.setBlob(newBlob);
+        if (!(blob instanceof ManagedBlob)) {
+            return;
+        }
+        String blobProviderId = ((ManagedBlob) blob).getProviderId();
+        deleteBlobIfRecord(blobProviderId, doc, xpath);
+    }
+
+    protected void deleteBlobIfRecord(String blobProviderId, Document doc, String xpath) {
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
+        if (blobProvider != null && blobProvider.isRecordMode()) {
+            checkBlobCanBeDeleted(doc, xpath);
+            blobProvider.deleteBlob(new BlobContext(doc, xpath));
+        }
+    }
+
+    protected void checkBlobCanBeDeleted(Document doc, String xpath) {
+        if (MAIN_BLOB_XPATH.equals(xpath) && doc.isUnderRetentionOrLegalHold()) {
+            throw new DocumentSecurityException(
+                    "Cannot remove main blob from document " + doc.getUUID() + ", it is under retention / hold");
+        }
+    }
+
+    @Override
+    public void notifySetRetainUntil(Document doc, Calendar retainUntil) {
+        // throw new UnsupportedOperationException("TODO");
+    }
+
+    @Override
+    public void notifySetLegalHold(Document doc, boolean hold) {
+        // throw new UnsupportedOperationException("TODO");
     }
 
 }

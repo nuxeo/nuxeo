@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
@@ -153,6 +154,10 @@ public class SQLSession implements Session<QueryFilter> {
         return repository.getName();
     }
 
+    protected DocumentBlobManager getDocumentBlobManager() {
+        return Framework.getService(DocumentBlobManager.class);
+    }
+
     protected String idToString(Serializable id) {
         return session.getModel().idToString(id);
     }
@@ -244,8 +249,14 @@ public class SQLSession implements Session<QueryFilter> {
         if (!copyFindFreeNameDisabled) {
             name = findFreeName(parentNode, name);
         }
-        Node copy = session.copy(((SQLDocument) source).getNode(), parentNode, name);
+        Node copy = session.copy(((SQLDocument) source).getNode(), parentNode, name,
+                this::notifyDocumentBlobManagerAfterCopy);
         return newDocument(copy);
+    }
+
+    protected void notifyDocumentBlobManagerAfterCopy(Node node) {
+        Document doc = newDocument(node);
+        getDocumentBlobManager().notifyAfterCopy(doc);
     }
 
     @Override
@@ -610,7 +621,12 @@ public class SQLSession implements Session<QueryFilter> {
     }
 
     protected void remove(Node node) {
-        session.removeNode(node);
+        session.removeNode(node, this::notifyDocumentBlobManagerBeforeRemove);
+    }
+
+    protected void notifyDocumentBlobManagerBeforeRemove(Node node) {
+        Document doc = newDocument(node);
+        getDocumentBlobManager().notifyBeforeRemove(doc);
     }
 
     protected void removeProperty(Node node) {
@@ -627,7 +643,13 @@ public class SQLSession implements Session<QueryFilter> {
     }
 
     protected void restore(Node node, Node version) {
+        if (node.isRecord()) {
+            notifyDocumentBlobManagerBeforeRemove(node);
+        }
         session.restore(node, version);
+        if (version.isRecord()) {
+            notifyDocumentBlobManagerAfterCopy(node);
+        }
     }
 
     protected Document getVersionByLabel(String versionSeriesId, String label) {

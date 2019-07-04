@@ -148,6 +148,10 @@ public class Node implements StateAccessor {
         return primaryType.equals(model.PROXY_TYPE);
     }
 
+    public boolean isRecord() {
+        return Boolean.TRUE.equals(getSimpleProperty(model.MAIN_IS_RECORD_PROP).getValue());
+    }
+
     private static final String[] NO_MIXINS = {};
 
     /**
