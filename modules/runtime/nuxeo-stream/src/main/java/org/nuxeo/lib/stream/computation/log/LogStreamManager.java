@@ -20,7 +20,10 @@ package org.nuxeo.lib.stream.computation.log;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -61,14 +64,23 @@ public class LogStreamManager implements StreamManager {
 
     protected final Map<Name, RecordFilterChain> filters = new HashMap<>();
 
+    protected final Set<Name> streams = new HashSet<>();
+
     @Override
     public void register(String processorName, Topology topology, Settings settings) {
         log.debug("Register processor: " + processorName);
         topologies.put(processorName, topology);
         this.settings.put(processorName, settings);
         initStreams(topology, settings);
-        initAppenders(topology, settings);
-        registerFilters(topology, settings);
+        initAppenders(topology.streamsSet(), settings);
+        registerFilters(topology.streamsSet(), settings);
+    }
+
+    @Override
+    public void register(List<String> streams, Settings settings) {
+        streams.forEach(stream -> initStream(stream, settings));
+        initAppenders(streams, settings);
+        registerFilters(streams, settings);
     }
 
     @Override
@@ -137,41 +149,40 @@ public class LogStreamManager implements StreamManager {
 
     protected void initStreams(Topology topology, Settings settings) {
         log.debug("Initializing streams");
-        topology.streamsSet().stream().map(Name::ofUrn).forEach(streamName -> {
-            if (settings.isExternal(streamName)) {
-                return;
-            }
-            if (!logManager.exists(streamName)) {
-                logManager.createIfNotExists(streamName, settings.getPartitions(streamName));
-            } else {
-                int size = logManager.size(streamName);
-                if (settings.getPartitions(streamName) != size) {
-                    log.debug(String.format(
-                            "Update settings for stream: %s defined with %d partitions but exists with %d partitions",
-                            streamName, settings.getPartitions(streamName), size));
-                    settings.setPartitions(streamName, size);
-                }
-            }
-        });
+        topology.streamsSet().forEach(streamName -> initStream(streamName, settings));
     }
 
-    protected void initAppenders(Topology topology, Settings settings) {
+    protected void initStream(String streamName, Settings settings) {
+        Name stream = Name.ofUrn(streamName);
+        if (settings.isExternal(stream)) {
+            return;
+        }
+        if (!logManager.exists(stream)) {
+            logManager.createIfNotExists(stream, settings.getPartitions(streamName));
+        } else {
+            int size = logManager.size(stream);
+            if (settings.getPartitions(streamName) != size) {
+                log.debug(String.format(
+                        "Update settings for stream: %s defined with %d partitions but exists with %d partitions",
+                        streamName, settings.getPartitions(streamName), size));
+                settings.setPartitions(streamName, size);
+            }
+        }
+        streams.add(stream);
+    }
+
+    protected void initAppenders(Collection<String> streams, Settings settings) {
         log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
-        topology.streamsSet()
-                .stream().map(Name::ofUrn)
-                .forEach(stream -> {
-                    if (!settings.isExternal(stream)) {
-                        logManager.getAppender(stream, settings.getCodec(stream));
-                    }
-                });
+        streams.forEach(stream -> log.warn(stream));
+        streams.stream()
+               .filter(stream -> !settings.isExternal(Name.ofUrn(stream)))
+               .forEach(stream -> logManager.getAppender(Name.ofUrn(stream), settings.getCodec(stream)));
     }
 
-    protected void registerFilters(Topology topology, Settings settings) {
-        topology.streamsSet().stream().map(Name::ofUrn).forEach(stream -> {
-            if (!settings.isExternal(stream)) {
-                filters.put(stream, settings.getFilterChain(stream));
-            }
-        });
+    protected void registerFilters(Collection<String> streams, Settings settings) {
+        streams.stream()
+               .filter(stream -> !settings.isExternal(Name.ofUrn(stream)))
+               .forEach(stream -> filters.put(Name.ofUrn(stream), settings.getFilterChain(stream)));
     }
 
 }
