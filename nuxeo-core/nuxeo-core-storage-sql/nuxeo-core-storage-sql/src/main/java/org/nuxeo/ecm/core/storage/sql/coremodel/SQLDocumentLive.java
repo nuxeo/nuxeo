@@ -364,9 +364,14 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
      * ----- Retention and Hold -----
      */
 
+    protected DocumentBlobManager getDocumentBlobManager() {
+        return Framework.getService(DocumentBlobManager.class);
+    }
+
     @Override
     public void makeRecord() {
         setPropertyValue(Model.MAIN_IS_RECORD_PROP, Boolean.TRUE);
+        getDocumentBlobManager().notifyMakeRecord(this);
     }
 
     @Override
@@ -383,6 +388,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
                             + (retainUntil == null ? "null" : retainUntil.toInstant()));
         }
         setPropertyValue(Model.MAIN_RETAIN_UNTIL_PROP, retainUntil);
+        getDocumentBlobManager().notifySetRetainUntil(this, retainUntil);
     }
 
     protected boolean allowNewRetention(Calendar current, Calendar retainUntil) {
@@ -408,6 +414,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public void setLegalHold(boolean hold) {
         setPropertyValue(Model.MAIN_HAS_LEGAL_HOLD_PROP, hold ? Boolean.TRUE : null);
+        getDocumentBlobManager().notifySetLegalHold(this, hold);
     }
 
     @Override
@@ -444,8 +451,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public void setLifeCyclePolicy(String policy) {
         setPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_POLICY_PROP));
+        getDocumentBlobManager().notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_POLICY_PROP));
     }
 
     @Override
@@ -456,8 +462,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public void setCurrentLifeCycleState(String state) {
         setPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP, state);
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_STATE_PROP));
+        getDocumentBlobManager().notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_STATE_PROP));
     }
 
     @Override
@@ -517,8 +522,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     @Override
     public Document checkIn(String label, String checkinComment) {
         Document version = session.checkIn(getNode(), label, checkinComment);
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        blobManager.freezeVersion(version);
+        getDocumentBlobManager().freezeVersion(version);
         return version;
     }
 

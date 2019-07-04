@@ -17,10 +17,15 @@
     <blobprovider name="dummy">
       <class>org.nuxeo.ecm.core.DummyBlobProvider</class>
     </blobprovider>
+    <blobprovider name="records1">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultRecordBlobProvider</class>
+      <property name="path">records1</property>
+    </blobprovider>
   </extension>
   <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
     <blobdispatcher>
       <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
+      <property name="records">records1</property>
       <property name="dc:format=video">test2</property>
       <property name="nosuchschema:nosuchprop=foo">test2</property>
       <property name="blob:mime-type=video/mp4,nosuchschema:nosuchprop=foo">test3</property>

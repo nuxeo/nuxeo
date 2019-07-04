@@ -121,6 +121,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     public static final String LOCK_CREATED_PROP = "ecm:lockCreated";
 
+    public static final String IS_RECORD_PROP = "ecm:isRecord";
+
+    public static final String RETAIN_UNTIL_PROP = "ecm:retainUntil";
+
+    public static final String HAS_LEGAL_HOLD_PROP = "ecm:hasLegalHold";
+
     public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<>(Arrays.asList( //
                                                                                           FULLTEXT_JOBID_PROP, //
                                                                                           FULLTEXT_BINARYTEXT_PROP, //
@@ -129,6 +135,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                                                                                           LOCK_OWNER_PROP, //
                                                                                           LOCK_CREATED_PROP, //
                                                                                           DC_ISSUED, //
+                                                                                          IS_RECORD_PROP, //
+                                                                                          RETAIN_UNTIL_PROP, //
+                                                                                          HAS_LEGAL_HOLD_PROP, //
                                                                                           RELATED_TEXT_RESOURCES, //
                                                                                           RELATED_TEXT_ID, //
                                                                                           RELATED_TEXT //
@@ -960,6 +969,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
         @Override
         public void setBlob(Blob blob) throws PropertyException {
+            // markDirty has to be called *before* we change the state
             markDirty.run();
             setValueBlob(state, blob, getXPath());
         }
