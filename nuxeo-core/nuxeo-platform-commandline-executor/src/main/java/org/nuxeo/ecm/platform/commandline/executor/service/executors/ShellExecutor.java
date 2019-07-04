@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters.ParameterValue;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
@@ -56,13 +56,7 @@ import org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor
  */
 public class ShellExecutor implements Executor {
 
-    private static final Log log = LogFactory.getLog(ShellExecutor.class);
-
-    @Deprecated
-    @Override
-    public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params) {
-        return exec(cmdDesc, params, new EnvironmentDescriptor());
-    }
+    private static final Logger log = LogManager.getLogger(ShellExecutor.class);
 
     protected static final AtomicInteger PIPE_COUNT = new AtomicInteger();
 
@@ -73,9 +67,7 @@ public class ShellExecutor implements Executor {
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env) {
         String commandLine = cmdDesc.getCommand() + " " + String.join(" ", cmdDesc.getParametersString());
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Running system command: " + commandLine);
-            }
+            log.debug("Running system command: {}", commandLine);
             long t0 = System.currentTimeMillis();
             ExecResult res = exec1(cmdDesc, params, env);
             long t1 = System.currentTimeMillis();
@@ -190,18 +182,12 @@ public class ShellExecutor implements Executor {
      * @since 7.10
      */
     public static Thread pipe(InputStream in, OutputStream out) {
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    IOUtils.copy(in, out);
-                    out.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
+        Runnable run = () -> {
+            try (in; out) {
+                IOUtils.copy(in, out);
+                out.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         };
         Thread thread = new Thread(run, "Nuxeo-pipe-" + PIPE_COUNT.incrementAndGet());
@@ -249,13 +235,14 @@ public class ShellExecutor implements Executor {
         String[] systemPaths = System.getenv("PATH").split(File.pathSeparator);
         for (String ext : extensions) {
             for (String sp : systemPaths) {
+                String fullCommand = command + ext;
                 try {
                     Path path = Paths.get(sp.trim());
-                    if (Files.exists(path.resolve(command + ext))) {
-                        return path.resolve(command + ext).toString();
+                    if (Files.exists(path.resolve(fullCommand))) {
+                        return path.resolve(fullCommand).toString();
                     }
                 } catch (InvalidPathException e) {
-                    log.warn("PATH environment variable contains an invalid path : " + e.getMessage());
+                    log.warn("PATH environment variable contains an invalid path: {}", fullCommand, e);
                 }
             }
         }
