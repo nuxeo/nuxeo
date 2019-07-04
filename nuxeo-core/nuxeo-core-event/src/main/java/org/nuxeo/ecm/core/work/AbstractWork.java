@@ -458,7 +458,14 @@ public abstract class AbstractWork implements Work {
         } catch (IllegalArgumentException e) {
             log.debug("No default log manager, don't save work in failure to a dead letter queue");
         } catch (Exception e) {
-            log.error("Failed to save work: " + getId() + " in dead letter queue", e);
+            String message = "Failed to save work: " + getId() + " in dead letter queue";
+            if (ExceptionUtils.hasInterruptedCause(e)) {
+                // During hot reload or forced shutdown the StreamService might be unavailable
+                // using warn level to prevent CI build to fail
+                log.warn(message, e);
+            } else {
+                log.error(message, e);
+            }
         }
     }
 
