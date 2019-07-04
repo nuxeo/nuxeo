@@ -20,12 +20,13 @@
  */
 package org.nuxeo.ecm.platform.commandline.executor.service.executors;
 
-import java.io.BufferedReader;
+import static org.apache.commons.io.IOUtils.buffer;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters.ParameterVa
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
 import org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor;
+import org.nuxeo.runtime.RuntimeServiceException;
 
 /**
  * Default implementation of the {@link Executor} interface. Use simple shell exec.
@@ -96,10 +98,8 @@ public class ShellExecutor implements Executor {
             list.addAll(words);
         }
 
-        List<Process> processes = new LinkedList<>();
-        List<Thread> pipes = new LinkedList<>();
+        List<ProcessBuilder> builders = new LinkedList<>();
         List<String> command = new LinkedList<>();
-        Process process = null;
         for (Iterator<String> it = list.iterator(); it.hasNext();) {
             String word = it.next();
             boolean build;
@@ -117,36 +117,37 @@ public class ShellExecutor implements Executor {
             if (!build) {
                 continue;
             }
-            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            var processBuilder = createProcessBuilder(command, env);
+            builders.add(processBuilder);
+
             command = new LinkedList<>(); // reset for next loop
-            processBuilder.directory(new File(env.getWorkingDirectory()));
-            processBuilder.environment().putAll(env.getParameters());
-            processBuilder.redirectErrorStream(true);
-            Process newProcess = processBuilder.start();
-            processes.add(newProcess);
-            if (process == null) {
-                // first process, nothing to input
-                IOUtils.closeQuietly(newProcess.getOutputStream());
-            } else {
-                // pipe previous process output into new process input
-                // needs a thread doing the piping because Java has no way to connect two children processes directly
-                // except through a filesystem named pipe but that can't be created in a portable manner
-                Thread pipe = pipe(process.getInputStream(), newProcess.getOutputStream());
-                pipes.add(pipe);
-            }
-            process = newProcess;
         }
+        // now start all process
+        List<Process> processes = ProcessBuilder.startPipeline(builders);
 
         // get result from last process
-        @SuppressWarnings("null")
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        List<String> output = new ArrayList<>();
-        while ((line = reader.readLine()) != null) {
-            output.add(line);
+        List<String> output;
+        Process last = processes.get(processes.size() - 1);
+        try (var stream = buffer(last.getInputStream())) {
+            output = IOUtils.readLines(stream, Charset.defaultCharset()); // use the host charset
         }
-        reader.close();
 
+        // get return code from processes
+        int returnCode = getReturnCode(processes);
+
+        return new ExecResult(null, output, 0, returnCode);
+    }
+
+    protected ProcessBuilder createProcessBuilder(List<String> command, EnvironmentDescriptor env) {
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        log.debug("Building Process for command: {}", () -> String.join(" ", processBuilder.command()));
+        processBuilder.directory(new File(env.getWorkingDirectory()));
+        processBuilder.environment().putAll(env.getParameters());
+        processBuilder.redirectErrorStream(true);
+        return processBuilder;
+    }
+
+    protected int getReturnCode(List<Process> processes) {
         // wait for all processes, get first non-0 exit status
         int returnCode = 0;
         for (Process p : processes) {
@@ -157,21 +158,10 @@ public class ShellExecutor implements Executor {
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
+                throw new RuntimeServiceException(e);
             }
         }
-
-        // wait for all pipes
-        for (Thread t : pipes) {
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
-        }
-
-        return new ExecResult(null, output, 0, returnCode);
+        return returnCode;
     }
 
     /**
@@ -180,14 +170,16 @@ public class ShellExecutor implements Executor {
      * The streams are both closed when the copy is finished.
      *
      * @since 7.10
+     * @deprecated since 11.1, seems unused
      */
+    @Deprecated(since = "11.1")
     public static Thread pipe(InputStream in, OutputStream out) {
         Runnable run = () -> {
             try (in; out) {
                 IOUtils.copy(in, out);
                 out.flush();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeServiceException(e);
             }
         };
         Thread thread = new Thread(run, "Nuxeo-pipe-" + PIPE_COUNT.incrementAndGet());
