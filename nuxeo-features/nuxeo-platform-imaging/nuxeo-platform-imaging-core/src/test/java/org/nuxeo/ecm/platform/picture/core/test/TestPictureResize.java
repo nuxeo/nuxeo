@@ -99,23 +99,23 @@ public class TestPictureResize {
 
         assertNotNull(result);
     }
-    
+
     @Test
     public void testResizerForDoc() throws Exception{
         // TODO: NXP-27622
         assumeFalse(SystemUtils.IS_OS_MAC);
-        
+
         DocumentModel pictureDoc = session.createDocumentModel("/", "testpicture", "Picture");
         Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg");
         pictureDoc.setPropertyValue("file:content", (Serializable) source);
         pictureDoc = session.createDocument(pictureDoc);
-        
+
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         eventService.waitForAsyncCompletion();
-        
+
         OperationContext ctx = new OperationContext(session);
 
         ctx.setInput(pictureDoc);
