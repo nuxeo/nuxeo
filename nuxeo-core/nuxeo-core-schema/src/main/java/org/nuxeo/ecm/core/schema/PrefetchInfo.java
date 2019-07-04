@@ -23,10 +23,11 @@ package org.nuxeo.ecm.core.schema;
 import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,10 @@ public class PrefetchInfo implements Serializable {
 
     private final String expr;
 
+    /**
+     * @deprecated since 11.1. Not used anymore.
+     */
+    @Deprecated
     private transient String[] fields;
 
     private transient String[] schemas;
@@ -63,6 +68,10 @@ public class PrefetchInfo implements Serializable {
         return schemas;
     }
 
+    /**
+     * @deprecated since 11.1. Not used anymore.
+     */
+    @Deprecated
     public String[] getFields() {
         parseExpression();
         return fields;
@@ -75,8 +84,8 @@ public class PrefetchInfo implements Serializable {
             return;
         }
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        List<String> fields = new ArrayList<>();
-        List<String> schemas = new ArrayList<>();
+        Set<String> fields = new HashSet<>();
+        Set<String> schemas = new HashSet<>();
 
         for (String s : expr.split("[ \t\n\r,]")) {
             if (s.isEmpty()) {
@@ -119,6 +128,9 @@ public class PrefetchInfo implements Serializable {
                 continue;
             }
             parts.add(field.getName().getPrefixedName());
+
+            // we have a field, add its schema
+            schemas.add(field.getDeclaringType().getName());
 
             // got a field, check its complex properties
             for (String t : complex) {

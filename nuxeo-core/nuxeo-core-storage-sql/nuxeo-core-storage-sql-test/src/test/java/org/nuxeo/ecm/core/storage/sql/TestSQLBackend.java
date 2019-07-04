@@ -2825,32 +2825,21 @@ public class TestSQLBackend extends SQLBackendTestCase {
             alwaysFragments.add(Model.MISC_TABLE_NAME);
         }
 
-        boolean subjectsIsArray = !model.getFragmentNames().contains("tst:subjects");
-        boolean tagsIsArray = !model.getFragmentNames().contains("tst:tags");
-
         // check computed prefetch info
         HashSet<String> expectedFragments;
-        expectedFragments = new HashSet<>(Arrays.asList("testschema", "tst:bignotes", "acls", "versions"));
+        expectedFragments = new HashSet<>(
+                Arrays.asList("testschema", "tst:bignotes", "tst:subjects", "tst:tags", "acls", "versions"));
         expectedFragments.addAll(alwaysFragments);
-        if (!subjectsIsArray) {
-            expectedFragments.add("tst:subjects");
-        }
-        if (!tagsIsArray) {
-            expectedFragments.add("tst:tags");
-        }
         assertEquals(expectedFragments, model.getTypePrefetchedFragments("TestDoc"));
 
-        expectedFragments = new HashSet<>(Arrays.asList("testschema2", "acls", "versions"));
+        expectedFragments = new HashSet<>(Arrays.asList("testschema2", "acls", "versions", "tst2:bignotes",
+                "tst2:counts", "tst2:dates", "tst2:subjects"));
         expectedFragments.addAll(alwaysFragments);
         assertEquals(expectedFragments, model.getTypePrefetchedFragments("TestDoc2"));
 
-        expectedFragments = new HashSet<>(Arrays.asList("acls", "versions"));
+        expectedFragments = new HashSet<>(
+                Arrays.asList("testschema", "acls", "versions", "tst:bignotes", "tst:subjects", "tst:tags"));
         expectedFragments.addAll(alwaysFragments);
-        if (subjectsIsArray) {
-            expectedFragments.add("testschema");
-        } else {
-            expectedFragments.add("tst:subjects");
-        }
         assertEquals(expectedFragments, model.getTypePrefetchedFragments("TestDoc3"));
 
         Node root = session.getRootNode();
