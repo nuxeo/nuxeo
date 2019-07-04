@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,18 +31,6 @@ import org.nuxeo.ecm.platform.commandline.executor.service.EnvironmentDescriptor
  * @author tiry
  */
 public interface Executor {
-
-    /**
-     * No exception is thrown but the returned {@link ExecResult} contains everything about the command execution,
-     * including an optional exception.
-     *
-     * @param cmdDesc Command to run. Cannot be null.
-     * @param params Parameters passed to the command. Cannot be null.
-     * @return Result of the execution
-     * @deprecated Since 7.4. Prefer use of {@link #exec(CommandLineDescriptor, CmdParameters, EnvironmentDescriptor)}
-     */
-    @Deprecated
-    ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params);
 
     /**
      * No exception is thrown but the returned {@link ExecResult} contains everything about the command execution,
