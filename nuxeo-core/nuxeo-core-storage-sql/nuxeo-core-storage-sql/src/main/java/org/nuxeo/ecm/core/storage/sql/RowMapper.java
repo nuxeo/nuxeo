@@ -259,22 +259,28 @@ public interface RowMapper {
 
         public final String[] mixinTypes;
 
-        public IdWithTypes(Serializable id, String primaryType, String[] mixinTypes) {
+        public final boolean isRecord;
+
+        public IdWithTypes(Serializable id, String primaryType, String[] mixinTypes, boolean isRecord) {
             this.id = id;
             this.primaryType = primaryType;
             this.mixinTypes = mixinTypes;
+            this.isRecord = isRecord;
         }
 
         public IdWithTypes(Node node) {
-            this.id = node.getId();
-            this.primaryType = node.getPrimaryType();
-            this.mixinTypes = node.getMixinTypes();
+            this(node.getId(), node.getPrimaryType(), node.getMixinTypes(), node.isRecord());
+        }
+
+        public IdWithTypes(NodeInfo info) {
+            this(info.id, info.primaryType, null, info.isRecord);
         }
 
         public IdWithTypes(SimpleFragment hierFragment) {
-            this.id = hierFragment.getId();
-            this.primaryType = hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY);
-            this.mixinTypes = (String[]) hierFragment.get(Model.MAIN_MIXIN_TYPES_KEY);
+            this(hierFragment.getId(), //
+                    hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY),
+                    (String[]) hierFragment.get(Model.MAIN_MIXIN_TYPES_KEY),
+                    TRUE.equals(hierFragment.get(Model.MAIN_IS_RECORD_KEY)));
         }
 
         @Override
@@ -296,10 +302,15 @@ public interface RowMapper {
         /** The ids of newly created proxies. */
         public final Set<Serializable> proxyIds;
 
-        public CopyResult(Serializable copyId, Invalidations invalidations, Set<Serializable> proxyIds) {
+        /** The ids of newly created documents that were previously records. */
+        public final Set<Serializable> recordIds;
+
+        public CopyResult(Serializable copyId, Invalidations invalidations, Set<Serializable> proxyIds,
+                Set<Serializable> recordIds) {
             this.copyId = copyId;
             this.invalidations = invalidations;
             this.proxyIds = proxyIds;
+            this.recordIds = recordIds;
         }
     }
 
@@ -343,20 +354,23 @@ public interface RowMapper {
 
         public final Serializable targetId;
 
+        public final boolean isRecord;
+
         public final boolean isUndeletable;
 
         /**
          * Creates node info for a node that may also be a proxy.
          */
         public NodeInfo(Serializable id, Serializable parentId, String primaryType, Boolean isProperty,
-                Serializable versionSeriesId, Serializable targetId, Calendar retainUntil, boolean hasLegalHold,
-                boolean isRetentionActive) {
+                Serializable versionSeriesId, Serializable targetId, boolean isRecord, Calendar retainUntil,
+                boolean hasLegalHold, boolean isRetentionActive) {
             this.id = id;
             this.parentId = parentId;
             this.primaryType = primaryType;
             this.isProperty = isProperty;
             this.versionSeriesId = versionSeriesId;
             this.targetId = targetId;
+            this.isRecord = isRecord;
             isUndeletable = hasLegalHold //
                     || (retainUntil != null && Calendar.getInstance().before(retainUntil)) //
                     || isRetentionActive;
@@ -380,6 +394,7 @@ public interface RowMapper {
                 versionSeriesId = ps;
                 targetId = proxyFragment.get(Model.PROXY_TARGET_KEY);
             }
+            isRecord = TRUE.equals(hierFragment.get(Model.MAIN_IS_RECORD_KEY));
             Serializable hasLegalHold = hierFragment.get(Model.MAIN_HAS_LEGAL_HOLD_KEY);
             Serializable retainUntil = hierFragment.get(Model.MAIN_RETAIN_UNTIL_KEY);
             Serializable isRetentionActive = hierFragment.get(Model.MAIN_IS_RETENTION_ACTIVE_KEY);

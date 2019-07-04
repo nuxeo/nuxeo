@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.resource.cci.Connection;
 
@@ -281,7 +282,21 @@ public interface Session extends Connection {
      * @param node the node to remove
      * @see #removePropertyNode
      */
-    void removeNode(Node node);
+    default void removeNode(Node node) {
+        removeNode(node, null);
+    }
+
+    /**
+     * Removes a node from the storage.
+     * <p>
+     * This is much more complex than removing a property node ({@link #removePropertyNode}).
+     *
+     * @param node the node to remove
+     * @param beforeRecordRemove a consumer called on nodes of records before they are removed
+     * @see {@link #removePropertyNode}
+     * @since 11.1
+     */
+    void removeNode(Node node, Consumer<Node> beforeRecordRemove);
 
     /**
      * Removes a property node from the storage.
@@ -326,7 +341,23 @@ public interface Session extends Connection {
      * @param name the new node name
      * @return the copied node
      */
-    Node copy(Node source, Node parent, String name);
+    default Node copy(Node source, Node parent, String name) {
+        return copy(source, parent, name, null);
+    }
+
+    /**
+     * Copies a node to a new location with a new name.
+     * <p>
+     * A {@link #save} is automatically done first.
+     *
+     * @param source the node to copy
+     * @param parent the new parent to which the node is copied
+     * @param name the new node name
+     * @param afterRecordCopy a consumer called on nodes that were records before copy
+     * @return the copied node
+     * @since 11.1
+     */
+    Node copy(Node source, Node parent, String name, Consumer<Node> afterRecordCopy);
 
     /**
      * Checks in a checked-out node: creates a new version with a copy of its information.

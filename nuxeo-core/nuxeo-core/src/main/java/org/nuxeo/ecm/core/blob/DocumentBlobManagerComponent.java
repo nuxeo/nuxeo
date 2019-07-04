@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -59,6 +61,9 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     protected static final BlobDispatcher DEFAULT_BLOB_DISPATCHER = new DefaultBlobDispatcher();
 
     protected static final int BINARY_GC_TX_TIMEOUT_SEC = 86_400; // 1 day
+
+    // in these low-level APIs we deal with unprefixed xpaths, so not file:content
+    protected static final String MAIN_BLOB_XPATH = "content";
 
     protected Deque<BlobDispatcherDescriptor> blobDispatcherDescriptorsRegistry = new LinkedList<>();
 
@@ -183,6 +188,10 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (blobProvider == null) {
             throw new NuxeoException("No registered blob provider with id: " + dispatch.providerId);
         }
+        if (MAIN_BLOB_XPATH.equals(xpath) && blobProvider.isRecordMode() && doc.isUnderRetentionOrLegalHold()) {
+            throw new DocumentSecurityException(
+                    "Cannot change blob from document " + doc.getUUID() + ", it is under retention / hold");
+        }
         String key = blobProvider.writeBlob(blob, doc.getUUID(), xpath);
         if (dispatch.addPrefix) {
             key = dispatch.providerId + ':' + key;
@@ -225,6 +234,28 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     public void notifyChanges(Document doc, Set<String> xpaths) {
         getBlobDispatcher().notifyChanges(doc, xpaths);
     }
+
+    public void notifyMakeRecord(Document doc) {
+        getBlobDispatcher().notifyMakeRecord(doc);
+    }
+
+    public void notifyAfterCopy(Document doc) {
+        getBlobDispatcher().notifyAfterCopy(doc);
+    }
+
+    public void notifyBeforeRemove(Document doc) {
+        getBlobDispatcher().notifyBeforeRemove(doc);
+    }
+
+    public void notifySetRetainUntil(Document doc, Calendar retainUntil) {
+        getBlobDispatcher().notifySetRetainUntil(doc, retainUntil);
+    }
+
+    public void notifySetLegalHold(Document doc, boolean hold) {
+        getBlobDispatcher().notifySetLegalHold(doc, hold);
+    }
+
+    // TODO restore to version also changes the blob
 
     // find which GCs to use
     // only GC the binary managers to which we dispatch blobs

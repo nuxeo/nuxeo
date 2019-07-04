@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.resource.ResourceException;
 import javax.resource.cci.ConnectionFactory;
@@ -251,6 +252,11 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
+    public void removeNode(Node node, Consumer<Node> beforeRecordRemove) {
+        getSession().removeNode(node, beforeRecordRemove);
+    }
+
+    @Override
     public void removeNode(Node node) {
         getSession().removeNode(node);
     }
@@ -278,6 +284,11 @@ public class ConnectionImpl implements Session {
     @Override
     public Node move(Node source, Node parent, String name) {
         return getSession().move(source, parent, name);
+    }
+
+    @Override
+    public Node copy(Node source, Node parent, String name, Consumer<Node> afterRecordCopy) {
+        return getSession().copy(source, parent, name, afterRecordCopy);
     }
 
     @Override
