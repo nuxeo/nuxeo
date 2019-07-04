@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -100,5 +101,51 @@ public interface BlobDispatcher {
      * @since 7.3
      */
     void notifyChanges(Document doc, Set<String> xpaths);
+
+    /**
+     * Notifies the blob dispatcher that the document was made a record.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    default void notifyMakeRecord(Document doc) {
+        // do nothing, for forward compatibility of non-default implementations
+    }
+
+    /**
+     * Notifies the blob dispatcher that the document has been copied.
+     *
+     * @param doc the new document, the result of the copy
+     * @since 11.1
+     */
+    default void notifyAfterCopy(Document doc) {
+        // do nothing, for forward compatibility of non-default implementations
+    }
+
+    /**
+     * Notifies the blob dispatcher that the document is about to be removed.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    default void notifyBeforeRemove(Document doc) {
+        // do nothing, for forward compatibility of non-default implementations
+    }
+
+    /**
+     * Notifies the blob dispatcher that the document's retention date was changed.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    void notifySetRetainUntil(Document doc, Calendar retainUntil);
+
+    /**
+     * Notifies the blob dispatcher that the document's legal hold status was changed.
+     *
+     * @param doc the document
+     * @since 11.1
+     */
+    void notifySetLegalHold(Document doc, boolean hold);
 
 }

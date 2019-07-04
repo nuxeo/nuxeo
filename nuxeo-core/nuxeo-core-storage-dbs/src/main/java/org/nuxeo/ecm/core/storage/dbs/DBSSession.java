@@ -117,6 +117,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
@@ -240,6 +241,10 @@ public class DBSSession implements Session<QueryFilter> {
 
     protected BlobManager getBlobManager() {
         return repository.getBlobManager();
+    }
+
+    protected DocumentBlobManager getDocumentBlobManager() {
+        return Framework.getService(DocumentBlobManager.class);
     }
 
     protected String getRootId() {
@@ -643,6 +648,11 @@ public class DBSSession implements Session<QueryFilter> {
         String versionId = version.getUUID();
 
         DBSDocumentState docState = transaction.getStateForUpdate(docId);
+
+        if (TRUE.equals(docState.get(KEY_IS_RECORD))) {
+            getDocumentBlobManager().notifyBeforeRemove(doc);
+        }
+
         State versionState = transaction.getStateForRead(versionId);
 
         // clear all data
@@ -661,6 +671,13 @@ public class DBSSession implements Session<QueryFilter> {
         docState.put(KEY_IS_VERSION, null);
         docState.put(KEY_IS_CHECKED_IN, TRUE);
         docState.put(KEY_BASE_VERSION_ID, versionId);
+        docState.put(KEY_IS_RECORD, null);
+        docState.put(KEY_RETAIN_UNTIL, null);
+        docState.put(KEY_HAS_LEGAL_HOLD, null);
+
+        if (TRUE.equals(versionState.get(KEY_IS_RECORD))) {
+            getDocumentBlobManager().notifyAfterCopy(doc);
+        }
     }
 
     // keys we don't copy from version when restoring
@@ -686,6 +703,10 @@ public class DBSSession implements Session<QueryFilter> {
         case KEY_IS_VERSION:
         case KEY_IS_CHECKED_IN:
         case KEY_BASE_VERSION_ID:
+            // record
+        case KEY_IS_RECORD:
+        case KEY_RETAIN_UNTIL:
+        case KEY_HAS_LEGAL_HOLD:
             return true;
         }
         return false;
@@ -767,6 +788,14 @@ public class DBSSession implements Session<QueryFilter> {
             // reset version
             copy.put(KEY_MAJOR_VERSION, null);
             copy.put(KEY_MINOR_VERSION, null);
+        }
+        if (TRUE.equals(copy.get(KEY_IS_RECORD))) {
+            // unset record on the copy
+            copy.put(KEY_IS_RECORD, null);
+            copy.put(KEY_RETAIN_UNTIL, null);
+            copy.put(KEY_HAS_LEGAL_HOLD, null);
+            DBSDocument doc = getDocument(copy);
+            getDocumentBlobManager().notifyAfterCopy(doc);
         }
         return copy.getId();
     }
@@ -924,7 +953,7 @@ public class DBSSession implements Session<QueryFilter> {
         // if a subdocument is under retention / hold, removal fails
         if (!undeletableIds.isEmpty()) {
             // in tests we may want to delete everything
-            boolean allowDeleteUndeletable = Framework.isBooleanPropertyTrue("allowDeleteUndeletableDocuments");
+            boolean allowDeleteUndeletable = Framework.isBooleanPropertyTrue(PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS);
             if (!allowDeleteUndeletable) {
                 if (undeletableIds.contains(rootId)) {
                     throw new DocumentExistsException("Cannot remove " + rootId + ", it is under retention / hold");
@@ -1512,18 +1541,22 @@ public class DBSSession implements Session<QueryFilter> {
     public void removeDocument(String id) {
         transaction.save();
 
-        State state = transaction.getStateForRead(id);
+        DBSDocumentState docState = transaction.getStateForUpdate(id);
 
-        Calendar retainUntil = (Calendar) state.get(KEY_RETAIN_UNTIL);
+        Calendar retainUntil = (Calendar) docState.get(KEY_RETAIN_UNTIL);
         if (retainUntil != null && Calendar.getInstance().before(retainUntil)) {
             throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
         }
-        if (TRUE.equals(state.get(KEY_HAS_LEGAL_HOLD))) {
+        if (TRUE.equals(docState.get(KEY_HAS_LEGAL_HOLD))) {
             throw new DocumentExistsException("Cannot remove " + id + ", it is under retention / hold");
         }
-        if (TRUE.equals(state.get(KEY_IS_RETENTION_ACTIVE))) {
+        if (TRUE.equals(docState.get(KEY_IS_RETENTION_ACTIVE))) {
             throw new DocumentExistsException("Cannot remove " + id + ", it is under active retention");
         }
+
+        // notify blob manager before removal
+        DBSDocument doc = getDocument(docState);
+        getDocumentBlobManager().notifyBeforeRemove(doc);
 
         // remove doc
         transaction.removeStates(Collections.singleton(id));

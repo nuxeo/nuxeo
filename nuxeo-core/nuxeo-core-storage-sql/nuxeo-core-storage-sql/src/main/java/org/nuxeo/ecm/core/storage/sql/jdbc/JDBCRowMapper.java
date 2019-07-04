@@ -976,8 +976,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             // create the new hierarchy by copy
             boolean resetVersion = destParentId != null;
+            Set<Serializable> recordIds = new HashSet<>();
             Serializable newRootId = copyHierRecursive(source, destParentId, destName, overwriteId, resetVersion, idMap,
-                    idToTypes, excludeSpecialChildren);
+                    idToTypes, recordIds, excludeSpecialChildren);
             // invalidate children
             Serializable invalParentId = overwriteId == null ? destParentId : overwriteId;
             if (invalParentId != null) { // null for a new version
@@ -1014,7 +1015,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     }
                 }
             }
-            return new CopyResult(newRootId, invalidations, proxyIds);
+            return new CopyResult(newRootId, invalidations, proxyIds, recordIds);
         } catch (SQLException e) {
             throw new NuxeoException("Could not copy: " + source.id.toString(), e);
         }
@@ -1056,8 +1057,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * <p>
      * If name is {@code null}, then the original name is kept.
      * <p>
-     * {@code idMap} is filled with info about the correspondence between original and copied ids. {@code idType} is
-     * filled with the type of each (source) fragment.
+     * {@code idMap} is filled with info about the correspondence between original and copied ids. {@code idToTypes} is
+     * filled with the type of each (source) fragment. {@code recordIds} is filled with the copied ids of documents that
+     * used to be records.
      * <p>
      * TODO: this should be optimized to use a stored procedure.
      *
@@ -1066,7 +1068,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      */
     protected Serializable copyHierRecursive(IdWithTypes source, Serializable parentId, String name,
             Serializable overwriteId, boolean resetVersion, Map<Serializable, Serializable> idMap,
-            Map<Serializable, IdWithTypes> idToTypes, boolean excludeSpecialChildren) throws SQLException {
+            Map<Serializable, IdWithTypes> idToTypes, Set<Serializable> recordIds, boolean excludeSpecialChildren) throws SQLException {
         idToTypes.put(source.id, source);
         Serializable newId;
         if (overwriteId == null) {
@@ -1075,11 +1077,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             newId = overwriteId;
             idMap.put(source.id, newId);
         }
+        if (source.isRecord) {
+            recordIds.add(newId);
+        }
 
         // recurse in children, exclude regular children (in the case of a versionable folderish)
         boolean excludeRegularChildren = parentId == null;
         for (IdWithTypes child : getChildrenIdsWithTypes(source.id, excludeSpecialChildren, excludeRegularChildren)) {
-            copyHierRecursive(child, newId, null, null, resetVersion, idMap, idToTypes, excludeSpecialChildren);
+            copyHierRecursive(child, newId, null, null, resetVersion, idMap, idToTypes, recordIds, excludeSpecialChildren);
         }
         return newId;
     }
@@ -1089,8 +1094,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * <p>
      * If name is {@code null}, then the original name is kept.
      * <p>
-     * {@code idMap} is filled with info about the correspondence between original and copied ids. {@code idType} is
-     * filled with the type of each (source) fragment.
+     * {@code idMap} is filled with info about the correspondence between original and copied ids.
      *
      * @return the new id
      */
@@ -1118,6 +1122,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 } else if (key.equals(Model.MAIN_KEY)) {
                     // present if APP_UUID generation
                     v = newId;
+                } else if (key.equals(Model.MAIN_IS_RECORD_KEY)) {
+                    // records are reset on copy
+                    v = null;
                 } else if (key.equals(Model.MAIN_BASE_VERSION_KEY) || key.equals(Model.MAIN_CHECKED_IN_KEY)) {
                     v = null;
                 } else if (key.equals(Model.MAIN_MINOR_VERSION_KEY) || key.equals(Model.MAIN_MAJOR_VERSION_KEY)) {
@@ -1171,6 +1178,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     Serializable childId = null;
                     String childPrimaryType = null;
                     String[] childMixinTypes = null;
+                    boolean isRecord = false;
                     int i = 1;
                     for (Column column : columns) {
                         String key = column.getKey();
@@ -1181,9 +1189,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                             childPrimaryType = (String) value;
                         } else if (key.equals(Model.MAIN_MIXIN_TYPES_KEY)) {
                             childMixinTypes = (String[]) value;
+                        } else if (key.equals(Model.MAIN_IS_RECORD_KEY)) {
+                            isRecord = Boolean.TRUE.equals(value);
                         }
                     }
-                    children.add(new IdWithTypes(childId, childPrimaryType, childMixinTypes));
+                    children.add(new IdWithTypes(childId, childPrimaryType, childMixinTypes, isRecord));
                     if (debugValues != null) {
                         debugValues.add(childId + "/" + childPrimaryType + "/" + Arrays.toString(childMixinTypes));
                     }
@@ -1381,6 +1391,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         Serializable targetId = null;
         Serializable versionableId = null;
         Calendar retainUntil = null;
+        boolean isRecord = false;
         boolean hasLegalHold = false;
         boolean isRetentionActive = false;
         int i = 1;
@@ -1399,6 +1410,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 targetId = value;
             } else if (key.equals(Model.PROXY_VERSIONABLE_KEY)) {
                 versionableId = value;
+            } else if (key.equals(Model.MAIN_IS_RECORD_KEY)) {
+                isRecord = Boolean.TRUE.equals(value);
             } else if (key.equals(Model.MAIN_RETAIN_UNTIL_KEY)) {
                 retainUntil = (Calendar) value;
             } else if (key.equals(Model.MAIN_HAS_LEGAL_HOLD_KEY)) {
@@ -1409,8 +1422,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             // no mixins (not useful to caller)
             // no versions (not fileable)
         }
-        NodeInfo nodeInfo = new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId, retainUntil,
-                hasLegalHold, isRetentionActive);
+        NodeInfo nodeInfo = new NodeInfo(id, parentId, primaryType, isProperty, versionableId, targetId, isRecord,
+                retainUntil, hasLegalHold, isRetentionActive);
         return nodeInfo;
     }
 
