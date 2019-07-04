@@ -21,6 +21,7 @@ package org.nuxeo.lib.stream.computation.log;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,8 +71,15 @@ public class LogStreamManager implements StreamManager {
         topologies.put(processorName, topology);
         this.settings.put(processorName, settings);
         initStreams(topology, settings);
-        initAppenders(topology, settings);
-        registerFilters(topology, settings);
+        initAppenders(settings);
+        registerFilters(settings);
+    }
+
+    @Override
+    public void register(List<String> streams, Settings settings) {
+        streams.forEach(stream -> initStream(stream, settings));
+        initAppenders(settings);
+        registerFilters(settings);
     }
 
     @Override
@@ -140,29 +148,32 @@ public class LogStreamManager implements StreamManager {
     protected void initStreams(Topology topology, Settings settings) {
         log.debug("Initializing streams");
         topology.streamsSet().forEach(streamName -> {
-            if (logManager.exists(streamName)) {
-                int size = logManager.size(streamName);
-                if (settings.getPartitions(streamName) != size) {
-                    log.debug(String.format(
-                            "Update settings for stream: %s defined with %d partitions but exists with %d partitions",
-                            streamName, settings.getPartitions(streamName), size));
-                    settings.setPartitions(streamName, size);
-                }
-            } else {
-                logManager.createIfNotExists(streamName, settings.getPartitions(streamName));
-            }
-            streams.add(streamName);
+            initStream(streamName, settings);
         });
     }
 
-    protected void initAppenders(Topology topology, Settings settings) {
-        log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
-        topology.streamsSet()
-                .forEach(stream -> logManager.getAppender(stream, settings.getCodec(stream)));
+    protected void initStream(String streamName, Settings settings) {
+        if (logManager.exists(streamName)) {
+            int size = logManager.size(streamName);
+            if (settings.getPartitions(streamName) != size) {
+                log.debug(String.format(
+                        "Update settings for stream: %s defined with %d partitions but exists with %d partitions",
+                        streamName, settings.getPartitions(streamName), size));
+                settings.setPartitions(streamName, size);
+            }
+        } else {
+            logManager.createIfNotExists(streamName, settings.getPartitions(streamName));
+        }
+        streams.add(streamName);
     }
 
-    protected void registerFilters(Topology topology, Settings settings) {
-        topology.streamsSet().forEach(stream -> filters.put(stream, settings.getFilterChain(stream)));
+    protected void initAppenders(Settings settings) {
+        log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
+        streams.forEach(stream -> logManager.getAppender(stream, settings.getCodec(stream)));
+    }
+
+    protected void registerFilters(Settings settings) {
+        streams.forEach(stream -> filters.put(stream, settings.getFilterChain(stream)));
     }
 
 }
