@@ -81,7 +81,8 @@ public class Topology {
             } else if (VertexType.STREAM.equals(vertex.getType())) {
                 String name = vertex.getName();
                 int partitions = settings.getPartitions(vertex.getName());
-                ret.append(String.format("queue %s [%s%n----%n%d partitions%ncodec: %s]%n", getPumlName(vertex), name, partitions, settings.getCodec(name).getName()));
+                ret.append(String.format("queue %s [%s%n----%n%d partitions%ncodec: %s]%n", getPumlName(vertex), name,
+                        partitions, settings.getCodec(name).getName()));
             }
         }
         for (DefaultEdge edge : dag.edgeSet()) {

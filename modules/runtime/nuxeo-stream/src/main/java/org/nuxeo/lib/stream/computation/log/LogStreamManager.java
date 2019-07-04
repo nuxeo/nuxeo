@@ -172,8 +172,8 @@ public class LogStreamManager implements StreamManager {
     }
 
     protected void initAppenders(Collection<String> streams, Settings settings) {
-        log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
-        streams.forEach(stream -> log.warn(stream));
+        log.debug("Initializing source appenders so we ensure they use codec defined in the processor:");
+        streams.forEach(stream -> log.debug(stream));
         streams.stream()
                .filter(stream -> !settings.isExternal(Name.ofUrn(stream)))
                .forEach(stream -> logManager.getAppender(Name.ofUrn(stream), settings.getCodec(stream)));

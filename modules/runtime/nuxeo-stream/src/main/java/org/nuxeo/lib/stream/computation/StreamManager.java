@@ -49,8 +49,10 @@ public interface StreamManager {
 
     /**
      * Registers some source Streams without any processors.
+     *
+     * @since 11.4
      */
-    void register(List<String> stream, Settings settings);
+    void register(List<String> streams, Settings settings);
 
     /**
      * Appends a record to a processor's source stream.
