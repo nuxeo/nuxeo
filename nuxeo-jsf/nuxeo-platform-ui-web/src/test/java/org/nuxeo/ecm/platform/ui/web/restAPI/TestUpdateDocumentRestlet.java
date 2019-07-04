@@ -77,6 +77,7 @@ public class TestUpdateDocumentRestlet extends AbstractRestletTest {
 
         // check doc has been updated
         txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
         assertEquals("mytitle", doc.getTitle());
         assertEquals("mydescr", doc.getPropertyValue("dc:description"));
     }

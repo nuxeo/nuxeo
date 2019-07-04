@@ -1203,19 +1203,6 @@ public class Model {
         String docTypeName = docType.getName();
         PrefetchInfo prefetch = docType.getPrefetchInfo();
         if (prefetch != null) {
-            Set<String> documentTypeFragments = getTypeFragments(docTypeName);
-            for (String fieldName : prefetch.getFields()) {
-                // prefetch all the relevant fragments
-                // TODO deal with full xpath
-                String fragment = fieldFragment.get(fieldName);
-                if (fragment != null) {
-                    // checks that the field actually belongs
-                    // to the type
-                    if (documentTypeFragments.contains(fragment)) {
-                        addDocTypePrefetchedFragments(docTypeName, Collections.singleton(fragment));
-                    }
-                }
-            }
             for (String schemaName : prefetch.getSchemas()) {
                 Set<String> fragments = schemaFragments.get(schemaName);
                 if (fragments != null) {
