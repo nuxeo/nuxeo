@@ -5,6 +5,9 @@
 *.orig
 *.rej
 
+# jenkins x
+.stignore
+
 # ide
 bin
 .classpath
