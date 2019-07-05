@@ -10,7 +10,7 @@
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="reindex" class="org.nuxeo.elasticsearch.bulk.IndexAction" logConfig="bulk"
       defaultConcurrency="2" defaultPartitions="4" enabled="${elasticsearch.enabled:=true}">
-      <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="false" />
+      <policy name="default" maxRetries="20" delay="1s" maxDelay="60s" continueOnFailure="false" />
       <!-- concurrency to build indexing requests -->
       <computation name="index" concurrency="2" />
       <!-- concurrency to execute indexing requests -->
