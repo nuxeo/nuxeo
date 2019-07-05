@@ -172,7 +172,7 @@
                      enabled="${nuxeo.stream.audit.enabled:=true}">
       <policy name="AuditLogWriter" batchCapacity="${nuxeo.stream.audit.batch.size:=10}"
               batchThreshold="${nuxeo.stream.audit.batch.threshold.ms:=50}ms"
-              maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="false" />
+              maxRetries="20" delay="1s" maxDelay="60s" continueOnFailure="false" />
     </streamProcessor>
   </extension>
 
