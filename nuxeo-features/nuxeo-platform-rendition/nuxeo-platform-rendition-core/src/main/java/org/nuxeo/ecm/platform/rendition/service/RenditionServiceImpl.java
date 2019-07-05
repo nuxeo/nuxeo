@@ -138,16 +138,12 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
      *
      * @deprecated since 10.10, use {@link #getAvailableRenditionDefinition(DocumentModel, String)} instead
      */
-    @Deprecated
+    @Deprecated(since = "10.10")
     public RenditionDefinition getRenditionDefinition(String name) {
         return renditionDefinitionRegistry.getRenditionDefinition(name);
     }
 
-    /**
-     * @deprecated since 7.2 because unused
-     */
     @Override
-    @Deprecated
     public List<RenditionDefinition> getDeclaredRenditionDefinitions() {
         return new ArrayList<>(renditionDefinitionRegistry.descriptors.values());
     }
@@ -156,7 +152,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
      * @deprecated since 7.2 because unused
      */
     @Override
-    @Deprecated
+    @Deprecated(since = "7.2")
     public List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(String providerType) {
         List<RenditionDefinition> defs = new ArrayList<>();
         for (RenditionDefinition def : getDeclaredRenditionDefinitions()) {
@@ -187,7 +183,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     /**
      * @deprecated since 8.1
      */
-    @Deprecated
+    @Deprecated(since = "8.1")
     protected DocumentModel storeRendition(DocumentModel sourceDocument, Rendition rendition, String name) {
         StoredRendition storedRendition = storeRendition(sourceDocument, rendition);
         return storedRendition == null ? null : storedRendition.getHostDocument();
@@ -197,7 +193,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
      * @since 8.1
      * @deprecated since 10.10, use {@link #storeRendition(DocumentModel, Rendition, RenditionDefinition)} instead
      */
-    @Deprecated
+    @Deprecated(since = "10.10")
     protected StoredRendition storeRendition(DocumentModel sourceDocument, Rendition rendition) {
         RenditionDefinition renditionDefinition = getAvailableRenditionDefinition(sourceDocument, rendition.getName());
         return storeRendition(sourceDocument, rendition, renditionDefinition);
@@ -319,7 +315,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         try {
             return Optional.of(getRendition(doc, defaultRenditionName, store));
         } catch (NuxeoException e) {
-            log.error("Unable to use default rendition " + defaultRenditionName, e);
+            log.error("Unable to use default rendition: {}", defaultRenditionName, e);
             return Optional.empty();
         }
     }
@@ -549,9 +545,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
                 }
             }
         }
-        if (log.isWarnEnabled()) {
-            log.warn(String.format("Failed to get rendition name for reason %s", reason));
-        }
+        log.warn("Failed to get rendition name for reason {}", reason);
         return null;
     }
 
