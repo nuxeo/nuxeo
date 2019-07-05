@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,16 +38,13 @@ public interface RenditionService {
     /**
      * Returns a {@code List} of registered {@code RenditionDefinition}. The order of the List does not depend on the
      * registering order.
-     *
-     * @deprecated since 7.2 because unused
      */
-    @Deprecated
     List<RenditionDefinition> getDeclaredRenditionDefinitions();
 
     /**
      * Returns a {@code List} of registered {@code RenditionDefinition} matching a given provider type
      *
-     * @deprecated since 7.2 because unused
+     * @deprecated since 7.2 because unused, except in JSF
      */
     @Deprecated
     List<RenditionDefinition> getDeclaredRenditionDefinitionsForProviderType(String providerType);

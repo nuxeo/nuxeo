@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.rendition.impl.LazyRendition.EMPTY_MARKER;
+import static org.nuxeo.ecm.platform.rendition.impl.LazyRendition.STALE_MARKER;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -47,8 +49,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -74,7 +76,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -121,19 +122,19 @@ public class TestRenditionService {
 
     public static final String CYCLIC_BARRIER_DESCRIPTION = "cyclicBarrierDesc";
 
-    public static final Log log = LogFactory.getLog(TestRenditionService.class);
+    public static final Logger log = LogManager.getLogger(TestRenditionService.class);
 
     @Inject
     protected HotDeployer deployer;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Inject
     protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
-
-    @Inject
-    protected EventService eventService;
 
     @Inject
     protected WorkManager works;
@@ -157,7 +158,7 @@ public class TestRenditionService {
                                                      .filter(renditionDefinition -> PDF_RENDITION_DEFINITION.equals(
                                                              renditionDefinition.getName()))
                                                      .findFirst()
-                                                     .get();
+                                                     .orElseThrow();
         assertNotNull(rd);
         assertEquals(PDF_RENDITION_DEFINITION, rd.getName());
         assertEquals("blobToPDF", rd.getOperationChain());
@@ -168,7 +169,7 @@ public class TestRenditionService {
                                  .filter(renditionDefinition -> "renditionDefinitionWithCustomOperationChain".equals(
                                          renditionDefinition.getName()))
                                  .findFirst()
-                                 .get();
+                                 .orElseThrow();
         assertNotNull(rd);
         assertEquals("renditionDefinitionWithCustomOperationChain", rd.getName());
         assertEquals("Dummy", rd.getOperationChain());
@@ -245,7 +246,7 @@ public class TestRenditionService {
         file.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         file = session.saveDocument(file);
         session.save();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
         assertEquals("0.1", file.getVersionLabel());
 
         // make a rendition on the document
@@ -326,7 +327,7 @@ public class TestRenditionService {
         file.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         file = session.saveDocument(file);
         session.save();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
         assertEquals("0.4", file.getVersionLabel());
 
         // update the source Document
@@ -348,7 +349,7 @@ public class TestRenditionService {
     public void doErrorRendition() {
         DocumentModel file = createBlobFile();
         session.save();
-        nextTransaction();
+        txFeature.nextTransaction();
 
         String renditionName = "delayedErrorAutomationRendition";
         Rendition rendition = renditionService.getRendition(file, renditionName);
@@ -368,7 +369,7 @@ public class TestRenditionService {
         file.setPropertyValue("dc:issued", (Serializable) issued.clone());
         session.saveDocument(file);
         session.save();
-        nextTransaction();
+        txFeature.nextTransaction();
 
         String renditionName = "lazyDelayedErrorAutomationRendition";
 
@@ -381,7 +382,7 @@ public class TestRenditionService {
         file.setPropertyValue("dc:issued", (Serializable) issued.clone());
         session.saveDocument(file);
         session.save();
-        nextTransaction();
+        txFeature.nextTransaction();
 
         // Check rendition in error and stale
         checkLazyRendition(file, renditionName, true, "text/plain;error=true;stale=true");
@@ -396,7 +397,7 @@ public class TestRenditionService {
         assertEquals(0, blob.getLength());
         String mimeType = blob.getMimeType();
         assertEquals(expectedMimeType, mimeType);
-        nextTransaction();
+        txFeature.nextTransaction();
     }
 
     @Test
@@ -460,12 +461,20 @@ public class TestRenditionService {
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
 
+        // wait before updating the folder to have different modification date
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+
         // now "update" the folder
         folder = session.getDocument(folder.getRef());
         folder.setPropertyValue("dc:description", "I have been updated");
         folder = session.saveDocument(folder);
         session.save();
-        nextTransaction();
+        txFeature.nextTransaction();
 
         // expect a stale rendition
         folder = session.getDocument(folder.getRef());
@@ -491,25 +500,19 @@ public class TestRenditionService {
             if (stale) {
                 assertTrue(rendition.isCompleted());
                 assertNotNull(rendition.getModificationDate());
-                assertFalse(blob.getMimeType().contains("empty=true"));
-                assertTrue(blob.getMimeType().contains("stale=true"));
+                assertFalse(blob.getMimeType().contains(EMPTY_MARKER));
+                assertTrue(blob.getMimeType().contains(STALE_MARKER));
                 assertNotEquals(LazyRendition.IN_PROGRESS_MARKER, blob.getFilename());
                 assertTrue(blob.getLength() > 0);
             } else {
                 assertFalse(rendition.isCompleted());
                 assertNull(rendition.getModificationDate());
-                assertTrue(blob.getMimeType().contains("empty=true"));
-                assertFalse(blob.getMimeType().contains("stale=true"));
+                assertTrue(blob.getMimeType().contains(EMPTY_MARKER));
+                assertFalse(blob.getMimeType().contains(STALE_MARKER));
                 assertEquals(LazyRendition.IN_PROGRESS_MARKER, blob.getFilename());
                 assertEquals(0, blob.getLength());
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
-            eventService.waitForAsyncCompletion(5000);
+            txFeature.nextTransaction();
             rendition = renditionService.getRendition(doc, renditionName, store);
         }
         return rendition;
@@ -565,16 +568,14 @@ public class TestRenditionService {
                 session.save();
             }
 
-            createDocumentWithBlob(childFolder.getPathAsString(),
-                    createTextBlob("Dummy1 text", "dummy1.txt"), "dummy1-file", "File");
-            createDocumentWithBlob(childFolder.getPathAsString(),
-                    createTextBlob("Dummy2 text", "dummy2.txt"), "dummy2-file", "File");
+            createDocumentWithBlob(childFolder.getPathAsString(), createTextBlob("Dummy1 text", "dummy1.txt"),
+                    "dummy1-file", "File");
+            createDocumentWithBlob(childFolder.getPathAsString(), createTextBlob("Dummy2 text", "dummy2.txt"),
+                    "dummy2-file", "File");
         }
 
         session.save();
-        TransactionHelper.commitOrRollbackTransaction();
-        eventService.waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
         folder = session.getDocument(folder.getRef());
         return folder;
     }
@@ -593,8 +594,7 @@ public class TestRenditionService {
             assertTrue(totoRendition.isStored());
         }
 
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
 
@@ -799,7 +799,7 @@ public class TestRenditionService {
             try {
                 renditionDocRef = renditionService.storeRendition(folder, ZIP_TREE_EXPORT_RENDITION_DEFINITION);
             } catch (LifeCycleException ignored) {
-                log.debug("Could not create stored rendition for doc type '" + docTypeName + "'");
+                log.debug("Could not create stored rendition for doc type: {}", docTypeName);
                 continue;
             }
             DocumentModel renditionDocModel = session.getDocument(renditionDocRef);
@@ -824,13 +824,7 @@ public class TestRenditionService {
         Rendition rendition = renditionService.getRendition(folder, renditionName);
         assertNotNull(rendition);
         assertFalse(rendition.isStored());
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-        eventService.waitForAsyncCompletion(5000);
+        txFeature.nextTransaction();
         rendition = renditionService.getRendition(folder, renditionName);
         assertNotNull(rendition);
         assertTrue(rendition.isStored());
@@ -849,8 +843,7 @@ public class TestRenditionService {
         folder.setPropertyValue(sourceDocumentModificationDatePropertyName, Calendar.getInstance());
         folder = session.createDocument(folder);
         session.save();
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         folder = session.getDocument(folder.getRef());
         final String folderId = folder.getId();
@@ -874,8 +867,7 @@ public class TestRenditionService {
         folder = session.saveDocument(folder);
 
         session.save();
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         // Sync #2
         RenditionThread.cyclicBarrier.await();
@@ -886,15 +878,14 @@ public class TestRenditionService {
         t1.join();
         t2.join();
 
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         // get the "updated" folder rendition
         Rendition rendition = renditionService.getRendition(folder, renditionName, true);
         assertNotNull(rendition);
         assertTrue(rendition.isStored());
         Calendar cal = rendition.getModificationDate();
-        assertTrue(!cal.before(modificationDate));
+        assertFalse(cal.before(modificationDate));
         assertNotNull(rendition.getBlob());
         assertTrue(rendition.getBlob().getString().contains(desc));
 
@@ -974,13 +965,6 @@ public class TestRenditionService {
 
     }
 
-    @Inject
-    TransactionalFeature txFeature;
-
-    protected void nextTransaction() {
-        txFeature.nextTransaction();
-    }
-
     @Test
     public void shouldNotScheduleRedundantLazyRenditionBuilderWorks() throws Exception {
         final String renditionName = "lazyAutomation";
@@ -993,8 +977,7 @@ public class TestRenditionService {
         folder.setPropertyValue(sourceDocumentModificationDatePropertyName, (Serializable) issued.clone());
         folder = session.createDocument(folder);
         session.save();
-        nextTransaction();
-        eventService.waitForAsyncCompletion();
+        txFeature.nextTransaction();
 
         for (int i = 0; i < 3; i++) {
             folder = session.getDocument(folder.getRef());
@@ -1012,7 +995,7 @@ public class TestRenditionService {
             assertEquals(issued, folder.getPropertyValue(sourceDocumentModificationDatePropertyName));
             issued.add(Calendar.SECOND, 10);
             folder.setPropertyValue(sourceDocumentModificationDatePropertyName, (Serializable) issued.clone());
-            desc = "description" + Integer.toString(i);
+            desc = "description" + i;
             folder.setPropertyValue("dc:description", desc);
             session.saveDocument(folder);
             session.save();
@@ -1038,7 +1021,7 @@ public class TestRenditionService {
         }
         CYCLIC_BARRIERS[2].await();
 
-        eventService.waitForAsyncCompletion(5000);
+        txFeature.nextTransaction();
 
         folder = session.getDocument(folder.getRef());
         assertEquals(issued, folder.getPropertyValue(sourceDocumentModificationDatePropertyName));
@@ -1049,8 +1032,7 @@ public class TestRenditionService {
             String mimeType = rendition.getBlob().getMimeType();
             if (mimeType != null) {
                 if (mimeType.contains(LazyRendition.EMPTY_MARKER)) {
-                    Thread.sleep(1000);
-                    eventService.waitForAsyncCompletion(5000);
+                    txFeature.nextTransaction();
                     continue;
                 } else if (mimeType.contains(LazyRendition.ERROR_MARKER)) {
                     fail("Error generating rendition for folder");
