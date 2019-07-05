@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
