@@ -16,6 +16,7 @@
       <event>documentSecurityUpdated</event>
       <event>documentRemoved</event>
       <event>sessionSaved</event>
+      <event>aboutToCheckIn</event>
       <event>documentCheckedOut</event>
       <event>documentCheckedIn</event>
       <event>binaryTextUpdated</event>
