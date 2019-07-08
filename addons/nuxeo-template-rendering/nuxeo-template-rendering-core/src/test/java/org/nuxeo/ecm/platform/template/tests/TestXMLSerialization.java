@@ -48,7 +48,7 @@ public class TestXMLSerialization extends TestCase {
     @Test
     public void testXMLSerialization() throws Exception {
 
-        Serializer xmlSerializer = Framework.getService(SerializerService.class).getSerializer("xml");
+        Serializer xmlSerializer = SerializerService.getXMLSerializerHelper();
 
         List<TemplateInput> params = new ArrayList<>();
 

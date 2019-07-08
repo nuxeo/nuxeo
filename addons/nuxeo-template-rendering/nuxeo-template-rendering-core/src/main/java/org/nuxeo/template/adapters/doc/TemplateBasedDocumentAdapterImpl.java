@@ -69,15 +69,6 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
 
     protected final TemplateBindings bindings;
 
-    protected Serializer serializer;
-
-    public Serializer getSerializer() {
-        if (serializer == null) {
-            serializer = Framework.getService(SerializerService.class).getSerializer("xml");
-        }
-        return serializer;
-    }
-
     public TemplateBasedDocumentAdapterImpl(DocumentModel doc) {
         adaptedDoc = doc;
         bindings = new TemplateBindings(doc);
@@ -364,7 +355,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         if (binding != null) {
             String xml = binding.getData();
             try {
-                return getSerializer().doDeserialization(xml);
+                return SerializerService.getXMLSerializerHelper().doDeserialization(xml);
             } catch (DocumentException e) {
                 log.error("Unable to parse parameters", e);
                 return new ArrayList<>();

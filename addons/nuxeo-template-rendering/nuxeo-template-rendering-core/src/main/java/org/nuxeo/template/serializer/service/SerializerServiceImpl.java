@@ -29,9 +29,6 @@ import org.nuxeo.template.serializer.executors.Serializer;
  */
 public class SerializerServiceImpl extends DefaultComponent implements SerializerService {
 
-    private static final String EXTENSION_POINT_NAME = "serializers";
-    private static final String DEFAULT_SERIALIZER_NAME = "default";
-
     @Override
     public Serializer getSerializer(String id) {
         SerializerContribution contrib = getDescriptor(EXTENSION_POINT_NAME, id);
@@ -45,4 +42,10 @@ public class SerializerServiceImpl extends DefaultComponent implements Serialize
 
         return contrib.getImplementation();
     }
+
+    @Override
+    public Serializer getXMLSerializer() {
+        return getSerializer(XML_SERIALIZER_NAME);
+    }
+
 }

@@ -56,7 +56,7 @@ public class TestSerializerService {
 
     @Test
     public void whenRequestXMLSerializer_shouldReturnXMLSerializer() {
-        Serializer serializer = serializerService.getSerializer("xml");
+        Serializer serializer = SerializerService.getXMLSerializerHelper();
         assertNotNull(serializer);
         assertEquals("XMLSerializer", serializer.getClass().getSimpleName());
     }

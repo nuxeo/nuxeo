@@ -20,6 +20,7 @@
 
 package org.nuxeo.template.serializer.service;
 
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.serializer.executors.Serializer;
 
 /**
@@ -39,12 +40,46 @@ import org.nuxeo.template.serializer.executors.Serializer;
 public interface SerializerService {
 
     /**
-     * Return the Serializer/Deserializer named id that transform List<TemplateInput> to a target serialized format.
-     * Default serialized format is XML except if you override contributing a "default" serializer.
-     * If no serializer named id, throws a NuxeoException.
+     * Extention point name
+     */
+    String EXTENSION_POINT_NAME = "serializers";
+
+    /**
+     * The well-known name of the default serializer
+     */
+    String DEFAULT_SERIALIZER_NAME = "default";
+
+    /**
+     * The well-known name of the XML serializer
+     */
+    String XML_SERIALIZER_NAME = "xml";
+
+    /**
+     * Return the Serializer/Deserializer named id that transform List<TemplateInput> to a target serialized String format.
+     * Default serialized format is XML except if you override contributing a "default" serializer named DEFAULT_SERIALIZER_NAME.
+     * If no serializer named id found, and no default serializer defined, throws a NuxeoException.
      *
      * @param id : name of the requested serializer
      * @return the constructed serializer
      */
     Serializer getSerializer(String id);
+
+    /**
+     * Return the Serializer/Deserializer named XML_SERIALIZER_NAME that transform List<TemplateInput> to XML String.
+     * If no serializer named XML_SERIALIZER_NAME found, and no default serializer defined, throws a NuxeoException.
+     *
+     * @return the constructed xml serializer/deserializer
+     */
+    Serializer getXMLSerializer();
+
+    /**
+     * Helper Returning the Serializer/Deserializer named XML_SERIALIZER_NAME that transform List<TemplateInput> to XML String.
+     * If no serializer named XML_SERIALIZER_NAME found, and no default serializer defined, throws a NuxeoException.
+     *
+     * @return the constructed xml serializer/deserializer
+     */
+    public static Serializer getXMLSerializerHelper() {
+        return Framework.getService(SerializerService.class).getXMLSerializer();
+    }
+
 }

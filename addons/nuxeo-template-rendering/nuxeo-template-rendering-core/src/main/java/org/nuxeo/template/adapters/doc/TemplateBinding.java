@@ -46,15 +46,6 @@ public class TemplateBinding {
 
     private boolean useMainContentAsTemplate;
 
-    protected Serializer serializer;
-
-    public Serializer getSerializer() {
-        if (serializer == null) {
-            serializer = Framework.getService(SerializerService.class).getSerializer("xml");
-        }
-        return serializer;
-    }
-
 
     public TemplateBinding() {
     }
@@ -95,7 +86,7 @@ public class TemplateBinding {
     }
 
     public void setData(List<TemplateInput> params) {
-        String xml = getSerializer().doSerialization(params);
+        String xml = SerializerService.getXMLSerializerHelper().doSerialization(params);
         setData(xml);
     }
 

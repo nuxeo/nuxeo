@@ -37,16 +37,6 @@ import org.nuxeo.template.serializer.service.SerializerService;
 
 public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
 
-
-    protected Serializer serializer;
-
-    public Serializer getService() {
-        if (serializer == null) {
-            serializer = Framework.getService(SerializerService.class).getSerializer("xml");
-        }
-        return serializer;
-    }
-
     @Override
     protected void setUp() throws Exception {
         deployBundle("org.nuxeo.template.manager.api");
@@ -74,13 +64,13 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
             assertTrue(found);
         }
 
-        String xmlParams = getService().doSerialization(inputs);
+        String xmlParams = SerializerService.getXMLSerializerHelper().doSerialization(inputs);
 
         for (TemplateInput input : inputs) {
             assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
         }
 
-        List<TemplateInput> inputs2 = getService().doDeserialization(xmlParams);
+        List<TemplateInput> inputs2 = SerializerService.getXMLSerializerHelper().doDeserialization(xmlParams);
 
         assertEquals(inputs.size(), inputs2.size());
         for (TemplateInput input : inputs) {
@@ -116,13 +106,13 @@ public class TestFreemarkerVariableExractor extends NXRuntimeTestCase {
             assertTrue(found);
         }
 
-        String xmlParams = getService().doSerialization(inputs);
+        String xmlParams = SerializerService.getXMLSerializerHelper().doSerialization(inputs);
 
         for (TemplateInput input : inputs) {
             assertTrue(xmlParams.contains("name=\"" + input.getName() + "\""));
         }
 
-        List<TemplateInput> inputs2 = getService().doDeserialization(xmlParams);
+        List<TemplateInput> inputs2 = SerializerService.getXMLSerializerHelper().doDeserialization(xmlParams);
 
         assertEquals(inputs.size(), inputs2.size());
         for (TemplateInput input : inputs) {

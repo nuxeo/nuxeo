@@ -82,15 +82,6 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
 
     private static final long serialVersionUID = 1L;
 
-    protected Serializer serializer;
-
-    public Serializer getSerializer() {
-        if (serializer == null) {
-            serializer = Framework.getService(SerializerService.class).getSerializer("xml");
-        }
-        return serializer;
-    }
-
     public TemplateSourceDocumentAdapterImpl(DocumentModel doc) {
         this.adaptedDoc = doc;
     }
@@ -109,7 +100,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
         String xml = adaptedDoc.getPropertyValue(dataPath).toString();
 
         try {
-            return getSerializer().doDeserialization(xml);
+            return SerializerService.getXMLSerializerHelper().doDeserialization(xml);
         } catch (DocumentException e) {
             log.error("Unable to parse parameters", e);
             return new ArrayList<>();
@@ -129,7 +120,7 @@ public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument 
     @Override
     public DocumentModel saveParams(List<TemplateInput> params, boolean save) {
         String dataPath = getTemplateParamsXPath();
-        String xml = getSerializer().doSerialization(params);
+        String xml = SerializerService.getXMLSerializerHelper().doSerialization(params);
         adaptedDoc.setPropertyValue(dataPath, xml);
         adaptedDoc.putContextData(TemplateSourceDocument.INIT_DONE_FLAG, true);
         if (save) {

@@ -58,7 +58,7 @@ public class TestXMLDeserialization {
 
     @Before
     public void setup() {
-        serializer = Framework.getService(SerializerService.class).getSerializer("xml");
+        serializer = SerializerService.getXMLSerializerHelper();
     }
 
 

@@ -37,7 +37,7 @@ import org.nuxeo.template.serializer.service.SerializerService;
 public class XMLSerializer {
 
     public static Serializer getXmlSerializer() {
-            return Framework.getService(SerializerService.class).getSerializer("xml");
+        return SerializerService.getXMLSerializerHelper();
     }
 
     public static String serialize(List<TemplateInput> params) {
