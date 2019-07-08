@@ -25,7 +25,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -87,7 +89,11 @@ public class ChainedConverter implements Converter {
             result = converter.convert(result, parameters);
             // Mark for deletion intermediate results
             if (subConverters.indexOf(converterName) != subConverters.size() - 1) {
-                result.getBlobs().forEach(blob -> Framework.trackFile(blob.getFile(), blob.getFile()));
+                result.getBlobs()
+                      .stream()
+                      .map(Blob::getFile)
+                      .filter(Objects::nonNull)
+                      .forEach(file -> Framework.trackFile(file, file));
             }
             srcMT = desc.getDestinationMimeType();
         }
