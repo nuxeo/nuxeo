@@ -22,6 +22,7 @@ package org.nuxeo.ftest.server.hotreload;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -247,6 +248,49 @@ public class ITDevHotReloadTest {
 
         String docType = RestHelper.fetchDocumentType(docPath);
         assertEquals("Foo", docType);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testHotReloadMimeTypeIconUpdater() throws IOException {
+        // Creates the document and its content.
+        String docId = RestHelper.createDocument("/", "CustomDocType", "myDocument");
+        addBlobToDocument(docId, "custom:image", "anyImage", "png");
+        addBlobToDocument(docId, "custom:question/image", "anyImage", "png");
+        addBlobToDocument(docId, "custom:question/audio", "anySong", "mp3");
+
+        // Check that all mime types are correctly computed.
+        Map<String, Object> properties = RestHelper.fetchDocumentProperties(docId);
+        Map<String, Object> image = (Map) properties.get("custom:image");
+        assertEquals("image/png", image.get("mime-type"));
+
+        Map<String, Map<String, Object>> question = (Map) properties.get("custom:question");
+        assertEquals("image/png", question.get("image").get("mime-type"));
+        assertEquals("audio/mpeg", question.get("audio").get("mime-type"));
+
+        // make a new deploy that override the exiting document model by removing the `question:image` property.
+        hotReloadRule.deployJarDevBundle(ITDevHotReloadTest.class, "testHotReloadMimeTypeIconUpdaterWhenSchemaChanges");
+
+        // Ensure that the event listener responsible of computing the mime type is correctly called when
+        // the schema is updated.
+        addBlobToDocument(docId, "custom:image", "newImage", "psd");
+
+        // Check then the new mime type is correctly computed.
+        properties = RestHelper.fetchDocumentProperties(docId);
+        image = (Map) properties.get("custom:image");
+        question = (Map) properties.get("custom:question");
+        assertEquals("application/photoshop", image.get("mime-type"));
+        assertEquals("audio/mpeg", question.get("audio").get("mime-type"));
+        assertNull(question.get("image"));
+    }
+
+    /** @since 11.1 **/
+    protected void addBlobToDocument(String docId, String xpath, String fileName, String extension) throws IOException {
+        File file = Files.createTempFile(fileName, "." + extension).toFile();
+        RestHelper.operation("Blob.AttachOnDocument", file, Map.of(), Map.of("document", docId, "xpath", xpath));
     }
 
 }

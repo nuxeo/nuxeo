@@ -67,6 +67,10 @@ public class MimetypeIconUpdater implements EventListener {
     @Deprecated(since = "11.1", forRemoval = true)
     protected static final String OCTET_STREAM_MT = DEFAULT_MIMETYPE;
 
+    /**
+     * @deprecated since 11.1. Create a new instance of {@link BlobsExtractor} when needed.
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     public final BlobsExtractor blobExtractor = new BlobsExtractor();
 
     /**
@@ -108,7 +112,8 @@ public class MimetypeIconUpdater implements EventListener {
                 // update mimetypes of blobs in the document
 
                 MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
-                for (Property prop : blobExtractor.getBlobsProperties(doc)) {
+                BlobsExtractor extractor = new BlobsExtractor();
+                for (Property prop : extractor.getBlobsProperties(doc)) {
                     if (prop.isDirty()) {
                         updateBlobProperty(doc, mimetypeRegistry, prop);
                     }
@@ -146,7 +151,7 @@ public class MimetypeIconUpdater implements EventListener {
             blob = mimetypeService.updateMimetype(blob);
             doc.setPropertyValue(fieldPath, (Serializable) blob);
         } else if (!mimetypeService.isMimeTypeNormalized(blob.getMimeType())) {
-            //normalize the mime type if not yet normalized
+            // normalize the mime type if not yet normalized
             mimetypeService.getNormalizedMimeType(blob.getMimeType()).ifPresent(blob::setMimeType);
         }
     }
