@@ -64,6 +64,7 @@ public class RestHelper {
                                                                        // by default timeout is 10s, hot reload needs a
                                                                        // bit more
                                                                        .timeout(120)
+                                                                       .schemas("*")
                                                                        .connect();
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
@@ -569,6 +570,14 @@ public class RestHelper {
             }
             throw nce;
         }
+    }
+
+    /**
+     * @since 11.1
+     */
+    public static Map<String, Object> fetchDocumentProperties(String docId) {
+        Document document = CLIENT.repository().fetchDocumentById(docId);
+        return document.getProperties();
     }
 
 }

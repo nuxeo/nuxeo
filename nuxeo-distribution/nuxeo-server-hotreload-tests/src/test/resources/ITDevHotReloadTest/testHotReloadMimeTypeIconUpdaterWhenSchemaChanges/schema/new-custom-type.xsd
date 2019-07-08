@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/filemanager/core/listener/test/blobinlist1"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:nxs="http://www.nuxeo.org/ecm/filemanager/core/listener/test/blobinlist1">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="image" type="nxs:content" />
+  <xs:element name="question" type="nxs:question-type" />
+  <xs:complexType name="question-type">
+    <xs:sequence>
+      <xs:element name="audio" type="nxs:content" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
