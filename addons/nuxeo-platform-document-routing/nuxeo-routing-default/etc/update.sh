@@ -31,8 +31,7 @@ cp -R $JARDIR/OSGI-INF/extensions.xml $RES/OSGI-INF/
 
 # replace studio name
 find $RES -name extensions.xml -o -name '*.xsd' | while read f; do
-  sed -e "s,/layouts/${STUDIONAME}_layout_template.xhtml,/layouts/layout_default_template.xhtml," \
-      -e "s,$STUDIONAME,nuxeo-routing-default,g" \
+  sed -e "s,$STUDIONAME,nuxeo-routing-default,g" \
       -i '~' $f
 done
 
@@ -46,10 +45,6 @@ sed -e 's#  <require>org.nuxeo.runtime.started</require>##' \
 
 # remove studio widget types extensions
 sed -e '/<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes"/,/<.extension>/d' \
-    -i '~' $RES/OSGI-INF/extensions.xml
-
-#temporary fix, waiting for NXS-1827 to be done    
-sed -e 's/<property name=\"width\">300<\/property>/<property name=\"width\">70%<\/property>/g' \
     -i '~' $RES/OSGI-INF/extensions.xml
 
 #temporary fix for MySQL column length, see NXP-17334
@@ -83,18 +78,6 @@ for wf in SerialDocumentReview ParallelDocumentReview; do
   zip -r $ZIP .
 done
 
-# Create JSF extensions.xml
-BUNDLE_JSF=$BUNDLE/../$STUDIONAME"-jsf"
-EXT_JSF=$BUNDLE_JSF/src/main/resources/OSGI-INF/extensions.xml
-echo 'Extracting JSF contrib to' $BUNDLE_JSF
-echo '<?xml version="1.0" encoding="UTF-8"?>' > $EXT_JSF
-echo '<component name="studio.extensions.nuxeo-routing-default.jsf" version="1.0.0">' >> $EXT_JSF
-# extract JSF contrib
-DIR_UI_C=$(xmllint --xpath "//extension[@target='org.nuxeo.ecm.directory.ui.DirectoryUIManager']" $RES/OSGI-INF/extensions.xml)
-echo "  $DIR_UI_C">> $EXT_JSF
-LAYOUT_C=$(xmllint --xpath "//extension[@target='org.nuxeo.ecm.platform.forms.layout.WebLayoutManager']" $RES/OSGI-INF/extensions.xml)
-echo "  $LAYOUT_C">> $EXT_JSF
-echo '</component>' >> $EXT_JSF
 # Remove JSF contribs from core extensions.xml
 sed -e '/<extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories"/,/<.extension>/d' \
     -i '~' $RES/OSGI-INF/extensions.xml
