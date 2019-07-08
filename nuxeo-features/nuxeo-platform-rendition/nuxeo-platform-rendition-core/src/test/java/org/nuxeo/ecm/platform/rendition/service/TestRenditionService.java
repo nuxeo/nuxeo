@@ -74,6 +74,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
+import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
+import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -228,6 +230,39 @@ public class TestRenditionService {
         assertNotNull(rendition);
         assertFalse(rendition.isStored());
 
+    }
+
+    // NXP-27078
+    @Test
+    public void doPDFRenditionOnChainedConverter() {
+        // assert the markdown converter is a chained one
+        ConverterDescriptor md2pdf = ConversionServiceImpl.getConverterDescriptor("md2pdf");
+        assertNotNull(md2pdf);
+        md2pdf.initConverter();
+        assertEquals(ConverterDescriptor.CHAINED_CONVERTER_TYPE, md2pdf.getConverterType());
+
+        DocumentModel note = session.createDocumentModel("/", "dummy-note", "Note");
+        String markdown = "# H1 Heading\n" + //
+                "\n" + //
+                "## H2 Heading\n" + //
+                "\n" + //
+                "Some text here.\n" + //
+                "\n" + //
+                "**Some bold   text.**\n" + //
+                "\n" + //
+                "*Some italics.*\n" + //
+                "\n" + //
+                "Some bullet points:\n" + //
+                "* one\n" + //
+                "* two\n" + //
+                "* three";
+        note.setPropertyValue("note:note", markdown);
+        note.setPropertyValue("note:mime_type", "text/x-web-markdown");
+        note = session.createDocument(note);
+
+        Rendition rendition = renditionService.getRendition(note, PDF_RENDITION_DEFINITION);
+        assertNotNull(rendition);
+        assertNotNull(rendition.getBlob());
     }
 
     @Test
