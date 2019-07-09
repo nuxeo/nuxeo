@@ -29,4 +29,6 @@ chromedriver.log
 
 # nuxeo build process
 addons/nuxeo-shell/
+# NXP-27709: to be removed
+nuxeo-jsf-ui/
 marketplace/
