@@ -27,10 +27,12 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -174,8 +176,11 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     public String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment,
             String eventName, boolean isValidated) {
 
-        if (!canEndTask(principal, task)) {
-            throw new NuxeoException(String.format("User with id '%s' cannot end this task", principal.getName()));
+        if (!checkPermissions(principal, task)) {
+            throw new DocumentSecurityException(
+                    String.format("User with id '%s' cannot end this task", principal.getName()));
+        } else if (!isTaskActive(task)) {
+            throw new ConcurrentUpdateException(String.format("The task '%s' is not active", task.getName()));
         }
         String taskProviderId = task.getVariable(Task.TASK_PROVIDER_KEY);
         if (taskProviderId == null) {
@@ -192,9 +197,20 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public boolean canEndTask(NuxeoPrincipal principal, Task task) {
-        if (task != null && (!task.isCancelled() && !task.hasEnded())) {
+        return isTaskActive(task) && checkPermissions(principal, task);
+    }
+
+    protected boolean checkPermissions(NuxeoPrincipal principal, Task task) {
+        if (task != null && principal != null) {
             return principal.isAdministrator() || principal.getName().equals(task.getInitiator())
                     || isTaskAssignedToUser(task, principal, true);
+        }
+        return false;
+    }
+
+    protected boolean isTaskActive(Task task) {
+        if (task != null) {
+            return !task.isCancelled() && !task.hasEnded();
         }
         return false;
     }
