@@ -1,16 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.nuxeo.ecm.platform</groupId>
-    <artifactId>nuxeo-jsf-ui</artifactId>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
     <version>11.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <groupId>org.nuxeo.ecm.distribution</groupId>
-  <artifactId>nuxeo-jsf-ui-gatling-tests</artifactId>
-  <name>Nuxeo JSF UI Gatling Bench</name>
-  <description>Gatling bench on Nuxeo JSF UI</description>
+  <artifactId>nuxeo-server-gatling-tests</artifactId>
+  <name>Nuxeo Server Gatling Bench</name>
+  <description>Gatling bench on Nuxeo Server</description>
   <packaging>jar</packaging>
 
   <properties>
@@ -19,19 +18,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution</artifactId>
-        <type>pom</type>
-        <scope>import</scope>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
-        <type>zip</type>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.tools.testing</groupId>
         <artifactId>data-test-les-arbres</artifactId>
@@ -50,12 +36,6 @@
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-server-tomcat</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-marketplace-jsf-ui</artifactId>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
@@ -193,24 +173,6 @@
                 </goals>
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim30Search</simulationClass>
-                </configuration>
-              </execution>
-              <execution>
-                <id>warmup-jsf</id>
-                <goals>
-                  <goal>test</goal>
-                </goals>
-                <configuration>
-                  <simulationClass>org.nuxeo.cap.bench.Sim25WarmUsersJsf</simulationClass>
-                </configuration>
-              </execution>
-              <execution>
-                <id>navigation-jsf</id>
-                <goals>
-                  <goal>test</goal>
-                </goals>
-                <configuration>
-                  <simulationClass>org.nuxeo.cap.bench.Sim30NavigationJsf</simulationClass>
                 </configuration>
               </execution>
               <execution>

@@ -12,9 +12,6 @@ and users.
 The next step is to create documents using the Nuxeo Rest API. The folder layout is created first then the leaf
 documents.
 
-Once documents are loaded, simulation that update documents or navigate using the JSF UI can be
-run.
-
 
 # Requirement
 
@@ -150,20 +147,6 @@ Update description of a document take document from `imp:temp:doc:created`
 ## Sim30Navigation: Rest navigation
 
 Get a random folder and document using the REST API (taken from `imp:temp:doc:created`)
-
-## Sim30NavigationJsf: JSF Navigation
-
-View a random folder and a document in it, view all document tabs (doc taken from `imp:temp:doc:created`)
-
-
-## Sim50Bench: mixing JSF, Rest Navigation and Document update
-
-To setup the proportion you need to prefix the options with:
-`nav.` for Rest Navigation
-`navjsf.` for JSF Navigation
-`upd.`  for Document update
-
-For instance: `-Dnav.users=30 -Dnavjsf=10 -Dupd.user=5 -Dnavjsf.pause_ms=5000`
 
 ## Sim80ReindexAll: Run an Elasticsearch reindex all
 

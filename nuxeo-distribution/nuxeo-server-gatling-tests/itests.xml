@@ -20,19 +20,12 @@
   <property name="nuxeo.wizard.done" value="true" />
   <property name="mail.transport.port" value="2525" />
   <property name="mail.transport.host" value="127.0.0.1" />
-  <property name="mp.install" value="${out.dir}/nuxeo-marketplace-jsf-ui-${maven.project.version}.zip" />
 
   <property name="inject.file" value="${out.dir}/data-test-les-arbres-1.1.csv" />
   <property name="inject.script" value="inject-arbres.py" />
   <property name="inject.artifact" value="org.nuxeo.tools.testing:data-test-les-arbres::zip" />
 
   <property name="redis.db" value="7" />
-
-  <target name="copy-packages">
-    <copy todir="${out.dir}">
-      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-marketplace-jsf-ui::zip" />
-    </copy>
-  </target>
 
   <target name="redis-clean" if="osfamily-unix">
     <echo level="info">Flushing Redis db ${redis.db}</echo>
