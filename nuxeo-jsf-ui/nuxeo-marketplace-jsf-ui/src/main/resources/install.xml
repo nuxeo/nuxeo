@@ -1,8 +1,0 @@
-<install>
-  <!--
-    The content of this file must be kept in sync with the apply-marketplace ant target
-    of the assembly.xml in the compat package nuxeo-server-tomcat while it exists.
-  -->
-  <update file="${package.root}/install/bundles" todir="${env.bundles}" />
-  <update file="${package.root}/install/lib" todir="${env.lib}" />
-</install>

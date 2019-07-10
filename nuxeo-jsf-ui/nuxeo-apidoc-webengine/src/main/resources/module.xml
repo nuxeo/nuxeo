@@ -1,4 +1,0 @@
-<?xml version="1.0"?>
-<!-- path="/distribution" kept for compat with WebEngine before 5.4.1 -->
-<module name="distribution" root-type="distribution" path="/distribution" extends="base">
-</module>

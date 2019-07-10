@@ -1,1 +1,0 @@
-/* Mock locale resources for select2. Do not delete. */
