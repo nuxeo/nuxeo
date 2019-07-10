@@ -342,6 +342,12 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
+        // Try to complete first task again
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review",
+                out)) {
+            assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+        }
+
         // Complete second task
         taskId = getCurrentTaskId(createdWorkflowInstanceId);
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/approve",
@@ -378,6 +384,56 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
                                                                .get(RunnableWorkflowJsonEnricher.NAME);
             // Cannot start default wf because of current lifecycle state of the note
             assertEquals(0, runnableWorkflowModels.size());
+        }
+    }
+
+    @Test
+    public void testTerminateTaskPermissions()  throws IOException {
+        final String createdWorkflowInstanceId;
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", RunnableWorkflowJsonEnricher.NAME);
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId(), headers)) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            ArrayNode runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
+                    .get(RunnableWorkflowJsonEnricher.NAME);
+            // We can start both default workflow on the note
+            assertEquals(2, runnableWorkflowModels.size());
+        }
+
+        // Start SerialDocumentReview on Note 0
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview", singletonList(note.getId())))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            createdWorkflowInstanceId = node.get("id").textValue();
+        }
+
+        String taskId = getCurrentTaskId(createdWorkflowInstanceId);
+        String out = getBodyForStartReviewTaskCompletion(taskId);
+
+        // Try to complete task without permissions
+        service = getServiceFor("user1", "user1");
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review",
+                out)) {
+            // Missing required variables
+            assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
+        }
+
+        service = getServiceFor("Administrator", "Administrator");
+        // Complete task
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review",
+                out)) {
+            // Missing required variables
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        }
+
+        // Try to complete first task again
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review",
+                out)) {
+            assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
         }
     }
 
