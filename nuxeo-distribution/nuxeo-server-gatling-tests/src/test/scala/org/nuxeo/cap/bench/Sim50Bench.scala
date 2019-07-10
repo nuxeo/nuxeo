@@ -19,31 +19,28 @@
 package org.nuxeo.cap.bench
 
 import io.gatling.core.Predef._
-import io.gatling.core.config.GatlingFiles
 import io.gatling.http.Predef._
 
-import scala.io.Source
+class Sim50Bench extends Simulation {
 
-object ScnWarmupUsersJsf {
+  val documents = Feeders.createRandomDocFeeder()
+  val scnNav = ScnNavigation.get(documents, Parameters.getSimulationDuration(),
+    Parameters.getPause(1000, prefix = "nav."))
+  val scnUpdate = ScnUpdateDocuments.get(documents, Parameters.getSimulationDuration(),
+    Parameters.getPause(500, prefix = "upd."))
 
-  def get = (userCount: Integer) => {
-    scenario("WarmUsersJsf").exec(
-      repeat(userCount.intValue(), "count") {
-        feed(Feeders.users)
-          .exec(NuxeoJsf.loginAndGoToGatlingWorkspace()).exec(NuxeoJsf.logout())
-      }
-    )
-  }
-}
-
-class Sim25WarmUsersJsf extends Simulation {
   val httpProtocol = http
     .baseUrl(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
+    .acceptEncodingHeader("identity")
     .connectionHeader("keep-alive")
-  val userCount = Source.fromFile(GatlingFiles.resourcesDirectory + "/data/users.csv").getLines.size - 1
-  val scn = ScnWarmupUsersJsf.get(userCount)
-  setUp(scn.inject(atOnceUsers(1)))
-    .protocols(httpProtocol).exponentialPauses
+
+  setUp(
+    scnNav.inject(rampUsers(Parameters.getConcurrentUsers(20, prefix = "nav."))
+      .during(Parameters.getRampDuration(prefix = "nav."))).exponentialPauses,
+    scnUpdate.inject(rampUsers(Parameters.getConcurrentUsers(5, prefix = "upd."))
+      .during(Parameters.getRampDuration(prefix = "upd."))).exponentialPauses
+  ).protocols(httpProtocol)
+    .assertions(global.successfulRequests.percent.gte(80))
 }
