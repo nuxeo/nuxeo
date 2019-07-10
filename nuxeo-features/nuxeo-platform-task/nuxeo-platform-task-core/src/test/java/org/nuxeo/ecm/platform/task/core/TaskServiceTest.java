@@ -37,10 +37,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -176,7 +177,7 @@ public class TaskServiceTest {
         try {
             taskService.acceptTask(session, user4, task, "ok i'm in");
             fail("Should have raised an exception: user4 cannot end the task");
-        } catch (NuxeoException e) {
+        } catch (DocumentSecurityException e) {
             assertEquals("User with id 'myuser4' cannot end this task", e.getMessage());
         }
 
@@ -196,6 +197,14 @@ public class TaskServiceTest {
         task = getTask(taskId);
         assertNotNull(task);
         assertEquals("Test Task Name", task.getName());
+
+        // test completing a task after being already completed
+        try {
+            taskService.acceptTask(session, user2, task, "ok i'm in");
+            fail("Should have raised an exception: task is already completed");
+        } catch (ConcurrentUpdateException e) {
+            assertEquals("The task 'Test Task Name' is not active", e.getMessage());
+        }
 
         pooledActorIds = task.getActors();
         assertEquals(2, pooledActorIds.size());
@@ -287,7 +296,7 @@ public class TaskServiceTest {
         try {
             taskService.rejectTask(session, user2, task1, "i don't agree");
             fail("Should have raised an exception: user2 cannot end the task");
-        } catch (NuxeoException e) {
+        } catch (DocumentSecurityException e) {
             assertEquals("User with id 'myuser2' cannot end this task", e.getMessage());
         }
 
@@ -372,7 +381,7 @@ public class TaskServiceTest {
         try {
             taskService.acceptTask(session, user4, task2, "i don't agree");
             fail("Should have raised an exception: user4 cannot end the task");
-        } catch (NuxeoException e) {
+        } catch (DocumentSecurityException e) {
             assertEquals("User with id 'myuser4' cannot end this task", e.getMessage());
         }
 
