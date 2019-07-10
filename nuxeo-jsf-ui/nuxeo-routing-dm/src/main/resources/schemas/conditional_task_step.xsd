@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xs:schema xmlns:nxst="http://www.nuxeo.org/ecm/schemas/conditional_task_step/" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.nuxeo.org/ecm/schemas/conditional_task_step/">
-
-
-  <xs:element name="subject" type="xs:string"/>
-  <xs:element name="operator" type="xs:string"/>
-  <xs:element name="value" type="xs:string"/>
-
-</xs:schema>

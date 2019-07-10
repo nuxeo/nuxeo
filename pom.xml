@@ -47,7 +47,6 @@
     <module>nuxeo-webengine</module>
     <module>nuxeo-dm</module>
     <module>addons</module>
-    <module>nuxeo-jsf-ui</module>
   </modules>
 
   <properties>
@@ -1021,7 +1020,6 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
 
-      <!-- Nuxeo JSF -->
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>

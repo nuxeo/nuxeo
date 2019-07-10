@@ -1,3 +1,0 @@
-<module>
-      <servlet path="/Annotations" class="org.nuxeo.ecm.platform.annotations.gwt.mock.MockAnnoteaServer"/>
-</module>

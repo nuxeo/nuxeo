@@ -1,3 +1,0 @@
-# additional command line parameters for mvn commands
-# e.g. to work offline:
-#mvn.opts=-o

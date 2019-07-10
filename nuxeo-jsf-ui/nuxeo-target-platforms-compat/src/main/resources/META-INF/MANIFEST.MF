@@ -1,9 +1,0 @@
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Manifest-Version: 1.0
-Bundle-Vendor: org.nuxeo.utils
-Bundle-Version: 1.0.0
-Bundle-Name: nuxeo-target-platforms-compat
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.nuxeo.targetplatforms.compat;singleton:=true
-Nuxeo-Component: OSGI-INF/restlet-contrib.xml

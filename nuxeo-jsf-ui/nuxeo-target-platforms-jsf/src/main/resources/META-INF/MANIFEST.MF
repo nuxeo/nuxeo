@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo Target Platforms JSF
-Bundle-SymbolicName: org.nuxeo.targetplatforms.jsf;singleton:=true
-Bundle-Version: 0.1.0
-Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/targetplatforms-actions-contrib.xml
