@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  *
  * Contributors:
- *     ldoguin, Antoine Taillefer
+ *      ldoguin, Antoine Taillefer
+ *      Nuno Cunha (ncunha@nuxeo.com)
  */
 package org.nuxeo.ecm.platform.task.core.service;
 
@@ -254,10 +255,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         DocumentRef docRef = new IdRef(taskId);
         DocumentModel taskDoc = coreSession.getDocument(docRef);
         if (taskDoc != null) {
-            Task task = taskDoc.getAdapter(Task.class);
-            if (task != null) {
-                return task;
-            }
+            return taskDoc.getAdapter(Task.class);
         }
         return null;
     }
@@ -590,8 +588,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 }
                 taskDoc.setACP(acp, true);
 
-                List<String> allDelegatedActors = new ArrayList<>();
-                allDelegatedActors.addAll(task.getDelegatedActors());
+                List<String> allDelegatedActors = new ArrayList<>(task.getDelegatedActors());
                 for (String actor : actorIds) {
                     if (!allDelegatedActors.contains(actor)) {
                         allDelegatedActors.add(actor);
@@ -619,8 +616,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     protected void notifyEvent(CoreSession session, Task task, List<DocumentModel> docs, String event,
             Map<String, Serializable> eventInfo, String comment, NuxeoPrincipal principal, List<String> actorIds) {
         Map<String, Serializable> eventProperties = new HashMap<>();
-        ArrayList<String> notificationRecipients = new ArrayList<>();
-        notificationRecipients.addAll(actorIds);
+        List<String> notificationRecipients = new ArrayList<>(actorIds);
         eventProperties.put(NotificationConstants.RECIPIENTS_KEY,
                 notificationRecipients.toArray(new String[notificationRecipients.size()]));
         if (eventInfo != null) {

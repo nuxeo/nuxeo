@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Anahide Tchertchian
+ *     Nuno Cunha (ncunha@nuxeo.com)
  */
 package org.nuxeo.ecm.platform.task.core;
 
@@ -25,7 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
@@ -92,7 +91,7 @@ public class TaskServiceTest {
 
     @Before
     public void setUp() {
-        administrator = userManager.getPrincipal(SecurityConstants.ADMINISTRATOR);
+        administrator = userManager.getPrincipal("Administrator");
         assertNotNull(administrator);
 
         user1 = userManager.getPrincipal("myuser1");
@@ -109,16 +108,14 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void testSingleTaskWithAccept() throws Exception {
+    public void testSingleTaskWithAccept() {
         DocumentModel document = getDocument();
         assertNotNull(document);
 
         // create task as admin
-        List<String> actors = new ArrayList<>();
-        actors.add(user1.getName());
-        actors.add(SecurityConstants.MEMBERS);
+        List<String> actors = List.of(user1.getName(), "members");
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2006, 6, 6);
+        calendar.set(2006, Calendar.JULY, 6);
         calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp
                                                // truncation issues.
 
@@ -138,7 +135,7 @@ public class TaskServiceTest {
 
         List<String> pooledActorIds = task.getActors();
         assertEquals(2, pooledActorIds.size());
-        assertTrue(pooledActorIds.contains(SecurityConstants.MEMBERS));
+        assertTrue(pooledActorIds.contains("members"));
         assertTrue(pooledActorIds.contains(user1.getName()));
 
         List<TaskComment> comments = task.getComments();
@@ -208,7 +205,7 @@ public class TaskServiceTest {
 
         pooledActorIds = task.getActors();
         assertEquals(2, pooledActorIds.size());
-        assertTrue(pooledActorIds.contains(SecurityConstants.MEMBERS));
+        assertTrue(pooledActorIds.contains("members"));
         assertTrue(pooledActorIds.contains(user1.getName()));
 
         comments = task.getComments();
@@ -232,16 +229,14 @@ public class TaskServiceTest {
     }
 
     @Test
-    public void testMultipleTaskWithReject() throws Exception {
+    public void testMultipleTaskWithReject() {
         DocumentModel document = getDocument();
         assertNotNull(document);
 
         // create task as admin
-        List<String> actors = new ArrayList<>();
-        actors.add(user1.getName());
-        actors.add(SecurityConstants.MEMBERS);
+        List<String> actors = List.of(user1.getName(), "members");
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2006, 6, 6);
+        calendar.set(2006, Calendar.JULY, 6);
         calendar.set(Calendar.MILLISECOND, 0); // be sure to avoid Timestamp
                                                // truncation issues.
 
@@ -253,7 +248,7 @@ public class TaskServiceTest {
         assertNotNull(tasks);
         assertEquals(2, tasks.size());
         // order is database-dependent
-        if (tasks.get(0).getActors().get(0).equals(SecurityConstants.MEMBERS)) {
+        if (tasks.get(0).getActors().get(0).equals("members")) {
             Collections.reverse(tasks);
         }
 
@@ -345,7 +340,7 @@ public class TaskServiceTest {
 
         pooledActorIds = task2.getActors();
         assertEquals(1, pooledActorIds.size());
-        assertEquals(SecurityConstants.MEMBERS, pooledActorIds.get(0));
+        assertEquals("members", pooledActorIds.get(0));
 
         comments = task2.getComments();
         assertEquals(1, comments.size());
@@ -395,11 +390,9 @@ public class TaskServiceTest {
 
     /**
      * Test user tasks.
-     *
-     * @throws Exception the exception
      */
     @Test
-    public void testUserTasks() throws Exception {
+    public void testUserTasks() {
 
         DocumentModel document = getDocument();
         assertNotNull(document);
@@ -471,8 +464,8 @@ public class TaskServiceTest {
         actors.add(user4.getName());
 
         // create task
-        taskService.createTask(session, administrator, document, "Task assigned to user3 and user4", actors, true,
-                null, null, null, null, null);
+        taskService.createTask(session, administrator, document, "Task assigned to user3 and user4", actors, true, null,
+                null, null, null, null);
         session.save();
         // get user3 tasks
         tasks = taskService.getTaskInstances(document, user3, session);
@@ -512,7 +505,7 @@ public class TaskServiceTest {
         // ----------------------------------------------------------------------
         // set task actors
         actors.clear();
-        actors.add(SecurityConstants.MEMBERS);
+        actors.add("members");
 
         // create task
         taskService.createTask(session, administrator, document, "Task assigned to members", actors, false, null, null,
@@ -550,26 +543,22 @@ public class TaskServiceTest {
      * <p>
      * It should have no impact since the DocumentTaskProvider rebuilds a clean actors list with both prefixed and
      * unprefixed names of the principal and all its groups.
-     *
-     * @throws Exception the exception
      */
     @Test
-    public void testPrefixedUnprefixedActorNames() throws Exception {
+    public void testPrefixedUnprefixedActorNames() {
 
         DocumentModel document = getDocument();
         assertNotNull(document);
 
         // set task actors mixing user and groups, prefixed and unprefixed
         // names
-        List<String> actors = new ArrayList<>();
-        actors.add(user1.getName());
-        actors.add(NuxeoPrincipal.PREFIX + user2.getName());
-        actors.add(SecurityConstants.ADMINISTRATORS);
-        actors.add(NuxeoGroup.PREFIX + SecurityConstants.MEMBERS);
+        List<String> actors = List.of(user1.getName(), NuxeoPrincipal.PREFIX + user2.getName(), "administrators",
+                NuxeoGroup.PREFIX + "members");
 
         // create task
         taskService.createTask(session, administrator, document,
-                "Task assigned to prefixed ans unprefixed users and groups", actors, true, null, null, null, null, null);
+                "Task assigned to prefixed ans unprefixed users and groups", actors, true, null, null, null, null,
+                null);
         session.save();
         // get user1 tasks: should have 2 since in members group
         List<Task> tasks = taskService.getTaskInstances(document, user1, session);
@@ -606,13 +595,13 @@ public class TaskServiceTest {
      * Test user tasks retrieval by non-admin session.
      */
     @Test
-    public void testUserTasksAsUser() throws Exception {
+    public void testUserTasksAsUser() {
 
         DocumentModel document = getDocument();
         assertNotNull(document);
 
-        taskService.createTask(session, administrator, document, "Task assigned to user1",
-                Arrays.asList(user1.getName()), false, null, null, null, null, null);
+        taskService.createTask(session, administrator, document, "Task assigned to user1", List.of(user1.getName()),
+                false, null, null, null, null, null);
         session.save();
         // check as admin
         List<Task> tasks = taskService.getTaskInstances(document, user1, session);
@@ -669,7 +658,7 @@ public class TaskServiceTest {
         return null;
     }
 
-    protected DocumentModel getDocument() throws Exception {
+    protected DocumentModel getDocument() {
         DocumentModel model = session.createDocumentModel(session.getRootDocument().getPathAsString(), "1", "File");
         DocumentModel doc = session.createDocument(model);
         assertNotNull(doc);
