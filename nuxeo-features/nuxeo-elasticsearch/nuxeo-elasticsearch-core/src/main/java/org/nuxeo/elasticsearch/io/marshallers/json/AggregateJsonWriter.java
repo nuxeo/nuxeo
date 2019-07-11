@@ -130,7 +130,7 @@ public class AggregateJsonWriter extends ExtensibleEntityJsonWriter<Aggregate> {
                 return;
             }
         } else {
-            field = schemaManager.getField(fieldName);
+            field = schemaManager.getField(agg.getXPathField());
         }
         jg.writeObjectField("id", agg.getId());
         jg.writeObjectField("field", agg.getField());
