@@ -186,4 +186,9 @@ public class AggregateBase<B extends Bucket> implements Aggregate<B> {
         }
     }
 
+    @Override
+    public String getXPathField() {
+        return getField();
+    }
+
 }
