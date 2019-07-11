@@ -231,6 +231,11 @@
       <groupId>org.codelibs.elasticsearch.module</groupId>
       <artifactId>analysis-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.skyscreamer</groupId>
+      <artifactId>jsonassert</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

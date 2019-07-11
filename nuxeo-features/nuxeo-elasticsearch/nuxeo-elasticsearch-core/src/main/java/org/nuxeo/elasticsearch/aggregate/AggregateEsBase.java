@@ -77,4 +77,13 @@ public abstract class AggregateEsBase<A extends Aggregation, B extends Bucket> e
         return size == 0 ? MAX_AGG_SIZE : size;
     }
 
+    @Override
+    public String getXPathField() {
+        String ret = super.getField();
+        if (FULLTEXT_FIELD.equals(ret)) {
+            ret = NXQL.ECM_FULLTEXT;
+        }
+        return ret.replace(ES_MUTLI_LEVEL_SEP, XPATH_SEP);
+    }
+
 }

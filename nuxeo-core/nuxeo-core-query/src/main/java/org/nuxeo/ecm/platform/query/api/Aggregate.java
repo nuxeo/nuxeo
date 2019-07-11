@@ -80,4 +80,14 @@ public interface Aggregate<B extends Bucket> {
      * post filtering.
      */
     List<Bucket> getExtendedBuckets();
+
+    /**
+     * Gets the field name as defined in Nuxeo.
+     * <p>
+     * In Nuxeo the separator for a complex type is the `/` character, in a case where our {@link Aggregate} implementation defines a field
+     * as `file:content.mime-type`, this method should return `file:content/mime-type`.
+     *
+     * @since 11.1
+     */
+    String getXPathField();
 }
