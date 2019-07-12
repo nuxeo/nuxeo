@@ -47,6 +47,7 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         super.init(context);
         try {
             temp = Files.createTempDirectory(metadata().name());
+            Framework.trackFile(temp.toFile(), temp);
         } catch (IOException e) {
             throw new IllegalStateException("Cannot create temp directory for " + this);
         }
