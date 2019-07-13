@@ -1,0 +1,37 @@
+<component name="org.nuxeo.binary.metadata.contribs.tests.readonly">
+
+  <extension target="org.nuxeo.binary.metadata"
+             point="metadataMappings">
+    <!--  has the readOnly flag set to true, cannot write to blob -->
+    <metadataMapping id="PDF-ReadOnly" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false" readOnly="true">
+      <metadata name="PDF:Language" xpath="dc:title"/>
+    </metadataMapping>
+    <!--  No readOnly flag can write to blob -->
+    <metadataMapping id="PDF-ReadWrite" processor="exifTool" blobXPath="file:content"
+                     ignorePrefix="false">
+      <metadata name="PDF:Producer" xpath="dc:source"/>
+    </metadataMapping>
+  </extension>
+  
+  <extension target="org.nuxeo.binary.metadata" point="metadataRules">
+    <rule id="default" order="0" enabled="true" async="false">
+      <metadataMappings>
+        <metadataMapping-id>PDF-ReadOnly</metadataMapping-id>
+        <metadataMapping-id>PDF-ReadWrite</metadataMapping-id>
+      </metadataMappings>
+      <filters>
+        <filter-id>hasFileType</filter-id>
+      </filters>
+    </rule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+    <filter id="hasFileType">
+      <rule grant="true">
+        <type>File</type>
+      </rule>
+    </filter>
+  </extension>
+
+</component>

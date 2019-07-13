@@ -16,6 +16,7 @@
  * Contributors:
  *     vpasquier <vpasquier@nuxeo.com>
  *     ajusto <ajusto@nuxeo.com>
+ *     Thibaud Arguillere
  */
 package org.nuxeo.binary.metadata.internals;
 
@@ -253,16 +254,18 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             if (blob != null) {
                 boolean isDirtyMapping = isDirtyMapping(mappingDescriptor, doc);
                 if (isDirtyMapping) {
-                    BlobManager blobManager = Framework.getService(BlobManager.class);
-                    BlobProvider blobProvider = blobManager.getBlobProvider(blob);
-                    // do not write metadata in blobs backed by extended blob providers (ex: Google Drive) or blobs from
-                    // providers that prevent user updates
-                    if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
-                        return;
+                    if(!mappingDescriptor.getReadOnly()) {
+                	    BlobManager blobManager = Framework.getService(BlobManager.class);
+                        BlobProvider blobProvider = blobManager.getBlobProvider(blob);
+                        // do not write metadata in blobs backed by extended blob providers (ex: Google Drive) or blobs from
+                        // providers that prevent user updates
+                        if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
+                            return;
+                        }
+                        // if document metadata dirty, write metadata from doc to Blob
+                        Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        fileProp.setValue(newBlob);
                     }
-                    // if document metadata dirty, write metadata from doc to Blob
-                    Blob newBlob = writeMetadata(mappingDescriptor.getProcessor(), fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
-                    fileProp.setValue(newBlob);
                 } else if (fileProp.isDirty()) {
                     // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
                     writeMetadata(doc);
