@@ -15,6 +15,7 @@
  *
  * Contributors:
  *      Vladimir Pasquier <vpasquier@nuxeo.com>
+ *      Thibaud Arguillere
  */
 package org.nuxeo.binary.metadata.internals;
 
@@ -45,6 +46,9 @@ public class MetadataMappingDescriptor implements Serializable {
 
     @XNode("@ignorePrefix")
     protected Boolean ignorePrefix = true;
+    
+    @XNode("@readOnly")
+    protected Boolean readOnly = false;
 
     @XNodeList(value = "metadata", componentType = MetadataDescriptor.class, type = ArrayList.class)
     protected List<MetadataDescriptor> metadataDescriptors;
@@ -88,5 +92,9 @@ public class MetadataMappingDescriptor implements Serializable {
 
     public Boolean getIgnorePrefix() {
         return ignorePrefix;
+    }
+
+    public Boolean getReadOnly() {
+        return readOnly;
     }
 }
