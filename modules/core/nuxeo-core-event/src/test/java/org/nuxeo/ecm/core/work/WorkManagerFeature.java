@@ -47,7 +47,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature.Waiter;
 @Deploy("org.nuxeo.runtime.kv") // for stream work manager
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test")
-@Features({ RuntimeFeature.class, TransactionalFeature.class, RuntimeStreamFeature.class })
+@Features({ RuntimeStreamFeature.class, TransactionalFeature.class })
 public class WorkManagerFeature implements RunnerFeature {
 
     private static final Log log = LogFactory.getLog(WorkManagerFeature.class);

@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.runtime.RuntimeMessage.Level;
 import org.nuxeo.runtime.RuntimeMessage.Source;
+import org.nuxeo.ecm.core.event.stream.DomainEventProducerDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -46,6 +47,9 @@ public class EventServiceComponent extends DefaultComponent {
     public static final String EVENT_PIPE_XP = "pipe";
 
     public static final String EVENT_DISPATCHER_XP = "dispatcher";
+
+    // @since 11.4
+    public static final String DOMAIN_EVENT_PRODUCER_XP = "domainEventProducer";
 
     public static final long DEFAULT_SHUTDOWN_TIMEOUT = Duration.ofSeconds(5).toMillis();
 
@@ -100,6 +104,9 @@ public class EventServiceComponent extends DefaultComponent {
         } else if (EVENT_DISPATCHER_XP.equals(extensionPoint)) {
             EventDispatcherDescriptor descriptor = (EventDispatcherDescriptor) contribution;
             service.addEventDispatcher(descriptor);
+        } else if (DOMAIN_EVENT_PRODUCER_XP.equals(extensionPoint)) {
+            DomainEventProducerDescriptor descriptor = (DomainEventProducerDescriptor) contribution;
+            service.addDomainEventProducer(descriptor);
         }
     }
 
@@ -113,6 +120,9 @@ public class EventServiceComponent extends DefaultComponent {
         } else if (EVENT_DISPATCHER_XP.equals(extensionPoint)) {
             EventDispatcherDescriptor descriptor = (EventDispatcherDescriptor) contribution;
             service.removeEventDispatcher(descriptor);
+        } else if (DOMAIN_EVENT_PRODUCER_XP.equals(extensionPoint)) {
+            DomainEventProducerDescriptor descriptor = (DomainEventProducerDescriptor) contribution;
+            service.removeDomainEventProducer(descriptor);
         }
     }
 
