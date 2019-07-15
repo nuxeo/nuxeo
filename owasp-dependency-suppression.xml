@@ -279,11 +279,4 @@
    <gav regex="true">^io\.gatling:gatling-app:.*$</gav>
    <cpe>cpe:/a:app_project:app</cpe>
 </suppress>
-<suppress>
-   <notes><![CDATA[
-   file name: gwt-servlet-2.7.0-NX1.jar (protobuf not directly accessible)
-   ]]></notes>
-   <gav regex="true">^com\.google\.gwt:gwt-servlet:.*$</gav>
-   <cpe>cpe:/a:google:protobuf</cpe>
-</suppress>
 </suppressions>
