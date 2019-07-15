@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.rendition.lazy;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -51,7 +51,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     protected final String renditionName;
 
-    protected static Log log = LogFactory.getLog(AbstractRenditionBuilderWork.class);
+    private static final Logger log = LogManager.getLogger(AbstractRenditionBuilderWork.class);
 
     public static final String CATEGORY = "renditionBuilder";
 
@@ -108,10 +108,8 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     @Override
     public void work() {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Starting %s work with id %s for transient store key %s and document %s.",
-                    getClass().getSimpleName(), id, key, docRef));
-        }
+        log.debug("Starting work: {} with id: {} for transient store key: {} and document: {}",
+                getClass().getSimpleName(), id, key, docRef);
         openUserSession();
         DocumentModel doc = session.getDocument(docRef);
 
@@ -150,11 +148,8 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
     }
 
     void updateAndCompleteStoreEntry(String sourceDocumentModificationDate, List<Blob> blobs) {
-        if (log.isDebugEnabled()) {
-            log.debug(
-                    String.format("Updating and completing transient store entry with key %s (workId=%s, document=%s).",
-                            key, id, docRef));
-        }
+        log.debug("Updating and completing transient store entry with key: {} (workId: {}, document: {})", key, id,
+                docRef);
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 
@@ -178,12 +173,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
     }
 
     /**
-     * Does the actual Rendition Computation : this code will be called from inside an Asynchronous Work
-     *
-     * @param session
-     * @param doc
-     * @param def
-     * @return
+     * Does the actual Rendition Computation: this code will be called from inside an Asynchronous Work
      */
     protected abstract List<Blob> doComputeRendition(CoreSession session, DocumentModel doc, RenditionDefinition def);
 
