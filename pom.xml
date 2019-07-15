@@ -115,7 +115,6 @@
     <jna.version>4.5.2</jna.version>
     <apacheds.version>1.5.1</apacheds.version>
     <apachedshared.version>0.9.7</apachedshared.version>
-    <gwt.version>2.7.0-NX1</gwt.version>
     <guice.version>3.0</guice.version>
     <jersey.version>1.19.4</jersey.version>
     <shindig.version>1.1-BETA5-incubating-nx2</shindig.version>
@@ -3432,85 +3431,14 @@
         <version>2.0.0</version>
       </dependency>
       <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
-        <version>${gwt.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>${gwt.version}</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-servlet</artifactId>
-        <version>${gwt.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-codeserver</artifactId>
-        <version>${gwt.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.2.2</version>
       </dependency>
       <dependency>
-        <groupId>com.google.gwt.google-apis</groupId>
-        <artifactId>gwt-gadgets</artifactId>
-        <version>1.0.3</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${guava.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.allen-sauer.gwt.log</groupId>
-        <artifactId>gwt-log</artifactId>
-        <version>3.3.2</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>net.customware.gwt.presenter</groupId>
-        <artifactId>gwt-presenter</artifactId>
-        <version>1.0.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>net.customware.gwt.dispatch</groupId>
-        <artifactId>gwt-dispatch</artifactId>
-        <version>1.0.0</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.allen-sauer.gwt.dnd</groupId>
-        <artifactId>gwt-dnd</artifactId>
-        <version>3.3.3</version>
-        <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.google.gwt.inject</groupId>
-        <artifactId>gin</artifactId>
-        <version>1.5.0</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>gwt-servlet</artifactId>
-            <groupId>com.google.gwt</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.google.inject.extensions</groupId>
@@ -3521,12 +3449,6 @@
         <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-assistedinject</artifactId>
         <version>${guice.version}</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>gwt.habyt</groupId>
-        <artifactId>gwt-habyt-upload</artifactId>
-        <version>0.1</version>
         <scope>compile</scope>
       </dependency>
 
@@ -3860,11 +3782,6 @@
         <groupId>org.apache.sanselan</groupId>
         <artifactId>sanselan</artifactId>
         <version>0.97-incubator</version>
-      </dependency>
-      <dependency>
-        <groupId>com.gwtext</groupId>
-        <artifactId>gwtext</artifactId>
-        <version>2.0.5</version>
       </dependency>
 
       <dependency>
@@ -4439,12 +4356,6 @@
             <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>com.smartgwt</groupId>
-        <artifactId>smartgwt</artifactId>
-        <version>1.0-20081121</version>
       </dependency>
 
       <dependency>
@@ -5321,30 +5232,6 @@
           <version>2.9</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>gwt-maven-plugin</artifactId>
-          <version>${gwt.version}</version>
-          <inherited>true</inherited>
-          <executions>
-            <execution>
-              <goals>
-                <goal>compile</goal>
-              </goals>
-              <configuration>
-                <extraJvmArgs>-Xmx512M -Xms128M -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
-                <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
-                <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
-                <treeLogger>true</treeLogger>
-                <logLevel>WARN</logLevel>
-                <draftCompile>true</draftCompile>
-                <workDir>${project.build.directory}/gwork</workDir>
-                <!-- useful for debug -->
-                <!-- <style>PRETTY</style> -->
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
           <artifactId>maven-antrun-extended-plugin</artifactId>
           <version>1.43</version>
@@ -5837,9 +5724,7 @@
                 |Apache Software License, version 2.0
                 |Apache Software License - Version 2.0
                 |The Apache License, Version 2.0
-                |The Apache Software License, Version 2.0
-                |GWT Terms
-                |Google Web Toolkit Terms</licenseMerge>
+                |The Apache Software License, Version 2.0</licenseMerge>
               <licenseMerge>BSD 2
                 |BSD-2-Clause
                 |BSD 2-Clause License</licenseMerge>
@@ -6215,20 +6100,6 @@
               </execution>
             </executions>
           </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>gwt-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>compile</goal>
-                </goals>
-                <configuration>
-                  <draftCompile>false</draftCompile>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
           <!-- http://jira.codehaus.org/browse/MLICENSE-76 prevents automated run -->
           <!-- <plugin> -->
           <!-- <groupId>org.codehaus.mojo</groupId> -->
@@ -6280,20 +6151,6 @@
                 <goals>
                   <goal>jar</goal>
                 </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>gwt-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>compile</goal>
-                </goals>
-                <configuration>
-                  <draftCompile>false</draftCompile>
-                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -6419,10 +6276,6 @@
                 <group>
                   <title>Nuxeo WebEngine Packages</title>
                   <packages>org.nuxeo.webengine*:org.nuxeo.ecm.webengine*</packages>
-                </group>
-                <group>
-                  <title>Nuxeo GWT Packages</title>
-                  <packages>org.nuxeo.ecm.gwt*</packages>
                 </group>
                 <group>
                   <title>Nuxeo OpenSocial Packages</title>
@@ -6875,12 +6728,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>gwt</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
     </profile>
   </profiles>
 

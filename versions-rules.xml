@@ -12,7 +12,6 @@
     <ignoreVersion type="regex">.*[-_\.][Bb]eta[0-9\.-]*</ignoreVersion> <!-- org.ow2.asm:asm 7.0-beta -->
     <ignoreVersion type="regex">.*-atlassian-[0-9\.]*</ignoreVersion> <!-- org.hamcrest:hamcrest-core 1.4-atlassian-1 -->
     <ignoreVersion type="regex">.*\.redhat-[0-9]+</ignoreVersion> <!-- org.apache.directory.shared:shared-asn1 0.9.19.redhat-002 -->
-    <ignoreVersion type="regex">.*-patch</ignoreVersion> <!-- com.smartgwt:smartgwt 2.5-patch -->
     <ignoreVersion type="regex">200[34][0-9\.]*</ignoreVersion> <!-- commons-cli:commons-cli 20040117.000000 -->
   </ignoreVersions>
   <rules>

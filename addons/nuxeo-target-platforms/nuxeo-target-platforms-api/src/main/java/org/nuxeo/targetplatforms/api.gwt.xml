@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module rename-to='nuxeo_target_platforms_api'>
-
-  <!-- Inherit the core Web Toolkit stuff -->
-  <inherits name='com.google.gwt.user.User' />
-  <source path="api" />
-
-</module>
