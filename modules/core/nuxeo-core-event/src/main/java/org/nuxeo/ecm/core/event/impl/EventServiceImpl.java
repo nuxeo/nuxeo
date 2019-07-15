@@ -644,7 +644,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             descriptor.getStream().filters.forEach(filter -> settings.addFilter(streamName, filter.getFilter()));
         });
         StreamService streamService = Framework.getService(StreamService.class);
-        // streamService.getStreamManager().register(streams, settings);
+        if (streamService == null) {
+            log.warn("StreamService is not available, you might want to use RuntimeStreamFeature.class test Feature");
+        } else {
+            streamService.getStreamManager().register(streams, settings);
+        }
     }
 
 }

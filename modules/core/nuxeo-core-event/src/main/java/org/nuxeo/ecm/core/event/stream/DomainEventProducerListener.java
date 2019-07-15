@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.log.LogAppender;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -99,8 +99,9 @@ public class DomainEventProducerListener implements EventListener, Synchronizati
                 continue;
             }
             log.debug("Writing domain events");
-            LogAppender<Record> appender = streamService.getLogManager().getAppender(producer.getStream());
-            records.forEach(record -> appender.append(record.getKey(), record));
+            StreamManager streamManager = streamService.getStreamManager();
+            String stream = producer.getStream();
+            records.forEach(record -> streamManager.append(stream, record));
         }
     }
 
