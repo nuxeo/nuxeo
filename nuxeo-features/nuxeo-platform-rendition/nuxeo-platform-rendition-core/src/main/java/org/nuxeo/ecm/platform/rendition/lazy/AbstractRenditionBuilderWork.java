@@ -134,8 +134,9 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
 
     protected void storeAnErrorRendition() {
         if (session == null) {
-            // The session should be available before cleanup but it depends when the error has been raised
-            openUserSession();
+            log.info("No session, unable to clean work: {} with id: {} for transient store key: {} and document: {}",
+                    getClass().getSimpleName(), id, key, docRef);
+            return;
         }
         DocumentModel doc = session.getDocument(docRef);
         String sourceDocumentModificationDate = getSourceDocumentModificationDate(doc);
