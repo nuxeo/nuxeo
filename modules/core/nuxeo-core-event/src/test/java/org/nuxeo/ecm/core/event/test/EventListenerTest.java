@@ -39,11 +39,11 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * TODO add tests on post commit.
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(RuntimeStreamFeature.class)
 @Deploy("org.nuxeo.ecm.core.event")
 public class EventListenerTest {
 

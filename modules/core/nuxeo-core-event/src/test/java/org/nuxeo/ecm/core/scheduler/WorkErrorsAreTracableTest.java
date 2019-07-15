@@ -30,14 +30,14 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, LogCaptureFeature.class })
+@Features({ RuntimeStreamFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.core.event")
 @LogCaptureFeature.FilterOn(loggerClass = WorkSchedulePath.class)
 public class WorkErrorsAreTracableTest {
