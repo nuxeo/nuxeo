@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.audit.stream.eventSourceProducer.contrib">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="eventDomainProducer">
+
+    <eventDomainProducer name="auditDomain" class="org.nuxeo.ecm.platform.audit.stream.AuditEventDomainProducer">
+      <stream name="src-audit" partitions="1" codec="avro" />
+    </eventDomainProducer>
+
+  </extension>
+
+</component>
