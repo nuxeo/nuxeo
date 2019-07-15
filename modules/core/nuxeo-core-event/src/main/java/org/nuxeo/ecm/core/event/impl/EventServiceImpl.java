@@ -56,8 +56,8 @@ import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
-import org.nuxeo.ecm.core.event.stream.EventDomainProducer;
-import org.nuxeo.ecm.core.event.stream.EventDomainProducerDescriptor;
+import org.nuxeo.ecm.core.event.stream.DomainEventProducer;
+import org.nuxeo.ecm.core.event.stream.DomainEventProducerDescriptor;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.runtime.api.Framework;
@@ -123,10 +123,10 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected EventBundleDispatcher pipeDispatcher;
 
-    // @since 11.1
-    protected DescriptorRegistry eventDomainProducers = new DescriptorRegistry();
+    // @since 11.4
+    protected DescriptorRegistry domainEventProducers = new DescriptorRegistry();
 
-    // @since 11.1
+    // @since 11.4
     protected static final String REGISTRY_TARGET_NAME = "EventService";
 
     public EventServiceImpl() {
@@ -146,13 +146,18 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 pipeDispatcher.init(pipes, dispatcherDescriptor.getParameters());
             }
         }
+<<<<<<< HEAD
         initEventDomainStreams();
+=======
+        initDomainEventStreams();
+>>>>>>> 695cc0e0553... NXP-27757: Add a domainEventProducer extension point
     }
 
     public EventBundleDispatcher getEventBundleDispatcher() {
         return pipeDispatcher;
     }
 
+<<<<<<< HEAD
     public void addEventDomainProducer(EventDomainProducerDescriptor descriptor) {
         if (descriptor.isEnabled()) {
             eventDomainProducers.register(REGISTRY_TARGET_NAME, EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP,
@@ -169,6 +174,24 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         eventDomainProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP,
                 descriptor);
         log.debug("Unregistered event domain producer: " + descriptor.getName());
+=======
+    public void addDomainEventProducer(DomainEventProducerDescriptor descriptor) {
+        if (descriptor.isEnabled()) {
+            domainEventProducers.register(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
+                    descriptor);
+            log.debug("Registered domain event producer: " + descriptor.getName());
+        } else {
+            domainEventProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
+                    descriptor);
+            log.debug("Unregistered domain event producer (disabled): " + descriptor.getName());
+        }
+    }
+
+    public void removeDomainEventProducer(DomainEventProducerDescriptor descriptor) {
+        domainEventProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP,
+                descriptor);
+        log.debug("Unregistered domain event producer: " + descriptor.getName());
+>>>>>>> 695cc0e0553... NXP-27757: Add a domainEventProducer extension point
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
@@ -592,21 +615,21 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     @Override
-    public List<EventDomainProducer> createEventProducers() {
-        // TODO: optmize this by keeping an immutable list
-        List<EventDomainProducerDescriptor> descriptors = eventDomainProducers.getDescriptors(REGISTRY_TARGET_NAME,
-                EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP);
-        List<EventDomainProducer> ret = new ArrayList<>(descriptors.size());
+    public List<DomainEventProducer> createDomainEventProducers() {
+        // TODO: optimize this by keeping an immutable list
+        List<DomainEventProducerDescriptor> descriptors = domainEventProducers.getDescriptors(REGISTRY_TARGET_NAME,
+                EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP);
+        List<DomainEventProducer> ret = new ArrayList<>(descriptors.size());
         descriptors.forEach(descriptor -> {
-            EventDomainProducer producer = descriptor.newInstance();
+            DomainEventProducer producer = descriptor.newInstance();
             ret.add(producer);
         });
         return ret;
     }
 
-    protected void initEventDomainStreams() {
-        List<EventDomainProducerDescriptor> descriptors = eventDomainProducers.getDescriptors(REGISTRY_TARGET_NAME,
-                EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP);
+    protected void initDomainEventStreams() {
+        List<DomainEventProducerDescriptor> descriptors = domainEventProducers.getDescriptors(REGISTRY_TARGET_NAME,
+                EventServiceComponent.DOMAIN_EVENT_PRODUCER_XP);
         Settings settings = new Settings(1, 1);
         List<String> streams = new ArrayList<>();
         CodecService codecService = Framework.getService(CodecService.class);

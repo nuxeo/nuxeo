@@ -22,7 +22,7 @@ package org.nuxeo.ecm.core.event;
 import java.util.List;
 
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
-import org.nuxeo.ecm.core.event.stream.EventDomainProducer;
+import org.nuxeo.ecm.core.event.stream.DomainEventProducer;
 
 /**
  * The event service manages listener registries and notifies listeners about core events.
@@ -138,8 +138,10 @@ public interface EventService extends EventProducer {
     void waitForAsyncCompletion(long timeout);
 
     /**
-     * @since 11.1
+     * Create the registered domain event producers.
+     *
+     * @since 11.4
      */
-    List<EventDomainProducer> createEventProducers();
+    List<DomainEventProducer> createDomainEventProducers();
 
 }

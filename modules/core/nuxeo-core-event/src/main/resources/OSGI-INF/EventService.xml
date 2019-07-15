@@ -107,16 +107,16 @@
     <object class="org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor"/>
   </extension-point>
 
-  <extension-point name="eventDomainProducer">
+  <extension-point name="domainEventProducer">
     <documentation>
-      Extension point to define Stream Event Domain Producer.
+      Extension point to define Stream Domain Event Producer.
     </documentation>
-    <object class="org.nuxeo.ecm.core.event.stream.EventDomainProducerDescriptor"/>
+    <object class="org.nuxeo.ecm.core.event.stream.DomainEventProducerDescriptor"/>
   </extension-point>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="eventDomainListener" async="false" priority="500"
-      class="org.nuxeo.ecm.core.event.stream.EventDomainProducerListener"/>
+    <listener name="domainEventListener" async="false" priority="500"
+      class="org.nuxeo.ecm.core.event.stream.DomainEventProducerListener"/>
   </extension>
 
 
