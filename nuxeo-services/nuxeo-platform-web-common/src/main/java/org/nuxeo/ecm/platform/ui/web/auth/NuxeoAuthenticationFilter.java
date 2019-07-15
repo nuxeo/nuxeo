@@ -622,9 +622,8 @@ public class NuxeoAuthenticationFilter implements Filter {
                         // httpResponse.setStatus(200);
                         return;
                     } else {
-                        // In case of a download redirection, the base url is already contained in the target
-                        String url = targetPageURL.startsWith(baseURL) ? targetPageURL : baseURL + targetPageURL;
-                        httpResponse.sendRedirect(url);
+                        String redirectUrl = URI.create(baseURL).resolve(targetPageURL).toString();
+                        httpResponse.sendRedirect(redirectUrl);
                         return;
                     }
 
