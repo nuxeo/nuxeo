@@ -136,7 +136,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 metadataMapping.put(metadataDescriptor.getName(), doc.getPropertyValue(metadataDescriptor.getXpath()));
             }
             BinaryMetadataProcessor processor = getProcessor(processorName);
-            return processor.writeMetadata(blob, metadataMapping, mappingDescriptor.getIgnorePrefix());
+            return processor.writeMetadata(blob, metadataMapping, mappingDescriptor.ignorePrefix());
         } catch (NoSuchMethodException e) {
             throw new BinaryMetadataException(e);
         }
@@ -179,7 +179,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
         List<String> blobMetadata = new ArrayList<>();
         MetadataMappingDescriptor mappingDescriptor = binaryMetadataComponent.mappingRegistry.getMappingDescriptorMap().get(
                 mappingDescriptorId);
-        boolean ignorePrefix = mappingDescriptor.getIgnorePrefix();
+        boolean ignorePrefix = mappingDescriptor.ignorePrefix();
         // Extract blob from the contributed xpath
         Blob blob = doc.getProperty(mappingDescriptor.getBlobXPath()).getValue(Blob.class);
         if (blob != null && mappingDescriptor.getMetadataDescriptors() != null
@@ -254,8 +254,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
             if (blob != null) {
                 boolean isDirtyMapping = isDirtyMapping(mappingDescriptor, doc);
                 if (isDirtyMapping) {
-                    if(!mappingDescriptor.getReadOnly()) {
-                	    BlobManager blobManager = Framework.getService(BlobManager.class);
+                    if (!mappingDescriptor.isReadOnly()) {
+                        BlobManager blobManager = Framework.getService(BlobManager.class);
                         BlobProvider blobProvider = blobManager.getBlobProvider(blob);
                         // do not write metadata in blobs backed by extended blob providers (ex: Google Drive) or blobs from
                         // providers that prevent user updates
