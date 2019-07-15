@@ -96,15 +96,28 @@
 
       Example dispatcher definition:
       <code>
-        <eventDispatcher name="dispatcher" 
+        <eventDispatcher name="dispatcher"
                          class="org.nuxeo.ecm.core.event.pipe.dispatch.SimpleEventBundlePipeDispatcher">
            <parameters>
              <parameter name="foo">bar</parameter>
            </parameters>
-        </eventDispatcher>    
+        </eventDispatcher>
       </code>
     </documentation>
     <object class="org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor"/>
   </extension-point>
+
+  <extension-point name="eventDomainProducer">
+    <documentation>
+      Extension point to define Stream Event Domain Producer.
+    </documentation>
+    <object class="org.nuxeo.ecm.core.stream.EventDomainProducerDescriptor"/>
+  </extension-point>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="eventDomainListener" async="false" priority="500"
+      class="org.nuxeo.ecm.core.stream.EventDomainProducerListener"/>
+  </extension>
+
 
 </component>
