@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.event.stream.producer.test" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="eventDomainProducer">
+
+    <eventDomainProducer name="testSrc" class="org.nuxeo.ecm.core.event.stream.MyEventDomainProducer">
+      <stream name="src-test" partitions="1" codec="avro" />
+      <option name="opt1">value1</option>
+    </eventDomainProducer>
+
+  </extension>
+
+</component>

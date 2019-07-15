@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.event.EventServiceComponent;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
@@ -55,7 +56,14 @@ import org.nuxeo.ecm.core.event.pipe.EventPipeRegistry;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventBundleDispatcher;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherDescriptor;
 import org.nuxeo.ecm.core.event.pipe.dispatch.EventDispatcherRegistry;
+import org.nuxeo.ecm.core.event.stream.EventDomainProducer;
+import org.nuxeo.ecm.core.event.stream.EventDomainProducerDescriptor;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.Settings;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.codec.CodecService;
+import org.nuxeo.runtime.model.DescriptorRegistry;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import io.opencensus.trace.AttributeValue;
@@ -115,6 +123,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
 
     protected EventBundleDispatcher pipeDispatcher;
 
+    // @since 11.1
+    protected DescriptorRegistry eventDomainProducers = new DescriptorRegistry();
+
+    // @since 11.1
+    protected static final String REGISTRY_TARGET_NAME = "EventService";
+
     public EventServiceImpl() {
         listenerDescriptors = new EventListenerList();
         postCommitExec = new PostCommitEventExecutor();
@@ -132,10 +146,29 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 pipeDispatcher.init(pipes, dispatcherDescriptor.getParameters());
             }
         }
+        initEventDomainStreams();
     }
 
     public EventBundleDispatcher getEventBundleDispatcher() {
         return pipeDispatcher;
+    }
+
+    public void addEventDomainProducer(EventDomainProducerDescriptor descriptor) {
+        if (descriptor.isEnabled()) {
+            eventDomainProducers.register(REGISTRY_TARGET_NAME, EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP,
+                    descriptor);
+            log.error("Registered event domain producer: " + descriptor.getName());
+        } else {
+            eventDomainProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP,
+                    descriptor);
+            log.debug("Unregistered event domain producer (disabled): " + descriptor.getName());
+        }
+    }
+
+    public void removeEventDomainProducer(EventDomainProducerDescriptor descriptor) {
+        eventDomainProducers.unregister(REGISTRY_TARGET_NAME, EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP,
+                descriptor);
+        log.debug("Unregistered event domain producer: " + descriptor.getName());
     }
 
     public void shutdown(long timeoutMillis) throws InterruptedException {
@@ -556,6 +589,39 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 log.error("Error while processing " + bundle, e);
             }
         }
+    }
+
+    @Override
+    public List<EventDomainProducer> createEventProducers() {
+        // TODO: optmize this by keeping an immutable list
+        List<EventDomainProducerDescriptor> descriptors = eventDomainProducers.getDescriptors(REGISTRY_TARGET_NAME,
+                EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP);
+        List<EventDomainProducer> ret = new ArrayList<>(descriptors.size());
+        descriptors.forEach(descriptor -> {
+            EventDomainProducer producer = descriptor.newInstance();
+            ret.add(producer);
+        });
+        return ret;
+    }
+
+    protected void initEventDomainStreams() {
+        List<EventDomainProducerDescriptor> descriptors = eventDomainProducers.getDescriptors(REGISTRY_TARGET_NAME,
+                EventServiceComponent.EVENT_DOMAIN_PRODUCER_XP);
+        Settings settings = new Settings(1, 1);
+        List<String> streams = new ArrayList<>();
+        CodecService codecService = Framework.getService(CodecService.class);
+        descriptors.forEach(descriptor -> {
+            String streamName = descriptor.getStream().name;
+            streams.add(streamName);
+            settings.setPartitions(streamName, descriptor.getStream().partitions);
+            String codec = descriptor.getStream().codec;
+            if (codec != null) {
+                settings.setCodec(streamName, codecService.getCodec(codec, Record.class));
+            }
+            descriptor.getStream().filters.forEach(filter -> settings.addFilter(streamName, filter.getFilter()));
+        });
+        StreamService streamService = Framework.getService(StreamService.class);
+        // streamService.getStreamManager().register(streams, settings);
     }
 
 }
