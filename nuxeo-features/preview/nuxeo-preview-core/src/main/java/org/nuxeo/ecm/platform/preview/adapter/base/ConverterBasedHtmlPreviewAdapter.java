@@ -35,7 +35,6 @@ import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.MimetypeNotFoundException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.preview.adapter.MimeTypePreviewer;
-import org.nuxeo.ecm.platform.preview.adapter.PlainImagePreviewer;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterManager;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
@@ -50,52 +49,6 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter {
 
     private static final Logger log = LogManager.getLogger(ConverterBasedHtmlPreviewAdapter.class);
-
-    /**
-     * @since 10.3
-     * @deprecated since 10.3
-     */
-    @Deprecated
-    public static final String OLD_PREVIEW_PROPERTY = "nuxeo.old.jsf.preview";
-
-    // class in nuxeo-preview-jsf
-    /**
-     * @since 11.1
-     * @deprecated since 11.1
-     */
-    @Deprecated
-    private static final String IMAGE_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.ImagePreviewer";
-
-    // class in nuxeo-preview-jsf
-    /**
-     * @since 11.1
-     * @deprecated since 11.1
-     */
-    @Deprecated
-    private static final String OFFICE_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.OfficePreviewer";
-
-    // class in nuxeo-preview-jsf
-    /**
-     * @since 11.1
-     * @deprecated since 11.1
-     */
-    @Deprecated
-    private static final String PDF_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.PdfPreviewer";
-
-    // class in nuxeo-preview-jsf
-    /**
-     * @since 11.1
-     * @deprecated since 11.1
-     */
-    @Deprecated
-    private static final String MARKDOWN_PREVIEWER_CLASS_NAME = "org.nuxeo.ecm.platform.preview.adapter.MarkdownPreviewer";
-
-    /**
-     * @since 10.3
-     * @deprecated since 10.3
-     */
-    @Deprecated
-    public static final String TEXT_ANNOTATIONS_PROPERTY = "nuxeo.text.annotations";
 
     protected String defaultFieldXPath;
 
@@ -188,7 +141,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         log.debug("Source type for HTML preview =" + srcMT);
         MimeTypePreviewer mtPreviewer = getPreviewManager().getPreviewer(srcMT);
         if (mtPreviewer != null) {
-            List<Blob> result = getPreviewFromMimeTypePreviewer(mtPreviewer, blob2Preview);
+            List<Blob> result = mtPreviewer.getPreview(blob2Preview, adaptedDoc);
             if (result != null) {
                 return result;
             }
@@ -209,42 +162,6 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         } catch (ConversionException e) {
             throw new PreviewException(e.getMessage(), e);
         }
-    }
-
-    /**
-     * Backward compatibility method to trigger the right previewers if 'nuxeo.old.jsf.preview' is set.
-     * <p>
-     * This allows old HTML preview to be used, to make annotations available.
-     * <p>
-     * To be removed with JSF UI.
-     *
-     * @since 10.3
-     * @deprecated since 10.3
-     */
-    @Deprecated
-    protected List<Blob> getPreviewFromMimeTypePreviewer(MimeTypePreviewer mtPreviewer, Blob blob2Preview) {
-        // this context data comes from the PreviewRestlet
-        boolean oldPreview = Boolean.TRUE.equals(adaptedDoc.getContextData(OLD_PREVIEW_PROPERTY));
-        if (!oldPreview) {
-            return mtPreviewer.getPreview(blob2Preview, adaptedDoc);
-        }
-
-        // when old preview is enabled
-        // - replace ImagePreviewer with PlainImagePreviewer
-        // - do nothing for "office" previewers if the text annotations are enabled to trigger the old preview behavior,
-        // otherwise keep the current preview behavior
-        String previewerClassName = mtPreviewer.getClass().getName();
-        if (IMAGE_PREVIEWER_CLASS_NAME.equals(previewerClassName)) {
-            return new PlainImagePreviewer().getPreview(blob2Preview, adaptedDoc);
-        }
-
-        ConfigurationService cs = Framework.getService(ConfigurationService.class);
-        if (cs.isBooleanTrue(TEXT_ANNOTATIONS_PROPERTY) && (PDF_PREVIEWER_CLASS_NAME.equals(previewerClassName)
-                || MARKDOWN_PREVIEWER_CLASS_NAME.equals(previewerClassName)
-                || OFFICE_PREVIEWER_CLASS_NAME.equals(previewerClassName))) {
-            return null;
-        }
-        return mtPreviewer.getPreview(blob2Preview, adaptedDoc);
     }
 
     /**
