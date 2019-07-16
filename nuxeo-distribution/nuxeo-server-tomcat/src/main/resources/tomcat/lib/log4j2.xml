@@ -236,7 +236,6 @@
 
     <Logger name="org.apache.shindig.common.xml.XmlUtil" level="warn" />
     <Logger name="org.apache.myfaces.shared_tomahawk" level="warn" />
-    <Logger name="org.artofsolving.jodconverter" level="warn" />
     <Logger name="net.openhft.chronicle.queue.impl.single.SCQIndexing" level="error" /> <!-- Hide perf warnings -->
 
     <Logger name="org.elasticsearch.bootstrap" level="error" />
