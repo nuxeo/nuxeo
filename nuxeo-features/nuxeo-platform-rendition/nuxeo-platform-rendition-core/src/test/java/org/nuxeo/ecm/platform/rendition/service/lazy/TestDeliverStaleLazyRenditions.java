@@ -22,9 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvider.CACHE_NAME;
+import static org.nuxeo.ecm.platform.rendition.lazy.AbstractLazyCachableRenditionProvider.SOURCE_DOCUMENT_MODIFICATION_DATE_KEY;
 
 import java.io.IOException;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import javax.inject.Inject;
@@ -40,9 +43,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.transientstore.api.TransientStore;
+import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
 import org.nuxeo.ecm.platform.rendition.impl.LazyRendition;
+import org.nuxeo.ecm.platform.rendition.lazy.AutomationLazyRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.DummyDocToTxt;
+import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionFeature;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
@@ -69,6 +76,9 @@ public class TestDeliverStaleLazyRenditions {
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected TransientStoreService transientStoreService;
 
     @Inject
     protected RenditionService rs;
@@ -147,6 +157,39 @@ public class TestDeliverStaleLazyRenditions {
 
         // wait for rendition completion
         waitForAsyncCompletion();
+
+        // ask for the latest rendition: up-to-date and stored
+        checkUpToDateRendition(true);
+    }
+
+    // NXP-27567
+    @Test
+    public void testOnlyConsiderRenditionUpToDateIfBlobsArePutInTransientStore() throws IOException,
+            InterruptedException {
+        // ask for the initial rendition: up-to-date and stored
+        checkInitialRendition(true);
+
+        // get source document modification date transient store parameter
+        RenditionDefinition renditionDefinition = new RenditionDefinition();
+        renditionDefinition.setName("lazyAutomation");
+        AutomationLazyRenditionProvider lazyRenditionProvider = new AutomationLazyRenditionProvider();
+        String renditionKey = lazyRenditionProvider.buildRenditionKey(doc, renditionDefinition);
+        TransientStore transientStore = transientStoreService.getStore(CACHE_NAME);
+        String tsSourceDocumentModificationDate = (String) transientStore.getParameter(renditionKey,
+                SOURCE_DOCUMENT_MODIFICATION_DATE_KEY);
+
+        // ask for an intermediate rendition without waiting for its completion: stale and not stored
+        checkStaleRendition(true, false);
+
+        // wait for source document modification date transient store parameter to be updated,
+        // after which the rendition blobs should be put in the transient store
+        String key;
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+        do {
+            key = (String) transientStore.getParameter(renditionKey, SOURCE_DOCUMENT_MODIFICATION_DATE_KEY);
+            // avoid hogging the CPU
+            Thread.sleep(1);
+        } while (tsSourceDocumentModificationDate.equals(key) && (System.nanoTime() - deadline < 0));
 
         // ask for the latest rendition: up-to-date and stored
         checkUpToDateRendition(true);

@@ -162,11 +162,23 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore(getTransientStoreName());
 
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("BEGIN - Putting blobs for transient store entry with key: %s", key));
+        }
+        ts.putBlobs(key, blobs);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("END - Putting blobs for transient store entry with key: %s", key));
+        }
+
         if (sourceDocumentModificationDate != null) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Updating source document modification date parameter to: %s for transient store entry with key: %s",
+                        sourceDocumentModificationDate, key));
+            }
             ts.putParameter(key, AbstractLazyCachableRenditionProvider.SOURCE_DOCUMENT_MODIFICATION_DATE_KEY,
                     sourceDocumentModificationDate);
         }
-        ts.putBlobs(key, blobs);
         ts.setCompleted(key, true);
     }
 
