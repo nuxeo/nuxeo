@@ -203,6 +203,8 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
             assertEquals(CONTENT, toString(stream2));
         }
         // and it's still in the first binary manager
+        // disable cache to fetch the binary from the S3 bucket
+        binaryManager.fileCache.clear();
         binary = binaryManager.getBinary(CONTENT_MD5);
         try (InputStream stream = binary.getStream()) {
             assertNotNull(stream);

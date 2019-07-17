@@ -546,7 +546,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
             } else {
                 sseAlgorithm = null;
             }
-            S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, sseAlgorithm, true);
+            S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, sseAlgorithm, false);
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
                 log.debug("copied blob " + sourceKey + " to " + key + " in " + dtms + "ms");
