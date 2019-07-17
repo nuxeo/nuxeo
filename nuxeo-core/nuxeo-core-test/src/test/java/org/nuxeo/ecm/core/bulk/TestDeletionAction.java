@@ -21,12 +21,9 @@ package org.nuxeo.ecm.core.bulk;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.test.DocumentSetRepositoryInit.CREATED_TOTAL;
-
-import java.time.Duration;
 
 import javax.inject.Inject;
 
@@ -44,6 +41,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 11.1
@@ -58,13 +56,16 @@ public class TestDeletionAction {
     protected CoreFeature coreFeature;
 
     @Inject
+    protected TransactionalFeature txFeature;
+
+    @Inject
     protected BulkService service;
 
     @Inject
     protected CoreSession session;
 
     @Test
-    public void testAction() throws Exception {
+    public void testAction() {
 
         assumeTrue("Ignored for VCS", coreFeature.getStorageConfiguration().isDBS());
 
@@ -76,7 +77,7 @@ public class TestDeletionAction {
                 session.getPrincipal().getName()).repository(session.getRepositoryName()).build();
         String commandId = service.submit(command);
 
-        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(600)));
+        txFeature.nextTransaction();
 
         BulkStatus status = service.getStatus(commandId);
         assertNotNull(status);
