@@ -499,9 +499,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
         try {
             if (sourceMetadata.getContentLength() > NON_MULTIPART_COPY_MAX_SIZE) {
-                S3Utils.copyFileMultipart(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
+                S3Utils.copyFileMultipart(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, false);
             } else {
-                S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, true);
+                S3Utils.copyFile(amazonS3, sourceMetadata, sourceBucketName, sourceKey, bucketName, key, false);
             }
             if (log.isDebugEnabled()) {
                 long dtms = System.currentTimeMillis() - t0;
