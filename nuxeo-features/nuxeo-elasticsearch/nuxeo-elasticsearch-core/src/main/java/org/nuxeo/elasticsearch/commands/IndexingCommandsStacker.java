@@ -145,11 +145,13 @@ public abstract class IndexingCommandsStacker {
             type = Type.UPDATE;
             break;
         case ABOUT_TO_CHECKIN:
-            DocumentModelList versions = doc.getCoreSession().query("SELECT * FROM " + doc.getType()
-                    + " WHERE (ecm:isLatestMajorVersion = 1 OR ecm:isLatestVersion = 1) AND ecm:versionVersionableId= '"
-                    + doc.getId() + "'");
-            for (DocumentModel version : versions) {
-                stackCommand(version, BEFORE_DOC_UPDATE, false);
+            if (indexIsLatestVersion()) {
+                DocumentModelList versions = doc.getCoreSession().query("SELECT * FROM " + doc.getType()
+                        + " WHERE (ecm:isLatestMajorVersion = 1 OR ecm:isLatestVersion = 1) AND ecm:versionVersionableId= '"
+                        + doc.getId() + "'");
+                for (DocumentModel version : versions) {
+                    stackCommand(version, BEFORE_DOC_UPDATE, false);
+                }
             }
             type = Type.UPDATE;
             break;

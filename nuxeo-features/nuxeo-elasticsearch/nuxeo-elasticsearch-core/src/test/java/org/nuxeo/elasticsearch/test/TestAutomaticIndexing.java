@@ -826,10 +826,10 @@ public class TestAutomaticIndexing {
 
         // but isLatestVersion and isLatestMajorVersion are not updated
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestVersion = 1"));
-        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals(3, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE ecm:isLatestMajorVersion = 1"));
-        Assert.assertEquals(1, ret.totalSize());
+        Assert.assertEquals(3, ret.totalSize());
 
     }
 
