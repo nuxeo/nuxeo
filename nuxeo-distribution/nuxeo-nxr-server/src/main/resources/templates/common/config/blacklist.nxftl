@@ -7,5 +7,9 @@ org.nuxeo.ecm.platform.audit.PageProviderservice.es.contrib
 org.nuxeo.ecm.platform.audit.search.contrib
 org.nuxeo.admin.audit.es.contentView.contrib
 org.nuxeo.ecm.multi.tenant.content.views.es
+org.nuxeo.drive.elasticsearch.adapters
+org.nuxeo.drive.elasticsearch.automation.server.bindings
+org.nuxeo.drive.elasticsearch.change.finder
+org.nuxeo.drive.elasticsearch.operations
 </#if>
 </#escape>
