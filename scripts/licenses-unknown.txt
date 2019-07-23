@@ -58,4 +58,4 @@
      (AL 2.0) metrics3-statsd (com.readytalk:metrics3-statsd:4.2.0 - https://github.com/ReadyTalk/metrics-statsd)
      (AL 2.0) kafka-avro-serializer (io.confluent:kafka-avro-serializer:5.0.0 - https://github.com/confluentinc/schema-registry)
      (AL 2.0) kafka-schema-registry-client (io.confluent:kafka-schema-registry-client:5.0.0 - https://github.com/confluentinc/schema-registry)
-     (AL 2.0) html (org.cyberneko:html:jar:1.9.8 - http://nekohtml.sourceforge.net/)
+     (AL 2.0) html (org.cyberneko:html:1.9.8 - http://nekohtml.sourceforge.net/)
