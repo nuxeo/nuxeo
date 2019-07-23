@@ -1227,19 +1227,18 @@ public class TestSQLBackend extends SQLBackendTestCase {
                              .getTransaction()
                              .enlistResource(((SessionImpl) session1).getXAResource());
             node1.setSimpleProperty("tst:title", "t1");
-            Transaction tx1 = TransactionHelper.suspendTransaction();
-            try {
+            TransactionHelper.runWithoutTransaction(() -> {
                 try {
                     TransactionHelper.lookupTransactionManager()
                                      .getTransaction()
                                      .enlistResource(((SessionImpl) session2).getXAResource());
                     foo2.getSimpleProperty("tst:title");
+                } catch (SystemException | RollbackException | NamingException e) {
+                    throw new RuntimeException(e);
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
-            } finally {
-                TransactionHelper.resumeTransaction(tx1);
-            }
+            });
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }

@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.Transaction;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -399,44 +397,21 @@ public class RelationService extends DefaultComponent implements RelationManager
             // RepositoryService failed to start, no need to go further
             return;
         }
-        Transaction tx = TransactionHelper.suspendTransaction();
-        try {
-            log.info("Relation Service initialization");
-
-            // init jena Graph outside of Tx
-            for (String graphName : graphDescriptions.keySet()) {
-                GraphDescription desc = graphDescriptions.get(graphName);
-                if (desc.getGraphType().equalsIgnoreCase("jena")) {
-                    log.info("create RDF Graph " + graphName);
+        log.info("Relation Service initialization");
+        for (String graphName : graphDescriptions.keySet()) {
+            GraphDescription desc = graphDescriptions.get(graphName);
+            log.info("create RDF Graph " + graphName);
+            if (desc.getGraphType().equalsIgnoreCase("jena")) {
+                // init jena Graph outside of Tx
+                TransactionHelper.runWithoutTransaction(() -> {
                     Graph graph = getGraphByName(graphName);
                     graph.size();
-                }
-            }
-        } finally {
-            TransactionHelper.resumeTransaction(tx);
-        }
-
-        // init non jena Graph inside a Tx
-        if (tx == null) {
-            TransactionHelper.startTransaction();
-        }
-        boolean txErrors = true;
-        try {
-            for (String graphName : graphDescriptions.keySet()) {
-                GraphDescription desc = graphDescriptions.get(graphName);
-                if (!desc.getGraphType().equalsIgnoreCase("jena")) {
-                    log.info("create RDF Graph " + graphName);
+                });
+            } else {
+                TransactionHelper.runInTransaction(() -> {
                     Graph graph = getGraphByName(graphName);
                     graph.size();
-                }
-            }
-            txErrors = false;
-        } finally {
-            if (txErrors) {
-                TransactionHelper.setTransactionRollbackOnly();
-            }
-            if (tx == null) {
-                TransactionHelper.commitOrRollbackTransaction();
+                });
             }
         }
     }

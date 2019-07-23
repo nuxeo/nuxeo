@@ -252,7 +252,11 @@ public class TransactionHelper {
      * @return the suspended transaction or null
      * @throws TransactionRuntimeException
      * @since 5.6
+     * @deprecated since 11.1, as not all backends (transaction resource managers) allow suspending the transaction or
+     *             transaction interleaving, instead use {@link #runInNewTransaction} or {@link #runWithoutTransaction}
+     *             explicitly
      */
+    @Deprecated(since = "11.1")
     public static Transaction requireNewTransaction() {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm == null) {
@@ -270,6 +274,15 @@ public class TransactionHelper {
         }
     }
 
+    /**
+     * Suspends the current transaction and returns
+     *
+     * @return the suspended transaction or null
+     * @deprecated since 11.1, as not all backends (transaction resource managers) allow suspending the transaction or
+     *             transaction interleaving, instead use {@link #runInNewTransaction} or {@link #runWithoutTransaction}
+     *             explicitly
+     */
+    @Deprecated(since = "11.1")
     public static Transaction suspendTransaction() {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
         if (tm == null) {
@@ -290,6 +303,9 @@ public class TransactionHelper {
      * Commit the current transaction if active and resume the principal transaction
      *
      * @param tx
+     * @deprecated since 11.1, as not all backends (transaction resource managers) allow suspending the transaction or
+     *             transaction interleaving, instead use {@link #runInNewTransaction} or {@link #runWithoutTransaction}
+     *             explicitly
      */
     public static void resumeTransaction(Transaction tx) {
         TransactionManager tm = NuxeoContainer.getTransactionManager();
