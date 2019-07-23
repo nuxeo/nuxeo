@@ -155,12 +155,7 @@ public class HibernateConfiguration implements EntityManagerFactoryProvider {
     // because SchemaUpdate tries to setAutoCommit(true)
     // so we use a new thread
     protected EntityManagerFactory createEntityManagerFactory(final Map<String, String> properties) {
-        Transaction tx = TransactionHelper.suspendTransaction();
-        try {
-            return cfg.createEntityManagerFactory(properties);
-        } finally {
-                TransactionHelper.resumeTransaction(tx);
-        }
+        return TransactionHelper.runWithoutTransaction(() -> cfg.createEntityManagerFactory(properties));
     }
 
     /**
