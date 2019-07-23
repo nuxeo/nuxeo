@@ -23,6 +23,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import javax.naming.NamingException;
@@ -60,6 +63,13 @@ public class TransactionHelper {
             throw new ExceptionInInitializerError(e);
         }
     }
+
+    /**
+     * Thread pool used to execute code in a separate transactional context.
+     *
+     * @since 11.1
+     */
+    protected static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     private TransactionHelper() {
         // utility class
@@ -520,8 +530,7 @@ public class TransactionHelper {
     }
 
     /**
-     * Runs the given {@link Runnable} without a  transactional context. Will suspend and restore the transaction if one already
-     * exists.
+     * Runs the given {@link Runnable} without a transactional context.
      *
      * @param runnable the {@link Runnable}
      * @since 9.1
@@ -532,24 +541,18 @@ public class TransactionHelper {
 
 
     /**
-     * Calls the given {@link Supplier} without a transactional context. Will suspend and restore the transaction if one already
-     * exists.
+     * Calls the given {@link Supplier} without a transactional context.
      *
      * @param supplier the {@link Supplier}
+     * @return the supplier's result
      * @since 9.1
      */
     public static <R> R runWithoutTransaction(Supplier<R> supplier) {
-        Transaction tx = suspendTransaction();
-        try {
-            return supplier.get();
-        } finally {
-            resumeTransaction(tx);
-        }
+        return runWithoutTransactionInternal(() -> runAndCleanupTransactionContext(supplier));
     }
 
     /**
-     * Runs the given {@link Runnable} in a new transactional context. Will suspend and restore the transaction if one already
-     * exists.
+     * Runs the given {@link Runnable} in a new transactional context.
      *
      * @param runnable the {@link Runnable}
      * @since 9.1
@@ -559,19 +562,14 @@ public class TransactionHelper {
     }
 
     /**
-     * Calls the given {@link Supplier} in a new transactional context. Will suspend and restore the transaction if one already
-     * exists.
+     * Calls the given {@link Supplier} in a new transactional context.
      *
      * @param supplier the {@link Supplier}
+     * @return the supplier's result
      * @since 9.1
      */
     public static <R> R runInNewTransaction(Supplier<R> supplier) {
-        Transaction tx = suspendTransaction();
-        try {
-            return runInTransaction(supplier);
-        } finally {
-            resumeTransaction(tx);
-        }
+        return runWithoutTransaction(() -> runInTransaction(supplier));
     }
 
     /**
@@ -613,6 +611,57 @@ public class TransactionHelper {
             } finally {
                 if (startTransaction) {
                     commitOrRollbackTransaction();
+                }
+            }
+        }
+    }
+
+    /**
+     * Calls the given {@link Supplier} in a context without a transaction. The supplier must do its own transactional
+     * cleanup to restore the thread to a pristine state.
+     *
+     * @param supplier the {@link Supplier}
+     * @return the supplier's result
+     * @since 11.1
+     */
+    protected static <R> R runWithoutTransactionInternal(Supplier<R> supplier) {
+        // if there is already no transaction, run in this thread
+        if (isNoTransaction()) {
+            return supplier.get();
+        }
+        // otherwise use a separate thread to get a separate transactional context
+        try {
+            return EXECUTOR.submit(() -> supplier.get()).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restore interrupted status
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else {
+                throw new RuntimeException(cause);
+            }
+        }
+    }
+
+    /**
+     * Calls the given {@link Supplier} and cleans up the transaction context afterwards.
+     *
+     * @param supplier the {@link Supplier}
+     * @return the supplier's result
+     * @since 11.1
+     */
+    protected static <R> R runAndCleanupTransactionContext(Supplier<R> supplier) {
+        try {
+            return supplier.get();
+        } finally {
+            if (!isNoTransaction()) {
+                // restore the no-transaction context of this thread
+                try {
+                    commitOrRollbackTransaction();
+                } catch (TransactionRuntimeException e) {
+                    log.error("Failed to commit/rollback", e);
                 }
             }
         }
