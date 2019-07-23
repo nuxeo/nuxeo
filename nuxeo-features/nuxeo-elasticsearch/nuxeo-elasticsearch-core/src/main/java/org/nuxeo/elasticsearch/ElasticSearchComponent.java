@@ -37,8 +37,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.transaction.Transaction;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.bytes.BytesReference;
@@ -474,18 +472,12 @@ public class ElasticSearchComponent extends DefaultComponent
         if (syncCommands.isEmpty()) {
             return;
         }
-        Transaction transaction = TransactionHelper.suspendTransaction();
-        try {
+        TransactionHelper.runWithoutTransaction(() -> {
             for (String repositoryName : syncCommands.keySet()) {
                 IndexingWorker idxWork = new IndexingWorker(repositoryName, syncCommands.get(repositoryName));
                 idxWork.run();
             }
-        } finally {
-            if (transaction != null) {
-                TransactionHelper.resumeTransaction(transaction);
-            }
-
-        }
+        });
     }
 
     @Override
