@@ -59,7 +59,7 @@ public class CanDetectTransactionLeakTest {
         @Test
         public void leakATransaction() {
             Executors.newSingleThreadExecutor().execute(() -> {
-                TransactionHelper.requireNewTransaction();
+                TransactionHelper.startTransaction();
             });
         }
     }

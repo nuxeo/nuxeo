@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.Transaction;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.PrimitiveArrays;
@@ -1469,21 +1467,20 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @see org.nuxeo.ecm.core.event.EventContext
      * @since 7.10
      */
+    // exact method signature needed for the Serializable mechanism to find it
     private Object writeReplace() throws ObjectStreamException {
         if (!TransactionHelper.isTransactionActive()) { // protect from no transaction
-            Transaction tx = TransactionHelper.suspendTransaction();
-            try {
-                TransactionHelper.startTransaction();
+            Object res = TransactionHelper.runInNewTransaction(() -> {
                 try {
                     return writeReplace();
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
+                } catch (ObjectStreamException e) {
+                    return e;
                 }
-            } finally {
-                if (tx != null) {
-                    TransactionHelper.resumeTransaction(tx);
-                }
+            });
+            if (res instanceof ObjectStreamException) {
+                throw (ObjectStreamException) res;
             }
+            return res;
         }
         if (isDirty()) {
             return this;
