@@ -146,9 +146,10 @@ public abstract class IndexingCommandsStacker {
             break;
         case ABOUT_TO_CHECKIN:
             if (indexIsLatestVersion()) {
-                DocumentModelList versions = doc.getCoreSession().query("SELECT * FROM " + doc.getType()
-                        + " WHERE (ecm:isLatestMajorVersion = 1 OR ecm:isLatestVersion = 1) AND ecm:versionVersionableId= '"
-                        + doc.getId() + "'");
+                String query = String.format(
+                        "SELECT * FROM %s WHERE (ecm:isLatestMajorVersion = 1 OR ecm:isLatestVersion = 1) AND ecm:versionVersionableId= '%s'",
+                        doc.getType(), doc.getId());
+                DocumentModelList versions = doc.getCoreSession().query(query);
                 for (DocumentModel version : versions) {
                     stackCommand(version, BEFORE_DOC_UPDATE, false);
                 }
