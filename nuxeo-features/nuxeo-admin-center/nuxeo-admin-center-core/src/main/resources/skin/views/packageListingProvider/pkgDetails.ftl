@@ -73,21 +73,6 @@
             </#if>
           </td>
       </tr>
-      <tr>
-        <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.production')}</span></td>
-        <td class="packageField"> ${Context.getMessage('label.productionState.'+pkg.productionState)}</td>
-      </tr><tr>
-        <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.certification')}</span></td>
-        <td class="packageField"> ${Context.getMessage('label.validationState.'+pkg.validationState)}</td>
-      <tr>
-        <td><span class="boldLabel">${Context.getMessage('label.pkgDetails.titles.support')}</span></td>
-        <td class="packageField"><#if pkg.isSupported()>
-             ${Context.getMessage('label.pkgDetails.titles.package.issupported.yes')}
-          <#else>
-             ${Context.getMessage('label.pkgDetails.titles.package.issupported.no')}
-          </#if>
-        </td>
-      </tr>
     </table>
         </span>
       </td>
