@@ -61,7 +61,6 @@ Ant usage: `ant package`
  * nuxeo-server-tomcat: Package Nuxeo Server with Tomcat
  * nuxeo-wizard-tests: WebDriver tests on Startup Wizard
  * nuxeo-server-cmis-tests: CMIS tests on Nuxeo Server
- * nuxeo-jsf-ui-funkload-tests: Funkload tests and bench on Nuxeo JSF UI
  * nuxeo-jsf-ui-gatling-tests: Gatling bench on Nuxeo JSF UI
  * nuxeo-jsf-ui-webdriver-tests: WebDriver functional tests on Nuxeo JSF UI
  * nuxeo-marketplace-dm: Transitional package for DM
