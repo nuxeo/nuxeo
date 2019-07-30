@@ -56,7 +56,7 @@ pipeline {
           ----------------------------------------"""
           withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
             echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -Pdistrib -DskipTests install'
+            sh 'mvn -B -nsu -T0.8C -DskipTests install'
           }
         }
       }
@@ -114,6 +114,29 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'FAILURE')
+        }
+      }
+    }
+    stage('Package') {
+      steps {
+        setGitHubBuildStatus('platform/package', 'Package', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Package
+          ----------------------------------------"""
+          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+            echo "MAVEN_OPTS=$MAVEN_OPTS"
+            sh 'mvn -B -nsu -T0.8C -f nuxeo-distribution/pom.xml -DskipTests install'
+          }
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('platform/package', 'Package', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/package', 'Package', 'FAILURE')
         }
       }
     }
