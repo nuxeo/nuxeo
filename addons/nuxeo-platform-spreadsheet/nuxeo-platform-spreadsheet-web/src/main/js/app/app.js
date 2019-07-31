@@ -151,7 +151,7 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
     }
 
     // Add sort infos
-    if (cv.sortInfos) {
+    if (cv.sortInfos && cv.sortInfos.length > 0) {
       sheet.sortInfos = cv.sortInfos;
     }
 
