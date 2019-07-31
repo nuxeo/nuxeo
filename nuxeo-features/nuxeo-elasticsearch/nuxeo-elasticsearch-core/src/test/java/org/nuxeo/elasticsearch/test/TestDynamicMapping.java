@@ -68,11 +68,10 @@ public class TestDynamicMapping extends TestMapping {
         waitForIndexing();
         // automatic versioning system check in all notes after an update
         // 3 commands processed:
-        // - update of version - stacker stacks UPDATE command when document is checkined -> UPDATE on version
         // - creation of version - automatically done by versioning system at creation step -> UPDATE on note
         // - creation of version - automatically done by versioning system -> INSERT on version
         // - creation of note -> INSERT on note
-        assertNumberOfCommandProcessed(4);
+        assertNumberOfCommandProcessed(3);
 
         startTransaction();
         // check that the custom mapping applied

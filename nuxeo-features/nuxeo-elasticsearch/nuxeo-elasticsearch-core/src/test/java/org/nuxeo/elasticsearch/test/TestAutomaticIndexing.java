@@ -452,7 +452,7 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        assertNumberOfCommandProcessed(5);
+        assertNumberOfCommandProcessed(4);
 
         startTransaction();
         SearchResponse searchResponse = searchAll();
@@ -763,8 +763,8 @@ public class TestAutomaticIndexing {
 
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
-        // 3 docs (2 files + 1 folder checkout) + 2 versions of folder + 2 versions (because of isLastVersions)
-        assertNumberOfCommandProcessed(7);
+        // 3 docs (2 files + 1 folder checkout) + 2 versions of folder
+        assertNumberOfCommandProcessed(5);
         startTransaction();
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
         Assert.assertEquals(5, ret.totalSize());
@@ -799,6 +799,9 @@ public class TestAutomaticIndexing {
         Assert.assertEquals(3, ret.totalSize());
     }
 
+    /**
+     * This test should be disabled now that we have an efficient way to reindex previous latest versions
+     */
     @Test
     public void shouldNotIndexLatestVersions() throws Exception {
         System.setProperty(AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY, "true");
