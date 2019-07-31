@@ -142,6 +142,7 @@
     <pdfbox.version>1.8.16</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
     <aws.version>1.11.516</aws.version>
+    <gcp.version>1.76.0</gcp.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
     <jackson.version>2.9.9</jackson.version>
@@ -1723,6 +1724,11 @@
       <dependency>
         <groupId>org.nuxeo.ecm.core</groupId>
         <artifactId>nuxeo-core-binarymanager-azure</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.core</groupId>
+        <artifactId>nuxeo-core-binarymanager-gcp</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
@@ -4557,7 +4563,11 @@
         <artifactId>jclouds-allblobstore</artifactId>
         <version>${jclouds.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-storage</artifactId>
+        <version>${gcp.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.microsoft.azure</groupId>
         <artifactId>azure-storage</artifactId>
