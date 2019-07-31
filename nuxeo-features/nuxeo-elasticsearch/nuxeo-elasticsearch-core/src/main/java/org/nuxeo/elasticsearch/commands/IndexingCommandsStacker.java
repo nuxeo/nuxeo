@@ -19,6 +19,7 @@
  */
 package org.nuxeo.elasticsearch.commands;
 
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ABOUT_TO_CHECKIN;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BEFORE_DOC_UPDATE;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CHECKEDIN;
@@ -41,7 +42,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractSession;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -130,6 +130,7 @@ public abstract class IndexingCommandsStacker {
             recurse = isFolderish(doc);
             break;
         case BEFORE_DOC_UPDATE:
+        case DOCUMENT_CHECKEDIN:
         case DOCUMENT_CHECKEDOUT:
         case BINARYTEXT_UPDATED:
         case DOCUMENT_TAG_UPDATED:
@@ -143,15 +144,14 @@ public abstract class IndexingCommandsStacker {
             }
             type = Type.UPDATE;
             break;
-        case DOCUMENT_CHECKEDIN:
+        case ABOUT_TO_CHECKIN:
             if (indexIsLatestVersion()) {
-                CoreSession session = doc.getCoreSession();
-                if (session != null) {
-                    // The previous doc version with isLastestVersion and isLatestMajorVersion need to be updated
-                    // Here we have no way to get this exact doc version so we reindex all versions
-                    for (DocumentModel version : doc.getCoreSession().getVersions(doc.getRef())) {
-                        stackCommand(version, BEFORE_DOC_UPDATE, false);
-                    }
+                String query = String.format(
+                        "SELECT * FROM %s WHERE (ecm:isLatestMajorVersion = 1 OR ecm:isLatestVersion = 1) AND ecm:versionVersionableId= '%s'",
+                        doc.getType(), doc.getId());
+                DocumentModelList versions = doc.getCoreSession().query(query);
+                for (DocumentModel version : versions) {
+                    stackCommand(version, BEFORE_DOC_UPDATE, false);
                 }
             }
             type = Type.UPDATE;
