@@ -19,6 +19,7 @@ bin
 *.iws
 *.ids
 .pydevproject
+.factorypath
 
 # build artifacts
 target/
