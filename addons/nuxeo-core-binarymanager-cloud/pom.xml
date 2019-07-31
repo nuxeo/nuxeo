@@ -17,6 +17,7 @@
     <module>nuxeo-core-binarymanager-s3-web-ui</module>
     <module>nuxeo-core-binarymanager-azure</module>
     <module>nuxeo-core-binarymanager-jclouds</module>
+    <module>nuxeo-core-binarymanager-gcp</module>
   </modules>
 
   <repositories>
