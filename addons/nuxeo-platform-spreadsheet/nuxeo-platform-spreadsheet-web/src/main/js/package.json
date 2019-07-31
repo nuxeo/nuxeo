@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
+    "browser-sync": "^2.26.7",
     "del": "^0.1.3",
     "gulp": "^3.8.7",
     "gulp-bower-files": "^0.2.1",
@@ -21,6 +22,7 @@
     "jshint-stylish": "^0.2.0",
     "merge-stream": "^0.1.6",
     "opn": "^0.1.1",
+    "proxy-middleware": "^0.15.0",
     "run-sequence": "^1.0.1",
     "traceur": "^0.0.72"
   },
