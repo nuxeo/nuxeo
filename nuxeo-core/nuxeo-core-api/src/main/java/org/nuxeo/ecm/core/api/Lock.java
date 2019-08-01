@@ -20,6 +20,10 @@ package org.nuxeo.ecm.core.api;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Objects;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
  * Information about a lock set on a document.
@@ -77,4 +81,27 @@ public class Lock implements Serializable {
         return failed;
     }
 
+    /**
+     * @since 11.1
+     */
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(owner, created, failed);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }
