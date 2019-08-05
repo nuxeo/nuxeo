@@ -135,10 +135,7 @@ public class XSDLoader {
         this.sd = sd;
     }
 
-    /**
-     * @deprecated since 10.2, seems unused
-     */
-    @Deprecated
+    // used by Studio, do not remove
     public XSDLoader(SchemaManagerImpl schemaManager, boolean collectReferencedXSD) {
         this.schemaManager = schemaManager;
         this.collectReferencedXSD = collectReferencedXSD;
@@ -898,10 +895,7 @@ public class XSDLoader {
         }
     }
 
-    /**
-     * @deprecated since 10.2, seems unused
-     */
-    @Deprecated
+    // used by Studio, do not remove
     public List<String> getReferencedXSD() {
         return referencedXSD;
     }
