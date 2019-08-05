@@ -40,8 +40,6 @@ import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.transaction.Transaction;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -306,117 +304,122 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
         flush();
         watch.stop("flush");
 
-        // Suspend current transaction
-        BundleException exc = TransactionHelper.runWithoutTransaction(() -> {
-            try {
-                // Stop or Standby the component manager
-                ComponentManager componentManager = Framework.getRuntime().getComponentManager();
-                String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
-                log.info("Component reload strategy={}", reloadStrategy);
+        // Commit current transaction
+        if (TransactionHelper.isTransactionMarkedRollback()) {
+            throw new BundleException("Cannot reload bundles when transaction is marked rollback");
+        }
+        boolean activeTransaction = TransactionHelper.isTransactionActive();
+        if (activeTransaction) {
+            TransactionHelper.commitOrRollbackTransaction();
+        }
 
-                watch.start("stop/standby");
-                log.info("Before stop/standby component manager");
-                if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
-                    componentManager.stop();
-                } else {
-                    // standby strategy by default
-                    componentManager.standby();
-                }
-                log.info("After stop/standby component manager");
-                watch.stop("stop/standby");
+        try {
+            // Stop or Standby the component manager
+            ComponentManager componentManager = Framework.getRuntime().getComponentManager();
+            String reloadStrategy = Framework.getProperty(RELOAD_STRATEGY_PARAMETER, RELOAD_STRATEGY_VALUE_DEFAULT);
+            log.info("Component reload strategy={}", reloadStrategy);
 
-                // Undeploy bundles
-                if (!bundlesNamesToUndeploy.isEmpty()) {
-                    watch.start("undeploy-bundles");
-                    log.info("Before undeploy bundles");
-                    logComponentManagerStatus();
-
-                    result.merge(_undeployBundles(bundlesNamesToUndeploy));
-                    clearJarFileFactoryCache(result);
-                    componentManager.unstash();
-
-                    // Clear the class loader
-                    classLoader.ifPresent(DevMutableClassLoader::clearPreviousClassLoader);
-                    // TODO shall we do a GC here ? see DevFrameworkBootstrap#clearClassLoader
-
-                    log.info("After undeploy bundles");
-                    logComponentManagerStatus();
-                    watch.stop("undeploy-bundles");
-                }
-
-                watch.start("delete-copy");
-                // Delete old bundles
-                log.info("Before delete-copy");
-                List<URL> urlsToRemove = result.undeployedBundles.stream()
-                                                                 .map(Bundle::getLocation)
-                                                                 .map(File::new)
-                                                                 .peek(File::delete)
-                                                                 .map(this::toURL)
-                                                                 .collect(Collectors.toList());
-                // Then copy new ones
-                List<File> bundlesToDeploy = copyBundlesToDeploy(context);
-                List<URL> urlsToAdd = bundlesToDeploy.stream().map(this::toURL).collect(Collectors.toList());
-                log.info("After delete-copy");
-                watch.stop("delete-copy");
-
-                // Reload resources
-                watch.start("reload-resources");
-                Framework.reloadResourceLoader(urlsToAdd, urlsToRemove);
-                watch.stop("reload-resources");
-
-                // Deploy bundles
-                if (!bundlesToDeploy.isEmpty()) {
-                    watch.start("deploy-bundles");
-                    log.info("Before deploy bundles");
-                    logComponentManagerStatus();
-
-                    // Fill the class loader
-                    classLoader.ifPresent(cl -> cl.addClassLoader(urlsToAdd.toArray(new URL[0])));
-
-                    result.merge(_deployBundles(bundlesToDeploy));
-                    componentManager.unstash();
-
-                    log.info("After deploy bundles");
-                    logComponentManagerStatus();
-                    watch.stop("deploy-bundles");
-                }
-
-                // Start or Resume the component manager
-                watch.start("start/resume");
-                log.info("Before start/resume component manager");
-                if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
-                    componentManager.start();
-                } else {
-                    // standby strategy by default
-                    componentManager.resume();
-                }
-                log.info("After start/resume component manager");
-                watch.stop("start/resume");
-
-                try {
-                    // run deployment preprocessor
-                    watch.start("deployment-preprocessor");
-                    runDeploymentPreprocessor();
-                    watch.stop("deployment-preprocessor");
-                } catch (IOException e) {
-                    throw new BundleException("Unable to run deployment preprocessor", e);
-                }
-
-                try {
-                    // reload
-                    watch.start("reload-properties");
-                    reloadProperties();
-                    watch.stop("reload-properties");
-                } catch (IOException e) {
-                    throw new BundleException("Unable to reload properties", e);
-                }
-                return null;
-            } catch (BundleException e) {
-                return e;
+            watch.start("stop/standby");
+            log.info("Before stop/standby component manager");
+            if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
+                componentManager.stop();
+            } else {
+                // standby strategy by default
+                componentManager.standby();
             }
-        });
-        if (exc != null) {
-            throw exc;
+            log.info("After stop/standby component manager");
+            watch.stop("stop/standby");
+
+            // Undeploy bundles
+            if (!bundlesNamesToUndeploy.isEmpty()) {
+                watch.start("undeploy-bundles");
+                log.info("Before undeploy bundles");
+                logComponentManagerStatus();
+
+                result.merge(_undeployBundles(bundlesNamesToUndeploy));
+                clearJarFileFactoryCache(result);
+                componentManager.unstash();
+
+                // Clear the class loader
+                classLoader.ifPresent(DevMutableClassLoader::clearPreviousClassLoader);
+                // TODO shall we do a GC here ? see DevFrameworkBootstrap#clearClassLoader
+
+                log.info("After undeploy bundles");
+                logComponentManagerStatus();
+                watch.stop("undeploy-bundles");
+            }
+
+            watch.start("delete-copy");
+            // Delete old bundles
+            log.info("Before delete-copy");
+            List<URL> urlsToRemove = result.undeployedBundles.stream()
+                                                             .map(Bundle::getLocation)
+                                                             .map(File::new)
+                                                             .peek(File::delete)
+                                                             .map(this::toURL)
+                                                             .collect(Collectors.toList());
+            // Then copy new ones
+            List<File> bundlesToDeploy = copyBundlesToDeploy(context);
+            List<URL> urlsToAdd = bundlesToDeploy.stream().map(this::toURL).collect(Collectors.toList());
+            log.info("After delete-copy");
+            watch.stop("delete-copy");
+
+            // Reload resources
+            watch.start("reload-resources");
+            Framework.reloadResourceLoader(urlsToAdd, urlsToRemove);
+            watch.stop("reload-resources");
+
+            // Deploy bundles
+            if (!bundlesToDeploy.isEmpty()) {
+                watch.start("deploy-bundles");
+                log.info("Before deploy bundles");
+                logComponentManagerStatus();
+
+                // Fill the class loader
+                classLoader.ifPresent(cl -> cl.addClassLoader(urlsToAdd.toArray(new URL[0])));
+
+                result.merge(_deployBundles(bundlesToDeploy));
+                componentManager.unstash();
+
+                log.info("After deploy bundles");
+                logComponentManagerStatus();
+                watch.stop("deploy-bundles");
+            }
+
+            // Start or Resume the component manager
+            watch.start("start/resume");
+            log.info("Before start/resume component manager");
+            if (RELOAD_STRATEGY_VALUE_RESTART.equals(reloadStrategy)) {
+                componentManager.start();
+            } else {
+                // standby strategy by default
+                componentManager.resume();
+            }
+            log.info("After start/resume component manager");
+            watch.stop("start/resume");
+
+            try {
+                // run deployment preprocessor
+                watch.start("deployment-preprocessor");
+                runDeploymentPreprocessor();
+                watch.stop("deployment-preprocessor");
+            } catch (IOException e) {
+                throw new BundleException("Unable to run deployment preprocessor", e);
+            }
+
+            try {
+                // reload
+                watch.start("reload-properties");
+                reloadProperties();
+                watch.stop("reload-properties");
+            } catch (IOException e) {
+                throw new BundleException("Unable to reload properties", e);
+            }
+        } finally {
+            if (activeTransaction) {
+                // Restart a transaction
+                TransactionHelper.startTransaction();
+            }
         }
 
         log.info(() -> {
