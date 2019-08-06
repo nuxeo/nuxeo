@@ -92,8 +92,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     protected final GlobalConfigDescriptor config = new GlobalConfigDescriptor();
 
-    protected static ConversionServiceImpl self;
-
     protected Thread gcThread;
 
     protected GCTask gcTask;
@@ -102,7 +100,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     public void activate(ComponentContext context) {
         converterDescriptors.clear();
         translationHelper.clear();
-        self = this;
         config.clearCachingDirectory();
     }
 
@@ -111,7 +108,6 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
         if (config.isCacheEnabled()) {
             ConversionCacheHolder.deleteCache();
         }
-        self = null;
         converterDescriptors.clear();
         translationHelper.clear();
     }
@@ -140,8 +136,12 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     /* Component API */
 
+    private static ConversionServiceImpl getConversionService() {
+        return (ConversionServiceImpl) Framework.getService(ConversionService.class);
+    }
+
     public static Converter getConverter(String converterName) {
-        ConverterDescriptor desc = self.converterDescriptors.get(converterName);
+        ConverterDescriptor desc = getConversionService().converterDescriptors.get(converterName);
         if (desc == null) {
             return null;
         }
@@ -149,19 +149,20 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     public static ConverterDescriptor getConverterDescriptor(String converterName) {
-        return self.converterDescriptors.get(converterName);
+        return getConversionService().converterDescriptors.get(converterName);
     }
 
     public static long getGCIntervalInMinutes() {
-        return self.config.getGCInterval();
+        return getConversionService().config.getGCInterval();
     }
 
     public static void setGCIntervalInMinutes(long interval) {
-        self.config.setGCInterval(interval);
+        getConversionService().config.setGCInterval(interval);
     }
 
     public static void registerConverter(ConverterDescriptor desc) {
 
+        ConversionServiceImpl self = getConversionService();
         if (self.converterDescriptors.containsKey(desc.getConverterName())) {
 
             ConverterDescriptor existing = self.converterDescriptors.get(desc.getConverterName());
@@ -173,19 +174,19 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     }
 
     public static int getMaxCacheSizeInKB() {
-        return self.config.getDiskCacheSize();
+        return getConversionService().config.getDiskCacheSize();
     }
 
     public static void setMaxCacheSizeInKB(int size) {
-        self.config.setDiskCacheSize(size);
+        getConversionService().config.setDiskCacheSize(size);
     }
 
     public static boolean isCacheEnabled() {
-        return self.config.isCacheEnabled();
+        return getConversionService().config.isCacheEnabled();
     }
 
     public static String getCacheBasePath() {
-        return self.config.getCachingDirectory();
+        return getConversionService().config.getCachingDirectory();
     }
 
     /* Service API */
