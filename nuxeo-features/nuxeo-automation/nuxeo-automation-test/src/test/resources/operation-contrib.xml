@@ -59,5 +59,29 @@
         }
       </script>
     </scriptedOperation>
+
+    <scriptedOperation id="javascript.testHtmlEscape">
+      <inputType>string</inputType>
+      <outputType>string</outputType>
+      <category>Scripting</category>
+      <script>
+        function run(input) {
+          var escaped = Fn.htmlEscape(input);
+          return escaped;
+        }
+      </script>
+    </scriptedOperation>
+
+    <scriptedOperation id="javascript.testNxqlEscape">
+      <inputType>string</inputType>
+      <outputType>string</outputType>
+      <category>Scripting</category>
+      <script>
+        function run(input) {
+          var escaped = Fn.nxqlEscape(input);
+          return escaped;
+        }
+      </script>
+    </scriptedOperation>
   </extension>
 </component>

@@ -178,7 +178,7 @@ public class PlatformFunctions extends CoreFunctions {
         return Long.toString(seq.getNextLong(key));
     }
 
-    public static String htmlEscape(String str) {
+    public String htmlEscape(String str) {
         return StringEscapeUtils.escapeHtml4(str);
     }
 
@@ -191,7 +191,7 @@ public class PlatformFunctions extends CoreFunctions {
      * @return the escaped string
      * @since 6.0-HF21, 7.10
      */
-    public static String nxqlEscape(String str) {
+    public String nxqlEscape(String str) {
         return NXQL.escapeStringInner(str);
     }
 
