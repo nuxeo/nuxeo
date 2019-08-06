@@ -107,4 +107,22 @@ public class TestRemoteAutomationScript {
         assertNotNull(doc);
 
     }
+
+    @Test
+    public void canCallHtmlEscapeViaJS() throws IOException {
+        String escaped = (String) session.newRequest("javascript.testHtmlEscape")
+                                         .setInput(" cou&cou ")
+                                         .execute();
+        assertNotNull(escaped);
+        assertEquals(" cou&amp;cou ", escaped);
+    }
+
+    @Test
+    public void canCallNxqlEscapeViaJS() throws IOException {
+        String escaped = (String) session.newRequest("javascript.testNxqlEscape")
+                .setInput(" \n ")
+                .execute();
+        assertNotNull(escaped);
+        assertEquals(" \\n ", escaped);
+    }
 }
