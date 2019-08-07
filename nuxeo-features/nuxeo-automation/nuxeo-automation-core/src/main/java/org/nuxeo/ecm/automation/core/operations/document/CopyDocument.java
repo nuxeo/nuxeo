@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -25,13 +29,14 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Operation(id = CopyDocument.ID, label = "Copy", category = Constants.CAT_DOCUMENT, description = "Copy the input document into the given Folderish. The name parameter will be used as the copy name otherwise if not specified the original name will be preserved. The target Folderish can be specified as an absolute or relative path (relative to the input document) as an UID or by using an EL expression. Return the newly created document (the copy). If the input document is a Folderish, all its content is copied recursively.")
+@Operation(id = CopyDocument.ID, label = "Copy", category = Constants.CAT_DOCUMENT, description = "Copy the input document into the given Folderish. The name parameter will be used as the copy name otherwise if not specified the original name will be preserved. The target Folderish can be specified as an absolute or relative path (relative to the input document) as an UID or by using an EL expression. Return the newly created document (the copy). The document is copied with its children recursively. The resetLifeCycle parameter allows to reset the life cycle of the copied document.")
 public class CopyDocument {
 
     public static final String ID = "Document.Copy";
@@ -45,21 +50,28 @@ public class CopyDocument {
     @Param(name = "name", required = false)
     protected String name;
 
+    /**
+     * @since 11.1
+     */
+    @Param(name = "resetLifeCycle", required = false)
+    protected boolean resetLifeCycle;
+
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         String n = name;
-        if (name == null || name.length() == 0) {
+        if (StringUtils.isEmpty(name)) {
             n = doc.getName();
         }
-        return session.copy(doc.getRef(), target, n);
+        List<CopyOption> options = new ArrayList<>();
+
+        if (resetLifeCycle) {
+            options.add(CopyOption.RESET_LIFE_CYCLE);
+        }
+        return session.copy(doc.getRef(), target, n, options.toArray(CopyOption[]::new));
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentRef ref) {
-        String n = name;
-        if (name == null || name.length() == 0) {
-            n = session.getDocument(ref).getName();
-        }
-        return session.copy(ref, target, n);
+        return run(session.getDocument(ref));
     }
 }
