@@ -2233,7 +2233,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         if (lock.getFailed()) {
             // lock removal failed due to owner check
-            throw new LockException("Document already locked by " + lock.getOwner() + ": " + docRef);
+            throw new LockException("Document already locked by " + lock.getOwner() + ": " + docRef, SC_CONFLICT);
         }
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<>();
