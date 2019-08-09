@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Funsho David
  *     Nuno Cunha <ncunha@nuxeo.com>
+ *     Nour AL KOTOB
  */
 
 package org.nuxeo.ecm.platform.comment.impl;
@@ -128,16 +129,15 @@ public abstract class AbstractCommentManager implements CommentManager {
     }
 
     protected void setFolderPermissions(CoreSession session, DocumentModel documentModel) {
-        ACP acp = new ACPImpl();
-        ACE grantAddChildren = new ACE("members", SecurityConstants.ADD_CHILDREN, true);
-        ACE grantRemoveChildren = new ACE("members", SecurityConstants.REMOVE_CHILDREN, true);
-        ACE grantRemove = new ACE("members", SecurityConstants.REMOVE, true);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { grantAddChildren, grantRemoveChildren, grantRemove });
-        acp.addACL(acl);
-        session.setACP(documentModel.getRef(), acp, true);
+        ACP acp = documentModel.getACP();
+        acp.blockInheritance(ACL.LOCAL_ACL, SecurityConstants.SYSTEM_USERNAME);
+        documentModel.setACP(acp, true);
     }
 
+    /**
+     * @deprecated since 10.10-HF12. Not used anymore
+     */
+    @Deprecated
     protected void setCommentPermissions(CoreSession session, DocumentModel documentModel) {
         ACP acp = new ACPImpl();
         ACE grantRead = new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true);
