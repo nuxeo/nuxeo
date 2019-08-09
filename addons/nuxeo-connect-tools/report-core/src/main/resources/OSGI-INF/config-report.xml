@@ -1,7 +1,0 @@
-<component name="org.nuxeo.connect.tools.report.config">
- 
-  <extension target="org.nuxeo.connect.tools.report" point="reports">
-    <report name="config"
-      oftype="org.nuxeo.connect.tools.report.config.ConfigReport" />
-  </extension>
-</component>

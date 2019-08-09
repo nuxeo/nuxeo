@@ -1,6 +1,0 @@
-<component name="org.nuxeo.connect.tools.report">
-  <extension target="org.nuxeo.connect.tools.report" point="reports">
-    <report name="mxbeans.thread-dump" enabled="false"/>
-    <report name="mxbeans.class-histogram" enabled="false"/>
-  </extension>
-</component>

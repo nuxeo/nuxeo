@@ -1922,39 +1922,6 @@
         <version>${nuxeo.datadog.reporter.version}</version>
       </dependency>
 
-      <!-- Connect Tools -->
-      <dependency>
-        <groupId>org.nuxeo.connect.tools</groupId>
-        <artifactId>nuxeo-connect-tools</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.connect.tools</groupId>
-        <artifactId>nuxeo-connect-tools-report-client</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.connect.tools</groupId>
-        <artifactId>nuxeo-connect-tools-report-management-api</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.connect.tools</groupId>
-        <artifactId>nuxeo-connect-tools-report-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.connect.tools</groupId>
-        <artifactId>nuxeo-connect-tools-report-core</artifactId>
-        <type>test-jar</type>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.connect.tools</groupId>
-        <artifactId>nuxeo-connect-tools-report-web</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
       <!-- PDF Utils -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

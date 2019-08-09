@@ -42,7 +42,6 @@
     <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-fsexporter</module>
-    <module>nuxeo-connect-tools</module>
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-platform-3d</module>
     <module>nuxeo-target-platforms</module>
