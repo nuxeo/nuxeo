@@ -1,7 +1,0 @@
-<component name="org.nuxeo.connect.tools.report.apidoc">
- 
-  <extension target="org.nuxeo.connect.tools.report" point="reports">
-    <report name="apidoc"
-      oftype="org.nuxeo.connect.tools.report.apidoc.APIDocReport" />
-  </extension>
-</component>

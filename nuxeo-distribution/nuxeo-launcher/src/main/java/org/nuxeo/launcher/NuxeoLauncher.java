@@ -32,7 +32,6 @@ import java.io.OutputStreamWriter;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -89,10 +88,9 @@ import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.connect.connector.NuxeoClientInstanceType;
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.data.ConnectProject;
-import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier.NoCLID;
+import org.nuxeo.connect.identity.TechnicalInstanceIdentifier;
 import org.nuxeo.connect.registration.RegistrationException;
-import org.nuxeo.connect.tools.report.client.ReportConnector;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
@@ -388,7 +386,7 @@ public abstract class NuxeoLauncher {
     private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
             "mp-update", "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP,
-            "register", "register-trial", "connect-report" };
+            "register", "register-trial" };
 
     private static final String[] COMMANDS_NO_RUNNING_SERVER = { "pack", "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
@@ -527,7 +525,6 @@ public abstract class NuxeoLauncher {
             + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
             + "        pack\t\t\tBuild a static archive.\n"
             + "        showconf\t\tDisplay the instance configuration.\n"
-            + "        connect-report\t\tDump a JSON report about the running server (which being used by Nuxeo support).\n"
             + "        mp-list\t\t\tList local Nuxeo Packages.\n"
             + "        mp-listall\t\tList all Nuxeo Packages.\n"
             + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n"
@@ -552,7 +549,6 @@ public abstract class NuxeoLauncher {
             + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", "
             + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", "
             + "\"mp-reset\".\n"
-            + "\nThe following commands can only be executed on a running server: \"connect-report\"\n"
             + "\nCommand parameters may need to be prefixed with '--' to separate them from option arguments when confusion arises.";
 
     private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [options] [--] [command parameters]\n\n";
@@ -586,7 +582,6 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl register --renew [--clid <arg>]\n"
             + "                Renew an instance registration with Nuxeo Online Services.\n\n"
             + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" //
-            + "        nuxeoctl connect-report [--output <file>|--gzip <*true|false|yes|no>|--pretty-print <true|*false|yes|no>]\n\n"
             + "OPTIONS";
 
     private static final String OPTION_HELP_FOOTER = "\nSee online documentation \"ADMINDOC/nuxeoctl and Control Panel Usage\": https://doc.nuxeo.com/x/FwNc";
@@ -1261,22 +1256,6 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.register();
         } else if (launcher.commandIs("register-trial")) {
             commandSucceeded = launcher.registerTrial();
-        } else if (launcher.commandIs("connect-report")) {
-            boolean gzip = Boolean.parseBoolean(launcher.cmdLine.getOptionValue(OPTION_GZIP_OUTPUT, "true"));
-            boolean prettyprinting = Boolean.parseBoolean(
-                    launcher.cmdLine.getOptionValue(OPTION_PRETTY_PRINT, "false"));
-            Path outputpath;
-            if (launcher.cmdLine.hasOption(OPTION_OUTPUT)) {
-                outputpath = Paths.get(launcher.cmdLine.getOptionValue(OPTION_OUTPUT));
-            } else {
-                Path dir = Paths.get(
-                        launcher.configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
-                outputpath = dir.resolve("nuxeo-connect-tools-report.json".concat(gzip ? ".gz" : ""));
-            }
-            log.info("Dumping connect report in " + outputpath);
-            try (OutputStream output = openOutput(outputpath, gzip)) {
-                commandSucceeded = launcher.dumpConnectReport(output, prettyprinting);
-            }
         } else {
             log.error("Unknown command " + launcher.command);
             printLongHelp();
@@ -2900,22 +2879,5 @@ public abstract class NuxeoLauncher {
             errorValue = EXIT_CODE_ERROR;
         }
         return cmdOK;
-    }
-
-    protected boolean dumpConnectReport(OutputStream out, boolean prettyPrint) {
-        try (JsonGenerator generator = Json.createGeneratorFactory(
-                Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, prettyPrint)).createGenerator(out)) {
-            generator.writeStartObject();
-            ReportConnector.of().feed(generator);
-            generator.writeEnd();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (IOException | ExecutionException cause) {
-            log.error("Cannot dump connect report", cause);
-            errorValue = EXIT_CODE_ERROR;
-            return false;
-        }
-        return true;
     }
 }
