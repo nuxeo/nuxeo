@@ -173,7 +173,7 @@ object NuxeoRest {
   def createDocumentIfNotExists = (parent: String, name: String, docType: String) => {
     exec(
       http("Check if document exists")
-        .head(Constants.API_PATH + parent + "/" + name)
+        .get(Constants.API_PATH + parent + "/" + name)
         .headers(Headers.base)
         .header("Content-Type", "application/json")
         .basicAuth("${user}", "${password}")
@@ -199,7 +199,7 @@ object NuxeoRest {
   def createDocumentIfNotExistsAsAdmin = (parent: String, name: String, docType: String) => {
     exec(
       http("Check if document exists")
-        .head(Constants.API_PATH + parent + "/" + name)
+        .get(Constants.API_PATH + parent + "/" + name)
         .headers(Headers.base)
         .header("Content-Type", "application/json")
         .basicAuth("${adminId}", "${adminPassword}")
@@ -297,7 +297,7 @@ object NuxeoRest {
   def createUserIfNotExists = (groupName: String) => {
     exec(
       http("Check if user exists")
-        .head("/api/v1/user/${user}")
+        .get("/api/v1/user/${user}")
         .headers(Headers.base)
         .header("Content-Type", "application/json")
         .basicAuth("${adminId}", "${adminPassword}")
@@ -330,7 +330,7 @@ object NuxeoRest {
   def createGroupIfNotExists = (groupName: String) => {
     exec(
       http("Check if group exists")
-        .head("/api/v1/group/" + groupName)
+        .get("/api/v1/group/" + groupName)
         .headers(Headers.base)
         .header("Content-Type", "application/json")
         .basicAuth("${adminId}", "${adminPassword}")
