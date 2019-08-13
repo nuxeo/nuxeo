@@ -1,0 +1,7 @@
+## Edit this file to customize your configuration ##
+fs-exporter.target=.
+
+# Set list of templates to include, comma separated values.
+nuxeo.template.includes=common
+
+#nuxeo.fsexporter.plugin.class=org.nuxeo.io.fsexporter.DefaultExporterPlugin

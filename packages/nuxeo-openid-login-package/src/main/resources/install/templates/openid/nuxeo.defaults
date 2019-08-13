@@ -1,0 +1,17 @@
+nuxeo.openid.github.client.id=
+nuxeo.openid.github.client.secret=
+
+nuxeo.openid.google.client.id=
+nuxeo.openid.google.client.secret=
+
+nuxeo.openid.googleplus.client.id=
+nuxeo.openid.googleplus.client.secret=
+
+nuxeo.openid.linkedin.client.id=
+nuxeo.openid.linkedin.client.secret=
+
+nuxeo.openid.amazon.client.id=
+nuxeo.openid.amazon.client.secret=
+
+nuxeo.openid.facebook.client.id=
+nuxeo.openid.facebook.client.secret=

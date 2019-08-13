@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="Kerberos-config">
+        <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+        <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+        <require>org.nuxeo.ecm.platform.login.Kerberos</require>
+
+        <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="chain">
+                <authenticationChain>
+                        <plugins>
+                                <plugin>BASIC_AUTH</plugin>
+                                <plugin>KRB5_AUTH</plugin>
+                                <plugin>FORM_AUTH</plugin>
+                        </plugins>
+                </authenticationChain>
+        </extension>
+</component>

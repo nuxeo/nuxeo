@@ -1,0 +1,41 @@
+<component name="sample.shibboleth.config">
+
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+  <!--
+  Disabled by default to lets administrator set their own AuthentificationChain
+  To edit it, go to templates/shibboleth/config/shibboleth-login-config.xml
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>SHIB_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+  -->
+
+  <extension target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
+    point="config">
+    <config>
+      <uidHeaders>
+        <default>${nuxeo.shibboleth.uid}</default>
+      </uidHeaders>
+
+      <loginURL>${nuxeo.shibboleth.login.url}</loginURL>
+      <logoutURL>${nuxeo.shibboleth.logout.url}</logoutURL>
+
+      <!-- Add others fieldMappings if needed -->
+      <fieldMapping header="uid">username</fieldMapping>
+      <fieldMapping header="mail">email</fieldMapping>
+    </config>
+  </extension>
+</component>

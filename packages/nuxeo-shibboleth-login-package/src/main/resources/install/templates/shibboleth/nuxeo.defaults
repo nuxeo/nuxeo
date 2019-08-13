@@ -1,0 +1,3 @@
+nuxeo.shibboleth.uid=uid
+nuxeo.shibboleth.login.url=https://host/Shibboleth.sso/WAYF
+nuxeo.shibboleth.logout.url=https://host/Shibboleth.sso/logout

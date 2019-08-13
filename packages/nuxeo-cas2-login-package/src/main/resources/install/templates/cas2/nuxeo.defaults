@@ -1,0 +1,7 @@
+nuxeo.cas2.login.plugin=Trusting_LM
+
+nuxeo.cas2.login.url=http://127.0.0.1:8080/cas/login
+nuxeo.cas2.logout.url=http://127.0.0.1:8080/cas/logout
+nuxeo.cas2.validate.url=http://127.0.0.1:8080/cas/serviceValidate
+nuxeo.cas2.service.key=service
+nuxeo.cas2.ticket.key=ticket

@@ -1990,6 +1990,153 @@
         <version>${nuxeo.shell.version}</version>
       </dependency>
 
+      <!-- Packages -->
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-3d-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-adobe-connector-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-amazon-s3-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-audit-storage-directory-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-cas2-login-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-csv-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-dam-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-datadog-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-drive-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-duoweb-authentication-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-easyshare-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-fsexporter-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-imap-connector-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-importer-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-jsf-to-web-ui-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-kerberos-authentication-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-lang-ext-incomplete-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-liveconnect-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-microsoft-azure-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-multi-tenant-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-openid-login-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-quota-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-saml2-login-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-scan-importer-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-shibboleth-login-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-signature-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-template-rendering-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-tree-snapshot-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-wopi-package</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <!-- Third parties -->
       <dependency>
         <groupId>org.nuxeo.build</groupId>
@@ -6632,6 +6779,7 @@
       <id>distrib</id>
       <modules>
         <module>nuxeo-distribution</module>
+        <module>packages</module>
       </modules>
     </profile>
 

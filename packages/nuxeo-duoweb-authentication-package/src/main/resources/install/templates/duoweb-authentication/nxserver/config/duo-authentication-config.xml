@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.duo.factors.login.contrib">
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+
+  <documentation>
+    This authentication plugin processes DuoWeb Two Factors Authentication
+  </documentation>
+
+  <extension
+          target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+          point="authenticators">
+    <authenticationPlugin name="DUO_TWO_FACTORS_AUTH"
+                          enabled="true"
+                          class="org.nuxeo.duoweb.authentication.DuoFactorsAuthenticator">
+      <loginModulePlugin>Trusting_LM</loginModulePlugin>
+      <parameters>
+        <parameter name="IKEY">YOUR_INTEGRATION_KEY</parameter>
+        <parameter name="SKEY">YOUR_SECRET_KEY</parameter>
+        <parameter name="AKEY">YOUR_APPLICATION_KEY</parameter>
+        <parameter name="HOST">YOUR_API_HOSTNAME</parameter>
+      </parameters>
+    </authenticationPlugin>
+  </extension>
+
+  <extension
+          target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+          point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>DUO_TWO_FACTORS_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+  <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <openUrl name="duoFactorsPattern">
+      <grantPattern>/nuxeo/duofactors.jsp</grantPattern>
+    </openUrl>
+  </extension>
+
+</component>

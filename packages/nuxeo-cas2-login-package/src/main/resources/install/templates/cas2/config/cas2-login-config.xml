@@ -1,0 +1,62 @@
+<component name="sample.cas2.login">
+  <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+  <require>org.nuxeo.ecm.platform.login.Cas2SSO</require>
+
+  <!-- Include CAS2 into authentication chain, disabled by default.
+     To edit it, copy the templates/cas2, customize it in your own template and include this one
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>TOKEN_AUTH</plugin>
+        <plugin>CAS2_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH_FOR_CAS2</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>
+        <plugin>WEBSERVICES_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+  -->
+
+  <!--  configure you CAS server parameters -->
+  <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+    point="authenticators">
+    <authenticationPlugin name="CAS2_AUTH">
+      <needStartingURLSaving>true</needStartingURLSaving>
+      <loginModulePlugin>${nuxeo.cas2.login.plugin}</loginModulePlugin>
+      <parameters>
+        <parameter name="appURL">${nuxeo.url}/nxstartup.faces</parameter>
+        <parameter name="serviceLoginURL">${nuxeo.cas2.login.url}</parameter>
+        <parameter name="logoutURL">${nuxeo.cas2.logout.url}</parameter>
+        <parameter name="serviceValidateURL">${nuxeo.cas2.validate.url}</parameter>
+        <parameter name="serviceKey">${nuxeo.cas2.service.key}</parameter>
+        <parameter name="ticketKey">${nuxeo.cas2.ticket.key}</parameter>
+      </parameters>
+    </authenticationPlugin>
+
+    <authenticationPlugin name="ANONYMOUS_AUTH_FOR_CAS2" enabled="true"
+        class="org.nuxeo.ecm.platform.ui.web.auth.cas2.AnonymousAuthenticatorForCAS2">
+      <loginModulePlugin>${nuxeo.cas2.login.plugin}</loginModulePlugin>
+    </authenticationPlugin>
+  </extension>
+
+  <!-- enable an anonymous user
+
+  <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+    point="userManager">
+    <userManager>
+      <users>
+        <anonymousUser id="Anonymous">
+          <property name="firstName">Anonymous</property>
+          <property name="lastName">User</property>
+        </anonymousUser>
+      </users>
+    </userManager>
+  </extension>
+  -->
+
+</component>

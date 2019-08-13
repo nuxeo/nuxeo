@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<component name="s3" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.storage.cloud.managment.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="default">
+      <class>org.nuxeo.ecm.core.storage.sql.S3BinaryManager</class>
+      <property name="awsid">${nuxeo.s3storage.awsid}</property>
+      <property name="awssecret">${nuxeo.s3storage.awssecret}</property>
+      <property name="awstoken">${nuxeo.s3storage.awstoken}</property>
+      <property name="bucket">${nuxeo.s3storage.bucket}</property>
+      <property name="region">${nuxeo.s3storage.region}</property>
+      <property name="bucket_prefix">${nuxeo.s3storage.bucket_prefix}</property>
+      <!-- min file age, in second, to be removed from cache if the size max size is reached, default is 3600 -->
+      <property name="cacheminage">${nuxeo.s3storage.cacheminage}</property>
+      <property name="cachesize">${nuxeo.s3storage.cachesize}</property>
+      <property name="cachecount">${nuxeo.s3storage.cachecount}</property>
+      <property name="connection.max">${nuxeo.s3storage.connection.max}</property>
+      <property name="connection.retry">${nuxeo.s3storage.connection.retry}</property>
+      <property name="connection.timeout">${nuxeo.s3storage.connection.timeout}</property>
+      <property name="socket.timeout">${nuxeo.s3storage.socket.timeout}</property>
+    </blobprovider>
+  </extension>
+
+</component>

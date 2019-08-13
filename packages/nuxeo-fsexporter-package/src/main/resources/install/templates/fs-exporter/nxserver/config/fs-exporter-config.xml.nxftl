@@ -1,0 +1,8 @@
+<component name="org.nuxeo.io.fsexporter.config">
+<#if (nuxeo.fsexporter.plugin.class)?? >
+    <extension target="org.nuxeo.io.fsexporter.FSExporter"
+        point="exportLogic">
+        <exportLogic class="${nuxeo.fsexporter.plugin.class}" />
+    </extension>
+</#if>
+</component>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<install>
+  @BUNDLES@
+  @LIBS@
+  @TEMPLATES@
+  <config set="JAVA_OPTS=$JAVA_OPTS -Djava.security.auth.login.config=nxserver/config/java.login.config" />
+</install>

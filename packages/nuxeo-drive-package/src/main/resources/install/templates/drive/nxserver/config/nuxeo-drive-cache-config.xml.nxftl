@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.cache">
+
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="caches">
+
+    <cache name="driveSyncRoot">
+      <option name="maxSize">10000</option>
+      <option name="concurrencyLevel">4</option>
+      <ttl>1</ttl>
+    </cache>
+
+    <cache name="driveCollectionSyncRootMember">
+      <option name="maxSize">10000</option>
+      <option name="concurrencyLevel">4</option>
+      <ttl>1</ttl>
+    </cache>
+
+    <cache name="driveDescendantsScroll">
+      <ttl>${nuxeo.cache.ttl}</ttl><!-- minutes -->
+      <option name="maxSize">${nuxeo.cache.maxsize}</option>
+      <option name="concurrencyLevel">${nuxeo.cache.concurrencylevel}</option>
+    </cache>
+
+  </extension>
+
+</component>
