@@ -82,7 +82,7 @@ Contributors:
       },
 
       _isAvailable: function() {
-        return (this.nxProvider !== null) && this.columns.length;
+        return (this.nxProvider !== null) && this.columns && this.columns.length;
       },
 
       _show: function() {
