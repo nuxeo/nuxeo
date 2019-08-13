@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package type="addon" name="adobe-connector-package" version="@VERSION@">
+  <title>Nuxeo for Adobe CC</title>
+  <description>
+    <p>The Nuxeo for Adobe CC addon enables creative users to interact directly with Nuxeo repository assets from within InDesign, Photoshop or Illustrator. Link to the repository is maintained so as to facilitate updates of the referenced assets.</p>
+  </description>
+  <vendor>Nuxeo</vendor>
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>server-@VERSION@</platform>
+    <platform>server-@VERSION@-HF*</platform>
+  </platforms>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+  <visibility>MARKETPLACE</visibility>
+</package>

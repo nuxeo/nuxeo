@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package type="addon" name="nuxeo-scan-importer" version="@VERSION@">
+  <title>Scan Documents Importer</title>
+  <description>
+The Scan Documents Importer addon allows to batch create documents (File + Properties) based on XML decriptors that provide metadata values and reference files to import. Mapping between XLM attributes and elements values and document properties is configurable. Typical use case is importing the outpout of the a digitisation chain.</description>
+  <home-page>https://doc.nuxeo.com/nxdoc/scan-documents-importer/</home-page>
+  <vendor>Nuxeo</vendor>
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>server-@VERSION@</platform>
+    <platform>server-@VERSION@-*</platform>
+  </platforms>
+  <conflicts>
+    <package>nuxeo-platform-importer</package>
+  </conflicts>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+  <visibility>MARKETPLACE</visibility>
+</package>

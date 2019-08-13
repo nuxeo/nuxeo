@@ -1,0 +1,8 @@
+Nuxeo {
+   com.sun.security.auth.module.Krb5LoginModule required
+   debug=true
+   storeKey=true
+   useKeyTab=true
+   keyTab="${kerberos.keytab}"
+   principal="${kerberos.principal}";
+};

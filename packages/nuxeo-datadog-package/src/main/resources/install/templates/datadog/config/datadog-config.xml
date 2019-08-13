@@ -1,0 +1,14 @@
+<component name="org.nuxeo.datadog.contrib">
+
+  <extension target="org.nuxeo.datadog.service" point="configuration">
+
+    <configuration>
+      <apiKey>${datadog.apikey}</apiKey>
+      <host>${datadog.host}</host>
+      <pollInterval>${datadog.pollinterval}</pollInterval>
+      <tags>${datadog.tags}</tags>
+    </configuration>
+
+  </extension>
+
+</component>

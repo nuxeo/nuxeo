@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.ecm.distribution</groupId>
+    <artifactId>nuxeo-distribution</artifactId>
+    <version>11.1-SNAPSHOT</version>
+    <relativePath>../nuxeo-distribution/pom.xml</relativePath>
+  </parent>
+
+  <groupId>org.nuxeo.packages</groupId>
+  <artifactId>nuxeo-packages</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Packages</name>
+
+  <modules>
+    <module>nuxeo-3d-package</module>
+    <module>nuxeo-adobe-connector-package</module>
+    <module>nuxeo-amazon-s3-package</module>
+    <module>nuxeo-audit-storage-directory-package</module>
+    <module>nuxeo-cas2-login-package</module>
+    <module>nuxeo-csv-package</module>
+    <module>nuxeo-dam-package</module>
+    <module>nuxeo-datadog-package</module>
+    <module>nuxeo-drive-package</module>
+    <module>nuxeo-duoweb-authentication-package</module>
+    <module>nuxeo-easyshare-package</module>
+    <module>nuxeo-fsexporter-package</module>
+    <module>nuxeo-imap-connector-package</module>
+    <module>nuxeo-importer-package</module>
+    <module>nuxeo-jsf-to-web-ui-package</module>
+    <module>nuxeo-kerberos-authentication-package</module>
+    <module>nuxeo-lang-ext-incomplete-package</module>
+    <module>nuxeo-liveconnect-package</module>
+    <module>nuxeo-microsoft-azure-package</module>
+    <module>nuxeo-multi-tenant-package</module>
+    <module>nuxeo-openid-login-package</module>
+    <module>nuxeo-quota-package</module>
+    <module>nuxeo-saml2-login-package</module>
+    <module>nuxeo-scan-importer-package</module>
+    <module>nuxeo-shibboleth-login-package</module>
+    <module>nuxeo-signature-package</module>
+    <module>nuxeo-template-rendering-package</module>
+    <module>nuxeo-tree-snapshot-package</module>
+    <module>nuxeo-wopi-package</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-nxr-server</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/../src/main/assemble/assembly.xml</buildFile>
+          </buildFiles>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,136 @@
+<project name="assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="build" description="Build ${maven.project.name}">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <artifact:nuxeo-expand includeTestScope="true" groupPrefixes="org.nuxeo" />
+    <artifact:print output="${outdir}/dependency-tree.log" />
+    <tstamp />
+
+    <delete failonerror="false" dir="${outdir}/nxr" />
+    <mkdir dir="${outdir}/nxr" />
+    <delete failonerror="false" dir="${outdir}/package" />
+    <mkdir dir="${outdir}/package" />
+    <copy todir="${outdir}/package">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${maven.project.version}" />
+      </filterset>
+    </copy>
+
+    <!-- Base distribution NXR -->
+    <copy todir="${outdir}">
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-nxr-server::zip" />
+    </copy>
+
+    <!-- Nuxeo bundles -->
+    <copy todir="${outdir}/nxr/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" />
+        </includes>
+        <excludes>
+          <artifact groupId="org.nuxeo.build*" />
+          <artifact groupId="org.nuxeo.lib*" />
+          <artifact groupId="org.nuxeo.packages*" />
+          <artifact scope="test" />
+          <artifact scope="provided" />
+          <artifact type="pom" />
+        </excludes>
+      </artifact:set>
+    </copy>
+    <!-- Third-party libraries -->
+    <copy todir="${outdir}/nxr/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" />
+          <artifact groupId="org.nuxeo.lib*" />
+        </includes>
+        <excludes>
+          <artifact scope="test" />
+          <artifact scope="provided" />
+          <artifact type="pom" />
+        </excludes>
+      </artifact:set>
+    </copy>
+    <nx:rmdups dir="${outdir}/nxr/lib" />
+    <zip destfile="${outdir}/nxr-${maven.project.version}.zip" basedir="${outdir}/nxr" />
+    <!-- Diff against Nuxeo Server -->
+    <nx:zipdiff file1="${outdir}/nxr-${maven.project.version}.zip"
+                file2="${outdir}/nuxeo-nxr-server-${maven.project.version}.zip"
+                ignoreContent="true"
+                includesfile="${outdir}/includes"
+                excludesfile="${outdir}/excludesfile"
+                patternsetid="${maven.project.artifactId}.versus.server">
+    </nx:zipdiff>
+    <unzip src="${outdir}/nxr-${maven.project.version}.zip" dest="${outdir}/package/install">
+      <patternset refid="${maven.project.artifactId}.versus.server" />
+    </unzip>
+
+    <!-- Generate install.xml content -->
+    <var name="install.bundles" value="" />
+    <var name="install.bundles"
+         value="${line.separator}
+  &lt;update file=&quot;${package.root}/install/bundles&quot; todir=&quot;${env.bundles}&quot; /&gt;" />
+
+    <var name="install.libs" value="" />
+    <if>
+      <available file="${outdir}/package/install/lib" />
+      <then>
+        <var name="install.libs"
+             value="${line.separator}
+  &lt;update file=&quot;${package.root}/install/lib&quot; todir=&quot;${env.lib}&quot; /&gt;" />
+      </then>
+    </if>
+
+    <var name="install.templates" value=""/>
+    <if>
+      <available file="${outdir}/package/install/templates"/>
+      <then>
+        <!-- get the list of templates -->
+        <dirset id="templates.list" dir="${outdir}/package/install/templates" includes="*"/>
+        <pathconvert pathsep="," property="templates.list" refid="templates.list">
+          <map from="${outdir}/package/install/templates/" to=""/>
+        </pathconvert>
+
+        <var name="install.templates"
+             value="${line.separator}
+  &lt;copy dir=&quot;${package.root}/install/templates&quot; todir=&quot;${env.templates}&quot; overwrite=&quot;true&quot; /&gt;${line.separator}
+  &lt;config addtemplate=&quot;${templates.list}&quot; /&gt;${line.separator}"/>
+      </then>
+    </if>
+
+    <var name="install.xml.path" value="../src/main/resources/install.xml" />
+    <if>
+      <available file="src/main/resources/install.xml" />
+      <then>
+        <var name="install.xml.path" value="src/main/resources/install.xml" />
+      </then>
+    </if>
+
+    <copy file="${install.xml.path}" todir="${outdir}/package" overwrite="true">
+      <filterset>
+        <filter token="BUNDLES" value="${install.bundles}" />
+        <filter token="LIBS" value="${install.libs}" />
+        <filter token="TEMPLATES" value="${install.templates}" />
+      </filterset>
+    </copy>
+
+    <nx:studioExtraction todir="${outdir}/package">
+      <fileset dir="${outdir}/package/install/bundles"/>
+    </nx:studioExtraction>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${outdir}/package" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
+
+    <!-- cleanups -->
+    <delete dir="${outdir}/package" failonerror="false" />
+    <delete dir="${outdir}/nxr" failonerror="false" />
+    <delete file="${outdir}/nuxeo-nxr-server-${maven.project.version}.zip" failonerror="false" />
+    <delete file="${outdir}/nxr-${maven.project.version}.zip" failonerror="false" />
+  </target>
+
+</project>

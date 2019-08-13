@@ -1,0 +1,19 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.packages</groupId>
+    <artifactId>nuxeo-packages</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-duoweb-authentication-package</artifactId>
+  <packaging>zip</packaging>
+  <name>Nuxeo DuoWeb Authentication Package</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.duoweb.authentication</groupId>
+      <artifactId>nuxeo-duoweb-authentication</artifactId>
+    </dependency>
+  </dependencies>
+</project>

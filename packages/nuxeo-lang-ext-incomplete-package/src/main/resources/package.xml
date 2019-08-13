@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package type="addon" name="marketplace-lang-ext-incomplete" version="@VERSION@">
+  <title>Nuxeo Platform Additional Languages</title>
+  <description>The Nuxeo Platform Additional Languages addon provides languages that were not sufficiently translated (95%) to be included in the default distribution of the Nuxeo Platform. More information about how to translate the Nuxeo Platform at https://doc.nuxeo.com/nxdoc/how-to-translate-the-nuxeo-platform/.</description>
+  <vendor>Nuxeo</vendor>
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <production-state>production_ready</production-state>
+  <supported>true</supported>
+  <platforms>
+    <platform>server-@VERSION@</platform>
+    <platform>server-@VERSION@-*</platform>
+  </platforms>
+  <license>Apache 2.0</license>
+  <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
+  <visibility>PUBLIC</visibility>
+</package>
