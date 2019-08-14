@@ -185,6 +185,20 @@ public class TestHtmlSanitizerServiceImpl {
     }
 
     @Test
+    public void sanitizeHugeString() throws Exception {
+        int maxInputSize = 100000; // from antisamy-nuxeo-policy.xml
+        StringBuilder buf = new StringBuilder();
+        while (buf.length() < maxInputSize + 1) {
+            buf.append("<script>bar</script>");
+        }
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        String res = service.sanitizeString(buf.toString(), null);
+        assertEquals("The input was too large. " //
+                + "The specified input was 100,020 bytes and the maximum is 100,000 bytes. " //
+                + "Please check with the server administrator to increase the maximum input size.", res);
+    }
+
+    @Test
     public void testFieldToString() {
         FieldDescriptor fd = new FieldDescriptor();
         fd.contentField = "a";
