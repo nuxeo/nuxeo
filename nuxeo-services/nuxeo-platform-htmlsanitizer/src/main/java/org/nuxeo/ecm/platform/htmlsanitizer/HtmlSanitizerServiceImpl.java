@@ -237,7 +237,12 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
             return cr.getCleanHTML();
         } catch (ScanException | PolicyException e) {
             log.error(String.format("Cannot sanitize %s: %s", info == null ? "" : info, e));
-            return string;
+            String msg = e.getMessage();
+            if (msg.startsWith("The input was too large")) {
+                return msg + " Please check with the server administrator to increase the maximum input size.";
+            } else {
+                return "Error while sanitizing HTML, please check the server logs";
+            }
         }
     }
 
