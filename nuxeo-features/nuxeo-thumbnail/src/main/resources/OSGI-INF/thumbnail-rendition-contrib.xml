@@ -7,7 +7,7 @@
     <renditionDefinition name="thumbnail" cmisName="nuxeo:icon"
       class="org.nuxeo.ecm.platform.thumbnail.rendition.ThumbnailRenditionProvider">
       <label>label.rendition.thumbnail</label>
-      <icon>/icons/pdf.png</icon>
+      <icon>/icons/image.gif</icon>
       <kind>cmis:thumbnail</kind>
       <contentType>image/jpeg</contentType>
     </renditionDefinition>
