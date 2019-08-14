@@ -24,7 +24,11 @@ package org.nuxeo.ecm.platform.comment.service;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_SECURED;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_PROPERTY_TO_SECURED;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
+
+import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,7 +110,7 @@ public class CommentService extends DefaultComponent {
         }
         if (status.isRunning()) {
             String step = status.getStep();
-            if (MIGRATION_STEP_RELATION_TO_PROPERTY.equals(step)) {
+            if (Arrays.asList(MIGRATION_STEP_RELATION_TO_PROPERTY, MIGRATION_STEP_PROPERTY_TO_SECURED).contains(step)) {
                 return new BridgeCommentManager(new CommentManagerImpl(config), new PropertyCommentManager());
             } else {
                 throw new IllegalStateException("Unknown migration step: " + step);
@@ -115,7 +119,7 @@ public class CommentService extends DefaultComponent {
             String state = status.getState();
             if (MIGRATION_STATE_RELATION.equals(state)) {
                 return new CommentManagerImpl(config);
-            } else if (MIGRATION_STATE_PROPERTY.equals(state)) {
+            } else if (Arrays.asList(MIGRATION_STATE_PROPERTY, MIGRATION_STATE_SECURED).contains(state)) {
                 return new PropertyCommentManager();
             } else {
                 throw new IllegalStateException("Unknown migration state: " + state);

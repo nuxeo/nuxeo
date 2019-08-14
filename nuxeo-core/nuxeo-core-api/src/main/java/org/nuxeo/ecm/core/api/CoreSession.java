@@ -678,7 +678,6 @@ public interface CoreSession {
      * Moves the source document to the destination folder under the given name. If the name is {@code null} or if there
      * is a collision, a suitable new name is found.
      * <p>
-     * If the destination document is not a folder or it doesn't exists then throws an exception.
      *
      * @param src the source document reference
      * @param dst the destination folder reference

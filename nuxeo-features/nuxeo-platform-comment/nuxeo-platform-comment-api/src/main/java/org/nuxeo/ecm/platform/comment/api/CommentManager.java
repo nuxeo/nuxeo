@@ -26,6 +26,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
@@ -322,4 +324,23 @@ public interface CommentManager {
      */
     boolean hasFeature(Feature feature);
 
+
+    /**
+     * Gets the top level ancestor document ref for the given document model comment ref. No matter how many levels of
+     * comments there is.
+     * <p>
+     * Given a document fileOne, that we comment with commentOne which we reply on with replyOne
+     * <p>
+     * This method will return:
+     * <ul>
+     * <li>CommentManager#getAncestorRef(session, commentOne) = fileOne</li>
+     * <li>CommentManager#getAncestorRef(session, replyOne) = fileOne</li>
+     * </ul>
+     *
+     * @param session the CoreSession
+     * @param commentIdRef the comment document model ref
+     * @return the top level ancestor document ref
+     * @since 11.1
+     */
+     DocumentRef getAncestorRef(CoreSession session, DocumentRef commentIdRef);
 }
