@@ -77,6 +77,11 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
     }
 
     @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
+    @Override
     public void work() {
         setStatus("Duplicating");
         if (collectionMemberIds != null) {

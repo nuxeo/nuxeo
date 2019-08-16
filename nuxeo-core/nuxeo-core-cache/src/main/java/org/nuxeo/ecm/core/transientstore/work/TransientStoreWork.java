@@ -115,4 +115,10 @@ public abstract class TransientStoreWork extends AbstractWork {
     public String getEntryKey() {
         return entryKey;
     }
+
+    @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
 }
