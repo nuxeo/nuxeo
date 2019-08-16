@@ -113,6 +113,11 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
         }
 
         @Override
+        public boolean isIdempotent() {
+            return false;
+        }
+
+        @Override
         public void work() {
             openSystemSession();
             DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));

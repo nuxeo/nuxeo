@@ -66,6 +66,11 @@ public class QuotaStatsInitialWork extends AbstractWork {
     }
 
     @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
+    @Override
     public void work() {
         final QuotaStatsInitialWork currentWorker = this;
         new UnrestrictedSessionRunner(repositoryName) {
