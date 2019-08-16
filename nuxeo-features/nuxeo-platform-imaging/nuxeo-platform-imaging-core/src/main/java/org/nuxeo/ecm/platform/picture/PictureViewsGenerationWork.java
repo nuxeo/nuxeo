@@ -79,6 +79,11 @@ public class PictureViewsGenerationWork extends AbstractWork {
     }
 
     @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
+    @Override
     public void work() {
         setProgress(Progress.PROGRESS_INDETERMINATE);
         setStatus("Extracting");
