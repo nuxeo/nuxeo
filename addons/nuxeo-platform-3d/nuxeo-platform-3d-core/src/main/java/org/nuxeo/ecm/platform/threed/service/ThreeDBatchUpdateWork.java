@@ -88,6 +88,11 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
     }
 
     @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
+    @Override
     public void work() {
         if (isWorkInstanceSuspended()) {
             return;
