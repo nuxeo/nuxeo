@@ -59,6 +59,11 @@ public class BlobProviderDocumentsUpdateWork extends AbstractWork {
     }
 
     @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
+    @Override
     public void work() {
         BatchUpdateBlobProvider blobProvider = (BatchUpdateBlobProvider) Framework.getService(
                 BlobManager.class).getBlobProvider(providerName);

@@ -54,6 +54,11 @@ public abstract class RemovedAbstractWork extends AbstractWork {
     }
 
     @Override
+    public boolean isIdempotent() {
+        return false;
+    }
+
+    @Override
     public void work() {
         setStatus("Updating");
         if (docId != null) {
