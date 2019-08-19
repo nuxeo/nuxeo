@@ -20,6 +20,7 @@
 
 package org.nuxeo.directory.mongodb;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_SEQ;
 
@@ -215,7 +216,7 @@ public class MongoDBSession extends BaseSession {
             String tenantId = getCurrentTenantId();
             if (StringUtils.isNotBlank(tenantId)) {
                 String entryTenantId = (String) docModel.getProperty(schemaName, TENANT_ID_FIELD);
-                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
+                if (isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
                     throw new OperationNotAllowedException("Operation not allowed in the current tenant context",
                             "label.directory.error.multi.tenant.operationNotAllowed", null);
                 }
@@ -660,12 +661,7 @@ public class MongoDBSession extends BaseSession {
     protected boolean checkEntryTenantId(String entryTenantId) {
         // check that the entry is from the current tenant, or no tenant at all
         String tenantId = getCurrentTenantId();
-        if (StringUtils.isNotBlank(tenantId)) {
-            if (StringUtils.isNotBlank(entryTenantId) && !entryTenantId.equals(tenantId)) {
-                return false;
-            }
-        }
-        return true;
+        return isBlank(tenantId) || isBlank(entryTenantId) || tenantId.equals(entryTenantId);
     }
 
     protected String getPrefixedIdField() {
