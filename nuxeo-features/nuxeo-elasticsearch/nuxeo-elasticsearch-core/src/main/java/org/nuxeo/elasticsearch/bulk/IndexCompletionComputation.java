@@ -21,8 +21,8 @@ package org.nuxeo.elasticsearch.bulk;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.INDEX_UPDATE_ALIAS_PARAM;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.REFRESH_INDEX_PARAM;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -40,7 +40,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 10.3
  */
 public class IndexCompletionComputation extends AbstractComputation {
-    private static final Log log = LogFactory.getLog(IndexCompletionComputation.class);
+
+    private static final Logger log = LogManager.getLogger(IndexCompletionComputation.class);
 
     public static final String NAME = "indexCompletion";
 
@@ -73,7 +74,7 @@ public class IndexCompletionComputation extends AbstractComputation {
     protected void refreshIndexIfNeeded(BulkCommand command) {
         Boolean refresh = command.getParam(REFRESH_INDEX_PARAM);
         if (Boolean.TRUE.equals(refresh)) {
-            log.warn("Refresh index requested by command: " + command.getId());
+            log.warn("Refresh index requested by command: {}", command::getId);
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esa.refreshRepositoryIndex(command.getRepository());
         }
@@ -82,7 +83,7 @@ public class IndexCompletionComputation extends AbstractComputation {
     protected void updateAliasIfNeeded(BulkCommand command) {
         Boolean updateAlias = command.getParam(INDEX_UPDATE_ALIAS_PARAM);
         if (Boolean.TRUE.equals(updateAlias)) {
-            log.warn("Update alias requested by command: " + command.getId());
+            log.warn("Update alias requested by command: {}", command::getId);
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esa.syncSearchAndWriteAlias(esa.getIndexNameForRepository(command.getRepository()));
         }
@@ -93,9 +94,9 @@ public class IndexCompletionComputation extends AbstractComputation {
         long wait = status.getScrollStartTime().toEpochMilli() - status.getSubmitTime().toEpochMilli();
         long scroll = status.getScrollEndTime().toEpochMilli() - status.getScrollStartTime().toEpochMilli();
         double rate = 1000.0 * status.getTotal() / (elapsed);
-        log.warn(String.format(
-                "Index command: %s completed: %d docs in %.2fs (wait: %.2fs, scroll: %.2fs) rate: %.2f docs/s",
-                status.getId(), status.getTotal(), elapsed / 1000.0, wait / 1000.0, scroll / 1000.0, rate));
+        log.warn("Index command: {} completed: {} in {}", status.getId(), status.getTotal(),
+                String.format("%.2fs (wait: %.2fs, scroll: %.2fs) rate: %.2f docs/s", elapsed / 1000.0, wait / 1000.0,
+                        scroll / 1000.0, rate));
     }
 
 }
