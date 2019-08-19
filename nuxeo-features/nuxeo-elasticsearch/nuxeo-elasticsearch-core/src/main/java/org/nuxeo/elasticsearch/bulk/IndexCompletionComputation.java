@@ -65,8 +65,12 @@ public class IndexCompletionComputation extends AbstractComputation {
             logIndexing(status);
             BulkService bulkService = Framework.getService(BulkService.class);
             BulkCommand command = bulkService.getCommand(status.getId());
-            refreshIndexIfNeeded(command);
-            updateAliasIfNeeded(command);
+            if (command != null) {
+                refreshIndexIfNeeded(command);
+                updateAliasIfNeeded(command);
+            } else {
+                log.error("Command not found for id: {}", status::getId);
+            }
         }
         context.askForCheckpoint();
     }
