@@ -171,15 +171,12 @@ public class MongoDBSession extends BaseSession {
                 Field field = entry.getValue();
                 if (field != null) {
                     String fieldName = field.getName().getPrefixedName();
-                    Object value = newDocMap.get(fieldName);
                     Type type = field.getType();
-                    newDocMap.put(fieldName, convertToType(value, type));
+                    newDocMap.computeIfPresent(fieldName, (k, v) -> convertToType(v, type));
                     // Load default values if defined and not present in the map
-                    if (!newDocMap.containsKey(fieldName)) {
-                        Object defaultValue = field.getDefaultValue();
-                        if (defaultValue != null) {
-                            newDocMap.put(fieldName, defaultValue);
-                        }
+                    Object defaultValue = field.getDefaultValue();
+                    if (defaultValue != null) {
+                        newDocMap.putIfAbsent(fieldName, defaultValue);
                     }
                 }
             }
