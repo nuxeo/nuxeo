@@ -65,6 +65,7 @@
     <nuxeo.common.version>11.1-SNAPSHOT</nuxeo.common.version>
     <nuxeo.runtime.version>11.1-SNAPSHOT</nuxeo.runtime.version>
     <nuxeo.core.version>11.1-SNAPSHOT</nuxeo.core.version>
+    <nuxeo.distribution.version>11.1-SNAPSHOT</nuxeo.distribution.version>
     <nuxeo.services.version>11.1-SNAPSHOT</nuxeo.services.version>
     <nuxeo.theme.version>11.1-SNAPSHOT</nuxeo.theme.version>
     <nuxeo.dm.version>11.1-SNAPSHOT</nuxeo.dm.version>
@@ -1988,6 +1989,51 @@
         <groupId>org.nuxeo.shell</groupId>
         <artifactId>nuxeo-shell-equinox</artifactId>
         <version>${nuxeo.shell.version}</version>
+      </dependency>
+
+      <!-- Nuxeo Distribution -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-nxr-server</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-nxr-server</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-server-tomcat</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-server-tomcat</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+        <classifier>sdk</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-startup-wizard</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo</groupId>
+        <artifactId>nuxeo-launcher</artifactId>
+        <version>${project.version}</version>
+        <classifier>jar-with-dependencies</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-functional-tests</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <!-- Packages -->
