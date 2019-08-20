@@ -94,19 +94,6 @@ Contributors:
           sortInfos.push({'sortColumn': key, 'sortAscending': provider.sort[key] === 'asc'});
         });
 
-        // convert provider.params and provider.aggregations to properties
-        var properties = {};
-        if (provider.params) {
-          Object.keys(provider.params).forEach(function(key) {
-            properties[key] = provider.params[key];
-          });
-        }
-        if (provider.aggregations) {
-          Object.keys(provider.aggregations).forEach(function(key) {
-            properties[key] = provider.aggregations[key].selection;
-          });
-        }
-
         // convert datatable.columns to columns
         var columns = [];
         this.columns.forEach(function(c) {
@@ -119,12 +106,28 @@ Contributors:
           pageProviderName: provider.provider,
           pageSize: provider.pageSize,
           currentPage: provider.page,
-          namedParameters: provider.params,
-          searchDocument: {properties: properties},
           sortInfos: sortInfos,
           resultColumns: columns,
           executed: false
         };
+
+        if (Array.isArray(provider.params)) {
+          state.queryParameters = provider.params;
+        } else {
+          // convert provider.params and provider.aggregations to properties
+          var properties = {};
+          if (provider.params) {
+            Object.keys(provider.params).forEach(function(key) {
+              properties[key] = provider.params[key];
+            });
+          }
+          if (provider.aggregations) {
+            Object.keys(provider.aggregations).forEach(function(key) {
+              properties[key] = provider.aggregations[key].selection;
+            });
+          }
+          state.searchDocument = { properties: properties };
+        }
 
         this.$.iframe.src = this.$.nxconn.url + '/spreadsheet/?cv=' + encodeURIComponent(btoa(JSON.stringify(state)));
         this.$.dialog.toggle();
