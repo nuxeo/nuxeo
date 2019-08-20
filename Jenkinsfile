@@ -140,6 +140,32 @@ pipeline {
         }
       }
     }
+    stage('Run "dev" functional tests') {
+      steps {
+        setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Run "dev" functional tests
+          ----------------------------------------"""
+          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+            echo "MAVEN_OPTS=$MAVEN_OPTS"
+            sh "mvn -B -nsu -f nuxeo-distribution/pom.xml verify"
+          }
+        }
+      }
+      post {
+        always {
+          junit testResults: '**/target/surefire-reports/*.xml'
+        }
+        success {
+          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
+        }
+      }
+    }
   }
   post {
     always {
