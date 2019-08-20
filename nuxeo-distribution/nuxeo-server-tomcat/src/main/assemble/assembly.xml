@@ -84,7 +84,7 @@
       <fileset dir="src/main/resources/tomcat" />
     </copy>
     <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
-      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${maven.project.version}:war" />
     </copy>
     <copy todir="${tomcat}/client">
       <artifact:file key="org.nuxeo.shell:nuxeo-shell" />
@@ -109,7 +109,7 @@
 
     <!-- Nuxeo Server NXR -->
     <unzip dest="${distribution.dir}/nxserver">
-      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-nxr-server:${nuxeo.distribution.version}:zip" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-nxr-server:${maven.project.version}:zip" />
     </unzip>
     <!-- Move templates to their correct location -->
     <mkdir dir="${distribution.dir}/templates" />

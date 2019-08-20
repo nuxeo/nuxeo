@@ -3,9 +3,8 @@
 
   <parent>
     <groupId>org.nuxeo</groupId>
-    <artifactId>nuxeo-addons-parent</artifactId>
+    <artifactId>nuxeo-ecm</artifactId>
     <version>11.1-SNAPSHOT</version>
-    <relativePath>../addons/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -13,10 +12,6 @@
   <packaging>pom</packaging>
   <name>Nuxeo Distribution Parent</name>
   <description>Build package distributions of nuxeo applications</description>
-
-  <properties>
-    <nuxeo.distribution.version>11.1-SNAPSHOT</nuxeo.distribution.version>
-  </properties>
 
   <modules>
     <module>nuxeo-functional-tests</module>
@@ -61,44 +56,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-nxr-server</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-nxr-server</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-server-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-server-tomcat</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>zip</type>
-        <classifier>sdk</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-startup-wizard</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo</groupId>
-        <artifactId>nuxeo-launcher</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <classifier>jar-with-dependencies</classifier>
-      </dependency>
-
       <!-- Provided scope -->
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -117,14 +74,6 @@
         <artifactId>quartz-mongodb</artifactId>
         <version>${quartz.mongodb.version}</version>
         <scope>provided</scope>
-      </dependency>
-
-      <!-- Test scope -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-functional-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

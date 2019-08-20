@@ -2,10 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.nuxeo.ecm.distribution</groupId>
-    <artifactId>nuxeo-distribution</artifactId>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
     <version>11.1-SNAPSHOT</version>
-    <relativePath>../nuxeo-distribution/pom.xml</relativePath>
   </parent>
 
   <groupId>org.nuxeo.packages</groupId>
