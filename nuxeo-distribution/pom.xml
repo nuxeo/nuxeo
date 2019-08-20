@@ -22,7 +22,6 @@
     <module>nuxeo-functional-tests</module>
     <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
-    <module>nuxeo-test-dependencies</module>
     <module>nuxeo-nxr-server</module>
     <module>nuxeo-server-tomcat</module>
     <!-- Functional Tests -->
@@ -125,13 +124,6 @@
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-functional-tests</artifactId>
         <version>${nuxeo.distribution.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution-tests</artifactId>
-        <version>${nuxeo.distribution.version}</version>
-        <type>pom</type>
         <scope>test</scope>
       </dependency>
     </dependencies>

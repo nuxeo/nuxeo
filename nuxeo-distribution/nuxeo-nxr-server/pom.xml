@@ -590,15 +590,6 @@
       <artifactId>nuxeo-connect-client-wrapper</artifactId>
     </dependency>
 
-    <!-- Scope test -->
-<!--
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-tests</artifactId>
-      <type>pom</type>
-    </dependency>
--->
-
     <!-- Database Drivers used in assembly -->
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>
