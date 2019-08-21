@@ -114,15 +114,16 @@ public class ApiBrowser extends DefaultObject {
     public Object doGet() {
         if (embeddedMode) {
             DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
+            List<String> bundleIds = snap.getBundleIds();
             Map<String, Integer> stats = new HashMap<String, Integer>();
-            stats.put("bundles", snap.getBundleIds().size());
+            stats.put("bundles", bundleIds.size());
             stats.put("jComponents", snap.getJavaComponentIds().size());
             stats.put("xComponents", snap.getXmlComponentIds().size());
             stats.put("services", snap.getServiceIds().size());
             stats.put("xps", snap.getExtensionPointIds().size());
             stats.put("contribs", snap.getComponentIds().size());
             return getView("indexSimple").arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID)).arg("stats",
-                    stats);
+                    stats).arg("bundleIds", bundleIds);
         } else {
             return getView("index").arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
         }
