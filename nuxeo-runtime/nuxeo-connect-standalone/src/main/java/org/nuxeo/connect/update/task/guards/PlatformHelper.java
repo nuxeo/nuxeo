@@ -39,8 +39,8 @@ public class PlatformHelper {
     public PlatformHelper() {
         cg = new ConfigurationGenerator();
         cg.init();
-        name = cg.getUserConfig().getProperty(Environment.DISTRIBUTION_NAME);
-        version = cg.getUserConfig().getProperty(Environment.DISTRIBUTION_VERSION);
+        name = cg.getEnv().getProperty(Environment.DISTRIBUTION_NAME);
+        version = cg.getEnv().getProperty(Environment.DISTRIBUTION_VERSION);
     }
 
     public String getName() {
