@@ -1,0 +1,4 @@
+<install>
+  <copy file="${package.root}/test111.properties" todir="${env.config}/test111.properties" if="Version.isEqual(Platform.getVersion(), '11.1')"/>
+  <copy file="${package.root}/test810.properties" todir="${env.config}/test810.properties" if="Version.isEqual(Platform.getVersion(), '8.10')"/>
+</install>
