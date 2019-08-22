@@ -18,6 +18,8 @@
  */
 package org.nuxeo.runtime.cluster;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
@@ -35,7 +37,7 @@ public class ClusterNodeDescriptor implements Descriptor {
     public String name;
 
     @XNode("@enabled")
-    public Boolean enabled;
+    public String enabled;
 
     @Override
     public String getId() {
@@ -53,7 +55,7 @@ public class ClusterNodeDescriptor implements Descriptor {
      * Checks if cluster is enabled for this node. May return {@code null} if there is no configuration.
      */
     public Boolean getEnabled() {
-        return enabled;
+        return isBlank(enabled) ? null : Boolean.valueOf(enabled);
     }
 
     /**
@@ -66,13 +68,9 @@ public class ClusterNodeDescriptor implements Descriptor {
     public ClusterNodeDescriptor merge(Descriptor o) {
         ClusterNodeDescriptor other = (ClusterNodeDescriptor) o;
         ClusterNodeDescriptor merged = new ClusterNodeDescriptor();
-        merged.name = defaultValue(other.name, name);
-        merged.enabled = defaultValue(other.enabled, enabled);
+        merged.name = other.name == null ? name : other.name;
+        merged.enabled = isBlank(other.enabled) ? enabled : other.enabled;
         return merged;
-    }
-
-    protected static <T> T defaultValue(T value, T defaultValue) {
-        return value == null ? defaultValue : value;
     }
 
 }

@@ -48,10 +48,11 @@ opensocial.gadgets.path=/site/gadgets
 opensocial.trusted.hosts=
 
 # Clustering
-nuxeo.cluster.enabled=false
+# use an empty value instead of just false to allow for backward compatibility when repository.clustering.enabled is defined
+nuxeo.cluster.enabled=
 nuxeo.cluster.nodeid=
 # The following are deprecated and replaced by nuxeo.cluster.enabled and nuxeo.cluster.nodeid
-#repository.clustering.enabled=false
+#repository.clustering.enabled=
 #repository.clustering.id=
 # If clustering is activated, set nuxeo.binarystores.root=/path/to/some/shared/folder/for/binaries
 nuxeo.binarystores.root=${nuxeo.data.dir}
