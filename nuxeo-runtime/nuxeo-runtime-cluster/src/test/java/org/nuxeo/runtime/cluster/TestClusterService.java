@@ -66,4 +66,10 @@ public class TestClusterService {
         assertNotNull(clusterService.getNodeId());
     }
 
+    @Test
+    @Deploy("org.nuxeo.runtime.cluster.tests:OSGI-INF/test-blank.xml")
+    public void testClusterNodeEnabledBlank() {
+        assertFalse(clusterService.isEnabled());
+    }
+
 }
