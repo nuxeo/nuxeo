@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,12 +43,9 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
-import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -92,44 +90,46 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     public List<DocumentModel> getComments(DocumentModel docModel) {
-        Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
-                ResourceAdapter.CORE_SESSION_CONTEXT_KEY, docModel.getCoreSession());
-        RelationManager relationManager = Framework.getService(RelationManager.class);
-        Graph graph = relationManager.getGraph(config.graphName, docModel.getCoreSession());
-        Resource docResource = relationManager.getResource(config.documentNamespace, docModel, ctxMap);
-        if (docResource == null) {
-            throw new NuxeoException("Could not adapt document model to relation resource ; "
-                    + "check the service relation adapters configuration");
-        }
-
-        // FIXME AT: why no filter on the predicate?
-        List<Statement> statementList = graph.getStatements(null, null, docResource);
-        if (graph instanceof JenaGraph) {
-            // XXX AT: BBB for when repository name was not included in the
-            // resource uri
-            Resource oldDocResource = new QNameResourceImpl(config.documentNamespace, docModel.getId());
-            statementList.addAll(graph.getStatements(null, null, oldDocResource));
-        }
-
-        List<DocumentModel> commentList = new ArrayList<DocumentModel>();
-        for (Statement stmt : statementList) {
-            QNameResourceImpl subject = (QNameResourceImpl) stmt.getSubject();
-
-            DocumentModel commentDocModel = (DocumentModel) relationManager.getResourceRepresentation(
-                    config.commentNamespace, subject, ctxMap);
-            if (commentDocModel == null) {
-                // XXX AT: maybe user cannot see the comment
-                log.warn("Could not adapt comment relation subject to a document "
-                        + "model; check the service relation adapters configur  ation");
-                continue;
+        return doPrivileged(docModel, session -> {
+            Map<String, Object> ctxMap = Collections.singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
+            RelationManager relationManager = Framework.getService(RelationManager.class);
+            Graph graph = relationManager.getGraph(config.graphName, session);
+            Resource docResource = relationManager.getResource(config.documentNamespace, docModel, ctxMap);
+            if (docResource == null) {
+                throw new NuxeoException("Could not adapt document model to relation resource ; "
+                        + "check the service relation adapters configuration");
             }
-            commentList.add(commentDocModel);
-        }
 
-        CommentSorter sorter = new CommentSorter(true);
-        Collections.sort(commentList, sorter);
+            // FIXME AT: why no filter on the predicate?
+            List<Statement> statementList = graph.getStatements(null, null, docResource);
+            if (graph instanceof JenaGraph) {
+                // XXX AT: BBB for when repository name was not included in the
+                // resource uri
+                Resource oldDocResource = new QNameResourceImpl(config.documentNamespace, docModel.getId());
+                statementList.addAll(graph.getStatements(null, null, oldDocResource));
+            }
 
-        return commentList;
+            List<DocumentModel> commentList = new ArrayList<DocumentModel>();
+            for (Statement stmt : statementList) {
+                QNameResourceImpl subject = (QNameResourceImpl) stmt.getSubject();
+
+                DocumentModel commentDocModel = (DocumentModel) relationManager.getResourceRepresentation(
+                        config.commentNamespace, subject, ctxMap);
+                if (commentDocModel == null) {
+                    // XXX AT: maybe user cannot see the comment
+                    log.warn("Could not adapt comment relation subject to a document "
+                            + "model; check the service relation adapters configur  ation");
+                    continue;
+                }
+                // detach the document as it was loaded by a system session, not the user session.
+                commentDocModel.detach(true);
+                commentList.add(commentDocModel);
+            }
+
+            CommentSorter sorter = new CommentSorter(true);
+            Collections.sort(commentList, sorter);
+            return commentList;
+        });
     }
 
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
@@ -255,7 +255,6 @@ public class CommentManagerImpl implements CommentManager {
         converter.updateDocumentModel(commentDocModel, comment);
         commentDocModel.setPathInfo(pathStr, pss.generatePathSegment(commentDocModel));
         commentDocModel = mySession.createDocument(commentDocModel);
-        setCommentPermissions(commentDocModel);
         log.debug("created comment with id=" + commentDocModel.getId());
 
         return commentDocModel;
@@ -295,23 +294,8 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     private static void setFolderPermissions(DocumentModel dm) {
-        ACP acp = new ACPImpl();
-        ACE grantAddChildren = new ACE("members", SecurityConstants.ADD_CHILDREN, true);
-        ACE grantRemoveChildren = new ACE("members", SecurityConstants.REMOVE_CHILDREN, true);
-        ACE grantRemove = new ACE("members", SecurityConstants.REMOVE, true);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { grantAddChildren, grantRemoveChildren, grantRemove });
-        acp.addACL(acl);
-        dm.setACP(acp, true);
-    }
-
-    private static void setCommentPermissions(DocumentModel dm) {
-        ACP acp = new ACPImpl();
-        ACE grantRead = new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true);
-        ACE grantRemove = new ACE("members", SecurityConstants.REMOVE, true);
-        ACL acl = new ACLImpl();
-        acl.setACEs(new ACE[] { grantRead, grantRemove });
-        acp.addACL(acl);
+        ACP acp = dm.getACP();
+        acp.blockInheritance(ACL.LOCAL_ACL, SecurityConstants.SYSTEM_USERNAME);
         dm.setACP(acp, true);
     }
 
@@ -402,39 +386,51 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
-        Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
-                ResourceAdapter.CORE_SESSION_CONTEXT_KEY, comment.getCoreSession());
-        RelationManager relationManager = Framework.getService(RelationManager.class);
-        Graph graph = relationManager.getGraph(config.graphName, comment.getCoreSession());
-        Resource commentResource = relationManager.getResource(config.commentNamespace, comment, ctxMap);
-        if (commentResource == null) {
-            throw new NuxeoException("Could not adapt document model to relation resource ; "
-                    + "check the service relation adapters configuration");
-        }
-        Resource predicate = new ResourceImpl(config.predicateNamespace);
-
-        List<Statement> statementList = graph.getStatements(commentResource, predicate, null);
-        if (graph instanceof JenaGraph) {
-            // XXX AT: BBB for when repository name was not included in the
-            // resource uri
-            Resource oldDocResource = new QNameResourceImpl(config.commentNamespace, comment.getId());
-            statementList.addAll(graph.getStatements(oldDocResource, predicate, null));
-        }
-
-        List<DocumentModel> docList = new ArrayList<DocumentModel>();
-        for (Statement stmt : statementList) {
-            QNameResourceImpl subject = (QNameResourceImpl) stmt.getObject();
-            DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
-                    config.documentNamespace, subject, ctxMap);
-            if (docModel == null) {
-                log.warn("Could not adapt comment relation subject to a document "
-                        + "model; check the service relation adapters configuration");
-                continue;
+        return doPrivileged(comment, session -> {
+            Map<String, Object> ctxMap = Collections.singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
+            RelationManager relationManager = Framework.getService(RelationManager.class);
+            Graph graph = relationManager.getGraph(config.graphName, session);
+            Resource commentResource = relationManager.getResource(config.commentNamespace, comment, ctxMap);
+            if (commentResource == null) {
+                throw new NuxeoException("Could not adapt document model to relation resource ; "
+                        + "check the service relation adapters configuration");
             }
-            docList.add(docModel);
-        }
-        return docList;
+            Resource predicate = new ResourceImpl(config.predicateNamespace);
 
+            List<Statement> statementList = graph.getStatements(commentResource, predicate, null);
+            if (graph instanceof JenaGraph) {
+                // XXX AT: BBB for when repository name was not included in the
+                // resource uri
+                Resource oldDocResource = new QNameResourceImpl(config.commentNamespace, comment.getId());
+                statementList.addAll(graph.getStatements(oldDocResource, predicate, null));
+            }
+
+            List<DocumentModel> docList = new ArrayList<DocumentModel>();
+            for (Statement stmt : statementList) {
+                QNameResourceImpl subject = (QNameResourceImpl) stmt.getObject();
+                DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
+                        config.documentNamespace, subject, ctxMap);
+                if (docModel == null) {
+                    log.warn("Could not adapt comment relation subject to a document "
+                            + "model; check the service relation adapters configuration");
+                    continue;
+                }
+                // detach the document as it was loaded by a system session, not the user session.
+                docModel.detach(true);
+                docList.add(docModel);
+            }
+            return docList;
+        });
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected List<DocumentModel> doPrivileged(DocumentModel doc, Function<CoreSession, List<DocumentModel>> function) {
+        if (doc.getCoreSession() == null) {
+            return CoreInstance.doPrivileged(doc.getRepositoryName(), function);
+        }
+        return CoreInstance.doPrivileged(doc.getCoreSession(), function);
     }
 
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
