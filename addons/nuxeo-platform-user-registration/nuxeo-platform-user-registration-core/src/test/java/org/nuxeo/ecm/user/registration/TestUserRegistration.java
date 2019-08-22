@@ -27,11 +27,14 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 import org.nuxeo.runtime.api.Framework;
@@ -40,6 +43,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
 public class TestUserRegistration extends AbstractUserRegistration {
+
+    @Inject
+    protected LifeCycleService lifeCycleService;
 
     @Before
     public void init() {
@@ -140,5 +146,11 @@ public class TestUserRegistration extends AbstractUserRegistration {
         Framework.getService(EventService.class).waitForAsyncCompletion();
 
         assertEquals(0, session.query(searchUserRegistration).size());
+    }
+
+    @Test
+    public void testLifeCycleName() {
+        assertEquals("default", lifeCycleService.getLifeCycleNameFor("UserRegistrationContainer"));
+        assertEquals("registrationRequest", lifeCycleService.getLifeCycleNameFor("UserRegistration"));
     }
 }

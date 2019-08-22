@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.registration.core.service.contrib">
+
+  <require>org.nuxeo.ecm.user.registration.core.types.contrib</require>
+  <require>org.nuxeo.ecm.user.invite.core.service.contrib</require>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="UserRegistration" extends="File">
+      <facet name="UserRegistration"/>
+      <facet name="HiddenInNavigation"/>
+    </doctype>
+
+    <doctype name="UserRegistrationContainer" extends="Workspace">
+      <facet name="HiddenInNavigation"/>
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
+             point="types">
+    <types>
+      <type name="UserRegistrationContainer">default</type>
+      <type name="UserRegistration">registrationRequest</type>
+    </types>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.user.registration.UserRegistrationService"
+             point="configuration">
+    <configuration merge="true">
+      <requestDocType>UserRegistration</requestDocType>
+      <container>
+        <docType>UserRegistrationContainer</docType>
+        <parentPath>/management/</parentPath>
+        <name>registrationRequests</name>
+        <title>Registration Requests Container</title>
+      </container>
+      <validationEmail>
+        <title>Hi ${userinfo.firstName} ${userinfo.lastName}! You are invited to access ${productName}</title>
+        <template>skin/views/userRegistration/EmailInviteDocTemplate.ftl</template>
+      </validationEmail>
+      <reviveEmail>
+        <title>You are invited to access Nuxeo</title>
+        <template>skin/views/userRegistration/ReviveEmailInviteDocTemplate.ftl</template>
+      </reviveEmail>
+      <enterPasswordUrl>site/userRegistration/enterpassword/</enterPasswordUrl>
+      <validationRelUrl>site/userRegistration/validate</validationRelUrl>
+      <registrationUserFactory>org.nuxeo.ecm.user.registration.DefaultRegistrationUserFactory</registrationUserFactory>
+    </configuration>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+             point="event">
+    <event name="registrationSubmitted"/>
+    <event name="registrationAccepted"/>
+    <event name="registrationValidated"/>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="openUrl">
+    <openUrl name="RegisterUser_validate">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/validate</grantPattern>
+    </openUrl>
+    <openUrl name="RegisterUser_enterpassword">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userRegistration/enterpassword/.*</grantPattern>
+    </openUrl>
+    <openUrl name="Graphical_Resources">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/registration/.*</grantPattern>
+    </openUrl>
+  </extension>
+</component>

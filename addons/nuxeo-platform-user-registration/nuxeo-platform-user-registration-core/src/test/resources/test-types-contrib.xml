@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.test.ecm.user.registration.core.types.contrib">
 
-  <require>org.nuxeo.ecm.user.registration.core.types.contrib</require>
+  <require>org.nuxeo.ecm.user.registration.core.service.contrib</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
     <doctype name="TestRegistration" extends="File">
@@ -15,6 +15,8 @@
 
   <extension target="org.nuxeo.ecm.user.registration.UserRegistrationService"
              point="configuration">
+
+    <configuration remove="true" />
 
     <configuration>
       <requestDocType>TestRegistration</requestDocType>
