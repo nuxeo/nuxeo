@@ -4,6 +4,8 @@ Bundle-Name: Nuxeo User Registration Core
 Bundle-SymbolicName: org.nuxeo.ecm.user.registration;singleton:=true
 Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=registration;extends=invite;headless=true
 Nuxeo-Component: OSGI-INF/user-registration-core-types-contrib.xml,
  OSGI-INF/user-registration-service-framework.xml,
+ OSGI-INF/user-registration-contrib.xml,
  OSGI-INF/user-registration-listener-contrib.xml
