@@ -282,6 +282,17 @@ public class TestSchemaManager {
         assertFalse(schemaManager.getNoPerDocumentQueryFacets().contains("someFacet"));
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-facet-disabled.xml")
+    public void testFacetDisabled() throws Exception {
+        CompositeType f = schemaManager.getFacet("someFacet");
+        assertNull(f);
+        DocumentType t = schemaManager.getDocumentType("myDoc");
+        assertNotNull(t);
+        assertEquals(Collections.emptySet(), t.getFacets());
+        assertEquals(Collections.emptySet(), new HashSet<>(Arrays.asList(t.getSchemaNames())));
+    }
+
     protected static List<String> schemaNames(List<Schema> schemas) {
         return schemas.stream().map(Schema::getName).collect(Collectors.toList());
     }

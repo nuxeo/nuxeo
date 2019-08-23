@@ -119,6 +119,8 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected Set<String> noPerDocumentQueryFacets = new HashSet<>();
 
+    protected Set<String> disabledFacets = new HashSet<>();
+
     /** Effective document types. */
     protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<>();
 
@@ -502,6 +504,7 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void recomputeFacets() {
         facets.clear();
         noPerDocumentQueryFacets.clear();
+        disabledFacets.clear();
         for (FacetDescriptor fd : allFacets) {
             recomputeFacet(fd);
         }
@@ -512,6 +515,10 @@ public class SchemaManagerImpl implements SchemaManager {
         registerFacet(fd.name, fdSchemas);
         if (Boolean.FALSE.equals(fd.perDocumentQuery)) {
             noPerDocumentQueryFacets.add(fd.name);
+        }
+        if (Boolean.FALSE.equals(fd.enabled)) {
+            disabledFacets.add(fd.name);
+            facets.remove(fd.name);
         }
     }
 
@@ -646,12 +653,18 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String facetName : facetNames) {
             CompositeType ct = facets.get(facetName);
             if (ct == null) {
+                if (disabledFacets.contains(facetName)) {
+                    // facet is disabled, don't WARN about it
+                    log.debug("Disabled facet: {} used in document type: {}", facetName, name);
+                    continue;
+                }
                 log.warn("Undeclared facet: {} used in document type: {}", facetName, name);
                 // register it with no schemas
                 ct = registerFacet(facetName, Collections.emptySet());
             }
             schemaNames.addAll(Arrays.asList(ct.getSchemaNames()));
         }
+        facetNames.removeAll(disabledFacets);
 
         // find the schemas
         List<Schema> docTypeSchemas = new ArrayList<>();
