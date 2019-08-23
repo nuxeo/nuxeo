@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.schema;
 
+import static java.lang.Boolean.FALSE;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -33,6 +35,9 @@ public class FacetDescriptor {
 
     @XNode("@perDocumentQuery")
     public Boolean perDocumentQuery;
+
+    @XNode("@enabled")
+    public Boolean enabled;
 
     @XNodeList(value = "schema", type = SchemaDescriptor[].class, componentType = SchemaDescriptor.class)
     public SchemaDescriptor[] schemas;
@@ -52,7 +57,8 @@ public class FacetDescriptor {
 
     @Override
     public String toString() {
-        return "Facet(" + name + ',' + SchemaDescriptor.getSchemaNames(schemas) + ')';
+        return "Facet(" + name + (FALSE.equals(enabled) ? ",disabled," : ",")
+                + SchemaDescriptor.getSchemaNames(schemas) + ')';
     }
 
 }
