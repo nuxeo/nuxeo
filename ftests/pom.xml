@@ -1,0 +1,119 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-ecm</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ftests</groupId>
+  <artifactId>nuxeo-ftests</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Functional Tests</name>
+
+  <modules>
+    <module>nuxeo-3d-ftests</module>
+    <module>nuxeo-adobe-connector-ftests</module>
+    <module>nuxeo-amazon-s3-ftests</module>
+    <module>nuxeo-audit-storage-directory-ftests</module>
+    <module>nuxeo-cas2-login-ftests</module>
+    <module>nuxeo-csv-ftests</module>
+    <module>nuxeo-dam-ftests</module>
+    <module>nuxeo-datadog-ftests</module>
+    <module>nuxeo-drive-ftests</module>
+    <module>nuxeo-duoweb-authentication-ftests</module>
+    <module>nuxeo-easyshare-ftests</module>
+    <module>nuxeo-fsexporter-ftests</module>
+    <module>nuxeo-imap-connector-ftests</module>
+    <module>nuxeo-importer-ftests</module>
+    <module>nuxeo-jsf-to-web-ui-ftests</module>
+    <module>nuxeo-kerberos-authentication-ftests</module>
+    <module>nuxeo-lang-ext-incomplete-ftests</module>
+    <module>nuxeo-liveconnect-ftests</module>
+    <module>nuxeo-microsoft-azure-ftests</module>
+    <module>nuxeo-multi-tenant-ftests</module>
+    <module>nuxeo-openid-login-ftests</module>
+    <module>nuxeo-quota-ftests</module>
+    <module>nuxeo-saml2-login-ftests</module>
+    <module>nuxeo-scan-importer-ftests</module>
+    <module>nuxeo-shibboleth-login-ftests</module>
+    <module>nuxeo-signature-ftests</module>
+    <module>nuxeo-template-rendering-ftests</module>
+    <module>nuxeo-tree-snapshot-ftests</module>
+    <module>nuxeo-wopi-ftests</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
+      <type>zip</type>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-functional-tests</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <argLine>-Dlog4j.configuration=${file.uri.prefix}${basedir}/src/test/resources/log4j.xml
+                -Dnuxeo.log.dir=${project.build.directory}
+              </argLine>
+              <reportNameSuffix>${project.artifactId}</reportNameSuffix>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/../itests.xml</buildFile>
+          </buildFiles>
+        </configuration>
+      </plugin>
+      <!-- no need to build any ftest jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase/>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- we do not want to deploy any ftest jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
