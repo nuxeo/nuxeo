@@ -1,0 +1,38 @@
+<project name="ftests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <target name="prepare-packages">
+    <copy todir="${out.dir}/packages">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo.packages" type="zip" />
+        </includes>
+      </artifact:set>
+    </copy>
+
+    <!-- compute mp.install property with the list of packages -->
+    <fileset id="packages.list" dir="${out.dir}/packages" />
+    <pathconvert pathsep="," property="packages.list" refid="packages.list" />
+    <property name="mp.install" value="${packages.list}" />
+  </target>
+
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
+    <antcall target="set-conf">
+      <param name="name" value="kerberos.keytab" />
+      <param name="value" value="/opt/build/keystores/keytabs/jenkins.keytab" />
+    </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="kerberos.principal" />
+      <param name="value" value="HTTP/jenkins@AD.IN.NUXEO.COM" />
+    </antcall>
+  </target>
+
+</project>
