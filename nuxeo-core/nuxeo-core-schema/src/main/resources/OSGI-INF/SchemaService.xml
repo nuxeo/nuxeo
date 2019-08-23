@@ -112,12 +112,16 @@
           <schema name="myschema" />
           <schema name="otherschema" />
         </facet>
+        <facet name="MyOldFacet" enabled="false" />
       </code>
 
       Queries using ecm:mixinType on facets marked with
       perDocumentQuery="false" will not match any document where
       this facet has been added using DocumentModel.addFacet() and does
       not belong to the document type (this is done for performance reasons).
+
+      Facets with enabled=false will be ignored in all document types
+      still referencing them, and will not be returned when listing available facets.
 
       It's also possible to associate one or more schemas to all proxies:
       <code>
