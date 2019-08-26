@@ -1,4 +1,7 @@
 # vim:set ft=dockerfile:
+# Choose slim to build a light image without conversion capability
+ARG NUXEO_IMAGE=full
+
 # ------------------------------------------------------------------------
 # Build Stage: Unzip the distribution
 FROM alpine:3.10.2 as distrib
@@ -18,28 +21,47 @@ COPY docker/docker-template /distrib/templates/docker
 
 
 # ------------------------------------------------------------------------
-# Target Stage: Nuxeo image
-FROM       centos:7
-MAINTAINER Nuxeo <packagers@nuxeo.com>
+# Build Stage: Base image with Java and no converter
+FROM centos:7 as slim
 
 # Add Nuxeo Jenkins X Yum repository
 COPY nuxeo.repo /etc/yum.repos.d/
 
-# Add needed convert tools
-RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
-  wget tar less \
+RUN yum -y update && yum -y --setopt=skip_missing_names_on_install=False install \
   java-11-openjdk java-11-openjdk-devel \
+  less \
+  tar \
+  unzip \
+  wget \
+  && yum clean all
+
+# Remove setuid/setgid binaries from images for security
+RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
+
+
+# ------------------------------------------------------------------------
+# Build Stage: Base image with Java and converters
+FROM centos:7 as full
+
+# Add Nuxeo Jenkins X Yum repository
+COPY nuxeo.repo /etc/yum.repos.d/
+
+RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
   ccextractor-0.88-1.el7 \
   ffmpeg-4.1.4-4.el7 \
   ghostscript \
   ImageMagick \
+  java-11-openjdk java-11-openjdk-devel \
+  less \
   libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
   libwpd-tools \
   # required by perl-Image-ExifTool to extract binary metadata from open office document
   perl-Archive-Zip \
   perl-Image-ExifTool \
   poppler-utils \
+  tar \
   ufraw \
+  wget \
   && yum clean all
 
 # Set Java 11 as default java (libreoffice adds Java 8)
@@ -47,6 +69,12 @@ RUN alternatives --set java java-11-openjdk.x86_64
 
 # Remove setuid/setgid binaries from images for security
 RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
+
+
+# ------------------------------------------------------------------------
+# Target Stage: Nuxeo image
+FROM ${NUXEO_IMAGE}
+MAINTAINER Nuxeo <packagers@nuxeo.com>
 
 # Copy distribution
 ENV NUXEO_HOME /opt/nuxeo/server
