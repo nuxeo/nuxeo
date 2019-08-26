@@ -35,7 +35,7 @@ RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing
   ffmpeg-4.1.4-4.el7 \
   ghostscript \
   ImageMagick \
-  libreoffice \
+  libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
   libwpd-tools \
   # required by perl-Image-ExifTool to extract binary metadata from open office document
   perl-Archive-Zip \
