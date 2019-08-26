@@ -13,7 +13,7 @@
             <needStartingURLSaving>true</needStartingURLSaving>
             <parameters>
                 <parameter name="name">PingOne</parameter>
-                <parameter name="icon">nuxeo.war/img/pingOne.png</parameter>
+                <parameter name="icon">/img/pingOne.png</parameter>
                 <parameter name="metadata">nxserver/config/pingone-metadata-idp.xml</parameter>
             </parameters>
         </authenticationPlugin>
