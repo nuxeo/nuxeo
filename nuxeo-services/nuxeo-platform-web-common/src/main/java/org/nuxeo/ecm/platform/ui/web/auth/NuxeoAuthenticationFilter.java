@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.ui.web.auth;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.CALLBACK_URL_PARAMETER;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DRIVE_PROTOCOL;
@@ -546,9 +547,14 @@ public class NuxeoAuthenticationFilter implements Filter {
                 // identity not found in cache or reseted by logout
                 if (cachableUserIdent == null || cachableUserIdent.getUserInfo() == null) {
                     UserIdentificationInfo userIdent = handleRetrieveIdentity(httpRequest, httpResponse);
-                    if (userIdent != null && userIdent.containsValidIdentity()
-                            && userIdent.getUserName().equals(getAnonymousId())) {
-                        if (forceAnonymousLogin) {
+                    if (userIdent != null && userIdent.containsValidIdentity()) {
+                        String userName = userIdent.getUserName();
+                        if (userName.equals(SYSTEM_USERNAME)) {
+                            // always forbidden
+                            buildUnauthorizedResponse(httpRequest, httpResponse);
+                            return;
+                        }
+                        if (userName.equals(getAnonymousId()) && forceAnonymousLogin) {
                             userIdent = null;
                         }
                     }
