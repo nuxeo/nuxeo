@@ -18,9 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.services.bulk;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
@@ -30,6 +27,8 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.bulk.BulkService;
 
@@ -56,7 +55,7 @@ public class BulkWaitForAction {
     protected long timeout = 60L;
 
     @OperationMethod
-    public Boolean run() {
+    public Blob run() {
         try {
             if (!bulkService.await(commandId, Duration.ofSeconds(timeout))) {
                 throw new TimeoutException();
@@ -66,9 +65,9 @@ public class BulkWaitForAction {
                 // reset interrupted status
                 Thread.currentThread().interrupt();
             }
-            return FALSE;
+            return Blobs.JSON_FALSE;
         }
-        return TRUE;
+        return Blobs.JSON_TRUE;
     }
 
 }

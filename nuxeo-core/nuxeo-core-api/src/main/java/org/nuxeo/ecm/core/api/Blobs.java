@@ -37,6 +37,12 @@ public class Blobs {
     private Blobs() {
     }
 
+    public static final Blob JSON_FALSE = new StringBlob("{\"entity-type\":\"boolean\",\"value\":false}",
+            "application/json");
+
+    public static final Blob JSON_TRUE = new StringBlob("{\"entity-type\":\"boolean\",\"value\":true}",
+            "application/json");
+
     /**
      * Creates a {@link Blob} backed by the given {@link File}.
      *
