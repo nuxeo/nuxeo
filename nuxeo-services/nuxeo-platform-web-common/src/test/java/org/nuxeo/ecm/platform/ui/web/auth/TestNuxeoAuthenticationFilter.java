@@ -37,6 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginAnonymous.DUMMY_ANONYMOUS_LOGIN;
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm.DUMMY_AUTH_FORM_PASSWORD_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm.DUMMY_AUTH_FORM_USERNAME_KEY;
@@ -510,6 +511,43 @@ public class TestNuxeoAuthenticationFilter {
         // chain not called, as we redirect
         assertFalse(chain.called);
 
+        // no login event
+        checkNoEvents();
+
+        // redirecting to /login
+        verify(response).setStatus(SC_UNAUTHORIZED);
+        verify(response).addHeader(eq("Location"), eq("http://localhost:8080/nuxeo/" + LOGIN_PAGE));
+    }
+
+    /**
+     * Basic immediate login with the forbidden system user. Redirects to login page.
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-loginmodule.xml")
+    @Deploy("org.nuxeo.ecm.platform.web.common.test:OSGI-INF/test-authchain-dummy-token.xml")
+    public void testAuthAsSystemIsForbidden() throws Exception {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        HttpSession session = mock(HttpSession.class);
+        Map<String, Object> sessionAttributes = mockSessionAttributes(session);
+        when(request.getSession(anyBoolean())).thenReturn(session);
+        mockRequestURI(request, "/foo/bar", "", "");
+        // token info contains system user
+        when(request.getParameter(eq(DUMMY_AUTH_TOKEN_KEY))).thenReturn(SYSTEM_USERNAME);
+        // record output
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        @SuppressWarnings("resource")
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(out, UTF_8), true);
+        when(response.getWriter()).thenReturn(writer);
+
+        filter.doFilter(request, response, chain);
+
+        // chain not called
+        assertFalse(chain.called);
+        // no auth
+        assertNull(chain.principal);
+        // no cached auth
+        checkNoCachedUser(sessionAttributes);
         // no login event
         checkNoEvents();
 
