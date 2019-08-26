@@ -1,4 +1,24 @@
 # vim:set ft=dockerfile:
+# ------------------------------------------------------------------------
+# Build Stage: Unzip the distribution
+FROM alpine:3.10.2 as distrib
+
+COPY target/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
+
+RUN mkdir -p /tmp/nuxeo-distribution \
+  && unzip -q -d /tmp/nuxeo-distribution /tmp/nuxeo-distribution-tomcat.zip \
+  && DISTDIR=$(/bin/ls /tmp/nuxeo-distribution | head -n 1) \
+  && mv /tmp/nuxeo-distribution/$DISTDIR /distrib \
+  && sed -i -e "s/^org.nuxeo.distribution.package.*/org.nuxeo.distribution.package=docker/" /distrib/templates/common/config/distribution.properties \
+  && rm -rf /tmp/nuxeo-distribution* \
+  && chmod +x /distrib/bin/*ctl /distrib/bin/*.sh \
+  && chown -R 1000:0 /distrib && chmod -R g+rwX /distrib
+
+COPY docker/docker-template /distrib/templates/docker
+
+
+# ------------------------------------------------------------------------
+# Target Stage: Nuxeo image
 FROM       centos:7
 MAINTAINER Nuxeo <packagers@nuxeo.com>
 
@@ -39,20 +59,9 @@ ARG NUXEO_VERSION=master
 RUN useradd -m -d /home/$NUXEO_USER -u 1000 -s /bin/bash $NUXEO_USER
 
 # Add distribution
-COPY target/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
-RUN mkdir -p /tmp/nuxeo-distribution $(dirname $NUXEO_HOME) \
-  && unzip -q -d /tmp/nuxeo-distribution /tmp/nuxeo-distribution-tomcat.zip \
-  && DISTDIR=$(/bin/ls /tmp/nuxeo-distribution | head -n 1) \
-  && mv /tmp/nuxeo-distribution/$DISTDIR $NUXEO_HOME \
-  && sed -i -e "s/^org.nuxeo.distribution.package.*/org.nuxeo.distribution.package=docker/" $NUXEO_HOME/templates/common/config/distribution.properties \
-  && rm -rf /tmp/nuxeo-distribution* \
-  && chmod +x $NUXEO_HOME/bin/*ctl $NUXEO_HOME/bin/*.sh \
-  # For arbitrary user in the admin group
-  && chmod g+rwX $NUXEO_HOME/bin/*ctl $NUXEO_HOME/bin/*.sh \
-  && $NUXEO_HOME/bin/nuxeoctl mp-init \
-  && chown -R 1000:0 $NUXEO_HOME && chmod -R g+rwX $NUXEO_HOME
+COPY --from=distrib --chown=1000:0 /distrib $NUXEO_HOME
+COPY --chown=1000:0 docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
 
-COPY docker/docker-template $NUXEO_HOME/templates/docker
 COPY docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
 ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
 
