@@ -22,14 +22,12 @@ COPY docker/docker-template /distrib/templates/docker
 FROM       centos:7
 MAINTAINER Nuxeo <packagers@nuxeo.com>
 
-# Install wget and tar
-RUN yum -y install wget tar
-
 # Add Nuxeo Jenkins X Yum repository
 COPY nuxeo.repo /etc/yum.repos.d/
 
 # Add needed convert tools
 RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
+  wget tar less \
   java-11-openjdk java-11-openjdk-devel \
   ccextractor-0.88-1.el7 \
   ffmpeg-4.1.4-4.el7 \
@@ -50,20 +48,15 @@ RUN alternatives --set java java-11-openjdk.x86_64
 # Remove setuid/setgid binaries from images for security
 RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 
-ENV NUXEO_USER nuxeo
+# Copy distribution
 ENV NUXEO_HOME /opt/nuxeo/server
-ENV HOME /opt/nuxeo/server
-ARG NUXEO_VERSION=master
-
-# Create Nuxeo user
-RUN useradd -m -d /home/$NUXEO_USER -u 1000 -s /bin/bash $NUXEO_USER
-
-# Add distribution
 COPY --from=distrib --chown=1000:0 /distrib $NUXEO_HOME
 COPY --chown=1000:0 docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
+COPY docker/docker-entrypoint.sh /
 
-COPY docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
-ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
+# Add a nuxeo user
+ENV NUXEO_USER nuxeo
+RUN useradd -m -d $NUXEO_HOME -u 1000 -s /bin/bash $NUXEO_USER
 
 # Protecting writeable directories to support arbitrary User IDs for OpenShift
 # https://docs.openshift.com/container-platform/3.4/creating_images/guidelines.html
@@ -78,12 +71,11 @@ RUN chown -R 1000:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo && rm -f $NUXEO_HOME/bi
   && chown -R 1000:0 /docker-entrypoint-initnuxeo.d && chmod -R g+rwX /docker-entrypoint-initnuxeo.d  \
   && chmod g=u /etc/passwd
 
+ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
+ENV HOME $NUXEO_HOME
 ENV PATH $NUXEO_HOME/bin:$PATH
-
 WORKDIR $NUXEO_HOME
-COPY docker/docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 8080
-CMD ["nuxeoctl","console"]
-
 USER 1000
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nuxeoctl","console"]
