@@ -30,6 +30,8 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
@@ -70,7 +72,7 @@ public class ElasticsearchWaitForIndexingOperation {
     protected Boolean waitForAudit = false;
 
     @OperationMethod
-    public Boolean run() {
+    public Blob run() {
         long start = System.currentTimeMillis();
         WorkManager workManager = Framework.getService(WorkManager.class);
         AuditLogger auditLogger = Framework.getService(AuditLogger.class);
@@ -85,13 +87,13 @@ public class ElasticsearchWaitForIndexingOperation {
             esa.prepareWaitForIndexing().get(computeRemainingTime(start), TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return Boolean.FALSE;
+            return Blobs.JSON_FALSE;
         } catch (TimeoutException | ExecutionException e) {
             if (ExceptionUtils.hasInterruptedCause(e)) {
                 // reset interrupted status
                 Thread.currentThread().interrupt();
             }
-            return Boolean.FALSE;
+            return Blobs.JSON_FALSE;
         }
         if (refresh) {
             esa.refreshRepositoryIndex(repo.getRepositoryName());
@@ -99,7 +101,7 @@ public class ElasticsearchWaitForIndexingOperation {
                 esa.getClient().refresh(esa.getIndexNameForType(ElasticSearchConstants.ENTRY_TYPE));
             }
         }
-        return Boolean.TRUE;
+        return Blobs.JSON_TRUE;
     }
 
     protected long computeRemainingTime(long start) {
