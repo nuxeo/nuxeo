@@ -22,6 +22,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_AUTHENTICATION_FAILED;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ERROR_CONNECTION_FAILED;
@@ -520,10 +521,15 @@ public class NuxeoAuthenticationFilter implements Filter {
                 // identity not found in cache or reseted by logout
                 if (cachableUserIdent == null || cachableUserIdent.getUserInfo() == null) {
                     UserIdentificationInfo userIdent = handleRetrieveIdentity(httpRequest, httpResponse);
-                    if (userIdent != null && userIdent.containsValidIdentity()
-                            && userIdent.getUserName().equals(getAnonymousId())) {
+                    if (userIdent != null && userIdent.containsValidIdentity()) {
+                        String userName = userIdent.getUserName();
+                        if (userName.equals(SYSTEM_USERNAME)) {
+                            // always forbidden
+                            buildUnauthorizedResponse(httpRequest, httpResponse);
+                            return;
+                        }
                         String forceAuth = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
-                        if (forceAuth != null && forceAuth.equals("true")) {
+                        if (userName.equals(getAnonymousId()) && "true".equals(forceAuth)) {
                             userIdent = null;
                         }
                     }
