@@ -1513,19 +1513,6 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.nuxeo.shibboleth.invitation</groupId>
-        <artifactId>nuxeo-shibboleth-invitation</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
-      <!-- User Registration -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-user-registration-core</artifactId>
-        <version>${nuxeo.user.registration.version}</version>
-      </dependency>
-
       <!-- Filesystem connectors -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

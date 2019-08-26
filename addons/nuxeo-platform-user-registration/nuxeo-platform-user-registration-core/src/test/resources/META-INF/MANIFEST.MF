@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo User Registration Core Test
-Bundle-SymbolicName: org.nuxeo.ecm.user.registration.test;singleton:=true
-Bundle-Vendor: Nuxeo
-Bundle-Version: 1.0.0

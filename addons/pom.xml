@@ -19,7 +19,6 @@
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
-    <module>nuxeo-platform-user-registration</module>
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-platform-suggestbox</module>
@@ -40,7 +39,6 @@
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-liveconnect</module>
     <module>nuxeo-datadog-reporter</module>
-    <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-platform-3d</module>
