@@ -5,21 +5,12 @@ MAINTAINER Nuxeo <packagers@nuxeo.com>
 # Install wget and tar
 RUN yum -y install wget tar
 
-# Install Java
-ARG JAVA_ARCHIVE=OpenJDK11U-jdk_x64_linux_hotspot_11.0.4_11.tar.gz
-ARG JAVA_HOME_DIR=jdk-11.0.4+11
-RUN wget https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.4%2B11/OpenJDK11U-jdk_x64_linux_hotspot_11.0.4_11.tar.gz \
-  && echo "90c33cf3f2ed0bd773f648815de7347e69cfbb3416ef3bf41616ab1c4aa0f5a8 $JAVA_ARCHIVE" | sha256sum -c - \
-  && tar zxvf $JAVA_ARCHIVE \
-  && rm $JAVA_ARCHIVE \
-  && mv $JAVA_HOME_DIR /usr/local/
-ENV JAVA_HOME /usr/local/$JAVA_HOME_DIR
-
 # Add Nuxeo Jenkins X Yum repository
 COPY nuxeo.repo /etc/yum.repos.d/
 
 # Add needed convert tools
 RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
+  java-11-openjdk java-11-openjdk-devel \
   ccextractor-0.88-1.el7 \
   ffmpeg-4.1.4-4.el7 \
   ghostscript \
@@ -32,6 +23,9 @@ RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing
   poppler-utils \
   ufraw \
   && yum clean all
+
+# Set Java 11 as default java (libreoffice adds Java 8)
+RUN alternatives --set java java-11-openjdk.x86_64
 
 # Remove setuid/setgid binaries from images for security
 RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
