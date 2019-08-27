@@ -25,6 +25,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * Encapsulates some information about a user and how it must be authenticated.
  *
@@ -115,6 +118,34 @@ public class UserIdentificationInfo implements Serializable {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(userName)
+                                    .append(password)
+                                    .append(token)
+                                    .append(authPluginName)
+                                    .append(loginPluginName)
+                                    .append(loginParameters.hashCode())
+                                    .hashCode();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        } else if (!(object instanceof UserIdentificationInfo)) {
+            return false;
+        }
+        UserIdentificationInfo other = (UserIdentificationInfo) object;
+        return new EqualsBuilder().append(userName, other.userName)
+                                  .append(password, other.password)
+                                  .append(token, other.token)
+                                  .append(authPluginName, other.authPluginName)
+                                  .append(loginPluginName, other.loginPluginName)
+                                  .appendSuper(loginParameters.equals(other.loginParameters))
+                                  .isEquals();
     }
 
 }

@@ -56,11 +56,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.security.Principal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 
 import javax.naming.NamingException;
 import javax.security.auth.callback.CallbackHandler;
@@ -116,6 +118,8 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 import com.codahale.metrics.Timer;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Servlet filter handling Nuxeo authentication (JAAS + EJB).
@@ -289,13 +293,35 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
     }
 
+    // cache of LoginContext, per security domain and per user info
+    protected static final ThreadLocal<Map<String, Cache<UserIdentificationInfo, LoginContext>>> LOGIN_CONTEXTS = ThreadLocal.withInitial(
+            () -> new HashMap<>());
+
     protected Principal doAuthenticate(CachableUserIdentificationInfo cachableUserIdent,
             HttpServletRequest httpRequest) {
 
+        UserIdentificationInfo userInfo = cachableUserIdent.getUserInfo();
+
         LoginContext loginContext;
         try {
-            CallbackHandler handler = service.getCallbackHandler(cachableUserIdent.getUserInfo());
-            loginContext = new LoginContext(securityDomain, handler);
+            // LoginContext.login() is extremely costly since Java 9 (JDK-8047789)
+            // because it does a full scan of all the JARs using a ServiceLoader to
+            // find the available LoginModules.
+            // To avoid this, we attempt to cache the LoginContext.
+
+            Function<String, Cache<UserIdentificationInfo, LoginContext>> cacheBuilder;
+            cacheBuilder = k -> CacheBuilder.newBuilder()
+                                            .maximumSize(1000)
+                                            .expireAfterWrite(Duration.ofMinutes(10))
+                                            .build();
+            Cache<UserIdentificationInfo, LoginContext> lcs = //
+                    LOGIN_CONTEXTS.get().computeIfAbsent(securityDomain, cacheBuilder);
+            loginContext = lcs.getIfPresent(userInfo);
+            if (loginContext == null) {
+                CallbackHandler handler = service.getCallbackHandler(userInfo);
+                loginContext = new LoginContext(securityDomain, handler);
+                lcs.put(userInfo, loginContext);
+            }
 
             if (isLoginSynchronized()) {
                 synchronized (NuxeoAuthenticationFilter.class) {
@@ -310,16 +336,16 @@ public class NuxeoAuthenticationFilter implements Filter {
             cachableUserIdent.setAlreadyAuthenticated(true);
             // re-set the userName since for some SSO based on token,
             // the userName is not known before login is completed
-            cachableUserIdent.getUserInfo().setUserName(principal.getName());
+            userInfo.setUserName(principal.getName());
 
-            logAuthenticationAttempt(cachableUserIdent.getUserInfo(), true);
+            logAuthenticationAttempt(userInfo, true);
         } catch (LoginException e) {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Login failed for %s on request %s",
-                        cachableUserIdent.getUserInfo().getUserName(), httpRequest.getRequestURI()));
+                        userInfo.getUserName(), httpRequest.getRequestURI()));
             }
             log.debug(e, e);
-            logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
+            logAuthenticationAttempt(userInfo, false);
             Throwable cause = e.getCause();
             if (cause instanceof DirectoryException) {
                 Throwable rootCause = ExceptionUtils.getRootCause(cause);
@@ -347,7 +373,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         // store user ident
         cachableUserIdent.setLoginContext(loginContext);
-        boolean createSession = needSessionSaving(cachableUserIdent.getUserInfo());
+        boolean createSession = needSessionSaving(userInfo);
         HttpSession session = httpRequest.getSession(createSession);
         if (session != null) {
             session.setAttribute(USERIDENT_KEY, cachableUserIdent);
