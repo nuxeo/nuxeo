@@ -35,7 +35,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 public class LoginModuleDescriptor {
 
     @XNode("@code")
-    public Class<?> code;
+    public String code;
 
     @XNode("@flag")
     public String flag;
