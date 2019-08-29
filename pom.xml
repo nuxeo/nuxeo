@@ -1719,35 +1719,6 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
-      <!-- Nuxeo diff -->
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-diff-core</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-diff-content</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-diff-content</artifactId>
-        <version>${nuxeo.addons.version}</version>
-        <type>test-jar</type>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-diff-pictures</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm</groupId>
-        <artifactId>nuxeo-diff-test</artifactId>
-        <version>${nuxeo.addons.version}</version>
-      </dependency>
-
       <!-- Template rendering -->
       <dependency>
         <groupId>org.nuxeo.template.rendering</groupId>
@@ -4476,20 +4447,6 @@
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-naming</artifactId>
         <version>3.18</version>
-      </dependency>
-
-      <!-- daisydiff -->
-      <dependency>
-        <groupId>org.outerj.daisy</groupId>
-        <artifactId>daisydiff</artifactId>
-        <classifier>shaded</classifier>
-        <version>1.2-NX2</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.eclipse.core.runtime</groupId>
-            <artifactId>eclipse-core-runtime</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
