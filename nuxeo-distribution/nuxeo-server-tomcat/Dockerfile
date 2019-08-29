@@ -15,8 +15,11 @@ RUN wget https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jd
   && mv $JAVA_HOME_DIR /usr/local/
 ENV JAVA_HOME /usr/local/$JAVA_HOME_DIR
 
+# Add Nuxeo Jenkins X Yum repository
+COPY nuxeo.repo /etc/yum.repos.d/
+
 # Add needed convert tools
-RUN yum -y update && yum -y install epel-release && yum -y install \
+RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
   ccextractor-0.88-1.el7 \
   ffmpeg-4.1.4-4.el7 \
   ghostscript \
