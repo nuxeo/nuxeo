@@ -1,0 +1,5 @@
+[nuxeo]
+name=Nuxeo Jenkins X Repository
+baseurl=http://nexus/repository/yum-registry/
+enabled=1
+gpgcheck=0
