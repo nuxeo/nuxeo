@@ -19,23 +19,11 @@
 
 package org.nuxeo.ecm.platform.video.convert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assume;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -51,6 +39,14 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * @since 5.5
@@ -145,6 +141,28 @@ public class VideoConversionTest {
         Assume.assumeTrue("ffmpeg-toavi is not available, skipping test", ca.isAvailable());
 
         BlobHolder result = applyConverter(Constants.TO_AVI_CONVERTER, DELTA_MP4, "video/x-msvideo", 120);
+        List<Blob> blobs = result.getBlobs();
+        assertFalse(blobs.isEmpty());
+        assertEquals(1, blobs.size());
+        Blob blob = blobs.get(0);
+        assertEquals("DELTA.avi", blob.getFilename());
+        assertEquals("video/x-msvideo", blob.getMimeType());
+    }
+
+    @Test
+    public void testAVIConversionWithEmptyVideoInfos() throws Exception {
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-toavi");
+        Assume.assumeTrue("ffmpeg-toavi is not available, skipping test", ca.isAvailable());
+
+        assertNotNull(cs.getRegistredConverters().contains(Constants.TO_AVI_CONVERTER));
+        BlobHolder in = getBlobFromPath(DELTA_MP4, "video/x-msvideo");
+        Map<String, Serializable> parameters = new HashMap<>() {{
+            put("videoInfo", VideoInfo.EMPTY_INFO);
+            put("height", 120);
+        }};
+        BlobHolder result = cs.convert(Constants.TO_AVI_CONVERTER, in, parameters);
+        assertNotNull(result);
+
         List<Blob> blobs = result.getBlobs();
         assertFalse(blobs.isEmpty());
         assertEquals(1, blobs.size());
