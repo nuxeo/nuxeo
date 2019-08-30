@@ -41,12 +41,14 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
@@ -560,8 +562,14 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
             subComment.setText(text);
             subComment.setParentId(createdComment.getId());
 
-            Comment createdSubcomment = commentManager.createComment(johnSession, subComment);
-            assertEquals(createdComment.getId(), createdSubcomment.getParentId());
+            Comment createdSubComment = commentManager.createComment(johnSession, subComment);
+            assertEquals(createdComment.getId(), createdSubComment.getParentId());
+
+            DocumentModel commentDocModel = johnSession.getDocument(new IdRef(createdComment.getId()));
+            DocumentModel subCommentDocModel = johnSession.getDocument(new IdRef(createdSubComment.getId()));
+
+            assertEquals(doc.getId(), johnSession.getDocument(commentDocModel.getParentRef()).getId());
+            assertEquals(doc.getId(), johnSession.getDocument(subCommentDocModel.getParentRef()).getId());
         }
 
         try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
@@ -603,11 +611,19 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         subComment = commentManager.createComment(session, subComment);
 
+        // User john can get the comment by two ways using the CommentManager#getComment or the Session#getDocument
         try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
             Comment createdComment = commentManager.getComment(johnSession, comment.getId());
             assertEquals(doc.getId(), createdComment.getParentId());
-            Comment createdSubcomment = commentManager.getComment(johnSession, subComment.getId());
-            assertEquals(comment.getId(), createdSubcomment.getParentId());
+            Comment createdSubComment = commentManager.getComment(johnSession, subComment.getId());
+            assertEquals(comment.getId(), createdSubComment.getParentId());
+
+            DocumentModelList documents = johnSession.getDocuments(
+                    new DocumentRef[] { new IdRef(createdComment.getId()), new IdRef(createdSubComment.getId()) });
+            assertEquals(2, documents.size());
+
+            assertEquals(doc.getId(), johnSession.getDocument(documents.get(0).getParentRef()).getId());
+            assertEquals(doc.getId(), johnSession.getDocument(documents.get(1).getParentRef()).getId());
         }
 
         try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
@@ -623,6 +639,57 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         } catch (CommentSecurityException e) {
             assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
                     e.getMessage());
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            DocumentModelList documents = janeSession.getDocuments(
+                    new DocumentRef[] { new IdRef(comment.getId()), new IdRef(subComment.getId()) });
+            assertEquals(0, documents.size());
+        }
+    }
+
+    @Test
+    public void testQueryCommentAsRegularUser() {
+
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        ACPImpl acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("john", SecurityConstants.READ, true));
+        session.setACP(doc.getRef(), acp, false);
+        session.save();
+
+        String query = String.format("Select * From Document where %s = '%s'", NXQL.ECM_PARENTID, doc.getId());
+
+        try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
+            String author = "john";
+            String text = "I am a comment !";
+            Comment comment = new CommentImpl();
+            comment.setAuthor(author);
+            comment.setText(text);
+            comment.setParentId(doc.getId());
+            comment = commentManager.createComment(johnSession, comment);
+
+            Comment subComment = new CommentImpl();
+            subComment.setAuthor(author);
+            subComment.setText("I reply to the last comment");
+            subComment.setParentId(comment.getId());
+            commentManager.createComment(johnSession, subComment);
+
+            johnSession.save();
+
+            DocumentModelList documents = johnSession.query(query);
+            assertEquals(2, documents.size());
+
+            assertEquals(doc.getId(), johnSession.getDocument(documents.get(0).getParentRef()).getId());
+            assertEquals(doc.getId(), johnSession.getDocument(documents.get(1).getParentRef()).getId());
+        }
+
+        try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
+            DocumentModelList documents = janeSession.query(query);
+            assertEquals(0, documents.size());
         }
     }
 

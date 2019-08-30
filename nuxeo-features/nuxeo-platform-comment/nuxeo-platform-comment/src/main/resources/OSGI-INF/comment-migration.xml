@@ -14,10 +14,19 @@
         <description label="migration.comment-storage.property">Comments stored with their parent id as property
         </description>
       </state>
+      <state id="secured">
+        <description label="migration.comment-storage.secured">Comments stored under the commented document
+          (ecm:parentId will be this commented document)
+        </description>
+      </state>
 
       <step id="relation-to-property" fromState="relation" toState="property">
         <description label="migration.comment-storage.relation-to-property">Migrate comments from relations to the
           parent id property usage
+        </description>
+      </step>
+      <step id="property-to-secured" fromState="property" toState="secured">
+        <description label="migration.comment-storage.property-to-secured">Migrate comments under the commented document
         </description>
       </step>
     </migration>

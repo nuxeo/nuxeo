@@ -114,7 +114,9 @@ public abstract class AbstractTestCommentManager {
         comment = commentManager.createComment(session, comment);
         assertEquals(author, comment.getAuthor());
         assertEquals(text, comment.getText());
-        assertTrue(comment.getAncestorIds().contains(doc.getId()));
+
+        assertEquals(doc.getRef(),
+                commentManager.getAncestorRef(session, new IdRef(comment.getId())));
 
         // Create a comment in a specific location
         DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
@@ -225,6 +227,38 @@ public abstract class AbstractTestCommentManager {
         commentableDocument.removeComment(newComment);
         assertTrue(commentableDocument.getComments().isEmpty());
 
+    }
+
+    @Test
+    public void testGetAncestorDocument() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(doc.getId());
+
+        // Create any comment
+        comment = commentManager.createComment(session, comment);
+
+        // Reply on this comment, needs to leverage CommentableDocumentAdapter#addComment (case of PropertyManager)
+        DocumentModel replyModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
+        CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
+
+        DocumentModel reply = commentableDocument.addComment(session.getDocument(new IdRef(comment.getId())),
+                replyModel);
+
+        // Created comments are detached. Reload the document to have a non-null CoreSession.
+        assertEquals(doc.getRef(),
+                commentManager.getAncestorRef(session, new IdRef(comment.getId())));
+        assertEquals(doc.getRef(),
+                commentManager.getAncestorRef(session, new IdRef(reply.getId())));
     }
 
     public static CommentServiceConfig newConfig() {
