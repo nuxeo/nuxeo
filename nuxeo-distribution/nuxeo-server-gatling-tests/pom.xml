@@ -80,13 +80,6 @@
                 <jvmArg>-Xms1g</jvmArg>
                 <jvmArg>-Xmx2g</jvmArg>
                 <jvmArg>-Xmn400m</jvmArg>
-                <jvmArg>-XX:+UseParNewGC</jvmArg>
-                <jvmArg>-XX:+UseConcMarkSweepGC</jvmArg>
-                <jvmArg>-XX:+CMSParallelRemarkEnabled</jvmArg>
-                <jvmArg>-XX:+AggressiveOpts</jvmArg>
-                <jvmArg>-XX:+OptimizeStringConcat</jvmArg>
-                <jvmArg>-XX:+UseThreadPriorities</jvmArg>
-                <jvmArg>-XX:ThreadPriorityPolicy=42</jvmArg>
                 <!--<jvmArg>-Dcom.sun.management.jmxremote.autodiscovery=true</jvmArg> -->
                 <!--<jvmArg>-Dcom.sun.management.jdp.name=gatling</jvmArg> -->
                 <!--<jvmArg>-XX:+UnlockCommercialFeatures</jvmArg> -->

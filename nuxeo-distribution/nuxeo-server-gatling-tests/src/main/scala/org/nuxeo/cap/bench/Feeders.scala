@@ -23,9 +23,9 @@ import io.gatling.core.Predef._
 object Feeders {
 
   // csv feeds
-  val users = csv("users.csv").circular
-  val admins = csv("admins.csv").circular
-  val fulltextSearch = csv("fulltext.csv").circular
+  val users = csv("data/users.csv").circular
+  val admins = csv("data/admins.csv").circular
+  val fulltextSearch = csv("data/fulltext.csv").circular
 
   // redis feeds
   def createDocFeeder() = {
