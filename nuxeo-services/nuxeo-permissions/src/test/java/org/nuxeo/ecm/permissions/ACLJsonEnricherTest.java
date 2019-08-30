@@ -128,6 +128,9 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json = json.has("aces").get(3);
         json.has("username").isObject();
         json.has("creator").isObject();
+
+        // ACL enricher does not return references (groups) any more
+        json.get("username").get("properties").get("groups").hasNot(0);
     }
 
     @Test
