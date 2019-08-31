@@ -42,11 +42,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
  * @author Benjamin JALON
  */
 @Deploy("org.nuxeo.ecm.platform.login.cas2")
-@Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-yes-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/login-cas-and-anonymous-contrib.xml")
 public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
-
-    protected static final String CAS_USER = "CasUser";
 
     protected static final String TICKET_KEY = "ticket";
 
@@ -59,7 +56,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         naf.doFilter(request, response, chain);
 
         String loginError = (String) request.getAttribute(NXAuthConstants.LOGIN_ERROR);
-        LoginContext loginContext = (LoginContext) request.getAttribute("org.nuxeo.ecm.login.context");
+        LoginContext loginContext = (LoginContext) request.getAttribute(NXAuthConstants.LOGINCONTEXT_KEY);
         assertNull(loginError);
         assertNotNull(loginContext);
         assertEquals(CAS_USER, ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());
@@ -72,7 +69,7 @@ public class TestCASAndAnonymousAuthenticator extends AbstractAuthenticator {
         naf.doFilter(request, response, chain);
 
         String loginError = (String) request.getAttribute(NXAuthConstants.LOGIN_ERROR);
-        LoginContext loginContext = (LoginContext) request.getAttribute("org.nuxeo.ecm.login.context");
+        LoginContext loginContext = (LoginContext) request.getAttribute(NXAuthConstants.LOGINCONTEXT_KEY);
         assertNull(loginError);
         assertNotNull(loginContext);
         assertEquals("Anonymous", ((Principal) loginContext.getSubject().getPrincipals().toArray()[0]).getName());

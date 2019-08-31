@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.login.Cas2SSO">
    <documentation><pre>
-   		CAS2 Authentication Plugin
-   		Parameters include :
-   		 - ticketKey : name of the ticket parameter in the URL
-   		 - appURL : url used to connect to nuxeo when CAS auth is done
-   		   ( can be $NUXEO to let Nuxeo compute the URL)
-   		 - serviceLoginURL : CAS url for login form
-   		   ( can use $CASSERVER to let nuxeo define url according to CasServer header)
-   		 - serviceValidateURL : CAS url for ticket validation
-   		   ( can use $CASSERVER to let nuxeo define url according to CasServer header)
-   		 - serviceKey : name of the service parameter in the URL
-		 - excludePromptURL : if requested url starts with this value, there will be no CAS authentication
-		   (you can add multiple exclude path by adding different suffix to the parameter name)
+       CAS2 Authentication Plugin
+       Parameters include :
+        - ticketKey : name of the ticket parameter in the URL
+        - appURL : url used to connect to nuxeo when CAS auth is done
+          ( can be $NUXEO to let Nuxeo compute the URL)
+        - serviceLoginURL : CAS url for login form
+          ( can use $CASSERVER to let nuxeo define url according to CasServer header)
+        - serviceValidateURL : CAS url for ticket validation
+          ( can use $CASSERVER to let nuxeo define url according to CasServer header)
+        - serviceKey : name of the service parameter in the URL
+     - excludePromptURL : if requested url starts with this value, there will be no CAS authentication
+       (you can add multiple exclude path by adding different suffix to the parameter name)
    </pre>
    </documentation>
    <extension
@@ -22,7 +22,6 @@
               name="CAS2_AUTH"
               enabled="true"
               class="org.nuxeo.ecm.platform.ui.web.auth.cas2.Cas2Authenticator">
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <needStartingURLSaving>true</needStartingURLSaving>
        <parameters>
          <parameter name="ticketKey">ticket</parameter>

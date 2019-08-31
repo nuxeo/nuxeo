@@ -8,7 +8,6 @@
     <authenticationPlugin name="ANONYMOUS_AUTH" enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.DummyAuthenticator">
       <stateful>false</stateful>
-      <loginModulePlugin>Dummy_LM</loginModulePlugin>
       <needStartingURLSaving>true</needStartingURLSaving>
     </authenticationPlugin>
 

@@ -9,7 +9,6 @@
       <authenticationPlugin
               name="CAS2_AUTH">
        <needStartingURLSaving>true</needStartingURLSaving>
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="ticketKey">ticket</parameter>
          <parameter name="appURL">http://127.0.0.1:8080/nuxeo/nxstartup.faces</parameter>
@@ -22,7 +21,6 @@
 
     <authenticationPlugin name="ANONYMOUS_AUTH_FOR_CAS2" enabled="true"
         class="org.nuxeo.ecm.platform.ui.web.auth.cas2.AnonymousAuthenticatorForCAS2">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
     </authenticationPlugin>
   </extension>
 
@@ -51,7 +49,7 @@
       </users>
     </userManager>
   </extension>
-  
 
-  
+
+
 </component>

@@ -38,13 +38,17 @@ public class UserIdentificationInfo implements Serializable {
 
     protected String password;
 
+    /** @since 11.1 */
+    protected boolean credentialsChecked;
+
     protected String token;
 
     protected String authPluginName;
 
-    protected String loginPluginName;
-
-    protected final Map<String, String> loginParameters = new HashMap<>();
+    public UserIdentificationInfo(String userName) {
+        this.userName = userName;
+        this.credentialsChecked = true;
+    }
 
     public UserIdentificationInfo(String userName, String password) {
         this.userName = userName;
@@ -53,6 +57,8 @@ public class UserIdentificationInfo implements Serializable {
 
     public UserIdentificationInfo(UserIdentificationInfo savedIdent) {
         this(savedIdent.userName, savedIdent.password);
+        credentialsChecked = savedIdent.credentialsChecked;
+        token = savedIdent.token;
         authPluginName = savedIdent.authPluginName;
     }
 
@@ -90,23 +96,14 @@ public class UserIdentificationInfo implements Serializable {
         return userName.length() != 0;
     }
 
-    public Map<String, String> getLoginParameters() {
-        return loginParameters;
+    /** @since 11.1 */
+    public boolean credentialsChecked() {
+        return credentialsChecked;
     }
 
-    public void setLoginParameters(Map<String, String> loginParameters) {
-        this.loginParameters.putAll(loginParameters);
-    }
-
-    /**
-     * Returns the name of the LoginModule plugin that must be used to create the Principal.
-     */
-    public String getLoginPluginName() {
-        return loginPluginName;
-    }
-
-    public void setLoginPluginName(String loginPluginName) {
-        this.loginPluginName = loginPluginName;
+    /** @since 11.1 */
+    public void setCredentialsChecked(boolean credentialsChecked)  {
+        this.credentialsChecked = credentialsChecked;
     }
 
     public String getToken() {

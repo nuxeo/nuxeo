@@ -52,7 +52,7 @@ public class DummyAuthPluginToken implements NuxeoAuthenticationPlugin, NuxeoAut
         if (isBlank(username)) {
             return null;
         }
-        return new UserIdentificationInfo(username, username);
+        return new UserIdentificationInfo(username);
     }
 
     @Override

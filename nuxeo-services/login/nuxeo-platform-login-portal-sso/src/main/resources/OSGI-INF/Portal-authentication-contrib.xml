@@ -11,7 +11,6 @@
               name="PORTAL_AUTH"
               enabled="true"
               class="org.nuxeo.ecm.platform.ui.web.auth.portal.PortalAuthenticator">
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="secret">nuxeo5secretkey</parameter>
          <parameter name="maxAge">3600</parameter>

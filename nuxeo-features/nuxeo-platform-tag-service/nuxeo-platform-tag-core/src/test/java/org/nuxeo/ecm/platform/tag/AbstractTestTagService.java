@@ -82,7 +82,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.tag")
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.dublincore")
-@Deploy("org.nuxeo.ecm.platform.tag:login-config.xml")
 @Deploy("org.nuxeo.ecm.tag.tests:test-core-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.tag.tests:test-versioning-contrib.xml")
 public abstract class AbstractTestTagService {

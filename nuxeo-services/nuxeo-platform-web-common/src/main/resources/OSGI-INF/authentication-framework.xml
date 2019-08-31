@@ -25,7 +25,7 @@
       Authentication plugins are responsible for :
       - generating the authentication prompt (if needed)
       - get the user identity
-      - set the LoginModule that will be used for Login
+      - checking the user credentials if they're not login/password based
 
       Authentication plugin must implement the NuxeoAuthenticationPlugin interface.
 
@@ -63,28 +63,6 @@
     </documentation>
     <object
             class="org.nuxeo.ecm.platform.ui.web.auth.service.StartURLPatternDescriptor" />
-  </extension-point>
-
-  <extension-point name="propagator">
-    <documentation>
-      Contribute a App Server specific security propagation handler.
-      Usefull to externalize dependencies on JBossSX
-
-      @author Thierry Delprat (td@nuxeo.com)
-    </documentation>
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.AuthenticationPropagatorDescriptor" />
-  </extension-point>
-
-  <extension-point name="callBackHandlerFactory">
-    <documentation>
-      Contribute a App Server specific JAAS CallBackHandler Factory
-      Usefull to externalize dependencies on JBossSX
-
-      @author Thierry Delprat (td@nuxeo.com)
-    </documentation>
-    <object
-            class="org.nuxeo.ecm.platform.ui.web.auth.service.CallbackHandlerFactoryDescriptor" />
   </extension-point>
 
   <extension-point name="sessionManager">

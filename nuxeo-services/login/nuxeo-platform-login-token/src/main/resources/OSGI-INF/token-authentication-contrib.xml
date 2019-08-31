@@ -12,13 +12,6 @@
 
       The user is retrieved looking into a directory mapping unique tokens to user names.
 
-      This Authentication Plugin is
-      configured to be
-      used with the Trusting_LM LoginModule plugin
-      => no password check will be done, a
-      principal will be
-      created from the userName if the user exists in the user directory.
-
       Set the allowAnonymous parameter to true to
       allow token authentication for anonymous user.
 
@@ -28,7 +21,6 @@
 
     <authenticationPlugin name="TOKEN_AUTH" enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <parameters>
         <parameter name="allowAnonymous">false</parameter>
       </parameters>

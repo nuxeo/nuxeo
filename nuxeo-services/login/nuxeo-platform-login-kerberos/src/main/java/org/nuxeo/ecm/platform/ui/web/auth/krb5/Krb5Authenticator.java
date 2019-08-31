@@ -132,8 +132,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
             if (context.isEstablished()) {
                 String principal = context.getSrcName().toString();
                 String username = principal.split("@")[0]; // throw away the realm
-                UserIdentificationInfo info = new UserIdentificationInfo(username, "Trust");
-                info.setLoginPluginName("Trusting_LM");
+                UserIdentificationInfo info = new UserIdentificationInfo(username);
                 req.getSession().removeAttribute(CONTEXT_ATTRIBUTE);
                 return info;
             } else {

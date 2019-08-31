@@ -12,7 +12,6 @@
                         name="KRB5_AUTH"
                         enabled="true"
                         class="org.nuxeo.ecm.platform.ui.web.auth.krb5.Krb5Authenticator">
-                        <loginModulePlugin>Trusting_LM</loginModulePlugin>
                 </authenticationPlugin>
         </extension>
 

@@ -9,7 +9,6 @@
       <authenticationPlugin
               name="CAS2_AUTH">
        <needStartingURLSaving>true</needStartingURLSaving>
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="ticketKey">ticket</parameter>
          <parameter name="appURL">http://127.0.0.1:8080/nuxeo/nxstartup.faces</parameter>
@@ -34,20 +33,5 @@
       </plugins>
     </authenticationChain>
   </extension>
-  
-    <extension target="org.nuxeo.runtime.LoginComponent" point="domains">
-    <domain name="nuxeo-ecm-web">
-      <login-module code="org.nuxeo.ecm.platform.ui.web.auth.simple.LoginModuleYes"
-          flag="required">
-      </login-module>
-    </domain>
-
-    <domain name="nuxeo-ecm">
-      <login-module code="org.nuxeo.ecm.platform.ui.web.auth.simple.LoginModuleYes"
-          flag="required">
-      </login-module>
-    </domain>
-  </extension>
-  
 
 </component>

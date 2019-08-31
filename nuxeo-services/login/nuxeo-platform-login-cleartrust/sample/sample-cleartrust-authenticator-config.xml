@@ -11,7 +11,6 @@
               name="ClearTrust_AUTH"
               enabled="true"
               class="org.nuxeo.ecm.platform.ui.web.auth.cleartrust.ClearTrustAuthenticator">
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="cookieDomain"></parameter>
          <parameter name="cleartrustLoginUrl">http://mysite.net/cleartrust/ct_logon_en.html</parameter>

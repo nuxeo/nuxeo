@@ -56,7 +56,6 @@ import com.google.inject.name.Names;
 // we get this order by using features in tests like this @Features(JtajcaManagementFeature.class, CoreFeature.class)
 @Features(ManagementFeature.class)
 @Deploy("org.nuxeo.ecm.core.management.jtajca")
-@Deploy("org.nuxeo.ecm.core.management.jtajca:login-config.xml")
 public class JtajcaManagementFeature implements RunnerFeature {
 
     protected static ObjectName nameOf(Class<?> itf) {

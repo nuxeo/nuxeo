@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,63 +22,55 @@
 package org.nuxeo.ecm.core.api.local;
 
 import java.security.Principal;
-import java.util.LinkedList;
 
 import javax.security.auth.Subject;
 
+import org.nuxeo.runtime.api.login.LoginComponent;
+
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * This class is deprecated and now delegates to {@link LoginComponent}.
+ *
+ * @deprecated since 11.1
  */
+@Deprecated
 public class LoginStack {
 
-    public static LoginStack synchronizedStack() {
-        return new Sync();
-    }
-
-    protected final LinkedList<Entry> stack = new LinkedList<>();
-
     public void clear() {
-        stack.clear();
+        LoginComponent.getPrincipalStack().clear();
     }
 
     public void push(Principal principal, Object credential, Subject subject) {
-        stack.add(new Entry(principal, credential, subject));
+        // credential and subject are ignored
+        LoginComponent.pushPrincipal(principal);
     }
 
     public Entry pop() {
-        if (stack.isEmpty()) {
-            return null;
-        }
-        return stack.removeLast();
+        Principal principal = LoginComponent.popPrincipal();
+        return principal == null ? null : new Entry(principal, null, null);
     }
 
     public Entry peek() {
-        if (stack.isEmpty()) {
-            return null;
-        }
-        return stack.getLast();
+        Principal principal = LoginComponent.getPrincipalStack().peekLast();
+        return principal == null ? null : new Entry(principal, null, null);
     }
 
     public boolean isEmpty() {
-        return stack.isEmpty();
+        return LoginComponent.getPrincipalStack().isEmpty();
     }
 
     public int size() {
-        return stack.size();
-    }
-
-    public Entry get(int index) {
-        return stack.get(index);
-    }
-
-    public Entry remove(int index) {
-        return stack.remove(index);
+        return LoginComponent.getPrincipalStack().size();
     }
 
     public Entry[] toArray() {
-        return stack.toArray(new Entry[stack.size()]);
+        return (Entry[]) LoginComponent.getPrincipalStack()
+                                       .stream()
+                                       .map(principal -> new Entry(principal, null, null))
+                                       .toArray();
     }
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     public static class Entry {
         protected final Principal principal;
 
@@ -96,68 +88,17 @@ public class LoginStack {
             return principal;
         }
 
+        /** @deprecated since 11.1, unused */
+        @Deprecated
         public Object getCredential() {
             return credential;
         }
 
+        /** @deprecated since 11.1, unused */
+        @Deprecated
         public Subject getSubject() {
             return subject;
         }
-    }
-
-    public static class Sync extends LoginStack {
-
-        @Override
-        public synchronized void clear() {
-            stack.clear();
-        }
-
-        @Override
-        public synchronized void push(Principal principal, Object credential, Subject subject) {
-            stack.add(new Entry(principal, credential, subject));
-        }
-
-        @Override
-        public synchronized Entry pop() {
-            if (stack.isEmpty()) {
-                return null;
-            }
-            return stack.removeLast();
-        }
-
-        @Override
-        public synchronized Entry peek() {
-            if (stack.isEmpty()) {
-                return null;
-            }
-            return stack.getLast();
-        }
-
-        @Override
-        public synchronized boolean isEmpty() {
-            return stack.isEmpty();
-        }
-
-        @Override
-        public synchronized int size() {
-            return stack.size();
-        }
-
-        @Override
-        public synchronized Entry get(int index) {
-            return stack.get(index);
-        }
-
-        @Override
-        public synchronized Entry remove(int index) {
-            return stack.remove(index);
-        }
-
-        @Override
-        public synchronized Entry[] toArray() {
-            return stack.toArray(new Entry[stack.size()]);
-        }
-
     }
 
 }

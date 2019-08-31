@@ -105,7 +105,7 @@ public class NuxeoOAuth2Authenticator implements NuxeoAuthenticationPlugin {
 
         String username = token.getNuxeoLogin();
         log.trace("OAuth2 token found for user: " + username);
-        return new UserIdentificationInfo(username, username);
+        return new UserIdentificationInfo(username);
     }
 
     protected String getAccessToken(HttpServletRequest request) {

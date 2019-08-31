@@ -2,10 +2,10 @@
 
   <extension target="org.nuxeo.usermapper.service.UserMapperComponent"
     point="mapper">
-    
+
     <mapper name="keycloakTest" class="org.nuxeo.ecm.platform.ui.web.keycloak.MockUserMapper">
     </mapper>
-  
+
   </extension>
 
   <extension
@@ -13,7 +13,6 @@
       point="authenticators">
     <authenticationPlugin name="KEYCLOAK_AUTH"
       class="org.nuxeo.ecm.platform.ui.web.keycloak.KeycloakAuthenticationPlugin">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <parameters>
         <parameter name="keycloakConfigFile">keycloak1.json</parameter>
         <parameter name="mappingName">keycloakTest</parameter>
@@ -33,6 +32,6 @@
       </plugins>
     </authenticationChain>
   </extension>
-  
+
 
 </component>

@@ -8,7 +8,6 @@
     <authenticationPlugin name="KRB5_AUTH" enabled="true"
       class="org.nuxeo.ecm.platform.ui.web.auth.krb5.Krb5Authenticator">
       <needStartingURLSaving>true</needStartingURLSaving>
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <parameters>
         <parameter name="servicePrincipalName">HTTP/nuxeo@NUXEO.ORG</parameter>
       </parameters>

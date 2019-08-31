@@ -23,7 +23,6 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
     <authenticationPlugin name="DUMMY_AUTH_TOKEN"
       class="org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginToken">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
     </authenticationPlugin>
   </extension>
 

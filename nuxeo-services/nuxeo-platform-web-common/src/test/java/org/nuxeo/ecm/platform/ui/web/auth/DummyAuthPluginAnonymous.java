@@ -46,7 +46,7 @@ public class DummyAuthPluginAnonymous implements NuxeoAuthenticationPlugin, Nuxe
 
     @Override
     public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest request, HttpServletResponse response) {
-        return new UserIdentificationInfo(DUMMY_ANONYMOUS_LOGIN, DUMMY_ANONYMOUS_LOGIN);
+        return new UserIdentificationInfo(DUMMY_ANONYMOUS_LOGIN);
     }
 
     @Override

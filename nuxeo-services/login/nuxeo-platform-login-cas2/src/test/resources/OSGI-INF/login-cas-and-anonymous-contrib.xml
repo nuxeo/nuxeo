@@ -18,7 +18,6 @@
    <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
       <authenticationPlugin name="CAS2_AUTH">
        <needStartingURLSaving>true</needStartingURLSaving>
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="ticketKey">ticket</parameter>
          <parameter name="proxyKey">proxy</parameter>

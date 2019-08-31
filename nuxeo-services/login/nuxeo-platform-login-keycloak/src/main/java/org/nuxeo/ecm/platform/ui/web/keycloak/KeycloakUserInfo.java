@@ -39,10 +39,6 @@ public class KeycloakUserInfo extends UserIdentificationInfo {
 
     protected Set<String> roles;
 
-    private KeycloakUserInfo(String emailAsUserName, String password) {
-        super(emailAsUserName, password);
-    }
-
     public KeycloakUserInfo(String emailAsUserName, String password, String firstName, String lastName, String company) {
         super(emailAsUserName, password);
 
@@ -82,8 +78,6 @@ public class KeycloakUserInfo extends UserIdentificationInfo {
 
         protected String password;
 
-        protected String authPluginName;
-
         protected String company;
 
         protected String lastName;
@@ -112,11 +106,6 @@ public class KeycloakUserInfo extends UserIdentificationInfo {
             return this;
         }
 
-        public KeycloakUserInfoBuilder withAuthPluginName(String authPluginName) {
-            this.authPluginName = authPluginName;
-            return this;
-        }
-
         public KeycloakUserInfoBuilder withCompany(String company) {
             this.company = company;
             return this;
@@ -134,8 +123,8 @@ public class KeycloakUserInfo extends UserIdentificationInfo {
 
         public KeycloakUserInfo build() {
             KeycloakUserInfo keycloakUserInfo = new KeycloakUserInfo(userName, password, firstName, lastName, company);
+            keycloakUserInfo.setCredentialsChecked(true);
             keycloakUserInfo.setToken(token);
-            keycloakUserInfo.setAuthPluginName(authPluginName);
             return keycloakUserInfo;
         }
     }

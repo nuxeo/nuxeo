@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
@@ -239,6 +240,34 @@ public interface NuxeoPrincipal extends Principal, Serializable {
             return sb.toString();
         }
         return baseUsername;
+    }
+
+    /**
+     * Returns the current logged in {@link NuxeoPrincipal}.
+     *
+     * @return the current logged in {@link NuxeoPrincipal}, or {@code null} if there is none
+     * @since 11.1
+     */
+    static NuxeoPrincipal getCurrent() {
+        Principal principal = LoginComponent.getCurrentPrincipal();
+        if (principal instanceof NuxeoPrincipal) {
+            return (NuxeoPrincipal) principal;
+        } else if (LoginComponent.isSystemLogin(principal)) {
+            return new SystemPrincipal(principal.getName());
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Checks if the current logged in {@link NuxeoPrincipal} is an Administrator.
+     *
+     * @return {@code true} if the current logged in {@link NuxeoPrincipal} is an Administrator
+     * @since 11.1
+     */
+    static boolean isCurrentAdministrator() {
+        NuxeoPrincipal principal = getCurrent();
+        return principal != null && principal.isAdministrator();
     }
 
 }

@@ -35,14 +35,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.api.login.UserIdentificationInfoCallbackHandler;
 import org.nuxeo.ecm.platform.ui.web.auth.CachableUserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPropagator;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationSessionManager;
-import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoCallbackHandlerFactory;
-import org.nuxeo.ecm.platform.ui.web.auth.plugins.DefaultSessionManager;
 import org.nuxeo.ecm.platform.web.common.session.NuxeoHttpSessionMonitor;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -61,10 +56,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
 
     public static final String EP_SPECIFIC_CHAINS = "specificChains";
 
-    public static final String EP_PROPAGATOR = "propagator";
-
-    public static final String EP_CBFACTORY = "JbossCallbackfactory";
-
     public static final String EP_STARTURL = "startURL";
 
     public static final String EP_OPENURL = "openUrl";
@@ -78,13 +69,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
     private Map<String, NuxeoAuthenticationPlugin> authenticators;
 
     private Map<String, NuxeoAuthenticationSessionManager> sessionManagers;
-
-    // NB: not used. Remove?
-    private NuxeoAuthenticationSessionManager defaultSessionManager;
-
-    private NuxeoAuthenticationPropagator propagator;
-
-    private NuxeoCallbackHandlerFactory cbhFactory;
 
     private List<String> authChain;
 
@@ -102,7 +86,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
         authChain = new ArrayList<>();
         authenticators = new HashMap<>();
         sessionManagers = new HashMap<>();
-        defaultSessionManager = new DefaultSessionManager();
         loginScreenConfigRegistry = new LoginScreenConfigRegistry();
     }
 
@@ -112,7 +95,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
         authenticators = null;
         authChain = null;
         sessionManagers = null;
-        defaultSessionManager = null;
         loginScreenConfigRegistry = null;
     }
 
@@ -152,24 +134,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
         } else if (extensionPoint.equals(EP_STARTURL)) {
             StartURLPatternDescriptor startupURLContrib = (StartURLPatternDescriptor) contribution;
             startupURLs.addAll(startupURLContrib.getStartURLPatterns());
-        } else if (extensionPoint.equals(EP_PROPAGATOR)) {
-            AuthenticationPropagatorDescriptor propagationContrib = (AuthenticationPropagatorDescriptor) contribution;
-
-            // create the new instance
-            try {
-                propagator = propagationContrib.getClassName().getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                log.error("Unable to create propagator", e);
-            }
-        } else if (extensionPoint.equals(EP_CBFACTORY)) {
-            CallbackHandlerFactoryDescriptor cbhfContrib = (CallbackHandlerFactoryDescriptor) contribution;
-
-            // create the new instance
-            try {
-                cbhFactory = cbhfContrib.getClassName().getDeclaredConstructor().newInstance();
-            } catch (ReflectiveOperationException e) {
-                log.error("Unable to create callback handler factory", e);
-            }
         } else if (extensionPoint.equals(EP_SESSIONMANAGER)) {
             SessionManagerDescriptor smContrib = (SessionManagerDescriptor) contribution;
             if (smContrib.enabled) {
@@ -216,11 +180,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
         Map<String, String> oldParameters = oldDescriptor.getParameters();
         oldParameters.putAll(newContrib.getParameters());
         oldDescriptor.setParameters(oldParameters);
-
-        // override LoginLModule
-        if (newContrib.getLoginModulePlugin() != null && newContrib.getLoginModulePlugin().length() > 0) {
-            oldDescriptor.setLoginModulePlugin(newContrib.getLoginModulePlugin());
-        }
 
         oldDescriptor.setStateful(newContrib.getStateful());
 
@@ -300,21 +259,6 @@ public class PluggableAuthenticationService extends DefaultComponent {
                     }
                 }
             }
-        }
-        return null;
-    }
-
-    public UserIdentificationInfoCallbackHandler getCallbackHandler(UserIdentificationInfo userIdent) {
-        if (cbhFactory == null) {
-            return new UserIdentificationInfoCallbackHandler(userIdent);
-        }
-        return cbhFactory.createCallbackHandler(userIdent);
-    }
-
-    public NuxeoAuthenticationPropagator.CleanupCallback propagateUserIdentificationInformation(
-            CachableUserIdentificationInfo cachableUserIdent) {
-        if (propagator != null) {
-            return propagator.propagateUserIdentificationInformation(cachableUserIdent);
         }
         return null;
     }

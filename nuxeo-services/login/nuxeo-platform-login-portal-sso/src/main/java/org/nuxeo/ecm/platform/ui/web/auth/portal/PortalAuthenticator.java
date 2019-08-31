@@ -91,7 +91,7 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
         }
 
         if (validateToken(ts, random, token, userName)) {
-            return new UserIdentificationInfo(userName, userName);
+            return new UserIdentificationInfo(userName);
         } else {
             return null;
         }

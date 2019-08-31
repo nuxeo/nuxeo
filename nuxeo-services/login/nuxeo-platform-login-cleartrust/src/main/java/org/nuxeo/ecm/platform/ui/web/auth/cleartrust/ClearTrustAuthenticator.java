@@ -126,8 +126,7 @@ public class ClearTrustAuthenticator implements NuxeoAuthenticationPlugin, Nuxeo
         String ctUid = request.getHeader(CLEARTRUST_HEADER_UID);
         log.debug("handleRetrieveIdentity ctUid = [" + ctUid + "]");
         String userName = ctUid;
-        UserIdentificationInfo uui = new UserIdentificationInfo(userName,
-                "No password needed for ClearTrust authentication");
+        UserIdentificationInfo uui = new UserIdentificationInfo(userName);
         log.debug("handleRetrieveIdentity going on with authenticated user = [" + userName + "]");
         return uui;
     }

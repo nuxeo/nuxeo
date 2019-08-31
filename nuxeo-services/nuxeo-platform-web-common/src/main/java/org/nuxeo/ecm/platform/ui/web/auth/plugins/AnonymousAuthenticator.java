@@ -78,7 +78,7 @@ public class AnonymousAuthenticator implements NuxeoAuthenticationPlugin, NuxeoA
             return null;
         }
 
-        return new UserIdentificationInfo(anonymousLogin, anonymousLogin);
+        return new UserIdentificationInfo(anonymousLogin);
     }
 
     protected boolean isAnonymousLoginBlocked(HttpServletRequest httpRequest) {
