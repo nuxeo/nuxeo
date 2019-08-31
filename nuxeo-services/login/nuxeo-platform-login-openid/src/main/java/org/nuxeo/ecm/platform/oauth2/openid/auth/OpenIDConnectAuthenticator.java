@@ -139,7 +139,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
                 return null;
             }
 
-            return new UserIdentificationInfo(userId, userId);
+            return new UserIdentificationInfo(userId);
 
         } catch (NuxeoException e) {
             log.error("Error while retrieve Identity From OAuth", e);
@@ -166,9 +166,6 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
             return null;
         }
         UserIdentificationInfo userIdent = retrieveIdentityFromOAuth(httpRequest, httpResponse);
-        if (userIdent != null) {
-            userIdent.setAuthPluginName("TRUSTED_LM");
-        }
         return userIdent;
     }
 

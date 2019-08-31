@@ -469,7 +469,7 @@ public class SAMLAuthenticationProvider
             }
         }
 
-        return new UserIdentificationInfo(userId, userId);
+        return new UserIdentificationInfo(userId);
     }
 
     protected AbstractSAMLProfile getProcessor(@SuppressWarnings("rawtypes") SAMLMessageContext context) {

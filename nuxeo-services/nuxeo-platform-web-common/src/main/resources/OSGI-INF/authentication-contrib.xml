@@ -37,7 +37,6 @@
 
     <authenticationPlugin name="ANONYMOUS_AUTH" enabled="true"
         class="org.nuxeo.ecm.platform.ui.web.auth.plugins.AnonymousAuthenticator">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
     </authenticationPlugin>
   </extension>
 

@@ -16,16 +16,7 @@
     <authenticationPlugin name="DIGEST_AUTH"
       enabled="true" class="org.nuxeo.ecm.ui.web.auth.digest.DigestAuthenticator">
       <stateful>false</stateful>
-      <loginModulePlugin>DigestLoginPlugin</loginModulePlugin>
     </authenticationPlugin>
-  </extension>
-
-  <extension target="org.nuxeo.ecm.platform.login.LoginPluginRegistry"
-    point="plugin">
-    <LoginPlugin name="DigestLoginPlugin"
-      class="org.nuxeo.ecm.ui.web.auth.digest.DigestLoginPlugin">
-      <enabled>true</enabled>
-    </LoginPlugin>
   </extension>
 
 </component>

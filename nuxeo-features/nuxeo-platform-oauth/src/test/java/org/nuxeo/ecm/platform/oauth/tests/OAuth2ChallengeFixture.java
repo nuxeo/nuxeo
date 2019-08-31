@@ -82,6 +82,7 @@ import org.nuxeo.ecm.platform.oauth2.NuxeoOAuth2Servlet;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Features;
@@ -103,7 +104,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 5.9.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ OAuthFeature.class, OAuth2ServletContainerFeature.class, JWTFeature.class })
+@Features({ NuxeoLoginFeature.class, OAuthFeature.class, OAuth2ServletContainerFeature.class, JWTFeature.class })
 public class OAuth2ChallengeFixture {
 
     protected static final String CLIENT_ID = "testClient";

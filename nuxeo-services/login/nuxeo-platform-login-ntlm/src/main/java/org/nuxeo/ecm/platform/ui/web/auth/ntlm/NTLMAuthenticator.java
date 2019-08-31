@@ -134,8 +134,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
             String password = ntlm.getPassword();
             if (password == null || "".equals(password)) {
                 // we don't get the NTLM password, so we have to trust NTLM auth
-                UserIdentificationInfo userInfo = new UserIdentificationInfo(ntlm.getUsername(), "ITrustNTLM");
-                userInfo.setLoginPluginName("Trusting_LM");
+                UserIdentificationInfo userInfo = new UserIdentificationInfo(ntlm.getUsername());
                 return userInfo;
             } else {
                 return new UserIdentificationInfo(ntlm.getUsername(), ntlm.getPassword());

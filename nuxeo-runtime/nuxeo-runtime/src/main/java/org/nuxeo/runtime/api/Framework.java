@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.Supplier;
 
-import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -47,6 +46,7 @@ import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.login.LoginAs;
 import org.nuxeo.runtime.api.login.LoginService;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.trackers.files.FileEvent;
 import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
@@ -295,35 +295,68 @@ public final class Framework {
     }
 
     /**
+     * Login as the system user. The returned {@NuxeoLoginContext} MUST be closed when done.
+     *
+     * @return the login context, to be closed when done
+     * @since 11.1
+     */
+    public static NuxeoLoginContext loginSystem() {
+        checkRuntimeInitialized();
+        LoginService loginService = runtime.getService(LoginService.class);
+        return (NuxeoLoginContext) loginService.login();
+    }
+
+    /**
+     * Login as the system user, remembering the originating user. The returned {@NuxeoLoginContext} MUST be closed when
+     * done.
+     *
+     * @param originatingUser the originating user
+     * @return the login context, to be closed when done
+     * @since 11.1
+     */
+    public static NuxeoLoginContext loginSystem(String originatingUser) {
+        checkRuntimeInitialized();
+        LoginService loginService = runtime.getService(LoginService.class);
+        return (NuxeoLoginContext) loginService.loginAs(originatingUser);
+    }
+
+    /**
+     * Login as the given user. The returned {@NuxeoLoginContext} MUST be closed when done.
+     *
+     * @param username the username
+     * @return the login context, to be closed when done
+     * @throws LoginException on login failure
+     * @since 11.1
+     */
+    public static NuxeoLoginContext loginUser(String username) throws LoginException {
+        checkRuntimeInitialized();
+        return (NuxeoLoginContext) getService(LoginAs.class).loginAs(username);
+    }
+
+    /**
      * Login in the system as the system user (a pseudo-user having all privileges).
      *
      * @return the login session if successful. Never returns null.
      * @throws LoginException on login failure
+     * @deprecated since 11.1, use {@link #loginSystem} instead
      */
+    @Deprecated
     public static LoginContext login() throws LoginException {
-        checkRuntimeInitialized();
-        LoginService loginService = runtime.getService(LoginService.class);
-        if (loginService != null) {
-            return loginService.login();
-        }
-        return null;
+        return loginSystem();
     }
 
     /**
      * Login in the system as the system user (a pseudo-user having all privileges). The given username will be used to
      * identify the user id that called this method.
      *
-     * @param username the originating user id
+     * @param originatingUser the originating user id
      * @return the login session if successful. Never returns null.
      * @throws LoginException on login failure
+     * @deprecated since 11.1, use {@link #loginSystem(String)} instead
      */
-    public static LoginContext loginAs(String username) throws LoginException {
-        checkRuntimeInitialized();
-        LoginService loginService = runtime.getService(LoginService.class);
-        if (loginService != null) {
-            return loginService.loginAs(username);
-        }
-        return null;
+    @Deprecated
+    public static LoginContext loginAs(String originatingUser) throws LoginException {
+        return loginSystem(originatingUser);
     }
 
     /**
@@ -333,9 +366,11 @@ public final class Framework {
      * @return the login context
      * @throws LoginException if any error occurs
      * @since 5.4.2
+     * @deprecated since 11.1, use {@link #loginUser} instead
      */
+    @Deprecated
     public static LoginContext loginAsUser(String username) throws LoginException {
-        return getService(LoginAs.class).loginAs(username);
+        return loginUser(username);
     }
 
     /**
@@ -345,29 +380,11 @@ public final class Framework {
      * @param password the password
      * @return a login session if login was successful. Never returns null.
      * @throws LoginException if login failed
+     * @deprecated since 11.1, use {@link #loginUser} instead
      */
+    @Deprecated
     public static LoginContext login(String username, Object password) throws LoginException {
-        checkRuntimeInitialized();
-        LoginService loginService = runtime.getService(LoginService.class);
-        if (loginService != null) {
-            return loginService.login(username, password);
-        }
-        return null;
-    }
-
-    /**
-     * Login in the system using the given callback handler for login info resolution.
-     *
-     * @param cbHandler used to fetch the login info
-     * @return the login context
-     */
-    public static LoginContext login(CallbackHandler cbHandler) throws LoginException {
-        checkRuntimeInitialized();
-        LoginService loginService = runtime.getService(LoginService.class);
-        if (loginService != null) {
-            return loginService.login(cbHandler);
-        }
-        return null;
+        return loginUser(username);
     }
 
     public static void sendEvent(RuntimeServiceEvent event) {

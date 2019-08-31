@@ -37,11 +37,8 @@ import com.google.inject.Binder;
 /**
  * Feature allowing to mock the {@link LoginComponent} in order to test services which need a security context.
  * <p>
- * This feature contributes {@link DummyLoginAs} to the component and registers 2 domains:
- * <ul>
- * <li>nuxeo-system-login</li>
- * <li>nuxeo-client-login</li>
- * </ul>
+ * This feature contributes {@link DummyLoginAs} to the component.
+ * <p>
  * The feature will look for {@link WithUser} annotation on the test method, then on the class method, and use its value
  * to log in the given user.
  * <p>

@@ -7,17 +7,13 @@
    The HTTP Header from where the userName is read can be configured
    using the ssoheaderName parameter.
 
-   This Authentication Plugin is configured to be used with the Trusting_LM LoginModule plugin.
-   => No password check will be done, a principal will be created from the userName if
-   the user exists in the user directory.
-   
-	Sometime the proxy returns a username not exactly in the desired form.
-	For example, username@EXAMPLE.COM instead of username
-	
-	With these modifications, you could register a regular expression pattern
-	to remove part of the received username (like removing @EXAMPLE.COM).
-	use a parameter named usernameUnwantedPartExpression with the regular expression for removal
-	of unwanted part. Like @EXAMPLE.COM to remove it from username@EXAMPLE.COM   
+  Sometime the proxy returns a username not exactly in the desired form.
+  For example, username@EXAMPLE.COM instead of username
+
+  With these modifications, you could register a regular expression pattern
+  to remove part of the received username (like removing @EXAMPLE.COM).
+  use a parameter named usernameUnwantedPartExpression with the regular expression for removal
+  of unwanted part. Like @EXAMPLE.COM to remove it from username@EXAMPLE.COM
    </documentation>
    <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
@@ -26,7 +22,6 @@
               name="PROXY_AUTH"
               enabled="true"
               class="org.nuxeo.ecm.platform.ui.web.auth.proxy.ProxyAuthenticator">
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="ssoHeaderName">remote_user</parameter>
        </parameters>

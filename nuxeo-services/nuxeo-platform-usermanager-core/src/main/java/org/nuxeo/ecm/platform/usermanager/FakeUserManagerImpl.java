@@ -216,7 +216,7 @@ public class FakeUserManagerImpl implements UserManager {
 
     @Override
     public boolean checkUsernamePassword(String username, String password) {
-        throw new UnsupportedOperationException();
+        return username.equals(password); // ok for a mock
     }
 
     @Override

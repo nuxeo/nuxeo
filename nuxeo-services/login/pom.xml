@@ -14,7 +14,6 @@
     <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-login-cas2</module>
     <module>nuxeo-platform-login-cleartrust</module>
-    <module>nuxeo-platform-login-default</module>
     <module>nuxeo-platform-login-deputy</module>
     <module>nuxeo-platform-login-digest</module>
     <module>nuxeo-platform-login-kerberos</module>

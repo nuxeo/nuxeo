@@ -163,7 +163,7 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin,
         .withUserName(token.getEmail())
         // Optional
         .withFirstName(token.getGivenName()).withLastName(token.getFamilyName()).withCompany(
-                token.getPreferredUsername()).withAuthPluginName("KEYCLOAK_AUTH")
+                token.getPreferredUsername())
         // The password is randomly generated has we won't use it
         .withPassword(UUID.randomUUID().toString()).build();
     }

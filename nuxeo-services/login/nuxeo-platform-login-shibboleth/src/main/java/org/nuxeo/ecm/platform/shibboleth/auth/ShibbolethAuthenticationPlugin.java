@@ -142,7 +142,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
             }
         }
 
-        return new UserIdentificationInfo(userId, userId);
+        return new UserIdentificationInfo(userId);
     }
 
     @Override

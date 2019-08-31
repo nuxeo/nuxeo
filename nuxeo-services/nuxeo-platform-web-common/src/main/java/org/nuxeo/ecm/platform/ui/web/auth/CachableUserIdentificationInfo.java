@@ -34,28 +34,16 @@ public class CachableUserIdentificationInfo implements Serializable {
 
     protected final UserIdentificationInfo userInfo;
 
-    protected boolean alreadyAuthenticated;
-
     protected Principal principal;
 
     protected transient LoginContext loginContext;
 
     public CachableUserIdentificationInfo(String userName, String password) {
         userInfo = new UserIdentificationInfo(userName, password);
-        alreadyAuthenticated = false;
     }
 
     public CachableUserIdentificationInfo(UserIdentificationInfo uii) {
         userInfo = uii;
-        alreadyAuthenticated = false;
-    }
-
-    public Boolean getAlreadyAuthenticated() {
-        return alreadyAuthenticated;
-    }
-
-    public void setAlreadyAuthenticated(boolean alreadyAuthenticated) {
-        this.alreadyAuthenticated = alreadyAuthenticated;
     }
 
     public Principal getPrincipal() {

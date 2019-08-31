@@ -23,9 +23,10 @@ package org.nuxeo.runtime.api.login;
 
 import java.security.Principal;
 
-import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -35,47 +36,28 @@ public interface LoginService {
     /**
      * System login, using a private principal that has all privileges. This principal is not stored in any database and
      * cannot be accessed by user.
-     * <p>
-     * The method requires the caller to have the {@link SystemLoginPermission} permission.
      *
      * @return the login context
      */
-    LoginContext login() throws LoginException;
+    LoginContext login();
 
     /**
      * System login, using a private principal that has all privileges. This principal is not stored in any database and
      * cannot be accessed by user.
-     * <p>
-     * The method requires the caller to have the {@link SystemLoginPermission} permission.
      *
-     * @param username the username that originated the system login
+     * @param originatingUser the username that originated the system login
      * @return the login context
      */
-    LoginContext loginAs(String username) throws LoginException;
+    LoginContext loginAs(String originatingUser);
 
     /**
      * Client login using the given username and password.
+     *
+     * @deprecated since 11.1, use {@link Framework#loginUser} instead
      */
+    @Deprecated
     LoginContext login(String username, Object credentials) throws LoginException;
 
-    /**
-     * Client login using a custom callback handler to retrieve login info.
-     *
-     * @param cbHandler the callback handler to use to retrieve the login info
-     * @return the login context
-     */
-    LoginContext login(CallbackHandler cbHandler) throws LoginException;
-
-    SecurityDomain getSecurityDomain(String name);
-
-    void addSecurityDomain(SecurityDomain domain);
-
     boolean isSystemId(Principal principal);
-
-    void removeSecurityDomain(String name);
-
-    SecurityDomain[] getSecurityDomains();
-
-    void removeSecurityDomains();
 
 }

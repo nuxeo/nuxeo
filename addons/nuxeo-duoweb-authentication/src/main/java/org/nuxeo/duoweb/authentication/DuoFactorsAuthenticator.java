@@ -40,9 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
-import org.nuxeo.ecm.platform.login.LoginPlugin;
-import org.nuxeo.ecm.platform.login.LoginPluginDescriptor;
-import org.nuxeo.ecm.platform.login.LoginPluginRegistry;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.plugins.FormAuthenticator;
@@ -236,48 +233,10 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     protected NuxeoPrincipal validateUserIdentity() throws LoginException {
         UserManager manager = Framework.getService(UserManager.class);
-        final RuntimeService runtime = Framework.getRuntime();
-        LoginPluginRegistry loginPluginManager = (LoginPluginRegistry) runtime.getComponent(LoginPluginRegistry.NAME);
-        String loginPluginName = userIdent.getLoginPluginName();
-        if (loginPluginName == null) {
-            // we don't use a specific plugin
-            if (manager.checkUsernamePassword(userIdent.getUserName(), userIdent.getPassword())) {
-                return createIdentity(userIdent.getUserName());
-            } else {
-                return null;
-            }
+        if (manager.checkUsernamePassword(userIdent.getUserName(), userIdent.getPassword())) {
+            return createIdentity(userIdent.getUserName());
         } else {
-            LoginPlugin lp = loginPluginManager.getPlugin(loginPluginName);
-            if (lp == null) {
-                log.error("Can't authenticate against a null loginModule " + "plugin");
-                return null;
-            }
-            // set the parameters and reinit if needed
-            LoginPluginDescriptor lpd = loginPluginManager.getPluginDescriptor(loginPluginName);
-            if (!lpd.getInitialized()) {
-                Map<String, String> existingParams = lp.getParameters();
-                if (existingParams == null) {
-                    existingParams = new HashMap<>();
-                }
-                Map<String, String> loginParams = userIdent.getLoginParameters();
-                if (loginParams != null) {
-                    existingParams.putAll(loginParams);
-                }
-                boolean init = lp.initLoginModule();
-                if (init) {
-                    lpd.setInitialized(true);
-                } else {
-                    log.error("Unable to initialize LoginModulePlugin " + lp.getName());
-                    return null;
-                }
-            }
-
-            String username = lp.validatedUserIdentity(userIdent);
-            if (username == null) {
-                return null;
-            } else {
-                return createIdentity(username);
-            }
+            return null;
         }
     }
 

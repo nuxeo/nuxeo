@@ -13,7 +13,6 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
     <authenticationPlugin name="DUMMY_AUTH_FORM"
                           class="org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginForm">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <needStartingURLSaving>true</needStartingURLSaving>
     </authenticationPlugin>
   </extension>
@@ -29,7 +28,6 @@
   <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="authenticators">
     <authenticationPlugin name="DUMMY_AUTH_ANONYMOUS"
       class="org.nuxeo.ecm.platform.ui.web.auth.DummyAuthPluginAnonymous">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
     </authenticationPlugin>
   </extension>
 

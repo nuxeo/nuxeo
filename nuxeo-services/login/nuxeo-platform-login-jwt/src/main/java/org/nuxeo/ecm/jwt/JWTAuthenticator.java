@@ -113,7 +113,7 @@ public class JWTAuthenticator implements NuxeoAuthenticationPlugin {
                 return null;
             }
         }
-        return new UserIdentificationInfo(username, username);
+        return new UserIdentificationInfo(username);
     }
 
     protected String retrieveToken(HttpServletRequest request) {

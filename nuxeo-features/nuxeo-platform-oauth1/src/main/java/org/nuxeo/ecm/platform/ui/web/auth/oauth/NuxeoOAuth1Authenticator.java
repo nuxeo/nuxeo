@@ -90,7 +90,7 @@ public class NuxeoOAuth1Authenticator implements NuxeoAuthenticationPlugin {
             return null;
         }
         log.trace("OAuth 1 auth for user: {}", username);
-        return new UserIdentificationInfo(username, username);
+        return new UserIdentificationInfo(username);
     }
 
     protected boolean isOAuth1SignedRequest(HttpServletRequest request) {

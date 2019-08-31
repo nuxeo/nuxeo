@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.login.ClearTrustSSO">
    <documentation><pre>
-   		RSA ClearTrust Authentication Plugin
-   		Parameters include:
-   		 - Cookie domain : name of the domain used in the ClearTrust cookies
-   		 </pre>
+       RSA ClearTrust Authentication Plugin
+       Parameters include:
+        - Cookie domain : name of the domain used in the ClearTrust cookies
+        </pre>
    </documentation>
    <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
@@ -13,7 +13,6 @@
               name="ClearTrust_AUTH"
               enabled="true"
               class="org.nuxeo.ecm.platform.ui.web.auth.cleartrust.ClearTrustAuthenticator">
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <needStartingURLSaving>true</needStartingURLSaving>
        <parameters>
          <parameter name="cookieDomain"></parameter>

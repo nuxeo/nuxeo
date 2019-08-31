@@ -57,6 +57,7 @@ import org.nuxeo.ecm.platform.oauth.consumers.NuxeoOAuthConsumer;
 import org.nuxeo.ecm.platform.oauth.consumers.OAuthConsumerRegistry;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthToken;
 import org.nuxeo.ecm.platform.oauth.tokens.OAuthTokenStore;
+import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.jaxrs.test.JerseyClientHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -79,7 +80,7 @@ import net.oauth.OAuthMessage;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ OAuth1Feature.class, ServletContainerTransactionalFeature.class })
+@Features({ NuxeoLoginFeature.class, OAuth1Feature.class, ServletContainerTransactionalFeature.class })
 @Deploy("org.nuxeo.ecm.platform.oauth1:OSGI-INF/test-servletcontainer-config.xml")
 @Deploy("org.nuxeo.ecm.platform.oauth1:OSGI-INF/test-authentication-config.xml")
 public class TestOAuth1Protocol {

@@ -68,7 +68,7 @@ public class DummyAuthPluginForm implements NuxeoAuthenticationPlugin, NuxeoAuth
             request.setAttribute(LOGIN_ERROR, "Username and password do not match");
             return null;
         }
-        return new UserIdentificationInfo(username, password);
+        return new UserIdentificationInfo(username);
     }
 
     /** dummy check: username = password to authenticate */

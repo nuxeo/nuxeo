@@ -25,6 +25,7 @@ import java.util.Map;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 @XObject("authenticationPlugin")
@@ -40,9 +41,6 @@ public class AuthenticationPluginDescriptor implements Serializable {
 
     @XNode("@class")
     Class<NuxeoAuthenticationPlugin> className;
-
-    @XNode("loginModulePlugin")
-    String loginModulePlugin;
 
     private Boolean needStartingURLSaving;
 
@@ -61,14 +59,6 @@ public class AuthenticationPluginDescriptor implements Serializable {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public String getLoginModulePlugin() {
-        return loginModulePlugin;
-    }
-
-    public void setLoginModulePlugin(String loginModulePlugin) {
-        this.loginModulePlugin = loginModulePlugin;
     }
 
     public String getName() {

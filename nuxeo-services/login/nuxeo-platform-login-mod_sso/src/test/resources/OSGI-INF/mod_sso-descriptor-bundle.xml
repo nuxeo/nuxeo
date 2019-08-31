@@ -7,7 +7,6 @@
       point="authenticators">
       <authenticationPlugin
               name="PROXY_AUTH">
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="ssoHeaderName">remote_user</parameter>
        </parameters>

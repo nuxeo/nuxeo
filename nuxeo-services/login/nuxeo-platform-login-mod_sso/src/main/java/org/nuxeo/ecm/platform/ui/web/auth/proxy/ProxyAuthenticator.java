@@ -123,7 +123,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         if (!noRedirect) {
             handleRedirectToValidStartPage(httpRequest, httpResponse);
         }
-        return new UserIdentificationInfo(userName, userName);
+        return new UserIdentificationInfo(userName);
     }
 
     /**

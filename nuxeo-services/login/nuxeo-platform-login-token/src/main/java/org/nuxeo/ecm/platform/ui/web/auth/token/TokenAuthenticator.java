@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.ui.web.auth.token;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.spi.LoginModule;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,9 +39,6 @@ import org.nuxeo.runtime.api.Framework;
  * Handles authentication with a token sent as a request header.
  * <p>
  * The user is retrieved with the {@link TokenAuthenticationService}.
- * <p>
- * This Authentication Plugin is configured to be used with the Trusting_LM {@link LoginModule} plugin => no password
- * check will be done, a principal will be created from the userName if the user exists in the user directory.
  *
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
@@ -92,7 +88,7 @@ public class TokenAuthenticator implements NuxeoAuthenticationPlugin, NuxeoAuthe
         Cookie cookie = CookieHelper.createCookie(httpRequest, TOKEN_HEADER, token);
         httpResponse.addCookie(cookie);
 
-        return new UserIdentificationInfo(userName, userName);
+        return new UserIdentificationInfo(userName);
     }
 
     /**

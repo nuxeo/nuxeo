@@ -67,7 +67,7 @@ public class DummyAuthPluginSSO
         if (username == null) {
             return null;
         }
-        return new UserIdentificationInfo(username, username);
+        return new UserIdentificationInfo(username);
     }
 
     /** dummy check: any non-null ticket is accepted */

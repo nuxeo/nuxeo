@@ -38,14 +38,20 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -55,14 +61,14 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @author Benjamin JALON
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-// Mock the usermanager service (we don't want to pull all nuxeo framework) Needed by Anonymous
-@Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/mock-usermanager-framework.xml")
+@Features({ RuntimeFeature.class, MockitoFeature.class })
 // Mock the event producer (we don't want to pull all nuxeo framework) NuxeoAuthenticationFilter sends events
 @Deploy("org.nuxeo.ecm.platform.login.cas2.test:OSGI-INF/mock-event-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.login")
 @Deploy("org.nuxeo.ecm.platform.web.common")
 public abstract class AbstractAuthenticator {
+
+    protected static final String CAS_USER = "CasUser";
 
     protected static final String SCHEME = "http";
 
@@ -79,6 +85,20 @@ public abstract class AbstractAuthenticator {
     protected NuxeoAuthenticationFilter naf;
 
     protected FilterChain chain;
+
+    @Mock
+    @RuntimeService
+    protected UserManager userManager;
+
+    @Before
+    public void setUp() throws Exception {
+        String anonymousUserId = "Anonymous";
+        when(userManager.getAnonymousUserId()).thenReturn(anonymousUserId);
+        NuxeoPrincipal anonymousPrincipal = new UserPrincipal(anonymousUserId, null, true, false);
+        NuxeoPrincipal casUserPrincipal = new UserPrincipal(CAS_USER, null, false, false);
+        when(userManager.getPrincipal(anonymousUserId)).thenReturn(anonymousPrincipal);
+        when(userManager.getPrincipal(CAS_USER)).thenReturn(casUserPrincipal);
+    }
 
     protected PluggableAuthenticationService getAuthService() {
         return Framework.getService(PluggableAuthenticationService.class);

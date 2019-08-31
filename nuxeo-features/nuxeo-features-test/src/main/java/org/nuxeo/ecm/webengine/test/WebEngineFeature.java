@@ -30,13 +30,11 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 import org.nuxeo.runtime.test.runner.web.WebDriverFeature;
 
 @Deploy("org.nuxeo.ecm.platform.login")
-@Deploy("org.nuxeo.ecm.platform.login.default")
 @Deploy("org.nuxeo.ecm.webengine.jaxrs")
 @Deploy("org.nuxeo.ecm.webengine.base")
 @Deploy("org.nuxeo.ecm.webengine.ui")
 @Deploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:login-anonymous-config.xml")
-@Deploy("org.nuxeo.ecm.webengine.test:login-config.xml")
 @Deploy("org.nuxeo.ecm.webengine.test:runtimeserver-contrib.xml")
 @Features({ PlatformFeature.class, WebDriverFeature.class, ServletContainerTransactionalFeature.class,
         WebEngineFeatureCore.class })

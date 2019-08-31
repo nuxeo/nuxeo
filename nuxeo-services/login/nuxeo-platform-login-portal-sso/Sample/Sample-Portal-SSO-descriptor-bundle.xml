@@ -7,7 +7,6 @@
       point="authenticators">
       <authenticationPlugin
               name="PORTAL_AUTH">
-       <loginModulePlugin>Trusting_LM</loginModulePlugin>
        <parameters>
          <parameter name="secret">nuxeo5secretkey</parameter>
          <parameter name="maxAge">3600</parameter>

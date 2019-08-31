@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,32 @@
  * Contributors:
  *     Gagnavarslan ehf
  *     Thomas Haines
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.ui.web.auth.digest;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Nuxeo Authenticator for HTTP Digest Access Authentication (RFC 2617).
@@ -52,16 +54,19 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
 
     protected static final long DEFAULT_NONCE_VALIDITY_SECONDS = 1000;
 
-    protected static final String EQUAL_SEPARATOR = "=";
+    protected static final String REALM = "realm";
 
-    protected static final String QUOTE = "\"";
+    protected static final String HTTP_METHOD = "httpMethod";
 
-    /*
-     * match the first portion up until an equals sign followed by optional white space of quote chars and ending with
-     * an optional quote char Pattern is a thread-safe class and so can be defined statically Example pair pattern:
-     * username="kirsty"
-     */
-    protected static final Pattern PAIR_ITEM_PATTERN = Pattern.compile("^(.*?)=([\\s\"]*)?(.*)(\")?$");
+    protected static final String URI = "uri";
+
+    protected static final String QOP = "qop";
+
+    protected static final String NONCE = "nonce";
+
+    protected static final String NC = "nc";
+
+    protected static final String CNONCE = "cnonce";
 
     protected static final String REALM_NAME_KEY = "RealmName";
 
@@ -98,32 +103,28 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
             HttpServletResponse httpResponse) {
 
         String header = httpRequest.getHeader("Authorization");
-        String DIGEST_PREFIX = "digest ";
-        if (StringUtils.isEmpty(header) || !header.toLowerCase().startsWith(DIGEST_PREFIX)) {
+        if (StringUtils.isEmpty(header)) {
             return null;
         }
-        Map<String, String> headerMap = splitParameters(header.substring(DIGEST_PREFIX.length()));
+        Map<String, String> headerMap = splitParameters(header);
+        if (headerMap == null) {
+            // parsing failed
+            return null;
+        }
         headerMap.put("httpMethod", httpRequest.getMethod());
 
-        String nonceB64 = headerMap.get("nonce");
+        String nonceB64 = headerMap.get(NONCE);
         String nonce = new String(Base64.decodeBase64(nonceB64.getBytes()));
         String[] nonceTokens = nonce.split(":");
-
-        Long.parseLong(nonceTokens[0]);
+        @SuppressWarnings("unused")
+        long nonceExpiryTime = Long.parseLong(nonceTokens[0]);
         // @TODO: check expiry time and do something
 
-        String username = headerMap.get("username");
-        String responseDigest = headerMap.get("response");
-        UserIdentificationInfo userIdent = new UserIdentificationInfo(username, responseDigest);
-
-        /*
-         * I have used this property to transfer response parameters to DigestLoginPlugin But loginParameters rewritten
-         * in NuxeoAuthenticationFilter common implementation
-         * @TODO: Fix this or find new way to transfer properties to LoginPlugin
-         */
-        userIdent.setLoginParameters(headerMap);
-        return userIdent;
-
+        String username = getValidatedUsername(headerMap);
+        if (username == null) {
+            return null; // invalid
+        }
+        return new UserIdentificationInfo(username);
     }
 
     @Override
@@ -147,21 +148,74 @@ public class DigestAuthenticator implements NuxeoAuthenticationPlugin {
     }
 
     public static Map<String, String> splitParameters(String auth) {
-        Map<String, String> map = new HashMap<>();
-        try (CSVParser reader = new CSVParser(new StringReader(auth), CSVFormat.DEFAULT)) {
-            Iterator<CSVRecord> iterator = reader.iterator();
-            if (iterator.hasNext()) {
-                CSVRecord record = iterator.next();
-                for (String itemPairStr : record) {
-                    itemPairStr = StringUtils.remove(itemPairStr, QUOTE);
-                    String[] parts = itemPairStr.split(EQUAL_SEPARATOR, 2);
-                    map.put(parts[0].trim(), parts[1].trim());
-                }
-            }
-        } catch (IOException e) {
+        Map<String, String> map;
+        try {
+            map = org.apache.tomcat.util.http.parser.Authorization.parseAuthorizationDigest(new StringReader(auth));
+        } catch (IllegalArgumentException | IOException e) {
             log.error(e.getMessage(), e);
+            map = null;
         }
         return map;
+    }
+
+    protected String getValidatedUsername(Map<String, String> headerMap) {
+        String username = headerMap.get("username");
+        try {
+            String storedHA1 = getStoredHA1(username);
+            if (StringUtils.isEmpty(storedHA1)) {
+                log.warn("Digest authentication failed, stored HA1 is empty for user: " + username);
+                return null;
+            }
+            String computedDigest = computeDigest(storedHA1, //
+                    headerMap.get(HTTP_METHOD), //
+                    headerMap.get(URI), //
+                    headerMap.get(QOP), // RFC 2617 extension
+                    headerMap.get(NONCE), //
+                    headerMap.get(NC), // RFC 2617 extension
+                    headerMap.get(CNONCE) // RFC 2617 extension
+            );
+            String digest = headerMap.get("response");
+            if (!computedDigest.equals(digest)) {
+                log.warn("Digest authentication failed for user: " + username + ", realm: " + headerMap.get(REALM));
+                return null;
+            }
+        } catch (IllegalArgumentException | DirectoryException e) {
+            log.error("Digest authentication failed for user: " + username, e);
+            return null;
+        }
+        return username;
+    }
+
+    protected static String computeDigest(String ha1, String httpMethod, String uri, String qop, String nonce,
+            String nc, String cnonce) throws IllegalArgumentException {
+        String a2 = httpMethod + ":" + uri;
+        String ha2 = DigestUtils.md5Hex(a2);
+        String digest;
+        if (qop == null) {
+            digest = ha1 + ":" + nonce + ":" + ha2;
+        } else if ("auth".equals(qop)) {
+            digest = ha1 + ":" + nonce + ":" + nc + ":" + cnonce + ":" + qop + ":" + ha2;
+        } else {
+            throw new IllegalArgumentException("This method does not support a qop: '" + qop + "'");
+        }
+        return DigestUtils.md5Hex(digest);
+    }
+
+    protected String getStoredHA1(String username) {
+        UserManager userManager = Framework.getService(UserManager.class);
+        String dirName = userManager.getDigestAuthDirectory();
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        Directory directory = directoryService.getDirectory(dirName);
+        if (directory == null) {
+            throw new IllegalArgumentException("Digest Auth directory not found: " + dirName);
+        }
+        try (Session dir = directoryService.open(dirName)) {
+            dir.setReadAllColumns(true); // needed to read digest password
+            String schema = directoryService.getDirectorySchema(dirName);
+            DocumentModel entry = Framework.doPrivileged(() -> dir.getEntry(username, true));
+            String passwordField = dir.getPasswordField();
+            return entry == null ? null : (String) entry.getProperty(schema, passwordField);
+        }
     }
 
 }

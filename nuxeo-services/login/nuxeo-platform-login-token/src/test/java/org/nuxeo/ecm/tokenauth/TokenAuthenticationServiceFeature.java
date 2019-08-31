@@ -39,7 +39,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-directory-types.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token:OSGI-INF/token-authentication-framework.xml")
 @Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-directory-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-system-login-contrib.xml")
 public class TokenAuthenticationServiceFeature implements RunnerFeature {
 
 }

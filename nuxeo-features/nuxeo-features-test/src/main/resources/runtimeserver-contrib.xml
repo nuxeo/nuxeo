@@ -41,10 +41,6 @@
       <filter-name>NuxeoAuthenticationFilter</filter-name>
       <filter-class>org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter</filter-class>
       <display-name>WebEngine Authentication Filter</display-name>
-      <init-params>
-        <param name="byPassAuthenticationLog">true</param>
-        <param name="securityDomain">nuxeo-webengine</param>
-      </init-params>
       <filter-mapping>
         <url-pattern>/*</url-pattern>
       </filter-mapping>

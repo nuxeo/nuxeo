@@ -6,8 +6,6 @@
 
     To configure the keycloak SSO realm, just drop the keycloak.json configuration somewhere in the classpath.
     (the /nxserver/config in typically in the classpath)
-
-    This Authentication Plugin is configured to be used with the Trusting_LM LoginModule plugin.
   </documentation>
   <extension
       target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
@@ -16,24 +14,23 @@
         name="KEYCLOAK_AUTH"
         enabled="true"
         class="org.nuxeo.ecm.platform.ui.web.keycloak.KeycloakAuthenticationPlugin">
-      <loginModulePlugin>Trusting_LM</loginModulePlugin>
       <parameters>
         <parameter name="keycloakConfigFile">keycloak.json</parameter>
       </parameters>
     </authenticationPlugin>
   </extension>
-  
-  
+
+
   <extension target="org.nuxeo.usermapper.service.UserMapperComponent"
     point="mapper">
 
     <documentation>
       Contribute the default usermapper for keycloak.
     </documentation>
-    
+
     <mapper name="keycloak" class="org.nuxeo.ecm.platform.ui.web.keycloak.KeycloakUserMapper">
     </mapper>
-  
+
   </extension>
-  
+
 </component>

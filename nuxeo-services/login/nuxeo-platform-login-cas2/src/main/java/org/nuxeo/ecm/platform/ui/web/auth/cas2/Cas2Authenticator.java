@@ -245,7 +245,7 @@ public class Cas2Authenticator
             return null;
         }
 
-        UserIdentificationInfo uui = new UserIdentificationInfo(userName, casTicket);
+        UserIdentificationInfo uui = new UserIdentificationInfo(userName);
         uui.setToken(casTicket);
 
         return uui;
