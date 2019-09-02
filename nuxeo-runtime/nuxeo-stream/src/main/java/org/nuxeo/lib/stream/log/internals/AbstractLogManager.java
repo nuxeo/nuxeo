@@ -144,7 +144,7 @@ public abstract class AbstractLogManager implements LogManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized <M extends Externalizable> LogAppender<M> getAppender(String name, Codec<M> codec) {
+    public <M extends Externalizable> LogAppender<M> getAppender(String name, Codec<M> codec) {
         LogAppender<M> ret = (LogAppender<M>) appenders.computeIfAbsent(name, n -> {
             if (exists(n)) {
                 return createAppender(n, codec);
