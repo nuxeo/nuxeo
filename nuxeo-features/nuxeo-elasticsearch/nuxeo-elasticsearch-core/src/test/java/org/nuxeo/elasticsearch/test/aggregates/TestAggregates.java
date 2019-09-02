@@ -62,6 +62,7 @@ import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
 import org.nuxeo.elasticsearch.aggregate.DateHistogramAggregate;
+import org.nuxeo.elasticsearch.aggregate.HistogramAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
@@ -270,6 +271,27 @@ public class TestAggregates {
         qb.updateRequest(request);
         assertEqualsEvenUnderWindows(
                 "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
+                request.toString());
+    }
+
+    @Test
+    public void testAggregateHistogramQueryWithSelection() {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("histogram");
+        aggDef.setId("size");
+        aggDef.setDocumentField("common:size");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "size_agg"));
+        aggDef.setProperty("interval", "1024");
+        aggDef.setProperty("extendedBoundsMin", "0");
+        aggDef.setProperty("extendedBoundsMax", "10240");
+        HistogramAggregate agg = (HistogramAggregate) AggregateFactory.create(aggDef, null);
+        agg.setSelection(Collections.singletonList("2048.0"));
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+                                                       .addAggregate(agg);
+        SearchSourceBuilder request = new SearchSourceBuilder();
+        qb.updateRequest(request);
+        assertEqualsEvenUnderWindows(
+                "{\"from\":0,\"size\":10,\"query\":{\"match_all\":{\"boost\":1.0}},\"post_filter\":{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"range\":{\"common:size\":{\"from\":2048,\"to\":3072,\"include_lower\":true,\"include_upper\":false,\"boost\":1.0}}}],\"adjust_pure_negative\":true,\"boost\":1.0}}],\"adjust_pure_negative\":true,\"boost\":1.0}},\"_source\":{\"includes\":[\"_id\"],\"excludes\":[]},\"aggregations\":{\"size_filter\":{\"filter\":{\"match_all\":{\"boost\":1.0}},\"aggregations\":{\"size\":{\"histogram\":{\"field\":\"common:size\",\"interval\":1024.0,\"offset\":0.0,\"order\":{\"_key\":\"asc\"},\"keyed\":false,\"min_doc_count\":0,\"extended_bounds\":{\"min\":0.0,\"max\":10240.0}}}}}}}",
                 request.toString());
     }
 
