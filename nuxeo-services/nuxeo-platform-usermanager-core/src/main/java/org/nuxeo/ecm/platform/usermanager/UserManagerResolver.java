@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * This {@link ObjectResolver} allows to manage integrity for fields containing group or user references.
@@ -39,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * References should have a prefix. NuxeoPrincipal.PREFIX for users, NuxeoGroup.PREFIX for groups.
  * </p>
  * <p>
- * If only user or group are configured, the prefix is not needed but still supported. If noth user and group are
+ * If only user or group are configured, the prefix is not needed but still supported. If both user and group are
  * configured, reference without prefix are resolved as user first.
  * </p>
  * <p>
@@ -83,9 +84,13 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
 
     public static final String PARAM_INCLUDE_GROUPS = "includeGroups";
 
+    private static final String USE_LIGHT_PRINCIPAL_PARAM = "nuxeo.usermanager.use.light.principal";
+
     private boolean includingUsers = true;
 
     private boolean includingGroups = true;
+
+    private boolean fetchReferences;
 
     private transient UserManager userManager;
 
@@ -122,6 +127,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
         }
         this.parameters.put(PARAM_INCLUDE_GROUPS, includingGroups);
         this.parameters.put(PARAM_INCLUDE_USERS, includingUsers);
+        fetchReferences = Framework.getService(ConfigurationService.class).isBooleanFalse(USE_LIGHT_PRINCIPAL_PARAM);
     }
 
     @Override
@@ -144,7 +150,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                 if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                     return new SystemPrincipal(null);
                 }
-                return getUserManager().getPrincipal(name);
+                return getUserManager().getPrincipal(name, fetchReferences);
             } else if (!includingUsers && includingGroups) {
                 if (groupPrefix) {
                     name = name.substring(NuxeoGroup.PREFIX.length());
@@ -156,7 +162,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                     if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                         return new SystemPrincipal(null);
                     }
-                    return getUserManager().getPrincipal(name);
+                    return getUserManager().getPrincipal(name, fetchReferences);
                 } else if (groupPrefix) {
                     name = name.substring(NuxeoGroup.PREFIX.length());
                     return getUserManager().getGroup(name);
@@ -164,7 +170,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                     if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                         return new SystemPrincipal(null);
                     }
-                    NuxeoPrincipal principal = getUserManager().getPrincipal(name);
+                    NuxeoPrincipal principal = getUserManager().getPrincipal(name, fetchReferences);
                     if (principal != null) {
                         return principal;
                     } else {
