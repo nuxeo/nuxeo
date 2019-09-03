@@ -52,11 +52,23 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     boolean validatePassword(String password);
 
     /**
+     * Calls {@link #getPrincipal(String, boolean)} to retrieve a principal and its references, given its username
+     */
+    default NuxeoPrincipal getPrincipal(String username) {
+        return getPrincipal(username, true);
+    }
+
+    /**
      * Retrieves the principal with the given username or null if it does not exist.
      * <p>
      * Can build principals for anonymous and virtual users as well as for users defined in the users directory.
+     *
+     * @param username is the name of the entry in the user directory
+     * @param fetchReferences controls if the references (groups) of the user will be fetched
+     *
+     * @since 11.1
      */
-    NuxeoPrincipal getPrincipal(String username);
+    NuxeoPrincipal getPrincipal(String username, boolean fetchReferences);
 
     /**
      * Returns the nuxeo group with given name or null if it does not exist.
@@ -451,5 +463,4 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 9.2
      */
     void notifyGroupChanged(String groupName, String eventId, List<String> ancestorGroupNames);
-
 }

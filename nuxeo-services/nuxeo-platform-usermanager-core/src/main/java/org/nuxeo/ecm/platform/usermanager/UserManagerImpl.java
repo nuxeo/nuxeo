@@ -598,11 +598,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
-    public NuxeoPrincipal getPrincipal(String username) {
-        if (useCache()) {
+    public NuxeoPrincipal getPrincipal(String username, boolean fetchReferences) {
+        // Caching is not needed for a principal without references because this object is only a reference on an
+        // already cached User Model
+        if (useCache() && fetchReferences) {
             return getPrincipalUsingCache(username);
         }
-        return getPrincipal(username, null);
+        return getPrincipal(username, null, fetchReferences);
     }
 
     protected NuxeoPrincipal getPrincipalUsingCache(String username) {
@@ -1242,6 +1244,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public DocumentModel getUserModel(String userName, DocumentModel context) {
+        return getUserModel(userName, context, true);
+    }
+
+    protected DocumentModel getUserModel(String userName, DocumentModel context, boolean fetchReferences) {
         if (userName == null) {
             return null;
         }
@@ -1253,7 +1259,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
 
         try (Session userDir = dirService.open(userDirectoryName, context)) {
-            return userDir.getEntry(userName);
+            return userDir.getEntry(userName, fetchReferences);
         }
     }
 
@@ -1275,6 +1281,10 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
 
     @Override
     public NuxeoPrincipal getPrincipal(String username, DocumentModel context) {
+        return getPrincipal(username, context, true);
+    }
+
+    protected NuxeoPrincipal getPrincipal(String username, DocumentModel context, boolean fetchReferences) {
         if (username == null) {
             return null;
         }
@@ -1288,13 +1298,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         if (NuxeoPrincipal.isTransientUsername(username)) {
             return makeTransientPrincipal(username);
         }
-        DocumentModel userModel = getUserModel(username, context);
+        DocumentModel userModel = getUserModel(username, context, fetchReferences);
         if (userModel != null) {
             return makePrincipal(userModel);
         }
         return null;
     }
-
     @Override
     public DocumentModelList searchGroups(String pattern, DocumentModel context) {
         QueryBuilder queryBuilder = getQueryForPattern(pattern, groupDirectoryName, groupSearchFields,

@@ -144,7 +144,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                 if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                     return new SystemPrincipal(null);
                 }
-                return getUserManager().getPrincipal(name);
+                return getUserManager().getPrincipal(name, false);
             } else if (!includingUsers && includingGroups) {
                 if (groupPrefix) {
                     name = name.substring(NuxeoGroup.PREFIX.length());
@@ -156,7 +156,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                     if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                         return new SystemPrincipal(null);
                     }
-                    return getUserManager().getPrincipal(name);
+                    return getUserManager().getPrincipal(name, false);
                 } else if (groupPrefix) {
                     name = name.substring(NuxeoGroup.PREFIX.length());
                     return getUserManager().getGroup(name);
@@ -164,7 +164,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
                     if (SecurityConstants.SYSTEM_USERNAME.equals(name)) {
                         return new SystemPrincipal(null);
                     }
-                    NuxeoPrincipal principal = getUserManager().getPrincipal(name);
+                    NuxeoPrincipal principal = getUserManager().getPrincipal(name, false);
                     if (principal != null) {
                         return principal;
                     } else {

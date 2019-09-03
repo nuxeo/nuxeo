@@ -235,9 +235,11 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
-    public NuxeoPrincipal getPrincipal(String username) {
+    public NuxeoPrincipal getPrincipal(String username, boolean fetchReferences) {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(SecurityConstants.ADMINISTRATOR, false, true);
-        principal.setGroups(Collections.singletonList(SecurityConstants.ADMINISTRATORS));
+        if (fetchReferences) {
+            principal.setGroups(Collections.singletonList(SecurityConstants.ADMINISTRATORS));
+        }
         principal.setEmail("admin@example.com");
         return principal;
     }
