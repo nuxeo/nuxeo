@@ -948,10 +948,10 @@ public class TestUserManager extends UserManagerTestCase {
         DocumentModel u1 = getUser("user1");
         userManager.createUser(u1);
         DocumentModel g1 = getGroup("group1");
-        g1.setProperty("group", "members", Arrays.asList("user1"));
+        g1.setProperty("group", "members", List.of("user1"));
         userManager.createGroup(g1);
         DocumentModel g2 = getGroup("group2");
-        g2.setProperty("group", "members", Arrays.asList("user1"));
+        g2.setProperty("group", "members", List.of("user1"));
         userManager.createGroup(g2);
 
         NuxeoPrincipal principal1 = userManager.getPrincipal("user1");

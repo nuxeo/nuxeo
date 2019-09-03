@@ -235,11 +235,6 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
-    public NuxeoPrincipal getPrincipal(String username) {
-        return getPrincipal(username, true);
-    }
-
-    @Override
     public NuxeoPrincipal getPrincipal(String username, boolean fetchReferences) {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(SecurityConstants.ADMINISTRATOR, false, true);
         if (fetchReferences) {
