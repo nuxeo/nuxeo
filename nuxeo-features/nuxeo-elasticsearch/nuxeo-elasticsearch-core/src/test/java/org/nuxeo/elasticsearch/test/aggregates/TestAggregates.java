@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ import org.nuxeo.ecm.platform.query.core.BucketRangeDate;
 import org.nuxeo.ecm.platform.query.core.FieldDescriptor;
 import org.nuxeo.elasticsearch.aggregate.AggregateFactory;
 import org.nuxeo.elasticsearch.aggregate.DateHistogramAggregate;
+import org.nuxeo.elasticsearch.aggregate.HistogramAggregate;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -490,6 +492,96 @@ public class TestAggregates {
                         "    }\n" +
                         "  }\n" +
                         "}", //
+                request.toString());
+    }
+
+    @Test
+    public void testAggregateHistogramQueryWithSelection() {
+        AggregateDefinition aggDef = new AggregateDescriptor();
+        aggDef.setType("histogram");
+        aggDef.setId("size");
+        aggDef.setDocumentField("common:size");
+        aggDef.setSearchField(new FieldDescriptor("advanced_search", "size_agg"));
+        aggDef.setProperty("interval", "1024");
+        aggDef.setProperty("extendedBoundsMin", "0");
+        aggDef.setProperty("extendedBoundsMax", "10240");
+        HistogramAggregate agg = (HistogramAggregate) AggregateFactory.create(aggDef, null);
+        agg.setSelection(Collections.singletonList("2048.0"));
+        NxQueryBuilder qb = new NxQueryBuilder(session).nxql("SELECT * FROM Document")
+                                                       .addAggregate(agg);
+        SearchSourceBuilder request = new SearchSourceBuilder();
+        qb.updateRequest(request);
+        assertEqualsEvenUnderWindows("{\n" +
+                "  \"from\" : 0,\n" +
+                "  \"size\" : 10,\n" +
+                "  \"query\" : {\n" +
+                "    \"match_all\" : {\n" +
+                "      \"boost\" : 1.0\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"post_filter\" : {\n" +
+                "    \"bool\" : {\n" +
+                "      \"must\" : [\n" +
+                "        {\n" +
+                "          \"bool\" : {\n" +
+                "            \"should\" : [\n" +
+                "              {\n" +
+                "                \"range\" : {\n" +
+                "                  \"common:size\" : {\n" +
+                "                    \"from\" : 2048,\n" +
+                "                    \"to\" : 3072,\n" +
+                "                    \"include_lower\" : true,\n" +
+                "                    \"include_upper\" : false,\n" +
+                "                    \"boost\" : 1.0\n" +
+                "                  }\n" +
+                "                }\n" +
+                "              }\n" +
+                "            ],\n" +
+                "            \"disable_coord\" : false,\n" +
+                "            \"adjust_pure_negative\" : true,\n" +
+                "            \"boost\" : 1.0\n" +
+                "          }\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"disable_coord\" : false,\n" +
+                "      \"adjust_pure_negative\" : true,\n" +
+                "      \"boost\" : 1.0\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"_source\" : {\n" +
+                "    \"includes\" : [\n" +
+                "      \"_id\"\n" +
+                "    ],\n" +
+                "    \"excludes\" : [ ]\n" +
+                "  },\n" +
+                "  \"aggregations\" : {\n" +
+                "    \"size_filter\" : {\n" +
+                "      \"filter\" : {\n" +
+                "        \"match_all\" : {\n" +
+                "          \"boost\" : 1.0\n" +
+                "        }\n" +
+                "      },\n" +
+                "      \"aggregations\" : {\n" +
+                "        \"size\" : {\n" +
+                "          \"histogram\" : {\n" +
+                "            \"field\" : \"common:size\",\n" +
+                "            \"interval\" : 1024.0,\n" +
+                "            \"offset\" : 0.0,\n" +
+                "            \"order\" : {\n" +
+                "              \"_key\" : \"asc\"\n" +
+                "            },\n" +
+                "            \"keyed\" : false,\n" +
+                "            \"min_doc_count\" : 0,\n" +
+                "            \"extended_bounds\" : {\n" +
+                "              \"min\" : 0.0,\n" +
+                "              \"max\" : 10240.0\n" +
+                "            }\n" +
+                "          }\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}",
                 request.toString());
     }
 

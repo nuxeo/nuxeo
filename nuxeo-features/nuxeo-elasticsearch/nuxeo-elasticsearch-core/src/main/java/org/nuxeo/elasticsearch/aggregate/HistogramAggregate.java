@@ -100,7 +100,7 @@ public class HistogramAggregate extends AggregateEsBase<BucketRange> {
         BoolQueryBuilder ret = QueryBuilders.boolQuery();
         for (String sel : getSelection()) {
             RangeQueryBuilder rangeFilter = QueryBuilders.rangeQuery(getField());
-            long from = Long.parseLong(sel);
+            long from = Float.valueOf(sel).longValue();
             long to = from + getInterval();
             rangeFilter.gte(from).lt(to);
             ret.should(rangeFilter);
