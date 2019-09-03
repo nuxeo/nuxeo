@@ -51,9 +51,12 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
 
     boolean validatePassword(String password);
 
-     default NuxeoPrincipal getPrincipal(String username) {
-         return getPrincipal(username, true);
-     }
+    /**
+     * Calls {@link #getPrincipal(String, boolean) to retrieve a principal and its references, given its username
+     */
+    default NuxeoPrincipal getPrincipal(String username) {
+        return getPrincipal(username, true);
+    }
 
     /**
      * Retrieves the principal with the given username or null if it does not exist.
