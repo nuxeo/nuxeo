@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -141,12 +142,7 @@ public class EventListenerDescriptor {
     public void initListener() {
         try {
             if (className != null) {
-                Class<?> klass;
-                try {
-                    klass = getRuntimeContext().loadClass(className);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
+                Class<?> klass = getRuntimeContext().loadClass(className);
                 if (EventListener.class.isAssignableFrom(klass)) {
                     inLineListener = (EventListener) klass.getDeclaredConstructor().newInstance();
                     isPostCommit = false;
@@ -168,7 +164,7 @@ public class EventListenerDescriptor {
                 throw new IllegalArgumentException("Listener extension must define either a class or a script");
             }
         } catch (ReflectiveOperationException | NoClassDefFoundError | IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -255,7 +251,7 @@ public class EventListenerDescriptor {
     }
 
     public boolean getIsAsync() {
-        return isAsync == null ? false : isAsync.booleanValue();
+        return Boolean.TRUE.equals(isAsync);
     }
 
     public boolean isSingleThreaded() {

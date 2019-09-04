@@ -115,7 +115,7 @@ public class TestEventListenerContrib {
         assertEquals(3, errors.size());
 
         assertEquals("Failed to register event listener in component 'service:test-invalid-listeners': "
-                + "error initializing event listener 'invalidListenerUnknown' (java.lang.RuntimeException: "
+                + "error initializing event listener 'invalidListenerUnknown' (org.nuxeo.ecm.core.api.NuxeoException: "
                 + "java.lang.ClassNotFoundException: org.nuxeo.invalid.listener.UnknownClass)", errors.get(0));
         assertEquals(
                 "Failed to register event listener in component 'service:test-invalid-listeners': "

@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -61,21 +60,12 @@ public class TestEventServiceComponent {
     protected int initialThreadCount;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws InterruptedException {
         Framework.getProperties().setProperty(PostCommitEventExecutor.TIMEOUT_MS_PROP, "300"); // 0.3s
         Thread.sleep(100);
         initialThreadCount = Thread.activeCount();
         DummyPostCommitEventListener.handledCountReset();
         DummyPostCommitEventListener.eventCountReset();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        Event commit = new EventImpl("commit", new EventContextImpl());
-        commit.setIsCommitEvent(true);
-        EventService service = getService();
-        service.fireEvent(commit);
-        service.waitForAsyncCompletion();
     }
 
     @Test
@@ -100,16 +90,16 @@ public class TestEventServiceComponent {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event:test-async-listeners.xml")
-    public void testAsync() throws Exception {
+    public void testAsync() throws InterruptedException {
 
         EventService service = getService();
 
         // send two events, only one of which is recognized by the listener
         // (the other is filtered out of the bundle passed to this listener)
-        Event test1 = new EventImpl("testasync", new EventContextImpl());
+        Event test1 = new EventImpl("testasync", new EventContextImpl()); // NOSONAR
         service.fireEvent(test1);
         assertEquals(DummyPostCommitEventListener.handledCount(), 0);
-        Event test2 = new EventImpl("testnotmached", new EventContextImpl());
+        Event test2 = new EventImpl("testnotmached", new EventContextImpl()); // NOSONAR
         test2.setIsCommitEvent(true);
         service.fireEvent(test2);
         service.waitForAsyncCompletion();
@@ -124,7 +114,7 @@ public class TestEventServiceComponent {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event:test-async-listeners.xml")
-    public void testAsyncRetry() throws Exception {
+    public void testAsyncRetry() {
 
         EventService service = getService();
 
@@ -186,7 +176,7 @@ public class TestEventServiceComponent {
     @Test
     @Ignore
     @Deploy("org.nuxeo.ecm.core.event:test-PostCommitListeners3.xml")
-    public void testAsyncEventExecutorShutdown() throws Exception {
+    public void testAsyncEventExecutorShutdown() throws InterruptedException {
         // send an async event to make sure the async event executor spawned
         // some threads
         // load contrib
@@ -197,7 +187,7 @@ public class TestEventServiceComponent {
         test1.setIsCommitEvent(true);
         service.fireEvent(test1);
         // wait for async processing to be done
-        service.waitForAsyncCompletion(2 * 1000);
+        service.waitForAsyncCompletion(2L * 1000);
         assertEquals(1, DummyPostCommitEventListener.handledCount());
         // can still fire events
         Event test2 = new EventImpl("test1", new EventContextImpl());
@@ -205,11 +195,11 @@ public class TestEventServiceComponent {
         service.fireEvent(test2);
         // now stop service
         // this is called by EventServiceComponent.deactivate() in real life
-        ((EventServiceImpl) service).shutdown(2 * 1000);
+        ((EventServiceImpl) service).shutdown(2L * 1000);
         ((EventServiceImpl) service).init();
         assertEquals(2, DummyPostCommitEventListener.handledCount());
-        Thread.sleep(2 * 1000);
-        assertEquals("Threads not dead", 0, Thread.activeCount() - initialThreadCount);
+        Thread.sleep(2L * 1000);
+        assertEquals("Threads not dead", 0, (long) Thread.activeCount() - initialThreadCount);
     }
 
     protected EventServiceImpl getService() {
@@ -234,7 +224,7 @@ public class TestEventServiceComponent {
     }
 
     private void doTestSyncPostCommit(boolean error, boolean timeout, int expectedHandled, int expectedEvents)
-            throws Exception {
+            throws InterruptedException {
         EventService service = getService();
 
         // Send 4 events, only 2 of which are recognized by the listeners
@@ -261,7 +251,6 @@ public class TestEventServiceComponent {
         assertEquals(0, DummyPostCommitEventListener.handledCount());
         service.fireEvent(event4);
         service.waitForAsyncCompletion();
-        // Thread.sleep(3000);
         assertEquals(expectedHandled, DummyPostCommitEventListener.handledCount());
         assertEquals(expectedEvents, DummyPostCommitEventListener.eventCount());
         if (timeout) {
@@ -272,7 +261,7 @@ public class TestEventServiceComponent {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event:test-async-listeners.xml") // contains a sync listener too
-    public void testConcurrentUpdateExceptionNotSwallowed() throws Exception {
+    public void testConcurrentUpdateExceptionNotSwallowed() {
         Event event = new EventImpl("testasync", new EventContextImpl());
         event.getContext().setProperty("throw-concurrent", "yes");
         try {
