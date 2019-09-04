@@ -32,8 +32,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class PostCommitEventExecutor {
 
-    private static final Log log = LogFactory.getLog(PostCommitEventExecutor.class);
+    private static final Logger log = LogManager.getLogger(PostCommitEventExecutor.class);
 
     public static final String TIMEOUT_MS_PROP = "org.nuxeo.ecm.core.event.tx.PostCommitExecutor.timeoutMs";
 
@@ -128,6 +128,12 @@ public class PostCommitEventExecutor {
     }
 
     public void run(List<EventListenerDescriptor> listeners, EventBundle event) {
+        log.warn(
+                "Running post commit event listeners: {}. Post commit event listener execution will soon be deprecated,"
+                        + " see NXP-27986. As explained in NXP-26911, please update your post commit event listener"
+                        + " contributions to make the listeners asynchronous with <listener async=\"true\"...>.\n"
+                        + " You can disable this warning by following the instructions provided in NXP-26911.",
+                listeners);
         run(listeners, event, getDefaultTimeoutMs(), false);
     }
 
