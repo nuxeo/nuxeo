@@ -22,45 +22,31 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Asynchronous event handler to update Collection of a removed CollectiomMember and CollectionMember of a Collection.
+ * Synchronous event handler to update Collection of a removed CollectiomMember and CollectionMember of a Collection by
+ * scheduling an asynchronous work.
  *
  * @since 5.9.3
  */
-public class RemovedCollectionListener implements PostCommitEventListener {
+public class RemovedCollectionListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(RemovedCollectionListener.class);
 
     @Override
-    public void handleEvent(EventBundle bundle) {
-        for (Event each : bundle) {
-            final EventContext ctx = each.getContext();
-            if (!(ctx instanceof DocumentEventContext)) {
-                continue;
-            }
+    public void handleEvent(Event event) {
 
-            final String eventId = each.getName();
-            if (!eventId.equals(DocumentEventTypes.DOCUMENT_REMOVED)) {
-                continue;
-            }
-
-            onEvent(each);
+        final EventContext ctx = event.getContext();
+        if (!(ctx instanceof DocumentEventContext)) {
+            return;
         }
-    }
 
-    protected void onEvent(final Event event) {
-
-        final DocumentEventContext docCxt = (DocumentEventContext) event.getContext();
-
-        final DocumentModel doc = docCxt.getSourceDocument();
+        final DocumentModel doc = ((DocumentEventContext) ctx).getSourceDocument();
 
         final CollectionManager collectionManager = Framework.getService(CollectionManager.class);
 
