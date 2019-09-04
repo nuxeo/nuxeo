@@ -16,7 +16,7 @@
       <event>aboutToRemove</event>
     </listener>
 
-    <listener name="documenttemplate-type-binding" async="true" priority="500"
+    <listener name="documenttemplate-type-binding" async="true" postCommit="true" priority="500"
       class="org.nuxeo.template.listeners.TemplateTypeBindingListener">
       <event>documentCreated</event>
       <event>documentModified</event>

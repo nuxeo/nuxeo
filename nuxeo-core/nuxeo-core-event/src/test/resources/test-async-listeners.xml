@@ -2,7 +2,7 @@
 <component name="test-async-listener">
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener async="true" postCommit="false" class="org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener" name="testPostCommit">
+    <listener async="true" postCommit="true" class="org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener" name="testPostCommit">
       <event>testasync</event>
     </listener>
     <listener async="false" postCommit="false" name="inlineListener"

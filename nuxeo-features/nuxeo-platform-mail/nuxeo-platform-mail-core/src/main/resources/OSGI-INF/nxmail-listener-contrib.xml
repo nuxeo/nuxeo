@@ -3,8 +3,8 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="mailReceivedListener" async="true"
-      postCommit="true" priority="140"
+    <listener name="mailReceivedListener" async="false"
+      postCommit="false" priority="140"
       class="org.nuxeo.ecm.platform.mail.listener.MailEventListener">
       <event>MailReceivedEvent</event>
     </listener>
