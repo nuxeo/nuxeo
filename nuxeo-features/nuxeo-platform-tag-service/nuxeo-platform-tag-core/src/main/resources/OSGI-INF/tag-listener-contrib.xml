@@ -3,7 +3,8 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener name="taggedVersionListener" class="org.nuxeo.ecm.platform.tag.TaggedVersionListener">
+    <listener name="taggedVersionListener" class="org.nuxeo.ecm.platform.tag.TaggedVersionListener"
+      async="true" postCommit="true">
       <event>documentRestored</event>
       <event>documentProxyPublished</event>
       <event>documentRemoved</event>

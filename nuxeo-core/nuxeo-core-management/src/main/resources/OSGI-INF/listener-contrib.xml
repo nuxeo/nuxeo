@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="CounterListener" async="false"
+    <listener name="CounterListener" async="true"
       postCommit="true" priority="1000"
       class="org.nuxeo.ecm.core.management.events.EventCounterListener">
     </listener>
