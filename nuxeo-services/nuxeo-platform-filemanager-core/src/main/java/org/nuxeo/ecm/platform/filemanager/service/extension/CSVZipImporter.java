@@ -15,9 +15,9 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Jackie Aldama <jaldama@nuxeo.com>
  *
  */
-
 package org.nuxeo.ecm.platform.filemanager.service.extension;
 
 import java.io.File;
@@ -27,8 +27,10 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -39,7 +41,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -58,6 +60,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
+
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_LIFECYCLESTATE;
 
 public class CSVZipImporter extends AbstractFileImporter {
 
@@ -116,29 +121,32 @@ public class CSVZipImporter extends AbstractFileImporter {
                 Map<String, Integer> header = csvParser.getHeaderMap();
                 for (CSVRecord csvRecord : csvParser) {
                     String type = null;
-                    String id = null;
+                    String name = null;
                     Map<String, String> stringValues = new HashMap<>();
                     for (String headerValue : header.keySet()) {
                         String lineValue = csvRecord.get(headerValue);
                         if ("type".equalsIgnoreCase(headerValue)) {
                             type = lineValue;
-                        } else if ("id".equalsIgnoreCase(headerValue)) {
-                            id = lineValue;
+                        } else if ("name".equalsIgnoreCase(headerValue)) {
+                            name = lineValue;
                         } else {
                             stringValues.put(headerValue, lineValue);
                         }
                     }
 
+                    if (name == null || name.isEmpty()) {
+                        log.error("Can not create or update doc without a name, skipping line");
+                        continue;
+                    }
+
                     boolean updateDoc = false;
                     // get doc for update
                     DocumentModel targetDoc = null;
-                    if (id != null) {
-                        // update ?
-                        String targetPath = new Path(parentPath).append(id).toString();
-                        if (session.exists(new PathRef(targetPath))) {
-                            targetDoc = session.getDocument(new PathRef(targetPath));
-                            updateDoc = true;
-                        }
+
+                    String targetPath = new Path(parentPath).append(name).toString();
+                    if (session.exists(new PathRef(targetPath))) {
+                        targetDoc = session.getDocument(new PathRef(targetPath));
+                        updateDoc = true;
                     }
 
                     // create doc if needed
@@ -147,11 +155,7 @@ public class CSVZipImporter extends AbstractFileImporter {
                             log.error("Can not create doc without a type, skipping line");
                             continue;
                         }
-
-                        if (id == null) {
-                            id = IdUtils.generateStringId();
-                        }
-                        targetDoc = session.createDocumentModel(parentPath, id, type);
+                        targetDoc = session.createDocumentModel(parentPath, name, type);
                     }
 
                     // update doc properties
@@ -164,7 +168,11 @@ public class CSVZipImporter extends AbstractFileImporter {
                         String schemaName = null;
                         String fieldName = null;
 
-                        if (fname.contains(":")) {
+                        if (fname.equals(ECM_LIFECYCLESTATE)) {
+                            targetDoc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, stringValue);
+                        } else if (fname.equalsIgnoreCase("nxtag:tags")) {
+                           targetDoc = addTags(session, targetDoc, stringValue);
+                        } else if (fname.contains(":")) {
                             if (targetDocType.hasField(fname)) {
                                 field = targetDocType.getField(fname);
                                 usePrefix = true;
@@ -241,21 +249,50 @@ public class CSVZipImporter extends AbstractFileImporter {
                 log.warn(String.format("Unsupported field type '%s'", type));
                 return null;
             }
-        } else if (type.isComplexType() && TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
-            ZipEntry blobIndex = zip.getEntry(stringValue);
-            if (blobIndex != null) {
-                Blob blob;
-                try {
-                    blob = Blobs.createBlob(zip.getInputStream(blobIndex));
-                } catch (IOException e) {
-                    throw new NuxeoException(e);
+        } else if (type.isComplexType()) {
+            if (TypeConstants.CONTENT.equals(field.getName().getLocalName())) {
+                ZipEntry blobIndex = zip.getEntry(stringValue);
+                if (blobIndex != null) {
+                    Blob blob;
+                    try {
+                        blob = Blobs.createBlob(zip.getInputStream(blobIndex));
+                    } catch (IOException e) {
+                        throw new NuxeoException(e);
+                    }
+                    blob.setFilename(stringValue);
+                    fieldValue = (Serializable) blob;
                 }
-                blob.setFilename(stringValue);
-                fieldValue = (Serializable) blob;
             }
+            /*
+             * TODO: Account for other complex fields
+             */
+        } else if (type.isListType()) {
+            Type listFieldType = ((ListType) type).getFieldType();
+            if (listFieldType.isSimpleType()) {
+                /*
+                 * Array.
+                 */
+                fieldValue = stringValue.split("\\|");
+            }
+            /*
+             * TODO: Complex list.
+             */
         }
 
         return fieldValue;
     }
 
+    private DocumentModel addTags(CoreSession session, DocumentModel targetDoc, String tagString) {
+        String[] tagList = tagString.split("\\|");
+        List<Map<String, Serializable>> tags = new ArrayList<>();
+        for (String tag : tagList) {
+            Map<String, Serializable> tagMap = new HashMap<>();
+            tagMap.put("label", tag);
+            tagMap.put("username", session.getPrincipal().getName());
+            tags.add(tagMap);
+        }
+
+        targetDoc.setPropertyValue("nxtag:tags", (Serializable) tags);
+        return targetDoc;
+    }
 }
