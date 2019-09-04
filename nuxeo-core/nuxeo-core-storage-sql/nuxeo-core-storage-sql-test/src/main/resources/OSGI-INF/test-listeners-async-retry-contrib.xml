@@ -2,7 +2,7 @@
 <component name="org.nuxeo.ecm.core.storage.sql.tests.listeners.async.retry">
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="testAsyncRetry" async="true" postCommit="false" retryCount="1"
+    <listener name="testAsyncRetry" async="true" postCommit="true" retryCount="1"
       class="org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener">
       <event>documentCreated</event>
     </listener>

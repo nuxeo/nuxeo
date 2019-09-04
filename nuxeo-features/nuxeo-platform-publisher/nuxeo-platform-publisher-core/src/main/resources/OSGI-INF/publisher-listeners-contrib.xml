@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
              point="listener">
 
-    <listener name="domainCreationListener" async="false" postCommit="true"
+    <listener name="domainCreationListener" async="false" postCommit="false"
               class="org.nuxeo.ecm.platform.publisher.listeners.DomainEventsListener"
               priority="140">
       <event>documentCreated</event>

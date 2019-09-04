@@ -5,7 +5,7 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="commentListener" async="false" postCommit="true"
+    <listener name="commentListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.comment.listener.CommentRemovedEventListener">
       <event>documentRemoved</event>
     </listener>

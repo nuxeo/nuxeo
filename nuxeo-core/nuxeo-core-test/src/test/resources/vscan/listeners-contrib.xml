@@ -11,7 +11,7 @@
       <event>aboutToCreate</event>
     </listener>
 
-    <listener name="vscanProcessor" async="true"
+    <listener name="vscanProcessor" async="true" postCommit="true"
       class="org.nuxeo.ecm.core.event.test.virusscan.listeners.VirusScannerProcessor" priority="100">
       <event>virusScanNeeded</event>
     </listener>

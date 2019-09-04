@@ -18,7 +18,8 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="wopiLocksExpiration" async="true" class="org.nuxeo.wopi.lock.LockExpirationListener">
+    <listener name="wopiLocksExpiration" async="true" postCommit="true"
+      class="org.nuxeo.wopi.lock.LockExpirationListener">
       <event>wopiLocksExpiration</event>
     </listener>
   </extension>
