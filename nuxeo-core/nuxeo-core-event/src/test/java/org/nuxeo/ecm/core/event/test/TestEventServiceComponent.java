@@ -46,16 +46,20 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.runtime.jtajca")
 @Deploy("org.nuxeo.ecm.core.event")
 public class TestEventServiceComponent {
 
     @Inject
     protected HotDeployer hotDeployer;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     protected int initialThreadCount;
 
@@ -130,8 +134,14 @@ public class TestEventServiceComponent {
     }
 
     @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testSyncPostCommit() throws Exception {
         doTestSyncPostCommit(false, false, false, 2, 4);
+
+        // check post commit event listener execution deprecation warning
+        List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertTrue(caughtEvents.get(0).startsWith("Running post commit event listeners"));
     }
 
     @Test

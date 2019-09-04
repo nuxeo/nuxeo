@@ -300,4 +300,10 @@ public class EventListenerDescriptor {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return "EventListenerDescriptor [name=" + name + ", className=" + className + ", isPostCommit=" + isPostCommit
+                + ", isAsync=" + isAsync + "]";
+    }
+
 }
