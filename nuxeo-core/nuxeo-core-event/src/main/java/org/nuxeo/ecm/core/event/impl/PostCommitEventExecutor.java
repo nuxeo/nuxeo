@@ -146,19 +146,15 @@ public class PostCommitEventExecutor {
             }
         }
         if (!some) {
-            if (log.isDebugEnabled()) {
-                log.debug("Events postcommit execution has nothing to do");
-            }
+            log.debug("Events postcommit execution has nothing to do");
             return;
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Events postcommit execution starting with timeout %sms%s",
-                    Long.valueOf(timeoutMillis), bulk ? " in bulk mode" : ""));
-        }
+        log.debug("Events postcommit execution starting with timeout {}ms{}", () -> Long.valueOf(timeoutMillis),
+                () -> bulk ? " in bulk mode" : "");
 
-        Callable<Boolean> callable = !bulk ? new EventBundleRunner(listeners, bundle) : new EventBundleBulkRunner(
-                listeners, bundle);
+        Callable<Boolean> callable = !bulk ? new EventBundleRunner(listeners, bundle)
+                : new EventBundleBulkRunner(listeners, bundle);
         FutureTask<Boolean> futureTask = new FutureTask<>(callable);
         try {
             executor.execute(futureTask);
@@ -178,22 +174,19 @@ public class PostCommitEventExecutor {
             futureTask.cancel(true); // mayInterruptIfRunning=true
         } catch (TimeoutException e) {
             if (!bulk) {
-                log.info(String.format("Events postcommit execution exceeded timeout of %sms, leaving thread running",
-                        Long.valueOf(timeoutMillis)));
+                log.info("Events postcommit execution exceeded timeout of {}ms, leaving thread running",
+                        () -> Long.valueOf(timeoutMillis));
                 // don't cancel task, let it run
             } else {
-                log.error(String.format(
-                        "Events postcommit bulk execution exceeded timeout of %sms, interrupting thread",
-                        Long.valueOf(timeoutMillis)));
+                log.error("Events postcommit bulk execution exceeded timeout of {}ms, interrupting thread",
+                        () -> Long.valueOf(timeoutMillis));
                 futureTask.cancel(true); // mayInterruptIfRunning=true
             }
         } catch (ExecutionException e) {
-            log.error("Events postcommit execution encountered unexpected exception", e.getCause());
+            log.error("Events postcommit execution encountered unexpected exception", e::getCause);
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Events postcommit execution finished");
-        }
+        log.debug("Events postcommit execution finished");
     }
 
     /**
@@ -223,9 +216,7 @@ public class PostCommitEventExecutor {
 
         @Override
         public Boolean call() {
-            if (log.isDebugEnabled()) {
-                log.debug("Events postcommit execution starting in thread: " + Thread.currentThread().getName());
-            }
+            log.debug("Events postcommit execution starting in thread: {}", () -> Thread.currentThread().getName());
             SequenceTracer.startFrom(callerThread, "Postcommit", "#ff410f");
             long t0 = System.currentTimeMillis();
             EventStats stats = Framework.getService(EventStats.class);
@@ -235,9 +226,7 @@ public class PostCommitEventExecutor {
                 if (filtered.isEmpty()) {
                     continue;
                 }
-                if (log.isDebugEnabled()) {
-                    log.debug("Events postcommit execution start for listener: " + listener.getName());
-                }
+                log.debug("Events postcommit execution start for listener: {}", listener::getName);
                 SequenceTracer.start("run listener " + listener.getName());
                 long t1 = System.currentTimeMillis();
 
@@ -253,8 +242,8 @@ public class PostCommitEventExecutor {
                     ok = true;
                     // don't check for interrupted flag, the event completed normally, no reason to rollback
                 } catch (RuntimeException e) {
-                    log.error("Events postcommit execution encountered exception for listener: " + listener.getName(),
-                            e);
+                    log.error("Events postcommit execution encountered exception for listener: {}", listener::getName,
+                            () -> e);
                     // don't rethrow, but rollback (ok=false) and continue loop
                 } finally {
                     try {
@@ -273,19 +262,15 @@ public class PostCommitEventExecutor {
                         if (stats != null) {
                             stats.logAsyncExec(listener, elapsed);
                         }
-                        if (log.isDebugEnabled()) {
-                            log.debug("Events postcommit execution end for listener: " + listener.getName() + " in "
-                                    + elapsed + "ms");
-                        }
+                        log.debug("Events postcommit execution end for listener: {} in {}ms", listener::getName,
+                                () -> elapsed);
                         SequenceTracer.stop("listener done " + elapsed + " ms");
                     }
                 }
                 // even if interrupted due to timeout, we continue the loop
             }
             long elapsed = System.currentTimeMillis() - t0;
-            if (log.isDebugEnabled()) {
-                log.debug("Events postcommit execution finished in " + elapsed + "ms");
-            }
+            log.debug("Events postcommit execution finished in {}ms", elapsed);
             SequenceTracer.stop("postcommit done" + elapsed + " ms");
             return Boolean.TRUE; // no error to report
         }
@@ -305,6 +290,7 @@ public class PostCommitEventExecutor {
         protected final List<EventListenerDescriptor> listeners;
 
         protected final EventBundle bundle;
+
         protected final String callerThread;
 
         public EventBundleBulkRunner(List<EventListenerDescriptor> listeners, EventBundle bundle) {
@@ -316,9 +302,8 @@ public class PostCommitEventExecutor {
         @Override
         public Boolean call() {
             SequenceTracer.startFrom(callerThread, "BulkPostcommit", "#ff410f");
-            if (log.isDebugEnabled()) {
-                log.debug("Events postcommit bulk execution starting in thread: " + Thread.currentThread().getName());
-            }
+            log.debug("Events postcommit bulk execution starting in thread: {}",
+                    () -> Thread.currentThread().getName());
             long t0 = System.currentTimeMillis();
 
             boolean ok = false;
@@ -334,30 +319,25 @@ public class PostCommitEventExecutor {
                         continue;
                     }
                     SequenceTracer.start("run listener " + listener.getName());
-                    if (log.isDebugEnabled()) {
-                        log.debug("Events postcommit bulk execution start for listener: " + listener.getName());
-                    }
+                    log.debug("Events postcommit bulk execution start for listener: {}", listener::getName);
                     long t1 = System.currentTimeMillis();
                     try {
 
                         listener.asPostCommitListener().handleEvent(filtered);
 
                         if (Thread.currentThread().isInterrupted()) {
-                            log.error("Events postcommit bulk execution interrupted for listener: "
-                                    + listener.getName() + ", will rollback and abort bulk processing");
+                            log.error("Events postcommit bulk execution interrupted for listener: {}, will rollback and"
+                                    + " abort bulk processing", listener::getName);
                             interrupt = true;
                         }
                     } catch (RuntimeException e) {
-                        log.error(
-                                "Events postcommit bulk execution encountered exception for listener: "
-                                        + listener.getName(), e);
+                        log.error("Events postcommit bulk execution encountered exception for listener: {}",
+                                listener::getName, () -> e);
                         return Boolean.FALSE; // report error
                     } finally {
                         long elapsed = System.currentTimeMillis() - t1;
-                        if (log.isDebugEnabled()) {
-                            log.debug("Events postcommit bulk execution end for listener: " + listener.getName()
-                                    + " in " + elapsed + "ms");
-                        }
+                        log.debug("Events postcommit bulk execution end for listener: {} in {}ms", listener::getName,
+                                () -> elapsed);
                         SequenceTracer.stop("listener done " + elapsed + " ms");
                     }
                     if (interrupt) {
@@ -381,9 +361,7 @@ public class PostCommitEventExecutor {
                 }
                 long elapsed = System.currentTimeMillis() - t0;
                 SequenceTracer.stop("BulkPostcommit done " + elapsed + " ms");
-                if (log.isDebugEnabled()) {
-                    log.debug("Events postcommit bulk execution finished in " + elapsed + "ms");
-                }
+                log.debug("Events postcommit bulk execution finished in {}ms", elapsed);
             }
             return Boolean.TRUE; // no error to report
         }
