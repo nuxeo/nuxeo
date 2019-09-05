@@ -598,6 +598,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
     }
 
     @Override
+    public NuxeoPrincipal getPrincipal(String username) {
+        return getPrincipal(username, true);
+    }
+
+    @Override
     public NuxeoPrincipal getPrincipal(String username, boolean fetchReferences) {
         // Caching is not needed for a principal without references because this object is only a reference on an
         // already cached User Model
@@ -1278,7 +1283,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
         return result;
     }
-
+    
     @Override
     public NuxeoPrincipal getPrincipal(String username, DocumentModel context) {
         return getPrincipal(username, context, true);
