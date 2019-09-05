@@ -157,6 +157,14 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@batchThreshold")
         public Duration batchThreshold = DEFAULT_BATCH_THRESHOLD;
 
+        public ComputationPolicyBuilder createPolicyBuilder() {
+            RetryPolicy retryPolicy = new RetryPolicy().withMaxRetries(maxRetries)
+                                                       .withBackoff(delay.toMillis(), maxDelay.toMillis(),
+                                                               TimeUnit.MILLISECONDS);
+            return new ComputationPolicyBuilder().retryPolicy(retryPolicy)
+                                                 .batchPolicy(batchCapacity, batchThreshold)
+                                                 .continueOnFailure(continueOnFailure);
+        }
     }
 
     public static final Integer DEFAULT_CONCURRENCY = 4;
@@ -217,14 +225,7 @@ public class StreamProcessorDescriptor implements Descriptor {
                         "Cannot create policy: " + policyDescriptor.getId() + " for processor: " + this.getId(), e);
             }
         }
-        RetryPolicy retryPolicy = new RetryPolicy().withMaxRetries(policyDescriptor.maxRetries)
-                                                   .withBackoff(policyDescriptor.delay.toMillis(),
-                                                           policyDescriptor.maxDelay.toMillis(), TimeUnit.MILLISECONDS);
-        return new ComputationPolicyBuilder().retryPolicy(retryPolicy)
-                                             .batchPolicy(policyDescriptor.batchCapacity,
-                                                     policyDescriptor.batchThreshold)
-                                             .continueOnFailure(policyDescriptor.continueOnFailure)
-                                             .build();
+        return new DefaultNuxeoComputationPolicy().getPolicy(policyDescriptor);
     }
 
     public ComputationPolicy getDefaultPolicy() {
