@@ -29,6 +29,8 @@ import java.util.stream.Stream;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaNormalization;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import avro.shaded.com.google.common.collect.MapMaker;
 
@@ -38,6 +40,8 @@ import avro.shaded.com.google.common.collect.MapMaker;
  * @since 10.3
  */
 public class FileAvroSchemaStore implements AvroSchemaStore {
+
+    private static final Log log = LogFactory.getLog(FileAvroSchemaStore.class);
 
     protected static final String AVRO_SCHEMA_EXT = ".avsc";
 
@@ -74,13 +78,12 @@ public class FileAvroSchemaStore implements AvroSchemaStore {
      * Load the avro schema from this file.
      */
     public void loadSchema(Path schemaPath) {
-        Schema schema;
         try {
-            schema = new Schema.Parser().parse(schemaPath.toFile());
+            Schema schema = new Schema.Parser().parse(schemaPath.toFile());
+            addSchema(schema);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Invalid schema file: " + schemaPath, e);
+            log.error("Invalid schema file: " + schemaPath, e);
         }
-        addSchema(schema);
     }
 
     @Override
