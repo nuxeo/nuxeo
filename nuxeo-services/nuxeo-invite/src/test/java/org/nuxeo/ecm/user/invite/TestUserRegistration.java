@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
 import java.io.Serializable;
@@ -120,6 +121,38 @@ public class TestUserRegistration extends AbstractUserRegistration {
         // Must throw a UserAlreadyExistsException
         userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
                 UserInvitationService.ValidationMethod.NONE, true);
+    }
+
+    @Test public void tesEventOnRegistrationWithSameEmailAsExistingUser() {
+        // Set User info
+        DocumentModel userInfo = buildSampleUserInfo();
+        userInfo.setPropertyValue("userinfo:login", "vdu-" + userInfo.getPropertyValue("userinfo:login"));
+        userInfo.setPropertyValue("userinfo:email", "vdu-" + userInfo.getPropertyValue("userinfo:email"));
+        // Create a user using User Info
+        DocumentModel user1 = userManager.getBareUserModel();
+        user1.setPropertyValue(userManager.getUserIdField(), userInfo.getPropertyValue("userinfo:login") + "2");
+        user1.setPropertyValue(userManager.getUserEmailField(), userInfo.getPropertyValue("userinfo:email"));
+        userManager.createUser(user1);
+//        Map<String, Serializable> filter = new HashMap<>(1);
+//        filter.put(UserConfig.EMAIL_COLUMN, userInfo.getPropertyValue("userinfo:email"));
+//        DocumentModelList users = Framework.getService(UserManager.class).searchUsers(filter, null);
+//        assertFalse(users.isEmpty());
+//        System.out.println("### " + users.get(0).getPropertyValue(userManager.getUserEmailField()));
+        // Invite user from user info
+        try {
+            // Must throw a UserAlreadyExistsException
+            userRegistrationService.submitRegistrationRequest(userInfo, buildAdditionalInfo(),
+                    UserInvitationService.ValidationMethod.NONE, true);
+            fail("submitRegistrationRequest() should have thrown an exception as the email address is already used.");
+        } catch (UserAlreadyExistsException e) {
+            e.printStackTrace();
+            DocumentModelList regDocs = session.query("SELECT * FROM Document WHERE ecm:primaryType='TestRegistration'" 
+                    + " AND userinfo:login='" + userInfo.getPropertyValue("userinfo:login") + "'"
+                    );
+            assertTrue("A 'TestRegistration' document should not have been created as the email address is already used. ("
+                    + (!regDocs.isEmpty() ? regDocs.get(0).getProperties("userinfo") + ")" : ""),
+                    regDocs.isEmpty());
+        }
     }
 
     @Test(expected = UserAlreadyExistsException.class)

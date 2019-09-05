@@ -608,11 +608,6 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         if (StringUtils.isBlank((String) additionnalInfo.get(PARAM_ORIGINATING_USER))) {
             throw new IllegalArgumentException("Originating user should be provided in a registration request");
         }
-        RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel, additionnalInfo,
-                validationMethod);
-        creator.runUnrestricted();
-        String registrationUuid = creator.getRegistrationUuid();
-
         UserRegistrationConfiguration currentConfig = getConfiguration(configurationName);
         boolean userAlreadyExists = null != Framework.getService(UserManager.class)
                                                      .getPrincipal((String) userRegistrationModel.getPropertyValue(
@@ -622,6 +617,10 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             log.info("Trying to submit a registration from an existing email with a different username.");
             throw new UserAlreadyExistsException();
         }
+        RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel, additionnalInfo,
+                validationMethod);
+        creator.runUnrestricted();
+        String registrationUuid = creator.getRegistrationUuid();
 
         // Directly accept registration if the configuration allow it and the
         // user already exists
