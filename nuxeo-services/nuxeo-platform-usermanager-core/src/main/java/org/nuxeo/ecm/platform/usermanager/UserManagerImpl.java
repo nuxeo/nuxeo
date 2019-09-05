@@ -1283,7 +1283,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
         return result;
     }
-    
+
     @Override
     public NuxeoPrincipal getPrincipal(String username, DocumentModel context) {
         return getPrincipal(username, context, true);
@@ -1309,6 +1309,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         }
         return null;
     }
+
     @Override
     public DocumentModelList searchGroups(String pattern, DocumentModel context) {
         QueryBuilder queryBuilder = getQueryForPattern(pattern, groupDirectoryName, groupSearchFields,

@@ -52,7 +52,6 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
 
     boolean validatePassword(String password);
 
-
     /**
      * Retrieves the principal with the given username or null if it does not exist.
      * <p>
