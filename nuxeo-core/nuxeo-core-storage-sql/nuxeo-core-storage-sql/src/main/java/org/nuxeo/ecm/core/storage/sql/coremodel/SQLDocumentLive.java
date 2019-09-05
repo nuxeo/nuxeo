@@ -557,11 +557,17 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     public List<Document> getChildren() {
+        if (!isFolder()) {
+            return Collections.emptyList();
+        }
         return session.getChildren(getNode()); // newly allocated
     }
 
     @Override
     public List<String> getChildrenIds() {
+        if (!isFolder()) {
+            return Collections.emptyList();
+        }
         // not optimized as this method doesn't seem to be used
         List<Document> children = session.getChildren(getNode());
         List<String> ids = new ArrayList<>(children.size());
@@ -573,16 +579,25 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     public boolean hasChild(String name) {
+        if (!isFolder()) {
+            return false;
+        }
         return session.hasChild(getNode(), name);
     }
 
     @Override
     public boolean hasChildren() {
+        if (!isFolder()) {
+            return false;
+        }
         return session.hasChildren(getNode());
     }
 
     @Override
     public Document addChild(String name, String typeName) {
+        if (!isFolder()) {
+            throw new IllegalArgumentException("Not a folder");
+        }
         return session.addChild(getNode(), name, null, typeName);
     }
 

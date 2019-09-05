@@ -23,45 +23,32 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.api.security.ACL.LOCAL_ACL;
 import static org.nuxeo.ecm.platform.comment.AbstractTestCommentManager.newConfig;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_SECURED;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_PROPERTY_TO_SECURED;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -100,7 +87,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
 public class TestCommentsMigrator {
 
-    protected static final int NB_COMMENTS_BY_FILE = 50;
+    protected static final int NB_COMMENTS = 100;
 
     @Inject
     protected CoreSession session;
@@ -114,12 +101,6 @@ public class TestCommentsMigrator {
     @Inject
     protected NotificationManager notificationManager;
 
-    protected DocumentModel firstFileToComment;
-
-    protected DocumentModel secondFileToComment;
-
-    protected DocumentModel proxyFileToComment;
-
     protected static void sleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -129,40 +110,36 @@ public class TestCommentsMigrator {
         }
     }
 
-    @Before
-    public void setUp() {
-        DocumentModel domain = session.createDocumentModel("/", "test-domain", "Domain");
-        session.createDocument(domain);
-
-        DocumentModel anotherDomain = session.createDocumentModel("/", "another-domain", "Domain");
-        session.createDocument(anotherDomain);
-
-        // Create files which will be commented
-        firstFileToComment = session.createDocumentModel(domain.getPathAsString(), "file1", "File");
-        firstFileToComment = session.createDocument(firstFileToComment);
-
-        secondFileToComment = session.createDocumentModel(domain.getPathAsString(), "file2", "File");
-        secondFileToComment = session.createDocument(secondFileToComment);
-
-        proxyFileToComment = session.createProxy(secondFileToComment.getRef(), anotherDomain.getRef());
-
-        // Create comments as relations on these files
-        createCommentsAsRelations();
-    }
-
     @Test
-    public void testMigration() {
-        // Create the migration context
+    public void testMigrationImpl() {
         Migrator migrator = new CommentsMigrator();
+        List<String> progressLines = new ArrayList<>();
+        MigrationContext migrationContext = new MigrationContext() {
+            @Override
+            public void reportProgress(String message, long num, long total) {
+                String line = message + ": " + num + "/" + total;
+                progressLines.add(line);
+            }
 
-        // First step of migrate: from 'Relation' to 'Property'
-        migrateFromRelationToProperty(migrator);
+            @Override
+            public void requestShutdown() {
+            }
 
-        // Simulate the existence of unsecured comments
-        mockUnsecuredPropertyComments();
+            @Override
+            public boolean isShutdownRequested() {
+                return false;
+            }
+        };
 
-        // Second step of migrate: from 'Property' to 'Secured'
-        migrateFromPropertyToSecured(migrator);
+        testMigration(() -> migrator.run(MIGRATION_STEP_RELATION_TO_PROPERTY, migrationContext));
+
+        List<String> expectedLines = Arrays.asList( //
+                "Initializing: 0/-1", //
+                "Migrating comments: 1/100", //
+                "Migrating comments: 51/100", //
+                "Migrating comments: 100/100", //
+                "Done: 100/100");
+        assertEquals(expectedLines, progressLines);
     }
 
     @Test
@@ -179,8 +156,7 @@ public class TestCommentsMigrator {
         assertFalse(status.isRunning());
         assertEquals(MIGRATION_STATE_RELATION, status.getState());
 
-        // Launch the step relation to property
-        runMigration(() -> {
+        testMigration(() -> {
             migrationService.runStep(MIGRATION_ID, MIGRATION_STEP_RELATION_TO_PROPERTY);
 
             // wait a bit for the migration to start
@@ -206,15 +182,56 @@ public class TestCommentsMigrator {
     }
 
     @SuppressWarnings("deprecation")
-    protected void runMigration(Runnable migrator) {
+    protected void testMigration(Runnable migrator) {
+
+        CommentManager relationCommentManager = new CommentManagerImpl(newConfig());
+        CommentManager propertyCommentManager = new PropertyCommentManager();
+
+        DocumentModel domain = session.createDocumentModel("/", "test-domain", "Domain");
+        session.createDocument(domain);
+
+        DocumentModel file1 = session.createDocumentModel("/test-domain", "file1", "File");
+        file1 = session.createDocument(file1);
+
+        DocumentModel file2 = session.createDocumentModel("/test-domain", "file2", "File");
+        file2 = session.createDocument(file2);
+
+        NuxeoPrincipal principal = session.getPrincipal();
+        // create some comments
+        for (int i = 0; i < NB_COMMENTS; i++) {
+            DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
+            DocumentModel createdComment;
+            if (i % 2 == 0) {
+                createdComment = relationCommentManager.createComment(file1, comment);
+            } else {
+                createdComment = relationCommentManager.createComment(file2, comment);
+            }
+            notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
+                    principal, "notification" + i);
+        }
+
+        session.save();
+        transactionalFeature.nextTransaction();
+
+        // migrate
         try (CapturingEventListener listener = new CapturingEventListener(DOCUMENT_UPDATED)) {
             migrator.run();
             List<Event> events = listener.getCapturedEvents();
-
-            // Ensure the migration is done silently
             for (Event event : events) {
                 assertEquals(TRUE, event.getContext().getProperty(DISABLE_NOTIFICATION_SERVICE));
             }
+        }
+
+        // check resulting tags
+        List<Comment> commentsForFile1 = propertyCommentManager.getComments(session, file1.getId());
+        List<Comment> commentsForFile2 = propertyCommentManager.getComments(session, file2.getId());
+
+        assertEquals(NB_COMMENTS, commentsForFile1.size() + commentsForFile2.size());
+        for (Comment c : commentsForFile1) {
+            assertEquals(file1.getId(), c.getParentId());
+        }
+        for (Comment c : commentsForFile2) {
+            assertEquals(file2.getId(), c.getParentId());
         }
     }
 
@@ -228,30 +245,26 @@ public class TestCommentsMigrator {
 
         DocumentModel domain = session.createDocumentModel("/", "test-domain", "Domain");
         session.createDocument(domain);
-        DocumentModel file = session.createDocumentModel("/test-domain", "anotherFile", "File");
+        DocumentModel file = session.createDocumentModel("/test-domain", "file1", "File");
         file = session.createDocument(file);
         session.save();
 
+        // no comments, detected as already migrated
         Migrator migrator = new CommentsMigrator();
-        assertEquals(MIGRATION_STATE_RELATION, migrator.probeState());
-
-        // Both a relation-based comment and a property-based comment, detected as not migrated
-        DocumentModel otherComment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
-        otherComment.setPropertyValue(COMMENT_PARENT_ID, file.getId());
-        propertyCommentManager.createComment(file, otherComment);
-        session.save();
-        assertEquals(MIGRATION_STATE_RELATION, migrator.probeState());
-
-        // Migrate the created relation based comment to property
-        migrateFromRelationToProperty(migrator);
-
-        // Comments detected as 'Property'
         assertEquals(MIGRATION_STATE_PROPERTY, migrator.probeState());
 
-        // Just a relation-based comment, detected as not migrated
+        // just a relation-based comment, detected as not migrated
         DocumentModel comment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
         comment.setPropertyValue(COMMENT_AUTHOR, session.getPrincipal().getName());
         comment = relationCommentManager.createComment(file, comment);
+        session.save();
+        assertEquals(MIGRATION_STATE_RELATION, migrator.probeState());
+
+        // both a relation-based comment and a property-based comment, detected as not migrated
+        DocumentModel otherComment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
+        otherComment.setPropertyValue(COMMENT_PARENT_ID, file.getId());
+        otherComment.setPropertyValue(COMMENT_AUTHOR, session.getPrincipal().getName());
+        propertyCommentManager.createComment(file, otherComment);
         session.save();
         assertEquals(MIGRATION_STATE_RELATION, migrator.probeState());
 
@@ -266,154 +279,7 @@ public class TestCommentsMigrator {
         List<Statement> statementList = graph.getStatements(commentRes, null, null);
         graph.remove(statementList);
 
-        // No more relation comments detected as 'Relation'
         assertEquals(MIGRATION_STATE_PROPERTY, migrator.probeState());
-
-        // Migrate the created property based comment to secured
-        migrateFromPropertyToSecured(migrator);
-
-        // No more unsecured property comments
-        assertEquals(MIGRATION_STATE_SECURED, migrator.probeState());
     }
 
-    /**
-     * @since 11.1
-     */
-    protected void migrateFromRelationToProperty(Migrator migrator) {
-        ProgressMigrationContext migrationContext = new ProgressMigrationContext();
-        runMigration(() -> migrator.run(MIGRATION_STEP_RELATION_TO_PROPERTY, migrationContext));
-
-        CommentManager propertyCommentManager = new PropertyCommentManager();
-        List<Comment> commentsForFile1 = propertyCommentManager.getComments(session, firstFileToComment.getId());
-        List<Comment> commentsForFile2 = propertyCommentManager.getComments(session, secondFileToComment.getId());
-        List<Comment> commentsForProxy = propertyCommentManager.getComments(session, proxyFileToComment.getId());
-
-        assertEquals(NB_COMMENTS_BY_FILE * 3,
-                commentsForFile1.size() + commentsForFile2.size() + commentsForProxy.size());
-        for (Comment comment : commentsForFile1) {
-            assertEquals(firstFileToComment.getId(), comment.getParentId());
-        }
-        for (Comment comment : commentsForFile2) {
-            assertEquals(secondFileToComment.getId(), comment.getParentId());
-            assertNotEquals(proxyFileToComment.getId(), comment.getParentId());
-        }
-
-        for (Comment comment : commentsForProxy) {
-            assertEquals(proxyFileToComment.getId(), comment.getParentId());
-            assertNotEquals(secondFileToComment.getId(), comment.getParentId());
-        }
-
-        List<String> expectedLines = Arrays.asList( //
-                "Initializing: 0/-1", //
-                "Migrating comments from Relation to Property: 1/150", //
-                "Migrating comments from Relation to Property: 51/150", //
-                "Migrating comments from Relation to Property: 101/150", //
-                "Migrating comments from Relation to Property: 150/150", //
-                "Done Migrating from Relation to Property: 150/150");
-        assertEquals(expectedLines, migrationContext.getProgressLines());
-    }
-
-    /**
-     * @since 11.1
-     */
-    protected void migrateFromPropertyToSecured(Migrator migrator) {
-        ProgressMigrationContext migrationContext = new ProgressMigrationContext();
-
-        runMigration(() -> migrator.run(MIGRATION_STEP_PROPERTY_TO_SECURED, migrationContext));
-
-        List<String> expectedLines = Arrays.asList( //
-                "Initializing: 0/-1", //
-                "Migrating comments from Property to Secured: 1/150", //
-                "Migrating comments from Property to Secured: 51/150", //
-                "Migrating comments from Property to Secured: 101/150", //
-                "Migrating comments from Property to Secured: 150/150", //
-                "Done Migrating from Property to Secured: 150/150");
-        assertEquals(expectedLines, migrationContext.getProgressLines());
-
-        checkCommentsForDocument(firstFileToComment.getId());
-        checkCommentsForDocument(secondFileToComment.getId());
-        DocumentModelList rootCommentFolder = session.query(CommentsMigrator.GET_COMMENTS_FOLDERS_QUERY);
-        assertEquals(0, rootCommentFolder.size());
-    }
-
-    /**
-     * @since 11.1
-     */
-    protected void checkCommentsForDocument(String docId) {
-        DocumentModelList dml = session.query(String.format("SELECT * FROM Document WHERE %s = '%s' AND %s = '%s'",
-                NXQL.ECM_PARENTID, docId, NXQL.ECM_PRIMARYTYPE, COMMENT_DOC_TYPE));
-        assertEquals(NB_COMMENTS_BY_FILE, dml.size());
-        dml.forEach((doc) -> assertNull(doc.getACP().getACL(LOCAL_ACL)));
-    }
-
-    /**
-     * @since 11.1
-     */
-    protected void createCommentsAsRelations() {
-        CommentManager relationCommentManager = new CommentManagerImpl(newConfig());
-        NuxeoPrincipal principal = session.getPrincipal();
-        // create some comments as relation
-        for (int i = 0; i < NB_COMMENTS_BY_FILE * 2; i++) {
-            DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
-            DocumentModel createdComment;
-            if (i % 2 == 0) {
-                createdComment = relationCommentManager.createComment(firstFileToComment, comment);
-            } else {
-                createdComment = relationCommentManager.createComment(secondFileToComment, comment);
-            }
-            notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
-                    principal, "notification" + i);
-        }
-
-        for (int i = 0; i < 50; i++) {
-            DocumentModel comment = session.createDocumentModel(null, "comment_proxy" + i, COMMENT_DOC_TYPE);
-            DocumentModel createdComment = relationCommentManager.createComment(proxyFileToComment, comment);
-
-            notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
-                    principal, "notification" + i);
-        }
-
-        session.save();
-        transactionalFeature.nextTransaction();
-    }
-
-    /**
-     * @since 11.1
-     */
-    public static class ProgressMigrationContext implements MigrationContext {
-        protected final List<String> progressLines = new ArrayList<>();
-
-        public List<String> getProgressLines() {
-            return progressLines;
-        }
-
-        @Override
-        public void reportProgress(String message, long num, long total) {
-            progressLines.add(String.format("%s: %s/%s", message, num, total));
-        }
-
-        @Override
-        public void requestShutdown() {
-        }
-
-        @Override
-        public boolean isShutdownRequested() {
-            return false;
-        }
-    }
-
-    /**
-     * @since 11.1
-     */
-    protected void mockUnsecuredPropertyComments() {
-        CommentManager propertyCommentManager = new PropertyCommentManager();
-        List<Comment> commentsForFile1 = propertyCommentManager.getComments(session, firstFileToComment.getId());
-
-        List<DocumentRef> idRefs = commentsForFile1.stream()
-                                                   .map(c -> new IdRef(c.getId()))
-                                                   .collect(Collectors.toList());
-
-        DocumentModel commentsRoot = session.getDocument(new PathRef("/test-domain/Comments"));
-        session.move(idRefs, commentsRoot.getRef());
-    }
 }

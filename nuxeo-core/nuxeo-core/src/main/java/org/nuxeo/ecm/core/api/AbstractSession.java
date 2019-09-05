@@ -675,7 +675,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String childName = docModel.getName();
         Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
-        Document parent = fillCreateOptions(parentRef, childName, options);
+        Document folder = fillCreateOptions(parentRef, childName, options);
 
         // get initial life cycle state info
         String initialLifecycleState = null;
@@ -694,7 +694,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
         }
         childName = (String) options.get(CoreEventConstants.DESTINATION_NAME);
-        Document doc = parent.addChild(childName, typeName);
+        Document doc = folder.addChild(childName, typeName);
 
         // update facets too since some of them may be dynamic
         for (String facetName : docModel.getFacets()) {
@@ -740,26 +740,26 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected Document fillCreateOptions(DocumentRef parentRef, String childName, Map<String, Serializable> options)
             throws DocumentSecurityException {
-        Document parent;
+        Document folder;
         if (parentRef == null || EMPTY_PATH.equals(parentRef)) {
-            parent = getSession().getNullDocument();
+            folder = getSession().getNullDocument();
             options.put(CoreEventConstants.DESTINATION_REF, null);
             options.put(CoreEventConstants.DESTINATION_PATH, null);
             options.put(CoreEventConstants.DESTINATION_NAME, childName);
             options.put(CoreEventConstants.DESTINATION_EXISTS, false);
         } else {
-            parent = resolveReference(parentRef);
-            checkPermission(parent, ADD_CHILDREN);
+            folder = resolveReference(parentRef);
+            checkPermission(folder, ADD_CHILDREN);
             options.put(CoreEventConstants.DESTINATION_REF, parentRef);
-            options.put(CoreEventConstants.DESTINATION_PATH, parent.getPath());
+            options.put(CoreEventConstants.DESTINATION_PATH, folder.getPath());
             options.put(CoreEventConstants.DESTINATION_NAME, childName);
             if (Boolean.TRUE.equals(options.get(CoreSession.SKIP_DESTINATION_CHECK_ON_CREATE))) {
                 options.put(CoreEventConstants.DESTINATION_EXISTS, false);
             } else {
-                options.put(CoreEventConstants.DESTINATION_EXISTS, parent.hasChild(childName));
+                options.put(CoreEventConstants.DESTINATION_EXISTS, folder.hasChild(childName));
             }
         }
-        return parent;
+        return folder;
     }
 
     @Override

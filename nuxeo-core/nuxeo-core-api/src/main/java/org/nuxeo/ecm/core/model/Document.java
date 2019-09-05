@@ -421,6 +421,7 @@ public interface Document {
     /**
      * Gets the children of the document.
      * <p>
+     * Returns an empty list for non-folder documents.
      *
      * @return the children
      */
@@ -429,6 +430,7 @@ public interface Document {
     /**
      * Gets a list of the children ids.
      * <p>
+     * Returns an empty list for non-folder documents.
      *
      * @return a list of children ids.
      * @since 1.4.1
@@ -438,6 +440,7 @@ public interface Document {
     /**
      * Checks whether this document has a child of the given name.
      * <p>
+     * Returns {@code false} for non-folder documents.
      *
      * @param name the name of the child to check
      * @return {@code true} if the child exists, {@code false} otherwise
@@ -447,6 +450,7 @@ public interface Document {
     /**
      * Tests if the document has any children.
      * <p>
+     * Returns {@code false} for non-folder documents.
      *
      * @return {@code true} if the document has children, {@code false} otherwise
      */
@@ -455,7 +459,8 @@ public interface Document {
     /**
      * Creates a new child document of the given type.
      * <p>
-     * 
+     * Throws an error if this document is not a folder.
+     *
      * @param name the name of the new child to create
      * @param typeName the type of the child to create
      * @return the newly created document
