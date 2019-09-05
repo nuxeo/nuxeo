@@ -451,13 +451,12 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public PartialList<Comment> getComments(CoreSession s, String documentId, Long pageSize,
-            Long currentPageIndex, boolean sortAscending) throws CommentSecurityException {
+    public PartialList<Comment> getComments(CoreSession s, String documentId, Long pageSize, Long currentPageIndex,
+            boolean sortAscending) throws CommentSecurityException {
         return CoreInstance.doPrivileged(s, session -> {
             DocumentRef docRef = new IdRef(documentId);
             if (!session.exists(docRef)) {
-                return new PartialList<>(Collections.emptyList(), 0);
+                return new PartialList<Comment>(Collections.emptyList(), 0); // NOSONAR
             }
             DocumentModel commentedDoc = session.getDocument(docRef);
             // do a dummy implementation of pagination for former comment manager implementation
