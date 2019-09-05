@@ -90,10 +90,10 @@ public class ChronicleRetentionListener implements StoreFileListener {
         }
         log.info("Deleting Chronicle file: {} according to retention: {}", file::getAbsolutePath, () -> retention);
         try {
+            queue.release(store);
             Files.delete(file.toPath());
             queue.refreshDirectlyListing();
             log.debug(file + " deleted");
-            queue.release(store);
         } catch (IOException | SecurityException e) {
             log.warn("Unable to delete Chronicle file: {}, {}", file::getAbsolutePath, e::getMessage);
         }
