@@ -21,6 +21,7 @@ package org.nuxeo.lib.stream.tests.codec;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -53,4 +54,14 @@ public class TestFileAvroSchemaStore {
         assertNotNull(store2.findByFingerprint(v1fp));
         assertNotNull(store2.findByFingerprint(v2fp));
     }
+
+    @Test
+    public void testCorruptedFile() throws IOException {
+        Path root = folder.newFolder().toPath();
+        Path corrupted = root.resolve("corrupted-emtpy.avsc");
+        corrupted.toFile().createNewFile();
+        AvroSchemaStore store = new FileAvroSchemaStore(root);
+        assertNotNull(store);
+    }
+
 }
