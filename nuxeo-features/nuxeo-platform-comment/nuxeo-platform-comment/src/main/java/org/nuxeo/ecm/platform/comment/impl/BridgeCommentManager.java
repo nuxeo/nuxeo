@@ -198,13 +198,4 @@ public class BridgeCommentManager extends AbstractCommentManager {
             throw new UnsupportedOperationException(feature.name());
         }
     }
-
-    @Override
-    public DocumentRef getAncestorRef(CoreSession session, DocumentRef commentIdRef) {
-        DocumentModel documentModel = session.getDocument(commentIdRef);
-        if (documentModel.getPropertyValue(COMMENT_PARENT_ID) != null) {
-            return second.getAncestorRef(session, new IdRef(documentModel.getId()));
-        }
-        return first.getAncestorRef(session, new IdRef(documentModel.getId()));
-    }
 }
