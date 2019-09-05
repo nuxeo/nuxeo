@@ -27,7 +27,6 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Objects;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.nuxeo.runtime.api.Framework;
@@ -65,18 +64,18 @@ public class LoginComponent extends DefaultComponent implements LoginService {
     }
 
     @Override
-    public LoginContext login() {
+    public NuxeoLoginContext login() {
         return systemLogin(null);
     }
 
     @Override
-    public LoginContext loginAs(String username) {
+    public NuxeoLoginContext loginAs(String username) {
         return systemLogin(username);
     }
 
     @Deprecated
     @Override
-    public LoginContext login(String username, Object credentials) throws LoginException {
+    public NuxeoLoginContext login(String username, Object credentials) throws LoginException {
         return Framework.loginUser(username);
     }
 

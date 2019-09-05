@@ -38,7 +38,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.platform.el.ELService;
 import org.nuxeo.runtime.api.Framework;
@@ -90,7 +89,7 @@ public class StandardVersioningPolicyFilter implements VersioningPolicyFilter {
                     DocumentModel.class);
             ValueExpression currentDocExpr = expressionFactory.createValueExpression(currentDocument,
                     DocumentModel.class);
-            ValueExpression userExpr = expressionFactory.createValueExpression(ClientLoginModule.getCurrentPrincipal(),
+            ValueExpression userExpr = expressionFactory.createValueExpression(NuxeoPrincipal.getCurrent(),
                     NuxeoPrincipal.class);
             vm.setVariable(PREVIOUS_DOCUMENT, previousDocExpr);
             vm.setVariable(CURRENT_DOCUMENT, currentDocExpr);

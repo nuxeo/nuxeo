@@ -29,8 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
@@ -380,7 +380,7 @@ public abstract class AbstractProperty implements Property {
      * @since 11.1
      */
     protected boolean isSecuredForContext() {
-        return isSecured() && !ClientLoginModule.isCurrentAdministrator();
+        return isSecured() && !NuxeoPrincipal.isCurrentAdministrator();
     }
 
     /**

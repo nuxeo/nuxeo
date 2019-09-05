@@ -22,7 +22,6 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 
 import java.security.Principal;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
@@ -37,10 +36,10 @@ import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 public class DummyLoginAs implements LoginAs {
 
     @Override
-    public LoginContext loginAs(String username) throws LoginException {
+    public NuxeoLoginContext loginAs(String username) throws LoginException {
         boolean administrator = ADMINISTRATOR.equals(username);
         Principal principal = new UserPrincipal(username, null, false, administrator);
-        LoginContext loginContext = NuxeoLoginContext.create(principal);
+        NuxeoLoginContext loginContext = NuxeoLoginContext.create(principal);
         loginContext.login();
         return loginContext;
     }

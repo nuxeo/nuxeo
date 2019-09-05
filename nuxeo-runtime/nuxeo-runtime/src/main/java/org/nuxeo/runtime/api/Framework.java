@@ -257,7 +257,7 @@ public final class Framework {
      * @since 11.1 this method now takes a {@link ThrowableRunnable}
      */
     public static <E extends Throwable> void doPrivileged(ThrowableRunnable<E> runnable) throws E {
-        loginAndDo(Framework::login, runnable.toThrowableSupplier());
+        loginAndDo(Framework::loginSystem, runnable.toThrowableSupplier());
     }
 
     /**
@@ -269,7 +269,7 @@ public final class Framework {
      * @since 11.1 this method now takes a {@link ThrowableSupplier}
      */
     public static <T, E extends Throwable> T doPrivileged(ThrowableSupplier<T, E> supplier) throws E {
-        return loginAndDo(Framework::login, supplier);
+        return loginAndDo(Framework::loginSystem, supplier);
     }
 
     /**
@@ -278,16 +278,11 @@ public final class Framework {
      *
      * @since 11.1
      */
-    protected static <T, E extends Throwable> T loginAndDo(ThrowableSupplier<LoginContext, LoginException> authSupplier,
+    protected static <T, E extends Throwable> T loginAndDo(ThrowableSupplier<NuxeoLoginContext, LoginException> authSupplier,
             ThrowableSupplier<T, E> supplier) throws E {
         try {
-            LoginContext loginContext = authSupplier.get();
-            try {
+            try (NuxeoLoginContext loginContext = authSupplier.get()) {
                 return supplier.get();
-            } finally {
-                if (loginContext != null) { // may be null in tests
-                    loginContext.logout();
-                }
             }
         } catch (LoginException e) {
             throw new RuntimeServiceException(e);
@@ -303,7 +298,7 @@ public final class Framework {
     public static NuxeoLoginContext loginSystem() {
         checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
-        return (NuxeoLoginContext) loginService.login();
+        return loginService.login();
     }
 
     /**
@@ -317,7 +312,7 @@ public final class Framework {
     public static NuxeoLoginContext loginSystem(String originatingUser) {
         checkRuntimeInitialized();
         LoginService loginService = runtime.getService(LoginService.class);
-        return (NuxeoLoginContext) loginService.loginAs(originatingUser);
+        return loginService.loginAs(originatingUser);
     }
 
     /**

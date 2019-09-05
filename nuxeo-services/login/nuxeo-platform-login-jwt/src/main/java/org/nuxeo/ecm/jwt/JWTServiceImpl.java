@@ -34,7 +34,7 @@ import java.util.Objects;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
@@ -144,7 +144,7 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
             // default Nuxeo issuer, checked during validation
             builder.withIssuer(NUXEO_ISSUER);
             // default to current principal as subject
-            String subject = ClientLoginModule.getCurrentPrincipal().getActingUser();
+            String subject = NuxeoPrincipal.getCurrent().getActingUser();
             if (subject == null) {
                 throw new NuxeoException("No currently logged-in user");
             }

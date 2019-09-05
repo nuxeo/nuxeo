@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.api.local;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.junit.runners.model.FrameworkMethod;
@@ -26,6 +25,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -50,10 +50,9 @@ import com.google.inject.Binder;
  */
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/dummy-login-config.xml")
-@SuppressWarnings("JavadocReference")
 public class DummyLoginFeature implements RunnerFeature {
 
-    protected LoginContext loginContext;
+    protected NuxeoLoginContext loginContext;
 
     public NuxeoPrincipal getPrincipal() {
         return loginContext.getSubject()
@@ -70,7 +69,7 @@ public class DummyLoginFeature implements RunnerFeature {
 
     @Override
     public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(NuxeoPrincipal.class).toProvider(ClientLoginModule::getCurrentPrincipal);
+        binder.bind(NuxeoPrincipal.class).toProvider(NuxeoPrincipal::getCurrent);
     }
 
     @Override
@@ -85,17 +84,17 @@ public class DummyLoginFeature implements RunnerFeature {
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws LoginException {
+    public void afterRun(FeaturesRunner runner) {
         logout();
     }
 
     protected void login(WithUser withUser) throws LoginException {
-        loginContext = Framework.loginAsUser(withUser.value());
+        loginContext = Framework.loginUser(withUser.value());
     }
 
-    protected void logout() throws LoginException {
+    protected void logout() {
         if (loginContext != null) {
-            loginContext.logout();
+            loginContext.close();
             loginContext = null;
         }
     }

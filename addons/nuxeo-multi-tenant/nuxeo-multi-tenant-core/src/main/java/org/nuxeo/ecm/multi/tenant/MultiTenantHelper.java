@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -88,7 +88,7 @@ public class MultiTenantHelper {
             }
 
         } else {
-            return ClientLoginModule.getCurrentPrincipal().getTenantId();
+            return NuxeoPrincipal.getCurrent().getTenantId();
         }
     }
 

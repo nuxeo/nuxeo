@@ -19,12 +19,8 @@
 
 package org.nuxeo.easyshare;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -32,21 +28,14 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.web.common.RequestCleanupHandler;
 import org.nuxeo.ecm.platform.web.common.RequestContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 public abstract class EasyShareUnrestrictedRunner {
-
-    private static final Log log = LogFactory.getLog(EasyShareUnrestrictedRunner.class);
 
     protected CoreSession session;
 
     public Object runUnrestricted(String docId) {
-        final LoginContext lc;
-        try {
-            lc = Framework.login();
-        } catch (LoginException ex) {
-            log.error("Unable to render page", ex);
-            return null;
-        }
+        NuxeoLoginContext loginContext = Framework.loginSystem();
         CloseableCoreSession coreSession = null;
         try {
             coreSession = CoreInstance.openCoreSession(null);
@@ -61,12 +50,8 @@ public abstract class EasyShareUnrestrictedRunner {
 
                 @Override
                 public void cleanup(HttpServletRequest req) {
-                    try {
-                        session2close.close();
-                        lc.logout();
-                    } catch (LoginException e) {
-                        log.error("Error during request context cleanup", e);
-                    }
+                    session2close.close();
+                    loginContext.close();
                 }
             });
 

@@ -30,9 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -47,6 +44,7 @@ import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 /**
  * Default implementation for an {@link EventBundle} that need to be reconnected to a usable Session.
@@ -64,7 +62,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected transient List<Event> reconnectedEvents;
 
-    protected transient LoginContext loginCtx;
+    protected transient NuxeoLoginContext loginCtx;
 
     protected transient CloseableCoreSession reconnectedCoreSession;
 
@@ -85,12 +83,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected CoreSession getReconnectedCoreSession(String repoName, String originatingUsername) {
         if (reconnectedCoreSession == null) {
-            try {
-                loginCtx = Framework.login();
-            } catch (LoginException e) {
-                log.error("Cannot log in", e);
-                return null;
-            }
+            loginCtx = Framework.loginSystem();
             reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName, originatingUsername);
         } else {
             // Sanity Check
@@ -237,13 +230,8 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
         reconnectedCoreSession = null;
         reconnectedEvents = null;
         if (loginCtx != null) {
-            try {
-                loginCtx.logout();
-            } catch (LoginException e) {
-                log.error("Cannot log out", e);
-            } finally {
-                loginCtx = null;
-            }
+            loginCtx.close();
+            loginCtx = null;
         }
     }
 

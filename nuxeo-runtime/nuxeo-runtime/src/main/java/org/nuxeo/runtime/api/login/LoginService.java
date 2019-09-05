@@ -23,7 +23,6 @@ package org.nuxeo.runtime.api.login;
 
 import java.security.Principal;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.nuxeo.runtime.api.Framework;
@@ -39,7 +38,7 @@ public interface LoginService {
      *
      * @return the login context
      */
-    LoginContext login();
+    NuxeoLoginContext login();
 
     /**
      * System login, using a private principal that has all privileges. This principal is not stored in any database and
@@ -48,7 +47,7 @@ public interface LoginService {
      * @param originatingUser the username that originated the system login
      * @return the login context
      */
-    LoginContext loginAs(String originatingUser);
+    NuxeoLoginContext loginAs(String originatingUser);
 
     /**
      * Client login using the given username and password.
@@ -56,7 +55,7 @@ public interface LoginService {
      * @deprecated since 11.1, use {@link Framework#loginUser} instead
      */
     @Deprecated
-    LoginContext login(String username, Object credentials) throws LoginException;
+    NuxeoLoginContext login(String username, Object credentials) throws LoginException;
 
     boolean isSystemId(Principal principal);
 

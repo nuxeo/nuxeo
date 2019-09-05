@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.security.auth.login.LoginContext;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -150,14 +150,10 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
     @Test
     public void testExtendedFetchingAsRegularUser() throws Exception {
         CoreSession systemSession = session;
-        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("joe");
+                CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName())) {
             session = joeSession;
-            LoginContext loginContext = Framework.login("joe", "joe");
-            try {
-                testExtendedFetching();
-            } finally {
-                loginContext.logout();
-            }
+            testExtendedFetching();
         } finally {
             session = systemSession;
         }

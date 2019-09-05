@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
@@ -56,6 +55,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -147,7 +147,7 @@ public abstract class AbstractWork implements Work {
 
     protected transient CoreSession session;
 
-    protected transient LoginContext loginContext;
+    protected transient NuxeoLoginContext loginContext;
 
     protected WorkSchedulePath schedulePath;
 
@@ -291,12 +291,7 @@ public abstract class AbstractWork implements Work {
      * @since 8.1
      */
     public void openSystemSession() {
-        try {
-            loginContext = Framework.loginAs(originatingUsername);
-        } catch (LoginException e) {
-            throw new NuxeoException(e);
-        }
-
+        loginContext = Framework.loginSystem(originatingUsername);
         session = CoreInstance.openCoreSessionSystem(repositoryName, originatingUsername);
     }
 
@@ -313,7 +308,7 @@ public abstract class AbstractWork implements Work {
         }
 
         try {
-            loginContext = Framework.loginAsUser(originatingUsername);
+            loginContext = Framework.loginUser(originatingUsername);
         } catch (LoginException e) {
             throw new NuxeoException(e);
         }
@@ -346,13 +341,9 @@ public abstract class AbstractWork implements Work {
             session = null;
         }
 
-        try {
-            // loginContext may be null in tests
-            if (loginContext != null) {
-                loginContext.logout();
-            }
-        } catch (LoginException le) {
-            throw new NuxeoException(le);
+        // loginContext may be null in tests
+        if (loginContext != null) {
+            loginContext.close();
         }
     }
 

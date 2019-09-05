@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -802,7 +801,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         if (ancestorGroupIds != null) {
             eventProperties.put(ANCESTOR_GROUPS_PROPERTY_KEY, (Serializable) ancestorGroupIds);
         }
-        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal principal = NuxeoPrincipal.getCurrent();
         UnboundEventContext envContext = new UnboundEventContext(principal, eventProperties);
         envContext.setProperties(eventProperties);
         EventProducer eventProducer = Framework.getService(EventProducer.class);

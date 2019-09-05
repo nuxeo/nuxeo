@@ -47,10 +47,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -135,9 +134,7 @@ public class TestAnonymousDownload {
         NuxeoPrincipal anonymous = new UserPrincipal("johndoe", null, true, false);
 
         // do tests while logged in
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(anonymous, null, null);
-
+        LoginComponent.pushPrincipal(anonymous);
         try {
             downloadService.handleDownload(new TestHttpServletRequestWrapper(request, anonymous), response, baseUrl,
                     path);
@@ -146,7 +143,7 @@ public class TestAnonymousDownload {
             assertEquals("Authentication is needed for downloading the blob", e.getCause().getMessage());
             NuxeoPrincipal principal = new UserPrincipal("johnnotdoe", Collections.singletonList("members"), false,
                     false);
-            loginStack.push(principal, null, null);
+            LoginComponent.pushPrincipal(principal);
             try {
                 downloadService.handleDownload(new TestHttpServletRequestWrapper(request, principal), response, baseUrl,
                         path);
@@ -154,10 +151,10 @@ public class TestAnonymousDownload {
             } catch (IOException ioe) {
                 fail("The user should be able to download the blob");
             } finally {
-                loginStack.pop();
+                LoginComponent.popPrincipal();
             }
         } finally {
-            loginStack.pop();
+            LoginComponent.popPrincipal();
         }
     }
 

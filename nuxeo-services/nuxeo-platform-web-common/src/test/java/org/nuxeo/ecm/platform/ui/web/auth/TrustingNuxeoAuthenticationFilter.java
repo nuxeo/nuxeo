@@ -34,8 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * Authentication Filter that does not check the password and trusts the user name.
@@ -64,15 +63,14 @@ public class TrustingNuxeoAuthenticationFilter implements Filter {
         }
         // login
         NuxeoPrincipal principal = new UserPrincipal(username, null, false, isAdministrator(username));
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(principal, null, null);
+        LoginComponent.pushPrincipal(principal);
         try {
             // wrap
             request = new NuxeoSecuredRequestWrapper(request, principal);
             // chain
             chain.doFilter(request, servletResponse);
         } finally {
-            loginStack.pop();
+            LoginComponent.popPrincipal();
         }
     }
 

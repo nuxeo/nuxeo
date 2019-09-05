@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.DocumentModelResolver;
@@ -57,6 +56,7 @@ import org.nuxeo.ecm.core.model.DocumentModelResolver.MODE;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -660,15 +660,14 @@ public class TestDocumentModelResolver {
         adminDoc = resolver.fetch(DocumentModel.class, idOnlyRef);
         assertNotNull(adminDoc);
 
+        LoginComponent.pushPrincipal(new UserPrincipal(username, Collections.emptyList(), false, false));
         try {
-            ClientLoginModule.getThreadLocalLogin().push(new UserPrincipal(username, Collections.emptyList(), false, false),
-                                                         null, null);
             DocumentModel doc = resolver.fetch(DocumentModel.class, repoAndIdRef);
             assertNull(doc);
             doc = resolver.fetch(DocumentModel.class, idOnlyRef);
             assertNull(doc);
         } finally {
-            ClientLoginModule.getThreadLocalLogin().pop();
+            LoginComponent.popPrincipal();
         }
     }
 

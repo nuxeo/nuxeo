@@ -30,8 +30,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -43,6 +41,7 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 
 /**
  * Post-commit asynchronous listener that handles group change events fired by the {@link UserManager}.
@@ -89,8 +88,7 @@ public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventLi
         groupNames.add(groupName);
         // Get ancestor groups from the event context or compute them if not provided
         // and do it as system user in the local thread to access group directory
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(new SystemPrincipal(null), null, null);
+        LoginComponent.pushPrincipal(new SystemPrincipal(null));
         try {
             List<String> ancestorGroups = (List<String>) context.getProperty(
                     UserManagerImpl.ANCESTOR_GROUPS_PROPERTY_KEY);
@@ -100,7 +98,7 @@ public class NuxeoDriveGroupUpdateListener implements PostCommitFilteringEventLi
                 groupNames.addAll(Framework.getService(UserManager.class).getAncestorGroups(groupName));
             }
         } finally {
-            loginStack.pop();
+            LoginComponent.popPrincipal();
         }
         return groupNames;
     }

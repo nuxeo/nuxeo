@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.collections4.map.PassiveExpiringMap;
@@ -48,6 +47,7 @@ import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.common.collect.Lists;
@@ -137,20 +137,19 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
         TransactionHelper.runInTransaction(() -> {
             try {
                 String username = command.getUsername();
-                LoginContext loginContext = SYSTEM_USERNAME.equals(username) ? Framework.login()
-                        : Framework.loginAsUser(username);
                 String repository = command.getRepository();
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
+                try (NuxeoLoginContext loginContext = loginSystemOrUser(username);
+                        CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
                     compute(session, batch, command.getParams());
-                } finally {
-                    if (loginContext != null) {
-                        loginContext.logout();
-                    }
                 }
             } catch (LoginException e) {
                 throw new NuxeoException(e);
             }
         });
+    }
+
+    protected NuxeoLoginContext loginSystemOrUser(String username) throws LoginException {
+        return SYSTEM_USERNAME.equals(username) ? Framework.loginSystem() : Framework.loginUser(username);
     }
 
     /**
