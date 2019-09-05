@@ -35,9 +35,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,9 +53,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
-import org.nuxeo.ecm.core.api.local.LoginStack.Entry;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -66,6 +65,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -1402,12 +1402,11 @@ public class TestUserManager extends UserManagerTestCase {
         userManager.notifyUserChanged(userId, UserManagerImpl.USERMODIFIED_EVENT_ID);
 
         // remove any user from the login stack
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        Entry[] entries = loginStack.toArray();
-        loginStack.clear();
+        Deque<Principal> savedStack = LoginComponent.getPrincipalStack();
+        LoginComponent.clearPrincipalStack();
         try {
             // check that no user is logged in
-            assertNull(ClientLoginModule.getCurrentPrincipal());
+            assertNull(NuxeoPrincipal.getCurrent());
             byte[] buffer = SerializationUtils.serialize(principal);
             Object object = SerializationUtils.deserialize(buffer);
             assertTrue(object instanceof NuxeoPrincipalImpl); // actually a TransferableClone but that's a detail
@@ -1415,9 +1414,7 @@ public class TestUserManager extends UserManagerTestCase {
             assertEquals(userId, principal.getName());
         } finally {
             // restore login stack
-            for (Entry e : entries) {
-                loginStack.push(e.getPrincipal(), e.getCredential(), e.getSubject());
-            }
+            savedStack.forEach(p -> LoginComponent.pushPrincipal(p));
         }
     }
 

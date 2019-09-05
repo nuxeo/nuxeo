@@ -18,7 +18,6 @@
  */
 package org.nuxeo.runtime.api.login;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.nuxeo.runtime.api.Framework;
@@ -43,6 +42,6 @@ public interface LoginAs {
      * @return
      * @throws LoginException
      */
-    LoginContext loginAs(String username) throws LoginException;
+    NuxeoLoginContext loginAs(String username) throws LoginException;
 
 }

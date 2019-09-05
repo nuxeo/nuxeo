@@ -69,8 +69,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.blob.binary.Binary;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
@@ -81,6 +79,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -293,8 +292,7 @@ public class TestDownloadService {
         NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
 
         // do tests while logged in
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(principal, null, null);
+        LoginComponent.pushPrincipal(principal);
         try {
             // send download request for file:content, should be denied
             downloadService.downloadBlob(request, response, doc, "file:content", blob, null, reason, extendedInfos);
@@ -305,7 +303,7 @@ public class TestDownloadService {
             downloadService.downloadBlob(request, response, doc, "other:blob", blob, null, reason, extendedInfos);
             assertEquals(blobValue, out.toString());
         } finally {
-            loginStack.pop();
+            LoginComponent.popPrincipal();
         }
     }
 
@@ -392,8 +390,7 @@ public class TestDownloadService {
         TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
         ts.setCompleted(key, false);
         // do tests while logged in
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(principal, null, null);
+        LoginComponent.pushPrincipal(principal);
         try {
             // send status request for not complete stored blob, should be in progress
             downloadService.downloadBlobStatus(request, response, key, "download");
@@ -417,7 +414,7 @@ public class TestDownloadService {
             downloadService.downloadBlob(request, response, key, "download");
             assertEquals(blobValue, out.toString());
         } finally {
-            loginStack.pop();
+            LoginComponent.popPrincipal();
         }
     }
 
@@ -439,8 +436,7 @@ public class TestDownloadService {
         TransientStore ts = tss.getStore(DownloadService.TRANSIENT_STORE_STORE_NAME);
         ts.setCompleted(key, false);
         // do tests while logged in
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(principal, null, null);
+        LoginComponent.pushPrincipal(principal);
         try {
             // send download request for non existing key, should be not found
             downloadService.downloadBlob(request, response, "undefinedKey", "download");
@@ -451,7 +447,7 @@ public class TestDownloadService {
             downloadService.downloadBlob(request, response, key, "download");
             verify(response, atLeastOnce()).sendError(404);
         } finally {
-            loginStack.pop();
+            LoginComponent.popPrincipal();
         }
     }
 
@@ -487,13 +483,11 @@ public class TestDownloadService {
         NuxeoPrincipal principal = new UserPrincipal("bob", Collections.singletonList("members"), false, false);
 
         // do tests while logged in
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(principal, null, null);
-
+        LoginComponent.pushPrincipal(principal);
         try {
             downloadService.downloadBlob(request, response, key, "download");
         } finally {
-            loginStack.pop();
+            LoginComponent.popPrincipal();
         }
 
         // the file is gone

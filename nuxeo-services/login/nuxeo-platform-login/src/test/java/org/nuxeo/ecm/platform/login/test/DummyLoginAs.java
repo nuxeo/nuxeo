@@ -16,11 +16,11 @@
  */
 package org.nuxeo.ecm.platform.login.test;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginAs;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 /**
  * @since 10.3
@@ -28,7 +28,7 @@ import org.nuxeo.runtime.api.login.LoginAs;
 public class DummyLoginAs implements LoginAs {
 
     @Override
-    public LoginContext loginAs(String username) throws LoginException {
-        return Framework.login(username, username);
+    public NuxeoLoginContext loginAs(String username) throws LoginException {
+        return Framework.loginUser(username);
     }
 }

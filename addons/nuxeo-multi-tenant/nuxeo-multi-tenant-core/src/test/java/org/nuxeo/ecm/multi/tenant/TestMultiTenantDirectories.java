@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.nuxeo.ecm.multi.tenant.Constants.POWER_USERS_GROUP;
 
 import javax.inject.Inject;
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import java.util.Collections;
@@ -46,6 +45,7 @@ import org.nuxeo.ecm.platform.test.NuxeoLoginFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -98,24 +98,18 @@ public class TestMultiTenantDirectories {
         newEntry.put("label", "Label Key 0");
 
         // As user0, add a new entry in directory
-        LoginContext loginContext = Framework.loginAsUser("user0");
-        try (CloseableCoreSession userSession = openSession()) {
-            // Open the testDirectory
-            try (Session sessionDir = directoryService.open("testDirectory")) {
-                sessionDir.createEntry(newEntry);
-            }
+        try (NuxeoLoginContext loginContext = Framework.loginUser("user0");
+                CloseableCoreSession userSession = openSession();
+                Session sessionDir = directoryService.open("testDirectory")) {
+            sessionDir.createEntry(newEntry);
         }
-        loginContext.logout();
 
         // As user1, add the same entry in directory
-        loginContext = Framework.loginAsUser("user1");
-        try (CloseableCoreSession userSession = openSession()) {
-            // Open the testDirectory
-            try (Session sessionDir = directoryService.open("testDirectory")) {
-                sessionDir.createEntry(newEntry);
-            }
+        try (NuxeoLoginContext loginContext = Framework.loginUser("user1");
+                CloseableCoreSession userSession = openSession();
+                Session sessionDir = directoryService.open("testDirectory")) {
+            sessionDir.createEntry(newEntry);
         }
-        loginContext.logout();
 
         // Check that the two entries are created
         Framework.doPrivileged(() -> {
@@ -144,20 +138,17 @@ public class TestMultiTenantDirectories {
         newEntry.put("label", "Label Key 0");
 
         // As user0, add a new entry in directory
-        LoginContext loginContext = Framework.loginAsUser("user0");
-        try (CloseableCoreSession userSession = openSession()) {
-            // Open the testDirectory
-            try (Session sessionDir = directoryService.open("testDirectory")) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("user0");
+                CloseableCoreSession userSession = openSession();
+                Session sessionDir = directoryService.open("testDirectory")) {
+            sessionDir.createEntry(newEntry);
+            // Test if the second creation fails
+            try {
                 sessionDir.createEntry(newEntry);
-                // Test if the second creation fails
-                try {
-                    sessionDir.createEntry(newEntry);
-                } catch (DirectoryException e) {
-                    assertThat(e.getMessage()).isEqualTo("Entry with id tenant_domain0_key0 already exists in directory testDirectory");
-                }
+            } catch (DirectoryException e) {
+                assertThat(e.getMessage()).isEqualTo("Entry with id tenant_domain0_key0 already exists in directory testDirectory");
             }
         }
-        loginContext.logout();
     }
 
     protected CloseableCoreSession openSession() {

@@ -31,7 +31,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.logging.log4j.LogManager;
@@ -53,6 +52,7 @@ import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -125,9 +125,8 @@ public class BulkScrollerComputation extends AbstractComputation {
             }
             updateStatusAsScrolling(context, commandId);
             String username = command.getUsername();
-            LoginContext loginContext = SYSTEM_USERNAME.equals(username) ? Framework.login()
-                    : Framework.loginAsUser(username);
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
+            try (NuxeoLoginContext loginContext = loginSystemOrUser(username);
+                    CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
                 // scroll documents
                 ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollSize, scrollKeepAliveSeconds);
                 long documentCount = 0;
@@ -159,10 +158,6 @@ public class BulkScrollerComputation extends AbstractComputation {
             } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
                 log.error("Invalid query results in an empty document set: {}", command, e);
                 updateStatusAfterScroll(context, commandId, "Invalid query");
-            } finally {
-                if (loginContext != null) {
-                    loginContext.logout();
-                }
             }
         } catch (NuxeoException | LoginException e) {
             if (command != null) {
@@ -174,6 +169,10 @@ public class BulkScrollerComputation extends AbstractComputation {
 
         }
         context.askForCheckpoint();
+    }
+
+    protected NuxeoLoginContext loginSystemOrUser(String username) throws LoginException {
+        return SYSTEM_USERNAME.equals(username) ? Framework.loginSystem() : Framework.loginUser(username);
     }
 
     protected boolean isAbortedCommand(String commandId) {

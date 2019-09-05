@@ -19,13 +19,8 @@
 
 package org.nuxeo.ecm.core.api;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 /**
  * Helper class to run code with an unrestricted session.
@@ -35,8 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author Florent Guillaume
  */
 public abstract class UnrestrictedSessionRunner {
-
-    private static final Log log = LogFactory.getLog(UnrestrictedSessionRunner.class);
 
     protected String originatingUsername;
 
@@ -115,7 +108,7 @@ public abstract class UnrestrictedSessionRunner {
         isUnrestricted = true;
         try {
             if (sessionIsAlreadyUnrestricted) {
-                if (ClientLoginModule.isCurrentAdministrator()) {
+                if (NuxeoPrincipal.isCurrentAdministrator()) {
                     run();
                 } else {
                     // should be removed when login and session will be synchronized / NXP-27399
@@ -124,29 +117,13 @@ public abstract class UnrestrictedSessionRunner {
                 return;
             }
 
-            LoginContext loginContext;
-            try {
-                loginContext = Framework.loginAs(originatingUsername);
-            } catch (LoginException e) {
-                throw new NuxeoException(e);
-            }
-            try {
-                CoreSession baseSession = session;
-                try (CloseableCoreSession closeableCoreSession = CoreInstance.openCoreSession(repositoryName)) {
-                    session = closeableCoreSession;
-                    run();
-                } finally {
-                    session = baseSession;
-                }
+            CoreSession baseSession = session;
+            try (NuxeoLoginContext loginContext = Framework.loginSystem(originatingUsername);
+                    CloseableCoreSession closeableCoreSession = CoreInstance.openCoreSession(repositoryName)) {
+                session = closeableCoreSession;
+                run();
             } finally {
-                try {
-                    // loginContext may be null in tests
-                    if (loginContext != null) {
-                        loginContext.logout();
-                    }
-                } catch (LoginException e) {
-                    log.error(e); // don't rethrow inside finally
-                }
+                session = baseSession;
             }
         } finally {
             isUnrestricted = false;

@@ -47,7 +47,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -57,6 +56,7 @@ import org.nuxeo.ecm.directory.Reference;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -406,7 +406,7 @@ public class TestDirectoryEntryResolver {
     @Test
     public void testFetchDirWhenUnauthenticated() throws LoginException {
 
-        ClientLoginModule.getThreadLocalLogin().pop();
+        LoginComponent.popPrincipal();
         try {
             DirectoryEntryResolver derr = new DirectoryEntryResolver();
             HashMap<String, String> parameters = new HashMap<>();
@@ -417,7 +417,7 @@ public class TestDirectoryEntryResolver {
             assertTrue(entity instanceof DirectoryEntry);
             assertEquals(ENTRY_LABEL, ((DirectoryEntry) entity).getDocumentModel().getPropertyValue("drs:label"));
         } finally {
-            ClientLoginModule.getThreadLocalLogin().push(new SystemPrincipal(null), null, null);
+            LoginComponent.pushPrincipal(new SystemPrincipal(null));
         }
     }
 

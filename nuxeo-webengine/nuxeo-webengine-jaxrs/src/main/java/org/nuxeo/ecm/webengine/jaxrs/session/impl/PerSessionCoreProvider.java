@@ -20,8 +20,6 @@ package org.nuxeo.ecm.webengine.jaxrs.session.impl;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
@@ -115,21 +113,7 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
             return;
         }
 
-        LoginContext lc = null;
-        try {
-            lc = Framework.login();
-            destroy();
-        } catch (LoginException e) {
-            log.error(e, e);
-        } finally {
-            if (lc != null) {
-                try {
-                    lc.logout();
-                } catch (LoginException e) {
-                    log.error(e, e);
-                }
-            }
-        }
+        Framework.doPrivileged(this::destroy);
     }
 
     @Override

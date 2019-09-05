@@ -37,8 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,14 +61,12 @@ public class TestJWTService {
 
     @Before
     public void setUp() throws Exception {
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.push(new UserPrincipal(USERNAME, Collections.emptyList(), false, false), null, null);
+        LoginComponent.pushPrincipal(new UserPrincipal(USERNAME, Collections.emptyList(), false, false));
     }
 
     @After
     public void teardown() throws Exception {
-        LoginStack loginStack = ClientLoginModule.getThreadLocalLogin();
-        loginStack.pop();
+        LoginComponent.popPrincipal();
     }
 
     @Test

@@ -18,11 +18,11 @@
  */
 package org.nuxeo.ecm.platform.ui.web.auth.service;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.runtime.api.login.LoginAs;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -30,7 +30,7 @@ import org.nuxeo.runtime.api.login.LoginAs;
 public class LoginAsImpl implements LoginAs {
 
     @Override
-    public LoginContext loginAs(String username) throws LoginException {
+    public NuxeoLoginContext loginAs(String username) throws LoginException {
         return NuxeoAuthenticationFilter.loginAs(username);
     }
 

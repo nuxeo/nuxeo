@@ -22,7 +22,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
@@ -35,6 +34,7 @@ import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginAs;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -88,19 +88,7 @@ public class EventJob implements Job {
             return;
         }
 
-        LoginContext loginContext = null;
-        try {
-            // login
-            if (username == null) {
-                loginContext = Framework.login();
-            } else {
-                if (Framework.getService(LoginAs.class) != null) {
-                    loginContext = Framework.loginAsUser(username);
-                } else if (!Framework.isTestModeSet()) {
-                    log.error("LoginAs service not available");
-                }
-            }
-
+        try (NuxeoLoginContext loginContext = loginSystemOrUser(username)) {
             // set up event context
             UserPrincipal principal = new UserPrincipal(username, null, false, false);
             EventContext eventContext = new EventContextImpl(null, principal);
@@ -126,11 +114,19 @@ public class EventJob implements Job {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
             }
-        } finally {
-            // logout
-            if (loginContext != null) {
-                loginContext.logout();
+        }
+    }
+
+    protected NuxeoLoginContext loginSystemOrUser(String username) throws LoginException {
+        if (username == null) {
+            return Framework.loginSystem();
+        } else {
+            if (Framework.getService(LoginAs.class) != null) {
+                return Framework.loginUser(username);
+            } else if (!Framework.isTestModeSet()) {
+                log.error("LoginAs service not available");
             }
+            return null;
         }
     }
 

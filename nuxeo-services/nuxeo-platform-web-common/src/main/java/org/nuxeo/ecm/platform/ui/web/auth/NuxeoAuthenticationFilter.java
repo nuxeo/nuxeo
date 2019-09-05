@@ -64,7 +64,6 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.naming.NamingException;
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -184,10 +183,7 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected static boolean sendAuthenticationEvent(UserIdentificationInfo userInfo, String eventId, String comment) {
-
-        LoginContext loginContext = Framework.loginSystem();
-        try {
-
+        return Framework.doPrivileged(() -> {
             EventProducer evtProducer = Framework.getService(EventProducer.class);
             NuxeoPrincipal principal = new UserPrincipal(userInfo.getUserName(), null, false, false);
 
@@ -199,13 +195,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             EventContext ctx = new UnboundEventContext(principal, props);
             evtProducer.fireEvent(ctx.newEvent(eventId));
             return true;
-        } finally {
-            try {
-                loginContext.logout();
-            } catch (LoginException e) {
-                log.error("Unable to logout: " + e.getMessage());
-            }
-        }
+        });
     }
 
     protected boolean logAuthenticationAttempt(UserIdentificationInfo userInfo, boolean success) {
@@ -1074,7 +1064,7 @@ public class NuxeoAuthenticationFilter implements Filter {
      * @return the login context, which MUST be used for logout in a {@code finally} block
      * @throws LoginException
      */
-    public static LoginContext loginAs(String username) throws LoginException {
+    public static NuxeoLoginContext loginAs(String username) throws LoginException {
         NuxeoPrincipal principal = createPrincipal(username);
         NuxeoLoginContext loginContext = NuxeoLoginContext.create(principal);
         loginContext.login();

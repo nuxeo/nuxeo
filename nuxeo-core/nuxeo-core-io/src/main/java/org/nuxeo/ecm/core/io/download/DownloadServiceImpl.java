@@ -66,7 +66,6 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
@@ -327,7 +326,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
                 if (!session.exists(docRef)) {
                     // Send a security exception to force authentication, if the current user is anonymous
-                    NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+                    NuxeoPrincipal principal = NuxeoPrincipal.getCurrent();
                     if (principal != null && principal.isAnonymous()) {
                         throw new DocumentSecurityException("Authentication is needed for downloading the blob");
                     }
@@ -691,7 +690,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         xpath = fixXPath(xpath);
         Map<String, Object> context = new HashMap<>();
         Map<String, Serializable> ei = extendedInfos == null ? Collections.emptyMap() : extendedInfos;
-        NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal currentUser = NuxeoPrincipal.getCurrent();
         context.put("Document", doc);
         context.put("XPath", xpath);
         context.put("Blob", blob);
@@ -800,7 +799,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     protected static NuxeoPrincipal getPrincipal() {
-        return ClientLoginModule.getCurrentPrincipal();
+        return NuxeoPrincipal.getCurrent();
     }
 
 }

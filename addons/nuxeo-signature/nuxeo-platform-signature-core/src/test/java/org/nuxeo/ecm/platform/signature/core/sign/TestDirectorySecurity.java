@@ -25,8 +25,6 @@ import static org.junit.Assert.assertNull;
 import java.io.Serializable;
 import java.util.Collections;
 import javax.inject.Inject;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +35,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -60,17 +59,7 @@ public class TestDirectorySecurity {
     @Inject
     public DirectoryService directoryService;
 
-    protected LoginContext loginContext;
-
     protected Serializable entryId;
-
-    protected void login(String username) throws LoginException {
-        loginContext = Framework.login(username, username);
-    }
-
-    protected void logout() throws LoginException {
-        loginContext.logout();
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -94,12 +83,10 @@ public class TestDirectorySecurity {
         });
 
         // as a random user, we don't see the entry
-        login("aRandomUser");
-        try (Session session = directoryService.open(DIR_NAME)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("aRandomUser");
+                Session session = directoryService.open(DIR_NAME)) {
             DocumentModel entry = session.getEntry(entryId.toString());
             assertNull(entry); // hidden entry
-        } finally {
-            logout();
         }
     }
 
@@ -114,12 +101,10 @@ public class TestDirectorySecurity {
         });
 
         // as a random user, we don't see the entry
-        login("aRandomUser");
-        try (Session session = directoryService.open(DIR_NAME)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("aRandomUser");
+                Session session = directoryService.open(DIR_NAME)) {
             DocumentModelList results = session.query(Collections.singletonMap(ID_FIELD, entryId));
             assertEquals(0, results.size()); // hidden entry
-        } finally {
-            logout();
         }
     }
 

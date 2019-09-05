@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 
 /**
  * Abstract implementation for {@link BlobProvider} providing common logic.
@@ -74,7 +73,7 @@ public abstract class AbstractBlobProvider implements BlobProvider {
 
     @Override
     public boolean hasCreateFromKeyPermission() {
-        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal principal = NuxeoPrincipal.getCurrent();
         if (principal == null) {
             return false;
         }

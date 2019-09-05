@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import java.io.IOException;
 import java.security.Principal;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -33,10 +32,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.server.shared.BasicAuthCallContextHandler;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 /**
  * Auth Filter that does not check the password and trusts the user name.
@@ -60,21 +60,13 @@ public class TrustingNuxeoAuthFilter implements Filter {
             return;
         }
         // login
-        try {
-            LoginContext loginContext = Framework.loginAsUser(username);
-            try {
-                Principal principal = (Principal) loginContext.getSubject().getPrincipals().toArray()[0];
-                maybeMakeAdministrator(principal);
-                // propagate
-                ClientLoginModule.getThreadLocalLogin().push(principal, null, loginContext.getSubject());
-                // wrap
-                request = new NuxeoSecuredRequestWrapper(httpRequest, principal);
-                // chain
-                chain.doFilter(request, response);
-            } finally {
-                loginContext.logout();
-                ClientLoginModule.getThreadLocalLogin().pop();
-            }
+        try (NuxeoLoginContext loginContext = Framework.loginUser(username)) {
+            Principal principal = NuxeoPrincipal.getCurrent();
+            maybeMakeAdministrator(principal);
+            // wrap
+            request = new NuxeoSecuredRequestWrapper(httpRequest, principal);
+            // chain
+            chain.doFilter(request, response);
         } catch (LoginException e) {
             throw new RuntimeException(e);
         }

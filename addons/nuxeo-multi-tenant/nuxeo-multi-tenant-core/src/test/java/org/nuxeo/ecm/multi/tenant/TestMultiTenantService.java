@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.junit.After;
@@ -67,6 +66,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -269,25 +269,23 @@ public class TestMultiTenantService {
         assertEquals(domain.getName(), domain.getPropertyValue(TENANT_ID_PROPERTY));
 
         NuxeoPrincipal bender = createUser("bender", false, domain.getName());
-        LoginContext loginContext = Framework.loginAsUser("bender");
-        try (CloseableCoreSession benderSession = openSession()) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("bender");
+                CloseableCoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.READ));
             assertFalse(benderSession.hasPermission(domain.getRef(), SecurityConstants.EVERYTHING));
         }
-        loginContext.logout();
 
         domain.setPropertyValue(TENANT_ADMINISTRATORS_PROPERTY, (Serializable) List.of("bender"));
         session.saveDocument(domain);
         session.save();
 
         bender = userManager.getPrincipal(bender.getName());
-        loginContext = Framework.loginAsUser("bender");
-        try (CloseableCoreSession benderSession = openSession()) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("bender");
+                CloseableCoreSession benderSession = openSession()) {
             benderSession.save();
             assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.READ));
             assertTrue(benderSession.hasPermission(domain.getRef(), SecurityConstants.EVERYTHING));
         }
-        loginContext.logout();
     }
 
     @Test
@@ -297,27 +295,23 @@ public class TestMultiTenantService {
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
 
         createUser("fry", true, domain.getName());
-        LoginContext loginContext = Framework.loginAsUser("fry");
+        try (NuxeoLoginContext loginContext = Framework.loginUser("fry")) {
+            NuxeoGroup nuxeoGroup = createGroup("testGroup");
+            assertEquals("tenant_" + domain.getName() + "_testGroup", nuxeoGroup.getName());
 
-        NuxeoGroup nuxeoGroup = createGroup("testGroup");
-        assertEquals("tenant_" + domain.getName() + "_testGroup", nuxeoGroup.getName());
-
-        List<DocumentModel> groups = userManager.searchGroups((String) null);
-        assertEquals(1, groups.size());
-        DocumentModel group = groups.get(0);
-        assertEquals("tenant_" + domain.getName() + "_testGroup", group.getPropertyValue("group:groupname"));
-        assertEquals(domain.getName(), group.getPropertyValue("group:tenantId"));
-
-        loginContext.logout();
+            List<DocumentModel> groups = userManager.searchGroups((String) null);
+            assertEquals(1, groups.size());
+            DocumentModel group = groups.get(0);
+            assertEquals("tenant_" + domain.getName() + "_testGroup", group.getPropertyValue("group:groupname"));
+            assertEquals(domain.getName(), group.getPropertyValue("group:tenantId"));
+        }
 
         // other user not belonging to the tenant cannot see the group
         createUser("leela", false, "nonExistingTenant");
-        loginContext = Framework.loginAsUser("leela");
-
-        groups = userManager.searchGroups((String) null);
-        assertEquals(0, groups.size());
-
-        loginContext.logout();
+        try (NuxeoLoginContext loginContext = Framework.loginUser("leela")) {
+            DocumentModelList groups = userManager.searchGroups((String) null);
+            assertEquals(0, groups.size());
+        }
     }
 
     @Test
@@ -330,42 +324,40 @@ public class TestMultiTenantService {
         session.save();
 
         createUser("fry", true, domain.getName());
-        LoginContext loginContext = Framework.loginAsUser("fry");
+        NuxeoGroup nuxeoGroup;
+        try (NuxeoLoginContext loginContext = Framework.loginUser("fry")) {
+            nuxeoGroup = createGroup("supermembers");
+            assertEquals("tenant_" + domain.getName() + "_supermembers", nuxeoGroup.getName());
 
-        NuxeoGroup nuxeoGroup = createGroup("supermembers");
-        assertEquals("tenant_" + domain.getName() + "_supermembers", nuxeoGroup.getName());
-
-        try (CloseableCoreSession frySession = openSession()) {
-            // add the Read ACL
-            DocumentModel doc = frySession.getDocument(domain.getRef());
-            ACP acp = doc.getACP();
-            ACL acl = acp.getOrCreateACL();
-            acl.add(0, new ACE(nuxeoGroup.getName(), "Write", true));
-            doc.setACP(acp, true);
-            frySession.saveDocument(doc);
-            frySession.save();
+            try (CloseableCoreSession frySession = openSession()) {
+                // add the Read ACL
+                DocumentModel doc = frySession.getDocument(domain.getRef());
+                ACP acp = doc.getACP();
+                ACL acl = acp.getOrCreateACL();
+                acl.add(0, new ACE(nuxeoGroup.getName(), "Write", true));
+                doc.setACP(acp, true);
+                frySession.saveDocument(doc);
+                frySession.save();
+            }
         }
-        loginContext.logout();
 
         // bender is part of the supermembers group
         NuxeoPrincipal bender = createUser("bender", false, domain.getName());
         bender.setGroups(List.of(nuxeoGroup.getName()));
         userManager.updateUser(bender.getModel());
         bender = createUser("bender", false, domain.getName());
-        loginContext = Framework.loginAsUser("bender");
-        try (CloseableCoreSession benderSession = openSession()) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("bender");
+            CloseableCoreSession benderSession = openSession()) {
             assertTrue(benderSession.hasPermission(domain.getRef(), "Write"));
         }
-        loginContext.logout();
 
         // leela does not have Write permission
         createUser("leela", false, domain.getName());
-        loginContext = Framework.loginAsUser("leela");
-        try (CloseableCoreSession leelaSession = openSession()) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("leela");
+                CloseableCoreSession leelaSession = openSession()) {
             assertTrue(leelaSession.hasPermission(domain.getRef(), "Read"));
             assertFalse(leelaSession.hasPermission(domain.getRef(), "Write"));
         }
-        loginContext.logout();
     }
 
     @Test
@@ -378,45 +370,43 @@ public class TestMultiTenantService {
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
 
         createUser("fry", true, domain.getName());
-        LoginContext loginContext = Framework.loginAsUser("fry");
+        try (NuxeoLoginContext loginContext = Framework.loginUser("fry")) {
+            NuxeoGroup tenantGroup = createGroup("tenantGroup");
+            assertEquals("tenant_" + domain.getName() + "_tenantGroup", tenantGroup.getName());
 
-        NuxeoGroup tenantGroup = createGroup("tenantGroup");
-        assertEquals("tenant_" + domain.getName() + "_tenantGroup", tenantGroup.getName());
+            // cannot delete
+            try {
+                userManager.deleteGroup(noTenantGroup.getName());
+                fail();
+            } catch (OperationNotAllowedException e) {
+                // OK
+            }
 
-        // cannot delete
-        try {
-            userManager.deleteGroup(noTenantGroup.getName());
-            fail();
-        } catch (OperationNotAllowedException e) {
-            // OK
-        }
+            // cannot modify
+            try {
+                assertEquals("noTenantGroup", noTenantGroup.getLabel());
+                DocumentModel noTenantGroupModel = userManager.getGroupModel(noTenantGroup.getName());
+                noTenantGroupModel.setPropertyValue("group:grouplabel", "new label");
+                userManager.updateGroup(noTenantGroupModel);
+                fail();
+            } catch (OperationNotAllowedException e) {
+                // OK
+            }
 
-        // cannot modify
-        try {
+            noTenantGroup = userManager.getGroup(noTenantGroup.getName());
             assertEquals("noTenantGroup", noTenantGroup.getLabel());
-            DocumentModel noTenantGroupModel = userManager.getGroupModel(noTenantGroup.getName());
-            noTenantGroupModel.setPropertyValue("group:grouplabel", "new label");
-            userManager.updateGroup(noTenantGroupModel);
-            fail();
-        } catch (OperationNotAllowedException e) {
-            // OK
+
+            // can modify and delete tenant groups
+            DocumentModel testGroupModel = userManager.getGroupModel(tenantGroup.getName());
+            testGroupModel.setPropertyValue("group:grouplabel", "new label");
+            userManager.updateGroup(testGroupModel);
+            tenantGroup = userManager.getGroup(tenantGroup.getName());
+            assertEquals("new label", tenantGroup.getLabel());
+
+            userManager.deleteGroup(tenantGroup.getName());
+            tenantGroup = userManager.getGroup(tenantGroup.getName());
+            assertNull(tenantGroup);
         }
-
-        noTenantGroup = userManager.getGroup(noTenantGroup.getName());
-        assertEquals("noTenantGroup", noTenantGroup.getLabel());
-
-        // can modify and delete tenant groups
-        DocumentModel testGroupModel = userManager.getGroupModel(tenantGroup.getName());
-        testGroupModel.setPropertyValue("group:grouplabel", "new label");
-        userManager.updateGroup(testGroupModel);
-        tenantGroup = userManager.getGroup(tenantGroup.getName());
-        assertEquals("new label", tenantGroup.getLabel());
-
-        userManager.deleteGroup(tenantGroup.getName());
-        tenantGroup = userManager.getGroup(tenantGroup.getName());
-        assertNull(tenantGroup);
-
-        loginContext.logout();
     }
 
     @Test
@@ -464,18 +454,19 @@ public class TestMultiTenantService {
     }
 
     protected String getPowerUsersGroup() throws LoginException {
-        LoginContext login = Framework.loginAs("Administrator");
-        NuxeoGroup pwrUsrGrp = userManager.getGroup(Constants.POWER_USERS_GROUP);
+        try (NuxeoLoginContext loginContext = Framework.loginSystem("Administrator")) {
+            NuxeoGroup pwrUsrGrp = userManager.getGroup(Constants.POWER_USERS_GROUP);
 
-        if (pwrUsrGrp != null) {
-            return pwrUsrGrp.getName();
+            if (pwrUsrGrp != null) {
+                return pwrUsrGrp.getName();
+            }
+
+            DocumentModel powerUsers;
+            powerUsers = userManager.getBareGroupModel();
+            powerUsers.setPropertyValue("group:groupname", Constants.POWER_USERS_GROUP);
+            powerUsers = userManager.createGroup(powerUsers);
+            return powerUsers.getId();
         }
-
-        DocumentModel powerUsers = userManager.getBareGroupModel();
-        powerUsers.setPropertyValue("group:groupname", Constants.POWER_USERS_GROUP);
-        powerUsers = userManager.createGroup(powerUsers);
-        login.logout();
-        return powerUsers.getId();
     }
 
     protected NuxeoPrincipal createUser(String username, boolean isPowerUser, String tenant) throws LoginException {

@@ -40,8 +40,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +54,7 @@ import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -100,13 +99,13 @@ public class EmailHelper {
     public void sendmail(Map<String, Object> mail) throws MessagingException {
         try {
             sendmail0(mail);
-        } catch (LoginException | IOException | TemplateException | RenderingException e) {
+        } catch (IOException | TemplateException | RenderingException e) {
             throw new MessagingException(e.getMessage(), e);
         }
     }
 
     protected void sendmail0(Map<String, Object> mail)
-            throws MessagingException, IOException, TemplateException, LoginException, RenderingException {
+            throws MessagingException, IOException, TemplateException, RenderingException {
 
         Session session = getSession();
         if (javaMailNotAvailable || session == null) {
@@ -145,34 +144,31 @@ public class EmailHelper {
         } else {
             rs.registerEngine(new NotificationsRenderingEngine(customSubjectTemplate));
 
-            LoginContext lc = Framework.login();
+            try (NuxeoLoginContext loginContext = Framework.loginSystem()) {
+                Collection<RenderingResult> results = rs.process(context);
+                String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
 
-            Collection<RenderingResult> results = rs.process(context);
-            String subjectMail = "<HTML><P>No parsing Succeded !!!</P></HTML>";
-
-            for (RenderingResult result : results) {
-                subjectMail = (String) result.getOutcome();
+                for (RenderingResult result : results) {
+                    subjectMail = (String) result.getOutcome();
+                }
+                subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + subjectMail;
+                msg.setSubject(subjectMail, "UTF-8");
             }
-            subjectMail = NotificationServiceHelper.getNotificationService().getEMailSubjectPrefix() + subjectMail;
-            msg.setSubject(subjectMail, "UTF-8");
-
-            lc.logout();
         }
 
         msg.setSentDate(new Date());
 
         rs.registerEngine(new NotificationsRenderingEngine((String) mail.get(NotificationConstants.TEMPLATE_KEY)));
 
-        LoginContext lc = Framework.login();
-
-        Collection<RenderingResult> results = rs.process(context);
         String bodyMail = "<HTML><P>No parsing Succedeed !!!</P></HTML>";
 
+        Collection<RenderingResult> results;
+        try (NuxeoLoginContext lc = Framework.loginSystem()) {
+            results = rs.process(context);
+        }
         for (RenderingResult result : results) {
             bodyMail = (String) result.getOutcome();
         }
-
-        lc.logout();
 
         rs.unregisterEngine("ftl");
 

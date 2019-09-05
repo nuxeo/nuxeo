@@ -26,8 +26,6 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
-import org.nuxeo.ecm.core.api.local.LoginStack;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.LoginComponent;
@@ -137,9 +135,8 @@ public class CoreInstance {
         if (username != null) {
             return new UserPrincipal(username, new ArrayList<>(), false, false);
         } else {
-            LoginStack.Entry entry = ClientLoginModule.getCurrentLogin();
-            if (entry != null) {
-                Principal p = entry.getPrincipal();
+            Principal p = LoginComponent.getCurrentPrincipal();
+            if (p != null) {
                 if (p instanceof NuxeoPrincipal) {
                     return (NuxeoPrincipal) p;
                 } else if (LoginComponent.isSystemLogin(p)) {
@@ -165,7 +162,7 @@ public class CoreInstance {
      * @since 8.4
      */
     protected static String getCurrentPrincipalName() {
-        NuxeoPrincipal p = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal p = NuxeoPrincipal.getCurrent();
         return p == null ? null : p.getName();
     }
 

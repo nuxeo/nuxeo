@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.platform.rendition.Constants;
@@ -501,7 +500,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
             Map<String, Serializable> extendedInfos) {
         Map<String, Object> context = new HashMap<>();
         Map<String, Serializable> ei = extendedInfos == null ? Collections.emptyMap() : extendedInfos;
-        NuxeoPrincipal currentUser = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal currentUser = NuxeoPrincipal.getCurrent();
         context.put("Document", doc);
         context.put("Infos", ei);
         context.put("CurrentUser", currentUser);

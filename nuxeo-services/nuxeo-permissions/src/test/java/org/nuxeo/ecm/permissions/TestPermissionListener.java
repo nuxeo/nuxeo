@@ -34,9 +34,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -55,6 +52,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -79,16 +77,6 @@ public class TestPermissionListener {
 
     @Inject
     protected DirectoryService directoryService;
-
-    protected LoginContext loginContext;
-
-    protected void login(String username) throws LoginException {
-        loginContext = Framework.login(username, username);
-    }
-
-    protected void logout() throws LoginException {
-        loginContext.logout();
-    }
 
     @Test
     public void shouldFillDirectory() {
@@ -137,8 +125,8 @@ public class TestPermissionListener {
         rootACP.addACE(ACL.LOCAL_ACL, new ACE("joe", EVERYTHING, true));
         root.setACP(rootACP, true);
 
-        login("joe");
-        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("joe");
+                CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
             DocumentModel doc = joeSession.createDocumentModel("/", "file", "File");
             doc = joeSession.createDocument(doc);
             docId = doc.getId();
@@ -157,8 +145,6 @@ public class TestPermissionListener {
             acp.addACE(ACL.LOCAL_ACL, fryACE);
             doc.setACP(acp, true);
             fryACEId = fryACE.getId();
-        } finally {
-            logout();
         }
 
         try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
@@ -173,16 +159,14 @@ public class TestPermissionListener {
             assertEquals(fryACEId, entry.getPropertyValue("aceinfo:aceId"));
         }
 
-        login("joe");
-        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("joe");
+                CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
             DocumentModel doc = joeSession.getDocument(new IdRef(docId));
             ACP acp = doc.getACP();
             ACL acl = acp.getOrCreateACL();
             acl.clear();
             acp.addACL(acl);
             doc.setACP(acp, true);
-        } finally {
-            logout();
         }
 
         try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {

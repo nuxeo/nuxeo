@@ -51,7 +51,7 @@ public class ClientLoginFeature implements RunnerFeature {
     protected LoginContext logContext = null;
 
     public Principal login(String username) throws LoginException {
-        logContext = Framework.login(username, username);
+        logContext = Framework.loginUser(username);
         return logContext.getSubject().getPrincipals().iterator().next();
     }
 

@@ -28,8 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -51,21 +50,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(OAuthFeature.class)
 public class TestDirectorySecurity {
 
-    private LoginContext loginContext;
-
     @Inject
     public DirectoryService directoryService;
 
     // id of entries created during setup
     protected Map<String, Serializable> entryIds = new HashMap<>();
-
-    protected void login(String username) throws LoginException {
-        loginContext = Framework.login(username, username);
-    }
-
-    protected void logout() throws LoginException {
-        loginContext.logout();
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -112,12 +101,10 @@ public class TestDirectorySecurity {
         });
 
         // as a random user, we don't see the entry
-        login("aRandomUser");
-        try (Session session = directoryService.open(directoryName)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("aRandomUser");
+                Session session = directoryService.open(directoryName)) {
             DocumentModel entry = session.getEntry(entryId.toString());
             assertNull(entry); // hidden entry
-        } finally {
-            logout();
         }
     }
 
@@ -133,12 +120,10 @@ public class TestDirectorySecurity {
         });
 
         // as a random user, we don't see the entry
-        login("aRandomUser");
-        try (Session session = directoryService.open(directoryName)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("aRandomUser");
+                Session session = directoryService.open(directoryName)) {
             DocumentModelList results = session.query(Collections.singletonMap(idField, entryId));
             assertEquals(0, results.size()); // hidden entry
-        } finally {
-            logout();
         }
     }
 

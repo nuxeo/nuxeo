@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.DefaultOpenIDUserInfo;
@@ -43,6 +42,7 @@ import org.nuxeo.ecm.platform.oauth2.openid.auth.StoredUserInfoResolver;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -65,7 +65,7 @@ public class TestUserResolver {
 
     @Inject
     protected DirectoryService directoryService;
-    
+
     @Inject
     protected OpenIDConnectProviderRegistry registry;
 
@@ -81,7 +81,7 @@ public class TestUserResolver {
         info.put("email", "devnull@nuxeo.com");
         DocumentModel doc = userManager.getUserModel(ADMIN_USERNAME);
 
-        ClientLoginModule.getThreadLocalLogin().pop();
+        LoginComponent.popPrincipal();
         try {
             // Assert that you can fetch username even if not authenticated
             String username = emailResolver.findNuxeoUser(info);
@@ -93,7 +93,7 @@ public class TestUserResolver {
             assertEquals("test@nuxeo.com", doc.getPropertyValue("user:email"));
 
         } finally {
-            ClientLoginModule.getThreadLocalLogin().push(new SystemPrincipal(null), null, null);
+            LoginComponent.pushPrincipal(new SystemPrincipal(null));
         }
 
     }
@@ -117,7 +117,7 @@ public class TestUserResolver {
             session.createEntry(infos);
 
             DocumentModel doc = userManager.getUserModel(ADMIN_USERNAME);
-            ClientLoginModule.getThreadLocalLogin().pop();
+            LoginComponent.popPrincipal();
             try {
                 // Assert that you can fetch username even if not authenticated
                 String username = userInfoResolver.findNuxeoUser(info);
@@ -134,7 +134,7 @@ public class TestUserResolver {
                 assertEquals("test@nuxeo.com", doc.getPropertyValue("openIdUserInfo:email"));
 
             } finally {
-                ClientLoginModule.getThreadLocalLogin().push(new SystemPrincipal(null), null, null);
+                LoginComponent.pushPrincipal(new SystemPrincipal(null));
             }
         }
     }

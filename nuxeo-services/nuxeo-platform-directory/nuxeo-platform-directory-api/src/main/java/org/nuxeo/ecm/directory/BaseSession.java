@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.model.DefaultQueryVisitor;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
@@ -152,7 +151,7 @@ public abstract class BaseSession implements Session, EntrySource {
         if (permission.equals(SecurityConstants.WRITE) && isReadOnly()) {
             throw new DirectorySecurityException("Directory is read-only");
         } else {
-            NuxeoPrincipal user = ClientLoginModule.getCurrentPrincipal();
+            NuxeoPrincipal user = NuxeoPrincipal.getCurrent();
             throw new DirectorySecurityException("User " + user + " does not have " + permission + " permission");
         }
     }
@@ -189,7 +188,7 @@ public abstract class BaseSession implements Session, EntrySource {
             }
             return false;
         }
-        NuxeoPrincipal user = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal user = NuxeoPrincipal.getCurrent();
         if (user == null) {
             return false;
         }
@@ -622,7 +621,7 @@ public abstract class BaseSession implements Session, EntrySource {
      * Returns the tenant id of the logged user if any, {@code null} otherwise.
      */
     protected String getCurrentTenantId() {
-        NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+        NuxeoPrincipal principal = NuxeoPrincipal.getCurrent();
         return principal != null ? principal.getTenantId() : null;
     }
 

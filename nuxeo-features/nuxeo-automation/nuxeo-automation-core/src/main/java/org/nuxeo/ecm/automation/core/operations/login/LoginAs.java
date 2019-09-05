@@ -20,7 +20,6 @@ package org.nuxeo.ecm.automation.core.operations.login;
 
 import java.security.Principal;
 
-import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.nuxeo.ecm.automation.OperationContext;
@@ -32,6 +31,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -49,20 +49,14 @@ public class LoginAs {
 
     @OperationMethod
     public void run() throws LoginException, OperationException {
-        LoginContext lc = null;
+        NuxeoLoginContext lc;
         if (name == null) {
             Principal origPrincipal = ctx.getPrincipal();
-            if (origPrincipal != null) {
-                lc = Framework.loginAs(origPrincipal.getName());
-            } else {
-                lc = Framework.login();
-            }
+            lc = Framework.loginSystem(origPrincipal.getName());
         } else {
-            lc = Framework.loginAsUser(name);
+            lc = Framework.loginUser(name);
         }
-        if (lc != null) {
-            ctx.getLoginStack().push(lc);
-        }
+        ctx.getLoginStack().push(lc);
     }
 
     @OperationMethod
