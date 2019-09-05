@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
@@ -85,6 +87,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Property>> {
+
+    private static final Logger log = LogManager.getLogger(DocumentPropertiesJsonReader.class);
 
     public static final String DEFAULT_SCHEMA_NAME = "DEFAULT_SCHEMA_NAME";
 
@@ -187,19 +191,20 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
             ObjectResolver resolver = type.getObjectResolver();
             if (resolver == null) {
                 // Let's assume it is a blob of which content has to be stored in a string property.
-                assert type.getSuperType() instanceof StringType;
-                Blob blob = readEntity(Blob.class, Blob.class, jn);
-                if (blob == null) {
-                    throw new MarshallingException("Unable to parse the property " + property.getXPath());
+                if (type.getSuperType() instanceof StringType) {
+                    Blob blob = readEntity(Blob.class, Blob.class, jn);
+                    if (blob != null) {
+                        return blob.getString();
+                    }
                 }
-                return blob.getString();
+                log.info("Unable to parse the property {}", property::getXPath);
+                return null;
             }
             Object object = null;
             for (Class<?> clazz : resolver.getManagedClasses()) {
-                try {
-                    object = readEntity(clazz, clazz, jn);
-                } catch (Exception e) {
-                    continue;
+                object = readEntity(clazz, clazz, jn);
+                if (object != null) {
+                    break;
                 }
             }
             if (object == null) {
