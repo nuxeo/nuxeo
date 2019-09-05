@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,34 @@
  * Contributors:
  *     bdelbosc
  */
-package org.nuxeo.runtime.stream.tests;
+package org.nuxeo.runtime.stream;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
-import org.nuxeo.runtime.stream.StreamComputationPolicy;
-import org.nuxeo.runtime.stream.StreamProcessorDescriptor;
 
 import net.jodah.failsafe.RetryPolicy;
 
 /**
- * Example of a custom Computation Policy
+ * A Computation policy that can be use for Nuxeo.
  *
- * @since 10.3
+ * @since 11.1
  */
-public class MyPolicy implements StreamComputationPolicy {
+public class DefaultNuxeoComputationPolicy implements StreamComputationPolicy {
 
     @Override
     public ComputationPolicy getPolicy(StreamProcessorDescriptor.PolicyDescriptor descriptor) {
-        // Here we can use the full RetryPolicy API
         RetryPolicy retryPolicy = new RetryPolicy().withMaxRetries(descriptor.maxRetries)
                                                    .withBackoff(descriptor.delay.toMillis(),
                                                            descriptor.maxDelay.toMillis(), TimeUnit.MILLISECONDS);
-        retryPolicy.retryOn(IllegalStateException.class, IllegalArgumentException.class);
+        // NuxeoException and ConcurrentUpdateException are assignable from RuntimeException
+        retryPolicy.retryOn(RuntimeException.class, TimeoutException.class, IOException.class, SQLException.class);
         ComputationPolicyBuilder builder = descriptor.createPolicyBuilder();
-        return builder.retryPolicy(retryPolicy).build();
+        builder.retryPolicy(retryPolicy);
+        return builder.build();
     }
 }
