@@ -144,7 +144,8 @@ public class MongoDBConnectionHelper {
                 sslContextBuilder.loadTrustMaterial(trustStore, null);
             }
             if (keyStore != null) {
-                sslContextBuilder.loadKeyMaterial(keyStore, null);
+                sslContextBuilder.loadKeyMaterial(keyStore,
+                        StringUtils.isBlank(config.keyStorePassword) ? null : config.keyStorePassword.toCharArray());
             }
             return sslContextBuilder.build();
         } catch (GeneralSecurityException | IOException e) {
