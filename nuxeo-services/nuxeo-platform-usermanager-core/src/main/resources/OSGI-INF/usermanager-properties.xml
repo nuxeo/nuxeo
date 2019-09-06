@@ -21,7 +21,7 @@
       @since 11.1
     </documentation>
     <property name="nuxeo.usermanager.search.escape.compat">true</property>
-    <property name="nuxeo.usermanager.use.light.principal">false</property>
+    <property name="nuxeo.usermanager.resolver.fetchReferences">true</property>
   </extension>
 
 </component>

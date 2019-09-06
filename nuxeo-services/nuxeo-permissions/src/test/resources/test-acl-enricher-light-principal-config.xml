@@ -2,7 +2,7 @@
 
   <require>org.nuxeo.ecm.platform.usermanager.properties</require>
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <property name="nuxeo.usermanager.use.light.principal">true</property>
+    <property name="nuxeo.usermanager.resolver.fetchReferences">false</property>
   </extension>
 
 </component>

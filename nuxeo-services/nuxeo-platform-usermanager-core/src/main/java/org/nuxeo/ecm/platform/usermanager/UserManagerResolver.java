@@ -84,7 +84,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
 
     public static final String PARAM_INCLUDE_GROUPS = "includeGroups";
 
-    private static final String USE_LIGHT_PRINCIPAL_PARAM = "nuxeo.usermanager.use.light.principal";
+    private static final String FETCH_REFERENCES_PROPERTY = "nuxeo.usermanager.resolver.fetchReferences";
 
     private boolean includingUsers = true;
 
@@ -127,7 +127,7 @@ public class UserManagerResolver extends AbstractObjectResolver implements Objec
         }
         this.parameters.put(PARAM_INCLUDE_GROUPS, includingGroups);
         this.parameters.put(PARAM_INCLUDE_USERS, includingUsers);
-        fetchReferences = Framework.getService(ConfigurationService.class).isBooleanFalse(USE_LIGHT_PRINCIPAL_PARAM);
+        fetchReferences = Framework.getService(ConfigurationService.class).isBooleanTrue(FETCH_REFERENCES_PROPERTY);
     }
 
     @Override
