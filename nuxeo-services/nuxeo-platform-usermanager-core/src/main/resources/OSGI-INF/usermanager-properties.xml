@@ -9,6 +9,14 @@
       @since 8.4
     </documentation>
     <property name="nuxeo.usermanager.check.password">true</property>
+
+    <documentation>
+      Controls whether UserManagerResolver will fetch a principal with user references or not.
+      Default is set to true to keep compatibility.
+
+      @since 9.10-HF36
+    </documentation>
+    <property name="nuxeo.usermanager.resolver.fetchReferences">true</property>
   </extension>
 
 </component>

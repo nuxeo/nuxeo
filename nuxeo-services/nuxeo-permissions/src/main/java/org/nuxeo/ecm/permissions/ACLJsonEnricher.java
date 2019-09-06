@@ -43,9 +43,11 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.MaxDepthReachedException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverService;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.UserManagerResolver;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
@@ -169,12 +171,9 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
     protected void writePrincipalOrGroup(String propertyName, String value, JsonGenerator jg) throws IOException {
         if (value != null && ctx.getFetched(NAME).contains(propertyName)) {
             try (Closeable resource = ctx.wrap().controlDepth().open()) {
-                UserManager userManager = Framework.getService(UserManager.class);
-                Object entity = userManager.getPrincipal(value);
-                if (entity == null) {
-                    entity = userManager.getGroup(value);
-                }
-
+                ObjectResolver resolver = Framework.getService(ObjectResolverService.class)
+                        .getResolver(UserManagerResolver.NAME, new HashMap<>());
+                Object entity = resolver.fetch(value);
                 if (entity != null) {
                     writeEntityField(propertyName, entity, jg);
                     return;
