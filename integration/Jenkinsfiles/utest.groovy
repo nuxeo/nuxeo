@@ -19,7 +19,7 @@
 
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
 
-node('SLAVE') {
+node('IT910&&STATIC') { // Must be a static slave to share the workspace in docker compose
     tool name: 'ant-1.9', type: 'ant'
     tool name: 'java-8-openjdk', type: 'hudson.model.JDK'
     tool name: 'maven-3', type: 'hudson.tasks.Maven$MavenInstallation'
