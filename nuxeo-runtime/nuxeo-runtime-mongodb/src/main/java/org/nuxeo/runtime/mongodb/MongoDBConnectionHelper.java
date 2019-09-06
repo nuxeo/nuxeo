@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.nuxeo.runtime.RuntimeServiceException;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -95,18 +96,18 @@ public class MongoDBConnectionHelper {
      * @since 11.1
      */
     public static MongoClient newMongoClient(MongoDBConnectionConfig config,
-                                             Consumer<MongoClientOptions.Builder> optionsConsumer) {
+            Consumer<MongoClientOptions.Builder> optionsConsumer) {
         String server = config.server;
         if (StringUtils.isBlank(server)) {
-            throw new RuntimeException("Missing <server> in MongoDB descriptor");
+            throw new RuntimeServiceException("Missing <server> in MongoDB descriptor");
         }
-        MongoClientOptions.Builder optionsBuilder =
-                MongoClientOptions.builder()
-                                  // don't wait forever by default, can be overridden using URI options
-                                  .connectTimeout(
-                                          MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
-                                  .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
-                                  .description("Nuxeo");
+        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
+                                                                      // don't wait forever by default, can be
+                                                                      // overridden using URI options
+                                                                      .connectTimeout(
+                                                                              MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
+                                                                      .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
+                                                                      .description("Nuxeo");
         SSLContext sslContext = getSSLContext(config);
         if (sslContext == null) {
             if (config.ssl != null) {
@@ -148,7 +149,7 @@ public class MongoDBConnectionHelper {
             }
             return sslContextBuilder.build();
         } catch (GeneralSecurityException | IOException e) {
-            throw new RuntimeException("Cannot setup SSL context: " + config, e);
+            throw new RuntimeServiceException("Cannot setup SSL context: " + config, e);
         }
     }
 
@@ -186,6 +187,6 @@ public class MongoDBConnectionHelper {
     public static boolean hasCollection(MongoDatabase mongoDatabase, String collection) {
         MongoIterable<String> collections = mongoDatabase.listCollectionNames();
         boolean found = StreamSupport.stream(collections.spliterator(), false).anyMatch(collection::equals);
-        return found && mongoDatabase.getCollection(collection).count() > 0;
+        return found && mongoDatabase.getCollection(collection).estimatedDocumentCount() > 0;
     }
 }

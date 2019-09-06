@@ -56,7 +56,6 @@ public class MongoDBChecker implements BackingChecker {
      */
     public static final int DEFAULT_CHECK_TIMEOUT_IN_SECONDS = 5;
 
-
     @Override
     public boolean accepts(ConfigurationGenerator cg) {
         return cg.getTemplateList().contains(TEMPLATE_NAME);
@@ -71,15 +70,14 @@ public class MongoDBChecker implements BackingChecker {
         }
         MongoDBConnectionConfig config = getDescriptor(configFile, MongoDBConnectionConfig.class);
         try (MongoClient mongoClient = MongoDBConnectionHelper.newMongoClient(config,
-                builder -> builder.serverSelectionTimeout(
-                        (int) TimeUnit.SECONDS.toMillis(getCheckTimeoutInSeconds(cg)))
+                builder -> builder.serverSelectionTimeout((int) TimeUnit.SECONDS.toMillis(getCheckTimeoutInSeconds(cg)))
                                   .description("Nuxeo DB Check"))) {
             MongoDatabase database = mongoClient.getDatabase(config.dbname);
             Document ping = new Document("ping", "1");
             database.runCommand(ping);
         } catch (MongoTimeoutException e) {
-            throw new ConfigurationException(String.format(
-                    "Unable to connect to MongoDB at %s, please check your connection", config.server));
+            throw new ConfigurationException(
+                    String.format("Unable to connect to MongoDB at %s, please check your connection", config.server));
         }
     }
 
@@ -88,6 +86,7 @@ public class MongoDBChecker implements BackingChecker {
      *
      * @since 11.1
      */
+    @SuppressWarnings("unchecked")
     public <T> T getDescriptor(File file, Class<T> klass) throws ConfigurationException {
         XMap xmap = new XMap();
         xmap.register(klass);
@@ -99,17 +98,21 @@ public class MongoDBChecker implements BackingChecker {
     }
 
     /**
-     * Returns the value of the check timeout parameter in seconds.
-     * If value is not parseable or not set, then use the default value.
+     * Returns the value of the check timeout parameter in seconds. If value is not parseable or not set, then use the
+     * default value.
+     *
      * @return the timeout check in seconds.
      * @since 9.3
      */
     private int getCheckTimeoutInSeconds(ConfigurationGenerator cg) {
         int checkTimeout = DEFAULT_CHECK_TIMEOUT_IN_SECONDS;
         try {
-            checkTimeout = Integer.parseInt(cg.getUserConfig().getProperty(PARAM_MONGODB_CHECK_TIMEOUT, String.valueOf(DEFAULT_CHECK_TIMEOUT_IN_SECONDS)));
+            checkTimeout = Integer.parseInt(
+                    cg.getUserConfig()
+                      .getProperty(PARAM_MONGODB_CHECK_TIMEOUT, String.valueOf(DEFAULT_CHECK_TIMEOUT_IN_SECONDS)));
         } catch (NumberFormatException e) {
-            log.warn(String.format("Invalid format for %s parameter, using default value instead", PARAM_MONGODB_CHECK_TIMEOUT), e);
+            log.warn(String.format("Invalid format for %s parameter, using default value instead",
+                    PARAM_MONGODB_CHECK_TIMEOUT), e);
         }
         return checkTimeout;
     }
