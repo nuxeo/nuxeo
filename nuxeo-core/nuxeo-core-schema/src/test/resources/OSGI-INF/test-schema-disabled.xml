@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.schema-disabled">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="common" src="schema/common.xsd" />
+    <schema name="someSchema" src="schema/common.xsd" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+    <!-- define a doctype with that schema -->
+    <doctype name="myDoc">
+      <schema name="common" />
+      <schema name="someSchema" />
+    </doctype>
+
+    <!-- define a facet with that schema -->
+    <facet name="someFacet">
+      <schema name="common" />
+      <schema name="someSchema" />
+    </facet>
+
+    <!-- define another doctype with the facet -->
+    <doctype name="myDoc2">
+      <schema name="common" />
+      <facet name="someFacet" />
+    </doctype>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <!-- now disable the schema -->
+    <schema name="someSchema" enabled="false" />
+  </extension>
+
+</component>
