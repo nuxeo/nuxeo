@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/test/v1/multiResolved"
+  xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/"
+  targetNamespace="http://www.nuxeo.org/ecm/project/schemas/test/v1/multiResolved">
+  <!-- used by org.nuxeo.ecm.restapi.test.DocWithMultiResolvedFieldTest -->
+
+  <xs:element name="countries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="country" minOccurs="0" maxOccurs="unbounded">
+          <xs:simpleType>
+            <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="coverage" />
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

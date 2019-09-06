@@ -69,5 +69,17 @@
       <createTablePolicy>on_missing_columns</createTablePolicy>
     </directory>
 
+    <directory name="coverage" extends="template-directory">
+      <schema>xvocabulary</schema>
+      <types>
+        <type>system</type>
+      </types>
+      <parentDirectory>coverage</parentDirectory>
+      <idField>id</idField>
+      <autoincrementIdField>false</autoincrementIdField>
+      <dataFile>directories/coverage.csv</dataFile>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+    </directory>
+
   </extension>
 </component>
