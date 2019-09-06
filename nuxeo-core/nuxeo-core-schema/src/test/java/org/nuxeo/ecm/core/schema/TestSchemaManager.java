@@ -293,6 +293,19 @@ public class TestSchemaManager {
         assertEquals(Collections.emptySet(), new HashSet<>(Arrays.asList(t.getSchemaNames())));
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/test-schema-disabled.xml")
+    public void testSchemaDisabled() throws Exception {
+        Schema s = schemaManager.getSchema("someSchema");
+        assertNull(s);
+        CompositeType f = schemaManager.getFacet("someFacet");
+        assertEquals(Collections.singletonList("common"), Arrays.asList(f.getSchemaNames()));
+        DocumentType t = schemaManager.getDocumentType("myDoc");
+        assertEquals(Collections.singletonList("common"), Arrays.asList(t.getSchemaNames()));
+        DocumentType t2 = schemaManager.getDocumentType("myDoc2");
+        assertEquals(Collections.singletonList("common"), Arrays.asList(t2.getSchemaNames()));
+    }
+
     protected static List<String> schemaNames(List<Schema> schemas) {
         return schemas.stream().map(Schema::getName).collect(Collectors.toList());
     }
