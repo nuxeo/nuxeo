@@ -78,7 +78,7 @@ public class MongoDBChecker implements BackingChecker {
                 database.runCommand(ping);
             } catch (MongoTimeoutException e) {
                 throw new ConfigurationException(String.format(
-                        "Unable to connect to MongoDB at %s, please check your connection", config.server));
+                        "Unable to connect to MongoDB at %s, please check your connection", config.server), e);
             }
         }
     }
