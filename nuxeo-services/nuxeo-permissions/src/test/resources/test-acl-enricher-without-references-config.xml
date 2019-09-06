@@ -1,0 +1,8 @@
+<component name="org.nuxeo.ecm.permissions.acl.enricher.test" version="1.0.0">
+
+  <require>org.nuxeo.ecm.platform.usermanager.properties</require>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.usermanager.resolver.fetchReferences">false</property>
+  </extension>
+
+</component>

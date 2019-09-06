@@ -60,6 +60,17 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
     NuxeoPrincipal getPrincipal(String username);
 
     /**
+     * Retrieves the principal and its references (if explicitely requested with
+     * the fetchReferences parameter) with the given username or null if it does
+     * not exist.
+     *
+     * @since 11.1
+     */
+    default NuxeoPrincipal getPrincipal(String username, boolean fetchReferences) {
+        return getPrincipal(username);
+    }
+
+    /**
      * Returns the nuxeo group with given name or null if it does not exist.
      */
     NuxeoGroup getGroup(String groupName);
@@ -452,5 +463,4 @@ public interface UserManager extends Authenticator, EventListener, Serializable 
      * @since 9.2
      */
     void notifyGroupChanged(String groupName, String eventId, List<String> ancestorGroupNames);
-
 }

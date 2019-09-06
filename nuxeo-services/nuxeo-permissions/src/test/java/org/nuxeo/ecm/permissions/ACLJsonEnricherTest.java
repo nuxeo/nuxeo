@@ -128,6 +128,32 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json = json.has("aces").get(3);
         json.has("username").isObject();
         json.has("creator").isObject();
+
+        // ACL enricher returns user groups by default
+        json.get("username").get("properties").get("groups").contains("administrators");
+    }
+    @Test
+    @Deploy("org.nuxeo.ecm.permissions:test-acl-enricher-without-references-config.xml")
+    public void testUsersFetchingWithoutReferences() throws IOException {
+        DocumentModel root = session.getDocument(new PathRef("/"));
+        JsonAssert json = jsonAssert(root,
+                CtxBuilder.enrichDoc("acls")
+                          .fetch("acls", "username")
+                          .fetch("acls", "creator")
+                          .depth(DepthValues.children)
+                          .get());
+        json = json.has("contextParameters").isObject();
+        json.properties(1);
+        json = json.has("acls").length(1).has(0);
+        json.has("name").isEquals("local");
+        json.has("aces").isArray();
+        json = json.has("aces").get(3);
+        json.has("username").isObject();
+        json.has("creator").isObject();
+
+        // With the property nuxeo.usermanager.resolver.fetchReferences set to
+        // false, ACL enricher does not return references (groups) any more
+        json.get("username").get("properties").get("groups").length(0);
     }
 
     @Test

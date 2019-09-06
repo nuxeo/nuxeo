@@ -944,6 +944,27 @@ public class TestUserManager extends UserManagerTestCase {
     }
 
     @Test
+    public void testGetPrincipalWithoutReferences() throws Exception {
+        DocumentModel u1 = getUser("user1");
+        userManager.createUser(u1);
+        DocumentModel g1 = getGroup("group1");
+        g1.setProperty("group", "members", Arrays.asList("user1"));
+        userManager.createGroup(g1);
+        DocumentModel g2 = getGroup("group2");
+        g2.setProperty("group", "members", Arrays.asList("user1"));
+        userManager.createGroup(g2);
+
+        NuxeoPrincipal principal1 = userManager.getPrincipal("user1");
+        assertEquals(3, principal1.getAllGroups().size());
+
+        // Now fetch without references
+        principal1 = userManager.getPrincipal("user1", false);
+        assertEquals(1, principal1.getAllGroups().size()); // 1 virtual group = defgr
+        assertTrue(principal1.isMemberOf("defgr"));
+        assertFalse(principal1.isMemberOf("group1"));
+    }
+
+    @Test
     public void testPasswordAuthenticate() {
         assertTrue(userManager.checkUsernamePassword("Administrator", "Administrator"));
     }
