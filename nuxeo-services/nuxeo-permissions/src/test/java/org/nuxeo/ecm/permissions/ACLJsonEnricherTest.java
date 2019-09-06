@@ -133,8 +133,8 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json.get("username").get("properties").get("groups").contains("administrators");
     }
     @Test
-    @Deploy("org.nuxeo.ecm.permissions:test-acl-enricher-light-principal-config.xml")
-    public void testUsersFetchingWithLightPrincipal() throws IOException {
+    @Deploy("org.nuxeo.ecm.permissions:test-acl-enricher-without-references-config.xml")
+    public void testUsersFetchingWithoutReferences() throws IOException {
         DocumentModel root = session.getDocument(new PathRef("/"));
         JsonAssert json = jsonAssert(root,
                 CtxBuilder.enrichDoc("acls")
