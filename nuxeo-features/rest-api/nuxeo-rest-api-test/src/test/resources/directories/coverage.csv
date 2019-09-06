@@ -1,0 +1,4 @@
+id, label, parent, obsolete
+"europe","Europe","","0"
+"France","France","europe","0"
+"Albania","Albania","europe","0"
