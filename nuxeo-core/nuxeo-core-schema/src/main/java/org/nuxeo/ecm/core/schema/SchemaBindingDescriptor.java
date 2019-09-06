@@ -53,6 +53,9 @@ public class SchemaBindingDescriptor {
     @XNode("@xsdRootElement")
     public String xsdRootElement;
 
+    @XNode("@enabled")
+    public Boolean enabled;
+
     // this is set by the type service to the context that knows how to locate
     // the schema file
     public RuntimeContext context;
