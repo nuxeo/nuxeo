@@ -151,8 +151,8 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json.has("username").isObject();
         json.has("creator").isObject();
 
-        // With the property nuxeo.usermanager.light.principal set to true,
-        // ACL enricher does not return references (groups) any more
+        // With the property nuxeo.usermanager.resolver.fetchReferences set to
+        // false, ACL enricher does not return references (groups) any more
         json.get("username").get("properties").get("groups").length(0);
     }
 
