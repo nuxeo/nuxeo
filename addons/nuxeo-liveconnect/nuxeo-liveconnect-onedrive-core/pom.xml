@@ -50,7 +50,7 @@
     <!-- OneDrive libraries -->
 
     <dependency>
-      <groupId>org.nuxeo.onedrive</groupId>
+      <groupId>org.nuxeo.lib.onedrive</groupId>
       <artifactId>onedrive-java-client</artifactId>
     </dependency>
 
