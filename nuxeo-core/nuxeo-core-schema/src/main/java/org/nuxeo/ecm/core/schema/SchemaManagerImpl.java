@@ -112,6 +112,8 @@ public class SchemaManagerImpl implements SchemaManager {
     /** Effective schemas. */
     protected Map<String, Schema> schemas = new HashMap<>();
 
+    protected Set<String> disabledSchemas = new HashSet<>();
+
     protected final Map<String, Schema> prefixToSchema = new HashMap<>();
 
     /** Effective facets. */
@@ -387,6 +389,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected void recomputeSchemas() {
         schemas.clear();
+        disabledSchemas.clear();
         prefixToSchema.clear();
         RuntimeException errors = new RuntimeException("Cannot load schemas");
         // on reload, don't take confuse already-copied schemas with those contributed
@@ -395,6 +398,12 @@ public class SchemaManagerImpl implements SchemaManager {
         Map<String, SchemaBindingDescriptor> resolvedSchemas = new LinkedHashMap<>();
         for (SchemaBindingDescriptor sd : allSchemas) {
             String name = sd.name;
+            if (Boolean.FALSE.equals(sd.enabled)) {
+                disabledSchemas.add(name);
+                resolvedSchemas.remove(name);
+                log.debug("Disabling schema: {}", name);
+                continue;
+            }
             if (resolvedSchemas.containsKey(name)) {
                 if (!sd.override) {
                     log.warn("Schema {} is redefined but will not be overridden", name);
@@ -528,6 +537,11 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
+                if (disabledSchemas.contains(schemaName)) {
+                    // schema is disabled, don't log as ERROR
+                    log.debug("Facet: {} uses disabled schema: {}", name, schemaName);
+                    continue;
+                }
                 log.error("Facet: {} uses unknown schema: {}", name, schemaName);
                 continue;
             }
@@ -671,6 +685,11 @@ public class SchemaManagerImpl implements SchemaManager {
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
+                if (disabledSchemas.contains(schemaName)) {
+                    // schema is disabled, don't log as ERROR
+                    log.debug("Document type: {} uses disabled schema: {}", name, schemaName);
+                    continue;
+                }
                 log.error("Document type: {} uses unknown schema: {}", name, schemaName);
                 continue;
             }

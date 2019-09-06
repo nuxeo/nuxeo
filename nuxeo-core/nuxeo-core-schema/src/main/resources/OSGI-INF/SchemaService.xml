@@ -159,6 +159,12 @@
       <code>
         <schema name="employeeSchema" src="schema/testExtension.xsd" xsdRootElement="employee" />
       </code>
+      A schema can be completely disabled with:
+      <code>
+        <schema name="myOldSchema" enabled="false" />
+      </code>
+      Schemas with enabled=false will be ignored in all document types and facets
+      still referencing them, and will not be returned when listing available schemas.
 
       Extension Point is also used to register additional property information, called property characteristic, such as:
       <ul>
