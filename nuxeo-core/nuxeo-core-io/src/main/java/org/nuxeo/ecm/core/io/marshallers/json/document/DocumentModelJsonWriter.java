@@ -71,6 +71,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   "uid": "DOCUMENT_UID",
  *   "path": "DOCUMENT_PATH",
  *   "type": "DOCUMENT_TYPE",
+ *   "facets": [ "FACET1", "FACET2", ... ],
+ *   "schemas": [ "SCHEMA1", "SCHEMA2", ... ],
  *   "state": "DOCUMENT_STATE",
  *   "parentRef": "PARENT_DOCUMENT_UID",
  *   "isCheckedOut": true|false,
@@ -198,6 +200,12 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         jg.writeArrayFieldStart("facets");
         for (String facet : doc.getFacets()) {
             jg.writeString(facet);
+        }
+        jg.writeEndArray();
+
+        jg.writeArrayFieldStart("schemas");
+        for (String schema : doc.getSchemas()) {
+            jg.writeString(schema);
         }
         jg.writeEndArray();
     }
