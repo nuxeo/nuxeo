@@ -155,8 +155,6 @@ public class NuxeoAuthenticationFilter implements Filter {
     /** The Seam conversation id query parameter. */
     protected static final String CONVERSATION_ID = "conversationId";
 
-    private static String anonymous;
-
     protected volatile PluggableAuthenticationService service;
 
     protected ReentrantReadWriteLock unAuthenticatedURLPrefixLock = new ReentrantReadWriteLock();
@@ -263,7 +261,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         return principal;
     }
 
-    private boolean switchUser(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
+    protected boolean switchUser(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         String deputyLogin = (String) httpRequest.getAttribute(SWITCH_USER_KEY);
@@ -379,6 +377,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
         String forceAnonymousLoginParam = httpRequest.getParameter(FORCE_ANONYMOUS_LOGIN);
         boolean forceAnonymousLogin = Boolean.parseBoolean(forceAnonymousLoginParam);
+        String anonymousId = getAnonymousId();
 
         try {
             if (principal == null) {
@@ -390,11 +389,9 @@ public class NuxeoAuthenticationFilter implements Filter {
                 log.debug("Try getting authentication from cache");
                 cachableUserIdent = retrieveIdentityFromCache(httpRequest);
 
-                if (cachableUserIdent != null && cachableUserIdent.getUserInfo() != null) {
-                    if (cachableUserIdent.getUserInfo().getUserName().equals(getAnonymousId())) {
-                        if (forceAnonymousLogin) {
-                            cachableUserIdent = null;
-                        }
+                if (cachableUserIdent != null) {
+                    if (forceAnonymousLogin && cachableUserIdent.getUserInfo().getUserName().equals(anonymousId)) {
+                        cachableUserIdent = null;
                     }
 
                     if (service.needResetLogin(request)) {
@@ -411,7 +408,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                 }
 
                 // identity found in cache
-                if (cachableUserIdent != null && cachableUserIdent.getUserInfo() != null) {
+                if (cachableUserIdent != null) {
                     log.debug("userIdent found in cache, get the Principal from it without reloggin");
 
                     NuxeoHttpSessionMonitor.instance().updateEntry(httpRequest);
@@ -439,20 +436,20 @@ public class NuxeoAuthenticationFilter implements Filter {
                 }
 
                 // identity not found in cache or reseted by logout
-                if (cachableUserIdent == null || cachableUserIdent.getUserInfo() == null) {
+                if (cachableUserIdent == null) {
                     UserIdentificationInfo userIdent = handleRetrieveIdentity(httpRequest, httpResponse);
-                    if (userIdent != null && userIdent.containsValidIdentity()) {
+                    if (userIdent != null) {
                         String userName = userIdent.getUserName();
                         if (userName.equals(SYSTEM_USERNAME)) {
                             // always forbidden
                             buildUnauthorizedResponse(httpRequest, httpResponse);
                             return;
                         }
-                        if (userName.equals(getAnonymousId()) && forceAnonymousLogin) {
+                        if (forceAnonymousLogin && userName.equals(anonymousId)) {
                             userIdent = null;
                         }
                     }
-                    if ((userIdent == null || !userIdent.containsValidIdentity()) && !bypassAuth(httpRequest)) {
+                    if (userIdent == null && !bypassAuth(httpRequest)) {
                         boolean res = handleLoginPrompt(httpRequest, httpResponse);
                         if (res) {
                             return;
@@ -466,7 +463,7 @@ public class NuxeoAuthenticationFilter implements Filter {
                         // restore saved Starting page
                         targetPageURL = getSavedRequestedURL(httpRequest, httpResponse);
                     }
-                    if (userIdent != null && userIdent.containsValidIdentity()) {
+                    if (userIdent != null) {
                         // do the authentication
                         cachableUserIdent = new CachableUserIdentificationInfo(userIdent);
                         principal = doAuthenticate(cachableUserIdent, httpRequest);
@@ -566,11 +563,8 @@ public class NuxeoAuthenticationFilter implements Filter {
         return null;
     }
 
-    private String getAnonymousId() throws ServletException {
-        if (anonymous == null) {
-            anonymous = Framework.getService(UserManager.class).getAnonymousUserId();
-        }
-        return anonymous;
+    protected String getAnonymousId() {
+        return Framework.getService(UserManager.class).getAnonymousUserId();
     }
 
     protected void doInitIfNeeded() throws ServletException {
@@ -792,14 +786,11 @@ public class NuxeoAuthenticationFilter implements Filter {
         cookie.setPath("/");
         httpResponse.addCookie(cookie);
 
-        String pluginName = cachedUserInfo.getUserInfo().getAuthPluginName();
-        NuxeoAuthenticationPlugin authPlugin = service.getPlugin(pluginName);
+        NuxeoAuthenticationPlugin authPlugin = getAuthenticator(cachedUserInfo);
         NuxeoAuthenticationPluginLogoutExtension logoutPlugin = null;
-
         if (authPlugin instanceof NuxeoAuthenticationPluginLogoutExtension) {
             logoutPlugin = (NuxeoAuthenticationPluginLogoutExtension) authPlugin;
         }
-
         boolean redirected = false;
         if (logoutPlugin != null) {
             redirected = Boolean.TRUE.equals(
@@ -938,7 +929,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     }
 
-    private boolean handleLogin(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    protected boolean handleLogin(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String baseURL = service.getBaseURL(httpRequest);
 
         // go through plugins to get UserIndentity
@@ -988,7 +979,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         return false;
     }
 
-    private void buildUnauthorizedResponse(HttpServletRequest req, HttpServletResponse resp) {
+    protected void buildUnauthorizedResponse(HttpServletRequest req, HttpServletResponse resp) {
 
         try {
             String loginUrl = VirtualHostHelper.getBaseURL(req) + LOGIN_PAGE;
@@ -1011,7 +1002,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             if (plugin != null) {
                 log.debug("Trying to retrieve userIdentification using plugin " + pluginName);
                 userIdent = plugin.handleRetrieveIdentity(httpRequest, httpResponse);
-                if (userIdent != null && userIdent.containsValidIdentity()) {
+                if (userIdent != null) {
                     userIdent.setAuthPluginName(pluginName);
                     break;
                 }
@@ -1021,7 +1012,7 @@ public class NuxeoAuthenticationFilter implements Filter {
         }
 
         // Fall back to cache (used only when avoidReautenticated=false)
-        if (userIdent == null || !userIdent.containsValidIdentity()) {
+        if (userIdent == null) {
             log.debug("user/password not found in request, try into identity cache");
             HttpSession session = httpRequest.getSession(false);
             if (session == null) {

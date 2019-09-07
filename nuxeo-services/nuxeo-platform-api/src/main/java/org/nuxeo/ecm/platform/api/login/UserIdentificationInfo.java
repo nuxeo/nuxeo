@@ -21,9 +21,11 @@
 
 package org.nuxeo.ecm.platform.api.login;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Encapsulates some information about a user and how it must be authenticated.
@@ -46,11 +48,17 @@ public class UserIdentificationInfo implements Serializable {
     protected String authPluginName;
 
     public UserIdentificationInfo(String userName) {
+        if (isBlank(userName)) {
+            throw new NuxeoException("username must not be blank");
+        }
         this.userName = userName;
         this.credentialsChecked = true;
     }
 
     public UserIdentificationInfo(String userName, String password) {
+        if (isBlank(userName)) {
+            throw new NuxeoException("username must not be blank");
+        }
         this.userName = userName;
         this.password = password;
     }
@@ -86,14 +94,10 @@ public class UserIdentificationInfo implements Serializable {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public boolean containsValidIdentity() {
-        if (userName == null) {
-            return false;
+        if (isBlank(userName)) {
+            throw new NuxeoException("username must not be blank");
         }
-        return userName.length() != 0;
+        this.userName = userName;
     }
 
     /** @since 11.1 */
