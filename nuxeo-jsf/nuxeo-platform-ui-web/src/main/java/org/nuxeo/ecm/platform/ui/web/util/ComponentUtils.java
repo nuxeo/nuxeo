@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.runtime.api.Framework;
 
@@ -231,8 +232,15 @@ public final class ComponentUtils {
         HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
         HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
         try {
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos);
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .doc(doc)
+                                                     .xpath(xpath)
+                                                     .blob(blob)
+                                                     .filename(filename)
+                                                     .reason(reason)
+                                                     .extendedInfos(extendedInfos)
+                                                     .build();
+            Framework.getService(DownloadService.class).downloadBlob(context);
         } catch (IOException e) {
             log.error("Error while downloading the file: " + filename, e);
         } finally {

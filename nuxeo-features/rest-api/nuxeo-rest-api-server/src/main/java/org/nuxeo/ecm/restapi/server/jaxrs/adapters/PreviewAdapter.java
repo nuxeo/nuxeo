@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
@@ -93,9 +94,14 @@ public class PreviewAdapter extends DefaultAdapter {
 
         try {
             Blob blob = previewBlobs.get(0);
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.downloadBlob(request, response, bh.getDocument(), bh.getXpath(), blob, blob.getFilename(),
-                    "preview", null, true);
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .doc(bh.getDocument())
+                                                     .xpath(bh.getXpath())
+                                                     .blob(blob)
+                                                     .reason("preview")
+                                                     .inline(true)
+                                                     .build();
+            Framework.getService(DownloadService.class).downloadBlob(context);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -128,10 +134,15 @@ public class PreviewAdapter extends DefaultAdapter {
 
         try {
             Blob blob = subBlob.get();
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            Map<String, Serializable> extendedInfos = Collections.singletonMap("subPath", subPath);
-            downloadService.downloadBlob(request, response, bh.getDocument(), bh.getXpath(), blob, blob.getFilename(),
-                    "preview", extendedInfos, true);
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .doc(bh.getDocument())
+                                                     .xpath(bh.getXpath())
+                                                     .blob(blob)
+                                                     .reason("preview")
+                                                     .extendedInfos(Collections.singletonMap("subPath", subPath))
+                                                     .inline(true)
+                                                     .build();
+            Framework.getService(DownloadService.class).downloadBlob(context);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
