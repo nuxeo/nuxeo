@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
@@ -88,8 +89,12 @@ public class DownloadServlet extends HttpServlet {
         File tmpZip = new File(Environment.getDefault().getTemp(), tmpFileName);
         try {
             Blob zipBlob = Blobs.createBlob(tmpZip);
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.downloadBlob(req, resp, null, null, zipBlob, "clipboard.zip", "clipboardZip");
+            DownloadContext context = DownloadContext.newBuilder(req, resp)
+                                                     .blob(zipBlob)
+                                                     .filename("clipboard.zip")
+                                                     .reason("clipboardZip")
+                                                     .build();
+            Framework.getService(DownloadService.class).downloadBlob(context);
         } finally {
             tmpZip.delete();
         }

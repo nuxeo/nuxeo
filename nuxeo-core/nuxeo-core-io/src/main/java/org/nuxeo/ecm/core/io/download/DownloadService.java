@@ -121,6 +121,218 @@ public interface DownloadService {
     }
 
     /**
+     * Download context.
+     *
+     * @since 11.1
+     */
+    class DownloadContext {
+
+        protected final HttpServletRequest request;
+
+        protected final HttpServletResponse response;
+
+        protected final DocumentModel doc;
+
+        protected final String xpath;
+
+        protected final Blob blob;
+
+        protected final String filename;
+
+        protected final String reason;
+
+        protected final Map<String, Serializable> extendedInfos;
+
+        protected final Boolean inline;
+
+        protected final Consumer<ByteRange> blobTransferer;
+
+        public DownloadContext(HttpServletRequest request, HttpServletResponse response, DocumentModel doc,
+                String xpath, Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos,
+                Boolean inline, Consumer<ByteRange> blobTransferer) {
+            this.request = request;
+            this.response = response;
+            this.doc = doc;
+            this.xpath = xpath;
+            this.blob = blob;
+            this.filename = filename;
+            this.reason = reason;
+            this.extendedInfos = extendedInfos;
+            this.inline = inline;
+            this.blobTransferer = blobTransferer;
+        }
+
+        public HttpServletRequest getRequest() {
+            return request;
+        }
+
+        public HttpServletResponse getResponse() {
+            return response;
+        }
+
+        public DocumentModel getDocumentModel() {
+            return doc;
+        }
+
+        public String getXPath() {
+            return xpath;
+        }
+
+        public Blob getBlob() {
+            return blob;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public Map<String, Serializable> getExtendedInfos() {
+            return extendedInfos;
+        }
+
+        public Boolean getInline() {
+            return inline;
+        }
+
+        public Consumer<ByteRange> getBlobTransferer() {
+            return blobTransferer;
+        }
+
+        /**
+         * Creates a new builder.
+         *
+         * @param request the HTTP request
+         * @param response the HTTP response
+         * @return the new builder
+         */
+        public static Builder newBuilder(HttpServletRequest request, HttpServletResponse response) {
+            return new Builder(request, response);
+        }
+
+        /**
+         * Builder for a {@link DownloadContext}.
+         *
+         * @since 11.1
+         */
+        public static class Builder {
+
+            protected final HttpServletRequest request;
+
+            protected final HttpServletResponse response;
+
+            protected DocumentModel doc;
+
+            protected String xpath;
+
+            protected Blob blob;
+
+            protected String filename;
+
+            protected String reason;
+
+            protected Map<String, Serializable> extendedInfos;
+
+            protected Boolean inline;
+
+            protected Consumer<ByteRange> blobTransferer;
+
+            public Builder(HttpServletRequest request, HttpServletResponse response) {
+                this.request = request;
+                this.response = response;
+            }
+
+            /**
+             * The document from which to download the blob.
+             */
+            public Builder doc(DocumentModel doc) {
+                this.doc = doc;
+                return this;
+            }
+
+            /**
+             * The blob's xpath in the document, or the blobholder index.
+             */
+            public Builder xpath(String xpath) {
+                this.xpath = xpath;
+                return this;
+            }
+
+            /**
+             * The blob, if already fetched. Otherwise, it will be retrieved from the document and the xpath.
+             */
+            public Builder blob(Blob blob) {
+                this.blob = blob;
+                return this;
+            }
+
+            /**
+             * The filename to use. If absent, the blob's filename will be used.
+             */
+            public Builder filename(String filename) {
+                this.filename = filename;
+                return this;
+            }
+
+            /**
+             * The download reason.
+             * <p>
+             * The request attribute {@link #REQUEST_ATTR_DOWNLOAD_REASON}, if present, will be used instead.
+             */
+            public Builder reason(String reason) {
+                this.reason = reason;
+                return this;
+            }
+
+            /**
+             * The extended infos, holding additional info about the download (in particular for logging and permission
+             * checks).
+             * <p>
+             * The request attribute {@link #REQUEST_ATTR_DOWNLOAD_RENDITION}, if present, will be used for the
+             * {@code rendition} key.
+             */
+            public Builder extendedInfos(Map<String, Serializable> extendedInfos) {
+                this.extendedInfos = extendedInfos;
+                return this;
+            }
+
+            /**
+             * If {@code true}, specifies {@code Content-Disposition: inline}, and if {@code false} uses
+             * {@code Content-Disposition: attachment}.
+             * <p>
+             * If {@code null}, a request parameter {@code inline} will be checked instead.
+             * <p>
+             * By default, {@code Content-Disposition: inline} will be used.
+             */
+            public Builder inline(Boolean inline) {
+                this.inline = inline;
+                return this;
+            }
+
+            /**
+             * The consumer sending the blob's bytes to a client for a given byte range.
+             * <p>
+             * The default is just to send to the response output stream, without buffering.
+             */
+            public Builder blobTransferer(Consumer<ByteRange> blobTransferer) {
+                this.blobTransferer = blobTransferer;
+                return this;
+            }
+
+            /**
+             * Builds a final {@link DownloadContext}.
+             */
+            public DownloadContext build() {
+                return new DownloadContext(request, response, doc, xpath, blob, filename, reason, extendedInfos, inline,
+                        blobTransferer);
+            }
+        }
+    }
+
+    /**
      * Stores the blobs for later download.
      *
      * @param the list of blobs to store
@@ -241,7 +453,9 @@ public interface DownloadService {
      * @param blob the blob, if already fetched
      * @param filename the filename to use
      * @param reason the download reason
+     * @deprecated since 11.1, use {@link #downloadBlob(DownloadContext)} instead
      */
+    @Deprecated
     void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason) throws IOException;
 
@@ -254,7 +468,9 @@ public interface DownloadService {
      * @param filename the filename to use
      * @param reason the download reason
      * @param extendedInfos an optional map of extended informations to log
+     * @deprecated since 11.1, use {@link #downloadBlob(DownloadContext)} instead
      */
+    @Deprecated
     void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException;
 
@@ -268,7 +484,9 @@ public interface DownloadService {
      * @param reason the download reason
      * @param extendedInfos an optional map of extended informations to log
      * @param inline if not null, force the inline flag for content-disposition
+     * @deprecated since 11.1, use {@link #downloadBlob(DownloadContext)} instead
      */
+    @Deprecated
     void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
             throws IOException;
@@ -285,10 +503,20 @@ public interface DownloadService {
      * @param inline if not null, force the inline flag for content-disposition
      * @param blobTransferer the transferer of the actual blob
      * @since 7.10
+     * @deprecated since 11.1, use {@link #downloadBlob(DownloadContext)} instead
      */
+    @Deprecated
     void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
             Consumer<ByteRange> blobTransferer) throws IOException;
+
+    /**
+     * Triggers a blob download.
+     *
+     * @param context the download context
+     * @since 11.1
+     */
+    void downloadBlob(DownloadContext context) throws IOException;
 
     /**
      * Copies the blob stream at the given byte range into the supplied {@link OutputStream}.
