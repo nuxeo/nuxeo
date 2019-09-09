@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.impl.blob.JSONBlob;
 import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -92,9 +93,12 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
             }
             transferBlob(blob, entityStream);
         } else {
-            DownloadService downloadService = Framework.getService(DownloadService.class);
             String reason = blob instanceof JSONBlob ? "webengine" : "download";
-            downloadService.downloadBlob(request, response, null, null, blob, blob.getFilename(), reason);
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .blob(blob)
+                                                     .reason(reason)
+                                                     .build();
+            Framework.getService(DownloadService.class).downloadBlob(context);
         }
     }
 

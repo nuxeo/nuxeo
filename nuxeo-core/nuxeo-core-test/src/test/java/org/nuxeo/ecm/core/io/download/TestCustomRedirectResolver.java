@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -88,7 +89,10 @@ public class TestCustomRedirectResolver {
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
         // send download request
-        downloadService.downloadBlob(request, response, null, null, blob, null, null);
+        DownloadContext context = DownloadContext.newBuilder(request, response) //
+                                                 .blob(blob)
+                                                 .build();
+        downloadService.downloadBlob(context);
         // Verify we are redirect to Nuxeo website
         verify(response).sendRedirect(Matchers.eq("http://www.nuxeo.org"));
         // Verify there is no output

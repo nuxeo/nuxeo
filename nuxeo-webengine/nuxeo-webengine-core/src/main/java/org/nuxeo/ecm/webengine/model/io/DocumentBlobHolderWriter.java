@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -97,10 +98,13 @@ public class DocumentBlobHolderWriter implements MessageBodyWriter<DocumentBlobH
             transferBlob(blob, entityStream);
             return;
         }
-        DocumentModel doc = blobHolder.getDocument();
-        String xpath = blobHolder.getXpath();
-        DownloadService downloadService = Framework.getService(DownloadService.class);
-        downloadService.downloadBlob(request, response, doc, xpath, blob, blob.getFilename(), "download");
+        DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                 .doc(blobHolder.getDocument())
+                                                 .xpath(blobHolder.getXpath())
+                                                 .blob(blob)
+                                                 .reason("download")
+                                                 .build();
+        Framework.getService(DownloadService.class).downloadBlob(context);
     }
 
     protected void commitAndReopenTransaction() {
