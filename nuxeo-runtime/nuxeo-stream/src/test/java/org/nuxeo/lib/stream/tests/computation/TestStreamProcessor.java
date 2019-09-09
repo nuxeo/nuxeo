@@ -691,6 +691,31 @@ public abstract class TestStreamProcessor {
 
     }
 
+    @Test
+    public void testRegisterWithoutExecution() throws Exception {
+        Topology topology = Topology.builder()
+                                    .addComputation(() -> new ComputationForward("C1", 1, 1),
+                                            Arrays.asList("i1:input", "o1:output"))
+                                    .build();
+        try (LogManager manager = getLogManager()) {
+            StreamManager streamManager = new LogStreamManager(manager);
+            int concurrency = 0;
+            Settings settings = new Settings(concurrency, 1);
+            // Run the processor with 0 concurrency
+            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
+            processor.start();
+            assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
+            streamManager.append("input", Record.of("foo", null));
+            // there is no consumer thread the processor is never started
+            assertTrue(processor.isTerminated());
+            assertTrue(processor.drainAndStop(Duration.ofSeconds(1)));
+            processor.shutdown();
+            LogLag lag = manager.getLag("input", "C1");
+            // the record has not been processed
+            assertEquals(lag.toString(), 1, lag.lag());
+        }
+    }
+
     // ---------------------------------
     // helpers
     protected int readOutputCounter(LogManager manager) throws InterruptedException {
