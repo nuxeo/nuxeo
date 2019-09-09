@@ -24,6 +24,7 @@ import static org.nuxeo.lib.stream.codec.NoCodec.NO_CODEC;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -231,6 +232,9 @@ public class LogStreamProcessor implements StreamProcessor {
 
     protected List<List<LogPartition>> getDefaultAssignments(ComputationMetadataMapping meta) {
         int threads = settings.getConcurrency(meta.name());
+        if (threads == 0) {
+            return Collections.emptyList();
+        }
         Map<String, Integer> streams = new HashMap<>();
         meta.inputStreams().forEach(streamName -> streams.put(streamName, settings.getPartitions(streamName)));
         return KafkaUtils.roundRobinAssignments(threads, streams);

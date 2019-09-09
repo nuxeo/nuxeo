@@ -82,6 +82,10 @@ public class ComputationPool {
 
     @SuppressWarnings("FutureReturnValueIgnored")
     public void start() {
+        if (threads == 0) {
+            log.info(metadata.name() + ": Empty pool");
+            return;
+        }
         log.info(metadata.name() + ": Starting pool");
         threadPool = newFixedThreadPool(threads, new NamedThreadFactory(metadata.name() + "Pool"));
         defaultAssignments.forEach(assignments -> {
@@ -95,7 +99,7 @@ public class ComputationPool {
     }
 
     public boolean isTerminated() {
-        return threadPool.isTerminated();
+        return threadPool == null ? true : threadPool.isTerminated();
     }
 
     public boolean waitForAssignments(Duration timeout) throws InterruptedException {
