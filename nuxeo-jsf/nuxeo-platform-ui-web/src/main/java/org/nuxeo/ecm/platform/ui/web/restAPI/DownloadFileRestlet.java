@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.Request;
@@ -88,11 +89,16 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
             }
 
             // trigger download
-            String reason = "download";
-            Map<String, Serializable> extendedInfos = null;
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.downloadBlob(request, response, dm, xpath, blob, filename, reason, extendedInfos, null,
-                    byteRange -> setEntityToBlobOutput(blob, byteRange, res));
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .doc(dm)
+                                                     .xpath(xpath)
+                                                     .blob(blob)
+                                                     .filename(filename)
+                                                     .reason("download")
+                                                     .blobTransferer(
+                                                             byteRange -> setEntityToBlobOutput(blob, byteRange, res))
+                                                     .build();
+            Framework.getService(DownloadService.class).downloadBlob(context);
         } catch (IOException | NuxeoException e) {
             handleError(res, e);
         }

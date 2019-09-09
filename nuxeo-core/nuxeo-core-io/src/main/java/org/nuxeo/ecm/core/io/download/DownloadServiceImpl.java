@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -348,7 +347,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                     resp.getWriter().write(result);
                     resp.getWriter().flush();
                 } else {
-                    downloadBlob(req, resp, doc, xpath, null, filename, "download");
+                    DownloadContext context = DownloadContext.newBuilder(req, resp)
+                                                             .doc(doc)
+                                                             .xpath(xpath)
+                                                             .filename(filename)
+                                                             .reason("download")
+                                                             .build();
+                    downloadBlob(context);
                 }
             }
         } catch (NuxeoException e) {
@@ -366,13 +371,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlobStatus(HttpServletRequest request, HttpServletResponse response, String key, String reason)
             throws IOException {
-        this.downloadBlob(request, response, key, reason, true);
+        downloadBlob(request, response, key, reason, true);
     }
 
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason)
             throws IOException {
-        this.downloadBlob(request, response, key, reason, false);
+        downloadBlob(request, response, key, reason, false);
     }
 
     protected void downloadBlob(HttpServletRequest request, HttpServletResponse response, String key, String reason,
@@ -393,45 +398,104 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (ts.getParameter(key, TRANSIENT_STORE_PARAM_ERROR) != null) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     (String) ts.getParameter(key, TRANSIENT_STORE_PARAM_ERROR));
+            return;
+        }
+        boolean isCompleted = ts.isCompleted(key);
+        if (!status && !isCompleted) {
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return;
+        }
+        Blob blob;
+        if (status) {
+            Serializable progress = ts.getParameter(key, TRANSIENT_STORE_PARAM_PROGRESS);
+            blob = new AsyncBlob(key, isCompleted, progress != null ? (int) progress : -1);
         } else {
-            boolean isCompleted = ts.isCompleted(key);
-            if (!status && !isCompleted) {
-                response.setStatus(HttpServletResponse.SC_ACCEPTED);
-                return;
-            }
-            Blob blob;
-            if (status) {
-                Serializable progress = ts.getParameter(key, TRANSIENT_STORE_PARAM_PROGRESS);
-                blob = new AsyncBlob(key, isCompleted, progress != null ? (int) progress : -1);
-            } else {
-                blob = blobs.get(0);
-            }
-            try {
-                downloadBlob(request, response, null, null, blob, blob.getFilename(), reason);
-            } finally {
-                if (!status) {
-                    ts.remove(key);
-                }
+            blob = blobs.get(0);
+        }
+        try {
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .blob(blob)
+                                                     .reason(reason)
+                                                     .build();
+            downloadBlob(context);
+        } finally {
+            if (!status) {
+                ts.remove(key);
             }
         }
     }
 
+    @Deprecated
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason) throws IOException {
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, Collections.emptyMap());
+        DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                 .doc(doc)
+                                                 .xpath(xpath)
+                                                 .blob(blob)
+                                                 .filename(filename)
+                                                 .reason(reason)
+                                                 .build();
+        downloadBlob(context);
     }
 
+    @Deprecated
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException {
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, null);
+        DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                 .doc(doc)
+                                                 .xpath(xpath)
+                                                 .blob(blob)
+                                                 .filename(filename)
+                                                 .reason(reason)
+                                                 .extendedInfos(extendedInfos)
+                                                 .build();
+        downloadBlob(context);
     }
 
+    @Deprecated
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
             throws IOException {
+        DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                 .doc(doc)
+                                                 .xpath(xpath)
+                                                 .blob(blob)
+                                                 .filename(filename)
+                                                 .reason(reason)
+                                                 .extendedInfos(extendedInfos)
+                                                 .inline(inline)
+                                                 .build();
+        downloadBlob(context);
+    }
+
+    @Deprecated
+    @Override
+    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
+            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
+            Consumer<ByteRange> blobTransferer) throws IOException {
+        DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                 .doc(doc)
+                                                 .xpath(xpath)
+                                                 .blob(blob)
+                                                 .filename(filename)
+                                                 .reason(reason)
+                                                 .extendedInfos(extendedInfos)
+                                                 .inline(inline)
+                                                 .blobTransferer(blobTransferer)
+                                                 .build();
+        downloadBlob(context);
+    }
+
+    @Override
+    public void downloadBlob(DownloadContext context) throws IOException {
+        HttpServletRequest request = context.getRequest();
+        HttpServletResponse response = context.getResponse();
+        DocumentModel doc = context.getDocumentModel();
+        String xpath = context.getXPath();
+        Blob blob = context.getBlob();
         if (blob == null) {
             if (doc == null) {
                 throw new NuxeoException("No doc specified");
@@ -442,26 +506,28 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 return;
             }
         }
-        final Blob fblob = blob;
-        downloadBlob(request, response, doc, xpath, blob, filename, reason, extendedInfos, inline,
-                byteRange -> transferBlobWithByteRange(fblob, byteRange, response));
-    }
-
-    @Override
-    public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
-            Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
-            Consumer<ByteRange> blobTransferer) throws IOException {
-        Objects.requireNonNull(blob);
-        // check reason and rendition from request attributes
+        String filename = context.getFilename();
+        if (filename == null) {
+            filename = blob.getFilename();
+        }
+        String reason = context.getReason();
         String requestReason = (String) request.getAttribute(REQUEST_ATTR_DOWNLOAD_REASON);
         if (requestReason != null) {
             reason = requestReason;
         }
+        Map<String, Serializable> extendedInfos = context.getExtendedInfos();
+        extendedInfos = extendedInfos == null ? new HashMap<>() : new HashMap<>(extendedInfos);
         String requestRendition = (String) request.getAttribute(REQUEST_ATTR_DOWNLOAD_RENDITION);
         if (requestRendition != null) {
-            extendedInfos = extendedInfos == null ? new HashMap<>() : new HashMap<>(extendedInfos);
             extendedInfos.put(EXTENDED_INFO_RENDITION, requestRendition);
         }
+        Boolean inline = context.getInline();
+        Consumer<ByteRange> blobTransferer = context.getBlobTransferer();
+        if (blobTransferer == null) {
+            Blob fblob = blob;
+            blobTransferer = byteRange -> transferBlobWithByteRange(fblob, byteRange, response);
+        }
+
         // check blob permissions
         if (!checkPermission(doc, xpath, blob, reason, extendedInfos)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Permission denied");
@@ -472,12 +538,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         URI uri = redirectResolver.getURI(blob, UsageHint.DOWNLOAD, request);
         if (uri != null) {
             try {
-                Map<String, Serializable> ei = new HashMap<>();
-                if (extendedInfos != null) {
-                    ei.putAll(extendedInfos);
-                }
-                ei.put("redirect", uri.toString());
-                logDownload(doc, xpath, filename, reason, ei);
+                extendedInfos.put("redirect", uri.toString());
+                logDownload(doc, xpath, filename, reason, extendedInfos);
                 response.sendRedirect(uri.toString());
             } catch (IOException ioe) {
                 DownloadHelper.handleClientDisconnect(ioe);

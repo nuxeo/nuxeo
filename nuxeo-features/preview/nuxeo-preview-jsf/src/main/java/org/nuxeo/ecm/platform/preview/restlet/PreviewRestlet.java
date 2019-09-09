@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.platform.preview.adapter.base.ConverterBasedHtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.NothingToPreviewException;
@@ -158,17 +159,23 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Pragma", "no-cache");
 
-        String reason = "preview";
         final Blob fblob = blob;
         if (xpath == null || "default".equals(xpath)) {
             xpath = DownloadService.BLOBHOLDER_0;
         }
-        Boolean inline = Boolean.TRUE;
         Map<String, Serializable> extendedInfos = Collections.singletonMap("subPath", subPath);
-        DownloadService downloadService = Framework.getService(DownloadService.class);
         try {
-            downloadService.downloadBlob(request, response, targetDocument, xpath, blob, blob.getFilename(), reason,
-                    extendedInfos, inline, byteRange -> setEntityToBlobOutput(fblob, byteRange, res));
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .doc(targetDocument)
+                                                     .xpath(xpath)
+                                                     .blob(blob)
+                                                     .reason("preview")
+                                                     .extendedInfos(extendedInfos)
+                                                     .inline(true)
+                                                     .blobTransferer(
+                                                             byteRange -> setEntityToBlobOutput(fblob, byteRange, res))
+                                                     .build();
+            Framework.getService(DownloadService.class).downloadBlob(context);
         } catch (IOException e) {
             handleError(res, e);
         }

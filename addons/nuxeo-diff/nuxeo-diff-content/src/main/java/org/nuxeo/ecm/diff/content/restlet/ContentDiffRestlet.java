@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
@@ -155,7 +156,6 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
 
         String reason = "contentDiff";
         final Blob fblob = blob;
-        Boolean inline = Boolean.TRUE;
         Map<String, Serializable> extendedInfos = new HashMap<>();
         extendedInfos.put("subPath", subPath);
         extendedInfos.put("leftDocId", leftDocId);
@@ -167,8 +167,17 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             return;
         }
 
-            downloadService.downloadBlob(request, response, leftDoc, xpath, blob, blob.getFilename(), reason,
-                    extendedInfos, inline, byteRange -> setEntityToBlobOutput(fblob, byteRange, res));
+            DownloadContext context = DownloadContext.newBuilder(request, response)
+                                                     .doc(leftDoc)
+                                                     .xpath(xpath)
+                                                     .blob(blob)
+                                                     .reason(reason)
+                                                     .extendedInfos(extendedInfos)
+                                                     .inline(true)
+                                                     .blobTransferer(
+                                                             byteRange -> setEntityToBlobOutput(fblob, byteRange, res))
+                                                     .build();
+            downloadService.downloadBlob(context);
         } catch (NuxeoException | IOException e) {
             handleError(res, e);
         }
