@@ -39,7 +39,6 @@ import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
@@ -1486,7 +1485,9 @@ public class PersistenceContext {
         checkFreeName(parentId, name, complexProp(hierFragment));
         // do the copy
         Long pos = getNextPos(parentId, false);
-        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null);
+        // no special children (comments, annotations...) kept on document copy
+        boolean excludeSpecialChildren = true;
+        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null, excludeSpecialChildren);
         Serializable newId = copyResult.copyId;
         // read new child in this session (updates children Selection)
         SimpleFragment copy = getHier(newId, false);
@@ -1543,11 +1544,13 @@ public class PersistenceContext {
          * Do the copy without non-complex children, with null parent.
          */
         Serializable id = node.getId();
-        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null);
+        // complex (special) children are snapshot when checking in
+        boolean excludeSpecialChildren = false;
+        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null, excludeSpecialChildren);
         Serializable newId = res.copyId;
         markInvalidated(res.invalidations);
         // add version as a new child of its parent
-        SimpleFragment verHier = getHier(newId, false);
+        SimpleFragment verHier = getHier(newId, excludeSpecialChildren);
         verHier.put(Model.MAIN_IS_VERSION_KEY, Boolean.TRUE);
         boolean isMajor = Long.valueOf(0).equals(verHier.get(Model.MAIN_MINOR_VERSION_KEY));
 
@@ -1596,8 +1599,9 @@ public class PersistenceContext {
         Serializable versionableId = node.getId();
         Serializable versionId = version.getId();
 
-        // clear complex properties
-        List<SimpleFragment> children = getChildren(versionableId, null, true);
+        // clear complex properties and exclude special children to avoid duplicates on restore
+        boolean excludeSpecialChildren = true;
+        List<SimpleFragment> children = getChildren(versionableId, null, excludeSpecialChildren);
         // copy to avoid concurrent modifications
         for (SimpleFragment child : children.toArray(new SimpleFragment[children.size()])) {
             removePropertyNode(child);
@@ -1620,7 +1624,9 @@ public class PersistenceContext {
         overwriteRow.putNew(Model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
         overwriteRow.putNew(Model.MAIN_BASE_VERSION_KEY, versionId);
         overwriteRow.putNew(Model.MAIN_IS_VERSION_KEY, null);
-        CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow);
+        // see excludeSpecialChildren declaration for more info
+        CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow,
+                excludeSpecialChildren);
         markInvalidated(res.invalidations);
     }
 

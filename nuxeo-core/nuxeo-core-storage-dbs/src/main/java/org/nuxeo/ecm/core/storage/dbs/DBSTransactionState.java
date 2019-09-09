@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
@@ -85,6 +86,7 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepository.DBSQueryOperator;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
@@ -296,6 +298,67 @@ public class DBSTransactionState {
         }
         // fetch from repository
         List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
+        return getDbsDocumentStates(docStates, states);
+    }
+
+    public List<DBSDocumentState> getRegularChildrenStates(String parentId) {
+        List<DBSDocumentState> docStates = new LinkedList<>();
+        Set<String> seen = new HashSet<>();
+        Set<String> specialChildrenTypeNames = getSpecialChildrenTypesNamesSet();
+        // check transient state
+        for (DBSDocumentState docState : transientStates.values()) {
+            if (!parentId.equals(docState.getParentId())) {
+                continue;
+            }
+            if (specialChildrenTypeNames.contains(docState.getPrimaryType())) {
+                continue;
+            }
+            docStates.add(docState);
+            seen.add(docState.getId());
+        }
+        // fetch from repository
+        Map<DBSQueryOperator, List<String>> filter = getSpecialChildrenFilter(DBSQueryOperator.NOT_IN, specialChildrenTypeNames);
+        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, KEY_PRIMARY_TYPE, filter, seen);
+        return getDbsDocumentStates(docStates, states);
+    }
+
+    public List<DBSDocumentState> getSpecialChildrenStates(String parentId) {
+        List<DBSDocumentState> docStates = new LinkedList<>();
+        Set<String> seen = new HashSet<>();
+        Set<String> specialChildrenTypeNames = getSpecialChildrenTypesNamesSet();
+        // check transient state
+        for (DBSDocumentState docState : transientStates.values()) {
+            if (!parentId.equals(docState.getParentId())) {
+                continue;
+            }
+            if (!specialChildrenTypeNames.contains(docState.getPrimaryType())) {
+                continue;
+            }
+            docStates.add(docState);
+            seen.add(docState.getId());
+        }
+        // fetch from repository
+        Map<DBSQueryOperator, List<String>> filter = getSpecialChildrenFilter(DBSQueryOperator.IN, specialChildrenTypeNames);
+        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, KEY_PRIMARY_TYPE, filter, seen);
+        return getDbsDocumentStates(docStates, states);
+    }
+
+    protected Map<DBSQueryOperator, List<String>> getSpecialChildrenFilter(DBSQueryOperator operator,
+            Set<String> excludedFromCopyDocumentTypes) {
+        List<String> excludedFromCopyDocumentTypesAsList = //
+                excludedFromCopyDocumentTypes.stream().collect(Collectors.toList());
+        return Collections.singletonMap(operator, excludedFromCopyDocumentTypesAsList);
+    }
+
+    protected Set<String> getSpecialChildrenTypesNamesSet() {
+        return Framework.getService(SchemaManager.class)
+                        .getSpecialDocumentTypes()
+                        .stream()
+                        .map(s -> s.getName())
+                        .collect(Collectors.toSet());
+    }
+
+    protected List<DBSDocumentState> getDbsDocumentStates(List<DBSDocumentState> docStates, List<State> states) {
         for (State state : states) {
             String id = (String) state.get(KEY_ID);
             if (transientStates.containsKey(id)) {
@@ -323,6 +386,55 @@ public class DBSTransactionState {
         }
         // fetch from repository
         List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, seen);
+        return internalGetChildren(parentId, children, seen, states);
+    }
+
+    public List<String> getRegularChildrenIds(String parentId) {
+        List<String> children = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        Set<String> specialChildrenTypesNamesSet = getSpecialChildrenTypesNamesSet();
+        // check transient state
+        for (DBSDocumentState docState : transientStates.values()) {
+            String id = docState.getId();
+            if (!parentId.equals(docState.getParentId())) {
+                continue;
+            }
+            if (specialChildrenTypesNamesSet.contains(docState.getPrimaryType())) {
+                continue;
+            }
+            seen.add(id);
+            children.add(id);
+        }
+        // fetch from repository
+        Map<DBSQueryOperator, List<String>> filter = getSpecialChildrenFilter(DBSQueryOperator.NOT_IN, specialChildrenTypesNamesSet);
+        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, KEY_PRIMARY_TYPE, filter, seen);
+        return internalGetChildren(parentId, children, seen, states);
+    }
+
+    public List<String> getSpecialChildrenIds(String parentId) {
+        List<String> children = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        Set<String> specialChildrenTypesNamesSet = getSpecialChildrenTypesNamesSet();
+        // check transient state
+        for (DBSDocumentState docState : transientStates.values()) {
+            String id = docState.getId();
+            if (!parentId.equals(docState.getParentId())) {
+                continue;
+            }
+            if (!specialChildrenTypesNamesSet.contains(docState.getPrimaryType())) {
+                continue;
+            }
+            seen.add(id);
+            children.add(id);
+        }
+        // fetch from repository
+        Map<DBSQueryOperator, List<String>> filter = getSpecialChildrenFilter(DBSQueryOperator.IN, specialChildrenTypesNamesSet);
+        List<State> states = repository.queryKeyValue(KEY_PARENT_ID, parentId, KEY_PRIMARY_TYPE, filter, seen);
+        return internalGetChildren(parentId, children, seen, states);
+    }
+
+    protected List<String> internalGetChildren(String parentId, List<String> children, Set<String> seen,
+            List<State> states) {
         for (State state : states) {
             String id = (String) state.get(KEY_ID);
             if (transientStates.containsKey(id)) {

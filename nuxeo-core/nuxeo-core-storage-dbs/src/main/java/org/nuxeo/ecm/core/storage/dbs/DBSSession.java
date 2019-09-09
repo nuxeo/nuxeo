@@ -364,10 +364,26 @@ public class DBSSession implements Session<QueryFilter> {
     }
 
     protected List<String> getChildrenIds(String parentId) {
+        // We want all children, the filter flag is null
+        Boolean childrenFilter = null;
+        return internalGetChildrenIds(parentId, childrenFilter);
+    }
+
+    protected List<String> getChildrenIds(String parentId, boolean excludeSpecialChildren) {
+        return internalGetChildrenIds(parentId, excludeSpecialChildren);
+    }
+
+    private List<String> internalGetChildrenIds(String parentId, Boolean excludeSpecialChildren) {
         if (isOrderable(parentId)) {
             // TODO get only id and pos, not full state
             // TODO state not for update
-            List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
+            List<DBSDocumentState> docStates;
+            if (excludeSpecialChildren == null) {
+                docStates = transaction.getChildrenStates(parentId);
+            } else {
+                docStates = excludeSpecialChildren ? transaction.getRegularChildrenStates(parentId)
+                        : transaction.getSpecialChildrenStates(parentId);
+            }
             docStates.sort(POS_COMPARATOR);
             List<String> children = new ArrayList<>(docStates.size());
             for (DBSDocumentState docState : docStates) {
@@ -375,7 +391,13 @@ public class DBSSession implements Session<QueryFilter> {
             }
             return children;
         } else {
-            return transaction.getChildrenIds(parentId);
+            if (excludeSpecialChildren == null) {
+                return transaction.getChildrenIds(parentId);
+            } else {
+            return excludeSpecialChildren
+                    ? transaction.getRegularChildrenIds(parentId)
+                    : transaction.getSpecialChildrenIds(parentId);
+            }
         }
     }
 
@@ -570,8 +592,10 @@ public class DBSSession implements Session<QueryFilter> {
             }
         }
 
-        // copy into a version
-        DBSDocumentState verState = transaction.copy(id);
+        // copy into a version and create a snapshot of special children
+        boolean excludeSpecialChildren = false;
+        String versionId = copyRecurse(id, null, new LinkedList<>(), null, excludeSpecialChildren);
+        DBSDocumentState verState = transaction.getStateForUpdate(versionId);
         String verId = verState.getId();
         verState.put(KEY_PARENT_ID, null);
         verState.put(KEY_ANCESTOR_IDS, null);
@@ -705,7 +729,7 @@ public class DBSSession implements Session<QueryFilter> {
         }
         // do the copy
         Long pos = getNextPos(parentId);
-        String copyId = copyRecurse(sourceId, parentId, ancestorIds, name);
+        String copyId = copyRecurse(sourceId, parentId, ancestorIds, name, true);
         DBSDocumentState copyState = transaction.getStateForUpdate(copyId);
         // version copy fixup
         if (source.isVersion()) {
@@ -720,11 +744,12 @@ public class DBSSession implements Session<QueryFilter> {
         return getDocument(copyState);
     }
 
-    protected String copyRecurse(String sourceId, String parentId, LinkedList<String> ancestorIds, String name) {
+    protected String copyRecurse(String sourceId, String parentId, LinkedList<String> ancestorIds, String name, boolean excludeSpecialChildren) {
         String copyId = copy(sourceId, parentId, ancestorIds, name);
         ancestorIds.addLast(copyId);
-        for (String childId : getChildrenIds(sourceId)) {
-            copyRecurse(childId, copyId, ancestorIds, null);
+        for (String childId : getChildrenIds(sourceId, excludeSpecialChildren)) {
+            // don't exclude regular children when recursing
+            copyRecurse(childId, copyId, ancestorIds, null, true);
         }
         ancestorIds.removeLast();
         return copyId;

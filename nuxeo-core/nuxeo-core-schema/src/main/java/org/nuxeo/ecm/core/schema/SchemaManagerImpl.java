@@ -37,7 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -118,6 +120,8 @@ public class SchemaManagerImpl implements SchemaManager {
 
     /** Effective document types. */
     protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<>();
+
+    protected Map<String, DocumentTypeImpl> specialDocumentTypes = new HashMap<>();
 
     protected Map<String, Set<String>> documentTypesExtending = new HashMap<>();
 
@@ -575,7 +579,14 @@ public class SchemaManagerImpl implements SchemaManager {
                 documentTypesForFacet.computeIfAbsent(facet, k -> new HashSet<>()).add(docType.getName());
             }
         }
-
+        
+        // special document types (excluded from copy)
+        specialDocumentTypes.clear();
+        Set<String> specials = allDocumentTypes.stream()
+                .filter(d -> Boolean.TRUE.equals(d.excludeFromCopy))
+                .map(d -> d.name)
+                .collect(Collectors.toSet());
+        specialDocumentTypes = documentTypes.values().stream().filter(d -> specials.contains(d.getName())).collect(Collectors.toMap(DocumentType::getName, d -> d));
     }
 
     protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(DocumentTypeDescriptor src,
@@ -999,5 +1010,11 @@ public class SchemaManagerImpl implements SchemaManager {
         // remove prefix if exist, then
         // remove index from path - we're only interested in sth/index/sth because we can't add info on sth/* property
         return path.substring(path.lastIndexOf(':') + 1).replaceAll("/-?\\d+/", "/*/");
+    }
+
+    @Override
+    public List<DocumentType> getSpecialDocumentTypes() {
+        checkDirty();
+        return specialDocumentTypes.values().stream().collect(Collectors.toList());
     }
 }

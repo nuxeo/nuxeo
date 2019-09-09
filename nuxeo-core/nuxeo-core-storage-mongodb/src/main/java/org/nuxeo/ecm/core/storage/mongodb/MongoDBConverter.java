@@ -32,9 +32,11 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -43,6 +45,7 @@ import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepository.DBSQueryOperator;
 
 /**
  * Converts between MongoDB types (bson) and DBS types (diff, state, list, serializable).
@@ -53,6 +56,16 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
  * @since 9.1
  */
 public class MongoDBConverter {
+
+    /**
+     * @since 11.1
+     */
+    public static final String IN = "$in";
+
+    /**
+     * @since 11.1
+     */
+    public static final String NIN = "$nin";
 
     /** The key to use in memory to map the database native "_id". */
     protected final String idKey;
@@ -102,9 +115,18 @@ public class MongoDBConverter {
             return listToBson(values);
         } else if (value instanceof Object[]) {
             return listToBson(Arrays.asList((Object[]) value));
-        } else {
-            return serializableToBson(value);
+        } else if (value instanceof Map) {
+            // value is a single entry map containing an operator as the key
+            if(((Map)value).size() == 1) {
+                Map valueMap = (Map<DBSQueryOperator, String>) value;
+                if (valueMap.containsKey(DBSQueryOperator.IN)) {
+                    value = Collections.singletonMap(IN, valueMap.get(DBSQueryOperator.IN));
+                } else if (valueMap.containsKey(DBSQueryOperator.NOT_IN)) {
+                    value = Collections.singletonMap(NIN, valueMap.get(DBSQueryOperator.NOT_IN));
+                }
+            }
         }
+        return serializableToBson(value);
     }
 
     public Document stateToBson(State state) {

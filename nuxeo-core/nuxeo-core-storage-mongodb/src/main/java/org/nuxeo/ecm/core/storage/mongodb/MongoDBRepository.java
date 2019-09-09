@@ -424,15 +424,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        Document filter = new Document(converter.keyToBson(key), value);
+        Document filter = new Document(converter.keyToBson(key), converter.valueToBson(value));
         addIgnoredIds(filter, ignored);
         return findAll(filter);
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        Document filter = new Document(converter.keyToBson(key1), value1);
-        filter.put(converter.keyToBson(key2), value2);
+        Document filter = new Document(converter.keyToBson(key1), converter.valueToBson(value1));
+        filter.put(converter.keyToBson(key2), converter.valueToBson(value2));
         addIgnoredIds(filter, ignored);
         return findAll(filter);
     }

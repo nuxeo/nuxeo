@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,14 @@ public class DocumentTypeDescriptor {
 
     @XNode("@append")
     public boolean append = false;
+    
+    /**
+     * @since 11.1
+     * 
+     * Allows to exclude the doctype from copy operations.
+     */
+    @XNode("@excludeFromCopy")
+    public Boolean excludeFromCopy;
 
     @XNodeList(value = "subtypes/type", type = String[].class, componentType = String.class)
     public String[] subtypes = new String[0];
@@ -96,6 +104,7 @@ public class DocumentTypeDescriptor {
         clone.facets = facets;
         clone.prefetch = prefetch;
         clone.append = append;
+        clone.excludeFromCopy = excludeFromCopy;
         clone.subtypes = subtypes;
         clone.forbiddenSubtypes = forbiddenSubtypes;
         return clone;
@@ -128,6 +137,8 @@ public class DocumentTypeDescriptor {
                 prefetch = prefetch + " " + other.prefetch;
             }
         }
+        
+        excludeFromCopy = excludeFromCopy == null ? other.excludeFromCopy : excludeFromCopy;
 
         // update supertype
         if (StringUtils.isEmpty(superTypeName) && StringUtils.isNotEmpty(other.superTypeName)) {

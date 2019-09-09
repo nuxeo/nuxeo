@@ -357,5 +357,4 @@ public interface CommentManager {
     default String getLocationOfCommentCreation(CoreSession session, DocumentModel documentModel) {
         throw new UnsupportedOperationException();
     }
-
 }
