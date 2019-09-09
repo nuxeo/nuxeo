@@ -133,11 +133,6 @@ public class TestUserRegistration extends AbstractUserRegistration {
         user1.setPropertyValue(userManager.getUserIdField(), userInfo.getPropertyValue("userinfo:login") + "2");
         user1.setPropertyValue(userManager.getUserEmailField(), userInfo.getPropertyValue("userinfo:email"));
         userManager.createUser(user1);
-//        Map<String, Serializable> filter = new HashMap<>(1);
-//        filter.put(UserConfig.EMAIL_COLUMN, userInfo.getPropertyValue("userinfo:email"));
-//        DocumentModelList users = Framework.getService(UserManager.class).searchUsers(filter, null);
-//        assertFalse(users.isEmpty());
-//        System.out.println("### " + users.get(0).getPropertyValue(userManager.getUserEmailField()));
         // Invite user from user info
         try {
             // Must throw a UserAlreadyExistsException
@@ -145,9 +140,8 @@ public class TestUserRegistration extends AbstractUserRegistration {
                     UserInvitationService.ValidationMethod.NONE, true);
             fail("submitRegistrationRequest() should have thrown an exception as the email address is already used.");
         } catch (UserAlreadyExistsException e) {
-            e.printStackTrace();
-            DocumentModelList regDocs = session.query("SELECT * FROM Document WHERE ecm:primaryType='TestRegistration'" 
-                    + " AND userinfo:login='" + userInfo.getPropertyValue("userinfo:login") + "'"
+            DocumentModelList regDocs = session.query("SELECT * FROM TestRegistration WHERE "
+                    + "userinfo:login='" + userInfo.getPropertyValue("userinfo:login") + "'"
                     );
             assertTrue("A 'TestRegistration' document should not have been created as the email address is already used. ("
                     + (!regDocs.isEmpty() ? regDocs.get(0).getProperties("userinfo") + ")" : ""),
