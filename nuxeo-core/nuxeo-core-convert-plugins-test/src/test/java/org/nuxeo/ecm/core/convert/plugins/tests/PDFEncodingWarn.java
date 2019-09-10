@@ -18,11 +18,15 @@
  */
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Test;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.PDF2TextConverter;
 
@@ -32,12 +36,13 @@ import org.nuxeo.ecm.core.convert.plugins.text.extractors.PDF2TextConverter;
 public class PDFEncodingWarn {
 
     @Test
-    public void extract() throws IOException {
+    public void extract() throws IOException, URISyntaxException {
         URL url = getClass().getResource("/test-docs/nutcracker.pdf");
-        try (PDDocument doc = PDDocument.load(url)) {
+        File file = new File(url.toURI());
+        try (PDDocument doc = PDDocument.load(file)) {
             PDFTextStripper stripper = new PDF2TextConverter.PatchedPDFTextStripper();
-            stripper.getText(doc);
-            stripper.getText(doc);
+            String extractedText = stripper.getText(doc);
+            assertTrue(extractedText.contains("The Nutcracker and the Mouse King"));
         }
     }
 

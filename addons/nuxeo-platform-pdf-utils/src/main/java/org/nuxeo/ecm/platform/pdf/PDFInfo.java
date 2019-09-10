@@ -31,15 +31,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.PageLayout;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -89,7 +89,7 @@ public class PDFInfo {
 
     private String keywords = "";
 
-    private String pageLayout = "";
+    private PageLayout pageLayout;
 
     private String pdfVersion = "";
 
@@ -194,47 +194,35 @@ public class PDFInfo {
         fileName = pdfBlob.getFilename();
         File pdfFile = pdfBlob.getFile();
         fileSize = (pdfFile == null) ? -1 : pdfFile.length();
-        try (PDDocument pdfDoc = PDDocument.load(pdfBlob.getStream())) {
-            isEncrypted = pdfDoc.isEncrypted();
-            if (isEncrypted) {
-                pdfDoc.openProtection(new StandardDecryptionMaterial(password));
-            }
+        try (PDDocument pdfDoc = PDDocument.load(pdfBlob.getStream(), password)) {
             numberOfPages = pdfDoc.getNumberOfPages();
             PDDocumentCatalog docCatalog = pdfDoc.getDocumentCatalog();
-            pageLayout = checkNotNull(docCatalog.getPageLayout());
+            pageLayout = docCatalog.getPageLayout();
             pdfVersion = String.valueOf(pdfDoc.getDocument().getVersion());
             PDDocumentInformation docInfo = pdfDoc.getDocumentInformation();
             author = checkNotNull(docInfo.getAuthor());
             contentCreator = checkNotNull(docInfo.getCreator());
             keywords = checkNotNull(docInfo.getKeywords());
-            try {
-                creationDate = docInfo.getCreationDate();
-            } catch (IOException e) {
-                creationDate = null;
-            }
-            try {
-                modificationDate = docInfo.getModificationDate();
-            } catch (IOException e) {
-                modificationDate = null;
-            }
+            creationDate = docInfo.getCreationDate();
+            modificationDate = docInfo.getModificationDate();
             producer = checkNotNull(docInfo.getProducer());
             subject = checkNotNull(docInfo.getSubject());
             title = checkNotNull(docInfo.getTitle());
             permissions = pdfDoc.getCurrentAccessPermission();
             // Getting dimension is a bit tricky
             mediaBoxWidthInPoints = mediaBoxHeightInPoints = cropBoxWidthInPoints = cropBoxHeightInPoints = -1;
-            List<?> allPages = docCatalog.getAllPages();
+            PDPageTree allPages = docCatalog.getPages();
             boolean gotMediaBox = false, gotCropBox = false;
             for (Object pageObject : allPages) {
                 PDPage page = (PDPage) pageObject;
                 if (page != null) {
-                    PDRectangle r = page.findMediaBox();
+                    PDRectangle r = page.getMediaBox();
                     if (r != null) {
                         mediaBoxWidthInPoints = r.getWidth();
                         mediaBoxHeightInPoints = r.getHeight();
                         gotMediaBox = true;
                     }
-                    r = page.findCropBox();
+                    r = page.getCropBox();
                     if (r != null) {
                         cropBoxWidthInPoints = r.getWidth();
                         cropBoxHeightInPoints = r.getHeight();
@@ -263,7 +251,7 @@ public class PDFInfo {
                 }
             }
             alreadyParsed = true;
-        } catch (IOException | BadSecurityHandlerException | CryptographyException e) {
+        } catch (IOException e) {
             throw new NuxeoException(e);
         }
     }
@@ -302,7 +290,7 @@ public class PDFInfo {
                     String.format(Locale.ENGLISH, "%.1f x %.1f points", mediaBoxWidthInPoints, mediaBoxHeightInPoints));
             cachedMap.put("Page width", String.valueOf(mediaBoxWidthInPoints));
             cachedMap.put("Page height", String.valueOf(mediaBoxHeightInPoints));
-            cachedMap.put("Page layout", pageLayout);
+            cachedMap.put("Page layout", pageLayout.stringValue());
             cachedMap.put("Title", title);
             cachedMap.put("Author", author);
             cachedMap.put("Subject", subject);
@@ -425,7 +413,7 @@ public class PDFInfo {
         return keywords;
     }
 
-    public String getPageLayout() {
+    public PageLayout getPageLayout() {
         return pageLayout;
     }
 

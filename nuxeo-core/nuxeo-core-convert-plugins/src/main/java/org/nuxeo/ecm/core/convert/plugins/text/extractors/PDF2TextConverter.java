@@ -16,6 +16,7 @@
  * Contributors:
  *     Julien Anguenot
  *     Florent Guillaume
+ *     Thierry Martins
  */
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
@@ -25,21 +26,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.util.PDFOperator;
-import org.apache.pdfbox.util.PDFStreamEngine;
-import org.apache.pdfbox.util.PDFTextStripper;
-import org.apache.pdfbox.util.operator.OperatorProcessor;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -59,54 +52,6 @@ public class PDF2TextConverter implements Converter {
             setLineSeparator("\n");
             setParagraphEnd("\n\n");
             setArticleEnd("\n\n");
-        }
-
-        protected Object unrestrictedAccess(String name) {
-            try {
-                Field f = PDFStreamEngine.class.getDeclaredField(name);
-                f.setAccessible(true);
-                return f.get(this);
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException("Cannot get access to PDFStreamEngine fields", e);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        protected Set<String> unsupportedOperators() {
-            return (Set<String>) unrestrictedAccess("unsupportedOperators");
-        }
-
-        @SuppressWarnings("unchecked")
-        protected Map<String, OperatorProcessor> operators() {
-            return (Map<String, OperatorProcessor>) unrestrictedAccess("operators");
-        }
-
-        final static Set<StackTraceElement> loggedStacks = new HashSet<>();
-
-        @Override
-        protected void processOperator(PDFOperator operator, List<COSBase> arguments) throws IOException {
-            try {
-                String operation = operator.getOperation();
-                OperatorProcessor processor = operators().get(operation);
-                if (processor != null) {
-                    processor.setContext(this);
-                    processor.process(operator, arguments);
-                } else {
-                    if (!unsupportedOperators().contains(operation)) {
-                        log.info("unsupported/disabled operation: " + operation);
-                        unsupportedOperators().add(operation);
-                    }
-                }
-            } catch (IOException e) {
-                StackTraceElement root = e.getStackTrace()[0];
-                synchronized (loggedStacks) {
-                    if (loggedStacks.contains(root)) {
-                        return;
-                    }
-                    loggedStacks.add(root);
-                }
-                log.warn("Caught error in pdfbox during extraction (stack logged only once)", e);
-            }
         }
 
     }

@@ -23,12 +23,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -66,14 +62,9 @@ public class PDFUtils {
     public static PDDocument load(Blob inBlob, String inPwd) throws NuxeoException {
         PDDocument pdfDoc;
         try {
-            pdfDoc = PDDocument.load(inBlob.getStream());
-            if (pdfDoc.isEncrypted()) {
-                pdfDoc.openProtection(new StandardDecryptionMaterial(inPwd));
-            }
+            pdfDoc = PDDocument.load(inBlob.getStream(), inPwd);
         } catch (IOException e) {
             throw new NuxeoException("Failed to load the PDF", e);
-        } catch (BadSecurityHandlerException | CryptographyException e) {
-            throw new NuxeoException("Failed to decrypt the PDF", e);
         }
         return pdfDoc;
     }
@@ -86,14 +77,12 @@ public class PDFUtils {
      * @param inPdfDoc Input PDF document.
      * @return FileBlob
      * @throws IOException
-     * @throws COSVisitorException
      */
-    public static FileBlob saveInTempFile(PDDocument inPdfDoc) throws IOException, COSVisitorException {
+    public static FileBlob saveInTempFile(PDDocument inPdfDoc) throws IOException {
         return saveInTempFile(inPdfDoc, null);
     }
 
-    public static FileBlob saveInTempFile(PDDocument inPdfDoc, String inFileName) throws IOException,
-        COSVisitorException {
+    public static FileBlob saveInTempFile(PDDocument inPdfDoc, String inFileName) throws IOException {
         Blob result = Blobs.createBlobWithExtension(".pdf");
         File resultFile = result.getFile();
         inPdfDoc.save(result.getFile());

@@ -21,9 +21,8 @@ package org.nuxeo.ecm.platform.pdf;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFMergerUtility;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -114,10 +113,9 @@ public class PDFMerge {
      *
      * @param inFileName Name of the merged result.
      * @return The Blob embedding the PDF resulting form the merge.
-     * @throws COSVisitorException
      * @throws IOException
      */
-    public Blob merge(String inFileName) throws COSVisitorException, IOException {
+    public Blob merge(String inFileName) throws IOException {
         return merge(inFileName, null, null, null);
     }
 
@@ -132,10 +130,8 @@ public class PDFMerge {
      * @param inAuthor Author of the resulting PDF.
      * @return The Blob embedding the PDF resulting from the merge.
      * @throws IOException
-     * @throws COSVisitorException
      */
-    public Blob merge(String inFileName, String inTitle, String inSubject, String inAuthor) throws IOException,
-        COSVisitorException {
+    public Blob merge(String inFileName, String inTitle, String inSubject, String inAuthor) throws IOException {
         Blob finalBlob;
         switch (blobs.size()) {
         case 0:

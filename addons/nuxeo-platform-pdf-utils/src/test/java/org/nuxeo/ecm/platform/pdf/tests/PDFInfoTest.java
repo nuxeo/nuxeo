@@ -32,6 +32,8 @@ import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.pdfbox.pdmodel.PageLayout;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,7 +115,7 @@ public class PDFInfoTest {
         assertEquals(67122, info.getFileSize());
         assertEquals("1.3", info.getPdfVersion());
         assertEquals(13, info.getNumberOfPages());
-        assertEquals("SinglePage", info.getPageLayout());
+        assertEquals(PageLayout.SINGLE_PAGE, info.getPageLayout());
         assertEquals("Untitled 3", info.getTitle());
         assertEquals("", info.getAuthor());
         assertEquals("", info.getSubject());
@@ -184,10 +186,10 @@ public class PDFInfoTest {
         PDFInfo info = new PDFInfo(fb, TestUtils.PDF_ENCRYPTED_PASSWORD);
         assertNotNull(info);
         info.run();
-        assertTrue(info.isEncrypted());
+        assertFalse(info.isEncrypted()); // loading with password automatically decrypt the PDF
         assertEquals("1.4", info.getPdfVersion());
         assertEquals(67218, info.getFileSize());
-        assertEquals("SinglePage", info.getPageLayout());
+        assertEquals(PageLayout.SINGLE_PAGE, info.getPageLayout());
         assertEquals("TextEdit", info.getContentCreator());
         assertEquals("Mac OS X 10.10 Quartz PDFContext", info.getProducer());
     }
@@ -220,7 +222,7 @@ public class PDFInfoTest {
         PDFInfo info = new PDFInfo(fb, TestUtils.PDF_PROTECTED_OWNER_PASSWORD);
         assertNotNull(info);
         info.run();
-        assertTrue(info.isEncrypted());
+        assertFalse(info.isEncrypted()); // loading with password automatically decrypt the PDF
         assertTrue(info.getPermissions().canPrint());
         assertTrue(info.getPermissions().canModify());
         assertTrue(info.getPermissions().canExtractContent());
@@ -240,7 +242,7 @@ public class PDFInfoTest {
         info.run();
         HashMap<String, String> values = info.toHashMap();
         assertNotNull(values);
-        assertTrue(info.isEncrypted());
+        assertFalse(info.isEncrypted());  // loading with password automatically decrypt the PDF
         assertTrue(info.getPermissions().canPrint());
         assertTrue(info.getPermissions().canExtractContent());
         assertTrue(info.getPermissions().canExtractForAccessibility());

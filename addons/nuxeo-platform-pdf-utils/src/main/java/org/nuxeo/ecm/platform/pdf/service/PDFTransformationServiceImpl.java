@@ -20,37 +20,33 @@
 package org.nuxeo.ecm.platform.pdf.service;
 
 
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.Overlay;
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.graphics.PDExtendedGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.pdf.PDFUtils;
 import org.nuxeo.ecm.platform.pdf.service.watermark.WatermarkProperties;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @since 8.10
@@ -78,22 +74,19 @@ public class PDFTransformationServiceImpl extends DefaultComponent
 
         try (PDDocument pdfDoc = PDDocument.load(input.getStream())) {
 
-            PDFont font = PDType1Font.getStandardFont(properties.getFontFamily());
+            // TODO: get font from properties
+            // PDFont font = PDType1Font.getStandardFont(properties.getFontFamily());
+            PDFont font = PDType1Font.HELVETICA;
             float watermarkWidth = (float) (font.getStringWidth(text) * properties.getFontSize()
                                 / 1000f);
             int[] rgb = PDFUtils.hex255ToRGB(properties.getHex255Color());
 
-            for (PDPage page : (List<PDPage>)pdfDoc.getDocumentCatalog().getAllPages()) {
-                PDRectangle pageSize = page.findMediaBox();
-                PDResources resources = page.findResources();
+            for (PDPage page : pdfDoc.getDocumentCatalog().getPages()) {
+                PDRectangle pageSize = page.getMediaBox();
+                PDResources resources = page.getResources();
 
-                // Get the defined graphic states.
-                Map<String, PDExtendedGraphicsState> graphicsStates = resources.getGraphicsStates();
-                if (graphicsStates == null) {
-                    graphicsStates = new HashMap<>();
-                }
-                graphicsStates.put("TransparentState", extendedGraphicsState);
-                resources.setGraphicsStates(graphicsStates);
+                // Set the transparency state.
+                resources.put(COSName.getPDFName("TransparentState"), extendedGraphicsState);
 
                 try (PDPageContentStream contentStream =
                              new PDPageContentStream(pdfDoc, page, true, true, true)) {
@@ -114,7 +107,7 @@ public class PDFTransformationServiceImpl extends DefaultComponent
             }
             return saveInTempFile(pdfDoc);
 
-        } catch (IOException | COSVisitorException e) {
+        } catch (IOException e) {
             throw new NuxeoException(e);
         }
     }
@@ -129,21 +122,15 @@ public class PDFTransformationServiceImpl extends DefaultComponent
         extendedGraphicsState.setNonStrokingAlphaConstant((float) properties.getAlphaColor());
 
         try (PDDocument pdfDoc = PDDocument.load(input.getStream())){
-            BufferedImage image = ImageIO.read(watermark.getStream());
-            PDXObjectImage ximage = new PDPixelMap(pdfDoc, image);
+//            BufferedImage image = ImageIO.read(watermark.getStream());
+//            PDImageXObject ximage = new PDPixelMap(pdfDoc, image);
+            PDImageXObject ximage = PDImageXObject.createFromFileByContent(watermark.getFile(), pdfDoc);
 
-            for (PDPage page : (List<PDPage>)pdfDoc.getDocumentCatalog().getAllPages()) {
-                PDRectangle pageSize = page.findMediaBox();
-                PDResources resources = page.findResources();
+            for (PDPage page : pdfDoc.getDocumentCatalog().getPages()) {
+                PDRectangle pageSize = page.getMediaBox();
+                PDResources resources = page.getResources();
 
-                // Get the defined graphic states.
-                // Get the defined graphic states.
-                Map<String, PDExtendedGraphicsState> graphicsStates = resources.getGraphicsStates();
-                if (graphicsStates == null) {
-                    graphicsStates = new HashMap<>();
-                }
-                graphicsStates.put("TransparentState", extendedGraphicsState);
-                resources.setGraphicsStates(graphicsStates);
+                resources.put(COSName.TRANSPARENCY, extendedGraphicsState);
 
                 try (PDPageContentStream contentStream = new PDPageContentStream(pdfDoc, page, true, true)) {
                     contentStream.appendRawCommands("/TransparentState gs\n");
@@ -165,20 +152,30 @@ public class PDFTransformationServiceImpl extends DefaultComponent
                 }
             }
             return saveInTempFile(pdfDoc);
-        } catch (COSVisitorException | IOException e) {
+        } catch (IOException e) {
             throw new NuxeoException(e);
         }
     }
 
     @Override
     public Blob overlayPDF(Blob input, Blob overlayBlob) {
+        Overlay overlay = new Overlay();
         try (PDDocument pdfDoc = PDDocument.load(input.getStream());
              PDDocument pdfOverlayDoc = PDDocument.load(overlayBlob.getStream())) {
-            Overlay overlay = new Overlay();
-            overlay.overlay(pdfOverlayDoc, pdfDoc);
-            return saveInTempFile(pdfDoc);
-        } catch (IOException | COSVisitorException e) {
+            overlay.setInputPDF(pdfDoc);
+            overlay.setAllPagesOverlayPDF(pdfOverlayDoc);
+            Map<Integer, String> overlayGuide = new HashMap<Integer, String>();
+            overlay.overlay(overlayGuide);
+            Blob blob = saveInTempFile(pdfDoc);
+            return blob;
+        } catch (IOException e) {
             throw new NuxeoException(e);
+        } finally {
+            try {
+                overlay.close();
+            } catch (IOException ioe) {
+                log.error("Error when closing overlay", ioe);
+            }
         }
     }
 
@@ -231,10 +228,10 @@ public class PDFTransformationServiceImpl extends DefaultComponent
         return new Point2D.Double(xTranslation, yTranslation);
     }
 
-    protected Blob saveInTempFile(PDDocument PdfDoc) throws IOException, COSVisitorException {
+    protected Blob saveInTempFile(PDDocument pdfDoc) throws IOException {
         Blob blob = Blobs.createBlobWithExtension(".pdf"); // creates a tracked temporary file
         blob.setMimeType(MIME_TYPE);
-        PdfDoc.save(blob.getFile());
+        pdfDoc.save(blob.getFile());
         return blob;
     }
 
