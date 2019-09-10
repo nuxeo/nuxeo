@@ -17,7 +17,7 @@
  *     jcarsique
  */
 
-def nodelabel = getBinding().hasVariable("NODELABEL")?NODELABEL:'IT1010&&STATIC'
+def nodelabel = getBinding().hasVariable("NODELABEL")?NODELABEL:'SLAVE1010&&STATIC'
 def zipfilter = getBinding().hasVariable("ZIPFILTER")?ZIPFILTER:'nuxeo-server-tomcat-*.zip'
 
 currentBuild.setDescription("Branch: $BRANCH -> $PARENT_BRANCH, DB: $DBPROFILE, VERSION: $DBVERSION")
