@@ -13,7 +13,10 @@ file will have your Google identifiers.
 
 - `nuxeo.gcp.project`: your GCP project
 
-- `nuxeo.gcp.credentials`: your Json Google Credentials
+- `nuxeo.gcp.credentials`:
+    - absolute JSON GCP credentials file path
+    - file name of credentials in `nxserver/config`
+    - if not set Nuxeo will look into 'gcp-credentials.json' file by default (located in `nxserver/config`)
 
 # Building
 
