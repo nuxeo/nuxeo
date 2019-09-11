@@ -26,6 +26,8 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,6 +35,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -56,7 +59,12 @@ import com.google.cloud.storage.StorageOptions;
  * The BLOBs are cached locally on first access for efficiency.
  * <p>
  * Because the BLOB length can be accessed independently of the binary stream, it is also cached in a simple text file
- * if accessed before the stream.
+ * if accessed before the stream. Related to GCP credentials, here are the options:
+ * <ul>
+ * <li>nuxeo.gcp.credentials=/path/to/file.json</li>
+ * <li>nuxeo.gcp.credentials=file.json (located in nxserver/config)</li>
+ * <li>If nothing is set, Nuxeo will look into 'gcp-credentials.json' file by default (located in nxserver/config)</li>
+ * </ul>
  *
  * @since 10.10-HF12
  */
@@ -82,6 +90,8 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
 
     public static final String DELIMITER = "/";
 
+    public static final String GCP_JSON_FILE = "gcp-credentials.json";
+
     protected String bucketName;
 
     protected String bucketPrefix;
@@ -95,8 +105,13 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
         try {
             String projectId = getProperty(PROJECT_ID_PROPERTY);
 
+            File googleCredentials = new File(getProperty(GOOGLE_APPLICATION_CREDENTIALS));
+            String credentialsPath = googleCredentials.isFile() ? googleCredentials.getAbsolutePath()
+                    : new File(Environment.getDefault().getConfig(),
+                            getProperty(GOOGLE_APPLICATION_CREDENTIALS, GCP_JSON_FILE)).getAbsolutePath();
+
             GoogleCredentials credentials = GoogleCredentials.fromStream(
-                    new ByteArrayInputStream(getProperty(GOOGLE_APPLICATION_CREDENTIALS).getBytes()))
+                    new ByteArrayInputStream(Files.readAllBytes(Paths.get(credentialsPath))))
                                                              .createScoped(GOOGLE_PLATFORM_SCOPE, GOOGLE_STORAGE_SCOPE);
             credentials.refreshIfExpired();
 
