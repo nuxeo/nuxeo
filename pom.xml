@@ -3925,7 +3925,7 @@
       <dependency>
         <groupId>org.opensaml</groupId>
         <artifactId>opensaml</artifactId>
-        <version>2.6.1</version>
+        <version>2.6.4</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>
@@ -3945,6 +3945,16 @@
             <groupId>org.slf4j</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.santuario</groupId>
+        <artifactId>xmlsec</artifactId>
+        <version>2.1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opensaml</groupId>
+        <artifactId>openws</artifactId>
+        <version>1.5.4</version>
       </dependency>
 
       <!-- SCIM -->
