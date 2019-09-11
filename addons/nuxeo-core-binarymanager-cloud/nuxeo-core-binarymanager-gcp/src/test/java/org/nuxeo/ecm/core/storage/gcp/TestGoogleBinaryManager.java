@@ -51,8 +51,13 @@ import com.google.cloud.storage.StorageException;
  * <pre>
  *   -Dnuxeo.gcp.project: GCP Project ID
  *   -Dnuxeo.gcp.storage.bucket: GCP Bucket ID
- *   -Dnuxeo.gcp.credentials: GCP Credentials
+ *   -Dnuxeo.gcp.credentials: See following options
  * </pre>
+ * <ul>
+ * <li>nuxeo.gcp.credentials=/path/to/file.json</li>
+ * <li>nuxeo.gcp.credentials=file.json (located in nxserver/config)</li>
+ * <li>If nothing is set, Nuxeo will look into 'gcp-credentials.json' file by default (located in nxserver/config)</li>
+ * </ul>
  * <p/>
  * Don't set any bucket prefix (nuxeo.gcp.storage.bucket_prefix) as the unit tests don't check it.
  */
