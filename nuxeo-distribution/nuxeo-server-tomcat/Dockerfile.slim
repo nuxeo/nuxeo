@@ -1,4 +1,5 @@
 # vim:set ft=dockerfile:
+# Choose this slim Dockerfile to build a light image without conversion capability
 
 # ------------------------------------------------------------------------
 # Build Stage: Unzip the distribution
@@ -19,32 +20,16 @@ COPY docker/docker-template /distrib/templates/docker
 
 
 # ------------------------------------------------------------------------
-# Build Stage: Base image with Java and converters
-FROM centos:7 as base
+# Build Stage: Base image with Java and no converter
+FROM centos:7 as slim
 
-# Add Nuxeo Jenkins X Yum repository
-COPY nuxeo.repo /etc/yum.repos.d/
-
-RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
-  ccextractor-0.88-1.el7 \
-  ffmpeg-4.1.4-4.el7 \
-  ghostscript \
-  ImageMagick \
+RUN yum -y update && yum -y --setopt=skip_missing_names_on_install=False install \
   java-11-openjdk java-11-openjdk-devel \
   less \
-  libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
-  libwpd-tools \
-  # required by perl-Image-ExifTool to extract binary metadata from open office document
-  perl-Archive-Zip \
-  perl-Image-ExifTool \
-  poppler-utils \
   tar \
-  ufraw \
+  unzip \
   wget \
   && yum clean all
-
-# Set Java 11 as default java (libreoffice adds Java 8)
-RUN alternatives --set java java-11-openjdk.x86_64
 
 # Remove setuid/setgid binaries from images for security
 RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
@@ -52,7 +37,7 @@ RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 
 # ------------------------------------------------------------------------
 # Target Stage: Nuxeo image
-FROM base
+FROM slim
 MAINTAINER Nuxeo <packagers@nuxeo.com>
 
 # Copy distribution
