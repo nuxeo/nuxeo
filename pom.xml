@@ -155,7 +155,7 @@
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX01</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
-    <librepdf.version>1.2.0</librepdf.version>
+    <librepdf.version>1.2.1</librepdf.version>
     <librepdf.rtf.version>1.1.0</librepdf.rtf.version>
     <jclouds.version>2.1.1</jclouds.version>
     <guava.version>26.0-jre</guava.version>
