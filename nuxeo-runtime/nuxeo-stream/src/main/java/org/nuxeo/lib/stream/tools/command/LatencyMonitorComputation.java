@@ -55,7 +55,7 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
     public LatencyMonitorComputation(LogManager manager, List<String> logNames, String host, int port, boolean udp,
             String basePrefix, String computationName, int intervalSecond, int count, boolean verbose,
             Codec<Record> codec) {
-        super(manager, logNames, computationName, intervalSecond, count, verbose, codec);
+        super(manager, logNames, computationName, intervalSecond, count, verbose, codec, 0);
         this.host = host;
         this.port = port;
         this.udp = udp;

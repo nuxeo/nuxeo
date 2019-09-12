@@ -131,9 +131,13 @@ public class TrackerCommand extends Command {
             return manager.listAll()
                           .stream()
                           .filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX))
+                          .filter(name -> !name.startsWith(INPUT_STREAM))
                           .collect(Collectors.toList());
         }
         List<String> ret = Arrays.asList(names.split(","));
+        if (ret.isEmpty()) {
+            throw new IllegalArgumentException("No log name provided or found.");
+        }
         for (String name : ret) {
             if (!manager.exists(name)) {
                 throw new IllegalArgumentException("Unknown log name: " + name);
@@ -146,7 +150,7 @@ public class TrackerCommand extends Command {
         topology = Topology.builder()
                            .addComputation(
                                    () -> new LatencyTrackerComputation(manager, logNames, COMPUTATION_NAME, interval,
-                                           count, verbose, getRecordCodec(codec)),
+                                           count, verbose, getRecordCodec(codec), 1),
                                    Arrays.asList("i1:" + INPUT_STREAM, "o1:" + output))
                            .build();
     }
