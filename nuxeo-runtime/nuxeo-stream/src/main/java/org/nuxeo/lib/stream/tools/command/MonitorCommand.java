@@ -59,8 +59,6 @@ public class MonitorCommand extends Command {
 
     protected boolean verbose = false;
 
-    protected String output;
-
     protected List<String> logNames;
 
     protected int interval;
@@ -157,9 +155,13 @@ public class MonitorCommand extends Command {
             return manager.listAll()
                           .stream()
                           .filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX))
+                          .filter(name -> !name.startsWith(INPUT_STREAM))
                           .collect(Collectors.toList());
         }
         List<String> ret = Arrays.asList(names.split(","));
+        if (ret.isEmpty()) {
+            throw new IllegalArgumentException("No log name provided or found.");
+        }
         for (String name : ret) {
             if (!manager.exists(name)) {
                 throw new IllegalArgumentException("Unknown log name: " + name);
@@ -173,7 +175,7 @@ public class MonitorCommand extends Command {
                            .addComputation(
                                    () -> new LatencyMonitorComputation(manager, logNames, host, port, udp, prefix,
                                            COMPUTATION_NAME, interval, count, verbose, getRecordCodec(codec)),
-                                   Arrays.asList("i1:" + INPUT_STREAM, "o1:" + output))
+                                   Arrays.asList("i1:" + INPUT_STREAM))
                            .build();
     }
 

@@ -58,11 +58,13 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     protected int remaining;
 
-    protected List<LogPartitionGroup> logGroups;
+    protected final List<LogPartitionGroup> logGroups = new ArrayList<>();
+
+    protected int refreshGroupCounter;
 
     public LatencyTrackerComputation(LogManager manager, List<String> logNames, String computationName,
-            int intervalSecond, int count, boolean verbose, Codec<Record> codec) {
-        super(computationName, 1, 1);
+            int intervalSecond, int count, boolean verbose, Codec<Record> codec, int outputStream) {
+        super(computationName, 1, outputStream);
         this.manager = manager;
         this.logNames = logNames;
         this.intervalMs = 1000 * intervalSecond;
@@ -76,12 +78,6 @@ public class LatencyTrackerComputation extends AbstractComputation {
     public void init(ComputationContext context) {
         log.info(String.format("Tracking %s, count: %d, interval: %dms", Arrays.toString(logNames.toArray()), count,
                 intervalMs));
-        logGroups = new ArrayList<>();
-        logNames.forEach(name -> {
-            for (String group : manager.listConsumerGroups(name)) {
-                logGroups.add(new LogPartitionGroup(group, name, 0));
-            }
-        });
         context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
     }
 
@@ -98,7 +94,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
             log.info(String.format("Tracking latency %d/%d", count - remaining, count));
         }
         List<LogPartitionGroup> toRemove = new ArrayList<>();
-        for (LogPartitionGroup logGroup : logGroups) {
+        for (LogPartitionGroup logGroup : getLogGroup()) {
             try {
                 List<Latency> latencies = manager.getLatencyPerPartition(logGroup.name, logGroup.group, codec,
                         (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey));
@@ -125,6 +121,26 @@ public class LatencyTrackerComputation extends AbstractComputation {
                 context.askForTermination();
             }
         }
+    }
+
+    protected List<LogPartitionGroup> getLogGroup() {
+        if (logGroups.isEmpty() || refreshGroup()) {
+            logGroups.clear();
+            logNames.forEach(name -> {
+                for (String group : manager.listConsumerGroups(name)) {
+                    logGroups.add(new LogPartitionGroup(group, name, 0));
+                }
+            });
+            if (verbose) {
+                log.info("Update list of consumers: " + Arrays.toString(logGroups.toArray()));
+            }
+        }
+        return logGroups;
+    }
+
+    protected boolean refreshGroup() {
+        refreshGroupCounter += 1;
+        return (refreshGroupCounter % 5) == 0;
     }
 
     protected void processLatencies(ComputationContext context, LogPartitionGroup logGroup, List<Latency> latencies) {
