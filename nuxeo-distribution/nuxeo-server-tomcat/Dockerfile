@@ -13,7 +13,7 @@ RUN mkdir -p /tmp/nuxeo-distribution \
   && sed -i -e "s/^org.nuxeo.distribution.package.*/org.nuxeo.distribution.package=docker/" /distrib/templates/common/config/distribution.properties \
   && rm -rf /tmp/nuxeo-distribution* \
   && chmod +x /distrib/bin/*ctl /distrib/bin/*.sh \
-  && chown -R 1000:0 /distrib && chmod -R g+rwX /distrib
+  && chmod -R g+rwX /distrib
 
 COPY docker/docker-template /distrib/templates/docker
 
@@ -61,7 +61,11 @@ RUN useradd -m -d /home/$NUXEO_USER -u 1000 -s /bin/bash $NUXEO_USER
 
 # Copy distribution
 ENV NUXEO_HOME /opt/nuxeo/server
-COPY --from=distrib --chown=1000:0 /distrib $NUXEO_HOME
+COPY --from=distrib /distrib $NUXEO_HOME
+# Work around missing support for --chown flag with COPY instruction in Kaniko
+# TODO NXP-28052: remove and use COPY --chown when fixed in Kaniko, or find a proper way
+RUN chown -R 1000:0 $NUXEO_HOME
+
 COPY --chown=1000:0 docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
 COPY docker/docker-entrypoint.sh /
 
