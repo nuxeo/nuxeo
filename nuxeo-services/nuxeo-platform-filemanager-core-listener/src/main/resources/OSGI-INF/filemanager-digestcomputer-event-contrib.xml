@@ -8,6 +8,8 @@
       @author Thierry Delprat (td@nuxeo.com)
      </documentation>
     <listener name="digestListener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.filemanager.core.listener.DigestComputer" priority="140">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
     </listener>
   </extension>
 

@@ -43,28 +43,12 @@ import org.nuxeo.runtime.api.Framework;
 
 public class DigestComputer implements EventListener {
 
-    private boolean initDone = false;
-
-    private List<String> xpathFields;
-
-    private String digestAlgo = "sha-256";
-
-    private Boolean activateDigestComputation = false;
-
     private static final Log log = LogFactory.getLog(DigestComputer.class);
 
-    private boolean initIfNeeded() {
-        if (!initDone) {
-            FileManager fm = Framework.getService(FileManager.class);
-            xpathFields = fm.getFields();
-            digestAlgo = fm.getDigestAlgorithm();
-            activateDigestComputation = fm.isDigestComputingEnabled();
-            initDone = true;
-        }
-        return initDone;
-    }
-
     private void addDigestToDocument(DocumentModel doc) {
+        FileManager fm = Framework.getService(FileManager.class);
+        List<String> xpathFields = fm.getFields();
+        String digestAlgo = fm.getDigestAlgorithm();
         for (String xpathField : xpathFields) {
             Property blobProp = null;
             try {
@@ -76,7 +60,7 @@ public class DigestComputer implements EventListener {
                 try {
                     Blob blob = (Blob) blobProp.getValue();
                     if (blob != null) {
-                        String digest = computeDigest(blob);
+                        String digest = computeDigest(blob, digestAlgo);
                         if (!digest.equals(blob.getDigest())) {
                             blob.setDigest(digest);
                         }
@@ -88,7 +72,7 @@ public class DigestComputer implements EventListener {
         }
     }
 
-    private String computeDigest(Blob blob) throws IOException {
+    private String computeDigest(Blob blob, String digestAlgo) throws IOException {
 
         MessageDigest md;
         try {
@@ -102,11 +86,8 @@ public class DigestComputer implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        if (!initIfNeeded()) {
-            return;
-        }
-
-        if (!activateDigestComputation) {
+        FileManager fm = Framework.getService(FileManager.class);
+        if (!fm.isDigestComputingEnabled()) {
             return;
         }
 
