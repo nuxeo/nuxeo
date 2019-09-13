@@ -346,41 +346,26 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public List<Document> getChildren() {
-        if (!isFolder()) {
-            return Collections.emptyList();
-        }
         return session.getChildren(id);
     }
 
     @Override
     public List<String> getChildrenIds() {
-        if (!isFolder()) {
-            return Collections.emptyList();
-        }
         return session.getChildrenIds(id);
     }
 
     @Override
     public boolean hasChild(String name) {
-        if (!isFolder()) {
-            return false;
-        }
         return session.hasChild(id, name);
     }
 
     @Override
     public boolean hasChildren() {
-        if (!isFolder()) {
-            return false;
-        }
         return session.hasChildren(id);
     }
 
     @Override
     public Document addChild(String name, String typeName) {
-        if (!isFolder()) {
-            throw new IllegalArgumentException("Not a folder");
-        }
         return session.createChild(null, id, name, null, typeName);
     }
 

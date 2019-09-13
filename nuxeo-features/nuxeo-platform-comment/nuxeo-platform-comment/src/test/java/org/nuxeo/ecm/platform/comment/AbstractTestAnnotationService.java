@@ -50,9 +50,11 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,7 +66,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
-public class TestAnnotationService {
+public abstract class AbstractTestAnnotationService {
 
     @Inject
     protected CoreFeature coreFeature;
@@ -73,6 +75,8 @@ public class TestAnnotationService {
     protected AnnotationService annotationService;
 
     protected CloseableCoreSession session;
+    
+    protected abstract Class<? extends CommentManager> getCommentManager();
 
     @Before
     public void setup() {
@@ -454,6 +458,11 @@ public class TestAnnotationService {
         annotationService.deleteExternalAnnotation(session, entityId);
         assertFalse(session.exists(new IdRef(annotation.getId())));
 
+    }
+    
+    @Test
+    public void testUsedCommentManager() {
+        assertEquals(getCommentManager(), Framework.getService(CommentManager.class).getClass());
     }
 
 }
