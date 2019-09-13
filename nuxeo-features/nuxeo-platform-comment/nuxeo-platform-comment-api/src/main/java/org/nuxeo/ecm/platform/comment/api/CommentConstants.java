@@ -47,8 +47,14 @@ public final class CommentConstants {
     /** @since 10.3 */
     public static final String MIGRATION_STATE_PROPERTY = "property"; // also in XML
 
+    /** @since 11.1 */
+    public static final String MIGRATION_STATE_SECURED = "secured"; // also in XML
+
     /** @since 10.3 */
     public static final String MIGRATION_STEP_RELATION_TO_PROPERTY = "relation-to-property"; // also in XML
+
+    /** @since 11.1 */
+    public static final String MIGRATION_STEP_PROPERTY_TO_SECURED = "property-to-secured"; // also in XML
 
     private CommentConstants() {
     }
