@@ -88,9 +88,8 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
             if (entity.getId() == null) {
                 return Collections.emptyList();
             }
-            DocumentRef ancestorRef = new IdRef(
-                    (String) commentManager.getThreadForComment(s.getDocument(new IdRef(entity.getId())))
-                                           .getPropertyValue(COMMENT_PARENT_ID));
+
+            DocumentRef ancestorRef = commentManager.getTopLevelCommentAncestor(session, new IdRef(entity.getId()));
             return s.filterGrantedPermissions(principal, ancestorRef,
                     Arrays.asList(permissionProvider.getPermissions()));
         });
