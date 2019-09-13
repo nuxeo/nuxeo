@@ -53,7 +53,7 @@ RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 # ------------------------------------------------------------------------
 # Target Stage: Nuxeo image
 FROM base
-MAINTAINER Nuxeo <packagers@nuxeo.com>
+LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
 
 # Copy distribution
 ENV NUXEO_HOME /opt/nuxeo/server
