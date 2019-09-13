@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -34,6 +35,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -321,6 +323,8 @@ public class TreeCommentManager extends AbstractCommentManager {
 
         DocumentModel commentsFolder = session.createDocumentModel(rootDocModel.getPathAsString(),
                 COMMENTS_DIRECTORY_NAME, COMMENTS_DIRECTORY_TYPE);
+        // No need to notify the creation of the Comments folder
+        commentsFolder.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
         commentsFolder = session.getOrCreateDocument(commentsFolder);
         session.save();
 
