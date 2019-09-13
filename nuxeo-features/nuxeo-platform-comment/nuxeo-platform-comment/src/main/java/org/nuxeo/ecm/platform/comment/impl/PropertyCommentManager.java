@@ -25,6 +25,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
@@ -155,11 +156,6 @@ public class PropertyCommentManager extends AbstractCommentManager {
     @Override
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
-    }
-
-    @Override
-    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
-        return getThreadForComment(comment.getCoreSession(), comment);
     }
 
     @Override
@@ -391,6 +387,11 @@ public class PropertyCommentManager extends AbstractCommentManager {
         }
     }
 
+    @Override
+    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
+        return getAncestorRef(session, session.getDocument(commentIdRef));
+    }
+
     @SuppressWarnings("unchecked")
     protected DocumentModel getExternalCommentModel(CoreSession session, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
@@ -423,31 +424,25 @@ public class PropertyCommentManager extends AbstractCommentManager {
 
     protected DocumentRef getAncestorRef(CoreSession session, DocumentModel documentModel) {
         return CoreInstance.doPrivileged(session, s -> {
-            if (!documentModel.hasSchema(COMMENT_SCHEMA)) {
-                return documentModel.getRef();
-            }
             DocumentModel ancestorComment = getThreadForComment(s, documentModel);
-            return new IdRef((String) ancestorComment.getPropertyValue(COMMENT_PARENT_ID));
+            return ancestorComment.getRef();
         });
     }
 
-    protected DocumentModel getThreadForComment(CoreSession session, DocumentModel comment)
+    protected DocumentModel getThreadForComment(CoreSession s, DocumentModel comment)
             throws CommentSecurityException {
+        NuxeoPrincipal principal = s.getPrincipal();
+        return CoreInstance.doPrivileged(s, session -> {
+            DocumentModel documentModel = comment;
+            while (documentModel.hasSchema(COMMENT_SCHEMA) || HIDDEN_FOLDER_TYPE.equals(documentModel.getType())) {
+                documentModel = session.getDocument(new IdRef((String) documentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            }
 
-        NuxeoPrincipal principal = session.getPrincipal();
-        return CoreInstance.doPrivileged(session, s -> {
-            DocumentModel thread = comment;
-            DocumentModel parent = s.getDocument(new IdRef((String) thread.getPropertyValue(COMMENT_PARENT_ID)));
-            if (parent.hasSchema(COMMENT_SCHEMA)) {
-                thread = getThreadForComment(parent);
-            }
-            DocumentRef ancestorRef = s.getDocument(new IdRef((String) thread.getPropertyValue(COMMENT_PARENT_ID)))
-                                       .getRef();
-            if (!s.hasPermission(principal, ancestorRef, SecurityConstants.READ)) {
+            if (!session.hasPermission(principal, documentModel.getRef(), SecurityConstants.READ)) {
                 throw new CommentSecurityException("The user " + principal.getName()
-                        + " does not have access to the comments of document " + ancestorRef.reference());
+                        + " does not have access to the comments of document " + documentModel.getRef().reference());
             }
-            return thread;
+            return documentModel;
         });
     }
 }

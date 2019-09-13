@@ -20,7 +20,6 @@ package org.nuxeo.ecm.automation.core.test.collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,11 +29,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.collections.CreateCollectionOperation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Class testing the operation "Collection.CreateCollection".
@@ -86,31 +83,5 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
 
         String collectionPath = testWorkspace.getPathAsString() + "/" + COLLECTION_NAME;
         assertTrue(session.exists(new PathRef(collectionPath)));
-    }
-
-    @Test(expected=OperationException.class)
-    public void testCreateCollectionOnWrongDocument() throws Exception {
-        DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(), "test", "File");
-        session.createDocument(doc);
-        session.save();
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("name", COLLECTION_NAME);
-        params.put("description", COLLECTION_DESCRIPTION);
-
-        chain = new OperationChain("test-chain");
-        chain.add(CreateCollectionOperation.ID).from(params);
-
-        OperationContext ctx = new OperationContext(session);
-        ctx.setInput(doc);
-
-        try {
-            service.run(ctx, chain);
-            // Should fail before
-            fail("Document is not a File");
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
     }
 }
