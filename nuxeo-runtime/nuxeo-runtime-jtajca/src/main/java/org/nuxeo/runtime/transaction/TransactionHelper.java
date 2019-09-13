@@ -25,7 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import javax.naming.NamingException;
@@ -69,7 +71,9 @@ public class TransactionHelper {
      *
      * @since 11.1
      */
-    protected static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    // like Executors.newCachedThreadPool() but using a small keepAliveTime to avoid blocking shutdown
+    protected static final ExecutorService EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 5, TimeUnit.SECONDS,
+            new SynchronousQueue<>());
 
     private TransactionHelper() {
         // utility class
