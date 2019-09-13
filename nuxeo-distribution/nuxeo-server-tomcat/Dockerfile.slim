@@ -40,15 +40,15 @@ RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 FROM slim
 LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
 
+# Add a nuxeo user
+ENV NUXEO_USER nuxeo
+RUN useradd -m -d /home/$NUXEO_USER -u 1000 -s /bin/bash $NUXEO_USER
+
 # Copy distribution
 ENV NUXEO_HOME /opt/nuxeo/server
 COPY --from=distrib --chown=1000:0 /distrib $NUXEO_HOME
 COPY --chown=1000:0 docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
 COPY docker/docker-entrypoint.sh /
-
-# Add a nuxeo user
-ENV NUXEO_USER nuxeo
-RUN useradd -m -d $NUXEO_HOME -u 1000 -s /bin/bash $NUXEO_USER
 
 # Protecting writeable directories to support arbitrary User IDs for OpenShift
 # https://docs.openshift.com/container-platform/3.4/creating_images/guidelines.html
