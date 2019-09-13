@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -50,6 +51,8 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -799,6 +802,34 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
     }
 
+    @Test
+    public void testCreateLocalComment() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+
+        // Create a comment in a specific location
+        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
+        commentModel = session.createDocument(commentModel);
+        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
+        Comments.commentToDocumentModel(comment, commentModel);
+        commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
+
+        // Check if Comments folder has been created in the given container
+        assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
+
+        assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
+    }
+
+
     protected DocumentModel createTestFileAndUser(String user) {
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
         domain = session.createDocument(domain);
@@ -844,5 +875,10 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
             comments.add(comment);
         }
         return comments;
+    }
+
+    @Override
+    public Class<? extends CommentManager> getType() {
+        return PropertyCommentManager.class;
     }
 }

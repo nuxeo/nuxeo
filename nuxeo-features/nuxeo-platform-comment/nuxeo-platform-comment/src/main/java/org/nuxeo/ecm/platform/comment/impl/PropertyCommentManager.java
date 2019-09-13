@@ -391,6 +391,11 @@ public class PropertyCommentManager extends AbstractCommentManager {
         }
     }
 
+    @Override
+    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
+        return getAncestorRef(session, session.getDocument(commentIdRef));
+    }
+
     @SuppressWarnings("unchecked")
     protected DocumentModel getExternalCommentModel(CoreSession session, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);

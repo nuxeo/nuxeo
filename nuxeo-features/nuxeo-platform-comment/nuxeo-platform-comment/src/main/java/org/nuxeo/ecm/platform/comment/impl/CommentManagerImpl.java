@@ -24,11 +24,10 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -179,8 +178,6 @@ public class CommentManagerImpl extends AbstractCommentManager {
     @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            comment.setPropertyValue(COMMENT_ANCESTOR_IDS,
-                    (Serializable) computeAncestorIds(session, docModel.getId()));
             DocumentModel doc = internalCreateComment(session, docModel, comment, null);
             session.save();
             doc.detach(true);
@@ -519,4 +516,18 @@ public class CommentManagerImpl extends AbstractCommentManager {
             throw new UnsupportedOperationException(feature.name());
         }
     }
+
+    @Override
+    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
+        DocumentModel documentModel = session.getDocument(commentIdRef);
+        if (!documentModel.hasSchema(COMMENT_SCHEMA)) {
+            return documentModel.getRef();
+        }
+        DocumentModel ancestorComment = getThreadForComment(documentModel);
+        if (ancestorComment != null) {
+            return ancestorComment.getRef();
+        }
+        return null;
+    }
+
 }
