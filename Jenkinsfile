@@ -50,6 +50,7 @@ pipeline {
     REDIS_HOST = "${SERVICE_REDIS}.${NAMESPACE_REDIS}.svc.cluster.local"
     SERVICE_ACCOUNT = 'jenkins'
     ORG = 'nuxeo'
+    DOCKER_IMAGE_NAME = 'nuxeo'
   }
   stages {
     stage('Compile') {
@@ -195,43 +196,89 @@ pipeline {
         }
       }
     }
-    stage('Build and deploy Docker image') {
+    stage('Build Docker image') {
       steps {
-        setGitHubBuildStatus('platform/docker', 'Build and deploy Docker image', 'PENDING')
+        setGitHubBuildStatus('platform/docker/build', 'Build Docker image', 'PENDING')
         container('maven') {
           withEnv(["VERSION=${getVersion()}"]) {
             echo """
             ----------------------------------------
-            Build and deploy Docker image
+            Build Docker image
             ----------------------------------------
             Image tag: ${VERSION}
             """
-            // push image to the Jenkins X internal Docker registry
-            echo "Pushing Docker image to ${DOCKER_REGISTRY}"
+            echo "Building and pushing Docker image to ${DOCKER_REGISTRY}"
             sh """
               envsubst < nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml > nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
               skaffold build -p pr -f nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
             """
-
-            script {
-              if (BRANCH_NAME == 'master') {
-                // push image to the public Docker registry
-                echo "Pushing Docker image to ${PUBLIC_DOCKER_REGISTRY}"
-                sh """
-                  envsubst < nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml > nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
-                  skaffold build -p master -f nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
-                """
-              }
-            }
           }
         }
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker', 'Build and deploy Docker image', 'SUCCESS')
+          setGitHubBuildStatus('platform/docker/build', 'Build Docker image', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker', 'Build and deploy Docker image', 'FAILURE')
+          setGitHubBuildStatus('platform/docker/build', 'Build Docker image', 'FAILURE')
+        }
+      }
+    }
+    stage('Test Docker image') {
+      steps {
+        setGitHubBuildStatus('platform/docker/test', 'Test Docker image', 'PENDING')
+        container('maven') {
+          withEnv(["VERSION=${getVersion()}"]) {
+            echo """
+            ----------------------------------------
+            Test Docker image
+            ----------------------------------------
+            """
+            echo 'Testing image'
+            sh """
+              docker pull ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
+              docker run --rm ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} nuxeoctl start
+            """
+          }
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('platform/docker/test', 'Test Docker image', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/docker/test', 'Test Docker image', 'FAILURE')
+        }
+      }
+    }
+    stage('Deploy Docker image') {
+      when {
+        branch 'master'
+      }
+      steps {
+        setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker image', 'PENDING')
+        container('maven') {
+          withEnv(["VERSION=${getVersion()}"]) {
+            echo """
+            ----------------------------------------
+            Deploy Docker image
+            ----------------------------------------
+            Image tag: ${VERSION}
+            """
+            echo "Building and pushing Docker image to ${PUBLIC_DOCKER_REGISTRY}"
+            sh """
+              envsubst < nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml > nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
+              skaffold build -p master -f nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
+            """
+          }
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker image', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker image', 'FAILURE')
         }
       }
     }
