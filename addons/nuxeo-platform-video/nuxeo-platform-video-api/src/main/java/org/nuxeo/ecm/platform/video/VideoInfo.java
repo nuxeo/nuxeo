@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Object containing info about a video file.
@@ -41,6 +43,18 @@ import java.util.regex.Pattern;
 public final class VideoInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    private static final double DEFAULT_DURATION = 0d;
+
+    private static final long DEFAULT_WIDTH = 0L;
+
+    private static final long DEFAULT_HEIGHT = 0L;
+
+    private static final String DEFAULT_FORMAT = "";
+
+    private static final double DEFAULT_FRAME_RATE = 0d;
+
+    private static final List<Stream> DEFAULT_STREAM = List.of();
 
     public static final Pattern FORMAT_PATTERN = Pattern.compile("^\\s*(Input|Output) #0, ([\\w,]+).+$\\s*",
             Pattern.CASE_INSENSITIVE);
@@ -58,7 +72,8 @@ public final class VideoInfo implements Serializable {
 
     public static final Pattern BIT_RATE_PATTERN = Pattern.compile("(\\d+)\\s+kb/s", Pattern.CASE_INSENSITIVE);
 
-    public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0, 0, 0, null, null);
+    public static final VideoInfo EMPTY_INFO = new VideoInfo(DEFAULT_DURATION, DEFAULT_WIDTH, DEFAULT_HEIGHT,
+            DEFAULT_FRAME_RATE, DEFAULT_FORMAT, DEFAULT_STREAM);
 
     public static final String DURATION = "duration";
 
@@ -90,35 +105,19 @@ public final class VideoInfo implements Serializable {
      * Used when creating a {@code VideoInfo} from a {@code DocumentModel} property.
      */
     public static VideoInfo fromMap(Map<String, Serializable> map) {
-        Double duration = (Double) map.get(DURATION);
-        if (duration == null) {
-            duration = 0d;
-        }
-        Long width = (Long) map.get(WIDTH);
-        if (width == null) {
-            width = 0l;
-        }
-        Long height = (Long) map.get(HEIGHT);
-        if (height == null) {
-            height = 0l;
-        }
-        String format = (String) map.get(FORMAT);
-        if (format == null) {
-            format = "";
-        }
-        Double frameRate = (Double) map.get(FRAME_RATE);
-        if (frameRate == null) {
-            frameRate = 0d;
-        }
 
-        List<Stream> streams = new ArrayList<>();
+        Double duration = Optional.ofNullable((Double) map.get(DURATION)).orElse(DEFAULT_DURATION);
+        Long width = Optional.ofNullable((Long) map.get(WIDTH)).orElse(DEFAULT_WIDTH);
+        Long height = Optional.ofNullable((Long) map.get(HEIGHT)).orElse(DEFAULT_HEIGHT);
+        String format = Optional.ofNullable((String) map.get(FORMAT)).orElse(DEFAULT_FORMAT);
+        Double frameRate = Optional.ofNullable((Double) map.get(FRAME_RATE)).orElse(DEFAULT_FRAME_RATE);
+
         @SuppressWarnings("unchecked")
-        List<Map<String, Serializable>> streamItems = (List<Map<String, Serializable>>) map.get(STREAMS);
-        if (streamItems != null) {
-            for (Map<String, Serializable> m : streamItems) {
-                streams.add(Stream.fromMap(m));
-            }
-        }
+        List<Stream> streams = Optional.ofNullable((List<Map<String, Serializable>>) map.get(STREAMS))
+                                       .orElse(List.of())
+                                       .stream()
+                                       .map(Stream::fromMap)
+                                       .collect(Collectors.toList());
 
         return new VideoInfo(duration, width, height, frameRate, format, streams);
     }
@@ -127,12 +126,12 @@ public final class VideoInfo implements Serializable {
      * Build a {@code VideoInfo} from a FFmpeg output.
      */
     public static VideoInfo fromFFmpegOutput(List<String> output) {
-        double duration = 0;
-        long width = 0;
-        long height = 0;
-        double frameRate = 0;
-        double bitRate = 0;
-        String format = "";
+        double duration = DEFAULT_DURATION;
+        long width = DEFAULT_WIDTH;
+        long height = DEFAULT_HEIGHT;
+        double frameRate = DEFAULT_FRAME_RATE;
+        double bitRate = DEFAULT_FRAME_RATE;
+        String format = DEFAULT_FORMAT;
         List<Stream> streams = new ArrayList<>();
 
         for (String line : output) {
@@ -200,10 +199,7 @@ public final class VideoInfo implements Serializable {
         this.height = height;
         this.frameRate = frameRate;
         this.format = format;
-        this.streams = new ArrayList<>();
-        if (streams != null) {
-            this.streams.addAll(streams);
-        }
+        this.streams = Optional.ofNullable(streams).orElse(DEFAULT_STREAM);
     }
 
     /**
@@ -254,20 +250,16 @@ public final class VideoInfo implements Serializable {
      * Used when saving this {@code Stream} to a {@code DocumentModel} property.
      */
     public Map<String, Serializable> toMap() {
-        Map<String, Serializable> map = new HashMap<>();
-        map.put(DURATION, duration);
-        map.put(FRAME_RATE, frameRate);
-        map.put(WIDTH, width);
-        map.put(HEIGHT, height);
-        map.put(FORMAT, format);
-
-        List<Map<String, Serializable>> streamItems = new ArrayList<>(streams.size());
-        for (Stream stream : streams) {
-            streamItems.add(stream.toMap());
-        }
-        map.put(STREAMS, (Serializable) streamItems);
-
-        return map;
+        return new HashMap<>() {
+            {
+                put(DURATION, duration);
+                put(FRAME_RATE, frameRate);
+                put(WIDTH, width);
+                put(HEIGHT, height);
+                put(FORMAT, format);
+                put(STREAMS, (Serializable) streams.stream().map(Stream::toMap).collect(Collectors.toList()));
+            }
+        };
     }
 
 }

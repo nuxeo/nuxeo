@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.video;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Object representing a Stream of a video.
@@ -101,4 +102,22 @@ public class Stream {
         return attributes;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Stream stream = (Stream) o;
+        return Objects.equals(getBitRate(), stream.getBitRate()) && Objects.equals(getCodec(), stream.getCodec())
+                && Objects.equals(getType(), stream.getType())
+                && Objects.equals(getStreamInfo(), stream.getStreamInfo());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getBitRate(), getCodec(), getType(), getStreamInfo());
+    }
 }
