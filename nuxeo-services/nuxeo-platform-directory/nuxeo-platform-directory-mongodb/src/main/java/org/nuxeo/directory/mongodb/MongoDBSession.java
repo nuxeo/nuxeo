@@ -95,7 +95,7 @@ public class MongoDBSession extends BaseSession {
     public DocumentModel getEntryFromSource(String id, boolean fetchReferences) {
         String idFieldName = getPrefixedIdField();
         DocumentModelList result = doQuery(Collections.singletonMap(idFieldName, id), Collections.emptySet(),
-                Collections.emptyMap(), true, 1, 0, false);
+                Collections.emptyMap(), fetchReferences, 1, 0, false);
 
         if (result.isEmpty()) {
             return null;
