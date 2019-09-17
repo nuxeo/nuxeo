@@ -76,8 +76,8 @@ RUN chown -R 1000:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo && rm -f $NUXEO_HOME/bi
   && chown -R 1000:0 /var/lib/nuxeo/data && chmod -R g+rwX /var/lib/nuxeo/data \
   && mkdir -p /var/log/nuxeo \
   && chown -R 1000:0 /var/log/nuxeo && chmod -R g+rwX /var/log/nuxeo \
-  && mkdir -p /var/run/nuxeo \
-  && chown -R 1000:0 /var/run/nuxeo && chmod -R g+rwX /var/run/nuxeo \
+  && mkdir -p /var/pid/nuxeo \
+  && chown -R 1000:0 /var/pid/nuxeo && chmod -R g+rwX /var/pid/nuxeo \
   && mkdir -p /docker-entrypoint-initnuxeo.d \
   && chown -R 1000:0 /docker-entrypoint-initnuxeo.d && chmod -R g+rwX /docker-entrypoint-initnuxeo.d  \
   && chmod g=u /etc/passwd

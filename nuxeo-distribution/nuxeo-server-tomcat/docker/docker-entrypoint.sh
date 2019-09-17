@@ -23,7 +23,7 @@ if [ "$1" = 'nuxeoctl' ]; then
     # Can't do that at Java level since it's needed in nuxeoctl scripting
     cat << EOF >> $NUXEO_CONF
 nuxeo.log.dir=$NUXEO_LOG
-nuxeo.pid.dir=/var/run/nuxeo
+nuxeo.pid.dir=/var/pid/nuxeo
 nuxeo.data.dir=$NUXEO_DATA
 EOF
 
