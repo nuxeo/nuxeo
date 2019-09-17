@@ -22,6 +22,7 @@ package org.nuxeo.ecm.restapi.test;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -121,7 +122,7 @@ public class EmptyDocumentTest extends BaseTest {
         assertEquals(expectedPath, node.get("path").textValue());
 
         JsonNode properties = node.get("properties");
-        assertEquals(null, properties.get("dv:simpleWithoutDefault").textValue());
+        assertNull(properties.get("dv:simpleWithoutDefault").textValue());
         assertEquals("value", properties.get("dv:simpleWithDefault").textValue());
         JsonNode multiWithDefault = properties.get("dv:multiWithDefault");
         assertEquals(0, properties.get("dv:multiWithoutDefault").size());
