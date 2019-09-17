@@ -237,7 +237,7 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: quartz-mongodb-2.0.0-NX2.jar (MongoDB not included in Nuxeo)
+   file name: quartz-mongodb-2.1.0-NX1.jar (MongoDB not included in Nuxeo)
    ]]></notes>
    <gav regex="true">^com\.novemberain:quartz-mongodb:.*$</gav>
    <cpe>cpe:/a:mongodb:mongodb</cpe>
