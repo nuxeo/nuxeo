@@ -136,6 +136,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         if (!config.isEnabled() || config.logs.isEmpty()) {
             return;
         }
+        @SuppressWarnings("resource") // not ours to close
         LogManager manager = getLogManager(config.getId());
         config.logs.forEach(l -> {
             log.info("Create if not exists stream: {} with manager: {}", l.getId(), config.getId());
@@ -163,7 +164,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             return;
         }
         log.info("Init Stream processor: {} with manager: {}", descriptor.getId(), descriptor.config);
-        LogManager manager = getLogManager(descriptor.config);
+        getLogManager(descriptor.config);
         StreamManager streamManager = getStreamManager(descriptor.config);
         Topology topology;
         try {

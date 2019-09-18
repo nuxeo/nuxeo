@@ -44,11 +44,14 @@ public class ComputationPolicy {
 
     protected final boolean skipFailure;
 
+    protected final int skipFirstFailures;
+
     public ComputationPolicy(ComputationPolicyBuilder builder) {
         batchCapacity = builder.batchCapacity;
         batchThreshold = builder.batchThreshold;
         skipFailure = builder.skipFailure;
         retryPolicy = builder.retryPolicy;
+        skipFirstFailures = builder.skipFirstFailures;
     }
 
     public RetryPolicy getRetryPolicy() {
@@ -65,6 +68,10 @@ public class ComputationPolicy {
 
     public boolean continueOnFailure() {
         return skipFailure;
+    }
+
+    public int getSkipFirstFailures() {
+        return skipFirstFailures;
     }
 
     /**
