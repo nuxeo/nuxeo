@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -79,7 +79,7 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated
 public class CommentManagerImpl extends AbstractCommentManager {
 
-    private static final Log log = LogFactory.getLog(CommentManagerImpl.class);
+    private static final Logger log = LogManager.getLogger(CommentManagerImpl.class);
 
     final SimpleDateFormat timeFormat = new SimpleDateFormat("dd-HHmmss.S");
 
@@ -123,8 +123,8 @@ public class CommentManagerImpl extends AbstractCommentManager {
                         config.commentNamespace, subject, ctxMap);
                 if (commentDocModel == null) {
                     // XXX AT: maybe user cannot see the comment
-                    log.warn("Could not adapt comment relation subject to a document "
-                            + "model; check the service relation adapters configur  ation");
+                    log.warn(
+                            "Could not adapt comment relation subject to a document model; check the service relation adapters configuration");
                     continue;
                 }
                 commentList.add(commentDocModel);
@@ -257,7 +257,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
         converter.updateDocumentModel(commentDocModel, comment);
         commentDocModel.setPathInfo(pathStr, pss.generatePathSegment(commentDocModel));
         commentDocModel = mySession.createDocument(commentDocModel);
-        log.debug("created comment with id=" + commentDocModel.getId());
+        log.debug("created comment with id={}", commentDocModel.getId());
 
         return commentDocModel;
     }
@@ -369,8 +369,8 @@ public class CommentManagerImpl extends AbstractCommentManager {
                 DocumentModel docModel = (DocumentModel) relationManager.getResourceRepresentation(
                         config.documentNamespace, subject, ctxMap);
                 if (docModel == null) {
-                    log.warn("Could not adapt comment relation subject to a document "
-                            + "model; check the service relation adapters configuration");
+                    log.warn(
+                            "Could not adapt comment relation subject to a document model; check the service relation adapters configuration");
                     continue;
                 }
                 // detach the document as it was loaded by a system session, not the user session.

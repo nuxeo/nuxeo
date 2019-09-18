@@ -61,7 +61,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
 
     @Override
     protected String probeSession(CoreSession session) {
-        CommentService commentComponent =  Framework.getService(CommentService.class);
+        CommentService commentComponent = Framework.getService(CommentService.class);
         CommentServiceConfig commentServiceConfig = commentComponent.getConfig();
         if (commentServiceConfig != null) {
             Graph graph = Framework.getService(RelationManager.class).getGraph(commentServiceConfig.graphName, session);

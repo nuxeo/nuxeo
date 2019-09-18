@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -650,7 +649,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected static class MongoDBBlobFinder extends BlobFinder {
-        protected List<Bson> binaryKeys = new ArrayList<>(Collections.singleton(Projections.excludeId()));
+        protected List<Bson> binaryKeys = new ArrayList<>(Set.of(Projections.excludeId()));
 
         @Override
         protected void recordBlobPath() {

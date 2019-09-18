@@ -64,7 +64,7 @@ public interface CommentManager {
      *             document
      * @since 10.3
      */
-    List<DocumentModel> getComments(CoreSession session, DocumentModel docModel) throws CommentSecurityException;
+    List<DocumentModel> getComments(CoreSession session, DocumentModel docModel);
 
     /**
      * Get comments of a document.
@@ -74,7 +74,7 @@ public interface CommentManager {
      * @return the list of comments
      * @deprecated since 10.3, use {@link #getComments(DocumentModel)} instead.
      */
-    @Deprecated
+    @Deprecated(since = "10.3", forRemoval = true)
     List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent);
 
     /**
@@ -97,7 +97,7 @@ public interface CommentManager {
      * @return the comment document model.
      * @deprecated since 10.3, use {@link #createComment(CoreSession, Comment)} instead.
      */
-    @Deprecated
+    @Deprecated(since = "10.3", forRemoval = true)
     DocumentModel createComment(DocumentModel docModel, String comment, String author);
 
     /**
@@ -109,7 +109,7 @@ public interface CommentManager {
      * @throws CommentSecurityException if the current user does not have the right permissions on the document to
      *             comment.
      */
-    DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException;
+    DocumentModel createComment(DocumentModel docModel, DocumentModel comment);
 
     /**
      * Creates a comment document model, filling its properties with given info and linking it to given document.
@@ -120,7 +120,7 @@ public interface CommentManager {
      * @return the created comment document model.
      * @deprecated since 10.3, use {@link #createComment(CoreSession, Comment)} instead.
      */
-    @Deprecated
+    @Deprecated(since = "10.3", forRemoval = true)
     DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child);
 
     /**
@@ -130,7 +130,7 @@ public interface CommentManager {
      * @param comment the comment
      * @deprecated since 10.3, use {@link #deleteComment(CoreSession, String)} instead.
      */
-    @Deprecated
+    @Deprecated(since = "10.3", forRemoval = true)
     void deleteComment(DocumentModel docModel, DocumentModel comment);
 
     /**
@@ -140,7 +140,7 @@ public interface CommentManager {
      * @return the list of documents
      * @deprecated since 10.3, only used with deprecated implementation, no replacement.
      */
-    @Deprecated
+    @Deprecated(since = "10.3", forRemoval = true)
     List<DocumentModel> getDocumentsForComment(DocumentModel comment);
 
     /**
@@ -152,7 +152,7 @@ public interface CommentManager {
      *             document.
      * @since 5.5
      */
-    DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException;
+    DocumentModel getThreadForComment(DocumentModel comment);
 
     /**
      * Creates a comment document model. It gives opportunity to save the comments in a specified location.
@@ -164,8 +164,7 @@ public interface CommentManager {
      * @throws CommentSecurityException if the current user does not have the right permissions on the document to
      *             comment.
      */
-    DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
-            throws CommentSecurityException;
+    DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path);
 
     /**
      * Creates a comment.
@@ -177,8 +176,7 @@ public interface CommentManager {
      *             comment.
      * @since 10.3
      */
-    Comment createComment(CoreSession session, Comment comment)
-            throws CommentNotFoundException, CommentSecurityException;
+    Comment createComment(CoreSession session, Comment comment);
 
     /**
      * Gets a comment.
@@ -191,7 +189,7 @@ public interface CommentManager {
      *             document.
      * @since 10.3
      */
-    Comment getComment(CoreSession session, String commentId) throws CommentNotFoundException, CommentSecurityException;
+    Comment getComment(CoreSession session, String commentId);
 
     /**
      * Gets all comments for a document.
@@ -244,7 +242,7 @@ public interface CommentManager {
      * @since 10.3
      */
     PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize, Long currentPageIndex,
-            boolean sortAscending) throws CommentSecurityException;
+            boolean sortAscending);
 
     /**
      * Updates a comment.
@@ -258,8 +256,7 @@ public interface CommentManager {
      *             document.
      * @since 10.3
      */
-    Comment updateComment(CoreSession session, String commentId, Comment comment)
-            throws CommentNotFoundException, CommentSecurityException;
+    Comment updateComment(CoreSession session, String commentId, Comment comment);
 
     /**
      * Deletes a comment.
@@ -271,7 +268,7 @@ public interface CommentManager {
      *             document.
      * @since 10.3
      */
-    void deleteComment(CoreSession session, String commentId) throws CommentNotFoundException, CommentSecurityException;
+    void deleteComment(CoreSession session, String commentId);
 
     /**
      * Gets a comment generated by an external service.
@@ -284,8 +281,7 @@ public interface CommentManager {
      *             document.
      * @since 10.3
      */
-    Comment getExternalComment(CoreSession session, String entityId)
-            throws CommentNotFoundException, CommentSecurityException;
+    Comment getExternalComment(CoreSession session, String entityId);
 
     /**
      * Updates an external comment.
@@ -299,8 +295,7 @@ public interface CommentManager {
      *             document.
      * @since 10.3
      */
-    Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
-            throws CommentNotFoundException, CommentSecurityException;
+    Comment updateExternalComment(CoreSession session, String entityId, Comment comment);
 
     /**
      * Deletes an external comment.
@@ -312,8 +307,7 @@ public interface CommentManager {
      *             document.
      * @since 10.3
      */
-    void deleteExternalComment(CoreSession session, String entityId)
-            throws CommentNotFoundException, CommentSecurityException;
+    void deleteExternalComment(CoreSession session, String entityId);
 
     /**
      * Checks if a feature is available.

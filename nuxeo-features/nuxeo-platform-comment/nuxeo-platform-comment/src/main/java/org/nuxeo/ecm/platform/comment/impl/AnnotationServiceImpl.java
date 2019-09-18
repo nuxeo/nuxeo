@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,7 +62,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class AnnotationServiceImpl extends DefaultComponent implements AnnotationService {
 
-    private static final Log log = LogFactory.getLog(AnnotationServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(AnnotationServiceImpl.class);
 
     protected static final String GET_ANNOTATION_PAGEPROVIDER_NAME = "GET_ANNOTATION_AS_EXTERNAL_ENTITY";
 
@@ -132,19 +132,18 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
             });
         }
         return CoreInstance.doPrivileged(session, s -> {
-            return commentManager
-                    .getComments(s, annotatedDoc)
-                    .stream()
-                    .filter(annotationModel -> ANNOTATION_DOC_TYPE.equals(annotationModel.getType())
-                            && xpath.equals(annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
-                    .map(Comments::newAnnotation)
-                    .collect(Collectors.toList());
+            return commentManager.getComments(s, annotatedDoc)
+                                 .stream()
+                                 .filter(annotationModel -> ANNOTATION_DOC_TYPE.equals(annotationModel.getType())
+                                         && xpath.equals(annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
+                                 .map(Comments::newAnnotation)
+                                 .collect(Collectors.toList());
         });
     }
 
     @Override
     public void updateAnnotation(CoreSession session, String annotationId, Annotation annotation)
-            throws CommentNotFoundException, CommentSecurityException  {
+            throws CommentNotFoundException, CommentSecurityException {
         IdRef annotationRef = new IdRef(annotationId);
         if (!session.exists(annotationRef)) {
             throw new CommentNotFoundException("The annotation " + annotationId + " does not exist.");

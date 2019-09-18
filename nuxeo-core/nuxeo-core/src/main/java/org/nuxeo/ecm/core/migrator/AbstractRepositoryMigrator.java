@@ -22,8 +22,8 @@ package org.nuxeo.ecm.core.migrator;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
@@ -35,7 +35,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public abstract class AbstractRepositoryMigrator implements Migrator {
 
-    private static final Log log = LogFactory.getLog(AbstractRepositoryMigrator.class);
+    private static final Logger log = LogManager.getLogger(AbstractRepositoryMigrator.class);
 
     protected MigrationContext migrationContext;
 
@@ -50,7 +50,7 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
     }
 
     protected void reportProgress(String message, long num, long total) {
-        log.debug(message + ": " + num + "/" + total);
+        log.debug("{}: {}/{}", message, num, total);
         migrationContext.reportProgress(message, num, total);
     }
 
@@ -95,6 +95,5 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
             super();
         }
     }
-
 
 }

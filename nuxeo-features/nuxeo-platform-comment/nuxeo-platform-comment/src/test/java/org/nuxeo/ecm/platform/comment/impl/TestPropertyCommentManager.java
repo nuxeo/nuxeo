@@ -535,7 +535,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     public void testCreateCommentAsRegularUser() {
 
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        domain = session.createDocument(domain);
+        session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
         doc = session.createDocument(doc);
         ACPImpl acp = new ACPImpl();
@@ -561,8 +561,8 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
             subComment.setText(text);
             subComment.setParentId(createdComment.getId());
 
-            Comment createdSubcomment = commentManager.createComment(johnSession, subComment);
-            assertEquals(createdComment.getId(), createdSubcomment.getParentId());
+            Comment createdSubComment = commentManager.createComment(johnSession, subComment);
+            assertEquals(createdComment.getId(), createdSubComment.getParentId());
         }
 
         try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
@@ -577,7 +577,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     public void testGetCommentAsRegularUser() {
 
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        domain = session.createDocument(domain);
+        session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
         doc = session.createDocument(doc);
         ACPImpl acp = new ACPImpl();
@@ -607,8 +607,8 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
             Comment createdComment = commentManager.getComment(johnSession, comment.getId());
             assertEquals(doc.getId(), createdComment.getParentId());
-            Comment createdSubcomment = commentManager.getComment(johnSession, subComment.getId());
-            assertEquals(comment.getId(), createdSubcomment.getParentId());
+            Comment createdSubComment = commentManager.getComment(johnSession, subComment.getId());
+            assertEquals(comment.getId(), createdSubComment.getParentId());
         }
 
         try (CloseableCoreSession janeSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "jane")) {
@@ -631,7 +631,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     public void testUpdateCommentAsRegularUser() {
 
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        domain = session.createDocument(domain);
+        session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
         doc = session.createDocument(doc);
         ACPImpl acp = new ACPImpl();
@@ -685,7 +685,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     public void testDeleteCommentAsRegularUser() {
 
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        domain = session.createDocument(domain);
+        session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
         doc = session.createDocument(doc);
         ACPImpl acp = new ACPImpl();
@@ -715,7 +715,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         comment2 = commentManager.createComment(session, comment2);
         comment3 = commentManager.createComment(session, comment3);
 
-        Comment comment4= new CommentImpl();
+        Comment comment4 = new CommentImpl();
         comment4.setAuthor(author);
         comment4.setParentId(comment3.getId());
         comment4 = commentManager.createComment(session, comment4);
@@ -748,7 +748,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     public void testGetComments() {
 
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        domain = session.createDocument(domain);
+        session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
         doc = session.createDocument(doc);
         ACPImpl acp = new ACPImpl();
@@ -764,7 +764,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         comment1.setAuthor(author);
         comment1.setParentId(doc.getId());
 
-        comment1 = commentManager.createComment(session, comment1);
+        commentManager.createComment(session, comment1);
 
         Comment comment2 = new CommentImpl();
         comment2.setAuthor(author);
@@ -772,10 +772,10 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         comment2 = commentManager.createComment(session, comment2);
 
-        Comment comment3= new CommentImpl();
+        Comment comment3 = new CommentImpl();
         comment3.setAuthor(author);
         comment3.setParentId(comment2.getId());
-        comment3 = commentManager.createComment(session, comment3);
+        commentManager.createComment(session, comment3);
         session.save();
 
         try (CloseableCoreSession johnSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "john")) {
@@ -816,9 +816,8 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         return doc;
     }
 
-
     protected void testManageComments(CoreSession session, String commentId) {
-        //Read
+        // Read
         Comment comment = commentManager.getComment(session, commentId);
 
         // Update
@@ -830,7 +829,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     }
 
     protected Comment createSampleComment(String parentId, String author, String text) {
-        return createSampleComments(1, parentId,author,text).get(0);
+        return createSampleComments(1, parentId, author, text).get(0);
     }
 
     protected List<Comment> createSampleComments(int nbComments, String parentId, String author, String text) {
