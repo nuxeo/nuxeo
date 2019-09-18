@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -68,8 +66,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 10.3
  */
 public class PropertyCommentManager extends AbstractCommentManager {
-
-    private static final Log log = LogFactory.getLog(PropertyCommentManager.class);
 
     protected static final String GET_COMMENT_PAGEPROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
 
@@ -186,7 +182,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
         String parentId = comment.getParentId();
         DocumentRef docRef = new IdRef(parentId);
         // Parent document can be a comment, check existence as a privileged user
-        if (!CoreInstance.doPrivileged(session, s -> {return s.exists(docRef);})) {
+        if (!CoreInstance.doPrivileged(session, s -> {
+            return s.exists(docRef);
+        })) {
             throw new CommentNotFoundException("The document or comment " + comment.getParentId() + " does not exist.");
         }
         DocumentRef ancestorRef = CoreInstance.doPrivileged(session, s -> {
@@ -224,7 +222,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throws CommentNotFoundException, CommentSecurityException {
         DocumentRef commentRef = new IdRef(commentId);
         // Parent document can be a comment, check existence as a privileged user
-        if (!CoreInstance.doPrivileged(session, s -> {return s.exists(commentRef);})) {
+        if (!CoreInstance.doPrivileged(session, s -> {
+            return s.exists(commentRef);
+        })) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
         NuxeoPrincipal principal = session.getPrincipal();
@@ -272,7 +272,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
     public Comment updateComment(CoreSession session, String commentId, Comment comment)
             throws CommentNotFoundException {
         IdRef commentRef = new IdRef(commentId);
-        if (!CoreInstance.doPrivileged(session, s -> {return s.exists(commentRef);})) {
+        if (!CoreInstance.doPrivileged(session, s -> {
+            return s.exists(commentRef);
+        })) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
         NuxeoPrincipal principal = session.getPrincipal();
@@ -301,7 +303,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throws CommentNotFoundException, CommentSecurityException {
         IdRef commentRef = new IdRef(commentId);
         // Document can be a comment, check existence as a privileged user
-        if (!CoreInstance.doPrivileged(session, s -> {return s.exists(commentRef);})) {
+        if (!CoreInstance.doPrivileged(session, s -> {
+            return s.exists(commentRef);
+        })) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
         }
 

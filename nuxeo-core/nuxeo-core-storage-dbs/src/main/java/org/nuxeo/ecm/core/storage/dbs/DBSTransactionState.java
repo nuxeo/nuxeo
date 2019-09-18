@@ -809,7 +809,7 @@ public class DBSTransactionState {
          * Gets the conditions to use to match a change token.
          */
         public Map<String, Serializable> getConditions() {
-            return Collections.singletonMap(KEY_CHANGE_TOKEN, oldToken);
+            return Map.of(KEY_CHANGE_TOKEN, oldToken);
         }
 
         /**
@@ -826,7 +826,7 @@ public class DBSTransactionState {
             // also store the new token in the state (without marking dirty), for the next update
             docState.getState().put(KEY_CHANGE_TOKEN, newToken);
             oldToken = newToken;
-            return Collections.singletonMap(KEY_CHANGE_TOKEN, newToken);
+            return Map.of(KEY_CHANGE_TOKEN, newToken);
         }
     }
 

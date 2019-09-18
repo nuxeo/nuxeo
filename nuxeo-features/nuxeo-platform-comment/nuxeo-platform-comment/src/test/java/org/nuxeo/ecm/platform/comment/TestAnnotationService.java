@@ -178,7 +178,7 @@ public class TestAnnotationService {
             annotation = annotationService.getAnnotation(bobSession, annotationId);
             fail("bob should not be able to get annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob does not have access to the annotations of document " + docToAnnotate.getId(),
+            assertEquals("The user bob does not have access to the comments of document " + annotationId,
                     e.getMessage());
         }
     }

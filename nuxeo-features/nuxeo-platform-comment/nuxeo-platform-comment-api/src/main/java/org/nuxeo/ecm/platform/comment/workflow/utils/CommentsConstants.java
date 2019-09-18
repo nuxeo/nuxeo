@@ -105,24 +105,28 @@ public final class CommentsConstants {
 
     /**
      * Creation Date in ISO-8601 representation.
+     * 
      * @since 10.3
      */
     public static final String COMMENT_CREATION_DATE_FIELD = "creationDate";
 
     /**
      * Modification Date in ISO-8601 representation.
+     * 
      * @since 10.3
      */
     public static final String COMMENT_MODIFICATION_DATE_FIELD = "modificationDate";
 
     /**
      * Number of direct replies.
+     * 
      * @since 10.3
      */
     public static final String COMMENT_NUMBER_OF_REPLIES = "numberOfReplies";
 
     /**
      * Last Reply Date in ISO-8601 representation.
+     * 
      * @since 10.3
      */
     public static final String COMMENT_LAST_REPLY_DATE = "lastReplyDate";

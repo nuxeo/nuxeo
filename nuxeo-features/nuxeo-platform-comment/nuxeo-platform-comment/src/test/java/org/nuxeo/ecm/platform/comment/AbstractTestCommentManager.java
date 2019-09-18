@@ -87,7 +87,6 @@ public abstract class AbstractTestCommentManager {
 
     @Test
     public void testCreateComment() {
-
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
         domain = session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
@@ -134,12 +133,10 @@ public abstract class AbstractTestCommentManager {
         assertEquals(2, commentManager.getComments(session, doc.getId()).size());
         assertEquals(1, commentManager.getComments(session, commentModel.getId()).size());
         assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
-
     }
 
     @Test
     public void testGetComment() {
-
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
         domain = session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
@@ -167,12 +164,10 @@ public abstract class AbstractTestCommentManager {
         comment = commentManager.getComment(session, comment.getId());
         assertEquals(author, comment.getAuthor());
         assertEquals(text, comment.getText());
-
     }
 
     @Test
     public void testDeleteComment() {
-
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
         domain = session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
@@ -204,7 +199,6 @@ public abstract class AbstractTestCommentManager {
 
     @Test
     public void testCommentableDocumentAdapter() {
-
         DocumentModel doc = session.getDocument(new PathRef("/Folder/File"));
         CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
         DocumentModel comment = session.createDocumentModel(COMMENT_DOC_TYPE);
@@ -224,7 +218,6 @@ public abstract class AbstractTestCommentManager {
         // Deletion check
         commentableDocument.removeComment(newComment);
         assertTrue(commentableDocument.getComments().isEmpty());
-
     }
 
     public static CommentServiceConfig newConfig() {

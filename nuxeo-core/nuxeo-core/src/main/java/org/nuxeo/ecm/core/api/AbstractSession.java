@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,8 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -120,7 +120,7 @@ import com.codahale.metrics.SharedMetricRegistries;
  */
 public abstract class AbstractSession implements CoreSession, Serializable {
 
-    private static final Log log = LogFactory.getLog(CoreSession.class);
+    private static final Logger log = LogManager.getLogger(CoreSession.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -194,8 +194,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             return;
         }
         if (!hasPermission(doc, permission)) {
-            log.debug("Permission '" + permission + "' is not granted to '" + getPrincipal().getName()
-                    + "' on document " + doc.getPath() + " (" + doc.getUUID() + " - " + doc.getType().getName() + ")");
+            log.debug("Permission '{}' is not granted to '{}' on document {} ({} - {})", permission,
+                    getPrincipal().getName(), doc.getPath(), doc.getUUID(), doc.getType().getName());
+
             throw new DocumentSecurityException(
                     "Privilege '" + permission + "' is not granted to '" + getPrincipal().getName() + "'");
         }
@@ -1752,7 +1753,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel, options, null, null, true, false);
         }
 
-        log.debug("Document restored to version:" + version.getUUID());
+        log.debug("Document restored to version:{}", version::getUUID);
         return docModel;
     }
 
@@ -1898,10 +1899,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         doc = doc.getVersion(version.getLabel());
         if (doc == null) {
             // SQL Storage uses to return null if version not found
-            log.debug("Version " + version.getLabel() + " does not exist for " + docPath);
+            log.debug("Version {} does not exist for {}", version.getLabel(), docPath);
             return null;
         }
-        log.debug("Retrieved the version " + version.getLabel() + " of the document " + docPath);
+        log.debug("Retrieved the version {} of the document {}", version.getLabel(), docPath);
         return readModel(doc);
     }
 
@@ -2002,10 +2003,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 }
                 return doc.getPropertyValue(field);
             } else {
-                log.warn("Cannot find schema with name=" + schema);
+                log.warn("Cannot find schema with name={}", schema);
             }
         } else {
-            log.warn("Cannot resolve docRef=" + docRef);
+            log.warn("Cannot resolve docRef={}", docRef);
         }
         return null;
     }
