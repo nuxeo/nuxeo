@@ -122,8 +122,9 @@ public class WorkComputation extends AbstractComputation {
                                 work.getId(), work.getTitle(), record));
             } else {
                 // Report an error on the work and continue
-                log.error(String.format("Work id: %s title: %s is in error, the work is skipped, record: %s",
-                        work.getId(), work.getTitle(), record));
+                log.error(String.format(
+                        "Skip Work in failure: id: %s, title: %s, offset: %s, record: %s, thread: %s", work.getId(),
+                        work.getTitle(), context.getLastOffset(), record, Thread.currentThread().getName()));
                 context.askForCheckpoint();
             }
             // Cleanup should take care of logging error except if exception comes from the cleanup

@@ -37,6 +37,8 @@ public class ComputationPolicyBuilder {
 
     protected boolean skipFailure = false;
 
+    protected int skipFirstFailures = 0;
+
     protected int batchCapacity = DEFAULT_BATCH_CAPACITY;
 
     protected Duration batchThreshold = Duration.ofSeconds(DEFAULT_BATCH_THRESHOLD_SECOND);
@@ -75,6 +77,19 @@ public class ComputationPolicyBuilder {
      */
     public ComputationPolicyBuilder continueOnFailure(boolean value) {
         skipFailure = value;
+        return this;
+    }
+
+    /**
+     * A recovery fallback that continues processing after failure only for a limited number of time.
+     *
+     * @since 11.1
+     */
+    public ComputationPolicyBuilder skipFirstFailures(int failures) {
+        if (failures > 0) {
+            skipFirstFailures = failures;
+            skipFailure = false;
+        }
         return this;
     }
 

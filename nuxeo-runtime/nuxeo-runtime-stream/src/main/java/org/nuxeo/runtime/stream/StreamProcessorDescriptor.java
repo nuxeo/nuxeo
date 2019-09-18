@@ -34,12 +34,16 @@ import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
 import org.nuxeo.lib.stream.computation.ComputationPolicyBuilder;
 import org.nuxeo.lib.stream.computation.RecordFilter;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Descriptor;
 
 import net.jodah.failsafe.RetryPolicy;
 
 @XObject("streamProcessor")
 public class StreamProcessorDescriptor implements Descriptor {
+
+    // @since 11.1
+    public static String RECOVERY_SKIP_FIRST_FAILURES_OPTION = "nuxeo.stream.recovery.skipFirstFailures";
 
     // @since 11.1
     @XNode("@enabled")
@@ -141,6 +145,10 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@continueOnFailure")
         public Boolean continueOnFailure = Boolean.FALSE;
 
+        // @since 11.1 can be used for recovery in order to skip the n first failures
+        @XNode("@skipFirstFailures")
+        public Integer skipFirstFailures = 0;
+
         @Override
         public String getId() {
             return name;
@@ -157,13 +165,19 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@batchThreshold")
         public Duration batchThreshold = DEFAULT_BATCH_THRESHOLD;
 
+        protected int getSkipFirstFailures() {
+            return Integer.parseInt(
+                    Framework.getProperty(RECOVERY_SKIP_FIRST_FAILURES_OPTION, Integer.toString(skipFirstFailures)));
+        }
+
         public ComputationPolicyBuilder createPolicyBuilder() {
             RetryPolicy retryPolicy = new RetryPolicy().withMaxRetries(maxRetries)
                                                        .withBackoff(delay.toMillis(), maxDelay.toMillis(),
                                                                TimeUnit.MILLISECONDS);
             return new ComputationPolicyBuilder().retryPolicy(retryPolicy)
                                                  .batchPolicy(batchCapacity, batchThreshold)
-                                                 .continueOnFailure(continueOnFailure);
+                                                 .continueOnFailure(continueOnFailure)
+                                                 .skipFirstFailures(getSkipFirstFailures());
         }
     }
 

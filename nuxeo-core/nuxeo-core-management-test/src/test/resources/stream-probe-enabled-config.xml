@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.management.stream.tests">
+
+  <require>org.nuxeo.ecm.core.management.contribs</require>
+  <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent"
+    point="healthCheck">
+    <probe name="streamStatus" enabled="true" />
+  </extension>
+</component>
