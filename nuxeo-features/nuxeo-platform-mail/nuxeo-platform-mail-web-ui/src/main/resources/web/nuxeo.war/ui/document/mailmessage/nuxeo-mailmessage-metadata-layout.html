@@ -60,7 +60,9 @@ limitations under the License.
       <nuxeo-tags items="[[document.properties.mail:cc_recipients]]"></nuxeo-tags>
     </div>
 
-    <nuxeo-document-attachments role="widget" document="[[document]]"></nuxeo-document-attachments>
+    <template is="dom-if" if="[[hasSchema(document, 'files')]]">
+      <nuxeo-document-attachments role="widget" document="[[document]]"></nuxeo-document-attachments>
+    </template>
   </template>
   <script>
     Polymer({

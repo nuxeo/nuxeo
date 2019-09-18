@@ -85,7 +85,9 @@ limitations under the License.
       <div name="expired">[[formatDate(document.properties.dc:expired)]]</div>
     </div>
 
-    <nuxeo-document-attachments role="widget" document="[[document]]"></nuxeo-document-attachments>
+    <template is="dom-if" if="[[hasSchema(document, 'files')]]">
+      <nuxeo-document-attachments role="widget" document="[[document]]"></nuxeo-document-attachments>
+    </template>
 
   </template>
 

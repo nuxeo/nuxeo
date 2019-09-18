@@ -45,7 +45,9 @@ Contributors:
     <nuxeo-3d-preview class="card-section" document="{{document}}"></nuxeo-3d-preview>
     <nuxeo-3d-render-views class="card-section" document="{{document}}"></nuxeo-3d-render-views>
     <nuxeo-3d-transmission-formats class="card-section" document="{{document}}"></nuxeo-3d-transmission-formats>
-    <nuxeo-document-attachments class="card-section attachments" document="{{document}}"></nuxeo-document-attachments>
+    <template is="dom-if" if="[[hasSchema(document, 'files')]]">
+      <nuxeo-document-attachments role="widget" document="[[document]]"></nuxeo-document-attachments>
+    </template>
 
   </template>
 
