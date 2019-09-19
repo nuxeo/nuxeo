@@ -91,6 +91,12 @@ public abstract class AbstractCommentManager implements CommentManager {
         return getComments(session, documentId, pageSize, currentPageIndex, true);
     }
 
+    @Override
+    public DocumentModel getThreadForComment(DocumentModel comment) {
+        DocumentRef topLevelDocRef = getTopLevelCommentAncestor(comment.getCoreSession(), comment.getRef());
+        return comment.getCoreSession().getDocument(topLevelDocRef);
+    }
+
     protected void notifyEvent(CoreSession session, String eventType, DocumentModel commentedDoc,
             DocumentModel comment) {
 

@@ -134,6 +134,12 @@ public final class CommentsConstants {
     /** @since 10.3 */
     public static final String COMMENT_PERMISSIONS = "permissions";
 
+    /** @since 11.1 **/
+    public static final String COMMENTS_DIRECTORY_NAME = "Comments";
+
+    /** @since 11.1 **/
+    public static final String COMMENTS_DIRECTORY_TYPE = "CommentRoot";
+
     private CommentsConstants() {
     }
 
