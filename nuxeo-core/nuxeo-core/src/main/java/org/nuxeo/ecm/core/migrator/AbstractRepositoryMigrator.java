@@ -37,13 +37,30 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
 
     private static final Logger log = LogManager.getLogger(AbstractRepositoryMigrator.class);
 
+    /**
+     * @deprecated since 11.1, please use parameters when using or implementing:
+     *             <ul>
+     *             <li>{@link #migrateRepository(String, MigrationContext, String)}</li>
+     *             <li>{@link #migrateSession(String, MigrationContext, CoreSession)}</li>
+     *             <li>{@link #checkShutdownRequested(MigrationContext)}
+     *             <li>{@link #processBatched(MigrationContext, int, Collection, Consumer, String)}
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     protected MigrationContext migrationContext;
 
     protected String probeRepository(String repositoryName) {
         return TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::probeSession));
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link #checkShutdownRequested(MigrationContext)} instead
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     protected void checkShutdownRequested() {
+        checkShutdownRequested(this.migrationContext);
+    }
+
+    protected void checkShutdownRequested(MigrationContext migrationContext) {
         if (migrationContext.isShutdownRequested()) {
             throw new MigrationShutdownException();
         }
@@ -58,21 +75,48 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
         reportProgress(String.format("[%s] %s", repositoryName, message), num, total);
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link #migrateRepository(String, MigrationContext, String)} instead
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     protected void migrateRepository(String repositoryName) {
-        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::migrateSession));
+        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName,
+                (CoreSession session) -> migrateSession(session)));
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected void migrateRepository(String step, MigrationContext migrationContext, String repositoryName) {
+        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName,
+                (CoreSession session) -> migrateSession(step, migrationContext, session)));
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected abstract void migrateSession(String step, MigrationContext context, CoreSession session);
+
+    /**
+     * @deprecated since 11.1 Use {@link #processBatched(MigrationContext, int, Collection, Consumer, String)} instead
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
+    protected <T> void processBatched(int batchSize, Collection<T> collection, Consumer<T> consumer,
+            String progressMessage) {
+        processBatched(migrationContext, batchSize, collection, consumer, progressMessage);
     }
 
     /**
      * Runs a consumer on the collection, committing every BATCH_SIZE elements, reporting progress and checking for
      * shutdown request.
      */
-    protected <T> void processBatched(int batchSize, Collection<T> collection, Consumer<T> consumer,
-            String progressMessage) {
+    protected <T> void processBatched(MigrationContext migrationContext, int batchSize, Collection<T> collection,
+            Consumer<T> consumer, String progressMessage) {
         int size = collection.size();
         int i = -1;
         for (T element : collection) {
             consumer.accept(element);
-            checkShutdownRequested();
+            checkShutdownRequested(migrationContext);
             i++;
             if (i % batchSize == 0 || i == size - 1) {
                 reportProgress(progressMessage, i + 1, size);
@@ -84,7 +128,13 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
 
     protected abstract String probeSession(CoreSession session);
 
-    protected abstract void migrateSession(CoreSession session);
+    /**
+     * @deprecated since 11.1 Use {@link #migrateSession(String, MigrationContext, CoreSession)} instead
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
+    protected void migrateSession(CoreSession session) {
+        migrateSession(null, this.migrationContext, session);
+    }
 
     // exception used for simpler flow control
     protected static class MigrationShutdownException extends RuntimeException {

@@ -108,7 +108,6 @@ public class TestTrashedStateMigrator {
 
         List<String> expectedLines = Arrays.asList( //
                 "Initializing: 0/-1", //
-                "[test] Initializing: 0/-1", //
                 "[test] Setting isTrashed property: 0/100", //
                 "[test] Setting isTrashed property: 50/100", //
                 "[test] Setting isTrashed property: 100/100", //
