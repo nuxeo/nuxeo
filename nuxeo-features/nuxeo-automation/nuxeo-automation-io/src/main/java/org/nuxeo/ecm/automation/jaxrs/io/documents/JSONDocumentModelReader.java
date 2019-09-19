@@ -127,7 +127,7 @@ public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel>
         if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
             tok = jp.nextToken();
         }
-        SimpleDocumentModel simpleDoc = new SimpleDocumentModel();
+        SimpleDocumentModel simpleDoc = SimpleDocumentModel.empty();
         String type = null;
         String name = null;
         String uid = null;

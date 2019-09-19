@@ -216,7 +216,7 @@ public class PageProviderHelper {
      * {@link PageProviderDefinition definition}, or if the given {@code namedParameters} is not empty.
      * <p/>
      * {@link PageProviderDefinition Definition} is valid if either it has a type or if it declares where clause.
-     * 
+     *
      * @since 11.1
      */
     public static DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps,
@@ -232,7 +232,7 @@ public class PageProviderHelper {
                 } else if (def.getWhereClause() != null) {
                     // avoid later error on null search doc, in case where clause is only referring to named parameters
                     // (and no namedParameters are given)
-                    searchDocumentModel = new SimpleDocumentModel();
+                    searchDocumentModel = SimpleDocumentModel.empty();
                 }
             } else {
                 log.error("No page provider definition found for provider: {}", providerName);
@@ -242,7 +242,7 @@ public class PageProviderHelper {
         if (namedParameters != null && !namedParameters.isEmpty()) {
             // fall back on simple document if no type defined on page provider
             if (searchDocumentModel == null) {
-                searchDocumentModel = new SimpleDocumentModel();
+                searchDocumentModel = SimpleDocumentModel.empty();
             }
             fillSearchDocument(session, searchDocumentModel, namedParameters);
         }

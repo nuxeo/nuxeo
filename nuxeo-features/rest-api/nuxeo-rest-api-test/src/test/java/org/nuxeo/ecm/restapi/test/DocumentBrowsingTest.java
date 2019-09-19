@@ -233,8 +233,6 @@ public class DocumentBrowsingTest extends BaseTest {
 
         String payload = "{" //
                 + "         \"entity-type\": \"document\"," //
-                + "         \"name\": \"myFile\"," //
-                + "         \"type\": \"File\"," //
                 + "         \"state\": \"project\"," //
                 + "         \"title\": \"New title\"," //
                 + "         \"properties\": {" //

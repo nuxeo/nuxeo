@@ -101,7 +101,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator, boolean updateAllGroups) {
-        DocumentModel documentModelImpl = new SimpleDocumentModel(config.schemaName);
+        DocumentModel documentModelImpl = SimpleDocumentModel.ofSchemas(config.schemaName);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
         // a username

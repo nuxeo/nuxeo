@@ -50,7 +50,7 @@ public abstract class BusinessAdapter {
      * Default constructor called by jackson
      */
     public BusinessAdapter() {
-        doc = new SimpleDocumentModel();
+        doc = SimpleDocumentModel.empty();
     }
 
     public BusinessAdapter(DocumentModel document) {

@@ -49,7 +49,7 @@ public class NuxeoGroupImpl implements NuxeoGroup {
         name = name.trim();
         label = label == null ? null : label.trim();
 
-        model = new SimpleDocumentModel();
+        model = SimpleDocumentModel.empty();
         model.setProperty(config.schemaName, config.idField, name);
         model.setProperty(config.schemaName, config.labelField, label);
     }

@@ -166,8 +166,8 @@ public class AddPermissionTest {
         assertNull(doc.getACP().getACL("local"));
 
         List<String> users = Arrays.asList("existingGroup", "unexistingUser", "existingUser", "unexistingUser2");
-        when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
+        when(userManager.getUserModel("existingUser")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
+        when(userManager.getGroupModel("existingGroup")).thenReturn(SimpleDocumentModel.ofSchemas("group"));
         when(userManager.getUserModel("unexistingUser")).thenReturn(null);
         when(userManager.getUserModel("unexistingUser2")).thenReturn(null);
 
@@ -197,8 +197,8 @@ public class AddPermissionTest {
         assertNull(doc.getACP().getACL("local"));
 
         List<String> users = Arrays.asList("existingGroup", "unexistingGroup", "existingUser");
-        when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
+        when(userManager.getUserModel("existingUser")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
+        when(userManager.getGroupModel("existingGroup")).thenReturn(SimpleDocumentModel.ofSchemas("group"));
         when(userManager.getGroupModel("unexistingGroup")).thenReturn(null);
 
         ctx.setInput(doc);
@@ -292,7 +292,7 @@ public class AddPermissionTest {
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
-        when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
 
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation("existingUser", null, null, "Read", null,
@@ -338,9 +338,9 @@ public class AddPermissionTest {
         assertNull(doc.getACP().getACL("local"));
 
         List<String> users = Arrays.asList("existingUser2", "existingUser3");
-        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getUserModel("existingUser3")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser1")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
+        when(userManager.getUserModel("existingUser2")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
+        when(userManager.getUserModel("existingUser3")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
 
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation("existingUser1", users, null, "Write", null, null,
@@ -369,8 +369,8 @@ public class AddPermissionTest {
         assertNull(doc.getACP().getACL("local"));
 
         List<String> users = Arrays.asList("existingUser1", "existingUser2");
-        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getUserModel("existingUser2")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser1")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
+        when(userManager.getUserModel("existingUser2")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
 
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, users, "user@nuxeo.com", "Write", null, null,
@@ -396,7 +396,7 @@ public class AddPermissionTest {
         assertNotNull(doc.getACP());
         assertNull(doc.getACP().getACL("local"));
 
-        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser1")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
 
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation("existingUser1", null, "user@nuxeo.com", "Write",
@@ -422,7 +422,7 @@ public class AddPermissionTest {
 
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(singletonList("administrators"));
 
-        when(userManager.getUserModel("existingUser1")).thenReturn(new SimpleDocumentModel("user"));
+        when(userManager.getUserModel("existingUser1")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
 
         ctx.setInput(doc);
         Map<String, Object> params = getParametersForAddOperation(null, singletonList("existingUser1"), null, "Write",
@@ -444,7 +444,7 @@ public class AddPermissionTest {
     public void shouldAddPermissionForUsersWhenUsingChainExtension() throws OperationException {
         // Mock the users params
         List<String> users = Arrays.asList("jchastain", "rdeniro", "dwashington");
-        users.forEach(user -> when(userManager.getUserModel(user)).thenReturn(new SimpleDocumentModel(user)));
+        users.forEach(user -> when(userManager.getUserModel(user)).thenReturn(SimpleDocumentModel.ofSchemas(user)));
 
         DocumentModel doc = session.getDocument(new PathRef("/src"));
         ctx.setInput(doc);

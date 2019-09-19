@@ -90,8 +90,8 @@ public class PermissionAutomationTest {
         session.save();
         src = session.getDocument(src.getRef());
 
-        when(userManager.getUserModel("existingUser")).thenReturn(new SimpleDocumentModel("user"));
-        when(userManager.getGroupModel("existingGroup")).thenReturn(new SimpleDocumentModel("group"));
+        when(userManager.getUserModel("existingUser")).thenReturn(SimpleDocumentModel.ofSchemas("user"));
+        when(userManager.getGroupModel("existingGroup")).thenReturn(SimpleDocumentModel.ofSchemas("group"));
         when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
                 Collections.singletonList("administrators"));
         ctx = new OperationContext(session);

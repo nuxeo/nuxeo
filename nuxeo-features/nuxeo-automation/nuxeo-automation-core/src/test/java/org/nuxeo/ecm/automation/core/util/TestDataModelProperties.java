@@ -78,7 +78,7 @@ public class TestDataModelProperties {
 
     @Test
     public void shouldWorkWithSimpleDocumentModel() {
-        SimpleDocumentModel documentModel = new SimpleDocumentModel();
+        SimpleDocumentModel documentModel = SimpleDocumentModel.empty();
         documentModel.setPropertyValue("dc:title", "Doc2");
         documentModel.setPropertyValue("dc:description", "desc2");
         documentModel.setPropertyValue("dc:subjects", new String[] { "subject1", "subject2" });

@@ -3042,7 +3042,7 @@ public class TestSQLRepositoryAPI {
     @Test
     public void testCopyContentFromSimpleDocumentModel() {
         DocumentModel root = session.getRootDocument();
-        DocumentModel doc = new SimpleDocumentModel("dublincore");
+        DocumentModel doc = SimpleDocumentModel.ofSchemas("dublincore");
         doc.setPropertyValue("dc:title", "t");
         doc.setPropertyValue("dc:description", "d");
         doc.setPropertyValue("dc:subjects", new String[] { "a", "b" });
