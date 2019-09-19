@@ -85,28 +85,4 @@ public class CreateCollectionTest extends CollectionOperationsTestCase {
         assertTrue(session.exists(new PathRef(collectionPath)));
     }
 
-    @Test(expected=OperationException.class)
-    public void testCreateCollectionOnWrongDocument() throws Exception {
-        DocumentModel doc = session.createDocumentModel(testWorkspace.getPath().toString(), "test", "File");
-        session.createDocument(doc);
-        session.save();
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", COLLECTION_NAME);
-        params.put("description", COLLECTION_DESCRIPTION);
-
-        chain = new OperationChain("test-chain");
-        chain.add(CreateCollectionOperation.ID).from(params);
-
-        ctx.setInput(doc);
-
-        try {
-            service.run(ctx, chain);
-            // Should fail before
-            fail("Document is not a File");
-        } finally {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-    }
 }

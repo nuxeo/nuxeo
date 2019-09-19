@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
@@ -50,9 +51,11 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -64,7 +67,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
-public class TestAnnotationService {
+public abstract class AbstractTestAnnotationService {
 
     @Inject
     protected CoreFeature coreFeature;
@@ -73,6 +76,8 @@ public class TestAnnotationService {
     protected AnnotationService annotationService;
 
     protected CloseableCoreSession session;
+
+    protected abstract Class<? extends CommentManager> getCommentManager();
 
     @Before
     public void setup() {
@@ -178,7 +183,7 @@ public class TestAnnotationService {
             annotation = annotationService.getAnnotation(bobSession, annotationId);
             fail("bob should not be able to get annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob does not have access to the comments of document " + annotationId,
+            assertEquals("The user bob does not have access to the comments of document " + docToAnnotate.getId(),
                     e.getMessage());
         }
     }
@@ -218,7 +223,7 @@ public class TestAnnotationService {
             annotationService.updateAnnotation(bobSession, annotation.getId(), annotation);
             fail("bob should not be able to edit annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob can not edit annotations of document " + docToAnnotate.getId(), e.getMessage());
+            assertEquals("The user bob cannot edit comments of document " + docToAnnotate.getId(), e.getMessage());
         }
     }
 
@@ -259,8 +264,7 @@ public class TestAnnotationService {
             annotationService.deleteAnnotation(bobSession, annotation.getId());
             fail("bob should not be able to delete annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob can not delete annotations of document " + docToAnnotate.getId(),
-                    e.getMessage());
+            assertEquals("The user bob cannot delete comments of the document " + docToAnnotate.getId(), e.getMessage());
         }
 
         annotationService.deleteAnnotation(session, annotation.getId());
@@ -354,7 +358,7 @@ public class TestAnnotationService {
             annotation = annotationService.getExternalAnnotation(bobSession, entityId);
             fail("bob should not be able to get annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob does not have access to the annotations of document " + docToAnnotate.getId(),
+            assertEquals("The user bob does not have access to the comments of document " + docToAnnotate.getId(),
                     e.getMessage());
         }
     }
@@ -404,7 +408,7 @@ public class TestAnnotationService {
             annotationService.updateAnnotation(bobSession, annotation.getId(), annotation);
             fail("bob should not be able to edit annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob can not edit annotations of document " + docToAnnotate.getId(), e.getMessage());
+            assertEquals("The user bob cannot edit comments of document " + docToAnnotate.getId(), e.getMessage());
         }
     }
 
@@ -447,13 +451,69 @@ public class TestAnnotationService {
             annotationService.deleteAnnotation(bobSession, annotation.getId());
             fail("bob should not be able to delete annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob can not delete annotations of document " + docToAnnotate.getId(),
-                    e.getMessage());
+            assertEquals("The user bob cannot delete comments of the document " + docToAnnotate.getId(), e.getMessage());
         }
 
         annotationService.deleteExternalAnnotation(session, entityId);
         assertFalse(session.exists(new IdRef(annotation.getId())));
 
+    }
+
+    @Test
+    public void testGetTopLevelAnnotationAncestor() {
+        DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
+        docToAnnotate = session.createDocument(docToAnnotate);
+
+        String entityId = "foo";
+        String docIdToAnnotate = docToAnnotate.getId();
+        String xpathToAnnotate = "files:files/0/file";
+        String comment = "test comment";
+        String origin = "Test";
+        String entity = "<entity><annotation>bar</annotation></entity>";
+
+        Annotation annotation = new AnnotationImpl();
+        annotation.setAuthor("jdoe");
+        annotation.setText(comment);
+        annotation.setParentId(docIdToAnnotate);
+        annotation.setXpath(xpathToAnnotate);
+        annotation.setCreationDate(Instant.now());
+        annotation.setModificationDate(Instant.now());
+        ((ExternalEntity) annotation).setEntityId(entityId);
+        ((ExternalEntity) annotation).setOrigin(origin);
+        ((ExternalEntity) annotation).setEntity(entity);
+        annotation = annotationService.createAnnotation(session, annotation);
+
+        ACP acp = docToAnnotate.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("james", SecurityConstants.READ, true));
+        session.setACP(docToAnnotate.getRef(), acp, false);
+        session.save();
+
+        CommentManager commentManager = Framework.getService(CommentManager.class);
+        try (CloseableCoreSession systemSession = coreFeature.openCoreSession()) {
+            assertEquals(docToAnnotate.getRef(),
+                    commentManager.getTopLevelCommentAncestor(systemSession, new IdRef(annotation.getId())));
+        }
+
+        try (CloseableCoreSession jamesSession = coreFeature.openCoreSession("james")) {
+            assertEquals(docToAnnotate.getRef(),
+                    commentManager.getTopLevelCommentAncestor(jamesSession, new IdRef(annotation.getId())));
+        }
+
+        try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
+            assertEquals(docToAnnotate.getRef(),
+                    commentManager.getTopLevelCommentAncestor(janeSession, new IdRef(annotation.getId())));
+            fail("jane should not be able to get the top level annotation ancestor");
+        } catch (CommentSecurityException cse) {
+            assertNotNull(cse);
+            assertEquals(String.format("The user jane does not have access to the comments of document %s",
+                    docToAnnotate.getId()), cse.getMessage());
+        }
+    }
+
+    @Test
+    public void testUsedCommentManager() {
+        assertEquals(getCommentManager(), Framework.getService(CommentManager.class).getClass());
     }
 
 }

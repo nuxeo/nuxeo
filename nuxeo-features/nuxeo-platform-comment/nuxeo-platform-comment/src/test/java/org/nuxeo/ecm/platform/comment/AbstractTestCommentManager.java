@@ -32,16 +32,23 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -49,18 +56,20 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
-import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.comment.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
@@ -73,6 +82,14 @@ public abstract class AbstractTestCommentManager {
 
     @Inject
     protected CommentManager commentManager;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected CoreFeature coreFeature;
+
+    public abstract Class<? extends CommentManager> getType();
 
     @Before
     public void init() {
@@ -113,26 +130,8 @@ public abstract class AbstractTestCommentManager {
         comment = commentManager.createComment(session, comment);
         assertEquals(author, comment.getAuthor());
         assertEquals(text, comment.getText());
-        assertTrue(comment.getAncestorIds().contains(doc.getId()));
-
-        // Create a comment in a specific location
-        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
-        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        Comments.commentToDocumentModel(comment, commentModel);
-        commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
-        // Check if Comments folder has been created in the given container
-        assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
-
-        // Create a comment linked to a parent in a specific location
-        Comment newComment = new CommentImpl();
-        newComment.setParentId(commentModel.getId());
-        commentManager.createComment(session, newComment);
-        session.save();
-
-        // Check if both comments are linked and located accordingly
-        assertEquals(2, commentManager.getComments(session, doc.getId()).size());
-        assertEquals(1, commentManager.getComments(session, commentModel.getId()).size());
-        assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
+        assertEquals(doc.getRef(),
+                commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
     }
 
     @Test
@@ -218,6 +217,98 @@ public abstract class AbstractTestCommentManager {
         // Deletion check
         commentableDocument.removeComment(newComment);
         assertTrue(commentableDocument.getComments().isEmpty());
+    }
+
+    @Test
+    public void testGetTopLevelCommentAncestor() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("james", SecurityConstants.READ, true));
+        session.setACP(doc.getRef(), acp, false);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(doc.getId());
+
+        comment = commentManager.createComment(session, comment);
+        assertEquals(doc.getRef(), commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
+
+        try (CloseableCoreSession jamesSession = coreFeature.openCoreSession("james")) {
+            assertEquals(doc.getRef(),
+                    commentManager.getTopLevelCommentAncestor(jamesSession, new IdRef(comment.getId())));
+        }
+
+        try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
+            assertEquals(doc.getRef(),
+                    commentManager.getTopLevelCommentAncestor(janeSession, new IdRef(comment.getId())));
+            fail("jane should not be able to get the top level comment ancestor");
+        } catch (CommentSecurityException cse) {
+            assertNotNull(cse);
+            assertEquals(String.format("The user jane does not have access to the comments of document %s",
+                    doc.getId()), cse.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetCommentThread() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(doc.getId());
+
+        comment = commentManager.createComment(session, comment);
+
+        // Add a reply
+        Comment reply = new CommentImpl();
+        reply.setAuthor(author);
+        reply.setText("I am a reply");
+        reply.setParentId(comment.getId());
+        reply = commentManager.createComment(session, reply);
+
+        // Another reply
+        Comment anotherReply = new CommentImpl();
+        anotherReply.setAuthor(author);
+        anotherReply.setText("I am a 2nd reply");
+        anotherReply.setParentId(reply.getId());
+        anotherReply = commentManager.createComment(session, anotherReply);
+
+        DocumentModel anotherReplyDocModel = session.getDocument(new IdRef(anotherReply.getId()));
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, anotherReplyDocModel.getRef());
+        assertEquals(doc.getRef(), topLevelCommentAncestor);
+    }
+
+    @Test
+    public void testGetEmptyComments() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
+        doc = session.createDocument(doc);
+        session.save();
+
+        List<Comment> comments = commentManager.getComments(session, doc.getId());
+        assertTrue(comments.isEmpty());
+    }
+
+    @Test
+    public void testCommentManagerType() {
+        assertEquals(getType(), commentManager.getClass());
     }
 
     public static CommentServiceConfig newConfig() {

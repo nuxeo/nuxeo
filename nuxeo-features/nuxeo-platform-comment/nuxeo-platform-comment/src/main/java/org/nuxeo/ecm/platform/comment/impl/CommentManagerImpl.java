@@ -24,11 +24,9 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,10 +46,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
@@ -177,8 +177,6 @@ public class CommentManagerImpl extends AbstractCommentManager {
     @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            comment.setPropertyValue(COMMENT_ANCESTOR_IDS,
-                    (Serializable) computeAncestorIds(session, docModel.getId()));
             DocumentModel doc = internalCreateComment(session, docModel, comment, null);
             session.save();
             doc.detach(true);
@@ -404,19 +402,6 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
-        List<DocumentModel> threads = getDocumentsForComment(comment);
-        if (threads.size() > 0) {
-            DocumentModel thread = threads.get(0);
-            while (thread.getType().equals("Post") || thread.getType().equals(COMMENT_DOC_TYPE)) {
-                thread = getThreadForComment(thread);
-            }
-            return thread;
-        }
-        return null;
-    }
-
-    @Override
     public Comment createComment(CoreSession session, Comment comment)
             throws CommentNotFoundException, CommentSecurityException {
         DocumentRef commentRef = new IdRef(comment.getParentId());
@@ -483,10 +468,10 @@ public class CommentManagerImpl extends AbstractCommentManager {
             if (!session.exists(commentRef)) {
                 throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
             }
-            DocumentModel comment = session.getDocument(commentRef);
-            DocumentModel commentedDoc = session.getDocument(
-                    new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
-            deleteComment(commentedDoc, comment);
+
+            DocumentModel commentDocModel = session.getDocument(commentRef);
+            DocumentModel commentedDocModel = session.getDocument(getTopLevelCommentAncestor(session, commentRef));
+            deleteComment(commentedDocModel, commentDocModel);
         });
     }
 
@@ -517,4 +502,29 @@ public class CommentManagerImpl extends AbstractCommentManager {
             throw new UnsupportedOperationException(feature.name());
         }
     }
+
+    @Override
+    public DocumentRef getTopLevelCommentAncestor(CoreSession s, DocumentRef commentIdRef) {
+        NuxeoPrincipal principal = s.getPrincipal();
+        return CoreInstance.doPrivileged(s, session -> {
+            if (!session.exists(commentIdRef)) {
+                throw new CommentNotFoundException(String.format("The comment %s does not exist.", commentIdRef));
+            }
+
+            DocumentModel documentModel = session.getDocument(commentIdRef);
+            while (documentModel != null && documentModel.hasSchema(COMMENT_SCHEMA)) {
+                List<DocumentModel> ancestors = getDocumentsForComment(documentModel);
+                documentModel = ancestors.isEmpty() ? null : ancestors.get(0);
+            }
+
+            if (documentModel != null
+                    && !session.hasPermission(principal, documentModel.getRef(), SecurityConstants.READ)) {
+                throw new CommentSecurityException("The user " + principal.getName()
+                        + " does not have access to the comments of document " + documentModel.getRef().reference());
+            }
+
+            return documentModel != null ? documentModel.getRef() : null;
+        });
+    }
+
 }
