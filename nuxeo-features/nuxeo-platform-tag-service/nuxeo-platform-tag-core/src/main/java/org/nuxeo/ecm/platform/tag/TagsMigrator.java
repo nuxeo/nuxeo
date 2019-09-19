@@ -161,24 +161,24 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
         reportProgress("Initializing", 0, -1); // unknown
         List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();
         try {
-            repositoryNames.forEach(this::migrateRepository);
+            repositoryNames.forEach(repoName -> migrateRepository(step, migrationContext, repoName));
         } catch (MigrationShutdownException e) {
             return;
         }
     }
 
     @Override
-    protected void migrateSession(CoreSession session) {
+    protected void migrateSession(String step, MigrationContext migrationContext, CoreSession session) {
         // query all tagging
         List<Map<String, Serializable>> taggingMaps = session.queryProjection(QUERY_TAGGING, -1, 0);
 
-        checkShutdownRequested();
+        checkShutdownRequested(migrationContext);
 
         // query all tags we'll have to remove too
         String tagSql = "SELECT ecm:uuid FROM Tag WHERE ecm:isProxy = 0";
         List<Map<String, Serializable>> tagMaps = session.queryProjection(tagSql, -1, 0);
 
-        checkShutdownRequested();
+        checkShutdownRequested(migrationContext);
 
         // compute all tagged documents and their tag label and username
         Map<String, Set<Tag>> docTags = new HashMap<>();
@@ -198,16 +198,16 @@ public class TagsMigrator extends AbstractRepositoryMigrator {
                                     .map(map -> (String) map.get(ECM_UUID))
                                     .collect(Collectors.toSet());
 
-        checkShutdownRequested();
+        checkShutdownRequested(migrationContext);
 
         // recreate all doc tags
-        processBatched(BATCH_SIZE, docTags.entrySet(), es -> addTags(session, es.getKey(), es.getValue()),
+        processBatched(migrationContext, BATCH_SIZE, docTags.entrySet(), es -> addTags(session, es.getKey(), es.getValue()),
                 "Creating new tags");
 
         // delete all Tagging and Tag documents
-        processBatched(BATCH_SIZE, taggingIds, docId -> removeDocument(session, docId),
+        processBatched(migrationContext, BATCH_SIZE, taggingIds, docId -> removeDocument(session, docId),
                 "Deleting old Tagging documents");
-        processBatched(BATCH_SIZE, tagIds, docId -> removeDocument(session, docId), "Deleting old Tag documents");
+        processBatched(migrationContext, BATCH_SIZE, tagIds, docId -> removeDocument(session, docId), "Deleting old Tag documents");
 
         reportProgress("Done", docTags.size(), docTags.size());
     }

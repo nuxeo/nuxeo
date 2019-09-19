@@ -90,7 +90,7 @@ public class TrashedStateMigrator extends AbstractRepositoryMigrator {
         reportProgress("Initializing", 0, -1); // unknown
         List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();
         try {
-            repositoryNames.forEach(this::migrateRepository);
+            repositoryNames.forEach(repoName -> migrateRepository(step, migrationContext, repoName));
             reportProgress("Done", 1, 1);
         } catch (MigrationShutdownException e) {
             return;
@@ -98,22 +98,16 @@ public class TrashedStateMigrator extends AbstractRepositoryMigrator {
     }
 
     @Override
-    protected void migrateRepository(String repositoryName) {
-        reportProgress(repositoryName, "Initializing", 0, -1); // unknown
-        super.migrateRepository(repositoryName);
-    }
-
-    @Override
-    protected void migrateSession(CoreSession session) {
+    protected void migrateSession(String step, MigrationContext migrationContext, CoreSession session) {
         // query all 'deleted' documents
         List<Map<String, Serializable>> deletedMaps = session.queryProjection(QUERY_DELETED, -1, 0);
 
-        checkShutdownRequested();
+        checkShutdownRequested(migrationContext);
 
         // compute all deleted doc id refs
         List<String> ids = deletedMaps.stream().map(map -> (String) map.get(ECM_UUID)).collect(toList());
 
-        checkShutdownRequested();
+        checkShutdownRequested(migrationContext);
 
         // set ecm:isTrashed property by batch
         int size = ids.size();
@@ -134,7 +128,7 @@ public class TrashedStateMigrator extends AbstractRepositoryMigrator {
                 // force 'project' state
                 doc.setCurrentLifeCycleState("project");
             }
-            checkShutdownRequested();
+            checkShutdownRequested(migrationContext);
             i++;
             if (i % BATCH_SIZE == 0 || i == size) {
                 reportProgress(session.getRepositoryName(), "Setting isTrashed property", i, size);

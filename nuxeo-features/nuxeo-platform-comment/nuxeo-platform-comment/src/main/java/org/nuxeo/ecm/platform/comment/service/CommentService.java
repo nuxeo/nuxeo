@@ -24,6 +24,8 @@ package org.nuxeo.ecm.platform.comment.service;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_SECURED;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_PROPERTY_TO_SECURED;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
 
 import org.apache.commons.logging.Log;
@@ -32,6 +34,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -110,6 +113,8 @@ public class CommentService extends DefaultComponent {
             String step = status.getStep();
             if (MIGRATION_STEP_RELATION_TO_PROPERTY.equals(step)) {
                 return new BridgeCommentManager(new CommentManagerImpl(config), new PropertyCommentManager());
+            } else if (MIGRATION_STEP_PROPERTY_TO_SECURED.equals(step)) {
+                return new BridgeCommentManager(new PropertyCommentManager(), new TreeCommentManager());
             } else {
                 throw new IllegalStateException("Unknown migration step: " + step);
             }
@@ -119,6 +124,8 @@ public class CommentService extends DefaultComponent {
                 return new CommentManagerImpl(config);
             } else if (MIGRATION_STATE_PROPERTY.equals(state)) {
                 return new PropertyCommentManager();
+            } else if (MIGRATION_STATE_SECURED.equals(state)) {
+                return new TreeCommentManager();
             } else {
                 throw new IllegalStateException("Unknown migration state: " + state);
             }
