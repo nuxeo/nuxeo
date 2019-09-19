@@ -102,7 +102,7 @@ public class TestAutomationMapper {
 
     @Test
     public void testUnwrapDocumentScriptingWrapper() {
-        DocumentModel doc = new SimpleDocumentModel("note");
+        DocumentModel doc = SimpleDocumentModel.ofSchemas("note");
         doc.setPropertyValue("note:note", "A note in a doc");
         doc.setPropertyValue("note:mime_type", "text/plain");
         Map<String, Object> properties = doc.getProperties("note");

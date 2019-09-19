@@ -54,7 +54,7 @@ public class NuxeoComputedGroup implements ComputedGroup {
 
     public NuxeoComputedGroup(String name, String label, GroupConfig config) {
         this.config = config;
-        model = new SimpleDocumentModel();
+        model = SimpleDocumentModel.empty();
         model.setProperty(config.schemaName, config.idField, name);
         model.setProperty(config.schemaName, config.labelField, label);
     }

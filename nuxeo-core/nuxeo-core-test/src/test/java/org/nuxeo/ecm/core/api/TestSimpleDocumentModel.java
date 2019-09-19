@@ -37,27 +37,27 @@ public class TestSimpleDocumentModel {
 
     @Test
     public void testPropertyNotModifiedAreNotDirty() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         assertFalse(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedAreDirty1() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.setPropertyValue("dc:title", "toto");
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedAreDirty2() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.getProperty("dc:title").setValue("toto");
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedAreDirty3() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         Map<String, Object> values = new HashMap<>();
         values.put("title", "toto");
         doc.setProperties("dublincore", values);
@@ -66,49 +66,49 @@ public class TestSimpleDocumentModel {
 
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty1() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.setPropertyValue("dc:title", doc.getPropertyValue("dc:title"));
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty2() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.setPropertyValue("dc:title", doc.getProperty("dc:title").getValue());
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty3() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.setPropertyValue("dc:title", null);
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty4() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.getProperty("dc:title").setValue(doc.getPropertyValue("dc:title"));
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty5() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.getProperty("dc:title").setValue(doc.getProperty("dc:title").getValue());
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty6() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         doc.getProperty("dc:title").setValue(null);
         assertTrue(doc.getProperty("dc:title").isDirty());
     }
 
     @Test
     public void testPropertyUpdatedWithSameValueAreDirty7() throws Exception {
-        SimpleDocumentModel doc = new SimpleDocumentModel();
+        SimpleDocumentModel doc = SimpleDocumentModel.empty();
         Map<String, Object> values = new HashMap<>();
         values.put("title", null);
         doc.setProperties("dublincore", values);

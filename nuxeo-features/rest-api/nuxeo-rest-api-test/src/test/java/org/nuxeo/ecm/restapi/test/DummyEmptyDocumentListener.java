@@ -41,6 +41,7 @@ public class DummyEmptyDocumentListener implements EventListener {
         DocumentModel doc = docCtx.getSourceDocument();
         if ("DocDefaultValue".equals(doc.getType())) {
             doc.setPropertyValue("dc:source", "dummy source");
+            doc.setPropertyValue("dc:subjects", new String[] { "dummy subject" });
         }
     }
 

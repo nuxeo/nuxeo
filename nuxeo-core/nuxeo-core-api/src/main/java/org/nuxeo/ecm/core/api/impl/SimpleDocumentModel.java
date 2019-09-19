@@ -23,7 +23,6 @@ package org.nuxeo.ecm.core.api.impl;
 import static org.nuxeo.ecm.core.schema.types.ComplexTypeImpl.canonicalXPath;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -63,21 +64,92 @@ public class SimpleDocumentModel implements DocumentModel {
 
     private static final long serialVersionUID = 1L;
 
-    protected final boolean anySchema;
-
     protected final Map<String, DataModel> dataModels = new HashMap<>();
 
-    protected Set<String> schemas;
+    protected final Set<String> schemas = new HashSet<>();
 
     protected final Map<String, Serializable> contextData = new HashMap<>();
+
+    protected final boolean anySchema;
 
     protected Path path;
 
     protected String type;
 
-    public SimpleDocumentModel(List<String> schemas) {
-        this.schemas = new HashSet<>();
+    /**
+     * @deprecated since 11.1. Use {@link #empty()} instead.
+     */
+    @Deprecated(since = "11.1")
+    public SimpleDocumentModel() {
+        anySchema = true;
+    }
+
+    /**
+     * Returns a new empty {@link SimpleDocumentModel} instance.
+     *
+     * @since 11.1
+     */
+    public static SimpleDocumentModel empty() {
+        return new SimpleDocumentModel();
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected SimpleDocumentModel(DocumentType documentType) {
         anySchema = false;
+        type = documentType.getName();
+        initSchemas(List.of(documentType.getSchemaNames()));
+    }
+
+    /**
+     * Returns a {@link SimpleDocumentModel} instance initialized with the given {@code type} and its related schemas.
+     *
+     * @since 11.1
+     */
+    public static SimpleDocumentModel ofType(String type) {
+        SchemaManager service = Framework.getService(SchemaManager.class);
+        DocumentType dType = service.getDocumentType(type);
+        return new SimpleDocumentModel(dType);
+    }
+
+    /**
+     * @deprecated since 11.1. Use {@link #ofSchemas(List)} instead.
+     */
+    @Deprecated(since = "11.1")
+    public SimpleDocumentModel(List<String> schemas) {
+        anySchema = false;
+        initSchemas(schemas);
+    }
+
+    /**
+     * Returns a {@link SimpleDocumentModel} instance initialized with the given {@code schemas}.
+     *
+     * @since 11.1
+     */
+    public static SimpleDocumentModel ofSchemas(List<String> schemas) {
+        return new SimpleDocumentModel(schemas);
+    }
+
+    /**
+     * @deprecated since 11.1. Use {@link #ofSchemas(String, String...)} instead.
+     */
+    @Deprecated(since = "11.1")
+    public SimpleDocumentModel(String... schemas) {
+        this(List.of(schemas));
+    }
+
+    /**
+     * Returns a {@link SimpleDocumentModel} instance initialized with the given {@code schema} and optional
+     * {@code schemas}.
+     *
+     * @since 11.1
+     */
+    public static SimpleDocumentModel ofSchemas(String schema, String... schemas) {
+        return ofSchemas(Stream.concat(Stream.of(schema), Stream.of(schemas)).collect(Collectors.toList()));
+    }
+
+    protected final void initSchemas(List<String> schemas) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         for (String schema : schemas) {
             Schema s = schemaManager.getSchema(schema);
@@ -85,15 +157,6 @@ public class SimpleDocumentModel implements DocumentModel {
             dataModels.put(schema, new DataModelImpl(part));
             this.schemas.add(schema);
         }
-    }
-
-    public SimpleDocumentModel(String... schemas) {
-        this(Arrays.asList(schemas));
-    }
-
-    public SimpleDocumentModel() {
-        schemas = new HashSet<>();
-        anySchema = true;
     }
 
     protected DataModel getDataModelInternal(String schema) {
@@ -288,6 +351,10 @@ public class SimpleDocumentModel implements DocumentModel {
         return type;
     }
 
+    /**
+     * @deprecated since 11.1. Use {@link #ofType(String)}.
+     */
+    @Deprecated(since = "11.1")
     public void setType(String type) {
         this.type = type;
     }

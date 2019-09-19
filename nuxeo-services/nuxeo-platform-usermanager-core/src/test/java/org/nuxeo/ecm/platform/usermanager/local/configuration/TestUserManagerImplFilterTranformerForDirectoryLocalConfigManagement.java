@@ -119,7 +119,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
 
     @Test
     public void testShouldReturnAFilterWithSuffixAdded() {
-        DocumentModel fakeDoc = new SimpleDocumentModel();
+        DocumentModel fakeDoc = SimpleDocumentModel.empty();
 
         Map<String, Serializable> filter = new HashMap<>();
         HashSet<String> fulltext = new HashSet<>();
