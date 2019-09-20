@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.MaxDepthReachedException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -170,7 +171,8 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
     }
 
     protected void writePrincipalOrGroup(String propertyName, String value, JsonGenerator jg) throws IOException {
-        if (value != null && ctx.getFetched(NAME).contains(propertyName)) {
+        if (value != null && !SecurityConstants.SYSTEM_USERNAME.equals(value)
+                && ctx.getFetched(NAME).contains(propertyName)) {
             try (Closeable resource = ctx.wrap().controlDepth().open()) {
                 ObjectResolver resolver = Framework.getService(ObjectResolverService.class)
                         .getResolver(UserManagerResolver.NAME, new HashMap<>());
