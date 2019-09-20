@@ -20,12 +20,30 @@
       "HasRelatedText"
    ],
    "schemas" : [
-      "note",
-      "uid",
-      "common",
-      "files",
-      "dublincore",
-      "relatedtext"
+      {
+         "name": "note",
+         "prefix": "note"
+      },
+      {
+         "name": "uid",
+         "prefix": "uid"
+      },
+      {
+         "name": "common",
+         "prefix": "common"
+      },
+      {
+         "name": "files",
+         "prefix": "files"
+      },
+      {
+         "name": "dublincore",
+         "prefix": "dc"
+      },
+      {
+         "name": "relatedtext",
+         "prefix": "relatedtext"
+      }
    ],
    "properties" : {
       "common:icon" : null,

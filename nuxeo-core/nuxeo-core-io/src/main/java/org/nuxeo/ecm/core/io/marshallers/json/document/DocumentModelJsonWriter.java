@@ -34,6 +34,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -72,7 +73,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  *   "path": "DOCUMENT_PATH",
  *   "type": "DOCUMENT_TYPE",
  *   "facets": [ "FACET1", "FACET2", ... ],
- *   "schemas": [ "SCHEMA1", "SCHEMA2", ... ],
+ *   "schemas": [ {"name": SCHEMA1", "prefix": "PREFIX1"}, {"name": SCHEMA2", "prefix": "PREFIX2"}, ... ],
  *   "state": "DOCUMENT_STATE",
  *   "parentRef": "PARENT_DOCUMENT_UID",
  *   "isCheckedOut": true|false,
@@ -175,13 +176,14 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
             }
         }
 
+        String[] docSchemas  = doc.getSchemas();
         try (Closeable resource = ctx.wrap().controlDepth().open()) {
             Set<String> schemas = ctx.getProperties();
             if (schemas.size() > 0) {
                 jg.writeObjectFieldStart("properties");
                 if (schemas.contains(WILDCARD_VALUE)) {
                     // full document
-                    for (String schema : doc.getSchemas()) {
+                    for (String schema : docSchemas) {
                         writeSchemaProperties(jg, doc, schema);
                     }
                 } else {
@@ -204,10 +206,22 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         jg.writeEndArray();
 
         jg.writeArrayFieldStart("schemas");
-        for (String schema : doc.getSchemas()) {
-            jg.writeString(schema);
+        if (docSchemas.length > 0) {
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            for (String schemaName : docSchemas) {
+                Schema schema = schemaManager.getSchema(schemaName);
+                if (schema != null) {
+                    jg.writeStartObject();
+                    String name = schema.getName();
+                    String prefix = schema.getNamespace().prefix;
+                    jg.writeStringField("name", name);
+                    jg.writeStringField("prefix", StringUtils.isEmpty(prefix) ? name : prefix);
+                    jg.writeEndObject();
+                }
+            }
         }
         jg.writeEndArray();
+
     }
 
     private void writeSchemaProperties(JsonGenerator jg, DocumentModel doc, String schemaName) throws IOException {
