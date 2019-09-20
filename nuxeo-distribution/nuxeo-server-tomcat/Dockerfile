@@ -4,9 +4,13 @@
 # Build Stage: Unzip the distribution
 FROM alpine:3.10.2 as distrib
 
-COPY target/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
+# COPY target/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
+RUN apk add curl
 
-RUN mkdir -p /tmp/nuxeo-distribution \
+ARG NUXEO_DIST_URL=http://community.nuxeo.com/static/latest-snapshot/nuxeo-server-tomcat,SNAPSHOT.zip
+
+RUN curl -fsSL "${NUXEO_DIST_URL}" -o /tmp/nuxeo-distribution-tomcat.zip \
+  && mkdir -p /tmp/nuxeo-distribution \
   && unzip -q -d /tmp/nuxeo-distribution /tmp/nuxeo-distribution-tomcat.zip \
   && DISTDIR=$(/bin/ls /tmp/nuxeo-distribution | head -n 1) \
   && mv /tmp/nuxeo-distribution/$DISTDIR /distrib \
