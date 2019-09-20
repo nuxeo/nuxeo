@@ -109,7 +109,22 @@ public class DocumentModelJsonWriterTest extends AbstractJsonWriterTest.Local<Do
         json.has("changeToken").isNull();
         json.has("title").isEquals("myDoc");
         json.has("facets").contains("Folderish");
-        json.has("schemas").contains("documentResolver", "dublincore");
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testHasSchemas() throws Exception {
+        JsonAssert json = jsonAssert(document);
+        json.isObject();
+        json.has("schemas").length(3);
+        json.has("schemas").get(0).has("name").isEquals("documentResolver");
+        json.has("schemas").get(0).has("prefix").isEquals("dr");
+        json.has("schemas").get(1).has("name").isEquals("dublincore");
+        json.has("schemas").get(1).has("prefix").isEquals("dc");
+        json.has("schemas").get(2).has("name").isEquals("noPrefix");
+        json.has("schemas").get(2).has("prefix").isEquals("noPrefix");
     }
 
     @Test
