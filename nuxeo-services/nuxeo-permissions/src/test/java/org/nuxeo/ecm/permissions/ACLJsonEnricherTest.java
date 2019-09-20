@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
@@ -71,6 +72,8 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
 
     private ACE ace2;
 
+    private ACE ace3;
+
     @Before
     public void before() {
         DocumentModel root = session.getDocument(new PathRef("/"));
@@ -80,8 +83,10 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         contextData.put(Constants.COMMENT_KEY, "sample comment");
         ace1 = ACE.builder("Administrator", "Read").creator("Administrator").contextData(contextData).build();
         ace2 = new ACE("joe", "Read");
+        ace3 = new ACE(SecurityConstants.SYSTEM_USERNAME, SecurityConstants.EVERYTHING);
         acp.addACE(ACL.LOCAL_ACL, ace1);
         acp.addACE(ACL.LOCAL_ACL, ace2);
+        acp.addACE(ACL.LOCAL_ACL, ace3);
         root.setACP(acp, true);
     }
 
@@ -91,6 +96,7 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         ACP acp = root.getACP();
         acp.removeACE(ACL.LOCAL_ACL, ace1);
         acp.removeACE(ACL.LOCAL_ACL, ace2);
+        acp.removeACE(ACL.LOCAL_ACL, ace3);
         root.setACP(acp, true);
     }
 
@@ -123,12 +129,17 @@ public class ACLJsonEnricherTest extends AbstractJsonWriterTest.Local<DocumentMo
         json = json.has("acls").length(1).has(0);
         json.has("name").isEquals("local");
         json.has("aces").isArray();
+        JsonAssert systemJson =  json.has("aces").get(5);
         json = json.has("aces").get(3);
         json.has("username").isObject();
         json.has("creator").isObject();
 
         // ACL enricher returns user groups by default
         json.get("username").get("properties").get("groups").contains("administrators");
+
+        // Check entity type for system user, it must not be an object
+        systemJson.has("username").isText();
+        systemJson.has("username").isEquals(SecurityConstants.SYSTEM_USERNAME);
     }
     @Test
     @Deploy("org.nuxeo.ecm.permissions:test-acl-enricher-without-references-config.xml")
