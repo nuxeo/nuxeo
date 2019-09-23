@@ -431,6 +431,26 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
+    public List<State> queryKeyValueWithOperator(String key1, Object value1, String key2, DBSQueryOperator operator,
+            Object value2, Set<String> ignored) {
+        Map<String, Object> comparatorAndValue;
+        switch (operator) {
+        case IN:
+            comparatorAndValue = Map.of(QueryOperators.IN, value2);
+            break;
+        case NOT_IN:
+            comparatorAndValue = Map.of(QueryOperators.NIN, value2);
+            break;
+        default:
+            throw new IllegalArgumentException(String.format("Unknown operator: %s", operator));
+        }
+        Document filter = new Document(converter.keyToBson(key1), value1);
+        filter.put(converter.keyToBson(key2), comparatorAndValue);
+        addIgnoredIds(filter, ignored);
+        return findAll(filter);
+    }
+
+    @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys) {
         return getDescendants(rootId, keys, 0);
     }

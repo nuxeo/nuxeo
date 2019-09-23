@@ -433,4 +433,10 @@ public class DBSCachingRepository implements DBSRepository {
         repository.markReferencedBinaries();
     }
 
+    @Override
+    public List<State> queryKeyValueWithOperator(String key1, Object value1, String key2, DBSQueryOperator operator,
+            Object value2, Set<String> ignored) {
+        return repository.queryKeyValueWithOperator(key1, value1, key2, operator, value2, ignored);
+    }
+
 }

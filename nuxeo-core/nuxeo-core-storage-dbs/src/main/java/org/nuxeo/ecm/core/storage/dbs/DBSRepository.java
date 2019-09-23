@@ -194,6 +194,21 @@ public interface DBSRepository extends Repository, LockManager {
     List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored);
 
     /**
+     * Queries the repository for documents having key1 = value1 and key2 ${operator} value2.
+     *
+     * @param key1 the first key
+     * @param value1 the first value
+     * @param key2 the second key
+     * @param operator the operator to apply between key2 and value2
+     * @param value2 the second value
+     * @param ignored a set of document ids that should not be considered
+     * @return the document states matching the query
+     * @since 11.1
+     */
+    List<State> queryKeyValueWithOperator(String key1, Object value1, String key2, DBSQueryOperator operator,
+            Object value2, Set<String> ignored);
+
+    /**
      * Returns a stream of descendants from a given root document, in no particular order. This does not include
      * information about the root document itself.
      * <p>
@@ -300,6 +315,15 @@ public interface DBSRepository extends Repository, LockManager {
      */
     default void rollback() {
 
+    }
+
+    /**
+     * Abstracts queries with operators.
+     *
+     * @since 11.1
+     */
+    enum DBSQueryOperator {
+        NOT_IN, IN;
     }
 
 }

@@ -5054,4 +5054,62 @@ public class TestSQLRepositoryAPI {
         }
     }
 
+    @Test
+    public void testCopyWithoutExcludedType() {
+        // Create a file document
+        DocumentModel file = session.createDocumentModel("/", "SourceDoc", "File");
+        file = session.createDocument(file);
+
+        // Add different types of children (special, regular) on this created file
+        DocumentModel specialChildDoc = session.createDocumentModel(file.getPathAsString(), "specialChildDoc",
+                "SpecialFolder");
+        session.createDocument(specialChildDoc);
+
+        DocumentModel regularUnderSpecialDoc = session.createDocumentModel(specialChildDoc.getPathAsString(),
+                "regularUnderSpecialChildDoc", "File");
+        session.createDocument(regularUnderSpecialDoc);
+
+        DocumentModel regularChildDoc = session.createDocumentModel(file.getPathAsString(), "regularChildDoc", "File");
+        session.createDocument(regularChildDoc);
+
+        session.save();
+
+        assertEquals(2, session.getChildren(file.getRef()).size());
+
+        // Test nominal copy
+        DocumentModel copiedDocument = session.copy(file.getRef(), new PathRef("/"), "CopyDoc");
+        copiedDocument = session.getDocument(copiedDocument.getRef());
+        assertNotEquals(file.getId(), copiedDocument.getId());
+        assertEquals("CopyDoc", copiedDocument.getName());
+        DocumentModelList children = session.getChildren(copiedDocument.getRef());
+        // Special children shall not be copied
+        assertEquals(1, children.size());
+        DocumentModel copiedRegularChild = children.get(0);
+        assertEquals("regularChildDoc", copiedRegularChild.getName());
+        assertNotEquals(regularChildDoc.getRef(), copiedRegularChild.getRef());
+
+        // Test checkin copy, only special children shall be copied
+        DocumentRef checkedIn = file.checkIn(VersioningOption.MAJOR, "JustForFun");
+        children = session.getChildren(checkedIn);
+        assertEquals(1, children.totalSize());
+        DocumentModel versionedChild = children.get(0);
+        assertEquals("SpecialFolder", versionedChild.getType());
+        assertEquals("specialChildDoc", versionedChild.getName());
+        assertNotEquals(regularChildDoc.getRef(), versionedChild.getRef());
+
+        // Regular documents under the special children shall be copied as well
+        children = session.getChildren(versionedChild.getRef());
+        assertEquals(1, children.totalSize());
+        DocumentModel versionedSubChild = children.get(0);
+        assertEquals("File", versionedSubChild.getType());
+        assertEquals("regularUnderSpecialChildDoc", versionedSubChild.getName());
+        assertNotEquals(regularUnderSpecialDoc.getRef(), versionedSubChild.getRef());
+
+        // Test restore copy, `Live` documet shall keep both special and regular children.
+        // No version children shall be added during restore
+        DocumentModel restored = session.restoreToVersion(file.getRef(), checkedIn);
+        children = session.getChildren(restored.getRef());
+        assertEquals(2, children.totalSize());
+    }
+
 }

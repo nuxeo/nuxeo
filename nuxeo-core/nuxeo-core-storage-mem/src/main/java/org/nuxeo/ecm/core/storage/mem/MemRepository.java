@@ -641,4 +641,10 @@ public class MemRepository extends DBSRepositoryBase {
         blobManager.markReferencedBinary(key, repositoryName);
     }
 
+    @Override
+    public List<State> queryKeyValueWithOperator(String key1, Object value1, String key2, DBSQueryOperator operator,
+            Object value2, Set<String> ignored) {
+        throw new UnsupportedOperationException();
+    }
+
 }

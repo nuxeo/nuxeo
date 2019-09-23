@@ -60,6 +60,14 @@ public class DocumentTypeDescriptor {
     @XNode("@append")
     public boolean append = false;
 
+    /**
+     * Allows to exclude the doctype from copy operations for example.
+     *
+     * @since 11.1
+     */
+    @XNode("@special")
+    public Boolean special;
+
     @XNodeList(value = "subtypes/type", type = String[].class, componentType = String.class)
     public String[] subtypes = new String[0];
 
@@ -97,6 +105,7 @@ public class DocumentTypeDescriptor {
         clone.facets = facets;
         clone.prefetch = prefetch;
         clone.append = append;
+        clone.special = special;
         clone.subtypes = subtypes;
         clone.forbiddenSubtypes = forbiddenSubtypes;
         return clone;
@@ -134,6 +143,9 @@ public class DocumentTypeDescriptor {
         if (StringUtils.isEmpty(superTypeName) && StringUtils.isNotEmpty(other.superTypeName)) {
             superTypeName = other.superTypeName;
         }
+
+        // inherit the exclusion from copy
+        special = special == null ? other.special : special;
 
         // merge subtypes
         if (subtypes == null) {
