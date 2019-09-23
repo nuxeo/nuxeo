@@ -53,7 +53,6 @@ import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
-import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
 
@@ -88,7 +87,7 @@ public class PreviewAdapter extends DefaultAdapter {
 
         List<Blob> previewBlobs = getPreviewBlobs(bh, postProcessing);
         if (previewBlobs == null || previewBlobs.isEmpty()) {
-            throw new WebResourceNotFoundException("Preview not available");
+            return buildPreviewNotAvailable();
         }
 
         try {
@@ -101,6 +100,13 @@ public class PreviewAdapter extends DefaultAdapter {
         }
 
         return Response.ok().build();
+    }
+
+    protected Object buildPreviewNotAvailable() {
+        return Response.status(NOT_FOUND)
+                       .entity(getTemplate("preview/preview_not_available.ftl"))
+                       .type("text/html")
+                       .build();
     }
 
     @GET
@@ -116,14 +122,14 @@ public class PreviewAdapter extends DefaultAdapter {
 
         List<Blob> previewBlobs = getPreviewBlobs(bh, postProcessing);
         if (previewBlobs == null || previewBlobs.isEmpty()) {
-            throw new WebResourceNotFoundException("Preview not available");
+            return buildPreviewNotAvailable();
         }
 
         // find blob
         Optional<Blob> subBlob = previewBlobs.stream().filter(b -> subPath.equals(b.getFilename())).findFirst();
 
         if (!subBlob.isPresent()) {
-            throw new WebResourceNotFoundException(String.format("Preview blob %s not found", subPath));
+            return buildPreviewNotAvailable();
         }
 
         try {
@@ -152,12 +158,12 @@ public class PreviewAdapter extends DefaultAdapter {
 
             preview = doc.getAdapter(HtmlPreviewAdapter.class);
             if (preview == null) {
-                return null;
+                return Collections.emptyList();
             }
 
             return preview.getFilePreviewBlobs(blobPostProcessing);
         } catch (PreviewException e) {
-            throw new WebResourceNotFoundException("Preview not available", e);
+            return Collections.emptyList();
         }
     }
 
