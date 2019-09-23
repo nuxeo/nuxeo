@@ -13,4 +13,10 @@
       <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
   </extension>
+
+  <install>
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+  </install>
 </fragment>
