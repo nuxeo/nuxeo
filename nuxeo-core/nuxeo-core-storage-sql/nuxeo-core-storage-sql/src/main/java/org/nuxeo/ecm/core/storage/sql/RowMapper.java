@@ -315,9 +315,11 @@ public interface RowMapper {
      * @param destName the new name
      * @param overwriteRow when not {@code null}, the copy is done onto this existing row, and the values are set in
      *            hierarchy
+     * @param excludeSpecialChildren the flag to exclude special children from copy
      * @return info about the copy
      */
-    CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow);
+    CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow,
+            boolean excludeSpecialChildren);
 
     /**
      * A document id, parent id and primary type, along with the version and proxy information (the potentially impacted

@@ -40,6 +40,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -59,6 +60,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * This singleton generates and holds the actual SQL DDL and DML statements for the operations needed by the
@@ -96,7 +98,11 @@ public class SQLInfo {
 
     private String selectChildrenIdsAndTypesSql;
 
+    private String selectChildrenIdsAndTypesSqlExcludeSpecialChildren;
+
     private String selectComplexChildrenIdsAndTypesSql;
+
+    private String selectComplexChildrenIdsAndTypesSqlIncludeSpecialChildren;
 
     private List<Column> selectChildrenIdsAndTypesWhatColumns;
 
@@ -155,8 +161,10 @@ public class SQLInfo {
         selections = new HashMap<>();
 
         selectChildrenIdsAndTypesSql = null;
+        selectChildrenIdsAndTypesSqlExcludeSpecialChildren = null;
         selectChildrenIdsAndTypesWhatColumns = null;
         selectComplexChildrenIdsAndTypesSql = null;
+        selectComplexChildrenIdsAndTypesSqlIncludeSpecialChildren = null;
 
         insertSqlMap = new HashMap<>();
         insertColumnsMap = new HashMap<>();
@@ -206,8 +214,14 @@ public class SQLInfo {
 
     }
 
-    public String getSelectChildrenIdsAndTypesSql(boolean onlyComplex) {
-        return onlyComplex ? selectComplexChildrenIdsAndTypesSql : selectChildrenIdsAndTypesSql;
+    public String getSelectChildrenIdsAndTypesSql(boolean excludeSpecialChildren, boolean excludeRegularChildren) {
+        if (excludeRegularChildren) {
+            return excludeSpecialChildren ? selectComplexChildrenIdsAndTypesSql
+                    : selectComplexChildrenIdsAndTypesSqlIncludeSpecialChildren;
+        } else {
+            return excludeSpecialChildren ? selectChildrenIdsAndTypesSqlExcludeSpecialChildren
+                    : selectChildrenIdsAndTypesSql;
+        }
     }
 
     public List<Column> getSelectChildrenIdsAndTypesWhatColumns() {
@@ -1003,12 +1017,35 @@ public class SQLInfo {
                     + getSoftDeleteClause(tableName);
             select.setWhere(where);
             selectChildrenIdsAndTypesSql = select.getStatement();
+
+            // Build the exclude from copy part of the where clause
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            String excludedTypes = schemaManager.getSpecialDocumentTypes()
+                                                .stream()
+                                                .collect(Collectors.joining("', '"));
+            if (!excludedTypes.isEmpty()) {
+                String excludeSpecialChildrenClause = " AND "
+                        + table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY).getQuotedName() + " NOT IN ('" + excludedTypes
+                        + "')";
+                select.setWhere(where + excludeSpecialChildrenClause);
+            }
+            selectChildrenIdsAndTypesSqlExcludeSpecialChildren = select.getStatement();
+
             selectChildrenIdsAndTypesWhatColumns = whatColumns;
             // now only complex properties
-            where += " AND " + table.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() + " = "
+            String isComplexClause = table.getColumn(Model.HIER_CHILD_ISPROPERTY_KEY).getQuotedName() + " = "
                     + dialect.toBooleanValueString(true);
-            select.setWhere(where);
+            String whereAnd = where + " AND " + isComplexClause;
+            select.setWhere(whereAnd);
             selectComplexChildrenIdsAndTypesSql = select.getStatement();
+            // now only complex properties include special children
+            if (!excludedTypes.isEmpty()) {
+                String whereAndOr = where + " AND ( " + isComplexClause + " OR "
+                        + table.getColumn(Model.MAIN_PRIMARY_TYPE_KEY).getQuotedName() + " IN ('"
+                        + excludedTypes + "') )";
+                select.setWhere(whereAndOr);
+            }
+            selectComplexChildrenIdsAndTypesSqlIncludeSpecialChildren = select.getStatement();
         }
 
         // TODO optimize multiple inserts into one statement for collections

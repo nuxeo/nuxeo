@@ -1485,7 +1485,9 @@ public class PersistenceContext {
         checkFreeName(parentId, name, complexProp(hierFragment));
         // do the copy
         Long pos = getNextPos(parentId, false);
-        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null);
+        // no special children (comments, annotations...) kept on document copy
+        boolean excludeSpecialChildren = true;
+        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null, excludeSpecialChildren);
         Serializable newId = copyResult.copyId;
         // read new child in this session (updates children Selection)
         SimpleFragment copy = getHier(newId, false);
@@ -1542,7 +1544,9 @@ public class PersistenceContext {
          * Do the copy without non-complex children, with null parent.
          */
         Serializable id = node.getId();
-        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null);
+        // complex (special) children are snapshot when checking in
+        boolean excludeSpecialChildren = false;
+        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null, excludeSpecialChildren);
         Serializable newId = res.copyId;
         markInvalidated(res.invalidations);
         // add version as a new child of its parent
@@ -1619,7 +1623,10 @@ public class PersistenceContext {
         overwriteRow.putNew(Model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
         overwriteRow.putNew(Model.MAIN_BASE_VERSION_KEY, versionId);
         overwriteRow.putNew(Model.MAIN_IS_VERSION_KEY, null);
-        CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow);
+        // exclude special children to avoid duplicates on restore
+        boolean excludeSpecialChildren = true;
+        CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow,
+                excludeSpecialChildren);
         markInvalidated(res.invalidations);
     }
 
