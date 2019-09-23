@@ -22,6 +22,7 @@ package org.nuxeo.ecm.restapi.test;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -149,5 +150,32 @@ public class EmptyDocumentTest extends BaseTest {
         JsonNode complexWithDefault = properties.get("dv:complexWithDefault");
         assertTrue(complexWithDefault.get("foo").isNull());
         assertEquals("value", complexWithDefault.get("bar").textValue());
+    }
+
+    @Test
+    public void testOverrideEmptyDocumentListenerValues() throws IOException {
+        String data = "{" //
+                + "         \"entity-type\": \"document\"," //
+                + "         \"type\": \"DocDefaultValue\"," //
+                + "         \"name\": \"foo\"," //
+                + "         \"properties\": {" //
+                + "             \"dc:source\": null," //
+                + "             \"dc:title\": null" //
+                + "           }" //
+                + "       }";
+
+        DocumentModel folder = RestServerInit.getFolder(0, session);
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(),
+                data)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode jsonNode = mapper.readTree(response.getEntityInputStream());
+
+            // dc:source is set by DummyEmptyDocumentListener and overridden to be null
+            assertNull(jsonNode.get("properties").get("dc:source").textValue());
+            // dc:subjects is set by DummyEmptyDocumentListener and not overridden
+            JsonNode subjects = jsonNode.get("properties").get("dc:subjects");
+            assertTrue(subjects.isArray());
+            assertEquals("dummy subject", subjects.get(0).textValue());
+        }
     }
 }
