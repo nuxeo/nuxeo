@@ -13,40 +13,22 @@
 # limitations under the License.
 apiVersion: skaffold/v1beta11
 kind: Config
-profiles:
-  - name: master
-    build:
-      tagPolicy:
-        envTemplate:
-          template: "{{.PUBLIC_DOCKER_REGISTRY}}/{{.ORG}}/{{.IMAGE_NAME}}:{{.VERSION}}"
-      artifacts:
-        - image: nuxeo
-          context: nuxeo-distribution/nuxeo-server-tomcat
-          kaniko:
-            dockerfile: Dockerfile
-            buildContext:
-              localDir: {}
-      cluster:
-        namespace: platform
-        dockerConfig:
-          secretName: jenkins-docker-cfg
-  - name: pr
-    build:
-      tagPolicy:
-        envTemplate:
-          template: "{{.DOCKER_REGISTRY}}/{{.ORG}}/{{.IMAGE_NAME}}:{{.VERSION}}"
-      artifacts:
-        - image: nuxeo
-          context: nuxeo-distribution/nuxeo-server-tomcat
-          kaniko:
-            dockerfile: Dockerfile
-            buildContext:
-              localDir: {}
-            flags:
-              - --insecure
-              - --insecure-pull
-              - --insecure-registry=${DOCKER_REGISTRY}
-      cluster:
-        namespace: platform
-        dockerConfig:
-          secretName: jenkins-docker-cfg
+build:
+  tagPolicy:
+    envTemplate:
+      template: "{{.DOCKER_REGISTRY}}/{{.ORG}}/{{.IMAGE_NAME}}:{{.VERSION}}"
+  artifacts:
+    - image: nuxeo
+      context: nuxeo-distribution/nuxeo-server-tomcat
+      kaniko:
+        dockerfile: Dockerfile
+        buildContext:
+          localDir: {}
+        flags:
+          - --insecure
+          - --insecure-pull
+          - --insecure-registry=${DOCKER_REGISTRY}
+  cluster:
+    namespace: platform
+    dockerConfig:
+      secretName: jenkins-docker-cfg
