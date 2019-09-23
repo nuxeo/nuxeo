@@ -210,7 +210,7 @@ pipeline {
             echo "Building and pushing Docker image to ${DOCKER_REGISTRY}"
             sh """
               envsubst < nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml > nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
-              skaffold build -p pr -f nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
+              skaffold build -f nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
             """
           }
         }
@@ -265,10 +265,11 @@ pipeline {
             ----------------------------------------
             Image tag: ${VERSION}
             """
-            echo "Building and pushing Docker image to ${PUBLIC_DOCKER_REGISTRY}"
+            echo "Pushing Docker image to ${PUBLIC_DOCKER_REGISTRY}"
             sh """
-              envsubst < nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml > nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
-              skaffold build -p master -f nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
+              docker pull ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
+              docker tag ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} ${PUBLIC_DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
+              docker push ${PUBLIC_DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
             """
           }
         }
