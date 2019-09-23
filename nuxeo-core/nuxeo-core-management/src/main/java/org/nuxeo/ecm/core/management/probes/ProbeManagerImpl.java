@@ -238,8 +238,8 @@ public class ProbeManagerImpl implements ProbeManager {
         if (!descriptor.isEnabled()) {
             if (probesForHealthCheck.containsKey(name)) {
                 probesForHealthCheck.remove(name);
-                return;
             }
+            return;
         }
         if (infosByShortcuts.containsKey(name)) {
             probesForHealthCheck.put(name, getProbeInfo(name));
