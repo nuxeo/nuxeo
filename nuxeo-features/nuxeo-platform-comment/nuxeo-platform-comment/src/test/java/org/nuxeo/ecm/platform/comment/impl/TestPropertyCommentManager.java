@@ -62,7 +62,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
  * @since 10.3
  */
 @Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/property-comment-manager-override.xml")
 public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
     @Test

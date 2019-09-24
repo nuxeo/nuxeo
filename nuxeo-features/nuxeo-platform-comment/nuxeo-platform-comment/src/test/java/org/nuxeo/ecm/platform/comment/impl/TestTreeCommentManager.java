@@ -70,6 +70,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
  * @since 11.1
  */
 @Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/secured-comment-manager-override.xml")
 public class TestTreeCommentManager extends AbstractTestCommentManager {
 
     public static final String COPY_DOC_NAME = "CopyDoc";

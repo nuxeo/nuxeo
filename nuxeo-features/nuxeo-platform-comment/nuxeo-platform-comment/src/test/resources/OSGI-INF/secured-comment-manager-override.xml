@@ -5,7 +5,7 @@
 
   <extension target="org.nuxeo.runtime.migration.MigrationService" point="configuration">
     <migration id="comment-storage">
-      <defaultState>property</defaultState>
+      <defaultState>secured</defaultState>
     </migration>
   </extension>
 

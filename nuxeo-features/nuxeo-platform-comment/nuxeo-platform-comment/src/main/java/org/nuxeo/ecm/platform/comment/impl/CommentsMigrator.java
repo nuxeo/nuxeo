@@ -195,7 +195,10 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
      */
     protected void migrateSessionPropertyToSecured(CoreSession session, MigrationContext migrationContext) {
         List<String> comments = getUnsecuredCommentIds(session);
-        CommentManager commentManager = Framework.getService(CommentManager.class);
+        // For migration purpose and to avoid any duplication, we should rely mainly on `TreeCommentManager`
+        // For 10.10 (backward compatibility) Framework.getService(CommentManager.class) will return
+        // `PropertyCommentManager` the new location should be computed by the `TreeCommentManager`
+        CommentManager commentManager = new TreeCommentManager();
         processBatched(migrationContext, BATCH_SIZE, comments,
                 comment -> migrateCommentsFromPropertyToSecured(session, commentManager, new IdRef(comment)),
                 "Migrating comments from Property to Secured");

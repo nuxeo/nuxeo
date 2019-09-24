@@ -6,7 +6,7 @@
     <migration id="comment-storage">
       <description label="migration.comment-storage">Migration of the comment storage model</description>
       <class>org.nuxeo.ecm.platform.comment.impl.CommentsMigrator</class>
-      <defaultState>secured</defaultState>
+      <defaultState>property</defaultState>
       <state id="relation">
         <description label="migration.comment-storage.relation">Comments stored as relations</description>
       </state>
