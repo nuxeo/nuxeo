@@ -95,25 +95,6 @@
           </buildFiles>
         </configuration>
       </plugin>
-      <!-- no need to build any ftest jar -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-jar</id>
-            <phase/>
-          </execution>
-        </executions>
-      </plugin>
-      <!-- we do not want to deploy any ftest jar -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>
