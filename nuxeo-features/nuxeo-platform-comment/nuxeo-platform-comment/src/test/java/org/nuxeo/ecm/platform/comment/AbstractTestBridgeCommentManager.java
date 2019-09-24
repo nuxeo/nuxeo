@@ -40,7 +40,9 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.ecm.relations")
 @Deploy("org.nuxeo.ecm.relations.jena")
 @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
-public abstract class TestBridgeCommentManager extends AbstractTestCommentManager {
+public abstract class AbstractTestBridgeCommentManager extends AbstractTestCommentManager {
+
+    protected static final String FILE_DOC_TYPE = "File";
 
     @Before
     public void before() {

@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -267,8 +268,8 @@ public abstract class AbstractTestCommentManager {
         anotherReply = commentManager.createComment(session, anotherReply);
 
         DocumentModel anotherReplyDocModel = session.getDocument(new IdRef(anotherReply.getId()));
-        DocumentModel threadForComment = commentManager.getThreadForComment(anotherReplyDocModel);
-        assertEquals(new IdRef(comment.getId()), threadForComment.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, anotherReplyDocModel.getRef());
+        assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
 
     @Test

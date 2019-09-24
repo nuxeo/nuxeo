@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -440,11 +441,12 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.save();
 
         DocumentModel replyModel = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "Comment", COMMENT_DOC_TYPE);
-        replyModel = session.createDocument(replyModel);
         commentToDocumentModel(fourthLevelReply, replyModel);
-        DocumentModel threadDocumentModel = commentManager.getThreadForComment(replyModel);
-        assertNotNull(threadDocumentModel);
-        assertEquals(newComment(threadDocumentModel).getText(), comment.getText());
+        replyModel = session.createDocument(replyModel);
+        session.save();
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, replyModel.getRef());
+        assertNotNull(topLevelCommentAncestor);
+        assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
 
     @Test
@@ -457,11 +459,9 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         session.save();
 
-        DocumentModel threadDocumentModel = commentManager.getThreadForComment(
-                session.getDocument(new IdRef(comment.getId())));
-
-        assertNotNull(threadDocumentModel);
-        assertEquals(comment.getText(), newComment(threadDocumentModel).getText());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId()));
+        assertNotNull(topLevelCommentAncestor);
+        assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
 
     @Test

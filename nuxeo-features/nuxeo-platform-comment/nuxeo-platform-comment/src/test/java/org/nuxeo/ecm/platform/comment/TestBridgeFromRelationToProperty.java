@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.comment;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -43,7 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 11.1
  */
-public class TestBridgeFromRelationToProperty extends TestBridgeCommentManager {
+public class TestBridgeFromRelationToProperty extends AbstractTestBridgeCommentManager {
     @Test
     public void testDeleteCommentAsRelation() {
         // Use the comment as relation
@@ -63,18 +64,14 @@ public class TestBridgeFromRelationToProperty extends TestBridgeCommentManager {
             Resource predicateRes = new ResourceImpl(config.predicateNamespace);
             assertTrue(graph.getObjects(commentRes, predicateRes).stream().findAny().isPresent());
         }
-
-        // Delete this relation comment using the Bridge
-        // FIXME see the Team CommentManagerImpl#deleteComment(session, commentId) use PARENT_ID which is not consistent
-        // this means that an old comment cannot be deleted with the bridge (10.10) to check
-        // It should remove from jena graph like the Migration Service
-
-        // commentManager.deleteComment(session, commentDocModel.getId());
-        // comment = anotherCommentManager.getComment(session, commentDocModel.getId());
-        // assertNull(comment);
-        // if (config != null) {
-        // assertNull(relationManager.getResource(config.commentNamespace, commentDocModel, null));
-        // }
+        commentManager.deleteComment(session, commentDocModel.getId());
+        try {
+            anotherCommentManager.getComment(session, commentDocModel.getId());
+            fail();
+        } catch (CommentNotFoundException cfe) {
+            assertNotNull(cfe);
+            assertNotNull(cfe.getMessage());
+        }
     }
 
     @Test

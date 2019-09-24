@@ -152,7 +152,9 @@ public interface CommentManager {
      * @throws CommentSecurityException if the current user does not have the right permissions on the commented
      *             document.
      * @since 5.5
+     * @deprecated since 11.1. Use {@link #getTopLevelCommentAncestor(CoreSession, DocumentRef)} instead.
      */
+    @Deprecated
     DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException;
 
     /**
@@ -340,9 +342,9 @@ public interface CommentManager {
      * @return the top level ancestor document ref
      * @since 11.1
      */
-     default DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef){
-         throw new UnsupportedOperationException();
-     }
+    default DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Gets the location where the comment will be stored.

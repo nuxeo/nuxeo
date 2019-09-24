@@ -230,22 +230,34 @@ public class BridgeCommentManager extends AbstractCommentManager {
      * @since 11.1
      */
     protected <T> T execute(CoreSession s, DocumentRef documentRef, Function<CommentManager, T> function) {
-        DocumentModel documentModel = CoreInstance.doPrivileged(s, session -> {
-            return session.getDocument(documentRef);
-        });
+        return CoreInstance.doPrivileged(s, session -> {
+            DocumentModel documentModel = session.getDocument(documentRef);
 
-        if (first instanceof PropertyCommentManager && second instanceof TreeCommentManager) {
-            DocumentRef parentRef = documentModel.getParentRef();
-            if (s.getDocument(parentRef).getType().equals("HiddenFolder")) {
+            // From `Relation` to `Property`
+            if (first instanceof CommentManagerImpl && second instanceof PropertyCommentManager) {
+                if (documentModel.getPropertyValue(COMMENT_PARENT_ID) != null) {
+                    // Comment is in property model
+                    return function.apply(second);
+                }
+                // Comment still in relation model
                 return function.apply(first);
             }
-            return function.apply(second);
-        }
 
-        if (documentModel.getPropertyValue(COMMENT_PARENT_ID) != null) {
-            return function.apply(second);
-        }
-        return function.apply(first);
+            // From `Property` to `Tree`
+            if (first instanceof PropertyCommentManager && second instanceof TreeCommentManager) {
+                // In this case we cannot just rely on `comment:parentId` but on the type of doc that contains the comment
+                DocumentRef parentRef = documentModel.getParentRef();
+                // Comment is under property model
+                if (s.getDocument(parentRef).getType().equals("HiddenFolder")) {
+                    return function.apply(first);
+                }
+                // Comment is under tree model
+                return function.apply(second);
+            }
+
+            throw new IllegalArgumentException(String.format(
+                    "Undefined behaviour for document ref: %s, first: %s, second: %s ", documentModel, first, second));
+        });
     }
     
 }

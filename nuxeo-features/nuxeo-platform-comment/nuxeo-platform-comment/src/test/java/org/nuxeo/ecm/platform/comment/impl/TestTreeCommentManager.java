@@ -187,8 +187,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(doc.getRef(), parentDocumentRefs[1]);
 
         // Check the Thread
-        DocumentModel threadForComment = commentManager.getThreadForComment(commentDocModel);
-        assertEquals(commentDocModel.getRef(), threadForComment.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
+        assertEquals(doc.getRef(), topLevelCommentAncestor);
 
         // I can create a comment if i have the right permissions on the document
         ACPImpl acp = new ACPImpl();
@@ -243,8 +243,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(doc.getRef(), parentDocumentRefs[3]);
 
         // Check the Thread
-        DocumentModel threadForComment = commentManager.getThreadForComment(secondReplyDocModel);
-        assertEquals(new IdRef(createdComment.getId()), threadForComment.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, secondReplyDocModel.getRef());
+        assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
 
     @Test

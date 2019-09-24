@@ -136,18 +136,6 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentModel getThreadForComment(DocumentModel commentDocModel) {
-        CoreSession session = commentDocModel.getCoreSession();
-
-        // Get the Thread (first comment of the commented document)
-        DocumentModel threadDocModel = commentDocModel;
-        while (session.getDocument(threadDocModel.getParentRef()).hasSchema(COMMENT_SCHEMA)) {
-            threadDocModel = session.getDocument(threadDocModel.getParentRef());
-        }
-        return threadDocModel;
-    }
-
-    @Override
     public Comment createComment(CoreSession s, Comment comment) {
         checkReadCommentPermissions(s, new IdRef(comment.getParentId()));
 
@@ -301,8 +289,19 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef documentRef) {
-        return getRootDocument(session, documentRef);
+    public DocumentRef getTopLevelCommentAncestor(CoreSession s, DocumentRef documentRef) {
+        CoreInstance.doPrivileged(s, session -> {
+            if (!session.exists(documentRef)) {
+                throw new CommentNotFoundException(String.format("The comment %s does not exist.", documentRef));
+            }
+        });
+
+        DocumentModel documentModel = s.getDocument(documentRef);
+        while (documentModel.hasSchema(COMMENT_SCHEMA) || COMMENTS_DIRECTORY_TYPE.equals(documentModel.getType())) {
+            documentModel = s.getDocument(documentModel.getParentRef());
+        }
+
+        return documentModel.getRef();
     }
 
     /**
@@ -317,7 +316,7 @@ public class TreeCommentManager extends AbstractCommentManager {
     protected DocumentModel getOrCreateCommentsFolder(CoreSession session, DocumentModel documentModel) {
         // Depending on the case, the given document model can be the document being commented (the root document, the
         // first comment of the tree) or the comment (case where we reply on existing comment)
-        DocumentRef rootDocumentRef = getRootDocument(session, documentModel.getRef());
+        DocumentRef rootDocumentRef = getTopLevelCommentAncestor(session, documentModel.getRef());
         DocumentModel rootDocModel = session.getDocument(rootDocumentRef);
 
         DocumentModel commentsFolder = session.createDocumentModel(rootDocModel.getPathAsString(),
@@ -336,7 +335,7 @@ public class TreeCommentManager extends AbstractCommentManager {
      */
     protected void checkCreateCommentPermissions(CoreSession s, DocumentRef documentRef) {
         DocumentRef rootDocRef = CoreInstance.doPrivileged(s, session -> {
-            return getRootDocument(session, documentRef);
+            return getTopLevelCommentAncestor(session, documentRef);
         });
         if (!s.hasPermission(rootDocRef, SecurityConstants.READ)) {
             throw new CommentSecurityException(String.format("The user %s can not create comments on document %s",
@@ -353,7 +352,7 @@ public class TreeCommentManager extends AbstractCommentManager {
      */
     protected void checkReadCommentPermissions(CoreSession s, DocumentRef documentRef) {
         DocumentRef rootDocRef = CoreInstance.doPrivileged(s, session -> {
-            return getRootDocument(session, documentRef);
+            return getTopLevelCommentAncestor(session, documentRef);
         });
 
         if (!s.hasPermission(rootDocRef, SecurityConstants.READ)) {
@@ -403,7 +402,7 @@ public class TreeCommentManager extends AbstractCommentManager {
     protected void removeComment(CoreSession s, DocumentRef documentRef) {
         NuxeoPrincipal principal = s.getPrincipal();
         CoreInstance.doPrivileged(s, session -> {
-            DocumentRef ancestorRef = getRootDocument(session, documentRef);
+            DocumentRef ancestorRef = getTopLevelCommentAncestor(session, documentRef);
             DocumentModel commentDocModel = session.getDocument(documentRef);
             Serializable author = commentDocModel.getPropertyValue(COMMENT_AUTHOR);
             if (!(principal.isAdministrator() //
@@ -418,24 +417,6 @@ public class TreeCommentManager extends AbstractCommentManager {
             notifyEvent(session, CommentEvents.COMMENT_REMOVED, parent, commentDocModel);
         });
 
-    }
-
-    /**
-     * @return the root document of the comments hierarchy for the given {@code documentRef}
-     */
-    protected DocumentRef getRootDocument(CoreSession s, DocumentRef documentRef) {
-        CoreInstance.doPrivileged(s, session -> {
-            if (!session.exists(documentRef)) {
-                throw new CommentNotFoundException(String.format("The comment %s does not exist.", documentRef));
-            }
-        });
-
-        DocumentModel documentModel = s.getDocument(documentRef);
-        while (documentModel.hasSchema(COMMENT_SCHEMA) || COMMENTS_DIRECTORY_TYPE.equals(documentModel.getType())) {
-            documentModel = s.getDocument(documentModel.getParentRef());
-        }
-
-        return documentModel.getRef();
     }
 
     /**
