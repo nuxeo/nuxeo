@@ -230,10 +230,10 @@ org.nuxeo.distribution.package=zip</echo>
       </fileset>
     </move>
     <artifact:printMgt output="${sdk.dir}/artifacts-nuxeo.properties"
-                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
+                       key="org.nuxeo:nuxeo-addons-parent:${maven.project.version}:pom"
                        scopes="compile,provided,runtime" />
     <artifact:printMgt output="${sdk.dir}/test-artifacts-nuxeo.properties"
-                       key="org.nuxeo:nuxeo-addons-parent:${nuxeo.addons.version}:pom"
+                       key="org.nuxeo:nuxeo-addons-parent:${maven.project.version}:pom"
                        scopes="test,provided" />
 
     <copy todir="${sdk.dir}/sources">
