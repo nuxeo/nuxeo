@@ -14,8 +14,6 @@ RUN mkdir -p /tmp/nuxeo-distribution \
   && rm -rf /tmp/nuxeo-distribution* \
   && chmod +x /distrib/bin/*ctl /distrib/bin/*.sh
 
-COPY docker/docker-template /distrib/templates/docker
-
 
 # ------------------------------------------------------------------------
 # Build Stage: base image with Java and converters
@@ -61,31 +59,47 @@ RUN useradd -m -d /home/$NUXEO_USER -u 1000 -s /bin/bash $NUXEO_USER
 # Copy distribution
 ENV NUXEO_HOME /opt/nuxeo/server
 COPY --from=distrib /distrib $NUXEO_HOME
+
+# Copy scripts
+COPY docker/install-packages.sh /usr/local/bin
+COPY docker/docker-entrypoint.sh /
+
+# Move nuxeo.conf to its recommended location
+RUN mkdir -p /etc/nuxeo \
+  && mv $NUXEO_HOME/bin/nuxeo.conf /etc/nuxeo
+
+# Copy and install packages
+COPY docker/packages /packages
+ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
+RUN echo 'org.nuxeo.connect.url=' >> $NUXEO_CONF \
+  && install-packages.sh \
+  && sed -i '$ d' $NUXEO_CONF \
+  && rm -rf /packages
+
 # Work around missing support for --chown flag with COPY instruction in Kaniko
 # TODO NXP-28052: remove and use COPY --chown when fixed in Kaniko, or find a proper way
 RUN chown -R 1000:0 $NUXEO_HOME \
   && chmod -R g+rwX $NUXEO_HOME
 
-COPY --chown=1000:0 docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
-COPY docker/docker-entrypoint.sh /
-
 # Set permissions on writeable directories to support arbitrary user IDs for OpenShift.
 # These directories must be owned by the root group and be read/writable by that group.
 # See https://docs.openshift.com/container-platform/3.4/creating_images/guidelines.html
-RUN chown -R 1000:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo && rm -f $NUXEO_HOME/bin/nuxeo.conf \
+RUN chown -R 1000:0 /etc/nuxeo && chmod -R g+rwX /etc/nuxeo \
   && mkdir -p /var/lib/nuxeo/data \
   && chown -R 1000:0 /var/lib/nuxeo/data && chmod -R g+rwX /var/lib/nuxeo/data \
   && mkdir -p /var/log/nuxeo \
   && chown -R 1000:0 /var/log/nuxeo && chmod -R g+rwX /var/log/nuxeo \
   && mkdir -p /var/pid/nuxeo \
   && chown -R 1000:0 /var/pid/nuxeo && chmod -R g+rwX /var/pid/nuxeo \
-  && mkdir -p /docker-entrypoint-initnuxeo.d \
-  && chown -R 1000:0 /docker-entrypoint-initnuxeo.d && chmod -R g+rwX /docker-entrypoint-initnuxeo.d  \
   && chmod g=u /etc/passwd
 
-ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
+VOLUME /var/lib/nuxeo/data
+VOLUME /var/log/nuxeo
+VOLUME /tmp
+
 ENV HOME $NUXEO_HOME
 ENV PATH $NUXEO_HOME/bin:$PATH
+
 WORKDIR $NUXEO_HOME
 EXPOSE 8080
 USER 1000
