@@ -224,7 +224,7 @@ pipeline {
             ----------------------------------------
             Image tag: ${VERSION}
             """
-            echo "Building and pushing Docker image to ${DOCKER_REGISTRY}"
+            echo "Build and push Docker image to ${DOCKER_REGISTRY}"
             sh """
               envsubst < nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml > nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
               skaffold build -f nuxeo-distribution/nuxeo-server-tomcat/skaffold.yaml~gen
@@ -251,10 +251,12 @@ pipeline {
             Test Docker image
             ----------------------------------------
             """
-            echo 'Testing image'
             sh """
               docker pull ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
+              echo 'Run image as root (0)'
               docker run --rm ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} nuxeoctl start
+              echo 'Run image as an arbitrary user (900)'
+              docker run --user 900 --rm ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} nuxeoctl start
             """
           }
         }
@@ -282,7 +284,7 @@ pipeline {
             ----------------------------------------
             Image tag: ${VERSION}
             """
-            echo "Pushing Docker image to ${PUBLIC_DOCKER_REGISTRY}"
+            echo "Push Docker image to ${PUBLIC_DOCKER_REGISTRY}"
             sh """
               docker pull ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
               docker tag ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} ${PUBLIC_DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
