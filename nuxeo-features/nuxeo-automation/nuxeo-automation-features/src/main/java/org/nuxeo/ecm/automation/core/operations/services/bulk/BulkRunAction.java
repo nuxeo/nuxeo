@@ -113,8 +113,8 @@ public class BulkRunAction {
             throw new OperationException("Could not get Provider Definition from either query or provider name");
         }
 
-        PageProvider<?> provider = PageProviderHelper.getPageProvider(session, def, namedParameters,
-                queryParams != null ? queryParams.toArray(new String[0]) : null);
+        PageProvider<?> provider = PageProviderHelper.getPageProvider(session, def, namedParameters, null, null, null,
+                null, null, quickFilters, queryParams != null ? queryParams.toArray(new String[0]) : null);
         query = PageProviderHelper.buildQueryStringWithAggregates(provider);
 
         if (query.contains("?")) {

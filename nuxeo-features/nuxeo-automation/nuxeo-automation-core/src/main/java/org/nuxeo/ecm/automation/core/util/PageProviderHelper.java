@@ -325,11 +325,14 @@ public class PageProviderHelper {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected static String buildAggregatesClause(PageProvider provider) {
         try {
-            String aggregatesClause = "";
             // Aggregates that are being used as filters are stored in the namedParameters context data
             Properties namedParameters = (Properties) provider.getSearchDocumentModel()
                                                               .getContextData(NAMED_PARAMETERS);
+            if (namedParameters == null) {
+                return "";
+            }
             Map<String, Aggregate<? extends Bucket>> aggregates = provider.getAggregates();
+            String aggregatesClause = "";
             for (Aggregate<? extends Bucket> aggregate : aggregates.values()) {
                 if (namedParameters.containsKey(aggregate.getId())) {
                     JsonNode node = OBJECT_MAPPER.readTree(namedParameters.get(aggregate.getId()));

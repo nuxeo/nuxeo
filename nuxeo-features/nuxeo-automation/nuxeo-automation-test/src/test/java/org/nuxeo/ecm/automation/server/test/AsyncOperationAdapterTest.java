@@ -27,8 +27,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
@@ -71,6 +73,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.automation.test:operation-contrib.xml")
 @Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
+@Deploy("org.nuxeo.ecm.automation.test.test:test-page-provider.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class AsyncOperationAdapterTest {
 
@@ -193,5 +196,54 @@ public class AsyncOperationAdapterTest {
         folder = (Document) session.newRequest(FetchDocument.ID).set("value", "/test").execute();
 
         assertEquals("foo", folder.getTitle());
+    }
+
+    /**
+     * @throws IOException
+     * @since 11.1
+     */
+    @Test
+    public void testAsyncBulkActionWithPP() throws IOException {
+        // get the root
+        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
+        // create a folder and a file
+        Document folder = (Document) session.newRequest(CreateDocument.ID)
+                                            .setInput(root)
+                                            .set("type", "Folder")
+                                            .set("name", "test")
+                                            .execute();
+        Document file = (Document) session.newRequest(CreateDocument.ID)
+                                          .setInput(folder)
+                                          .set("type", "File")
+                                          .set("name", "file")
+                                          .execute();
+
+        // param for the automation operation
+        Map<String, Serializable> automationParams = new HashMap<>();
+        automationParams.put("properties", "dc:title=foo");
+
+        // param for the automation bulk action -> page provider with quick filter to only hit File document
+        Map<String, Serializable> actionParams = new HashMap<>();
+        actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
+        actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, (Serializable) automationParams);
+
+        Object r = async.newRequest(BulkRunAction.ID)
+                        .set("action", AutomationBulkAction.ACTION_NAME)
+                        .set("providerName", "PageProvider")
+                        .set("quickFilters", "FileOnly")
+                        .set("bucketSize", "10")
+                        .set("batchSize", "5")
+                        .set("parameters", (new ObjectMapper()).writeValueAsString(actionParams))
+                        .execute();
+        assertNotNull(r);
+
+        txFeature.nextTransaction();
+
+        // expect only File doc to be modified
+        folder = (Document) session.newRequest(FetchDocument.ID).set("value", "/test").execute();
+        file = (Document) session.newRequest(FetchDocument.ID).set("value", "/test/file").execute();
+
+        assertEquals("test", folder.getTitle());
+        assertEquals("foo", file.getTitle());
     }
 }
