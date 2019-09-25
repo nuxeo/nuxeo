@@ -18,7 +18,21 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static junit.framework.TestCase.assertEquals;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.HashMap;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,19 +61,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.Serializable;
-import java.util.HashMap;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static junit.framework.TestCase.assertEquals;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @since 10.3

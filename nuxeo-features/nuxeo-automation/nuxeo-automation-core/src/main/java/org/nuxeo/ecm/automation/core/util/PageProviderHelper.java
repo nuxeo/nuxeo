@@ -20,6 +20,19 @@ package org.nuxeo.ecm.automation.core.util;
 
 import static org.nuxeo.ecm.platform.query.api.PageProviderService.NAMED_PARAMETERS;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.el.ELContext;
+import javax.el.ValueExpression;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -54,18 +67,6 @@ import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
-
-import javax.el.ELContext;
-import javax.el.ValueExpression;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -106,7 +107,8 @@ public class PageProviderHelper {
         return getQueryAndFetchProviderDefinition(query, null);
     }
 
-    public static PageProviderDefinition getQueryAndFetchProviderDefinition(String query, Map<String, String> properties) {
+    public static PageProviderDefinition getQueryAndFetchProviderDefinition(String query,
+            Map<String, String> properties) {
         QueryAndFetchProviderDescriptor desc = new QueryAndFetchProviderDescriptor();
         desc.setName(StringUtils.EMPTY);
         desc.setPattern(query);
@@ -143,16 +145,15 @@ public class PageProviderHelper {
     }
 
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
-            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder,
-            Long pageSize, Long currentPageIndex, Object... queryParams) {
-        return getPageProvider(session, def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex,
-                null, null, queryParams);
+            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
+            Long currentPageIndex, Object... queryParams) {
+        return getPageProvider(session, def, namedParameters, sortBy, sortOrder, pageSize, currentPageIndex, null, null,
+                queryParams);
     }
 
     public static PageProvider<?> getPageProvider(CoreSession session, PageProviderDefinition def,
-            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder,
-            Long pageSize, Long currentPageIndex, List<String> highlights, List<String> quickFilters,
-            Object... parameters) {
+            Map<String, String> namedParameters, List<String> sortBy, List<String> sortOrder, Long pageSize,
+            Long currentPageIndex, List<String> highlights, List<String> quickFilters, Object... parameters) {
 
         // Ordered parameters
         if (ArrayUtils.isNotEmpty(parameters)) {
@@ -174,8 +175,8 @@ public class PageProviderHelper {
             for (int i = 0; i < sortBy.size(); i++) {
                 String sort = sortBy.get(i);
                 if (StringUtils.isNotBlank(sort)) {
-                    boolean sortAscending = (sortOrder != null && !sortOrder.isEmpty() && ASC.equalsIgnoreCase(
-                            sortOrder.get(i).toLowerCase()));
+                    boolean sortAscending = (sortOrder != null && !sortOrder.isEmpty()
+                            && ASC.equalsIgnoreCase(sortOrder.get(i).toLowerCase()));
                     sortInfos.add(new SortInfo(sort, sortAscending));
                 }
             }
@@ -201,8 +202,8 @@ public class PageProviderHelper {
 
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
 
-        return pageProviderService.getPageProvider(def.getName(), def,
-                searchDocumentModel, sortInfos, pageSize, currentPageIndex, props, highlights, quickFilterList, parameters);
+        return pageProviderService.getPageProvider(def.getName(), def, searchDocumentModel, sortInfos, pageSize,
+                currentPageIndex, props, highlights, quickFilterList, parameters);
     }
 
     public static DocumentModel getSearchDocumentModel(CoreSession session, String providerName,
@@ -216,7 +217,7 @@ public class PageProviderHelper {
      * {@link PageProviderDefinition definition}, or if the given {@code namedParameters} is not empty.
      * <p/>
      * {@link PageProviderDefinition Definition} is valid if either it has a type or if it declares where clause.
-     * 
+     *
      * @since 11.1
      */
     public static DocumentModel getSearchDocumentModel(CoreSession session, PageProviderService pps,
@@ -312,8 +313,9 @@ public class PageProviderHelper {
                     def.getEscapePatternParameters(), searchDocumentModel, null);
         } else {
             if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot build query of provider '%s': " + "no search document model is set", provider.getName()));
+                throw new NuxeoException(
+                        String.format("Cannot build query of provider '%s': " + "no search document model is set",
+                                provider.getName()));
             }
             String additionalClause = StringUtils.isEmpty(quickFiltersClause) ? aggregatesClause
                     : NXQLQueryBuilder.appendClause(aggregatesClause, quickFiltersClause);
@@ -409,7 +411,7 @@ public class PageProviderHelper {
      *
      * @param parameters parameters from the operation
      */
-    public static Object[] resolveELParameters(PageProviderDefinition def, Object ...parameters) {
+    public static Object[] resolveELParameters(PageProviderDefinition def, Object... parameters) {
         ELService elService = Framework.getService(ELService.class);
         if (elService == null) {
             return parameters;
