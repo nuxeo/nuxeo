@@ -4,7 +4,7 @@
 # Build Stage: unzip the Nuxeo distribution
 FROM alpine:3.10.2 as distrib
 
-COPY target/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
+COPY target/distrib/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
 
 RUN mkdir -p /tmp/nuxeo-distribution \
   && unzip -q -d /tmp/nuxeo-distribution /tmp/nuxeo-distribution-tomcat.zip \
@@ -61,15 +61,15 @@ ENV NUXEO_HOME /opt/nuxeo/server
 COPY --from=distrib /distrib $NUXEO_HOME
 
 # Copy scripts
-COPY docker/install-packages.sh /usr/local/bin
-COPY docker/docker-entrypoint.sh /
+COPY scripts/install-packages.sh /usr/local/bin
+COPY scripts/docker-entrypoint.sh /
 
 # Move nuxeo.conf to its recommended location
 RUN mkdir -p /etc/nuxeo \
   && mv $NUXEO_HOME/bin/nuxeo.conf /etc/nuxeo
 
 # Copy and install packages
-COPY docker/packages /packages
+COPY target/packages /packages
 ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
 RUN echo 'org.nuxeo.connect.url=' >> $NUXEO_CONF \
   && install-packages.sh \

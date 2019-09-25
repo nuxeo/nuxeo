@@ -5,7 +5,7 @@
 # Build Stage: Unzip the distribution
 FROM alpine:3.10.2 as distrib
 
-COPY target/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
+COPY target/distrib/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
 
 RUN mkdir -p /tmp/nuxeo-distribution \
   && unzip -q -d /tmp/nuxeo-distribution /tmp/nuxeo-distribution-tomcat.zip \
