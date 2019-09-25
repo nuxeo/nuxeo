@@ -14,6 +14,9 @@
         <quickFilter name="SectionRoot">
           <clause>ecm:primaryType = 'SectionRoot'</clause>
         </quickFilter>
+        <quickFilter name="FileOnly">
+          <clause>ecm:primaryType = 'File'</clause>
+        </quickFilter>
       </quickFilters>
     </coreQueryPageProvider>
 
