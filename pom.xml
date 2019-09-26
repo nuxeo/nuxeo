@@ -173,8 +173,7 @@
     <gcp.version>1.76.0</gcp.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.9.9</jackson.version>
-    <jackson.databind.version>2.9.9.3</jackson.databind.version>
+    <jackson.version>2.10.0</jackson.version>
     <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
     <xz.version>1.8</xz.version>
@@ -3050,7 +3049,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${jackson.databind.version}</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
