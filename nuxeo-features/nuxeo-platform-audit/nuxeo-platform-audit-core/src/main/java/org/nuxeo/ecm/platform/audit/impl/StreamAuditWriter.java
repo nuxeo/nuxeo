@@ -102,8 +102,6 @@ public class StreamAuditWriter implements StreamProcessorTopology {
                 json = new String(data, UTF_8);
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.readValue(json, LogEntryImpl.class);
-            } catch (UnsupportedEncodingException e) {
-                throw new NuxeoException("Discard log entry, invalid byte array", e);
             } catch (IOException e) {
                 throw new NuxeoException("Invalid json logEntry" + json, e);
             }

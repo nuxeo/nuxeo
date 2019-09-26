@@ -170,7 +170,7 @@ public class ExifToolProcessor implements BinaryMetadataProcessor {
         }
         String jsonOutput = sb.toString();
         List<Map<String, Object>> resultList = jacksonMapper.readValue(jsonOutput,
-                new TypeReference<List<HashMap<String, Object>>>() {
+                new TypeReference<List<Map<String, Object>>>() {
                 });
         Map<String, Object> resultMap = resultList.get(0);
         // Remove the SourceFile metadata injected automatically by ExifTool.
