@@ -36,7 +36,9 @@ import org.nuxeo.elasticsearch.listener.ElasticSearchInlineListener;
  */
 public class ElasticSearchFilter implements Filter {
 
-    public static final String ES_SYNC_FLAG = "nx_es_sync";
+    public static final String ES_SYNC_FLAG = "nx-es-sync";
+
+    protected static final String ES_SYNC_FLAG_COMPAT = "nx_es_sync";
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -50,7 +52,9 @@ public class ElasticSearchFilter implements Filter {
             return;
         }
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
-        final boolean esSync = Boolean.parseBoolean(httpRequest.getHeader(ES_SYNC_FLAG));
+        final boolean esSync = Boolean.parseBoolean(httpRequest.getHeader(ES_SYNC_FLAG))
+                // NXP-28075: keep compatibility with old header with underscores
+                || Boolean.parseBoolean(httpRequest.getHeader(ES_SYNC_FLAG_COMPAT));
         if (!esSync) {
             chain.doFilter(request, response);
             return;
