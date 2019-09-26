@@ -550,7 +550,7 @@ public class SearchTest extends BaseTest {
                 + "    \"ecm_fulltext\": \"Note*\",\n" + "    \"dc_modified_agg\": [\"last24h\"]\n" + "  },\n"
                 + "  \"contentViewData\": \"{" + "\\\"viewVar\\\": \\\"value\\\"" + "}\"\n" + "}";
         Map<String, String> headers = new HashMap<>();
-        headers.put("x-nxdocumentproperties", "default_search");
+        headers.put("x-nxdocumentproperties", "default_search, saved_search");
         try (CloseableClientResponse response = getResponse(RequestType.POST, SAVED_SEARCH_PATH, data, headers)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -561,9 +561,13 @@ public class SearchTest extends BaseTest {
             assertEquals("{\"viewVar\": \"value\"}", node.get("contentViewData").textValue());
             assertTrue(node.has("params"));
             node = node.get("params");
-            assertEquals("Note*", node.get("defaults:ecm_fulltext").textValue());
-            assertEquals(1, node.get("defaults:dc_modified_agg").size());
-            assertEquals("last24h", node.get("defaults:dc_modified_agg").get(0).textValue());
+            // assert that search params are not prefixed
+            assertEquals("Note*", node.get("ecm_fulltext").textValue());
+            assertEquals(1, node.get("dc_modified_agg").size());
+            assertEquals("last24h", node.get("dc_modified_agg").get(0).textValue());
+            // but the other search document properties are
+            assertEquals("default_search", node.get("saved:providerName").textValue());
+
         }
     }
 
