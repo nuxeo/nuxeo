@@ -150,8 +150,8 @@ public class DocumentSecuredPropertyTest extends BaseTest {
         try {
             Map<String, Object> body = new HashMap<>();
             body.put("entity-type", "document");
-            body.put("name", "file");
-            body.put("type", "File");
+            body.put("name", "secured_document");
+            body.put("type", "Secured");
             body.put("properties", singletonMap("secured:scalar", "I'm secured !"));
             return mapper.writeValueAsString(body);
         } catch (JsonProcessingException e) {
