@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -81,7 +82,11 @@ public class RenditionDefinitionRegistry extends ContributionFragmentRegistry<Re
     protected ActionContext createActionContext(DocumentModel doc) {
         ActionContext actionContext = new ELActionContext();
         actionContext.setCurrentDocument(doc);
-        actionContext.setDocumentManager(doc.getCoreSession());
+        CoreSession coreSession = doc.getCoreSession();
+        actionContext.setDocumentManager(coreSession);
+        if (coreSession != null) {
+            actionContext.setCurrentPrincipal(coreSession.getPrincipal());
+        }
         return actionContext;
     }
 
