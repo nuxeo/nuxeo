@@ -739,7 +739,13 @@ public class NXQLQueryBuilder {
      * @since 8.4
      */
     public static String appendClause(String query, String clause) {
-        return query + " AND " + clause;
+        if (StringUtils.isBlank(query)) {
+            return clause;
+        } else if (StringUtils.isBlank(clause)) {
+            return query;
+        } else {
+            return query + " AND " + clause;
+        }
     }
 
     /**
