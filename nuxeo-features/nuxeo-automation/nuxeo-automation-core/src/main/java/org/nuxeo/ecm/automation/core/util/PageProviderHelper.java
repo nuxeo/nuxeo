@@ -315,8 +315,7 @@ public class PageProviderHelper {
                         String.format("Cannot build query of provider '%s': " + "no search document model is set",
                                 provider.getName()));
             }
-            String additionalClause = StringUtils.isEmpty(quickFiltersClause) ? aggregatesClause
-                    : NXQLQueryBuilder.appendClause(aggregatesClause, quickFiltersClause);
+            String additionalClause = NXQLQueryBuilder.appendClause(aggregatesClause, quickFiltersClause);
             query = NXQLQueryBuilder.getQuery(searchDocumentModel, whereClause, additionalClause, parameters, null);
         }
         return query;

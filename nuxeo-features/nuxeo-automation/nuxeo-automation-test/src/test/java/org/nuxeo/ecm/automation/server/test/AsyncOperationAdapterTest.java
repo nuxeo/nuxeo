@@ -199,11 +199,22 @@ public class AsyncOperationAdapterTest {
     }
 
     /**
-     * @throws IOException
      * @since 11.1
      */
     @Test
-    public void testAsyncBulkActionWithPP() throws IOException {
+    public void testAsyncBulkActionWithPPWhereClause() throws IOException {
+        testAsyncBulkActionWithPP("QuickFilterPageProvider");
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testAsyncBulkActionWithPPPattern() throws IOException {
+        testAsyncBulkActionWithPP("PageProvider");
+    }
+
+    protected void testAsyncBulkActionWithPP(String pageProviderName) throws IOException {
         // get the root
         Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         // create a folder and a file
@@ -229,7 +240,7 @@ public class AsyncOperationAdapterTest {
 
         Object r = async.newRequest(BulkRunAction.ID)
                         .set("action", AutomationBulkAction.ACTION_NAME)
-                        .set("providerName", "PageProvider")
+                        .set("providerName", pageProviderName)
                         .set("quickFilters", "FileOnly")
                         .set("bucketSize", "10")
                         .set("batchSize", "5")
