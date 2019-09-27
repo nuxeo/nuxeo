@@ -20,6 +20,21 @@
       </quickFilters>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="QuickFilterPageProvider">
+      <whereClause>
+        <fixedPart>
+          ecm:mixinType != 'HiddenInNavigation'
+        </fixedPart>
+      </whereClause>
+      <sort column="dc:title" ascending="true"/>
+      <pageSize>2</pageSize>
+      <quickFilters>
+        <quickFilter name="FileOnly">
+          <clause>ecm:primaryType = 'File'</clause>
+        </quickFilter>
+      </quickFilters>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>
