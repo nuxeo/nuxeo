@@ -47,6 +47,7 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -501,6 +502,11 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     protected ActionContext createActionContext(DocumentModel doc) {
         ActionContext actionContext = new ELActionContext();
         actionContext.setCurrentDocument(doc);
+        CoreSession coreSession = doc.getCoreSession();
+        actionContext.setDocumentManager(coreSession);
+        if (coreSession != null) {
+            actionContext.setCurrentPrincipal(coreSession.getPrincipal());
+        }
         return actionContext;
     }
 
