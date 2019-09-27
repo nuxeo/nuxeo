@@ -38,6 +38,7 @@ import org.nuxeo.binary.metadata.api.BinaryMetadataException;
 import org.nuxeo.binary.metadata.api.BinaryMetadataProcessor;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -295,6 +296,11 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     protected ActionContext createActionContext(DocumentModel doc) {
         ActionContext actionContext = new ELActionContext();
         actionContext.setCurrentDocument(doc);
+        CoreSession coreSession = doc.getCoreSession();
+        actionContext.setDocumentManager(coreSession);
+        if (coreSession != null) {
+            actionContext.setCurrentPrincipal(coreSession.getPrincipal());
+        }
         return actionContext;
     }
 
