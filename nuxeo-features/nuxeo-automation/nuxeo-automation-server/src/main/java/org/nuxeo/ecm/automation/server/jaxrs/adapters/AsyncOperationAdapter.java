@@ -65,6 +65,7 @@ import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultAdapter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.api.login.LoginComponent;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.io.IOException;
@@ -172,11 +173,14 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         // TODO NXP-26303: use thread pool
         new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
+                LoginComponent.pushPrincipal(principal);
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(repoName, principal)){
                     opCtx.setCoreSession(session);
                     service.run(opCtx, opId, xreq.getParams());
                 } catch (OperationException e) {
                     setError(executionId, e.getMessage());
+                } finally {
+                    LoginComponent.popPrincipal();
                 }
             });
         }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
