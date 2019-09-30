@@ -7,5 +7,6 @@
     <!-- preview document enricher -->
     <register class="org.nuxeo.ecm.platform.audit.io.LogEntryJsonWriter" enable="true" />
     <register class="org.nuxeo.ecm.platform.audit.io.LogEntryListJsonWriter" enable="true" />
+    <register class="org.nuxeo.ecm.platform.audit.io.LogEntryCSVWriter" enable="true" />
   </extension>
 </component>
