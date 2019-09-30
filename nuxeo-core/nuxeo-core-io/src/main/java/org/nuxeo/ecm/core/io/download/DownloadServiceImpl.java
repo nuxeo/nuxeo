@@ -27,10 +27,14 @@ import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -44,6 +48,9 @@ import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -108,6 +115,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String RUN_FUNCTION = "run";
 
     private static final Pattern FILENAME_SANITIZATION_REGEX = Pattern.compile(";\\w+=.*");
+
+    private static final String DC_MODIFIED = "dc:modified";
+
+    private static final String MD5 = "MD5";
 
     protected enum Action {
         DOWNLOAD, DOWNLOAD_FROM_DOC, INFO, BLOBSTATUS
@@ -527,6 +538,14 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             Blob fblob = blob;
             blobTransferer = byteRange -> transferBlobWithByteRange(fblob, byteRange, response);
         }
+        Calendar lastModified = context.getLastModified();
+        if (lastModified == null && doc != null) {
+            try {
+                lastModified = (Calendar) doc.getPropertyValue(DC_MODIFIED);
+            } catch (PropertyNotFoundException | ClassCastException e) {
+                // ignore
+            }
+        }
 
         // check blob permissions
         if (!checkPermission(doc, xpath, blob, reason, extendedInfos)) {
@@ -548,14 +567,57 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         try {
+            long length = blob.getLength();
+            ByteRange byteRange = getByteRange(request, length);
+
             String digest = blob.getDigest();
+            String digestAlgorithm = blob.getDigestAlgorithm();
             if (digest == null) {
                 digest = DigestUtils.md5Hex(blob.getStream());
+                digestAlgorithm = MD5;
             }
-            String etag = '"' + digest + '"'; // with quotes per RFC7232 2.3
-            response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
+
+            // Want-Digest / Digest
+            Set<String> wantDigests = getWantDigests(request);
+            if (!wantDigests.isEmpty()) {
+                if (wantDigests.contains(digestAlgorithm.toLowerCase())) {
+                    // Digest header (RFC3230)
+                    response.setHeader("Digest", digestAlgorithm + '=' + hexToBase64(digest));
+                }
+                if (wantDigests.contains("contentmd5")) {
+                    // Content-MD5 header (RFC1864)
+                    // deprecated per RFC7231 Appendix B
+                    // don't do it if there's a byte range because the spec is inconsistent
+                    // see https://trac.ietf.org/trac/httpbis/ticket/178
+                    if (byteRange == null && MD5.equalsIgnoreCase(digestAlgorithm)) {
+                        response.setHeader("Content-MD5", hexToBase64(digest));
+                    }
+                }
+            }
+
             addCacheControlHeaders(request, response);
 
+            // If-Modified-Since / Last-Modified
+            if (lastModified != null) {
+                long lastModifiedMillis = lastModified.getTimeInMillis();
+                response.setDateHeader("Last-Modified", lastModifiedMillis);
+                long ifModifiedSince;
+                try {
+                    ifModifiedSince = request.getDateHeader("If-Modified-Since");
+                } catch (IllegalArgumentException e) {
+                    log.debug("Invalid If-Modified-Since header", e);
+                    ifModifiedSince = -1;
+                }
+                if (ifModifiedSince != -1 && ifModifiedSince >= lastModifiedMillis) {
+                    // not modified
+                    response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                    return;
+                }
+            }
+
+            // If-None-Match / ETag
+            String etag = '"' + digest + '"'; // with quotes per RFC7232 2.3
+            response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
             String ifNoneMatch = request.getHeader("If-None-Match");
             if (ifNoneMatch != null) {
                 boolean match = false;
@@ -597,21 +659,11 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 }
             }
 
-            long length = blob.getLength();
             response.setHeader("Accept-Ranges", "bytes");
-            String range = request.getHeader("Range");
-            ByteRange byteRange;
-            if (StringUtils.isBlank(range)) {
-                byteRange = null;
-            } else {
-                byteRange = DownloadHelper.parseRange(range, length);
-                if (byteRange == null) {
-                    log.error("Invalid byte range received: {}", range);
-                } else {
-                    response.setHeader("Content-Range",
-                            "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
-                    response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-                }
+            if (byteRange != null) {
+                response.setHeader("Content-Range",
+                        "bytes " + byteRange.getStart() + "-" + byteRange.getEnd() + "/" + length);
+                response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
             }
             long contentLength = byteRange == null ? length : byteRange.getLength();
             response.setContentLengthLong(contentLength);
@@ -648,6 +700,42 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             DownloadHelper.handleClientDisconnect(e.getCause());
         } catch (IOException ioe) {
             DownloadHelper.handleClientDisconnect(ioe);
+        }
+    }
+
+    protected ByteRange getByteRange(HttpServletRequest request, long length) {
+        String range = request.getHeader("Range");
+        if (StringUtils.isBlank(range)) {
+            return null;
+        }
+        ByteRange byteRange = DownloadHelper.parseRange(range, length);
+        if (byteRange == null) {
+            log.debug("Invalid byte range received: {}", range);
+        }
+        return byteRange;
+    }
+
+    protected Set<String> getWantDigests(HttpServletRequest request) {
+        Enumeration<String> values = request.getHeaders("Want-Digest");
+        if (values == null) {
+            return Collections.emptySet();
+        }
+        Set<String> wantDigests = new HashSet<>();
+        for (String value : Collections.list(values)) {
+            int semicolon = value.indexOf(';');
+            if (semicolon >= 0) {
+                value = value.substring(0, semicolon);
+            }
+            wantDigests.add(value.trim().toLowerCase());
+        }
+        return wantDigests;
+    }
+
+    protected static String hexToBase64(String hexString) {
+        try {
+            return Base64.encodeBase64String(Hex.decodeHex(hexString.toCharArray()));
+        } catch (DecoderException e) {
+            throw new NuxeoException(e);
         }
     }
 
