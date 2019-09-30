@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.io.download;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -147,9 +148,11 @@ public interface DownloadService {
 
         protected final Consumer<ByteRange> blobTransferer;
 
+        protected final Calendar lastModified;
+
         public DownloadContext(HttpServletRequest request, HttpServletResponse response, DocumentModel doc,
                 String xpath, Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos,
-                Boolean inline, Consumer<ByteRange> blobTransferer) {
+                Boolean inline, Consumer<ByteRange> blobTransferer, Calendar lastModified) {
             this.request = request;
             this.response = response;
             this.doc = doc;
@@ -160,6 +163,7 @@ public interface DownloadService {
             this.extendedInfos = extendedInfos;
             this.inline = inline;
             this.blobTransferer = blobTransferer;
+            this.lastModified = lastModified;
         }
 
         public HttpServletRequest getRequest() {
@@ -202,6 +206,10 @@ public interface DownloadService {
             return blobTransferer;
         }
 
+        public Calendar getLastModified() {
+            return lastModified;
+        }
+
         /**
          * Creates a new builder.
          *
@@ -239,6 +247,8 @@ public interface DownloadService {
             protected Boolean inline;
 
             protected Consumer<ByteRange> blobTransferer;
+
+            protected Calendar lastModified;
 
             public Builder(HttpServletRequest request, HttpServletResponse response) {
                 this.request = request;
@@ -323,11 +333,19 @@ public interface DownloadService {
             }
 
             /**
+             * The last modified date of the blob.
+             */
+            public Builder lastModified(Calendar lastModified) {
+                this.lastModified = lastModified;
+                return this;
+            }
+
+            /**
              * Builds a final {@link DownloadContext}.
              */
             public DownloadContext build() {
                 return new DownloadContext(request, response, doc, xpath, blob, filename, reason, extendedInfos, inline,
-                        blobTransferer);
+                        blobTransferer, lastModified);
             }
         }
     }
