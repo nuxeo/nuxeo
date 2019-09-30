@@ -46,6 +46,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -241,6 +242,64 @@ public class TestDownloadService {
         verify(req, atLeastOnce()).getHeader("If-None-Match");
         assertEquals(0, out.toByteArray().length);
         verify(resp).sendError(HttpServletResponse.SC_NOT_MODIFIED);
+    }
+
+    @Test
+    public void testWantDigestMD5() throws Exception {
+        doTestWantDigest(Arrays.asList("MD5"), "MD5=sQqNsWTgdUEFt6mb5y4/5Q==", null);
+    }
+
+    @Test
+    public void testWantDigestContentMD5() throws Exception {
+        doTestWantDigest(Arrays.asList("contentMD5"), null, "sQqNsWTgdUEFt6mb5y4/5Q==");
+    }
+
+    @Test
+    public void testWantDigestMD5AndContentMD5() throws Exception {
+        doTestWantDigest(Arrays.asList("MD5", "contentMD5"), "MD5=sQqNsWTgdUEFt6mb5y4/5Q==",
+                "sQqNsWTgdUEFt6mb5y4/5Q==");
+    }
+
+    @Test
+    public void testWantDigestUnknown() throws Exception {
+        doTestWantDigest(Arrays.asList("nosuchalgo"), null, null);
+    }
+
+    protected void doTestWantDigest(List<String> wanted, String expectedDigest, String expectedContentMD5)
+            throws Exception {
+        String blobValue = "Hello World";
+        Blob blob = Blobs.createBlob(blobValue);
+        blob.setFilename("myFile.txt");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getHeaders("Want-Digest")).thenReturn(Collections.enumeration(wanted));
+        when(req.getMethod()).thenReturn("GET");
+
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        ServletOutputStream sos = new DummyServletOutputStream() {
+            @Override
+            public void write(int b) {
+                out.write(b);
+            }
+        };
+        @SuppressWarnings("resource")
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(resp.getOutputStream()).thenReturn(sos);
+        when(resp.getWriter()).thenReturn(printWriter);
+
+        DownloadContext context = DownloadContext.builder(req, resp)
+                                                 .blob(blob)
+                                                 .build();
+        downloadService.downloadBlob(context);
+
+        verify(resp).setHeader(eq("ETag"), eq("\"b10a8db164e0754105b7a99be72e3fe5\""));
+        if (expectedDigest != null) {
+            verify(resp).setHeader(eq("Digest"), eq(expectedDigest));
+        }
+        if (expectedContentMD5 != null) {
+            verify(resp).setHeader(eq("Content-MD5"), eq(expectedContentMD5));
+        }
     }
 
     @Test
