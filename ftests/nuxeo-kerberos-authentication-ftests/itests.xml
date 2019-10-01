@@ -25,6 +25,11 @@
   </target>
 
   <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
+    <!-- prevent nuxeoctl from reaching Connect -->
+    <antcall target="set-conf">
+      <param name="name" value="org.nuxeo.connect.server.reachable" />
+      <param name="value" value="false" />
+    </antcall>
     <antcall target="set-conf">
       <param name="name" value="kerberos.keytab" />
       <param name="value" value="/opt/build/keystores/keytabs/jenkins.keytab" />
