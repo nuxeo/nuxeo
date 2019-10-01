@@ -4,16 +4,11 @@
   <description>
     <p>Nuxeo Tree Snapshot brings the possibility to snapshot and version a whole folder and its content in a single step and to recover the state of a folder for a given version.</p>
   </description>
-  <home-page>https://doc.nuxeo.com/nxdoc/nuxeo-tree-snapshot/</home-page>
   <vendor>Nuxeo</vendor>
-  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
-  <production-state>production_ready</production-state>
-  <supported>true</supported>
   <platforms>
     <platform>server-@VERSION@</platform>
     <platform>server-@VERSION@-*</platform>
   </platforms>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-  <visibility>PUBLIC</visibility>
 </package>

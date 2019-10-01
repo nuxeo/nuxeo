@@ -2,16 +2,11 @@
 <package type="addon" name="easyshare" version="@VERSION@">
   <title>EasyShare</title>
   <description>The EasyShare package is an addon for the Nuxeo Platform that enables filesharing from the repository for a limited time with a simple link, thus allowing external users to access the content without requiring a login.</description>
-  <home-page>https://doc.nuxeo.com/userdoc/easyshare/</home-page>
   <vendor>Nuxeo</vendor>
-  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
-  <production-state>production_ready</production-state>
-  <supported>true</supported>
   <platforms>
     <platform>server-@VERSION@</platform>
     <platform>server-@VERSION@-*</platform>
   </platforms>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-  <visibility>PUBLIC</visibility>
 </package>

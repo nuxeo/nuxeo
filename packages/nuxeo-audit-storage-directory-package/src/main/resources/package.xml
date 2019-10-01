@@ -6,14 +6,10 @@
     <p>For additional information please read <a href="https://github.com/nuxeo/nuxeo-audit-storage-directory">documentation</a></p>
   </description>
   <vendor>Nuxeo</vendor>
-  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
-  <production-state>production_ready</production-state>
-  <supported>true</supported>
   <platforms>
     <platform>server-@VERSION@</platform>
     <platform>server-@VERSION@-HF*</platform>
   </platforms>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-  <visibility>MARKETPLACE</visibility>
 </package>

@@ -4,16 +4,11 @@
   <description>
     <p>The Kerberos Authentication addon allows your users to log in to the Nuxeo Platform by authenticating to a Kerberos server (eg. Active Directory).</p>
   </description>
-  <home-page>https://doc.nuxeo.com/nxdoc/kerberos-authentication/</home-page>
   <vendor>Nuxeo</vendor>
-  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
-  <production-state>production_ready</production-state>
-  <supported>true</supported>
   <platforms>
     <platform>server-@VERSION@</platform>
     <platform>server-@VERSION@-*</platform>
   </platforms>
   <license>Apache 2.0</license>
   <license-url>http://www.apache.org/licenses/LICENSE-2.0</license-url>
-  <visibility>PUBLIC</visibility>
 </package>
