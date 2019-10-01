@@ -51,7 +51,6 @@ import org.nuxeo.ecm.automation.server.jaxrs.ResponseHelper;
 import org.nuxeo.ecm.core.api.AsyncService;
 import org.nuxeo.ecm.core.api.AsyncStatus;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -174,8 +173,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
                 LoginComponent.pushPrincipal(principal);
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(repoName, principal)){
-                    opCtx.setCoreSession(session);
+                try (var s = CoreInstance.openCoreSession(repoName, principal)){
+                    opCtx.setCoreSession(s);
                     service.run(opCtx, opId, xreq.getParams());
                 } catch (OperationException e) {
                     setError(executionId, e.getMessage());
