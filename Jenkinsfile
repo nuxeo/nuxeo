@@ -165,7 +165,8 @@ pipeline {
       }
       post {
         always {
-          junit testResults: '**/target/surefire-reports/*.xml'
+          archiveArtifacts artifacts: 'nuxeo-distribution/**/target/failsafe-reports/*, nuxeo-distribution/**/target/**/*.log, nuxeo-distribution/**/target/*.png, nuxeo-distribution/**/target/**/distribution.properties, nuxeo-distribution/**/target/**/configuration.properties, ftests/**/target/failsafe-reports/*, ftests/**/target/**/*.log, ftests/**/target/*.png, ftests/**/target/**/distribution.properties, ftests/**/target/**/configuration.properties'
+          junit testResults: '**/target/failsafe-reports/*.xml'
         }
         success {
           setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
