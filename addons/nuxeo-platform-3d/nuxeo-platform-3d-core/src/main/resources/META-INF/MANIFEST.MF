@@ -16,8 +16,7 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
  OSGI-INF/adapters-contrib.xml,
  OSGI-INF/threed-renditions-contrib.xml,
- OSGI-INF/threed-service-contrib.xml,
- OSGI-INF/preview-adapter-contrib.xml
+ OSGI-INF/threed-service-contrib.xml
 Bundle-Category: core,stateful
 Nuxeo-Require: org.nuxeo.ecm.platform.types.api,
  org.nuxeo.ecm.core.api,
