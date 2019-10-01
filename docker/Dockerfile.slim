@@ -5,7 +5,7 @@
 # Build Stage: Unzip the distribution
 FROM alpine:3.10.2 as distrib
 
-COPY target/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
+COPY target/distrib/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
 
 RUN mkdir -p /tmp/nuxeo-distribution \
   && unzip -q -d /tmp/nuxeo-distribution /tmp/nuxeo-distribution-tomcat.zip \
@@ -15,7 +15,7 @@ RUN mkdir -p /tmp/nuxeo-distribution \
   && rm -rf /tmp/nuxeo-distribution* \
   && chmod +x /distrib/bin/*ctl /distrib/bin/*.sh
 
-COPY docker/docker-template /distrib/templates/docker
+COPY docker-template /distrib/templates/docker
 
 
 # ------------------------------------------------------------------------
@@ -51,8 +51,8 @@ COPY --from=distrib /distrib $NUXEO_HOME
 RUN chown -R 1000:0 $NUXEO_HOME \
   && chmod -R g+rwX $NUXEO_HOME
 
-COPY --chown=1000:0 docker/nuxeo.conf /etc/nuxeo/nuxeo.conf.template
-COPY docker/docker-entrypoint.sh /
+COPY --chown=1000:0 nuxeo.conf /etc/nuxeo/nuxeo.conf.template
+COPY docker-entrypoint.sh /
 
 # Protecting writeable directories to support arbitrary User IDs for OpenShift
 # https://docs.openshift.com/container-platform/3.4/creating_images/guidelines.html
