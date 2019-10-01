@@ -19,7 +19,7 @@ build:
       template: "{{.DOCKER_REGISTRY}}/{{.ORG}}/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
     - image: nuxeo
-      context: nuxeo-distribution/nuxeo-server-tomcat
+      context: docker
       kaniko:
         dockerfile: Dockerfile
         buildContext:
