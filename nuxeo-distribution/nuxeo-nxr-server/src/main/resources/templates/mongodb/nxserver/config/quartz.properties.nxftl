@@ -27,4 +27,12 @@ org.quartz.jobStore.dbName=${nuxeo.mongodb.dbname}
 org.quartz.jobStore.collectionPrefix=quartz
 org.quartz.jobStore.jobDataAsBase64=false
 
+org.quartz.jobStore.mongoOptionEnableSSL=${nuxeo.mongodb.ssl}
+org.quartz.jobStore.mongoOptionTrustStorePath=${nuxeo.mongodb.truststore.path}
+org.quartz.jobStore.mongoOptionTrustStorePassword=${nuxeo.mongodb.truststore.password}
+org.quartz.jobStore.mongoOptionTrustStoreType=${nuxeo.mongodb.truststore.type}
+org.quartz.jobStore.mongoOptionKeyStorePath=${nuxeo.mongodb.keystore.path}
+org.quartz.jobStore.mongoOptionKeyStorePassword=${nuxeo.mongodb.keystore.password}
+org.quartz.jobStore.mongoOptionKeyStoreType=${nuxeo.mongodb.keystore.type}
+
 org.quartz.scheduler.mongoOptionWriteConcernTimeoutMillis=5000

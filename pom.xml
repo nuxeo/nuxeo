@@ -227,7 +227,7 @@
 
     <!-- MongoDB -->
     <mongo.java.driver.version>3.8.1</mongo.java.driver.version>
-    <quartz.mongodb.version>2.0.0-NX2</quartz.mongodb.version>
+    <quartz.mongodb.version>2.0.0-NX3</quartz.mongodb.version>
 
     <kafka.version>2.1.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
