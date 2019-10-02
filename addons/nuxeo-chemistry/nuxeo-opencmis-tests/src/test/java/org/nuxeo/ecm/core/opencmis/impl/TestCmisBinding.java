@@ -928,7 +928,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // get stream
         ContentStream cs = objService.getContentStream(repositoryId, ob.getId(), null, null, null, null);
         assertNotNull(cs);
-        assertEquals("text/plain", cs.getMimeType());
+        assertEquals("text/plain;charset=UTF-8", cs.getMimeType());
         assertEquals("testfile.txt", cs.getFileName());
         assertEquals(Helper.FILE1_CONTENT.length(), cs.getLength());
         assertEquals(Helper.FILE1_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
@@ -952,7 +952,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         // refetch
         cs = objService.getContentStream(repositoryId, ob.getId(), null, null, null, null);
         assertNotNull(cs);
-        assertEquals("text/plain; charset=UTF-8", cs.getMimeType());
+        assertEquals("text/plain;charset=UTF-8", cs.getMimeType());
         assertEquals("foo.txt", cs.getFileName());
         assertEquals(STREAM_CONTENT.getBytes("UTF-8").length, cs.getLength());
         assertEquals(STREAM_CONTENT, Helper.read(cs.getStream(), "UTF-8"));
