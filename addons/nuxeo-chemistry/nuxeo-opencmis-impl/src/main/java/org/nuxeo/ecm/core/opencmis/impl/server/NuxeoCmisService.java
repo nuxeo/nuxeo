@@ -18,12 +18,11 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import static org.apache.chemistry.opencmis.commons.server.CallContext.BINDING_ATOMPUB;
+import static org.apache.chemistry.opencmis.commons.server.CallContext.BINDING_BROWSER;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.core.blob.binary.AbstractBinaryManager.MD5_DIGEST;
-import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream.CONTENT_MD5_DIGEST_ALGORITHM;
-import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream.CONTENT_MD5_HEADER_NAME;
 import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream.DIGEST_HEADER_NAME;
 import static org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData.REND_STREAM_RENDITION_PREFIX;
 
@@ -92,6 +91,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentExcep
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisVersioningException;
 import org.apache.chemistry.opencmis.commons.impl.WSConverter;
@@ -143,6 +143,7 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.model.VersionNotModifiableException;
@@ -151,6 +152,8 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.io.download.DownloadService;
+import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.ecm.core.opencmis.impl.server.versioning.CMISVersioningFilter;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
@@ -225,6 +228,9 @@ public class NuxeoCmisService extends AbstractCmisService
     protected String cachedChangeLogToken;
 
     protected CallContext callContext;
+
+    /** @since 11.1 */
+    protected boolean responseAlreadySent;
 
     /** Filter that hides HiddenInNavigation and deleted objects. */
     protected final Filter documentFilter;
@@ -305,18 +311,22 @@ public class NuxeoCmisService extends AbstractCmisService
     public Progress afterServiceCall() {
         // check if there is a transaction timeout
         // if yes, abort and return a 503 (Service Unavailable)
-        if (!TransactionHelper.setTransactionRollbackOnlyIfTimedOut()) {
-            return Progress.CONTINUE;
-        }
-        HttpServletResponse response = (HttpServletResponse) getCallContext().get(CallContext.HTTP_SERVLET_RESPONSE);
-        if (response != null) {
-            try {
-                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Transaction timeout");
-            } catch (IOException e) {
-                throw new CmisRuntimeException("Failed to set timeout status", e);
+        if (TransactionHelper.setTransactionRollbackOnlyIfTimedOut()) {
+            HttpServletResponse response = (HttpServletResponse) getCallContext().get(
+                    CallContext.HTTP_SERVLET_RESPONSE);
+            if (response != null) {
+                try {
+                    response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Transaction timeout");
+                } catch (IOException e) {
+                    throw new CmisRuntimeException("Failed to set timeout status", e);
+                }
             }
+            return Progress.STOP;
         }
-        return Progress.STOP;
+        if (responseAlreadySent) {
+            return Progress.STOP;
+        }
+        return Progress.CONTINUE;
     }
 
     protected static NuxeoRepository getNuxeoRepository(String repositoryName) {
@@ -866,37 +876,66 @@ public class NuxeoCmisService extends AbstractCmisService
     @Override
     public ContentStream getContentStream(String repositoryId, String objectId, String streamId, BigInteger offset,
             BigInteger length, ExtensionsData extension) {
-        // TODO offset, length
-        ContentStream cs;
         HttpServletRequest request = (HttpServletRequest) callContext.get(CallContext.HTTP_SERVLET_REQUEST);
+        HttpServletResponse response = (HttpServletResponse) callContext.get(CallContext.HTTP_SERVLET_RESPONSE);
+        DocumentModel doc = getDocumentModel(objectId);
+        DownloadContext.Builder builder = DownloadContext.builder(request, response) //
+                                                         .doc(doc);
         if (streamId == null) {
-            DocumentModel doc = getDocumentModel(objectId);
-            cs = NuxeoPropertyData.getContentStream(doc, request);
-            if (cs == null) {
+            // do blob checks now to throw proper CMIS exceptions
+            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
+            if (blobHolder == null) {
+                throw new CmisStreamNotSupportedException();
+            }
+            Blob blob = blobHolder.getBlob();
+            if (blob == null) {
                 throw new CmisConstraintException("No content stream: " + objectId);
             }
+            builder.blob(blob);
+            builder.xpath(DownloadService.BLOBHOLDER_0);
+            builder.reason("cmis");
         } else {
-            String renditionName = streamId.replaceAll("^" + REND_STREAM_RENDITION_PREFIX, "");
-            cs = getRenditionServiceStream(objectId, renditionName);
-            if (cs == null) {
+            // get the rendition from the RenditionService
+            String renditionName;
+            if (streamId.startsWith(REND_STREAM_RENDITION_PREFIX)) {
+                renditionName = streamId.substring(REND_STREAM_RENDITION_PREFIX.length());
+            } else {
+                renditionName = streamId;
+            }
+            Rendition rendition = Framework.getService(RenditionService.class).getRendition(doc, renditionName);
+            if (rendition == null) {
                 throw new CmisInvalidArgumentException("Invalid stream id: " + streamId);
             }
-        }
-        if (cs instanceof NuxeoContentStream) {
-            NuxeoContentStream ncs = (NuxeoContentStream) cs;
-            Blob blob = ncs.blob;
-            String blobDigestAlgorithm = blob.getDigestAlgorithm();
-            if (MD5_DIGEST.equals(blobDigestAlgorithm)
-                    && NuxeoContentStream.hasWantDigestRequestHeader(request, CONTENT_MD5_DIGEST_ALGORITHM)) {
-                setResponseHeader(CONTENT_MD5_HEADER_NAME, blob, callContext);
+            Blob blob = rendition.getBlob();
+            if (blob == null) {
+                throw new CmisInvalidArgumentException("Invalid stream id: " + streamId);
             }
-            if (NuxeoContentStream.hasWantDigestRequestHeader(request, blobDigestAlgorithm)) {
-                setResponseHeader(DIGEST_HEADER_NAME, blob, callContext);
-            }
+            builder.blob(blob);
+            builder.lastModified(rendition.getModificationDate());
+            builder.extendedInfos(Collections.singletonMap("rendition", renditionName));
+            builder.reason("cmisRendition");
         }
-        return cs;
+        DownloadContext context = builder.build();
+        String binding = callContext.getBinding();
+        if (BINDING_BROWSER.equals(binding) || BINDING_ATOMPUB.equals(binding)) {
+            // delegate to DownloadService
+            try {
+                Framework.getService(DownloadService.class).downloadBlob(context);
+            } catch (IOException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
+            responseAlreadySent = true;
+            return null;
+        } else {
+            // else return a ContentStream, for local calls
+            // TODO offset, length
+            return NuxeoContentStream.create(doc, context.getXPath(), context.getBlob(), context.getReason(),
+                    context.getExtendedInfos(), null, request);
+        }
     }
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     protected void setResponseHeader(String headerName, Blob blob, CallContext callContext) {
         String digest = NuxeoPropertyData.transcodeHexToBase64(blob.getDigest());
         HttpServletResponse response = (HttpServletResponse) callContext.get(CallContext.HTTP_SERVLET_RESPONSE);
@@ -937,6 +976,8 @@ public class NuxeoCmisService extends AbstractCmisService
         return new ContentStreamImpl(filename, BigInteger.valueOf(info.getLength()), info.getMimeType(), is);
     }
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     protected ContentStream getRenditionServiceStream(String objectId, String renditionName) {
         RenditionService renditionService = Framework.getService(RenditionService.class);
         DocumentModel doc = getDocumentModel(objectId);

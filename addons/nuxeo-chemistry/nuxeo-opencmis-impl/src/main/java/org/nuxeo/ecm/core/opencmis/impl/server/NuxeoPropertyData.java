@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -68,6 +70,9 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HeaderElement;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicHeaderValueParser;
 import org.nuxeo.ecm.automation.core.util.ComplexPropertyJSONEncoder;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
@@ -314,6 +319,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         return facets;
     }
 
+    /**
+     * @deprecated since 11.1, now unused
+     */
+    @Deprecated
     public static ContentStream getContentStream(DocumentModel doc, HttpServletRequest request)
             throws CmisRuntimeException {
         BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
@@ -369,8 +378,24 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             IOUtils.copy(in, out);
             Framework.trackFile(file, in);
         }
-        return Blobs.createBlob(file, contentStream.getMimeType(), null, filename);
+        // parse full content stream mime type to isolate charset (a.k.a. encoding) for the Blob
+        // don't use org.apache.http.entity.ContentType as it parses the charset as a Java Charset
+        // but we don't want any validation
+        HeaderElement helem = BasicHeaderValueParser.parseHeaderElement(contentStream.getMimeType(), null);
+        String mimeType = helem.getName();
+        String encoding = null;
+        for (NameValuePair param : helem.getParameters()) {
+            if (param.getName().equalsIgnoreCase("charset")) {
+                String s = param.getValue();
+                if (!isBlank(s)) {
+                    encoding = s;
+                }
+                break;
+            }
+        }
+        return Blobs.createBlob(file, mimeType, encoding, filename);
     }
+
 
     public static void validateBlobDigest(DocumentModel doc, CallContext callContext) {
         Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
