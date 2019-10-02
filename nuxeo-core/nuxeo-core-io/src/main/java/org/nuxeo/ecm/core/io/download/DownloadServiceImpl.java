@@ -312,6 +312,13 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
     }
 
+    /* Needed because Chemistry wraps HEAD requests to pretend they are GET requests. */
+    protected static final String CHEMISTRY_HEAD_REQUEST_CLASS = "HEADHttpServletRequestWrapper";
+
+    protected static boolean isHead(HttpServletRequest request) {
+        return "HEAD".equals(request.getMethod()) || request.getClass().getSimpleName().equals(CHEMISTRY_HEAD_REQUEST_CLASS);
+    }
+
     protected void handleDownload(HttpServletRequest req, HttpServletResponse resp, String downloadPath, String baseUrl,
             boolean info) throws IOException {
         boolean tx = false;
@@ -354,8 +361,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                     String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
                             + downloadUrl;
                     resp.setContentType("text/plain");
-                    resp.getWriter().write(result);
-                    resp.getWriter().flush();
+                    if (!isHead(req)) {
+                        resp.getWriter().write(result);
+                        resp.getWriter().flush();
+                    }
                 } else {
                     DownloadContext context = DownloadContext.builder(req, resp)
                                                              .doc(doc)
@@ -557,7 +566,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         if (uri != null) {
             try {
                 extendedInfos.put("redirect", uri.toString());
-                logDownload(doc, xpath, filename, reason, extendedInfos);
+                logDownload(request, doc, xpath, filename, reason, extendedInfos);
                 response.sendRedirect(uri.toString());
             } catch (IOException ioe) {
                 DownloadHelper.handleClientDisconnect(ioe);
@@ -669,7 +678,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
 
             // log the download but not if it's a random byte range
             if (byteRange == null || byteRange.getStart() == 0) {
-                logDownload(doc, xpath, filename, reason, extendedInfos);
+                logDownload(request, doc, xpath, filename, reason, extendedInfos);
             }
 
             String xAccelLocation = request.getHeader(NginxConstants.X_ACCEL_LOCATION_HEADER);
@@ -693,8 +702,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                 }
             }
 
-            // execute the final download
-            blobTransferer.accept(byteRange);
+            if (!isHead(request)) {
+                // execute the final download
+                blobTransferer.accept(byteRange);
+            }
         } catch (UncheckedIOException e) {
             DownloadHelper.handleClientDisconnect(e.getCause());
         } catch (IOException ioe) {
@@ -915,8 +926,12 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     }
 
     @Override
-    public void logDownload(DocumentModel doc, String xpath, String filename, String reason,
+    public void logDownload(HttpServletRequest request, DocumentModel doc, String xpath, String filename, String reason,
             Map<String, Serializable> extendedInfos) {
+        if (request != null && isHead(request)) {
+            // don't log HEAD requests
+            return;
+        }
         if ("webengine".equals(reason)) {
             // don't log JSON operation results as downloads
             return;

@@ -555,8 +555,26 @@ public interface DownloadService {
      * @param filename the filename
      * @param reason the download reason
      * @param extendedInfos an optional map of extended informations to log
+     * @deprecated since 11.1, use the signature including the request
      */
-    void logDownload(DocumentModel doc, String blobXPath, String filename, String reason,
+    @Deprecated
+    default void logDownload(DocumentModel doc, String blobXPath, String filename, String reason,
+            Map<String, Serializable> extendedInfos) {
+        logDownload(null, doc, blobXPath, filename, reason, extendedInfos);
+    }
+
+    /**
+     * Logs a download.
+     *
+     * @param request the HTTP request, if available
+     * @param doc the doc for which this download occurs, if available
+     * @param blobXPath the blob's xpath or blobholder index, if available
+     * @param filename the filename
+     * @param reason the download reason
+     * @param extendedInfos an optional map of extended informations to log
+     * @since 11.1
+     */
+    void logDownload(HttpServletRequest request, DocumentModel doc, String blobXPath, String filename, String reason,
             Map<String, Serializable> extendedInfos);
 
     /**
