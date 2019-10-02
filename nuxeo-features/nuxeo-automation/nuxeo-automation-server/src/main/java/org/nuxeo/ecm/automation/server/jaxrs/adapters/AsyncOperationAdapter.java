@@ -59,6 +59,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -172,11 +173,14 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         // TODO NXP-26303: use thread pool
         new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
+                ClientLoginModule.getThreadLocalLogin().push(principal, null, null);
                 try (CloseableCoreSession session = CoreInstance.openCoreSession(repoName, principal)){
                     opCtx.setCoreSession(session);
                     service.run(opCtx, opId, xreq.getParams());
                 } catch (OperationException e) {
                     setError(executionId, e.getMessage());
+                } finally {
+                    ClientLoginModule.getThreadLocalLogin().pop();
                 }
             });
         }, String.format("Nuxeo-AsyncOperation-%s", executionId)).start();
