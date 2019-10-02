@@ -56,7 +56,7 @@ public abstract class AbstractConstraint implements Constraint {
     }
 
     @Override
-    public String getErrorMessage(Object invalidValue, Locale locale) {
+    public String getMessageKey() {
         // test whether there's a constraint specific translation
         // the expected key is label.schema.constraint.violation.[TheConstraintName]
         // if there's none, replies to a generic message
@@ -65,7 +65,12 @@ public abstract class AbstractConstraint implements Constraint {
         List<String> pathTokens = new ArrayList<>();
         pathTokens.add(MESSAGES_KEY);
         pathTokens.add(getDescription().getName());
-        String keyConstraint = StringUtils.join(pathTokens, '.');
+        return StringUtils.join(pathTokens, '.');
+    }
+
+    @Override
+    public String getErrorMessage(Object invalidValue, Locale locale) {
+        String keyConstraint = getMessageKey();
         String computedInvalidValue = "null";
         if (invalidValue != null) {
             String invalidValueString = invalidValue.toString();

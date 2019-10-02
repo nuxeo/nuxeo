@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
+import org.nuxeo.ecm.core.api.validation.ValidationViolation;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -66,8 +67,10 @@ public class DocumentValidationReportJsonWriterTest extends
         json.has("has_error").isTrue();
         json.has("number").isEquals(2);
         json = json.has("violations").length(2);
-        json.has(0).properties(4).has("message").isText();
-        json.has(1).properties(4).has("message").isText();
+        json.has(0).properties(5).has("message").isText();
+        json.has(1).properties(5).has("message").isText();
+        json.childrenContains("messageKey", "label.schema.constraint.violation.NotNullConstraint.dublincore.title",
+                "label.schema.constraint.violation.PatternConstraint.dublincore.description");
         json.childrenContains("invalid_value", null, null);
         json.childrenContains("constraint.entity-type", "validation_constraint", "validation_constraint");
         json.childrenContains("constraint.name", "NotNullConstraint", "PatternConstraint");
@@ -77,7 +80,7 @@ public class DocumentValidationReportJsonWriterTest extends
 
     @Test
     public void testNoErrors() throws Exception {
-        DocumentValidationReport report = new DocumentValidationReport(new ArrayList<ConstraintViolation>());
+        DocumentValidationReport report = new DocumentValidationReport(new ArrayList<ValidationViolation>());
         JsonAssert json = jsonAssert(report);
         json.properties(4);
         json.has("entity-type").isEquals("validation_report");

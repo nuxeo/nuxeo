@@ -62,6 +62,14 @@ public interface Constraint extends Serializable {
     String getErrorMessage(Object invalidValue, Locale locale);
 
     /**
+     * Provides the message key.
+     *
+     * @return The message key
+     * @since 11.1
+     */
+    String getMessageKey();
+
+    /**
      * Provides a description of a constraint. For example, a constraint which control String format could return
      * {@code name=PatternMatchingConstraint
      * | parameters= "pattern":"[0-9]+"}

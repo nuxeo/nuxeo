@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing;
+import org.nuxeo.ecm.core.api.validation.ValidationViolation;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 import org.nuxeo.ecm.core.schema.types.constraints.ObjectResolverConstraint;
@@ -114,9 +115,9 @@ public class TestObjectResolverProperties {
     @Test
     public void testPropertyValidationFailed() {
         prop().setValue("bob");
-        List<ConstraintViolation> violations = validator.validate(prop()).asList();
+        List<ValidationViolation> violations = validator.validate(prop()).asList();
         assertEquals(1, violations.size());
-        Constraint constraint = violations.get(0).getConstraint();
+        Constraint constraint = ((ConstraintViolation) violations.get(0)).getConstraint();
         assertTrue(constraint instanceof ObjectResolverConstraint);
         assertTrue(((ObjectResolverConstraint) constraint).getResolver() instanceof TestingColorResolver);
     }

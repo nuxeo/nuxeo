@@ -19,10 +19,14 @@
 
 package org.nuxeo.ecm.core.api.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpStatus;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
- * Exception thrown when some process failed due to {@link ConstraintViolation}.
+ * Exception thrown when some process failed due to {@link ValidationViolation}.
  *
  * @since 7.1
  */
@@ -38,8 +42,15 @@ public class DocumentValidationException extends NuxeoException {
     private DocumentValidationReport report;
 
     public DocumentValidationException(DocumentValidationReport report) {
-        super();
+        super(HttpStatus.SC_UNPROCESSABLE_ENTITY);
         this.report = report;
+    }
+
+    public DocumentValidationException(String message) {
+        super(message, HttpStatus.SC_UNPROCESSABLE_ENTITY);
+        List<ValidationViolation> violations = new ArrayList<>();
+        violations.add(new GlobalViolation(message));
+        this.report = new DocumentValidationReport(violations);
     }
 
     public DocumentValidationReport getReport() {
@@ -50,7 +61,7 @@ public class DocumentValidationException extends NuxeoException {
     public String getMessage() {
         if (report.hasError()) {
             int num = report.numberOfErrors();
-            String violationMessage = report.asList().get(0).getMessage(null);
+            String violationMessage = report.asList().get(0).getMessageKey();
             if (num > 1) {
                 return String.format(MESSAGE, report.numberOfErrors(), violationMessage);
             } else {

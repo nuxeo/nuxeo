@@ -24,15 +24,15 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * A managed set of {@link ConstraintViolation}.
+ * A managed set of {@link ValidationViolation}.
  *
  * @since 7.1
  */
 public class DocumentValidationReport {
 
-    protected List<ConstraintViolation> violations;
+    protected List<ValidationViolation> violations;
 
-    public DocumentValidationReport(List<ConstraintViolation> violations) {
+    public DocumentValidationReport(List<ValidationViolation> violations) {
         super();
         this.violations = violations;
     }
@@ -45,7 +45,7 @@ public class DocumentValidationReport {
         return violations.size();
     }
 
-    public List<ConstraintViolation> asList() {
+    public List<ValidationViolation> asList() {
         return Collections.unmodifiableList(violations);
     }
 
@@ -53,8 +53,8 @@ public class DocumentValidationReport {
     public String toString() {
         if (violations != null) {
             StringBuilder res = new StringBuilder();
-            for (ConstraintViolation violation : violations) {
-                res.append(violation.getMessage(Locale.ENGLISH)).append('\n');
+            for (ValidationViolation violation : violations) {
+                res.append(violation.getMessageKey()).append('\n');
             }
             return res.toString();
         } else {

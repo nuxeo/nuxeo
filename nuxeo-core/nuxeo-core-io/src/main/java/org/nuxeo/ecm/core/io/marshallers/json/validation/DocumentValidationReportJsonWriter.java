@@ -27,6 +27,7 @@ import java.io.IOException;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation.PathNode;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
+import org.nuxeo.ecm.core.api.validation.ValidationViolation;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -85,33 +86,38 @@ public class DocumentValidationReportJsonWriter extends ExtensibleEntityJsonWrit
         jg.writeNumberField("number", report.numberOfErrors());
         // constraint violations
         jg.writeArrayFieldStart("violations");
-        for (ConstraintViolation violation : report.asList()) {
+        for (ValidationViolation violation : report.asList()) {
             jg.writeStartObject();
-            // violation message
-            String message = violation.getMessage(ctx.getLocale());
-            jg.writeStringField("message", message);
+            String messageKey = violation.getMessageKey();
+            jg.writeStringField("messageKey", messageKey);
             // invalid value
-            Object invalidValue = violation.getInvalidValue();
-            if (invalidValue == null) {
-                jg.writeNullField("invalid_value");
-            } else {
-                jg.writeStringField("invalid_value", invalidValue.toString());
-            }
-            // violated constraint
-            Constraint constraint = violation.getConstraint();
-            writeEntityField("constraint", constraint, jg);
-            // violation place
-            jg.writeArrayFieldStart("path");
-            for (PathNode node : violation.getPath()) {
-                jg.writeStartObject();
-                jg.writeStringField("field_name", node.getField().getName().getPrefixedName());
-                jg.writeBooleanField("is_list_item", node.isListItem());
-                if (node.isListItem()) {
-                    jg.writeNumberField("index", node.getIndex());
+            if (violation instanceof ConstraintViolation) {
+                ConstraintViolation cv = (ConstraintViolation) violation;
+                // violation message
+                String message = cv.getMessage(ctx.getLocale());
+                jg.writeStringField("message", message);
+                Object invalidValue = cv.getInvalidValue();
+                if (invalidValue == null) {
+                    jg.writeNullField("invalid_value");
+                } else {
+                    jg.writeStringField("invalid_value", invalidValue.toString());
                 }
-                jg.writeEndObject();
+                // violated constraint
+                Constraint constraint = cv.getConstraint();
+                writeEntityField("constraint", constraint, jg);
+                // violation place
+                jg.writeArrayFieldStart("path");
+                for (PathNode node : cv.getPath()) {
+                    jg.writeStartObject();
+                    jg.writeStringField("field_name", node.getField().getName().getPrefixedName());
+                    jg.writeBooleanField("is_list_item", node.isListItem());
+                    if (node.isListItem()) {
+                        jg.writeNumberField("index", node.getIndex());
+                    }
+                    jg.writeEndObject();
+                }
+                jg.writeEndArray();
             }
-            jg.writeEndArray();
             jg.writeEndObject();
         }
         jg.writeEndArray();

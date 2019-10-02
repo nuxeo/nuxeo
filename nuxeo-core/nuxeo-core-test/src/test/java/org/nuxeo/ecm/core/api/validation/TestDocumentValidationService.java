@@ -415,10 +415,12 @@ public class TestDocumentValidationService {
         doc.setPropertyValue(COMPLEX_LIST_FIELD, value);
         doc = session.createDocument(doc);
         doc = session.saveDocument(doc);
-        List<ConstraintViolation> violations = validator.validate(doc).asList();
+        List<ValidationViolation> violations = validator.validate(doc).asList();
         assertEquals(5, violations.size());
         boolean found1 = false, found2 = false, found3 = false, found4 = false, found5 = false;
-        for (ConstraintViolation violation : violations) {
+        for (ValidationViolation v : violations) {
+            assertTrue(v instanceof ConstraintViolation);
+            ConstraintViolation violation = (ConstraintViolation) v;
             PathNode pathNode = violation.getPath().get(1);
             switch (pathNode.getIndex()) {
             case 0:
@@ -462,10 +464,10 @@ public class TestDocumentValidationService {
         assertFalse(violations.hasError());
         violations = validator.validate("vs:users/0/firstname", null);
         assertEquals(1, violations.numberOfErrors());
-        assertTrue(violations.asList().get(0).getConstraint() instanceof NotNullConstraint);
+        assertTrue(((ConstraintViolation) violations.asList().get(0)).getConstraint() instanceof NotNullConstraint);
         violations = validator.validate("vs:users/0/firstname", "   ");
         assertEquals(1, violations.numberOfErrors());
-        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+        assertTrue(((ConstraintViolation) violations.asList().get(0)).getConstraint() instanceof PatternConstraint);
     }
 
     @Test
@@ -478,7 +480,7 @@ public class TestDocumentValidationService {
         violations = validator.validate("vs:simpleList", new String[] { "", "123", "ABC" });
         assertTrue(violations.hasError());
         assertEquals(1, violations.numberOfErrors());
-        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+        assertTrue(((ConstraintViolation) violations.asList().get(0)).getConstraint() instanceof PatternConstraint);
     }
 
     @Test
@@ -497,7 +499,7 @@ public class TestDocumentValidationService {
         DocumentValidationReport violations = validator.validate(doc, true);
         assertTrue(violations.hasError());
         assertEquals(1, violations.numberOfErrors());
-        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+        assertTrue(((ConstraintViolation) violations.asList().get(0)).getConstraint() instanceof PatternConstraint);
     }
 
     @Test
@@ -508,7 +510,7 @@ public class TestDocumentValidationService {
         DocumentValidationReport violations = validator.validate(doc, true);
         assertTrue(violations.hasError());
         assertEquals(1, violations.numberOfErrors());
-        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+        assertTrue(((ConstraintViolation) violations.asList().get(0)).getConstraint() instanceof PatternConstraint);
     }
 
     @Test
@@ -525,7 +527,7 @@ public class TestDocumentValidationService {
         violations = validator.validate(doc);
         assertTrue(violations.hasError());
         assertEquals(1, violations.numberOfErrors());
-        assertTrue(violations.asList().get(0).getConstraint() instanceof PatternConstraint);
+        assertTrue(((ConstraintViolation) violations.asList().get(0)).getConstraint() instanceof PatternConstraint);
     }
 
     @Test
@@ -537,9 +539,10 @@ public class TestDocumentValidationService {
         doc.getProperty("vs:users").addValue(0, user);
         violations = validator.validate(doc);
         assertTrue(violations.hasError());
-        List<ConstraintViolation> violationList = violations.asList();
+        List<ValidationViolation> violationList = violations.asList();
         assertEquals(1, violationList.size());
-        ConstraintViolation violation = violationList.get(0);
+        assertTrue(violationList.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violationList.get(0);
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
     }
 
@@ -553,10 +556,10 @@ public class TestDocumentValidationService {
         Property userFirstnameProperty = doc.getProperty("vs:users").get(0).get("firstname");
         violations = validator.validate(userFirstnameProperty);
         assertTrue(violations.hasError());
-        List<ConstraintViolation> violationList = violations.asList();
+        List<ValidationViolation> violationList = violations.asList();
         assertEquals(1, violationList.size());
-        ConstraintViolation violation = violationList.get(0);
-        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
+        ValidationViolation violation = violationList.get(0);
+        assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, ((ConstraintViolation) violation).getMessage(Locale.ENGLISH));
     }
 
     @Test
@@ -564,21 +567,22 @@ public class TestDocumentValidationService {
         DocumentValidationReport violations;
         violations = validator.validate("vs:users/0/firstname", null);
         assertTrue(violations.hasError());
-        List<ConstraintViolation> violationList = violations.asList();
+        List<ValidationViolation> violationList = violations.asList();
         assertEquals(1, violationList.size());
-        ConstraintViolation violation = violationList.get(0);
+        assertTrue(violationList.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violationList.get(0);
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
         violations = validator.validate("vs:users/firstname", null);
         assertTrue(violations.hasError());
         violationList = violations.asList();
         assertEquals(1, violationList.size());
-        violation = violationList.get(0);
+        violation = (ConstraintViolation) violationList.get(0);
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
         violations = validator.validate("vs:users/user/firstname", null);
         assertTrue(violations.hasError());
         violationList = violations.asList();
         assertEquals(1, violationList.size());
-        violation = violationList.get(0);
+        violation = (ConstraintViolation) violationList.get(0);
         assertEquals(MESSAGE_FOR_USERS_FIRSTNAME, violation.getMessage(Locale.ENGLISH));
     }
 
@@ -609,14 +613,15 @@ public class TestDocumentValidationService {
     }
 
     private void checkOk(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(0, violations.size());
     }
 
     private void checkNotNullOnField(String field, DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(1, violation.getPath().size());
@@ -626,9 +631,10 @@ public class TestDocumentValidationService {
     }
 
     private void checkNumericIntervalOnGroupCode(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         Constraint constraint = violation.getConstraint();
         assertTrue(constraint instanceof NumericIntervalConstraint);
         assertEquals(SCHEMA, violation.getSchema().getName());
@@ -639,9 +645,10 @@ public class TestDocumentValidationService {
     }
 
     private void checkNotNullOnManagerFirstname(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(2, violation.getPath().size());
@@ -653,9 +660,10 @@ public class TestDocumentValidationService {
     }
 
     private void checkPatternOnManagerFirstname(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         assertTrue(violation.getConstraint() instanceof PatternConstraint);
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(2, violation.getPath().size());
@@ -667,9 +675,10 @@ public class TestDocumentValidationService {
     }
 
     private void checkNotNullOnRoles(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(2, violation.getPath().size());
@@ -681,9 +690,10 @@ public class TestDocumentValidationService {
     }
 
     private void checkPatternOnRoles(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         assertTrue(violation.getConstraint() instanceof PatternConstraint);
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(2, violation.getPath().size());
@@ -695,9 +705,10 @@ public class TestDocumentValidationService {
     }
 
     private void checkNotNullOnUsersFirstname(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         assertEquals(NotNullConstraint.get(), violation.getConstraint());
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(3, violation.getPath().size());
@@ -711,9 +722,10 @@ public class TestDocumentValidationService {
     }
 
     private void checkPatternOnUsersFirstname(DocumentValidationReport report) {
-        List<ConstraintViolation> violations = report.asList();
+        List<ValidationViolation> violations = report.asList();
         assertEquals(1, violations.size());
-        ConstraintViolation violation = violations.get(0);
+        assertTrue(violations.get(0) instanceof ConstraintViolation);
+        ConstraintViolation violation = (ConstraintViolation) violations.get(0);
         assertTrue(violation.getConstraint() instanceof PatternConstraint);
         assertEquals(SCHEMA, violation.getSchema().getName());
         assertEquals(3, violation.getPath().size());
