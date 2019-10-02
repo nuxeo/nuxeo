@@ -6,6 +6,7 @@
     <ignoreVersion type="regex">.*[-_\.][Mm][0-9\.]*</ignoreVersion> <!-- jline:jline 3.0.0.M1 -->
     <ignoreVersion type="regex">.*[-_\.]AM[0-9\.]*</ignoreVersion> <!-- org.apache.directory.server:apacheds-core 2.0.0.AM25 -->
     <ignoreVersion type="regex">.*[-_\.]CR[0-9\.]*</ignoreVersion> <!-- org.jboss.el:jboss-el 2.0.2.CR1 -->
+    <ignoreVersion type="regex">.*[-_\.]pr[0-9\.]*</ignoreVersion> <!-- com.fasterxml.jackson.core:jackson-core 2.10.0.pr3 -->
     <ignoreVersion type="regex">.*[-_\.]EA[0-9\.]*</ignoreVersion> <!-- javax.annotation:jsr250-api 2.0-JAXWS-2.0-EA3-depot -->
     <ignoreVersion type="regex">.*[-_\.](rc|RC)[0-9\.]*</ignoreVersion> <!-- io.dropwizard.metrics:metrics-core 4.1.0-rc2 -->
     <ignoreVersion type="regex">.*[-_\.][Aa]lpha[0-9\.-]*</ignoreVersion> <!-- javax.resource:connector-api 1.6-alpha-1 -->
@@ -59,6 +60,12 @@
       <ignoreVersions>
         <ignoreVersion type="regex">.*-kohsuke-.*</ignoreVersion>
         <ignoreVersion type="regex">.*-largetransfer-.*</ignoreVersion>
+      </ignoreVersions>
+    </rule>
+    <rule groupId="dom4j" artifactId="dom4j">
+      <ignoreVersions>
+        <ignoreVersion type="regex">.*-jboss</ignoreVersion>
+        <ignoreVersion type="regex">.*-brew</ignoreVersion>
       </ignoreVersions>
     </rule>
 
