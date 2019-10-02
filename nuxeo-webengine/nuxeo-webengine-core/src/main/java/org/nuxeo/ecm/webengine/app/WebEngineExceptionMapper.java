@@ -26,7 +26,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -57,7 +56,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
         if (headers.getAcceptableMediaTypes().contains(APPLICATION_JSON_TYPE)) {
             if (cause instanceof DocumentValidationException) {
                 DocumentValidationException dve = (DocumentValidationException) cause;
-                return Response.status(Status.BAD_REQUEST).entity(dve.getReport()).build();
+                return Response.status(dve.getStatusCode()).entity(dve.getReport()).build();
             }
         }
 

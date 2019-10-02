@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import javax.ws.rs.core.Response;
 
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -95,7 +96,7 @@ public class DocumentValidationTest extends BaseTest {
     public void testCreateDocumentWithViolationEndpointId() throws Exception {
         DocumentModel root = session.getDocument(new PathRef("/"));
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(), INVALID_DOC)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatus());
             checkResponseHasErrors(response);
         }
     }
@@ -103,7 +104,7 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testCreateDocumentWithViolationEndpointPath() throws Exception {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatus());
             checkResponseHasErrors(response);
         }
     }
@@ -116,7 +117,7 @@ public class DocumentValidationTest extends BaseTest {
         DocumentModel root = session.getDocument(new PathRef("/"));
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(),
                 INVALID_DOC_NOT_DIRTY)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatus());
             checkResponseHasNotDirtyError(response);
         }
     }
@@ -127,7 +128,7 @@ public class DocumentValidationTest extends BaseTest {
     @Test
     public void testCreateDocumentWithViolationNotDirtyEndpointPath() throws Exception {
         try (CloseableClientResponse response = getResponse(RequestType.POST, "path/", INVALID_DOC_NOT_DIRTY)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatus());
             checkResponseHasNotDirtyError(response);
         }
     }
@@ -170,7 +171,7 @@ public class DocumentValidationTest extends BaseTest {
         doc = session.createDocument(doc);
         fetchInvalidations();
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(), INVALID_DOC)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatus());
             checkResponseHasErrors(response);
         }
     }
@@ -182,7 +183,7 @@ public class DocumentValidationTest extends BaseTest {
         doc = session.createDocument(doc);
         fetchInvalidations();
         try (CloseableClientResponse response = getResponse(RequestType.PUT, "path/doc1", INVALID_DOC)) {
-            assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatus());
             checkResponseHasErrors(response);
         }
     }

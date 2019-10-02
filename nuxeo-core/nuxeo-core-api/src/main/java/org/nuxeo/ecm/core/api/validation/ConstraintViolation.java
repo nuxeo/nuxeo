@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.core.api.validation;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +68,7 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  *
  * @since 7.1
  */
-public class ConstraintViolation implements Serializable {
+public class ConstraintViolation implements ValidationViolation {
 
     private static final Log log = LogFactory.getLog(ConstraintViolation.class);
 
@@ -110,18 +109,9 @@ public class ConstraintViolation implements Serializable {
      * @return The message if it's found in message bundles, a generic message otherwise.
      * @since 7.1
      */
+    @Override
     public String getMessage(Locale locale) {
-        // test whether there's a specific translation for for this field and this constraint
-        // the expected key is label.schema.constraint.violation.[constraintName].[schemaName].[field].[subField]
-        List<String> pathTokens = new ArrayList<>();
-        pathTokens.add(Constraint.MESSAGES_KEY);
-        pathTokens.add(constraint.getDescription().getName());
-        pathTokens.add(schema.getName());
-        for (PathNode node : path) {
-            String name = node.getField().getName().getLocalName();
-            pathTokens.add(name);
-        }
-        String key = StringUtils.join(pathTokens, '.');
+        String key = getMessageKey();
         String computedInvalidValue = "null";
         if (invalidValue != null) {
             String invalidValueString = invalidValue.toString();
@@ -206,6 +196,20 @@ public class ConstraintViolation implements Serializable {
             }
         }
 
+    }
+
+    @Override
+    public String getMessageKey() {
+        // test whether there's a specific translation for this field and this constraint
+        // the expected key is label.schema.constraint.violation.[constraintName].[schemaName].[field].[subField]
+        List<String> pathTokens = new ArrayList<>();
+        pathTokens.add(constraint.getMessageKey());
+        pathTokens.add(schema.getName());
+        for (PathNode node : path) {
+            String name = node.getField().getName().getLocalName();
+            pathTokens.add(name);
+        }
+        return StringUtils.join(pathTokens, '.');
     }
 
 }
