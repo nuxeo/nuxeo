@@ -134,8 +134,8 @@ pipeline {
           ----------------------------------------"""
           withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
             echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -f nuxeo-distribution/pom.xml -DskipTests install'
-            sh 'mvn -B -nsu -T0.8C -f packages/pom.xml -DskipTests install'
+            sh 'mvn -B -nsu -f nuxeo-distribution/pom.xml -DskipTests install'
+            sh 'mvn -B -nsu -f packages/pom.xml -DskipTests install'
           }
         }
       }
@@ -186,7 +186,7 @@ pipeline {
           ----------------------------------------"""
           withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
             echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -Pdistrib -DskipTests deploy'
+            sh 'mvn -B -nsu -Pdistrib -DskipTests deploy'
           }
         }
       }
