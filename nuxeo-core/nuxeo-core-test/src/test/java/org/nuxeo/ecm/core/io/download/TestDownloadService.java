@@ -109,7 +109,16 @@ public class TestDownloadService {
     protected DownloadService downloadService;
 
     @Test
-    public void testBasicDownload() throws Exception {
+    public void testBasicDownloadGet() throws Exception {
+        doTestBasicDownload(false);
+    }
+
+    @Test
+    public void testBasicDownloadHead() throws Exception {
+        doTestBasicDownload(true);
+    }
+
+    protected void doTestBasicDownload(boolean head) throws Exception {
         // blob to download
         String blobValue = "Hello World Caf\u00e9";
         String encoding = "ISO-8859-1";
@@ -120,7 +129,7 @@ public class TestDownloadService {
         // prepare mocks
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("GET");
+        when(request.getMethod()).thenReturn(head ? "HEAD" : "GET");
 
         HttpServletResponse response = mock(HttpServletResponse.class);
         ServletOutputStream sos = new DummyServletOutputStream() {
@@ -140,8 +149,8 @@ public class TestDownloadService {
                                                  .build();
         downloadService.downloadBlob(context);
 
-        // check that the blob gets returned
-        assertEquals(blobValue, out.toString(encoding));
+        // check that the blob gets returned (except if HEAD)
+        assertEquals(head ? "" : blobValue, out.toString(encoding));
     }
 
     @Test
@@ -715,26 +724,33 @@ public class TestDownloadService {
 
     @Test
     public void testDownloadLoggedIfNoByteRange() throws IOException {
-        doTestDownloadLoggedOrNot(null, "Hello World", 1); // logged
+        doTestDownloadLoggedOrNot(null, false, "Hello World", 1); // logged
+    }
+
+    @Test
+    public void testDownloadNotLoggedIfHead() throws IOException {
+        doTestDownloadLoggedOrNot(null, true, "", 0); // not logged
     }
 
     @Test
     public void testDownloadLoggedIfByteRangeFromStart() throws IOException {
-        doTestDownloadLoggedOrNot("0-4", "Hello", 1); // logged
+        doTestDownloadLoggedOrNot("0-4", false, "Hello", 1); // logged
     }
 
     @Test
     public void testDownloadNotLoggedIfByteRangeOther() throws IOException {
-        doTestDownloadLoggedOrNot("6-10", "World", 0); // not logged
+        doTestDownloadLoggedOrNot("6-10", false, "World", 0); // not logged
     }
 
-    protected void doTestDownloadLoggedOrNot(String range, String expectedResult, int expectedSize) throws IOException {
+    protected void doTestDownloadLoggedOrNot(String range, boolean head, String expectedResult, int expectedSize)
+            throws IOException {
         String blobValue = "Hello World";
         Blob blob = Blobs.createBlob(blobValue);
         blob.setFilename("myFile.txt");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         HttpServletRequest req = mock(HttpServletRequest.class);
+        when(req.getMethod()).thenReturn(head ? "HEAD" : "GET");
         if (range != null) {
             when(req.getHeader("Range")).thenReturn("bytes=" + range);
         }

@@ -51,6 +51,11 @@ public class DownloadServlet extends HttpServlet {
     public static final String NXBIGFILE = DownloadService.NXBIGFILE;
 
     @Override
+    public void doHead(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        doGet(req, resp); // downstream methods will deal with HEAD and avoid sending a body
+    }
+
+    @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             handleDownload(req, resp);
