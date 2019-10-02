@@ -598,34 +598,6 @@ public abstract class TestStreamProcessor {
 
     }
 
-
-    @Test
-    public void testComputationRecoveryPolicy() throws Exception {
-        // Define a topology that fails
-        Topology topology = Topology.builder()
-                .addComputation(() -> new ComputationFailureForward("C1", 1, 1),
-                        Arrays.asList("i1:input", "o1:output"))
-                .build();
-        // Policy no retry, abort on failure but skip the first failure
-        ComputationPolicy policy = new ComputationPolicyBuilder().retryPolicy(
-                new RetryPolicy(ComputationPolicy.NO_RETRY)).continueOnFailure(false).skipFirstFailures(1).build();
-        try (LogManager manager = getLogManager()) {
-            StreamManager streamManager = new LogStreamManager(manager);
-            Settings settings = new Settings(1, 1, policy);
-            StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
-            processor.start();
-            processor.waitForAssignments(Duration.ofSeconds(10));
-            // Add 2 records
-            streamManager.append("input", Record.of("foo", null));
-            streamManager.append("input", Record.of("bar", null));
-            // wait
-            assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            LogLag lag = manager.getLag("input", "C1");
-            // only the first record is skipped after failure
-            assertEquals(lag.toString(), 1, lag.lag());
-        }
-    }
-
     @Test
     public void testPolicyBatchComputation() throws Exception {
         // Define a topology
