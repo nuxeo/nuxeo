@@ -502,7 +502,7 @@ public class CmisSuiteSession {
             String uri = ri.getThinClientUri() + ri.getId() + "/";
             uri += isAtomPub ? "content?id=" : "root?objectId=";
             uri += file.getId();
-            String eTag = file.getPropertyValue("nuxeo:contentStreamDigest");
+            String digest = file.getPropertyValue("nuxeo:contentStreamDigest");
             GregorianCalendar lastModifiedCalendar = file.getPropertyValue("dc:modified");
             String lastModified = RFC_1123_DATE_TIME.format(lastModifiedCalendar.toZonedDateTime());
             String encoding = Base64.encodeBytes(new String(USERNAME + ":" + PASSWORD).getBytes());
@@ -511,7 +511,7 @@ public class CmisSuiteSession {
             HttpResponse response = null;
             request.setHeader("Authorization", "Basic " + encoding);
             try {
-                request.setHeader("If-None-Match", eTag);
+                request.setHeader("If-None-Match", '"' + digest + '"'); // with quotes per RFC7232 2.3
                 response = client.execute(request);
                 assertEquals(HttpServletResponse.SC_NOT_MODIFIED, response.getStatusLine().getStatusCode());
                 request.removeHeaders("If-None-Match");
@@ -519,9 +519,7 @@ public class CmisSuiteSession {
                 response = client.execute(request);
                 String debug = "lastModified=" + lastModifiedCalendar.getTimeInMillis() + " If-Modified-Since="
                         + lastModified + " NuxeoContentStream last=" + NuxeoContentStream.LAST_MODIFIED;
-                // TODO NXP-16198 there are still timezone issues here
-                // @Ignore
-                // assertEquals(debug, HttpServletResponse.SC_NOT_MODIFIED, response.getStatusLine().getStatusCode());
+                assertEquals(debug, HttpServletResponse.SC_NOT_MODIFIED, response.getStatusLine().getStatusCode());
             } finally {
                 client.getConnectionManager().shutdown();
             }
@@ -530,7 +528,7 @@ public class CmisSuiteSession {
         // get stream
         ContentStream cs = file.getContentStream();
         assertNotNull(cs);
-        assertEquals("text/plain", cs.getMimeType());
+        assertEquals("text/plain;charset=UTF-8", cs.getMimeType());
         assertEquals("testfile.txt", cs.getFileName());
         if (!(isAtomPub || isBrowser)) {
             // TODO fix AtomPub/Browser case where the length is unknown
