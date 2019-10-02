@@ -18,11 +18,14 @@
  */
 package org.nuxeo.ecm.core.opencmis.impl.server;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -60,10 +63,16 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoContentStream
         implements CacheHeaderContentStream, LastModifiedContentStream, ContentLengthContentStream {
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     public static final String CONTENT_MD5_DIGEST_ALGORITHM = "contentMD5";
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     public static final String CONTENT_MD5_HEADER_NAME = "Content-MD5";
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     public static final String WANT_DIGEST_HEADER_NAME = "Want-Digest";
 
     public static final String DIGEST_HEADER_NAME = "Digest";
@@ -73,11 +82,11 @@ public class NuxeoContentStream
 
     protected final Blob blob;
 
-    protected final GregorianCalendar lastModified;
+    protected final Calendar lastModified;
 
     protected final InputStream stream;
 
-    private NuxeoContentStream(Blob blob, GregorianCalendar lastModified, boolean isHeadRequest) {
+    private NuxeoContentStream(Blob blob, Calendar lastModified, boolean isHeadRequest) {
         this.blob = blob;
         this.lastModified = lastModified;
         // The callers of getStream() often just want to know if the stream is null or not.
@@ -92,7 +101,7 @@ public class NuxeoContentStream
     }
 
     public static NuxeoContentStream create(DocumentModel doc, String xpath, Blob blob, String reason,
-            Map<String, Serializable> extendedInfos, GregorianCalendar lastModified, HttpServletRequest request) {
+            Map<String, Serializable> extendedInfos, Calendar lastModified, HttpServletRequest request) {
         BlobManager blobManager = Framework.getService(BlobManager.class);
         URI uri;
         try {
@@ -104,11 +113,9 @@ public class NuxeoContentStream
             extendedInfos = new HashMap<>(extendedInfos == null ? Collections.emptyMap() : extendedInfos);
             extendedInfos.put("redirect", uri.toString());
         }
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        downloadService.logDownload(request, doc, xpath, blob.getFilename(), reason, extendedInfos);
         boolean isHeadRequest = isHeadRequest(request);
-        if (!isHeadRequest) {
-            DownloadService downloadService = Framework.getService(DownloadService.class);
-            downloadService.logDownload(doc, xpath, blob.getFilename(), reason, extendedInfos);
-        }
         if (uri == null) {
             return new NuxeoContentStream(blob, lastModified, isHeadRequest);
         } else {
@@ -126,6 +133,8 @@ public class NuxeoContentStream
         return request.getMethod().equals("HEAD");
     }
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     public static boolean hasWantDigestRequestHeader(HttpServletRequest request, String digestAlgorithm) {
         if (request == null || digestAlgorithm == null) {
             return false;
@@ -160,7 +169,12 @@ public class NuxeoContentStream
 
     @Override
     public String getMimeType() {
-        return blob.getMimeType();
+        String mimeType = blob.getMimeType();
+        String encoding = blob.getEncoding();
+        if (isNotBlank(mimeType) && isNotBlank(encoding)) {
+            mimeType += ";charset=" + encoding;
+        }
+        return mimeType;
     }
 
     @Override
@@ -209,7 +223,7 @@ public class NuxeoContentStream
     @Override
     public GregorianCalendar getLastModified() {
         LAST_MODIFIED = lastModified == null ? 0 : lastModified.getTimeInMillis();
-        return lastModified;
+        return lastModified instanceof GregorianCalendar ? (GregorianCalendar) lastModified : null;
     }
 
     /**
@@ -284,7 +298,7 @@ public class NuxeoContentStream
 
         protected final String location;
 
-        private NuxeoRedirectingContentStream(Blob blob, GregorianCalendar lastModified, boolean isHeadRequest,
+        private NuxeoRedirectingContentStream(Blob blob, Calendar lastModified, boolean isHeadRequest,
                 String location) {
             super(blob, lastModified, isHeadRequest);
             this.location = location;
