@@ -110,7 +110,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
-        this.properties = properties;
         if (StringUtils.isNotBlank(properties.get(SERVER_PROPERTY))
                 || StringUtils.isNotBlank(properties.get(DBNAME_PROPERTY))) {
             throw new NuxeoException("Unable to initialize GridFS Binary Manager, properties " + SERVER_PROPERTY

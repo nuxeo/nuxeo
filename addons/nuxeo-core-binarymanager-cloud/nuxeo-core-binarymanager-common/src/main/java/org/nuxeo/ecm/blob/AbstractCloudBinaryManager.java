@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,8 +73,6 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
      */
     protected abstract void setupCloudClient() throws IOException;
 
-    protected Map<String, String> properties;
-
     protected boolean directDownload = false;
 
     protected int directDownloadExpire;
@@ -100,10 +99,11 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
 
     public static final int DEFAULT_DIRECTDOWNLOAD_EXPIRE = 60 * 60; // 1h
 
+    public static final String DIGEST_ALGORITHM_PROPERTY = "digest";
+
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
-        this.properties = properties;
 
         // Enable direct download from the remote binary store
         directDownload = Boolean.parseBoolean(getProperty(DIRECTDOWNLOAD_PROPERTY, DEFAULT_DIRECTDOWNLOAD));
@@ -245,6 +245,11 @@ public abstract class AbstractCloudBinaryManager extends CachingBinaryManager im
         } else {
             return DownloadHelper.getRFC2231ContentDisposition(servletRequest, blob.getFilename());
         }
+    }
+
+    @Override
+    protected String getDefaultDigestAlgorithm() {
+        return getProperty(DIGEST_ALGORITHM_PROPERTY, super.getDefaultDigestAlgorithm()).toUpperCase(Locale.ENGLISH);
     }
 
     @Override
