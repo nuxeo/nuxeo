@@ -99,13 +99,6 @@ import com.amazonaws.services.s3.transfer.Upload;
  */
 public class S3BinaryManager extends AbstractCloudBinaryManager {
 
-    private static final String MD5 = "MD5"; // must be MD5 for Etag
-
-    @Override
-    protected String getDefaultDigestAlgorithm() {
-        return MD5;
-    }
-
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
     public static final String SYSTEM_PROPERTY_PREFIX = "nuxeo.s3storage";
@@ -169,6 +162,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     private static final Pattern MD5_RE = Pattern.compile("[0-9a-f]{32}");
 
     protected String bucketName;
@@ -417,6 +412,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         return false;
     }
 
+    /** @deprecated since 11.1, now unused */
+    @Deprecated
     public static boolean isMD5(String digest) {
         return MD5_RE.matcher(digest).matches();
     }
@@ -579,17 +576,20 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 Download download = transferManager.download(
                         new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
                 download.waitForCompletion();
-                // Check ETag it is by default MD5 if not multipart
-                if (!isEncrypted && !digest.equals(download.getObjectMetadata().getETag())) {
-                    // In case of multipart it will happen, verify the downloaded file
-                    String currentDigest;
-                    try (FileInputStream input = new FileInputStream(file)) {
-                        currentDigest = DigestUtils.md5Hex(input);
-                    }
+                if (isEncrypted) {
+                    // can't easily check the decrypted digest
+                    return true;
+                }
+                if (!digest.equals(download.getObjectMetadata().getETag())) {
+                    // if our digest algorithm is not MD5 (so the ETag can never match),
+                    // or in case of a multipart upload (where the ETag may not be the MD5),
+                    // check manually the object integrity
+                    // TODO this is costly and it should possible to deactivate it
+                    String currentDigest = new DigestUtils(getDigestAlgorithm()).digestAsHex(file);
                     if (!currentDigest.equals(digest)) {
-                        log.error("Invalid ETag in S3, currentDigest=" + currentDigest + " expectedDigest=" + digest);
-                        throw new IOException("Invalid S3 object, it is corrupted expected digest is " + digest
-                                + " got " + currentDigest);
+                        String msg = "Invalid S3 object digest, expected=" + digest + " actual=" + currentDigest;
+                        log.error(msg);
+                        throw new IOException(msg);
                     }
                 }
                 return true;
@@ -640,9 +640,8 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                 int prefixLength = binaryManager.bucketNamePrefix.length();
                 for (S3ObjectSummary summary : list.getObjectSummaries()) {
                     String digest = summary.getKey().substring(prefixLength);
-                    if (!isMD5(digest)) {
-                        // ignore files that cannot be MD5 digests for
-                        // safety
+                    if (!binaryManager.isValidDigest(digest)) {
+                        // ignore files that cannot be digests, for safety
                         continue;
                     }
                     long length = summary.getSize();

@@ -108,7 +108,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         tmpDir = new File(base, TMP);
         storageDir.mkdirs();
         tmpDir.mkdirs();
-        descriptor = getDescriptor(new File(base, CONFIG_FILE));
+        setDescriptor(getDescriptor(new File(base, CONFIG_FILE)));
         createGarbageCollector();
 
         // be sure FileTracker won't steal our files !
