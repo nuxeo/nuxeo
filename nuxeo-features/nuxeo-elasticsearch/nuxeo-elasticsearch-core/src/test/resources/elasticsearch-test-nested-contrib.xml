@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.test.nested.hints.contrib">
+  <require>org.nuxeo.elasticsearch.ElasticSearchComponent</require>
+
+  <extension point="elasticSearchHints" target="org.nuxeo.elasticsearch.ElasticSearchComponent">
+    <hint name="nestedFilesQuery" class="org.nuxeo.elasticsearch.test.hint.NestedFilesESHintQueryBuilder" />
+  </extension>
+
+</component>
