@@ -70,6 +70,10 @@ public abstract class AbstractTestCloudBinaryManager<T extends CachingBinaryMana
 
     protected static final String CONTENT3_MD5 = "025e4da7edac35ede583f5e8d51aa7ec";
 
+    protected static final String CONTENT4 = "foobar";
+
+    protected static final String CONTENT4_SHA256 = "c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2";
+
     protected T binaryManager;
 
     protected void removeObjects() throws IOException {

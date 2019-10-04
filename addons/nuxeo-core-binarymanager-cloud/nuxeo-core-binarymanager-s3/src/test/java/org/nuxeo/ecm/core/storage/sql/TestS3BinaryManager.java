@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mockito.MockitoFeature;
 import org.nuxeo.runtime.mockito.RuntimeService;
@@ -89,6 +90,8 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     protected S3BinaryManager binaryManager2;
 
+    protected S3BinaryManager binaryManager3;
+
     @BeforeClass
     public static void beforeClass() {
 
@@ -113,8 +116,10 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
     @Before
     public void doBefore() throws IOException {
         binaryManager2 = getBinaryManager2();
+        binaryManager3 = getBinaryManager3();
         when(blobManager.getBlobProvider("repo")).thenReturn(binaryManager);
         when(blobManager.getBlobProvider("repo2")).thenReturn(binaryManager2);
+        when(blobManager.getBlobProvider("repo3")).thenReturn(binaryManager3);
     }
 
     @After
@@ -284,6 +289,31 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         return bytes;
     }
 
+    @Test
+    public void testDifferentDigestAlgorithm() throws Exception {
+        Binary binary = binaryManager3.getBinary(CONTENT4_SHA256);
+        assertTrue(binary instanceof LazyBinary);
+        if (binary.getStream() != null) {
+            // the tests have already been run
+            // make sure we delete it from the bucket first
+            removeObject(CONTENT4_SHA256);
+            binaryManager3.fileCache.clear();
+        }
+
+        // store binary
+        binary = binaryManager3.getBinary(Blobs.createBlob(CONTENT4));
+        assertNotNull(binary);
+
+        // clear cache
+        binaryManager3.fileCache.clear();
+
+        // get binary
+        binary = binaryManager3.getBinary(CONTENT4_SHA256);
+        assertNotNull(binary);
+        assertTrue(binary instanceof LazyBinary);
+        assertEquals(CONTENT4, toString(binary.getStream()));
+    }
+
     @Override
     protected S3BinaryManager getBinaryManager() throws IOException {
         S3BinaryManager binaryManager = new S3BinaryManager();
@@ -299,6 +329,17 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         S3BinaryManager binaryManager2 = new S3BinaryManager();
         binaryManager2.initialize("repo2", properties2);
         return binaryManager2;
+    }
+
+    /** Other binary manager with a different digest algorithm. */
+    protected S3BinaryManager getBinaryManager3() throws IOException {
+        Map<String, String> properties3 = new HashMap<>(PROPERTIES);
+        String prefix = properties3.get(S3BinaryManager.BUCKET_PREFIX_PROPERTY);
+        properties3.put(S3BinaryManager.BUCKET_PREFIX_PROPERTY, prefix + "withsha/");
+        properties3.put(S3BinaryManager.DIGEST_ALGORITHM_PROPERTY, "SHA-256");
+        S3BinaryManager binaryManager3 = new S3BinaryManager();
+        binaryManager3.initialize("repo3", properties3);
+        return binaryManager3;
     }
 
 }
