@@ -73,15 +73,15 @@ public class MoreLikeThisESHintQueryBuilder implements ESHintQueryBuilder {
         String repo = rm.getDefaultRepository().getName();
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         String esIndex = esa.getIndexNameForRepository(repo);
-        String[] values;
-        if (value instanceof String[]) {
-            values = (String[]) value;
+        Object[] values;
+        if (value instanceof Object[]) {
+            values = (Object[]) value;
         } else {
-            values = new String[] { (String) value };
+            values = new Object[] { value };
         }
         MoreLikeThisQueryBuilder.Item[] ret = new MoreLikeThisQueryBuilder.Item[values.length];
         for (int i = 0; i < values.length; i++) {
-            ret[i] = new MoreLikeThisQueryBuilder.Item(esIndex, DOC_TYPE, values[i]);
+            ret[i] = new MoreLikeThisQueryBuilder.Item(esIndex, DOC_TYPE, (String) values[i]);
         }
         return ret;
     }

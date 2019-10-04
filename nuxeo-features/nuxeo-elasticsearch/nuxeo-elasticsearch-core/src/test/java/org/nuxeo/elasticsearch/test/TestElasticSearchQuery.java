@@ -51,6 +51,7 @@ import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -82,6 +83,9 @@ public class TestElasticSearchQuery {
 
     @Inject
     ElasticSearchAdmin esa;
+    
+    @Inject
+    TransactionalFeature txFeature;
 
     private int commandProcessed;
 
@@ -113,24 +117,8 @@ public class TestElasticSearchQuery {
     }
 
     @Test
-    public void searchWithNestedQuery() throws Exception {
-        startTransaction();
-        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
-        // create doc with a list of blob attachement textfile1.txt length=1,textfile2.txt length=2, ...
-        List<Map<String, Serializable>> blobs = new ArrayList<>();
-        for (int i = 1; i <= 5; i++) {
-            String name = "testfile" + i + ".txt";
-            Blob nblob = Blobs.createBlob(new String(new char[i]).replace('\0', 'a'));
-            nblob.setFilename(name);
-            Map<String, Serializable> filesEntry = new HashMap<>();
-            filesEntry.put("file", (Serializable) nblob);
-            blobs.add(filesEntry);
-        }
-        doc.setPropertyValue("files:files", (Serializable) blobs);
-        doc = session.createDocument(doc);
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForCompletion();
-        startTransaction();
+    public void searchWithESNestedQuery() throws Exception {
+        createDocumentWithFiles();
 
         DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document"));
         Assert.assertEquals(1, ret.totalSize());
@@ -164,6 +152,21 @@ public class TestElasticSearchQuery {
                              .must(QueryBuilders.termQuery("files:files.file.length", 3)),
                 ScoreMode.Avg);
         ret = ess.query(new NxQueryBuilder(session).esQuery(qb));
+        Assert.assertEquals(1, ret.totalSize());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-nested-contrib.xml")
+    public void searchWithNestedNXQLQuery() throws Exception {
+        createDocumentWithFiles();
+
+        // Use an ES Hint Nested provided by a contribution (elasticsearch-test-nested-contrib.xml)
+        String nxql = "SELECT * FROM Document WHERE /*+ES: INDEX(files:files.file.name, files:files.file.length) OPERATOR(nestedFilesQuery) */ nested:value IN ('my-text-file', '0')";
+        DocumentModelList ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
+        Assert.assertEquals(0, ret.totalSize());
+
+        nxql = "SELECT * FROM Document WHERE /*+ES: INDEX(files:files.file.name, files:files.file.length) OPERATOR(nestedFilesQuery) */ nested:value IN ('testfile3.txt', '3')";
+        ret = ess.query(new NxQueryBuilder(session).nxql(nxql));
         Assert.assertEquals(1, ret.totalSize());
 
     }
@@ -231,6 +234,26 @@ public class TestElasticSearchQuery {
             ret = ess.query(new NxQueryBuilder(restrictedSession).esQuery(qb));
             Assert.assertEquals(0, ret.totalSize());
         }
+    }
+
+    protected void createDocumentWithFiles() throws Exception {
+        startTransaction();
+        DocumentModel doc = session.createDocumentModel("/", "myFile", "File");
+        // create doc with a list of blob attachement textfile1.txt length=1,textfile2.txt length=2, ...
+        List<Map<String, Serializable>> blobs = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            String name = "testfile" + i + ".txt";
+            Blob blob = Blobs.createBlob(new String(new char[i]).replace('\0', 'a'));
+            blob.setFilename(name);
+            Map<String, Serializable> filesEntry = new HashMap<>();
+            filesEntry.put("file", (Serializable) blob);
+            blobs.add(filesEntry);
+        }
+        doc.setPropertyValue("files:files", (Serializable) blobs);
+        session.createDocument(doc);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
     }
 
 }
