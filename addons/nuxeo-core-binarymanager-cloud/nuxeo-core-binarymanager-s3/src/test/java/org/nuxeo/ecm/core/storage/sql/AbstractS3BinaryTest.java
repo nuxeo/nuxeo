@@ -46,7 +46,7 @@ public abstract class AbstractS3BinaryTest<T extends S3BinaryManager> extends Ab
             int prefixLength = binaryManager.bucketNamePrefix.length();
             for (S3ObjectSummary summary : list.getObjectSummaries()) {
                 String digest = summary.getKey().substring(prefixLength);
-                if (!S3BinaryManager.isMD5(digest)) {
+                if (!binaryManager.isValidDigest(digest)) {
                     continue;
                 }
                 digests.add(digest);

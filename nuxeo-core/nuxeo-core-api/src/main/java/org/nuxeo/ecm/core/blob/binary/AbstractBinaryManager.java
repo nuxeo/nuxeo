@@ -27,9 +27,13 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -42,20 +46,42 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
     public static final String MD5_DIGEST = "MD5";
 
+    /** @deprecated since 11.1, unused */
+    @Deprecated
     public static final String SHA1_DIGEST = "SHA-1";
 
+    /** @deprecated since 11.1, unused */
+    @Deprecated
     public static final String SHA256_DIGEST = "SHA-256";
 
+    /** @deprecated since 11.1, unused */
+    @Deprecated
     public static final int MD5_DIGEST_LENGTH = 32;
 
+    /** @deprecated since 11.1, unused */
+    @Deprecated
     public static final int SHA1_DIGEST_LENGTH = 40;
 
+    /** @deprecated since 11.1, unused */
+    @Deprecated
     public static final int SHA256_DIGEST_LENGTH = 64;
 
     /**
      * @since 7.4
      */
-    public static final HashMap<Integer, String> DIGESTS_BY_LENGTH = new HashMap<>();
+    public static final Map<Integer, String> DIGESTS_BY_LENGTH;
+
+    static {
+        Map<Integer, String> map = new HashMap<>();
+        map.put(32, "MD5");
+        map.put(40, "SHA-1");
+        map.put(56, "SHA-224");
+        map.put(64, "SHA-256");
+        map.put(96, "SHA-384");
+        map.put(128, "SHA-512");
+        // TODO new algorithms like SHA3-256 will collide, so this mechanism is brittle
+        DIGESTS_BY_LENGTH = Collections.unmodifiableMap(map);
+    }
 
     public static final String DEFAULT_DIGEST = MD5_DIGEST; // SHA256_DIGEST
 
@@ -63,16 +89,23 @@ public abstract class AbstractBinaryManager implements BinaryManager {
 
     public String blobProviderId;
 
+    protected Map<String, String> properties;
+
     protected BinaryManagerRootDescriptor descriptor;
 
     protected BinaryGarbageCollector garbageCollector;
 
+    protected Pattern digestPattern;
+
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         this.blobProviderId = blobProviderId;
-        DIGESTS_BY_LENGTH.put(MD5_DIGEST_LENGTH, MD5_DIGEST);
-        DIGESTS_BY_LENGTH.put(SHA1_DIGEST_LENGTH, SHA1_DIGEST);
-        DIGESTS_BY_LENGTH.put(SHA256_DIGEST_LENGTH, SHA256_DIGEST);
+        this.properties = properties;
+    }
+
+    protected void setDescriptor(BinaryManagerRootDescriptor descriptor) {
+        this.descriptor = descriptor;
+        computeDigestPattern();
     }
 
     /**
@@ -159,18 +192,23 @@ public abstract class AbstractBinaryManager implements BinaryManager {
         }
         out.flush();
 
-        return toHexString(digest.digest());
+        return Hex.encodeHexString(digest.digest());
     }
 
-    private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
-
+    /** @deprecated since 11.1, use {@link Hex#encodeHexString} directly */
+    @Deprecated
     public static String toHexString(byte[] data) {
-        StringBuilder sb = new StringBuilder(2 * data.length);
-        for (byte b : data) {
-            sb.append(HEX_DIGITS[(0xF0 & b) >> 4]);
-            sb.append(HEX_DIGITS[0x0F & b]);
-        }
-        return sb.toString();
+        return Hex.encodeHexString(data);
+    }
+
+    protected void computeDigestPattern() {
+        // compute a dummy digest (from 0-length input) to know its length and derive a regexp
+        int len = new DigestUtils(getDigestAlgorithm()).digestAsHex(new byte[0]).length();
+        digestPattern = Pattern.compile("[0-9a-f]{" + len + "}");
+    }
+
+    public boolean isValidDigest(String digest) {
+        return digestPattern.matcher(digest).matches();
     }
 
     @Override

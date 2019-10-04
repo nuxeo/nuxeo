@@ -134,9 +134,6 @@ public class TestGridFSBinaryManager {
         Binary binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
 
-        System.out.println(binary.getDigestAlgorithm());
-        System.out.println(binary.getDigest());
-
         // check binary is here
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
