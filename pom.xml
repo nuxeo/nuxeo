@@ -2076,6 +2076,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-google-storage-package</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-imap-connector-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>
