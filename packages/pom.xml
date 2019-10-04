@@ -25,6 +25,7 @@
     <module>nuxeo-duoweb-authentication-package</module>
     <module>nuxeo-easyshare-package</module>
     <module>nuxeo-fsexporter-package</module>
+    <module>nuxeo-google-storage-package</module>
     <module>nuxeo-imap-connector-package</module>
     <module>nuxeo-importer-package</module>
     <module>nuxeo-jsf-to-web-ui-package</module>
