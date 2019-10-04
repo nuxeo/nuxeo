@@ -167,7 +167,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             return;
         }
 
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .doc(leftDoc)
                                                      .xpath(xpath)
                                                      .blob(blob)

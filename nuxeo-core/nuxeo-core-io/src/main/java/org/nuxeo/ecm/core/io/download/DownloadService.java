@@ -209,7 +209,7 @@ public interface DownloadService {
          * @param response the HTTP response
          * @return the new builder
          */
-        public static Builder newBuilder(HttpServletRequest request, HttpServletResponse response) {
+        public static Builder builder(HttpServletRequest request, HttpServletResponse response) {
             return new Builder(request, response);
         }
 

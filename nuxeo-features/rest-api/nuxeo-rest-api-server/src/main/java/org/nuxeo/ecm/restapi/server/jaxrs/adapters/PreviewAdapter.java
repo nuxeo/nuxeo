@@ -93,7 +93,7 @@ public class PreviewAdapter extends DefaultAdapter {
 
         try {
             Blob blob = previewBlobs.get(0);
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .doc(bh.getDocument())
                                                      .xpath(bh.getXpath())
                                                      .blob(blob)
@@ -140,7 +140,7 @@ public class PreviewAdapter extends DefaultAdapter {
 
         try {
             Blob blob = subBlob.get();
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .doc(bh.getDocument())
                                                      .xpath(bh.getXpath())
                                                      .blob(blob)

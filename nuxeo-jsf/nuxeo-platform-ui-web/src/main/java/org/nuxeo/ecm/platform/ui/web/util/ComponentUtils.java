@@ -232,7 +232,7 @@ public final class ComponentUtils {
         HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
         HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
         try {
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .doc(doc)
                                                      .xpath(xpath)
                                                      .blob(blob)

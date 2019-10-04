@@ -98,7 +98,7 @@ public class DocumentBlobHolderWriter implements MessageBodyWriter<DocumentBlobH
             transferBlob(blob, entityStream);
             return;
         }
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .doc(blobHolder.getDocument())
                                                  .xpath(blobHolder.getXpath())
                                                  .blob(blob)

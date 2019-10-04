@@ -89,7 +89,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
             }
 
             // trigger download
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .doc(dm)
                                                      .xpath(xpath)
                                                      .blob(blob)
