@@ -61,6 +61,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features({RepositoryElasticSearchFeature.class})
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-hints-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-nested-contrib.xml")
 public class TestNxqlConversion {
 
     private static final String IDX_NAME = "nxutest";
@@ -1653,87 +1654,107 @@ public class TestNxqlConversion {
 
         es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where /*+ES: INDEX(dc:title.fulltext^2,dc:description.fulltext) OPERATOR(more_like_this) */ ecm:uuid = '1234'").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"more_like_this\" : {\n" +
-                "    \"fields\" : [\n" +
-                "      \"dc:title.fulltext\",\n" +
-                "      \"dc:description.fulltext\"\n" +
-                "    ],\n" +
-                "    \"like\" : [\n" +
-                "      {\n" +
-                "        \"_index\" : \"nxutest\",\n" +
-                "        \"_type\" : \"doc\",\n" +
-                "        \"_id\" : \"1234\"\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"max_query_terms\" : 12,\n" +
-                "    \"min_term_freq\" : 1,\n" +
-                "    \"min_doc_freq\" : 3,\n" +
-                "    \"max_doc_freq\" : 2147483647,\n" +
-                "    \"min_word_length\" : 0,\n" +
-                "    \"max_word_length\" : 0,\n" +
-                "    \"minimum_should_match\" : \"30%\",\n" +
-                "    \"boost_terms\" : 0.0,\n" +
-                "    \"include\" : false,\n" +
-                "    \"fail_on_unsupported_field\" : true,\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"more_like_this\" : {\n" + //
+                "    \"fields\" : [\n" + //
+                "      \"dc:title.fulltext\",\n" + //
+                "      \"dc:description.fulltext\"\n" + //
+                "    ],\n" + //
+                "    \"like\" : [\n" + //
+                "      {\n" + //
+                "        \"_index\" : \"nxutest\",\n" + //
+                "        \"_type\" : \"doc\",\n" + //
+                "        \"_id\" : \"1234\"\n" + //
+                "      }\n" + //
+                "    ],\n" + //
+                "    \"max_query_terms\" : 12,\n" + //
+                "    \"min_term_freq\" : 1,\n" +  //
+                "    \"min_doc_freq\" : 3,\n" + //
+                "    \"max_doc_freq\" : 2147483647,\n" + //
+                "    \"min_word_length\" : 0,\n" + //
+                "    \"max_word_length\" : 0,\n" + //
+                "    \"minimum_should_match\" : \"30%\",\n" + //
+                "    \"boost_terms\" : 0.0,\n" + //
+                "    \"include\" : false,\n" + //
+                "    \"fail_on_unsupported_field\" : true,\n" + //
+                "    \"boost\" : 1.0\n" + //
+                "  }\n" + //
                 "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where /*+ES: INDEX(all_field) OPERATOR(more_like_this) */ ecm:uuid IN ('1234', '4567')").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"more_like_this\" : {\n" +
-                "    \"fields\" : [\n" +
-                "      \"all_field\"\n" +
-                "    ],\n" +
-                "    \"like\" : [\n" +
-                "      {\n" +
-                "        \"_index\" : \"nxutest\",\n" +
-                "        \"_type\" : \"doc\",\n" +
-                "        \"_id\" : \"'1234', '4567'\"\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"max_query_terms\" : 12,\n" +
-                "    \"min_term_freq\" : 1,\n" +
-                "    \"min_doc_freq\" : 3,\n" +
-                "    \"max_doc_freq\" : 2147483647,\n" +
-                "    \"min_word_length\" : 0,\n" +
-                "    \"max_word_length\" : 0,\n" +
-                "    \"minimum_should_match\" : \"30%\",\n" +
-                "    \"boost_terms\" : 0.0,\n" +
-                "    \"include\" : false,\n" +
-                "    \"fail_on_unsupported_field\" : true,\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"more_like_this\" : {\n" + //
+                "        \"fields\" : [\n" + //
+                "          \"all_field\"\n" + //
+                "        ],\n" + //
+                "        \"like\" : [\n" + //
+                "          {\n" + //
+                "            \"_index\" : \"nxutest\",\n" + //
+                "            \"_type\" : \"doc\",\n" + //
+                "            \"_id\" : \"1234\"\n" + //
+                "          },\n" + //
+                "          {\n" + //
+                "            \"_index\" : \"nxutest\",\n" + //
+                "            \"_type\" : \"doc\",\n" + //
+                "            \"_id\" : \"4567\"\n" + //
+                "          }\n" + //
+                "        ],\n" + //
+                "        \"max_query_terms\" : 12,\n" + //
+                "        \"min_term_freq\" : 1,\n" + //
+                "        \"min_doc_freq\" : 3,\n" + //
+                "        \"max_doc_freq\" : 2147483647,\n" + //
+                "        \"min_word_length\" : 0,\n" + //
+                "        \"max_word_length\" : 0,\n" + //
+                "        \"minimum_should_match\" : \"30%\",\n" + //
+                "        \"boost_terms\" : 0.0,\n" + //
+                "        \"include\" : false,\n" + //
+                "        \"fail_on_unsupported_field\" : true,\n" + //
+                "        \"boost\" : 1.0\n" + //
+                "      }\n" + //
+                "    },\n" + //
+                "    \"boost\" : 1.0\n" + //
+                "  }\n" + //
                 "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder(
                 "select * from Document where /*+ES: OPERATOR(more_like_this) */ ecm:uuid IN ('1234', '4567')").toString();
-        assertEqualsEvenUnderWindows("{\n" +
-                "  \"more_like_this\" : {\n" +
-                "    \"fields\" : [\n" +
-                "      \"ecm:uuid\"\n" +
-                "    ],\n" +
-                "    \"like\" : [\n" +
-                "      {\n" +
-                "        \"_index\" : \"nxutest\",\n" +
-                "        \"_type\" : \"doc\",\n" +
-                "        \"_id\" : \"'1234', '4567'\"\n" +
-                "      }\n" +
-                "    ],\n" +
-                "    \"max_query_terms\" : 12,\n" +
-                "    \"min_term_freq\" : 1,\n" +
-                "    \"min_doc_freq\" : 3,\n" +
-                "    \"max_doc_freq\" : 2147483647,\n" +
-                "    \"min_word_length\" : 0,\n" +
-                "    \"max_word_length\" : 0,\n" +
-                "    \"minimum_should_match\" : \"30%\",\n" +
-                "    \"boost_terms\" : 0.0,\n" +
-                "    \"include\" : false,\n" +
-                "    \"fail_on_unsupported_field\" : true,\n" +
-                "    \"boost\" : 1.0\n" +
-                "  }\n" +
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"more_like_this\" : {\n" + //
+                "        \"fields\" : [\n" + //
+                "          \"ecm:uuid\"\n" + //
+                "        ],\n" + //
+                "        \"like\" : [\n" + //
+                "          {\n" + //
+                "            \"_index\" : \"nxutest\",\n" + //
+                "            \"_type\" : \"doc\",\n" + //
+                "            \"_id\" : \"1234\"\n" + //
+                "          },\n" + //
+                "          {\n" + //
+                "            \"_index\" : \"nxutest\",\n" + //
+                "            \"_type\" : \"doc\",\n" + //
+                "            \"_id\" : \"4567\"\n" + //
+                "          }\n" + //
+                "        ],\n" + //
+                "        \"max_query_terms\" : 12,\n" + //
+                "        \"min_term_freq\" : 1,\n" + //
+                "        \"min_doc_freq\" : 3,\n" + //
+                "        \"max_doc_freq\" : 2147483647,\n" + //
+                "        \"min_word_length\" : 0,\n" + //
+                "        \"max_word_length\" : 0,\n" + //
+                "        \"minimum_should_match\" : \"30%\",\n" + //
+                "        \"boost_terms\" : 0.0,\n" + //
+                "        \"include\" : false,\n" + //
+                "        \"fail_on_unsupported_field\" : true,\n" + //
+                "        \"boost\" : 1.0\n" + //
+                "      }\n" + //
+                "    },\n" + //
+                "    \"boost\" : 1.0\n" + //
+                "  }\n" + //
                 "}", es);
 
         es = NxqlQueryConverter.toESQueryBuilder(
@@ -1775,6 +1796,46 @@ public class TestNxqlConversion {
                 "      }\n" + //
                 "    ],\n" + //
                 "    \"adjust_pure_negative\" : true,\n" + //
+                "    \"boost\" : 1.0\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder(
+                "SELECT * FROM Document WHERE /*+ES: INDEX(files:files.file.encoding, files:files.file.digest) OPERATOR(nestedFilesQuery) */ nested:value IN ('myEncoding', 'anyDigest')").toString();
+        assertEquals("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"nested\" : {\n" + //
+                "        \"query\" : {\n" + //
+                "          \"bool\" : {\n" + //
+                "            \"must\" : [\n" + //
+                "              {\n" + //
+                "                \"term\" : {\n" + //
+                "                  \"files:files.file.encoding\" : {\n" + //
+                "                    \"value\" : \"myEncoding\",\n" + //
+                "                    \"boost\" : 1.0\n" + //
+                "                  }\n" + //
+                "                }\n" + //
+                "              },\n" + //
+                "              {\n" + //
+                "                \"term\" : {\n" + //
+                "                  \"files:files.file.digest\" : {\n" + //
+                "                    \"value\" : \"anyDigest\",\n" + //
+                "                    \"boost\" : 1.0\n" + //
+                "                  }\n" + //
+                "                }\n" + //
+                "              }\n" + //
+                "            ],\n" + //
+                "            \"adjust_pure_negative\" : true,\n" + //
+                "            \"boost\" : 1.0\n" + //
+                "          }\n" + //
+                "        },\n" + //
+                "        \"path\" : \"files:files.file\",\n" + //
+                "        \"ignore_unmapped\" : false,\n" + //
+                "        \"score_mode\" : \"none\",\n" + //
+                "        \"boost\" : 1.0\n" + //
+                "      }\n" + //
+                "    },\n" + //
                 "    \"boost\" : 1.0\n" + //
                 "  }\n" + //
                 "}", es);

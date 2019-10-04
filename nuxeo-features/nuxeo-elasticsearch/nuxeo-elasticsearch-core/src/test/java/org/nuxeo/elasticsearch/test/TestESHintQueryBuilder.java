@@ -48,6 +48,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.hint.AnyESHintQueryBuilder;
 import org.nuxeo.elasticsearch.test.hint.MyTestTermESHintQueryBuilder;
 import org.nuxeo.elasticsearch.test.hint.TestBoolQueryESHintQueryBuilder;
+import org.nuxeo.elasticsearch.test.hint.NestedFilesESHintQueryBuilder;
 import org.nuxeo.elasticsearch.test.hint.TestTermESHintQueryBuilder;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -66,6 +67,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(RepositoryElasticSearchFeature.class)
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-hints-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-nested-contrib.xml")
 public class TestESHintQueryBuilder {
 
     public static final String ANY_FIELD_NAME = "anyField";
@@ -88,6 +90,10 @@ public class TestESHintQueryBuilder {
         Optional<ESHintQueryBuilder> anyESHintToRemove = elasticSearchAdmin.getHintByOperator("anyESHintToRemove");
         assertTrue(anyESHintToRemove.isPresent());
         assertTrue(anyESHintToRemove.get() instanceof AnyESHintQueryBuilder);
+
+        Optional<ESHintQueryBuilder> nestedFilesQuery = elasticSearchAdmin.getHintByOperator("nestedFilesQuery");
+        assertTrue(nestedFilesQuery.isPresent());
+        assertTrue(nestedFilesQuery.get() instanceof NestedFilesESHintQueryBuilder);
     }
 
     @Test
@@ -217,6 +223,20 @@ public class TestESHintQueryBuilder {
         } catch (NuxeoException ne) {
             assertEquals("Hints: GeoShapeESHintQueryBuilder requires 4 parameters: shapeId, type, index and path",
                     ne.getMessage());
+            assertEquals(SC_BAD_REQUEST, ne.getStatusCode());
+        }
+    }
+
+    @Test
+    public void shouldFailWhenMakeNestedESHintQueryWithIllegalArguments() {
+        Optional<ESHintQueryBuilder> nestedFilesQuery = elasticSearchAdmin.getHintByOperator("nestedFilesQuery");
+        assertTrue(nestedFilesQuery.isPresent());
+        assertTrue(nestedFilesQuery.get() instanceof NestedFilesESHintQueryBuilder);
+        try {
+            nestedFilesQuery.get().make(new EsHint(new EsIdentifierList("files:files.file.name"), null, null), ANY_FIELD_NAME, new String[2]);
+            fail("Should raise a NuxeoException");
+        } catch (NuxeoException ne) {
+            assertEquals("Fields size and values length should be the same", ne.getMessage());
             assertEquals(SC_BAD_REQUEST, ne.getStatusCode());
         }
     }
