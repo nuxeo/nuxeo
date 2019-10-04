@@ -346,7 +346,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                     resp.getWriter().write(result);
                     resp.getWriter().flush();
                 } else {
-                    DownloadContext context = DownloadContext.newBuilder(req, resp)
+                    DownloadContext context = DownloadContext.builder(req, resp)
                                                              .doc(doc)
                                                              .xpath(xpath)
                                                              .filename(filename)
@@ -412,7 +412,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             blob = blobs.get(0);
         }
         try {
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .blob(blob)
                                                      .reason(reason)
                                                      .build();
@@ -428,7 +428,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason) throws IOException {
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .doc(doc)
                                                  .xpath(xpath)
                                                  .blob(blob)
@@ -442,7 +442,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos) throws IOException {
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .doc(doc)
                                                  .xpath(xpath)
                                                  .blob(blob)
@@ -458,7 +458,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline)
             throws IOException {
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .doc(doc)
                                                  .xpath(xpath)
                                                  .blob(blob)
@@ -475,7 +475,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     public void downloadBlob(HttpServletRequest request, HttpServletResponse response, DocumentModel doc, String xpath,
             Blob blob, String filename, String reason, Map<String, Serializable> extendedInfos, Boolean inline,
             Consumer<ByteRange> blobTransferer) throws IOException {
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .doc(doc)
                                                  .xpath(xpath)
                                                  .blob(blob)

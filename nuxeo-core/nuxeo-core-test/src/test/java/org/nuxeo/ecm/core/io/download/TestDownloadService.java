@@ -134,7 +134,7 @@ public class TestDownloadService {
         when(response.getWriter()).thenReturn(printWriter);
 
         // send download request
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .blob(blob)
                                                  .build();
         downloadService.downloadBlob(context);
@@ -192,7 +192,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.newBuilder(req, resp)
+        DownloadContext context = DownloadContext.builder(req, resp)
                                                  .blob(blob)
                                                  .build();
         downloadService.downloadBlob(context);
@@ -232,7 +232,7 @@ public class TestDownloadService {
         when(resp.getOutputStream()).thenReturn(sos);
         when(resp.getWriter()).thenReturn(printWriter);
 
-        DownloadContext context = DownloadContext.newBuilder(req, resp)
+        DownloadContext context = DownloadContext.builder(req, resp)
                                                  .blob(blob)
                                                  .reason("test")
                                                  .build();
@@ -306,7 +306,7 @@ public class TestDownloadService {
         LoginComponent.pushPrincipal(principal);
         try {
             // send download request for file:content, should be denied
-            DownloadContext.Builder builder = DownloadContext.newBuilder(request, response)
+            DownloadContext.Builder builder = DownloadContext.builder(request, response)
                                                              .doc(doc)
                                                              .xpath("file:content")
                                                              .blob(blob)
@@ -361,7 +361,7 @@ public class TestDownloadService {
         when(doc.getPropertyValue("file:content")).thenReturn((Serializable) blob);
 
         // send download request permission denied
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .doc(doc)
                                                  .build();
         downloadService.downloadBlob(context);
@@ -594,7 +594,7 @@ public class TestDownloadService {
         doThrow(new IllegalArgumentException()).when(response).setCharacterEncoding(encoding);
 
         // send download request
-        DownloadContext context = DownloadContext.newBuilder(request, response)
+        DownloadContext context = DownloadContext.builder(request, response)
                                                  .blob(blob)
                                                  .build();
         downloadService.downloadBlob(context);
@@ -693,7 +693,7 @@ public class TestDownloadService {
         when(resp.getWriter()).thenReturn(printWriter);
 
         try (CapturingEventListener listener = new CapturingEventListener(DownloadService.EVENT_NAME)) {
-            DownloadContext context = DownloadContext.newBuilder(req, resp)
+            DownloadContext context = DownloadContext.builder(req, resp)
                                                      .blob(blob)
                                                      .reason("test")
                                                      .build();
@@ -735,7 +735,7 @@ public class TestDownloadService {
             when(resp.getWriter()).thenReturn(printWriter);
 
             // download it
-            DownloadContext context = DownloadContext.newBuilder(req, resp)
+            DownloadContext context = DownloadContext.builder(req, resp)
                                                      .blob(blob)
                                                      .reason("test")
                                                      .build();
