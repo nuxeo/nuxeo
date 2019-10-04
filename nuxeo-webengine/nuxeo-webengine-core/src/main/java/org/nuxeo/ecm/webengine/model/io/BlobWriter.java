@@ -94,7 +94,7 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
             transferBlob(blob, entityStream);
         } else {
             String reason = blob instanceof JSONBlob ? "webengine" : "download";
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .blob(blob)
                                                      .reason(reason)
                                                      .build();

@@ -89,7 +89,7 @@ public class DownloadServlet extends HttpServlet {
         File tmpZip = new File(Environment.getDefault().getTemp(), tmpFileName);
         try {
             Blob zipBlob = Blobs.createBlob(tmpZip);
-            DownloadContext context = DownloadContext.newBuilder(req, resp)
+            DownloadContext context = DownloadContext.builder(req, resp)
                                                      .blob(zipBlob)
                                                      .filename("clipboard.zip")
                                                      .reason("clipboardZip")

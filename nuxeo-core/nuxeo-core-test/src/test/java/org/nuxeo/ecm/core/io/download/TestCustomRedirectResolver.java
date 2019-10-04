@@ -88,7 +88,7 @@ public class TestCustomRedirectResolver {
         when(response.getOutputStream()).thenReturn(sos);
         when(response.getWriter()).thenReturn(printWriter);
         // send download request
-        DownloadContext context = DownloadContext.newBuilder(request, response) //
+        DownloadContext context = DownloadContext.builder(request, response) //
                                                  .blob(blob)
                                                  .build();
         downloadService.downloadBlob(context);

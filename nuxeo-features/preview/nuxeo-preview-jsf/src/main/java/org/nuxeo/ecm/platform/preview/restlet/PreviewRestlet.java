@@ -165,7 +165,7 @@ public class PreviewRestlet extends BaseStatelessNuxeoRestlet {
         }
         Map<String, Serializable> extendedInfos = Collections.singletonMap("subPath", subPath);
         try {
-            DownloadContext context = DownloadContext.newBuilder(request, response)
+            DownloadContext context = DownloadContext.builder(request, response)
                                                      .doc(targetDocument)
                                                      .xpath(xpath)
                                                      .blob(blob)
