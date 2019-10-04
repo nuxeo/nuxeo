@@ -36,6 +36,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Use {@link FileManager} to create documents from blobs
@@ -46,6 +47,8 @@ import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 public class FileManagerImport {
 
     public static final String ID = "FileManager.Import";
+
+    protected static final int IMPORT_TX_TIMEOUT_SEC = 86_400; // 1 day
 
     @Context
     protected CoreSession session;
@@ -72,9 +75,16 @@ public class FileManagerImport {
 
     @OperationMethod
     public DocumentModel run(Blob blob) throws OperationException, IOException {
+        // do the import in a long-running transaction to avoid timeouts
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction(IMPORT_TX_TIMEOUT_SEC);
         DocumentModel currentDocument = getCurrentDocument();
-        return fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(), overwite,
-                blob.getFilename(), noMimeTypeCheck);
+        DocumentModel doc = fileManager.createDocumentFromBlob(session, blob, currentDocument.getPathAsString(),
+                overwite, blob.getFilename(), noMimeTypeCheck);
+        // go back to default transaction timeout
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        return doc;
     }
 
     @OperationMethod
