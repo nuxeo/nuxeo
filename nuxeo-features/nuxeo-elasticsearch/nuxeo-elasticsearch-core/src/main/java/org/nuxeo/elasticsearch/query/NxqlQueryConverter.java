@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchPhrasePrefixQueryBuilder;
@@ -261,7 +262,7 @@ public final class NxqlQueryConverter {
         QueryBuilder filter = null;
         String name = getFieldName(nxqlName, hint);
         if (hint != null && hint.operator != null) {
-            if (hint.operator.startsWith("geo")) {
+            if (ArrayUtils.isNotEmpty(values)) {
                 filter = makeHintQuery(name, values, hint);
             } else {
                 query = makeHintQuery(name, value, hint);
