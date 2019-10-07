@@ -81,14 +81,14 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     }
 
     /**
-     * @param id the connection id to retrieve.
-     * @return the database configured by {@link MongoDBConnectionConfig} for the input id, or the default one if it
+     * @param databaseName the connection name to retrieve.
+     * @return the database configured by {@link MongoDBConnectionConfig} for the input name, or the default one if it
      *         doesn't exist
      */
     @Override
-    public MongoDatabase getDatabase(String id) {
-        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
-        MongoClient client = clients.get(id);
+    public MongoDatabase getDatabase(String databaseName) {
+        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, databaseName);
+        MongoClient client = clients.get(databaseName);
         if (client == null) {
             config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
             client = clients.get(DEFAULT_CONNECTION_ID);
