@@ -21,6 +21,8 @@
 package org.nuxeo.ecm.platform.pdf.operations;
 
 import java.io.IOException;
+
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -39,7 +41,12 @@ import org.nuxeo.ecm.platform.pdf.PDFTextExtractor;
  *
  * @since 8.10
  */
-@Operation(id = PDFExtractTextOperation.ID, category = Constants.CAT_DOCUMENT, label = "PDF: Extract Text", description = "Extracts raw text from a PDF. If the PDF is encrypted, a password is required.")
+@Operation(id = PDFExtractTextOperation.ID, category = Constants.CAT_DOCUMENT, label = "PDF: Extract Text", description = "Extracts raw text from a PDF."
+        + " If the PDF is encrypted, a password is required."
+        + " pdfxpath is the xpath of the blob (default to file:content)."
+        + " The extracted text is set in the targetxpath property of the input document, which is saved if save is true."
+        + " If patterntofind is not provided, extracts all the text it can, else it extracts only the line where the pattern is found."
+        + " If patterntofind is provided and removepatternfromresult is true, the line is returned without the pattern.")
 public class PDFExtractTextOperation {
 
     public static final String ID = "PDF.ExtractText";
@@ -69,8 +76,14 @@ public class PDFExtractTextOperation {
     public DocumentModel run(DocumentModel input) throws IOException {
         PDFTextExtractor textExtractor = new PDFTextExtractor(input, pdfxpath);
         textExtractor.setPassword(password);
-        String extractedText = removepatternfromresult ? textExtractor.extractLastPartOfLine(patterntofind)
-                : textExtractor.extractLineOf(patterntofind);
+        String extractedText;
+        if (StringUtils.isBlank(patterntofind)) {
+            extractedText = textExtractor.getAllExtractedLines();
+        } else if (removepatternfromresult) {
+            extractedText = textExtractor.extractLastPartOfLine(patterntofind);
+        } else {
+            extractedText = textExtractor.extractLineOf(patterntofind);
+        }
         if (extractedText != null) {
             input.setPropertyValue(targetxpath, extractedText);
         } else {
