@@ -167,8 +167,15 @@
         <include name="el-api*" />
         <include name="jsp-*" />
         <include name="juel-api-*" />
-        <include name="tomcat-dbcp-*" />
+        <include name="tomcat-catalina-*" /> <!-- provided by Tomcat as catalina.jar -->
+        <include name="tomcat-coyote-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-dbcp-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-el-api-*" /> <!-- provided by Tomcat as el-api.jar -->
         <include name="tomcat-jasper-*" /> <!-- provided by Tomcat as jasper.jar -->
+        <include name="tomcat-jdbc-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-jni-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-juli-*" /> <!-- provided by Tomcat as bin/tomcat-juli.jar -->
+        <include name="tomcat-util-*" /> <!-- provided by Tomcat -->
       </fileset>
       <!-- provided through templates -->
       <fileset dir="${distribution.dir}/nxserver/lib">

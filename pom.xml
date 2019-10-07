@@ -4085,6 +4085,7 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-catalina</artifactId>
         <version>${tomcat.version}</version>
+        <!-- provided by Tomcat as catalina.jar, excluded in final assembly -->
         <exclusions>
           <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
@@ -4101,6 +4102,7 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-coyote</artifactId>
         <version>${tomcat.version}</version>
+        <!-- provided by Tomcat, excluded in final assembly -->
         <exclusions>
           <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
@@ -4113,7 +4115,7 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-jasper</artifactId>
         <version>${tomcat.version}</version>
-        <!-- provided by Tomcat as jasper.jar, so will be excluded in final assembly -->
+        <!-- provided by Tomcat as jasper.jar, excluded in final assembly -->
         <exclusions>
           <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
@@ -4126,28 +4128,32 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-util</artifactId>
         <version>${tomcat.version}</version>
+        <!-- provided by Tomcat, excluded in final assembly -->
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-dbcp</artifactId>
         <version>${tomcat.version}</version>
+        <!-- provided by Tomcat, excluded in final assembly -->
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-juli</artifactId>
         <version>${tomcat.version}</version>
+        <!-- provided by Tomcat as bin/tomcat-juli.jar, excluded in final assembly -->
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-jdbc</artifactId>
         <version>${tomcat.version}</version>
+        <!-- provided by Tomcat, excluded in final assembly -->
       </dependency>
       <dependency>
         <!-- this implements a more recent version of the EL spec than javax.el:el-api:1.0 -->
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-el-api</artifactId>
         <version>${tomcat.version}</version>
-        <scope>provided</scope> <!-- provided by Tomcat as jasper.jar -->
+        <!-- provided by Tomcat, excluded in final assembly -->
       </dependency>
       <!-- saml -->
       <dependency>

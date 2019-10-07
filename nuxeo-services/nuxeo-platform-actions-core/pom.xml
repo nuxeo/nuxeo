@@ -24,10 +24,6 @@
       <groupId>org.nuxeo.ecm.core</groupId>
       <artifactId>nuxeo-core-el</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-el-api</artifactId>
-    </dependency>
 
     <!-- test scope -->
     <dependency>
