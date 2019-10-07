@@ -164,7 +164,7 @@
     <mongo.java.driver.version>3.8.1</mongo.java.driver.version>
     <quartz.mongodb.version>2.1.0-NX1</quartz.mongodb.version>
 
-    <kafka.version>2.1.0</kafka.version>
+    <kafka.version>2.3.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
     <chronicle.bom.version>2.17.178</chronicle.bom.version>
     <chronicle.threads.version>2.17.2</chronicle.threads.version>
