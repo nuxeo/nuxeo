@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -178,10 +179,10 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
             comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
             session.saveDocument(comment);
         } else if (parent == null && comment == null) {
-            log.debug("Documents {} and {} do not exist, they can not be migrated", object.getLocalName(),
+            log.warn("Documents {} and {} do not exist, they can not be migrated", object.getLocalName(),
                     subject.getLocalName());
         } else {
-            log.debug("Document {} does not exist, it can not be migrated",
+            log.warn("Document {} does not exist, it can not be migrated",
                     parent == null ? object.getLocalName() : subject.getLocalName());
         }
 
@@ -221,7 +222,15 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
     protected void migrateCommentsFromPropertyToSecured(CoreSession session, CommentManager commentManager,
             IdRef commentIdRef) {
         DocumentModel commentDocModel = session.getDocument(commentIdRef);
-        DocumentRef parentDocRef = new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID));
+        String parentId = (String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID);
+        if (StringUtils.isEmpty(parentId)) {
+            log.warn(
+                    "The comment document model with IdRef: {} cannot be migrated, because his 'comment:parentId' is not defined",
+                    commentIdRef);
+            return;
+        }
+
+        DocumentRef parentDocRef = new IdRef(parentId);
         DocumentModel parentDocModel = session.getDocument(parentDocRef);
 
         DocumentRef destination = new PathRef(commentManager.getLocationOfCommentCreation(session, parentDocModel));
