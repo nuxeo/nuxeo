@@ -4738,17 +4738,6 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!-- OSGi (automation client) -->
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient-osgi</artifactId>
-        <version>${apache.httpcomponents.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpcore-osgi</artifactId>
-        <version>${apache.httpcore.version}</version>
-      </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-parent</artifactId>
