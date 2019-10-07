@@ -107,26 +107,26 @@ public class PDFTextExtractorTest {
         OperationChain chain = new OperationChain("testChain");
         ctx.setInput(testDoc);
         chain.add(PDFExtractTextOperation.ID)
-        .set("save", true)
-        .set("targetxpath", "dc:description")
-        .set("patterntofind", "Contract Number: ")
-        .set("removepatternfromresult", false);
+             .set("save", true)
+             .set("targetxpath", "dc:description")
+             .set("patterntofind", "Contract Number: ")
+             .set("removepatternfromresult", false);
         DocumentModel documentModified = (DocumentModel) automationService.run(ctx, chain);
         assertEquals("Contract Number: 123456789", documentModified.getPropertyValue("dc:description"));
         chain = new OperationChain("testChain");
         chain.add(PDFExtractTextOperation.ID)
-        .set("save", true)
-        .set("targetxpath", "dc:description")
-        .set("patterntofind", "Something that is not in the file")
-        .set("removepatternfromresult", false);
+             .set("save", true)
+             .set("targetxpath", "dc:description")
+             .set("patterntofind", "Something that is not in the file")
+             .set("removepatternfromresult", false);
         documentModified = (DocumentModel) automationService.run(ctx, chain);
         assertNull(documentModified.getPropertyValue("dc:description"));
         chain = new OperationChain("testChain");
         chain.add(PDFExtractTextOperation.ID)
-        .set("save", true)
-        .set("targetxpath", "dc:description")
-        .set("patterntofind", "Contract Number: ")
-        .set("removepatternfromresult", true);
+             .set("save", true)
+             .set("targetxpath", "dc:description")
+             .set("patterntofind", "Contract Number: ")
+             .set("removepatternfromresult", true);
         documentModified = (DocumentModel) automationService.run(ctx, chain);
         assertEquals("123456789", documentModified.getPropertyValue("dc:description"));
     }
