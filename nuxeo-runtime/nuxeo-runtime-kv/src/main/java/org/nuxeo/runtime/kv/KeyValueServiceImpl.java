@@ -47,6 +47,7 @@ public class KeyValueServiceImpl extends DefaultComponent implements KeyValueSer
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
         providers.values().forEach(KeyValueStoreProvider::close);
+        providers.clear();
         super.stop(context);
     }
 
