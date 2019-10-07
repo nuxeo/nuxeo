@@ -20,6 +20,9 @@
 package org.nuxeo.ecm.platform.pdf.tests;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +64,8 @@ public class PDFTextExtractorTest {
     @Inject
     AutomationService automationService;
 
+    protected OperationContext ctx;
+
     @Before
     public void setUp() {
         testDocsFolder = coreSession.createDocumentModel("/", "test-pictures", "Folder");
@@ -73,10 +78,12 @@ public class PDFTextExtractorTest {
         doc.setPropertyValue("dc:title", f.getName());
         doc.setPropertyValue("file:content", new FileBlob(f));
         testDoc = coreSession.createDocument(doc);
+        ctx = new OperationContext(coreSession);
     }
 
     @After
     public void tearDown() {
+        ctx.close();
         coreSession.removeDocument(testDocsFolder.getRef());
         coreSession.save();
     }
@@ -84,44 +91,88 @@ public class PDFTextExtractorTest {
     @Test
     public void testExtractText() throws Exception {
         PDFTextExtractor pdfte = new PDFTextExtractor(pdfFileBlob);
+
+        // All text
         String text = pdfte.getAllExtractedLines();
         assertNotNull(text);
+
         assertEquals(19045, text.length());
-        assertEquals("Contract Number: 123456789", pdfte.extractLineOf("Contract Number: "));
         assertFalse(text.contains("Something that is not in the file"));
         assertTrue(text.contains("13.1"));
+
+        // Extract some text
+        assertEquals("Contract Number: 123456789", pdfte.extractLineOf("Contract Number: "));
         assertEquals("123456789", pdfte.extractLastPartOfLine("Contract Number: "));
     }
 
-    @Test
-    public void testExtractTextOperation() throws Exception {
+    protected void doTestExtractAllText(boolean useEmptyPattern) throws Exception {
+
+        Map<String, Object> params = new HashMap<>();
+        // We don't save because we set the dc:description field which has a max chars limit of 2,000
+        // and we don't want to complicate the unit test with XML extensions changing that or deploying
+        // another field, etc.
+        params.put("save", false);
+        params.put("targetxpath", "dc:description");
+        if (useEmptyPattern) {
+            params.put("patterntofind", "");
+        }
+
         OperationChain chain = new OperationChain("testChain");
-        OperationContext ctx = new OperationContext(coreSession);
-        assertNotNull(ctx);
+
+        ctx.setInput(testDoc);
+        chain.add(PDFExtractTextOperation.ID);
+        chain.addChainParameters(params);
+
+        DocumentModel documentModified = (DocumentModel) automationService.run(ctx, chain);
+        String text = (String) documentModified.getPropertyValue("dc:description");
+        assertNotNull(text);
+        assertEquals(19045, text.length());
+        assertFalse(text.contains("Something that is not in the file"));
+        assertTrue(text.contains("13.1"));
+
+    }
+
+    @Test
+    public void testOperationExtractAlltext() throws Exception {
+
+        // Test with no patterntofind at all
+        doTestExtractAllText(false);
+
+        // Passing an empty patterntofind => all text
+        doTestExtractAllText(true);
+    }
+
+    protected DocumentModel doOperationExtractSomeText(String pattern, boolean removePatternFromResult)
+            throws Exception {
+
+        OperationChain chain = new OperationChain("testChain");
         ctx.setInput(testDoc);
         chain.add(PDFExtractTextOperation.ID)
-            .set("save", true)
-            .set("targetxpath", "dc:description")
-            .set("patterntofind", "Contract Number: ")
-            .set("removepatternfromresult", false);
-        DocumentModel documentModified = (DocumentModel) automationService.run(ctx, chain);
+             .set("save", false)
+             .set("targetxpath", "dc:description")
+             .set("patterntofind", pattern)
+             .set("removepatternfromresult", removePatternFromResult);
+        DocumentModel result = (DocumentModel) automationService.run(ctx, chain);
+
+        return result;
+    }
+
+    @Test
+    public void testOperationExtractSomeText() throws Exception {
+
+        DocumentModel documentModified;
+
+        // Getting one line
+        documentModified = doOperationExtractSomeText("Contract Number: ", false);
         assertEquals("Contract Number: 123456789", documentModified.getPropertyValue("dc:description"));
-        chain = new OperationChain("testChain");
-        chain.add(PDFExtractTextOperation.ID)
-            .set("save", true)
-            .set("targetxpath", "dc:description")
-            .set("patterntofind", "Something that is not in the file")
-            .set("removepatternfromresult", false);
-        documentModified = (DocumentModel) automationService.run(ctx, chain);
-        assertNull(documentModified.getPropertyValue("dc:description"));
-        chain = new OperationChain("testChain");
-        chain.add(PDFExtractTextOperation.ID)
-            .set("save", true)
-            .set("targetxpath", "dc:description")
-            .set("patterntofind", "Contract Number: ")
-            .set("removepatternfromresult", true);
-        documentModified = (DocumentModel) automationService.run(ctx, chain);
+
+        // Getting part of a line
+        documentModified = doOperationExtractSomeText("Contract Number: ", true);
         assertEquals("123456789", documentModified.getPropertyValue("dc:description"));
+
+        // Passing a pattern that does not exist => extracted text must be null
+        documentModified = doOperationExtractSomeText("Something that is not in the file", false);
+        assertNull(documentModified.getPropertyValue("dc:description"));
     }
 
 }
