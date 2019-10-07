@@ -39,8 +39,7 @@ import org.nuxeo.ecm.platform.pdf.PDFTextExtractor;
  *
  * @since 8.10
  */
-@Operation(id = PDFExtractTextOperation.ID, category = Constants.CAT_DOCUMENT, label = "PDF: Extract Text",
-    description = "Extracts raw text from a PDF. If the PDF is encrypted, a password is required.")
+@Operation(id = PDFExtractTextOperation.ID, category = Constants.CAT_DOCUMENT, label = "PDF: Extract Text", description = "Extracts raw text from a PDF. If the PDF is encrypted, a password is required.")
 public class PDFExtractTextOperation {
 
     public static final String ID = "PDF.ExtractText";
@@ -70,8 +69,8 @@ public class PDFExtractTextOperation {
     public DocumentModel run(DocumentModel input) throws IOException {
         PDFTextExtractor textExtractor = new PDFTextExtractor(input, pdfxpath);
         textExtractor.setPassword(password);
-        String extractedText = removepatternfromresult ?
-            textExtractor.extractLastPartOfLine(patterntofind) : textExtractor.extractLineOf(patterntofind);
+        String extractedText = removepatternfromresult ? textExtractor.extractLastPartOfLine(patterntofind)
+                : textExtractor.extractLineOf(patterntofind);
         if (extractedText != null) {
             input.setPropertyValue(targetxpath, extractedText);
         } else {
