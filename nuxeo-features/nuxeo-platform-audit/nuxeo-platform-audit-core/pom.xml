@@ -55,10 +55,6 @@
       <artifactId>persistence-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-el-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.el</groupId>
       <artifactId>jboss-el</artifactId>
     </dependency>
