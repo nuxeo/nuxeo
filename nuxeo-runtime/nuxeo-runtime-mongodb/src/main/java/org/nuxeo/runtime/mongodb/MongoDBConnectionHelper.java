@@ -184,9 +184,11 @@ public class MongoDBConnectionHelper {
      * @param collection the collection name
      * @return true if the collection exists and not empty, false otherwise
      */
+    @SuppressWarnings("deprecation")
     public static boolean hasCollection(MongoDatabase mongoDatabase, String collection) {
         MongoIterable<String> collections = mongoDatabase.listCollectionNames();
         boolean found = StreamSupport.stream(collections.spliterator(), false).anyMatch(collection::equals);
-        return found && mongoDatabase.getCollection(collection).count() > 0;
+        // we do not need precision here, using the old count allows to preserve method signature
+        return found && mongoDatabase.getCollection(collection).count() > 0; // NOSONAR
     }
 }
