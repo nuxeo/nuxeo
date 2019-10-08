@@ -20,6 +20,8 @@
 
 package org.nuxeo.directory.mongodb;
 
+import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -108,9 +110,10 @@ public class MongoDBReference extends AbstractReference {
         try {
             MongoDBSession mongoSession = (MongoDBSession) session;
             MongoCollection<Document> coll = getCollection(mongoSession);
+            String databaseID = mongoSession.getDirectory().databaseID;
             List<Document> newDocs = targetIds.stream()
                                               .map(targetId -> buildDoc(sourceId, targetId))
-                                              .filter(doc -> coll.count(doc) == 0)
+                                              .filter(doc -> countDocuments(databaseID, coll, doc) == 0)
                                               .collect(Collectors.toList());
             if (!newDocs.isEmpty()) {
                 coll.insertMany(newDocs);
@@ -124,9 +127,10 @@ public class MongoDBReference extends AbstractReference {
     public void addLinks(List<String> sourceIds, String targetId, Session session) {
         MongoDBSession mongodbSession = (MongoDBSession) session;
         MongoCollection<Document> coll = getCollection(mongodbSession);
+        String databaseID = mongodbSession.getDirectory().databaseID;
         List<Document> newDocs = sourceIds.stream()
                                           .map(sourceId -> buildDoc(sourceId, targetId))
-                                          .filter(doc -> coll.count(doc) == 0)
+                                          .filter(doc -> countDocuments(databaseID, coll, doc) == 0)
                                           .collect(Collectors.toList());
         if (!newDocs.isEmpty()) {
             coll.insertMany(newDocs);

@@ -22,6 +22,7 @@ package org.nuxeo.directory.mongodb;
 
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_SEQ;
+import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -487,7 +488,7 @@ public class MongoDBSession extends BaseSession {
             long count;
             if (countTotal) {
                 // we have to do an additional query to count the total number of results
-                count = getCollection().count(filter);
+                count = countDocuments(getDirectory().databaseID, getCollection(), filter);
             } else {
                 count = -2; // unknown
             }
@@ -616,7 +617,8 @@ public class MongoDBSession extends BaseSession {
         String idFieldName = getPrefixedIdField();
         Type idFieldType = getIdFieldType();
         Object idFieldValue = convertToType(id, idFieldType);
-        return getCollection().count(MongoDBSerializationHelper.fieldMapToBson(idFieldName, idFieldValue)) > 0;
+        return countDocuments(getDirectory().databaseID, getCollection(),
+                MongoDBSerializationHelper.fieldMapToBson(idFieldName, idFieldValue)) > 0;
     }
 
     /**

@@ -57,6 +57,11 @@ public class MongoDBDirectory extends AbstractDirectory {
      */
     public static final String DIRECTORY_CONNECTION_PREFIX = "directory/";
 
+    /**
+     * @since 10.10-HF16
+     */
+    protected String databaseID;
+
     protected MongoDatabase database;
 
     protected MongoCollection<Document> collection;
@@ -102,7 +107,8 @@ public class MongoDBDirectory extends AbstractDirectory {
         super.initialize();
 
         MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
-        database = mongoService.getDatabase(DIRECTORY_CONNECTION_PREFIX + getName());
+        databaseID = DIRECTORY_CONNECTION_PREFIX + getName();
+        database = mongoService.getDatabase(databaseID);
         collection = database.getCollection(getName());
         String countersCollectionName = getName() + ".counters";
         countersCollection = database.getCollection(countersCollectionName);
