@@ -6,4 +6,5 @@ Bundle-Version: 1.0.0
 Bundle-Name: Nuxeo Audit Storage Directory
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.audit.storage.directory;singleton=true
-Nuxeo-Component: OSGI-INF/directory-audit-storage-contrib.xml
+Nuxeo-Component: OSGI-INF/directory-audit-storage-contrib.xml,
+ OSGI-INF/sync-audit-logs-contrib.xml

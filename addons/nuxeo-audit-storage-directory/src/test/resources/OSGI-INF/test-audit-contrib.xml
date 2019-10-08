@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<component name="test.audit.contrib">
+
+	<extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+		point="adapter">
+		<adapter name="myadapter" class="org.nuxeo.ecm.core.api.facet.VersioningDocument"/>
+	</extension>
+
+	<extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
+		point="event">
+		<event name="documentCreated" />
+		<event name="documentCreatedByCopy" />
+		<event name="documentDuplicated" />
+		<event name="documentMoved" />
+		<event name="documentRemoved" />
+		<event name="documentModified" />
+		<event name="documentLocked" />
+		<event name="documentUnlocked" />
+		<event name="documentPublished" />
+		<event name="documentSecurityUpdated" />
+		<event name="documentUnPublished" />
+		<event name="documentSubmitedForPublication" />
+		<event name="documentPublicationRejected" />
+		<event name="documentPublicationApproved" />
+		<event name="lifecycle_transition_event" />
+	</extension>
+
+    <extension point="extendedInfo"
+           target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
+        <extendedInfo expression="${source.dublincore.title}" key="title" />
+        <extendedInfo expression="${principal.name}" key="user" />
+        <extendedInfo expression="${source.path.removeLastSegments(1).toString()}" key="parentPath" />
+    </extension>
+
+</component>
