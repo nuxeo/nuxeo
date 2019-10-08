@@ -39,6 +39,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
+import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -208,7 +209,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void initRepository() {
         // check root presence
-        if (coll.count(Filters.eq(idKey, getRootId())) > 0) {
+        if (countDocuments(coll, Filters.eq(idKey, getRootId())) > 0) {
             return;
         }
         // create required indexes
@@ -595,7 +596,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else if (manualProjection) {
                 totalSize = -1; // unknown due to manual projection
             } else {
-                totalSize = coll.count(filter);
+                totalSize = countDocuments(coll, filter);
             }
         } else if (countUpTo == 0) {
             // no count
@@ -607,7 +608,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else if (manualProjection) {
                 totalSize = -1; // unknown due to manual projection
             } else {
-                totalSize = coll.count(filter, new CountOptions().limit(countUpTo + 1));
+                totalSize = countDocuments(coll, filter, new CountOptions().limit(countUpTo + 1));
             }
             if (totalSize > countUpTo) {
                 totalSize = -2; // truncated
