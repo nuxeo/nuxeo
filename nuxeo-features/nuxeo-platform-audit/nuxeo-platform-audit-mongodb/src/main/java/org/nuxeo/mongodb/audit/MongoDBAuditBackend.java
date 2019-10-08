@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_DOC_UUID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_DATE;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
+import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
 import static org.nuxeo.runtime.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 
 import java.io.IOException;
@@ -353,7 +354,8 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
 
     @Override
     public Long getEventsCount(String eventId) {
-        return Long.valueOf(collection.count(Filters.eq("eventId", eventId)));
+        MongoDatabase database = Framework.getService(MongoDBConnectionService.class).getDatabase(AUDIT_DATABASE_ID);
+        return Long.valueOf(countDocuments(database, collection, Filters.eq("eventId", eventId)));
     }
 
     @Override

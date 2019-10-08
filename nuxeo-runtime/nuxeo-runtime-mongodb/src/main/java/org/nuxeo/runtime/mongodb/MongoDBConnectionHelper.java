@@ -20,6 +20,8 @@
  */
 package org.nuxeo.runtime.mongodb;
 
+import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -187,6 +189,6 @@ public class MongoDBConnectionHelper {
     public static boolean hasCollection(MongoDatabase mongoDatabase, String collection) {
         MongoIterable<String> collections = mongoDatabase.listCollectionNames();
         boolean found = StreamSupport.stream(collections.spliterator(), false).anyMatch(collection::equals);
-        return found && mongoDatabase.getCollection(collection).count() > 0;
+        return found && countDocuments(mongoDatabase, mongoDatabase.getCollection(collection)) > 0;
     }
 }

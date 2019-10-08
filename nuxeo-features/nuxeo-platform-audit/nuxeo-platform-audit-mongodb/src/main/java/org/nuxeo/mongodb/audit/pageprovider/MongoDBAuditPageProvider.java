@@ -18,6 +18,9 @@
  */
 package org.nuxeo.mongodb.audit.pageprovider;
 
+import static org.nuxeo.mongodb.audit.MongoDBAuditBackend.AUDIT_DATABASE_ID;
+import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,10 +49,12 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.mongodb.audit.MongoDBAuditBackend;
 import org.nuxeo.mongodb.audit.MongoDBAuditEntryReader;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.mongodb.MongoDBSerializationHelper;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 
@@ -118,7 +123,8 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
         List<LogEntry> entries = new ArrayList<>();
 
         // set total number of results
-        setResultsCount(auditCollection.count(filter));
+        MongoDatabase database = Framework.getService(MongoDBConnectionService.class).getDatabase(AUDIT_DATABASE_ID);
+        setResultsCount(countDocuments(database, auditCollection, filter));
 
         for (Document document : response) {
             entries.add(MongoDBAuditEntryReader.read(document));

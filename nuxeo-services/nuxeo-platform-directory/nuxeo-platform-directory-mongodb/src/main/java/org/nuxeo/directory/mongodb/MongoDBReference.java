@@ -20,6 +20,8 @@
 
 package org.nuxeo.directory.mongodb;
 
+import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 import org.nuxeo.ecm.directory.ReferenceDescriptor;
 import org.nuxeo.ecm.directory.Session;
@@ -107,10 +110,11 @@ public class MongoDBReference extends AbstractReference {
         }
         try {
             MongoDBSession mongoSession = (MongoDBSession) session;
+            MongoDatabase database = mongoSession.getDirectory().database;
             MongoCollection<Document> coll = getCollection(mongoSession);
             List<Document> newDocs = targetIds.stream()
                                               .map(targetId -> buildDoc(sourceId, targetId))
-                                              .filter(doc -> coll.count(doc) == 0)
+                                              .filter(doc -> countDocuments(database, coll, doc) == 0)
                                               .collect(Collectors.toList());
             if (!newDocs.isEmpty()) {
                 coll.insertMany(newDocs);
@@ -123,10 +127,11 @@ public class MongoDBReference extends AbstractReference {
     @Override
     public void addLinks(List<String> sourceIds, String targetId, Session session) {
         MongoDBSession mongodbSession = (MongoDBSession) session;
+        MongoDatabase database = mongodbSession.getDirectory().database;
         MongoCollection<Document> coll = getCollection(mongodbSession);
         List<Document> newDocs = sourceIds.stream()
                                           .map(sourceId -> buildDoc(sourceId, targetId))
-                                          .filter(doc -> coll.count(doc) == 0)
+                                          .filter(doc -> countDocuments(database, coll, doc) == 0)
                                           .collect(Collectors.toList());
         if (!newDocs.isEmpty()) {
             coll.insertMany(newDocs);
