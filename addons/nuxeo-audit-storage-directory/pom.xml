@@ -105,7 +105,6 @@
     <dependency>
       <groupId>org.nuxeo.elasticsearch</groupId>
       <artifactId>nuxeo-elasticsearch-core</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.elasticsearch</groupId>
@@ -116,12 +115,10 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-search-rest-api</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.elasticsearch</groupId>
       <artifactId>nuxeo-elasticsearch-audit</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.elasticsearch</groupId>
