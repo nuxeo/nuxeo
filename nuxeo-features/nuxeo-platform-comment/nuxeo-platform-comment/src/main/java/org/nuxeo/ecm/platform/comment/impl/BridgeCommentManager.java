@@ -23,11 +23,9 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -46,7 +44,6 @@ public class BridgeCommentManager extends AbstractCommentManager {
     protected final CommentManager first;
 
     protected final CommentManager second;
-
 
     public BridgeCommentManager(CommentManager first, CommentManager second) {
         this.first = first;
@@ -100,6 +97,14 @@ public class BridgeCommentManager extends AbstractCommentManager {
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         return Stream.concat(first.getDocumentsForComment(comment).stream(),
                 second.getDocumentsForComment(comment).stream()).distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
+        if (comment.getPropertyValue(COMMENT_PARENT_ID) != null) {
+            return second.getThreadForComment(comment);
+        }
+        return first.getThreadForComment(comment);
     }
 
     @Override
@@ -193,66 +198,4 @@ public class BridgeCommentManager extends AbstractCommentManager {
             throw new UnsupportedOperationException(feature.name());
         }
     }
-
-    @Override
-    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
-        return execute(session, commentIdRef, cm -> cm.getTopLevelCommentAncestor(session, commentIdRef));
-    }
-
-    @Override
-    public String getLocationOfCommentCreation(CoreSession session, DocumentModel documentModel) {
-        return second.getLocationOfCommentCreation(session, documentModel);
-    }
-
-    /**
-     * Executes the given function for a comment document ref, depending on the type of the provided comment manager {@link #first},
-     * {@link #second}.
-     * <p>
-     * In some cases (see the callers of this method), rely on
-     * {@link org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants#COMMENT_PARENT_ID} is not enough, this
-     * mainly the case where {@link #first} is {@link PropertyCommentManager} and {@link #second} is
-     * {@link TreeCommentManager}, the comment storage structure is different:
-     * <ul>
-     * <li>RelationManager: Comments structures are stored in jenaGraph</li>
-     * <li>PropertyManager: All comments are stored under a hidden folder, and each comment/reply contains his direct
-     * parent in `comment:parentId`, this means if we want the commented document for example we should retrieve the
-     * `comment:parentId` of the comment thread (first comment)</li>
-     * <li>TreeCommentManager: Each comment is stored under his parent, but the first one (thread comment) is stored
-     * under a folder with `CommentRoot` type, in this case if we want to retrieve the commented document we should
-     * retrieve the `ecm:parentId` of the folder with type `CommentRoot`</li>
-     * </ul>
-     * 
-     * @since 11.1
-     */
-    protected <T> T execute(CoreSession s, DocumentRef documentRef, Function<CommentManager, T> function) {
-        return CoreInstance.doPrivileged(s, session -> {
-            DocumentModel documentModel = session.getDocument(documentRef);
-
-            // From `Relation` to `Property`
-            if (first instanceof CommentManagerImpl && second instanceof PropertyCommentManager) {
-                if (documentModel.getPropertyValue(COMMENT_PARENT_ID) != null) {
-                    // Comment is in property model
-                    return function.apply(second);
-                }
-                // Comment still in relation model
-                return function.apply(first);
-            }
-
-            // From `Property` to `Tree`
-            if (first instanceof PropertyCommentManager && second instanceof TreeCommentManager) {
-                // In this case we cannot just rely on `comment:parentId` but on the type of doc that contains the comment
-                DocumentRef parentRef = documentModel.getParentRef();
-                // Comment is under property model
-                if (s.getDocument(parentRef).getType().equals("HiddenFolder")) {
-                    return function.apply(first);
-                }
-                // Comment is under tree model
-                return function.apply(second);
-            }
-
-            throw new IllegalArgumentException(String.format(
-                    "Undefined behaviour for document ref: %s, first: %s, second: %s ", documentModel, first, second));
-        });
-    }
-    
 }

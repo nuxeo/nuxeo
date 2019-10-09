@@ -24,10 +24,11 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
-import static org.nuxeo.ecm.platform.relations.api.ResourceAdapter.CORE_SESSION_CONTEXT_KEY;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,6 +64,7 @@ import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.ecm.platform.relations.api.ResourceAdapter;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
@@ -96,7 +98,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     public List<DocumentModel> getComments(CoreSession s, DocumentModel docModel)
             throws CommentSecurityException {
         return doPrivileged(s, docModel.getRepositoryName(), session -> {
-            Map<String, Object> ctxMap = Collections.<String, Object>singletonMap(CORE_SESSION_CONTEXT_KEY,
+            Map<String, Object> ctxMap = Collections.<String, Object>singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
                     session);
             RelationManager relationManager = Framework.getService(RelationManager.class);
             Graph graph = relationManager.getGraph(config.graphName, session);
@@ -177,6 +179,8 @@ public class CommentManagerImpl extends AbstractCommentManager {
     @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
+            comment.setPropertyValue(COMMENT_ANCESTOR_IDS,
+                    (Serializable) computeAncestorIds(session, docModel.getId()));
             DocumentModel doc = internalCreateComment(session, docModel, comment, null);
             session.save();
             doc.detach(true);
@@ -343,7 +347,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     @Override
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         return doPrivileged(comment.getCoreSession(), comment.getRepositoryName(), session -> {
-            Map<String, Object> ctxMap = Collections.<String, Object>singletonMap(CORE_SESSION_CONTEXT_KEY,
+            Map<String, Object> ctxMap = Collections.<String, Object>singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY,
                     session);
             RelationManager relationManager = Framework.getService(RelationManager.class);
             Graph graph = relationManager.getGraph(config.graphName, session);
@@ -399,6 +403,19 @@ public class CommentManagerImpl extends AbstractCommentManager {
             session.save();
             return createdComment;
         }
+    }
+
+    @Override
+    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
+        List<DocumentModel> threads = getDocumentsForComment(comment);
+        if (threads.size() > 0) {
+            DocumentModel thread = threads.get(0);
+            while (thread.getType().equals("Post") || thread.getType().equals(COMMENT_DOC_TYPE)) {
+                thread = getThreadForComment(thread);
+            }
+            return thread;
+        }
+        return null;
     }
 
     @Override
@@ -468,10 +485,10 @@ public class CommentManagerImpl extends AbstractCommentManager {
             if (!session.exists(commentRef)) {
                 throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
             }
-
-            DocumentModel commentDocModel = session.getDocument(commentRef);
-            DocumentModel commentedDocModel = session.getDocument(getTopLevelCommentAncestor(session, commentRef));
-            deleteComment(commentedDocModel, commentDocModel);
+            DocumentModel comment = session.getDocument(commentRef);
+            DocumentModel commentedDoc = session.getDocument(
+                    new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
+            deleteComment(commentedDoc, comment);
         });
     }
 
@@ -502,16 +519,4 @@ public class CommentManagerImpl extends AbstractCommentManager {
             throw new UnsupportedOperationException(feature.name());
         }
     }
-
-    @Override
-    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
-        DocumentModel documentModel = session.getDocument(commentIdRef);
-        while (documentModel != null && documentModel.hasSchema(COMMENT_SCHEMA)) {
-            List<DocumentModel> ancestors = getDocumentsForComment(documentModel);
-            documentModel = ancestors.isEmpty() ? null : ancestors.get(0);
-        }
-
-        return documentModel != null ? documentModel.getRef() : null;
-    }
-
 }
