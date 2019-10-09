@@ -55,7 +55,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,15 +90,13 @@ import org.nuxeo.runtime.migration.MigrationService.Migrator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LogCaptureFeature;
-import org.nuxeo.runtime.test.runner.LogFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, LogFeature.class, LogCaptureFeature.class })
+@Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.comment")
 @Deploy("org.nuxeo.ecm.platform.notification.api")
@@ -128,17 +125,9 @@ public class TestCommentsMigrator {
     @Inject
     protected NotificationManager notificationManager;
 
-    @Inject
-    LogCaptureFeature.Result logCaptureResult;
-
-    @Inject
-    protected LogFeature logFeature;
-
     protected DocumentModel firstFileToComment;
 
     protected DocumentModel secondFileToComment;
-
-    protected DocumentModel thirdFileToComment;
 
     protected DocumentModel proxyFileToComment;
 
@@ -166,9 +155,6 @@ public class TestCommentsMigrator {
         secondFileToComment = session.createDocumentModel(domain.getPathAsString(), "file2", "File");
         secondFileToComment = session.createDocument(secondFileToComment);
 
-        thirdFileToComment = session.createDocumentModel(domain.getPathAsString(), "file3", "File");
-        thirdFileToComment = session.createDocument(thirdFileToComment);
-
         // Create a proxy file
         proxyFileToComment = session.createProxy(secondFileToComment.getRef(), anotherDomain.getRef());
     }
@@ -183,37 +169,14 @@ public class TestCommentsMigrator {
     }
 
     @Test
-    @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testMigrationFromPropertyToSecure() {
-        logFeature.hideWarningFromConsoleLog();
+        // Create comments as property on these files and add some reply
+        // Total of comments:
+        // NB_COMMENTS_BY_FILE*3 (files) + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
+        createCommentsAsProperty();
 
-        try {
-            // Create comments as property on these files and add some reply
-            // Total of comments:
-            // NB_COMMENTS_BY_FILE*3 (files) + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
-            createCommentsAsProperty();
-
-            // Second step of migrate: from 'Property' to 'Secured'
-            migrateFromPropertyToSecured(new CommentsMigrator());
-
-            List<LogEvent> events = logCaptureResult.getCaughtEvents();
-            assertEquals(NB_COMMENTS_BY_FILE, events.size());
-
-            PropertyCommentManager propertyCommentManager = new PropertyCommentManager();
-            List<DocumentRef> commentsOfThirdFile = propertyCommentManager.getComments(session, thirdFileToComment)
-                                                                          .stream()
-                                                                          .map(DocumentModel::getRef)
-                                                                          .collect(Collectors.toList());
-            List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
-            for (DocumentRef documentRef : commentsOfThirdFile) {
-                String message = String.format(
-                        "The comment document model with IdRef: %s cannot be migrated, because his 'comment:parentId' is not defined",
-                        documentRef);
-                assertTrue(caughtEventMessages.contains(message));
-            }
-        } finally {
-            logFeature.restoreConsoleLog();
-        }
+        // Second step of migrate: from 'Property' to 'Secured'
+        migrateFromPropertyToSecured(new CommentsMigrator());
     }
 
     @Test
@@ -371,13 +334,12 @@ public class TestCommentsMigrator {
 
         List<String> expectedLines = Arrays.asList( //
                 "Initializing: 0/-1", //
-                "Migrating comments from Property to Secured: 1/250", //
-                "Migrating comments from Property to Secured: 51/250", //
-                "Migrating comments from Property to Secured: 101/250", //
-                "Migrating comments from Property to Secured: 151/250", //
-                "Migrating comments from Property to Secured: 201/250", //
-                "Migrating comments from Property to Secured: 250/250", //
-                "Done Migrating from Property to Secured: 250/250");
+                "Migrating comments from Property to Secured: 1/200", //
+                "Migrating comments from Property to Secured: 51/200", //
+                "Migrating comments from Property to Secured: 101/200", //
+                "Migrating comments from Property to Secured: 151/200", //
+                "Migrating comments from Property to Secured: 200/200", //
+                "Done Migrating from Property to Secured: 200/200");
         assertEquals(expectedLines, migrationContext.getProgressLines());
 
         // Check that the comments folder are correctly created
@@ -472,17 +434,6 @@ public class TestCommentsMigrator {
 
             notificationManager.addSubscription(principal.getName(), "notification_proxy" + i, createdComment, FALSE,
                     principal, "notification_proxy" + i);
-        }
-
-        // Add comments without comment:parentId
-        if (commentManager instanceof PropertyCommentManager) {
-            for (int i = 0; i < NB_COMMENTS_BY_FILE ; i++) {
-                DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
-                DocumentModel createdComment = commentManager.createComment(thirdFileToComment, comment);
-                notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
-                        principal, "notification" + i);
-            }
-
         }
 
         transactionalFeature.nextTransaction();
