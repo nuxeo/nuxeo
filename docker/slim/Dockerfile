@@ -43,8 +43,8 @@ COPY --from=builder /distrib $NUXEO_HOME
 
 # Work around missing support for --chown flag with COPY instruction in Kaniko
 # TODO NXP-28052: remove and use COPY --chown when fixed in Kaniko, or find a proper way
-RUN chown -R 1000:0 $NUXEO_HOME \
+RUN chown -R 900:0 $NUXEO_HOME \
   && chmod -R g+rwX $NUXEO_HOME
 
 # Run as a non root user with a fixed UID
-USER 1000
+USER 900

@@ -33,8 +33,8 @@ from the nuxeo/builder image, using a multi-stage build as in the following Dock
 FROM nuxeo/builder:VERSION as builder
 
 FROM nuxeo/base:VERSION
-COPY --from=builder --chown=1000:0 /distrib NUXEO_HOME
-USER 1000
+COPY --from=builder --chown=900:0 /distrib NUXEO_HOME
+USER 900
 EOF
     exit 0
   fi
