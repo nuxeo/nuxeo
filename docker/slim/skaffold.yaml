@@ -18,29 +18,22 @@ build:
     envTemplate:
       template: "{{.DOCKER_REGISTRY}}/{{.ORG}}/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
-    - image: builder
-      context: docker/builder
+    - image: nuxeo
+      context: docker/slim
       kaniko:
         dockerfile: Dockerfile
         buildContext:
           localDir: {}
+        buildArgs:
+          BUILDER_IMAGE: ${DOCKER_REGISTRY}/${ORG}/builder:${VERSION}
+          BASE_IMAGE: ${DOCKER_REGISTRY}/${ORG}/base:${VERSION}
         flags:
           - --insecure
           - --insecure-pull
           - --insecure-registry=${DOCKER_REGISTRY}
         cache:
-          repo: ${DOCKER_REGISTRY}/${ORG}/builder/cache
-    - image: base
-      context: docker/base
-      kaniko:
-        dockerfile: Dockerfile
-        buildContext:
-          localDir: {}
-        flags:
-          - --insecure
-          - --insecure-pull
-          - --insecure-registry=${DOCKER_REGISTRY}
-        cache:
-          repo: ${DOCKER_REGISTRY}/${ORG}/base/cache
+          repo: ${DOCKER_REGISTRY}/${ORG}/slim/cache
   cluster:
     namespace: platform
+    dockerConfig:
+      secretName: jenkins-docker-cfg
