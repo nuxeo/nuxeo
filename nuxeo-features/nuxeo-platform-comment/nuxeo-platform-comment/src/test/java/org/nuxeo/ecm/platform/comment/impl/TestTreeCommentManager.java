@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -30,20 +29,12 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
-import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,7 +43,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -64,35 +54,21 @@ import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 11.1
  */
-@Deploy("org.nuxeo.ecm.automation.core")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/secured-comment-manager-override.xml")
 public class TestTreeCommentManager extends AbstractTestCommentManager {
 
-    public static final String COPY_DOC_NAME = "CopyDoc";
-
-    public static final String ROOT = "/";
-
-    public static final String TARGET_PROPERTY_KEY = "target";
-
-    public static final String NAME_PROPERTY_KEY = "name";
-
-    public static final String SPECIAL_CHILD_DOC_NAME = "Comments";
-
-    public static final String REGULAR_CHILD_DOC_NAME = "regularChildDoc";
-
-    public static final String COMMENT_ROOT_TYPE = "CommentRoot";
-
-    public static final String FILE = "File";
-
-    public static final String COMMENT_TEXT = "some text for this comment";
-
-    @Inject
-    protected AutomationService automationService;
+    @Before
+    public void before() {
+        // Until the development of NXP-27683 and to test the whole service just provide the implementation
+        // actually to get the CommentManager implementation we rely on CommentService#getAdapter and
+        // CommentService#recomputeCommentManager
+        // which will use the migration state to provide the correct service, from NXP-27683 the TreeCommentManager will
+        // be the default one
+        super.commentManager = new TreeCommentManager();
+    }
 
     @Test
     public void shouldThrowExceptionWhenGettingUnExistingComment() {
@@ -452,81 +428,6 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         }
     }
 
-    @Test
-    public void testCommentsExcludedFromCopy() throws OperationException {
-        DocumentModel doc = createDocumentModel("anyFile");
-        DocumentModel doc2 = createDocumentModel("anyFile");
-
-        DocumentModel regularChildDoc = session.createDocumentModel(doc.getPathAsString(), REGULAR_CHILD_DOC_NAME,
-                FILE);
-        session.createDocument(regularChildDoc);
-
-        Comment commentToCreate = createSampleComment(doc.getId());
-        createAndCheckComment(session, doc, commentToCreate, 1);
-
-        Comment commentToCreate2 = createSampleComment(doc2.getId());
-        createAndCheckComment(session, doc2, commentToCreate2, 1);
-
-        DocumentModelList children = session.getChildren(doc.getRef());
-        assertEquals(2, children.size());
-
-        try (OperationContext context = new OperationContext(session)) {
-            context.setInput(doc);
-            Map<String, Serializable> params = new HashMap<>();
-            params.put(TARGET_PROPERTY_KEY, ROOT);
-            params.put(NAME_PROPERTY_KEY, COPY_DOC_NAME);
-            DocumentModel result = (DocumentModel) automationService.run(context, CopyDocument.ID, params);
-            result = session.getDocument(result.getRef());
-            assertNotEquals(doc.getId(), result.getId());
-            assertEquals(COPY_DOC_NAME, result.getName());
-            children = session.getChildren(result.getRef());
-            // special children shall not be copied
-            assertEquals(1, children.size());
-            DocumentModel copiedRegularChild = children.get(0);
-            assertEquals(REGULAR_CHILD_DOC_NAME, copiedRegularChild.getName());
-            assertNotEquals(regularChildDoc.getRef(), copiedRegularChild.getRef());
-        }
-    }
-
-    @Test
-    public void testCommentsWithCheckInAndRestore() {
-        DocumentModel doc = createDocumentModel("anyFile");
-        DocumentModel doc2 = createDocumentModel("anyFile");
-
-        DocumentModel regularChildDoc = session.createDocumentModel(doc.getPathAsString(), REGULAR_CHILD_DOC_NAME,
-                FILE);
-        session.createDocument(regularChildDoc);
-
-        Comment commentToCreate = createSampleComment(doc.getId());
-        createAndCheckComment(session, doc, commentToCreate, 1);
-
-        Comment commentToCreate2 = createSampleComment(doc2.getId());
-        createAndCheckComment(session, doc2, commentToCreate2, 1);
-
-        DocumentModelList children = session.getChildren(doc.getRef());
-        assertEquals(2, children.size());
-
-        // test checkin copy, only special children shall be copied
-        DocumentRef checkedIn = doc.checkIn(VersioningOption.MAJOR, "JustForFun");
-        children = session.getChildren(checkedIn);
-        assertEquals(1, children.totalSize());
-        DocumentModel versionedChild = children.get(0);
-        assertEquals(COMMENT_ROOT_TYPE, versionedChild.getType());
-        assertEquals(SPECIAL_CHILD_DOC_NAME, versionedChild.getName());
-        assertNotEquals(regularChildDoc.getRef(), versionedChild.getRef());
-        children = session.getChildren(versionedChild.getRef());
-        // Check the snapshot comment
-        assertEquals(1, children.totalSize());
-        Comment retrievedComment = commentManager.getComment(session, children.get(0).getId());
-        assertEquals(COMMENT_TEXT, retrievedComment.getText());
-
-        // test restore copy. Live document shall keep both special and regular children.
-        // No version children shall be added during restore
-        DocumentModel restored = session.restoreToVersion(doc.getRef(), checkedIn);
-        children = session.getChildren(restored.getRef());
-        assertEquals(2, children.totalSize());
-    }
-
     /**
      * Creates a new comment and check his data {@link #verifyCommonsInfo(DocumentModel, Comment, Comment, int)}
      *
@@ -568,7 +469,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         Comment comment = new CommentImpl();
         comment.setParentId(parentId);
         comment.setAuthor(session.getPrincipal().getName());
-        comment.setText(COMMENT_TEXT);
+        comment.setText("some text for this comment");
         comment.setCreationDate(Instant.now());
 
         return comment;
