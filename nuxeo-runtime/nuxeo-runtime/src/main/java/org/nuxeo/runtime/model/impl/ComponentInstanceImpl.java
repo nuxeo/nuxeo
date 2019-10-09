@@ -87,7 +87,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         Object object;
         try {
             object = ri.getContext().loadClass(ri.getImplementation()).getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException | LinkageError e) {
             throw new RuntimeServiceException(e);
         }
         if (object instanceof Component) {
