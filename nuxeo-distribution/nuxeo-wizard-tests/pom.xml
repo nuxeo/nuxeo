@@ -12,6 +12,7 @@
   <description>WebDriver tests on Nuxeo Startup Wizard</description>
 
   <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
     <connect.password>setTheValueInYourSettings</connect.password>
   </properties>
 

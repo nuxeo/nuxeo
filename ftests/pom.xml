@@ -12,6 +12,10 @@
   <packaging>pom</packaging>
   <name>Nuxeo Functional Tests</name>
 
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+
   <modules>
     <module>nuxeo-3d-ftests</module>
     <module>nuxeo-adobe-connector-ftests</module>
