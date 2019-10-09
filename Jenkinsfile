@@ -46,6 +46,52 @@ void runFunctionalTests(String baseDir) {
       echo hudson.Functions.printThrowable(err)
     }
   }
+void dockerPull(String image) {
+  sh "docker pull ${image}"
+}
+
+void dockerRun(String image, String command, String user = null) {
+  String userOption = user ? "--user=${user}" : ''
+  sh "docker run --rm ${userOption} ${image} ${command}"
+}
+
+void dockerTag(String image, String tag) {
+  sh "docker tag ${image} ${tag}"
+}
+
+void dockerPush(String image) {
+  sh "docker push ${image}"
+}
+
+void dockerDeploy(String imageName) {
+  String imageTag = "${ORG}/${imageName}:${VERSION}"
+  String internalImage = "${DOCKER_REGISTRY}/${imageTag}"
+  String publicImage = "${PUBLIC_DOCKER_REGISTRY}/${imageTag}"
+  echo "Push ${publicImage}"
+  dockerPull(internalImage)
+  dockerTag(internalImage, publicImage)
+  dockerPush(publicImage)
+}
+
+/**
+ * Replaces environment variables present in the given yaml file and then runs skaffold build on it.
+ * Needed environment variables are generally:
+ * - DOCKER_REGISTRY
+ * - ORG
+ * - VERSION
+ */
+void skaffoldBuild(String yaml) {
+  sh """
+    envsubst < ${yaml} > ${yaml}~gen
+    skaffold build -f ${yaml}~gen
+  """
+}
+
+void skaffoldBuildAll() {
+  // build builder and base images
+  skaffoldBuild('docker/skaffold.yaml')
+  // build image depending on the builder and base images, waiting for dependent images support in skaffold
+  skaffoldBuild('docker/slim/skaffold.yaml')
 }
 
 pipeline {
@@ -62,7 +108,9 @@ pipeline {
     REDIS_HOST = "${SERVICE_REDIS}.${NAMESPACE_REDIS}.svc.cluster.local"
     SERVICE_ACCOUNT = 'jenkins'
     ORG = 'nuxeo'
-    DOCKER_IMAGE_NAME = 'nuxeo'
+    BUILDER_IMAGE_NAME = 'builder'
+    BASE_IMAGE_NAME = 'base'
+    NUXEO_IMAGE_NAME = 'nuxeo'
   }
   stages {
     stage('Compile') {
@@ -213,94 +261,104 @@ pipeline {
         }
       }
     }
-    stage('Build Docker image') {
+    stage('Build Docker images') {
       steps {
-        setGitHubBuildStatus('platform/docker/build', 'Build Docker image', 'PENDING')
+        setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
         container('maven') {
           withEnv(["VERSION=${getVersion()}"]) {
             echo """
             ----------------------------------------
-            Build Docker image
+            Build Docker images
             ----------------------------------------
             Image tag: ${VERSION}
             """
-            echo "Build and push Docker image to ${DOCKER_REGISTRY}"
-            sh """
-              # Fetch Nuxeo distribution with Maven
-              mvn -B -nsu -T0.8C -f docker/pom.xml process-resources
-              envsubst < docker/skaffold.yaml > docker/skaffold.yaml~gen
-              skaffold build -f docker/skaffold.yaml~gen
-            """
+            echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
+            // Fetch Nuxeo distribution with Maven
+            sh "mvn -B -nsu -f docker/builder/pom.xml process-resources"
+            skaffoldBuildAll()
           }
         }
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker/build', 'Build Docker image', 'SUCCESS')
+          setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker/build', 'Build Docker image', 'FAILURE')
+          setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'FAILURE')
         }
       }
     }
-    stage('Test Docker image') {
+    stage('Test Docker images') {
       steps {
-        setGitHubBuildStatus('platform/docker/test', 'Test Docker image', 'PENDING')
+        setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'PENDING')
         container('maven') {
           withEnv(["VERSION=${getVersion()}"]) {
             echo """
             ----------------------------------------
-            Test Docker image
+            Test Docker images
             ----------------------------------------
             """
-            sh """
-              docker pull ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
+            script {
+              // builder image
+              def image = "${DOCKER_REGISTRY}/${ORG}/${BUILDER_IMAGE_NAME}:${VERSION}"
+              echo "Test ${image}"
+              dockerPull(image)
+              dockerRun(image, 'ls -l /distrib')
+
+              // base image
+              image = "${DOCKER_REGISTRY}/${ORG}/${BASE_IMAGE_NAME}:${VERSION}"
+              echo "Test ${image}"
+              dockerPull(image)
+              dockerRun(image, 'cat /etc/centos-release; java -version')
+
+              // nuxeo image
+              image = "${DOCKER_REGISTRY}/${ORG}/${NUXEO_IMAGE_NAME}:${VERSION}"
+              echo "Test ${image}"
+              dockerPull(image)
               echo 'Run image as root (0)'
-              docker run --rm ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} nuxeoctl start
+              dockerRun(image, 'nuxeoctl start')
               echo 'Run image as an arbitrary user (900)'
-              docker run --user 900 --rm ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} nuxeoctl start
-            """
+              dockerRun(image, 'nuxeoctl start', '900')
+            }
           }
         }
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker/test', 'Test Docker image', 'SUCCESS')
+          setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker/test', 'Test Docker image', 'FAILURE')
+          setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'FAILURE')
         }
       }
     }
-    stage('Deploy Docker image') {
+    stage('Deploy Docker images') {
       when {
         branch 'master'
       }
       steps {
-        setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker image', 'PENDING')
+        setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'PENDING')
         container('maven') {
           withEnv(["VERSION=${getVersion()}"]) {
             echo """
             ----------------------------------------
-            Deploy Docker image
+            Deploy Docker images
             ----------------------------------------
             Image tag: ${VERSION}
             """
-            echo "Push Docker image to ${PUBLIC_DOCKER_REGISTRY}"
-            sh """
-              docker pull ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
-              docker tag ${DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION} ${PUBLIC_DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
-              docker push ${PUBLIC_DOCKER_REGISTRY}/${ORG}/${DOCKER_IMAGE_NAME}:${VERSION}
-            """
+            echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
+            dockerDeploy("${BUILDER_IMAGE_NAME}")
+            dockerDeploy("${BASE_IMAGE_NAME}")
+            dockerDeploy("${NUXEO_IMAGE_NAME}")
           }
         }
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker image', 'SUCCESS')
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker image', 'FAILURE')
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'FAILURE')
         }
       }
     }
