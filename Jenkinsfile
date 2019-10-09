@@ -36,6 +36,18 @@ String getVersion() {
   return BRANCH_NAME == 'master' ? nuxeoVersion : nuxeoVersion + "-${BRANCH_NAME}"
 }
 
+void runFunctionalTests(String baseDir) {
+  try {
+    sh "mvn -B -nsu -f ${baseDir}/pom.xml verify"
+  } finally {
+    try {
+      archiveArtifacts allowEmptyArchive: true, artifacts: "${baseDir}/**/target/failsafe-reports/*, ${baseDir}/**/target/**/*.log, ${baseDir}/**/target/*.png, ${baseDir}/**/target/**/distribution.properties, ${baseDir}/**/target/**/configuration.properties"
+    } catch (err) {
+      echo hudson.Functions.printThrowable(err)
+    }
+  }
+}
+
 pipeline {
   agent {
     label 'jenkins-nuxeo-platform-11'
@@ -157,22 +169,24 @@ pipeline {
           Run "dev" functional tests
           ----------------------------------------"""
           withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
-            echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh "mvn -B -nsu -f nuxeo-distribution/pom.xml verify"
-            sh "mvn -B -nsu -f ftests/pom.xml verify"
+            script {
+              try {
+                echo "MAVEN_OPTS=$MAVEN_OPTS"
+                runFunctionalTests('nuxeo-distribution/nuxeo-server-tests')
+                runFunctionalTests('nuxeo-distribution/nuxeo-server-hotreload-tests')
+                runFunctionalTests('nuxeo-distribution/nuxeo-server-gatling-tests')
+                runFunctionalTests('ftests')
+                setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
+              } catch (err) {
+                setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
+              }
+            }
           }
         }
       }
       post {
         always {
-          archiveArtifacts artifacts: 'nuxeo-distribution/**/target/failsafe-reports/*, nuxeo-distribution/**/target/**/*.log, nuxeo-distribution/**/target/*.png, nuxeo-distribution/**/target/**/distribution.properties, nuxeo-distribution/**/target/**/configuration.properties, ftests/**/target/failsafe-reports/*, ftests/**/target/**/*.log, ftests/**/target/*.png, ftests/**/target/**/distribution.properties, ftests/**/target/**/configuration.properties'
           junit testResults: '**/target/failsafe-reports/*.xml'
-        }
-        success {
-          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
         }
       }
     }
