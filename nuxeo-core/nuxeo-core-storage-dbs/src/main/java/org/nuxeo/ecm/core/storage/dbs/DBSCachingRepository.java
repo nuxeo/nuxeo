@@ -138,7 +138,6 @@ public class DBSCachingRepository implements DBSRepository {
 
     }
 
-    @Override
     public void begin() {
         repository.begin();
         processReceivedInvalidations();

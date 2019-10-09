@@ -539,8 +539,8 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow, boolean excludeSpecialChildren) {
-        CopyResult result = rowMapper.copy(source, destParentId, destName, overwriteRow, excludeSpecialChildren);
+    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow) {
+        CopyResult result = rowMapper.copy(source, destParentId, destName, overwriteRow);
         Invalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {

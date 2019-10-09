@@ -20,7 +20,6 @@
 
 package org.nuxeo.ecm.core.schema;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -43,14 +42,6 @@ public interface TypeProvider {
 
     /** Gets the list of document types. */
     DocumentType[] getDocumentTypes();
-
-    /**
-     * Gets the list of document types excluded from copy.
-     * @since 11.1
-     */
-    default Set<String> getSpecialDocumentTypes() {
-        return Collections.emptySet();
-    }
 
     /** Gets a facet. */
     CompositeType getFacet(String name);

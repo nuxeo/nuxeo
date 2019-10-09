@@ -19,6 +19,8 @@
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.model.VersionNotModifiableException;
@@ -131,6 +133,36 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     @Override
     public void orderBefore(String src, String dest) {
         throw new VersionNotModifiableException();
+    }
+
+    @Override
+    public Document addChild(String name, String typeName) {
+        throw new VersionNotModifiableException();
+    }
+
+    @Override
+    public Document getChild(String name) {
+        throw new DocumentNotFoundException(name);
+    }
+
+    @Override
+    public List<Document> getChildren() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> getChildrenIds() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean hasChild(String name) {
+        return false;
+    }
+
+    @Override
+    public boolean hasChildren() {
+        return false;
     }
 
     /*
