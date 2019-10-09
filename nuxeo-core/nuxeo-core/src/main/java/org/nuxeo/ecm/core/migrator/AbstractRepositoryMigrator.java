@@ -38,19 +38,12 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
     private static final Log log = LogFactory.getLog(AbstractRepositoryMigrator.class);
 
     protected MigrationContext migrationContext;
-    
-    /** @since 11.1 **/
-    protected String step;
 
     protected String probeRepository(String repositoryName) {
         return TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::probeSession));
     }
 
     protected void checkShutdownRequested() {
-        checkShutdownRequested(this.migrationContext);
-    }
-
-    protected void checkShutdownRequested(MigrationContext migrationContext) {
         if (migrationContext.isShutdownRequested()) {
             throw new MigrationShutdownException();
         }
@@ -66,42 +59,20 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
     }
 
     protected void migrateRepository(String repositoryName) {
-        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName,
-                (CoreSession session) -> migrateSession(session)));
-    }
-
-    /**
-     * @since 11.1
-     */
-    protected void migrateRepository(String step, MigrationContext migrationContext, String repositoryName) {
-        migrateRepository(repositoryName);
-    }
-
-    /**
-     * @since 11.1
-     */
-    protected void migrateSession(String step, MigrationContext context, CoreSession session) {
-        migrateSession(session);
-    }
-
-    protected <T> void processBatched(int batchSize, Collection<T> collection, Consumer<T> consumer,
-            String progressMessage) {
-        processBatched(migrationContext, batchSize, collection, consumer, progressMessage);
+        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName, this::migrateSession));
     }
 
     /**
      * Runs a consumer on the collection, committing every BATCH_SIZE elements, reporting progress and checking for
      * shutdown request.
-     * 
-     * @since 11.1
      */
-    protected <T> void processBatched(MigrationContext migrationContext, int batchSize, Collection<T> collection,
-            Consumer<T> consumer, String progressMessage) {
+    protected <T> void processBatched(int batchSize, Collection<T> collection, Consumer<T> consumer,
+            String progressMessage) {
         int size = collection.size();
         int i = -1;
         for (T element : collection) {
             consumer.accept(element);
-            checkShutdownRequested(migrationContext);
+            checkShutdownRequested();
             i++;
             if (i % batchSize == 0 || i == size - 1) {
                 reportProgress(progressMessage, i + 1, size);
@@ -124,5 +95,6 @@ public abstract class AbstractRepositoryMigrator implements Migrator {
             super();
         }
     }
+
 
 }
