@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
-import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -42,7 +41,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +52,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.comment")
 @Deploy("org.nuxeo.ecm.platform.query.api")
-public abstract class AbstractCommentJsonWriterTest extends AbstractJsonWriterTest.External<CommentJsonWriter, Comment> {
+public class CommentJsonWriterTest extends AbstractJsonWriterTest.External<CommentJsonWriter, Comment> {
 
     @Inject
     protected CommentManager commentManager;
@@ -68,9 +66,7 @@ public abstract class AbstractCommentJsonWriterTest extends AbstractJsonWriterTe
 
     protected List<Comment> replies;
 
-    protected abstract Class<? extends CommentManager> getCommentManager();
-
-    public AbstractCommentJsonWriterTest() {
+    public CommentJsonWriterTest() {
         super(CommentJsonWriter.class, Comment.class);
     }
 
@@ -210,11 +206,6 @@ public abstract class AbstractCommentJsonWriterTest extends AbstractJsonWriterTe
         } else {
             json.hasNot("lasReplyDate");
         }
-    }
-
-    @Test
-    public void testUsedCommentManager() {
-        assertEquals(getCommentManager(), commentManager.getClass());
     }
 
 }

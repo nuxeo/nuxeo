@@ -19,11 +19,8 @@
  */
 package org.nuxeo.ecm.platform.comment;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
-import java.util.Calendar;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -31,7 +28,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -39,9 +35,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.Comments;
-import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -121,37 +114,5 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
             comments = commentManager.getComments(userSession, userDoc.getId());
             assertEquals(0, comments.size());
         }
-    }
-
-    @Test
-    public void testCreateLocalComment() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        session.save();
-
-        String author = "toto";
-        String text = "I am a comment !";
-        Comment comment = new CommentImpl();
-        comment.setAuthor(author);
-        comment.setText(text);
-
-        // Create a comment in a specific location
-        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
-        commentModel = session.createDocument(commentModel);
-        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        Comments.commentToDocumentModel(comment, commentModel);
-        commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
-
-        // Check if Comments folder has been created in the given container
-        assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
-
-        assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
-    }
-
-    @Override
-    public Class<? extends CommentManager> getType() {
-        return CommentManagerImpl.class;
     }
 }

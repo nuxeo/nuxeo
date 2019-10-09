@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -92,14 +91,8 @@ public abstract class AbstractCommentManager implements CommentManager {
         return getComments(session, documentId, pageSize, currentPageIndex, true);
     }
 
-    @Override
-    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
-        DocumentRef topLevelDocRef = getTopLevelCommentAncestor(comment.getCoreSession(), comment.getRef());
-        return comment.getCoreSession().getDocument(topLevelDocRef);
-    }
-
     protected void notifyEvent(CoreSession session, String eventType, DocumentModel commentedDoc,
-                               DocumentModel comment) {
+            DocumentModel comment) {
 
         UserManager userManager = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = null;

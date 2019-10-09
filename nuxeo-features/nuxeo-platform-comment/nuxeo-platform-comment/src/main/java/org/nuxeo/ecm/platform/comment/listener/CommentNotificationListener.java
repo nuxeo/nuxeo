@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.comment.listener;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -40,10 +39,9 @@ public class CommentNotificationListener implements NotificationListenerHook {
         if (docCtx.getSourceDocument().getType().equals("Post")
                 || docCtx.getSourceDocument().getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
             CommentManager commentManager = Framework.getService(CommentManager.class);
-            DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(docCtx.getCoreSession(), docCtx.getSourceDocument().getRef());
-
-            if (topLevelCommentAncestor != null) {
-                Object[] args = { docCtx.getCoreSession().getDocument(topLevelCommentAncestor), null };
+            DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
+            if (thread != null) {
+                Object[] args = { thread, null };
                 docCtx.setArgs(args);
             }
         }

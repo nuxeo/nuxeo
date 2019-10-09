@@ -35,14 +35,6 @@
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
-    <coreQueryPageProvider name="GET_COMMENTS_FOR_DOCUMENT_BY_ECM_PARENT">
-      <pattern>
-        SELECT * FROM Comment WHERE ecm:parentId = ?
-      </pattern>
-      <pageSize>0</pageSize>
-      <maxPageSize>0</maxPageSize>
-    </coreQueryPageProvider>
-
   </extension>
 
 </component>
