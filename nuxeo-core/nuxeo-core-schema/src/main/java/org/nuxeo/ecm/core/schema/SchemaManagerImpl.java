@@ -37,9 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -120,8 +118,6 @@ public class SchemaManagerImpl implements SchemaManager {
 
     /** Effective document types. */
     protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<>();
-
-    protected Set<String> specialDocumentTypes = new HashSet<>();
 
     protected Map<String, Set<String>> documentTypesExtending = new HashMap<>();
 
@@ -580,11 +576,6 @@ public class SchemaManagerImpl implements SchemaManager {
             }
         }
 
-        // special document types (excluded from copy)
-        specialDocumentTypes = dtds.values().stream()
-                                               .filter(d -> Boolean.TRUE.equals(d.special))
-                                               .map(d -> d.name)
-                                               .collect(Collectors.toSet());
     }
 
     protected DocumentTypeDescriptor mergeDocumentTypeDescriptors(DocumentTypeDescriptor src,
@@ -1008,11 +999,5 @@ public class SchemaManagerImpl implements SchemaManager {
         // remove prefix if exist, then
         // remove index from path - we're only interested in sth/index/sth because we can't add info on sth/* property
         return path.substring(path.lastIndexOf(':') + 1).replaceAll("/-?\\d+/", "/*/");
-    }
-
-    @Override
-    public Set<String> getSpecialDocumentTypes() {
-        checkDirty();
-        return specialDocumentTypes;
     }
 }

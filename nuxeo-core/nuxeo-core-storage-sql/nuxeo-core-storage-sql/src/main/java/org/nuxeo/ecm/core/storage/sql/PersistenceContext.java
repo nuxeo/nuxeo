@@ -39,6 +39,7 @@ import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
@@ -1485,9 +1486,7 @@ public class PersistenceContext {
         checkFreeName(parentId, name, complexProp(hierFragment));
         // do the copy
         Long pos = getNextPos(parentId, false);
-        // no special children (comments, annotations...) kept on document copy
-        boolean excludeSpecialChildren = true;
-        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null, excludeSpecialChildren);
+        CopyResult copyResult = mapper.copy(new IdWithTypes(source), parentId, name, null);
         Serializable newId = copyResult.copyId;
         // read new child in this session (updates children Selection)
         SimpleFragment copy = getHier(newId, false);
@@ -1544,9 +1543,7 @@ public class PersistenceContext {
          * Do the copy without non-complex children, with null parent.
          */
         Serializable id = node.getId();
-        // complex (special) children are snapshot when checking in
-        boolean excludeSpecialChildren = false;
-        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null, excludeSpecialChildren);
+        CopyResult res = mapper.copy(new IdWithTypes(node), null, null, null);
         Serializable newId = res.copyId;
         markInvalidated(res.invalidations);
         // add version as a new child of its parent
@@ -1623,10 +1620,7 @@ public class PersistenceContext {
         overwriteRow.putNew(Model.MAIN_CHECKED_IN_KEY, Boolean.TRUE);
         overwriteRow.putNew(Model.MAIN_BASE_VERSION_KEY, versionId);
         overwriteRow.putNew(Model.MAIN_IS_VERSION_KEY, null);
-        // exclude special children to avoid duplicates on restore
-        boolean excludeSpecialChildren = true;
-        CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow,
-                excludeSpecialChildren);
+        CopyResult res = mapper.copy(new IdWithTypes(version), node.getParentId(), null, overwriteRow);
         markInvalidated(res.invalidations);
     }
 

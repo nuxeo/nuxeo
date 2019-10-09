@@ -77,14 +77,6 @@
       <schema name="dublincore" />
       <facet name="Aged" />
     </doctype>
-    <doctype name="SpecialFolder" extends="Folder" special="true">
-      <facet name="HiddenInNavigation" />
-      <facet name="HiddenInCreation" />
-      <subtypes>
-        <type>Folder</type>
-        <type>HiddenFolder</type>
-      </subtypes>
-    </doctype>
     <proxies>
       <schema name="info"/>
     </proxies>
