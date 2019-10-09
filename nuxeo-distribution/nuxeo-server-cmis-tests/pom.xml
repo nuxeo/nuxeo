@@ -13,6 +13,10 @@
   <name>Nuxeo Server CMIS Tests</name>
   <description>CMIS tests on Nuxeo Server</description>
 
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>

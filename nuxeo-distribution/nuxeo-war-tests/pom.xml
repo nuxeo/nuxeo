@@ -10,6 +10,10 @@
   <artifactId>nuxeo-war-tests</artifactId>
   <name>Functional [WebDriver] tests on Nuxeo (static) WAR</name>
 
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

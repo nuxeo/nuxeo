@@ -11,6 +11,10 @@
   <name>Nuxeo Server Tests</name>
   <description>Functional tests on Nuxeo Server</description>
 
+  <properties>
+    <maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
