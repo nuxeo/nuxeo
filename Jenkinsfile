@@ -317,8 +317,8 @@ pipeline {
               dockerPull(image)
               echo 'Run image as root (0)'
               dockerRun(image, 'nuxeoctl start')
-              echo 'Run image as an arbitrary user (900)'
-              dockerRun(image, 'nuxeoctl start', '900')
+              echo 'Run image as an arbitrary user (800)'
+              dockerRun(image, 'nuxeoctl start', '800')
             }
           }
         }

@@ -2,7 +2,7 @@
 #
 # Based on CentOS 7, it includes:
 # - OpenJDK.
-# - A nuxeo user with the 1000 fixed UID.
+# - A nuxeo user with the 900 fixed UID.
 # - The directories required to have the configuration, data and logs outside of the server directory, with appropriate permissions.
 # - An entrypoint script to configure the server.
 # - The default recommended volumes.
@@ -18,8 +18,8 @@
 #
 # FROM nuxeo/base:VERSION
 # RUN yum -y install ...
-# COPY --from=builder --chown=1000:0 /distrib $NUXEO_HOME
-# USER 1000
+# COPY --from=builder --chown=900:0 /distrib $NUXEO_HOME
+# USER 900
 
 FROM centos:7
 LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
@@ -40,7 +40,7 @@ RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 
 # Add a nuxeo user with a fixed UID
 ENV NUXEO_USER nuxeo
-RUN useradd -m -d /home/$NUXEO_USER -u 1000 -s /bin/bash $NUXEO_USER
+RUN useradd -m -d /home/$NUXEO_USER -u 900 -s /bin/bash $NUXEO_USER
 
 ENV NUXEO_HOME /opt/nuxeo/server
 
@@ -48,15 +48,15 @@ ENV NUXEO_HOME /opt/nuxeo/server
 # These directories must be owned by the root group and be readable/writable by that group.
 # See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
 RUN mkdir -p $NUXEO_HOME \
-  && chown 1000:0 $NUXEO_HOME && chmod g+rwX $NUXEO_HOME \
+  && chown 900:0 $NUXEO_HOME && chmod g+rwX $NUXEO_HOME \
   && mkdir -p /etc/nuxeo \
-  && chown 1000:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo \
+  && chown 900:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo \
   && mkdir -p /var/lib/nuxeo/data \
-  && chown 1000:0 /var/lib/nuxeo/data && chmod g+rwX /var/lib/nuxeo/data \
+  && chown 900:0 /var/lib/nuxeo/data && chmod g+rwX /var/lib/nuxeo/data \
   && mkdir -p /var/log/nuxeo \
-  && chown  1000:0 /var/log/nuxeo && chmod g+rwX /var/log/nuxeo \
+  && chown  900:0 /var/log/nuxeo && chmod g+rwX /var/log/nuxeo \
   && mkdir -p /var/pid/nuxeo \
-  && chown 1000:0 /var/pid/nuxeo && chmod g+rwX /var/pid/nuxeo \
+  && chown 900:0 /var/pid/nuxeo && chmod g+rwX /var/pid/nuxeo \
   && chmod g=u /etc/passwd
 
 COPY docker-entrypoint.sh /
