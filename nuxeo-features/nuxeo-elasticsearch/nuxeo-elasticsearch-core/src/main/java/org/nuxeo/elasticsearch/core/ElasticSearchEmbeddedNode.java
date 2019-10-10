@@ -67,6 +67,7 @@ public class ElasticSearchEmbeddedNode implements Closeable {
                .put("path.data", config.getDataPath())
                .put("cluster.name", config.getClusterName())
                .put("node.name", config.getNodeName())
+               .put("discovery.type", "single-node")
                .put("http.netty.worker_count", 4)
                .put("http.cors.enabled", true)
                .put("http.cors.allow-origin", "*")
