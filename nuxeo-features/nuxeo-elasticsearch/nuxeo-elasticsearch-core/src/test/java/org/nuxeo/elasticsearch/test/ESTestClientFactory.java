@@ -18,8 +18,6 @@
  */
 package org.nuxeo.elasticsearch.test;
 
-import java.util.Random;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.elasticsearch.api.ESClient;
@@ -49,8 +47,6 @@ public class ESTestClientFactory implements ESClientFactory {
 
     private static final Log log = LogFactory.getLog(ESTestClientFactory.class);
 
-    protected Random random = new Random();
-
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
         // we don't use the provided config for the client
@@ -68,29 +64,47 @@ public class ESTestClientFactory implements ESClientFactory {
     protected ESClient createTransportClient(ElasticSearchEmbeddedNode node) {
         ESTransportClientFactory factory = new ESTransportClientFactory();
         ElasticSearchClientConfig config = new ElasticSearchClientConfig();
+        String addressList = System.getProperty(ADDRESS_LIST_PROPERTY);
         addOptions(config);
-        log.info("Using Elasticsearch TransportClient");
-        System.out.println("ElasticSearchClient: TransportClient");
-        return factory.create(node, config);
+        if (addressList == null) {
+            infoMessage("ElasticSearchClient: TransportClient");
+            return factory.create(node, config);
+        } else {
+            infoMessage("ElasticSearchClient: TransportClient on " + addressList);
+            return factory.create(null, config);
+        }
+    }
+
+    protected void infoMessage(String message) {
+        System.out.println(message);
+        log.info(message);
     }
 
     protected ESClient createRestClient(ElasticSearchEmbeddedNode node) {
         ESRestClientFactory factory = new ESRestClientFactory();
         ElasticSearchClientConfig config = new ElasticSearchClientConfig();
+        String addressList = System.getProperty(ADDRESS_LIST_PROPERTY);
         addOptions(config);
-        log.info("Using Elasticsearch RestClient");
-        System.out.println("ElasticSearchClient: RestClient");
-        return factory.create(node, config);
+        if (addressList == null) {
+            infoMessage("ElasticSearchClient: RestClient");
+            return factory.create(node, config);
+        } else {
+            infoMessage("ElasticSearchClient: RestClient on " + addressList);
+            return factory.create(null, config);
+        }
     }
 
     protected void addOptions(ElasticSearchClientConfig config) {
-        String addressList = System.getProperty(ADDRESS_LIST_PROPERTY, "localhost:9300");
+        String addressList = System.getProperty(ADDRESS_LIST_PROPERTY);
         if (addressList != null) {
             config.options.put("addressList", addressList);
         }
         String clusterName = System.getProperty(CLUSTER_NAME_PROPERTY);
         if (clusterName != null) {
             config.options.put("clusterName", clusterName);
+            if (addressList == null) {
+                config.options.put("addressList", "localhost:9300");
+            }
         }
     }
 }
