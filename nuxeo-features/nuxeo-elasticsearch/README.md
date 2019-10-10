@@ -14,6 +14,39 @@ To build and run the tests, simply start the Maven build:
 
     mvn clean install
 
+## Running tests
+
+### Using the embedded Elasticsearch
+
+With the default `RestClient`:
+```bash
+mvn -nsu test
+# -Dnuxeo.test.elasticsearch.client=RestClient is set by default
+```
+
+Or with the `TransportClient`
+
+```bash
+mvn -nsu test -Dnuxeo.test.elasticsearch.client=TransportClient
+```
+
+### Using an external Elasticsearch
+
+1. Start an Elasticsearch using docker:
+```bash
+docker run -p 9400:9200 -p 9600:9300 docker.elastic.co/elasticsearch/elasticsearch-oss:6.5.3
+```
+
+2.a Run the test with `RestClient`:
+```bash
+mvn -nsu test -Dnuxeo.test.elasticsearch.addressList=http://localhost:9400
+```
+
+2.b Or run the test with `TransportClient`:
+```bash
+mvn -nsu test -Dnuxeo.test.elasticsearch.client=TransportClient -Dnuxeo.test.elasticsearch.clusterName=docker-cluster -Dnuxeo.test.elasticsearch.addressList=localhost:9600
+```
+
 ## Links
 
 - Administration: http://doc.nuxeo.com/x/UBY5AQ
