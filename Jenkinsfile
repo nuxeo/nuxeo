@@ -46,6 +46,8 @@ void runFunctionalTests(String baseDir) {
       echo hudson.Functions.printThrowable(err)
     }
   }
+}
+
 void dockerPull(String image) {
   sh "docker pull ${image}"
 }
