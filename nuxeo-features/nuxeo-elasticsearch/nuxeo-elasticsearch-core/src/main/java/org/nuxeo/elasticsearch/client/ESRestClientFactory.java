@@ -27,6 +27,7 @@ import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +41,8 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.http.HttpServerTransport;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
@@ -102,18 +105,39 @@ public class ESRestClientFactory implements ESClientFactory {
     @Override
     public ESClient create(ElasticSearchEmbeddedNode node, ElasticSearchClientConfig config) {
         if (node != null) {
-            return createLocalRestClient(node.getConfig());
+            return createLocalRestClient(node);
         }
         return createRestClient(config);
     }
 
+    /**
+     * @deprecated since 10.10-HF16, use {@link #createLocalRestClient(ElasticSearchEmbeddedNode)} instead
+     */
+    @Deprecated
     protected ESClient createLocalRestClient(ElasticSearchEmbeddedServerConfig serverConfig) {
         if (!serverConfig.httpEnabled()) {
             throw new IllegalArgumentException(
                     "Embedded configuration has no HTTP port enable, use TransportClient instead of Rest");
         }
         RestClientBuilder lowLevelRestClientBuilder = RestClient.builder(
-                new HttpHost("localhost", Integer.parseInt(serverConfig.getHttpPort())));
+        new HttpHost("localhost", Integer.parseInt(serverConfig.getHttpPort())));
+        RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClientBuilder); // NOSONAR (factory)
+        // checkConnection(client);
+        return new ESRestClient(client.getLowLevelClient(), client);
+    }
+
+    protected ESClient createLocalRestClient(ElasticSearchEmbeddedNode node) {
+        if (!node.getConfig().httpEnabled()) {
+            throw new IllegalArgumentException(
+                    "Embedded configuration has no HTTP port enable, use TransportClient instead of Rest");
+        }
+        HttpServerTransport http = node.getNode().injector().getInstance(HttpServerTransport.class);
+        TransportAddress[] addresses = http.boundAddress().boundAddresses();
+        if (ArrayUtils.isEmpty(addresses)) {
+            throw new IllegalStateException("Embedded node did not bind any address");
+        }
+        int port = addresses[0].getPort();
+        RestClientBuilder lowLevelRestClientBuilder = RestClient.builder(new HttpHost("localhost", port));
         RestHighLevelClient client = new RestHighLevelClient(lowLevelRestClientBuilder); // NOSONAR (factory)
         // checkConnection(client);
         return new ESRestClient(client.getLowLevelClient(), client);
