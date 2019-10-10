@@ -101,19 +101,19 @@ public class TestManageAliasAndWriteAlias {
         assertEquals("test", repo);
 
         String alias = esa.getIndexNameForRepository(repo);
-        assertEquals("nxutest", alias);
+        assertEquals("nxutestalias", alias);
 
         assertTrue("Expecting an alias", esa.getClient().aliasExists(alias));
 
         String writeAlias = esa.getWriteIndexName(alias);
-        assertEquals("nxutest-write", writeAlias);
+        assertEquals("nxutestalias-write", writeAlias);
         assertTrue("Expecting an alias", esa.getClient().aliasExists(writeAlias));
 
         String searchIndex = esa.getClient().getFirstIndexForAlias(alias);
         String writeIndex = esa.getClient().getFirstIndexForAlias(writeAlias);
         assertEquals(searchIndex, writeIndex);
         assertTrue("Expecting an index", esa.getClient().indexExists(searchIndex));
-        assertTrue(writeIndex, writeIndex.startsWith("nxutest-0"));
+        assertTrue(writeIndex, writeIndex.startsWith("nxutestalias-0"));
         assertTrue(esa.getClient().mappingExists(alias, ElasticSearchConstants.DOC_TYPE));
         assertEquals(repo, esa.getRepositoryForIndex(searchIndex));
         // recreate repo the alias are in sync
@@ -124,7 +124,7 @@ public class TestManageAliasAndWriteAlias {
         assertEquals(newIndex, esa.getClient().getFirstIndexForAlias(alias));
         assertEquals(newIndex, esa.getClient().getFirstIndexForAlias(writeAlias));
         // same alias
-        assertEquals("nxutest-write", writeAlias);
+        assertEquals("nxutestalias-write", writeAlias);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class TestManageAliasAndWriteAlias {
         assertEquals("test", repo);
 
         String searchIndex = esa.getIndexNameForRepository(repo);
-        assertEquals("nxutest", searchIndex);
+        assertEquals("nxutestalias", searchIndex);
 
         String writeIndex = esa.getWriteIndexName(searchIndex);
         assertEquals("i-manage-my-alias-alone", writeIndex);
