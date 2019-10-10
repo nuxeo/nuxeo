@@ -43,10 +43,7 @@ public class TestESRestClient extends TestESClient {
 
     @Override
     public ESClient createClient(ElasticSearchEmbeddedNode embeddedNode) {
-        ElasticSearchEmbeddedServerConfig config = new ElasticSearchEmbeddedServerConfig();
-        config.setHttpEnabled(true);
-        ElasticSearchEmbeddedNode node = new ElasticSearchEmbeddedNode(config);
-        return factory.create(node, new ElasticSearchClientConfig());
+        return factory.create(embeddedNode, new ElasticSearchClientConfig());
     }
 
     @Test(expected = IllegalArgumentException.class)

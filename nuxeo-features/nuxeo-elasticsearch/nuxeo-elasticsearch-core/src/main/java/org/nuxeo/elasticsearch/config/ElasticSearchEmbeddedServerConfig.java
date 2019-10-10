@@ -58,7 +58,7 @@ public class ElasticSearchEmbeddedServerConfig implements Serializable {
     protected boolean httpEnabled = false;
 
     @XNode("@httpPort")
-    protected String httpPort = "9200";
+    protected String httpPort = "9200-9300";
 
     @XNode("@networkHost")
     protected String networkHost = "127.0.0.1";
