@@ -567,7 +567,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (options == null) {
             options = new HashMap<>();
         }
-        options.put(CoreEventConstants.OLD_ACP, docModel.getACP().clone());
+        ACP oldAcp = docModel.getACP();
+        if (oldAcp != null) {
+            options.put(CoreEventConstants.OLD_ACP, oldAcp.clone());
+        }
         options.put(CoreEventConstants.NEW_ACP, newAcp);
 
         notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel, options, null, null, true, true);
