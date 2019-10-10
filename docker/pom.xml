@@ -17,6 +17,7 @@
   <modules>
     <module>base</module>
     <module>builder</module>
+    <module>builder-platform</module>
     <module>slim</module>
   </modules>
 
@@ -31,6 +32,12 @@
       <dependency>
         <groupId>org.nuxeo.docker</groupId>
         <artifactId>nuxeo-builder-docker-image</artifactId>
+        <classifier>docker-info</classifier>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.docker</groupId>
+        <artifactId>nuxeo-builder-platform-docker-image</artifactId>
         <classifier>docker-info</classifier>
         <version>${nuxeo.platform.version}</version>
       </dependency>

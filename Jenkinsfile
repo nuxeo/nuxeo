@@ -90,8 +90,9 @@ void skaffoldBuild(String yaml) {
 void skaffoldBuildAll() {
   // build builder and base images
   skaffoldBuild('docker/skaffold.yaml')
-  // build image depending on the builder and base images, waiting for dependent images support in skaffold
+  // build images depending on the builder and/or base images, waiting for dependent images support in skaffold
   skaffoldBuild('docker/slim/skaffold.yaml')
+  skaffoldBuild('docker/builder-platform/skaffold.yaml')
 }
 
 pipeline {
