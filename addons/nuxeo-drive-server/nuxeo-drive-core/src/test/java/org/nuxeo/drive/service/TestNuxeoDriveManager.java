@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -664,6 +665,9 @@ public class TestNuxeoDriveManager {
 
     protected void setPermissions(DocumentModel doc, ACE... aces) {
         ACP acp = session.getACP(doc.getRef());
+        if (acp == null) {
+            acp = new ACPImpl();
+        }
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (int i = 0; i < aces.length; i++) {
             localACL.add(i, aces[i]);
