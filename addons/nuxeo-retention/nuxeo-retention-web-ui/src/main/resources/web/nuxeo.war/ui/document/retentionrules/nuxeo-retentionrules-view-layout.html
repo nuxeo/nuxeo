@@ -1,0 +1,237 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-retentionrules-view-layout`
+@group Nuxeo UI
+@element nuxeo-retentionrules-view-layout
+-->
+<dom-module id="nuxeo-retentionrules-view-layout">
+
+  <template>
+
+    <style include="nuxeo-styles">
+      :host {
+        display: block;
+      }
+
+      .results {
+        @apply --layout-vertical;
+        @apply --layout-flex;
+        min-height: var(--nuxeo-document-content-min-height, calc(100vh - 216px - var(--nuxeo-app-top)));
+        margin-bottom: var(--nuxeo-document-content-margin-bottom, 0);
+      }
+
+      .results.dragging {
+        border: 2px dashed var(--nuxeo-primary-color);
+      }
+
+      .ellipsis {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        display: block;
+        width: calc(100% - 38px);
+      }
+
+      .capitalize {
+        text-transform: capitalize;
+      }
+
+      nuxeo-tag {
+        margin-right: 2px;
+      }
+    </style>
+
+    <nuxeo-connection id="nxcon"></nuxeo-connection>
+
+    <nuxeo-page-provider id="nxProvider"
+                         provider="[[provider]]"
+                         page-size="[[pageSize]]"
+                         aggregations="{{aggregations}}"
+                         enrichers="[[enrichers]]"
+                         params="[[params]]"
+                         schemas="[[schemas]]"
+                         headers="[[headers]]"
+                         fetch-aggregates>
+    </nuxeo-page-provider>
+
+    <nuxeo-results id="results"
+                   display-mode="table"
+                   name="[[document.uid]]"
+                   nx-provider="[[nxProvider]]"
+                   selected-items="{{selectedItems}}"
+                   document="[[document]]">
+
+      <!-- Table view -->
+      <nuxeo-data-table name="table" icon="nuxeo:view-list"
+                        class="results"
+                        settings-enabled
+                        empty-label="[[i18n('retention.rule.emptyRules')]]"
+                        empty-label-when-filtered="[[i18n('retention.rule.emptyRules')]]"
+                        selection-enabled
+                        on-row-clicked="_navigate"
+                        draggable$="[[_hasWritePermission(document)]]" drop-target-filter="[[_dropTargetFilter]]">
+        <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.title')]]"
+                                 field="dc:title" filter-by="title"  flex="100">
+          <template>
+            <nuxeo-document-thumbnail document="[[item]]"></nuxeo-document-thumbnail>
+            <a class="title ellipsis" href$="[[urlFor('browse', item.path)]]" on-tap="_navigate">[[item.title]]</a>
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.modified')]]"
+                                 field="dc:modified"
+                                 hidden
+                                 filter-by="dc_modified_agg"
+                                 flex="50">
+          <template is="header">
+            <nuxeo-dropdown-aggregation
+              placeholder="[[i18n('documentContentView.datatable.header.modified')]]"
+              data="[[aggregations.dc_modified_agg]]"
+              value="{{column.filterValue}}" multiple>
+            </nuxeo-dropdown-aggregation>
+          </template>
+          <template>
+            <nuxeo-date datetime="[[item.properties.dc:modified]]"></nuxeo-date>
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.lastContributor')]]"
+                                 filter-by="dc_last_contributor_agg" field="dc:lastContributor" flex="50">
+          <template is="header">
+            <nuxeo-dropdown-aggregation
+              placeholder="[[i18n('documentContentView.datatable.header.lastContributor')]]"
+              data="[[aggregations.dc_last_contributor_agg]]"
+              value="{{column.filterValue}}" multiple>
+            </nuxeo-dropdown-aggregation>
+          </template>
+          <template>
+            <nuxeo-user-tag user="[[item.properties.dc:lastContributor]]"></nuxeo-user-tag>
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.version')]]"
+                                 field="versionLabel" hidden>
+          <template>
+            [[formatVersion(item)]]
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.created')]]" flex="50" hidden>
+          <template>
+            <nuxeo-date datetime="[[item.properties.dc:created]]"></nuxeo-date>
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.author')]]" hidden>
+          <template>
+            <nuxeo-user-tag user="[[item.properties.dc:creator]]"></nuxeo-user-tag>
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('retention.rule.label.duration')]]" flex="70">
+          <template>
+            [[formatDuration(item)]]
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('retention.rule.label.beginactions')]]">
+          <template>
+            <template is="dom-repeat" items="[[item.properties.retention_def:beginActions]]" as="action">
+              <nuxeo-tag>
+                [[formatDirectory(action)]]
+              </nuxeo-tag>
+            </template>
+          </template>
+        </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('retention.rule.label.endactions')]]">
+          <template>
+            <template is="dom-repeat" items="[[item.properties.retention_def:endActions]]" as="action">
+              <nuxeo-tag>
+                [[formatDirectory(action)]]
+              </nuxeo-tag>
+            </template>
+          </template>
+        </nuxeo-data-table-column>
+      </nuxeo-data-table>
+    </nuxeo-results>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-retentionrules-view-layout',
+      behaviors: [Nuxeo.DocumentContentBehavior],
+      properties: {
+        /**
+         * The parameters to be passed on to `provider`.
+         */
+        params: {
+          type: Object
+        },
+        /**
+         * The name of the page provider to be used.
+         */
+        provider: {
+          type: String,
+          value: 'advanced_document_content'
+        },
+        /**
+         * The number of results per page.
+         */
+        pageSize: {
+          type: Number,
+          value: 40
+        },
+        /**
+         * List of comma separated values of the document schemas to be returned.
+         * All document schemas are returned by default.
+         */
+        schemas: {
+          type: String,
+          value: 'dublincore,common,retention_rule,retention_definition'
+        },
+        /**
+         * List of content enrichers passed on to `provider`.
+         * Already set by default are thumbnail, permissions and highlight.
+         */
+        enrichers: {
+          type: String,
+          value: 'thumbnail, permissions'
+        },
+        /**
+         * The headers passed on to `provider`.
+         * Already set by default are 'X-NXfetch.document': 'properties' and 'X-NXtranslate.directoryEntry': 'label'.
+         */
+        headers: {
+          type: String,
+          value: {'X-NXfetch.document': 'properties', 'X-NXtranslate.directoryEntry': 'label'}
+        },
+      },
+
+      _computeParams: function(document) {
+        if (document) {
+          this.$.nxProvider.set('sort', { 'ecm:pos': 'ASC' });
+          return { 'ecm_parentId': document.uid, 'ecm_trashed': this.isTrashed(document) }
+        }
+        return {};
+      },
+
+      formatDuration: function(document) {
+        return (document && document.properties) ? this.i18n('retention.rule.label.duration.pattern',
+          document.properties['retention_def:durationYears'],
+          document.properties['retention_def:durationMonths'],
+          document.properties['retention_def:durationDays']) : '';
+      }
+    });
+  </script>
+
+</dom-module>

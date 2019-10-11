@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.retention.adapters">
+
+  <extension
+    target="org.nuxeo.ecm.core.api.DocumentAdapterService"
+    point="adapters">
+    <adapter class="org.nuxeo.retention.adapters.Record"
+      factory="org.nuxeo.retention.adapters.RetentionAdapterFactory" />
+    <adapter class="org.nuxeo.retention.adapters.RetentionRule"
+      factory="org.nuxeo.retention.adapters.RetentionAdapterFactory" />
+  </extension>
+
+</component>

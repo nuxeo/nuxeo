@@ -1,0 +1,5 @@
+<component name="org.nuxeo.retention.audit" version="1.0">
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">
+    <event name="retentionRuleAttached" />
+  </extension>
+</component>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <require>org.nuxeo.web.ui</require>
+
+  <install>
+    <!-- unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+    <!-- create a temporary folder -->
+    <delete path="${bundle.fileName}.tmp" />
+    <mkdir path="${bundle.fileName}.tmp" />
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp" />
+
+    <delete path="${bundle.fileName}.tmp" />
+
+  </install>
+</fragment>

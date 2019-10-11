@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.retention.pageprovider.contrib">
+  <extension
+    target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider
+      name="manual_retention_rule_suggestion">
+      <whereClause>
+        <predicate parameter="retention_rule:docTypes" operator="=">
+          <field name="docType" />
+        </predicate>
+        <fixedPart quoteParameters="false" escapeParameters="true"> dc:title ILIKE '?%' AND ecm:mixinType =
+          'RetentionRule' AND retention_rule:enabled = 1 AND
+          ecm:isTrashed = 0
+        </fixedPart>
+      </whereClause>
+      <sort column="ecm:pos" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider
+      name="active_retention_rule">
+      <pattern quoteParameters="false" escapeParameters="true"> SELECT
+        * FROM Document WHERE ecm:mixinType = 'RetentionRule' AND
+        retention_rule:enabled = 1 AND ecm:isTrashed = 0
+      </pattern>
+      <sort column="ecm:pos" ascending="true" />
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+
+    <genericPageProvider name="retention_search"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <whereClause docType="RetentionSearch">
+        <fixedPart>
+          file:content/name IS NOT NULL
+          AND ecm:mixinType != 'HiddenInNavigation'
+        </fixedPart>
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="rendition_search" name="ecm_fulltext" />
+        </predicate>
+        <predicate parameter="dc:creator" operator="IN">
+          <field schema="rendition_search" name="dc_creator" />
+        </predicate>
+      </whereClause>
+      <aggregates>
+        <aggregate id="doc_type_agg" type="terms" parameter="ecm:primaryType">
+          <field schema="retention_search" name="doc_type_agg" />
+          <properties>
+            <property name="size">10</property>
+          </properties>
+        </aggregate>
+        <aggregate id="rules_agg" type="terms" parameter="record:ruleIds">
+          <field schema="retention_search" name="rules_agg" />
+          <properties>
+            <property name="size">10</property>
+          </properties>
+        </aggregate>
+        <aggregate id="record_retain_agg" type="date_range" parameter="record:retainUntil">
+          <field schema="retention_search" name="record_retain_agg" />
+          <properties>
+            <property name="format">"dd-MM-yyyy"</property>
+          </properties>
+          <dateRanges>
+            <dateRange key="last24h" fromDate="now-24H" toDate="now"/>
+            <dateRange key="lastWeek" fromDate="now-7d" toDate="now-24H"/>
+            <dateRange key="lastMonth" fromDate="now-1M" toDate="now-7d"/>
+            <dateRange key="lastYear" fromDate="now-1y" toDate="now-1M"/>
+            <dateRange key="priorToLastYear" toDate="now-1y"/>
+          </dateRanges>
+        </aggregate>
+        <aggregate id="ecm_retain_agg" type="date_range" parameter="ecm:retainUntil">
+          <field schema="retention_search" name="ecm_retain_agg" />
+          <properties>
+            <property name="format">"dd-MM-yyyy"</property>
+          </properties>
+          <dateRanges>
+            <dateRange key="next24Hours" fromDate="now" toDate="now+24H"/>
+            <dateRange key="beforeAWeek" fromDate="now+24H" toDate="now+7d"/>
+            <dateRange key="beforeAMonth" fromDate="now+7d" toDate="now+1M"/>
+            <dateRange key="beforeAYear" fromDate="now+1M" toDate="now+1y"/>
+            <dateRange key="afterAYear" fromDate="now+1y" toDate="now+1000y"/>
+            <dateRange key="indeterminate" fromDate="now+1000y"/>
+          </dateRanges>
+        </aggregate>
+      </aggregates>
+      <sort column="ecm:retainUntil" ascending="true" />
+      <quickFilters>
+        <quickFilter name="withoutRule">
+          <clause>record:ruleIds IS NULL</clause>
+          <clause>ecm:retainUntil IS NULL</clause>
+        </quickFilter>
+        <quickFilter name="hasLegalHold">
+          <clause>ecm:hasLegalHold = 1</clause>
+        </quickFilter>
+        <quickFilter name="hasNotLegalHold">
+          <clause>ecm:hasLegalHold = 0</clause>
+        </quickFilter>
+        <quickFilter name="exceptTrashed">
+          <clause>ecm:isTrashed = 0</clause>
+        </quickFilter>
+      </quickFilters>
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
+  </extension>
+</component>
