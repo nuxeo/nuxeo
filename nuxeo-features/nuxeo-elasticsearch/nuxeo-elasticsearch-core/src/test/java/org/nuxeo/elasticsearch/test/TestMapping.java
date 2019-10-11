@@ -128,8 +128,10 @@ public class TestMapping {
         Assert.assertEquals(0, ret.totalSize());
         ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'Upper%'"));
         Assert.assertEquals(0, ret.totalSize());
-        ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
-        Assert.assertEquals(0, ret.totalSize());
+
+        // Since elastic 6.7.0 match_phrase_prefix do work on keyword field, weird but should never be the case on Nuxeo
+        // ret = ess.query(new NxQueryBuilder(session).nxql("SELECT * FROM Document WHERE dc:description LIKE 'UPPER%'"));
+        // Assert.assertEquals(0, ret.totalSize());
 
         ret = ess.query(new NxQueryBuilder(session).nxql(
                 "SELECT * FROM Document WHERE ecm:fulltext.dc:description LIKE '%Case%'"));
