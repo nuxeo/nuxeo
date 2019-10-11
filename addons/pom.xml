@@ -46,6 +46,7 @@
     <module>nuxeo-audit-storage-directory</module>
     <module>nuxeo-adobe-connector</module>
     <module>nuxeo-wopi</module>
+    <module>nuxeo-retention</module>
   </modules>
 
 </project>

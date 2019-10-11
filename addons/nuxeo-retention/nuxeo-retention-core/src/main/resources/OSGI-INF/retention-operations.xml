@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.retention.operations" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+    <operation class="org.nuxeo.retention.operations.HoldDocument" />
+    <operation class="org.nuxeo.retention.operations.RetainDocument" />
+    <operation class="org.nuxeo.retention.operations.UnholdDocument" />
+
+    <operation class="org.nuxeo.retention.operations.AttachRetentionRule" />
+
+    <operation class="org.nuxeo.retention.operations.FireRetentionEvent" />
+  </extension>
+
+</component>
