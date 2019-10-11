@@ -171,8 +171,8 @@ public class MongoDBReference extends AbstractReference {
 
     private void removeLinksFor(String field, String value, MongoDBSession session) {
         try {
-            DeleteResult result = getCollection(session)
-                                         .deleteMany(MongoDBSerializationHelper.fieldMapToBson(field, value));
+            DeleteResult result = getCollection(session).deleteMany(
+                    MongoDBSerializationHelper.fieldMapToBson(field, value));
             if (!result.wasAcknowledged()) {
                 throw new DirectoryException(
                         "Error while deleting the entry, the request has not been acknowledged by the server");
@@ -208,8 +208,8 @@ public class MongoDBReference extends AbstractReference {
     }
 
     private List<String> getIdsFor(String queryField, String value, String resultField, MongoDBSession session) {
-        FindIterable<Document> docs = getCollection(session)
-                                             .find(MongoDBSerializationHelper.fieldMapToBson(queryField, value));
+        FindIterable<Document> docs = getCollection(session).find(
+                MongoDBSerializationHelper.fieldMapToBson(queryField, value));
         return StreamSupport.stream(docs.spliterator(), false)
                             .map(doc -> doc.getString(resultField))
                             .collect(Collectors.toList());
