@@ -98,20 +98,23 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
                         String.format("Field %s of type %s is expected to have a DateType", xpath, prop.getType()));
             }
             Calendar value = (Calendar) prop.getValue();
-            if (value == null) {
-                retainUntil = rule.getRetainUntilDateFromNow();
-            } else {
-                retainUntil = rule.getRetainUntilDateFrom(value);
+            if (value != null) {
+                Calendar retainUntilCandidate = rule.getRetainUntilDateFrom(value);
                 Calendar now = Calendar.getInstance();
-                if (now.after(retainUntil)) {
+                if (now.after(retainUntilCandidate)) {
                     log.info(
                             "Metabased-based rule found past date {} as retention expiration date on {} from {} property. Ignoring...",
-                            retainUntil::toInstant,
+                            retainUntilCandidate::toInstant,
                             document::getPathAsString, () -> xpath);
-                    return session.getDocument(document.getRef());
+                    retainUntil = null;
+                } else {
+                    retainUntil = retainUntilCandidate;
+                    log.debug("Attaching rule based on {} with value {}", () -> xpath, retainUntil::toInstant);
                 }
+            } else {
+                retainUntil = null;
+                log.info("Attaching rule based on {}: empty value", xpath);
             }
-            log.debug("Attaching rule base on {} with value {}", () -> xpath, retainUntil::toInstant);
         } else {
             throw new IllegalArgumentException("Unknown starting point policy: " + rule.getStartingPointPolicy());
         }
@@ -119,7 +122,9 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
         Record record = document.getAdapter(Record.class);
         record.setRule(rule, session);
         executeRuleBeginActions(record, session);
-        session.setRetainUntil(document.getRef(), retainUntil, null);
+        if (retainUntil != null) {
+            session.setRetainUntil(document.getRef(), retainUntil, null);
+        }
         notifyAttachRule(record, rule, session);
         return session.getDocument(document.getRef());
     }
@@ -147,6 +152,10 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
         }
         if (!rule.isDocTypeAccepted(document.getType())) {
             throw new NuxeoException("Rule does not accept this document type");
+        }
+        if (rule.isMetadataBased()) {
+            document.getProperty(rule.getMetadataXpath());
+            // above throw an exception if property not found
         }
         if (document.hasFacet(RetentionConstants.RECORD_FACET)) {
             throw new NuxeoException("Document is already a record");
