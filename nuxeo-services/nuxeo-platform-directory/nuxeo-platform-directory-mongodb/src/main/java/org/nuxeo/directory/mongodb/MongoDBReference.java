@@ -110,7 +110,7 @@ public class MongoDBReference extends AbstractReference {
             MongoCollection<Document> coll = getCollection(mongoSession);
             List<Document> newDocs = targetIds.stream()
                                               .map(targetId -> buildDoc(sourceId, targetId))
-                                              .filter(doc -> coll.count(doc) == 0)
+                                              .filter(doc -> coll.countDocuments(doc) == 0)
                                               .collect(Collectors.toList());
             if (!newDocs.isEmpty()) {
                 coll.insertMany(newDocs);
@@ -126,7 +126,7 @@ public class MongoDBReference extends AbstractReference {
         MongoCollection<Document> coll = getCollection(mongodbSession);
         List<Document> newDocs = sourceIds.stream()
                                           .map(sourceId -> buildDoc(sourceId, targetId))
-                                          .filter(doc -> coll.count(doc) == 0)
+                                          .filter(doc -> coll.countDocuments(doc) == 0)
                                           .collect(Collectors.toList());
         if (!newDocs.isEmpty()) {
             coll.insertMany(newDocs);

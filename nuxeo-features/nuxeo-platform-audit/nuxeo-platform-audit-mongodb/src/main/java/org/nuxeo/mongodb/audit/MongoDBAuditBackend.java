@@ -353,7 +353,7 @@ public class MongoDBAuditBackend extends AbstractAuditBackend implements AuditBa
 
     @Override
     public Long getEventsCount(String eventId) {
-        return Long.valueOf(collection.count(Filters.eq("eventId", eventId)));
+        return Long.valueOf(collection.countDocuments(Filters.eq("eventId", eventId)));
     }
 
     @Override

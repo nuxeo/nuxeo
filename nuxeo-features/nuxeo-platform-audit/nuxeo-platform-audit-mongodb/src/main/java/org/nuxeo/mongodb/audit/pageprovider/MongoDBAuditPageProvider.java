@@ -118,7 +118,7 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
         List<LogEntry> entries = new ArrayList<>();
 
         // set total number of results
-        setResultsCount(auditCollection.count(filter));
+        setResultsCount(auditCollection.countDocuments(filter));
 
         for (Document document : response) {
             entries.add(MongoDBAuditEntryReader.read(document));
