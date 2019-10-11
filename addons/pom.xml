@@ -62,6 +62,7 @@
     <nuxeo.jsf.to.web.ui.version>10.10-HF21-SNAPSHOT</nuxeo.jsf.to.web.ui.version>
     <nuxeo.adobe.cc.version>10.10-HF21-SNAPSHOT</nuxeo.adobe.cc.version>
     <nuxeo.wopi.version>10.10-HF21-SNAPSHOT</nuxeo.wopi.version>
+    <nuxeo.retention.version>10.10-HF21-SNAPSHOT</nuxeo.retention.version>
 
     <!-- optional addons -->
     <nuxeo.sync.version>10.10-HF21-SNAPSHOT</nuxeo.sync.version>
@@ -132,6 +133,7 @@
     <module>nuxeo-audit-storage-directory</module>
     <module>nuxeo-adobe-connector</module>
     <module>nuxeo-wopi</module>
+    <module>nuxeo-retention</module>
   </modules>
 
   <dependencyManagement>
@@ -1157,6 +1159,18 @@
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-wopi-web-ui</artifactId>
         <version>${nuxeo.wopi.version}</version>
+      </dependency>
+
+      <!-- Retention -->
+      <dependency>
+        <groupId>org.nuxeo.retention</groupId>
+        <artifactId>nuxeo-retention-core</artifactId>
+        <version>${nuxeo.retention.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.retention</groupId>
+        <artifactId>nuxeo-retention-web-ui</artifactId>
+        <version>${nuxeo.retention.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.retention.contentTemplate">
+
+  <require>
+    org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib
+  </require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="factoryBinding">
+
+    <factoryBinding name="RetentionRulesFactory" factoryName="SimpleTemplateRootFactory"
+      targetType="Root" append="true">
+      <template>
+        <templateItem typeName="RetentionRules" id="RetentionRules" title="RetentionRules" >
+          <acl>
+            <ace principal="Administrator" permission="Everything"
+              granted="true" />
+            <ace principal="administrators" permission="Everything"
+              granted="true" />
+            <ace principal="RecordManager" permission="Everything"
+              granted="true" />
+            <ace principal="Everyone" permission="Everything" granted="false" />
+          </acl>
+        </templateItem>
+      </template>
+    </factoryBinding>
+
+  </extension>
+
+</component>

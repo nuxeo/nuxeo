@@ -1,0 +1,136 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<script>
+  /* eslint-disable no-var, no-use-before-define */
+  var Nuxeo = Nuxeo || {};
+
+  /**
+   * `Nuxeo.RetentionBehavior` provides a set of helpers to format values.
+   *
+   * @polymerBehavior
+   */
+  Nuxeo.RetentionBehavior = {
+
+    properties: {
+      docTypes: Array,
+      dateFields: Array
+    },
+
+    ready: function() {
+      // XXX inject types and schema in a static namespace and init only once
+      this._fetchDocTypes();
+    },
+
+    _isAuto: function() {
+      return this.documentument && this.document.properties &&
+        this.document.properties['retention_rule:applicationPolicy'] === 'auto';
+    },
+
+    _isImmediate: function() {
+      return this.document && this.document.properties &&
+        this.document.properties['retention_def:startingPointPolicy'] === 'immediate';
+    },
+
+    _isEventBased: function() {
+      return this.document && this.document.properties &&
+        this.document.properties['retention_def:startingPointPolicy'] === 'event_based';
+    },
+
+    _isMetadataBased: function() {
+      return this.document && this.document.properties &&
+        this.document.properties['retention_def:startingPointPolicy'] === 'metadata_based';
+    },
+
+    _isAfterDelay: function() {
+      return this.document && this.document.properties &&
+        this.document.properties['retention_def:startingPointPolicy'] === 'after_delay';
+    },
+
+    _isManual: function() {
+      return this.document && this.document.properties &&
+        this.document.properties['retention_rule:applicationPolicy'] === 'manual';
+    },
+
+    _computeApplicationPolicyLabel: function() {
+      return this.document ? this.i18n(
+        'retention.rule.label.applicationPolicy.' + this.document.properties['retention_rule:applicationPolicy']) : '';
+    },
+
+    _computeStartPolicyLabel: function() {
+      return this.document ? this.i18n(
+        'retention.rule.label.startPolicy.' + this.document.properties['retention_def:startingPointPolicy']) : '';
+    },
+
+    _fetchDocTypes: function() {
+      if (!this.typeFetcher) {
+        this.typeFetcher = document.createElement('nuxeo-resource');
+        this._attachDom(this.typeFetcher);
+      }
+      this.typeFetcher.path = 'config/types';
+      this.typeFetcher.get().then(function(res) {
+        var schemas = new Set();
+        var types = [];
+        if (res && res.doctypes) {
+          for (var type in res.doctypes) {
+            if (
+             res.doctypes[type].schemas.indexOf('file') !== -1 &&
+             res.doctypes[type].facets.indexOf('Folderish') === -1 &&
+             res.doctypes[type].facets.indexOf('HiddenInNavigation') === -1 &&
+             res.doctypes[type].facets.indexOf('SystemDocument') === -1
+            ) {
+              types.push({
+                id: type,
+                text: type,
+              });
+              res.doctypes[type].schemas.forEach(function(schema) {
+                schemas.add(schema);
+              });
+            }
+          }
+          this.set('docTypes', types);
+          this._fetchDateFields(schemas);
+        }
+      }.bind(this));
+    },
+
+    _fetchDateFields: function(onlySchemas) {
+      if (onlySchemas.size > 0) {
+        if (!this.schemaFetcher) {
+          this.schemaFetcher = document.createElement('nuxeo-resource');
+          this._attachDom(this.schemaFetcher);
+        }
+        this.schemaFetcher.path = 'config/schemas';
+        this.schemaFetcher.get().then(function(res) {
+          this.dateFields = [];
+          if (res) {
+            res.forEach(function(schema) {
+              if (onlySchemas.has(schema.name)) {
+                for (var fieldName in schema.fields) {
+                  if (schema.fields[fieldName] === 'date') {
+                    this.dateFields.push(schema['@prefix'] + ':' + fieldName);
+                  }
+                }
+              }
+            }.bind(this));
+          }
+        }.bind(this));
+      }
+    }
+
+  };
+</script>
