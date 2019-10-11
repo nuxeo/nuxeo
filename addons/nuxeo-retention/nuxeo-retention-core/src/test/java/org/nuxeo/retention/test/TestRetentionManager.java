@@ -196,6 +196,18 @@ public class TestRetentionManager extends RetentionTestCase {
     }
 
     @Test
+    public void testManualNullMetadataBasedRule() {
+        RetentionRule testRule = createManualMetadataBasedRuleMillis("dc:expired", 500);
+        Calendar minusOneSecond = Calendar.getInstance();
+        minusOneSecond.add(Calendar.MILLISECOND, -1000);
+        file = session.saveDocument(file);
+
+        file = service.attachRule(file, testRule, session);
+        assertTrue(file.isRecord());
+        assertFalse(session.isUnderRetentionOrLegalHold(file.getRef()));
+    }
+
+    @Test
     public void testRetainUntilDateSaved() throws InterruptedException {
         RetentionRule testRule = createManualImmediateRuleMillis(100);
         file = service.attachRule(file, testRule, session);
