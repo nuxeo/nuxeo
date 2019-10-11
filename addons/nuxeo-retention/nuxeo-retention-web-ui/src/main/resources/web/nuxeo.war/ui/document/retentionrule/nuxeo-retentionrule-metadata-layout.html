@@ -1,0 +1,33 @@
+<!--
+`nuxeo-retentionrule-metadata-layout`
+@group Nuxeo UI
+@element nuxeo-retentionrule-metadata-layout
+-->
+<!-- We do not use this layout, everything is displayed in the view layout -->
+<dom-module id="nuxeo-retentionrule-metadata-layout">
+  <template>
+    <style>
+      *[role=widget] {
+        padding: 5px;
+      }
+    </style>
+
+    </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-retentionrule-metadata-layout',
+      behaviors: [Nuxeo.LayoutBehavior, Nuxeo.RetentionBehavior],
+      properties: {
+
+        /**
+           * @doctype retentionrule
+           */
+        document: {
+          type: Object,
+        },
+
+      }
+    });
+  </script>
+</dom-module>

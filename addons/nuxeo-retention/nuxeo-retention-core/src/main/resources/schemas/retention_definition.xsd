@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/"
+  xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="durationDays" type="xs:long" default="0"/>
+  <xs:element name="durationMonths" type="xs:long" default="0"/>
+  <xs:element name="durationYears" type="xs:long" default="0"/>
+  <xs:element name="durationMillis" type="xs:long" default="0"/>
+
+  <xs:element name="expression" type="xs:string" />
+
+  <xs:element name="startingPointPolicy" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="immediate" />
+        <xs:enumeration value="after_delay" />
+        <xs:enumeration value="event_based" />
+        <xs:enumeration value="metadata_based" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="startingPointEvent">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="RetentionEvent" />
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="startingPointExpression" type="xs:string" />
+
+  <xs:element name="metadataXPath" type="xs:string" />
+
+  <xs:simpleType name="beginActionList">
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="RetentionBegin" />
+      </xs:simpleType>
+    </xs:list>
+  </xs:simpleType>
+
+  <xs:simpleType name="endActionList">
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="RetentionEnd" />
+      </xs:simpleType>
+    </xs:list>
+  </xs:simpleType>
+
+  <xs:element name="beginActions" type="nxs:beginActionList" />
+  <xs:element name="endActions" type="nxs:endActionList" />
+
+</xs:schema>

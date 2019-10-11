@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Version: 1.0.0
+Bundle-Name: org.nuxeo.retention.web.ui
+Nuxeo-Component: OSGI-INF/nuxeo-retention-webresources-contrib.xml
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.web.ui.retention;singleton:=true

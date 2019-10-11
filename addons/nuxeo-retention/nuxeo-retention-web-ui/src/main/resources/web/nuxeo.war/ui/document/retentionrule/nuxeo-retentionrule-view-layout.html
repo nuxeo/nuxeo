@@ -1,0 +1,128 @@
+<!--
+`nuxeo-retentionrule-view-layout`
+@group Nuxeo UI
+@element nuxeo-retentionrule-view-layout
+-->
+<dom-module id="nuxeo-retentionrule-view-layout">
+  <template>
+    <style include="iron-flex iron-flex-alignment nuxeo-styles">
+      *[role=widget] {
+        padding: 5px;
+      }
+    </style>
+
+    <retention-config-widget document="[[document]]"></retention-config-widget>
+
+    <nuxeo-card heading="[[i18n('retention.rule.label.heading')]]">
+      <div role="widget">
+        <label>[[i18n('retention.rule.label.ruleName')]]</label>
+        <div name="title">[[document.properties.dc:title]]</div>
+      </div>
+
+      <div role="widget" hidden$="[[!document.properties.dc:description]]">
+        <label>[[i18n('retention.rule.label.ruleDescription')]]</label>
+        <div name="description" class="multiline">[[document.properties.dc:description]]</div>
+      </div>
+
+      <div role="widget">
+        <label hidden$="[[!document.properties.retention_rule:enabled]]">[[i18n('retention.rule.label.enabled')]]</label>
+        <label hidden$="[[document.properties.retention_rule:enabled]]">[[i18n('retention.rule.label.disabled')]]</label>
+      </div>
+    </nuxeo-card>
+
+    <nuxeo-card heading="[[i18n('retention.rule.label.applicationPolicy.heading')]]">
+      <div role="widget">
+        <nuxeo-tag>
+          [[_computeApplicationPolicyLabel(document)]]
+        </nuxeo-tag>
+      </div>
+      <div role="widget" hidden$="[[!_isManual(document)]]">
+        <label>[[i18n('retention.rule.label.applicationPolicy.manual.description')]]</label>
+        <nuxeo-tag>
+          [[document.properties.retention_rule:docTypes]]
+        </nuxeo-tag>
+      </div>
+      <div role="widget" hidden$="[[!_isAuto(document)]]">
+        <label>[[i18n('retention.rule.label.applicationPolicy.auto.description.short')]]</label>
+        <nuxeo-tag>
+          [[document.properties.retention_def:expression]]
+        </nuxeo-tag>
+      </div>
+    </nuxeo-card>
+
+    <nuxeo-card heading="[[i18n('retention.rule.label.startPolicy.heading')]]">
+      <div role="widget">
+        <nuxeo-tag name="startPolicy">
+          [[_computeStartPolicyLabel(document)]]
+        </nuxeo-tag>
+      </div>
+      <div role="widget" hidden$="[[!_isEventBased(document)]]">
+        <nuxeo-directory-suggestion name="event"
+           role="widget"
+           value="{{document.properties.retention_def:startingPointEvent}}"
+           label="[[i18n('retention.rule.label.startPolicy.eventBased.event.description')]]"
+           dbl10n
+           readonly
+           directory-name="RetentionEvent">
+        </nuxeo-directory-suggestion>
+        <nuxeo-tag  name="eventInput">
+          [[document.properties.retention_def:startingPointExpression]]
+        </nuxeo-tag>
+      </div>
+      <div role="widget" hidden$="[[!_isMetadataBased(document)]]">
+        <nuxeo-tag name="xpath">
+          [[document.properties.retention_def:metadataXPath]]
+        </nuxeo-tag>
+      </div>
+    </nuxeo-card>
+
+    <nuxeo-card heading="[[i18n('retention.rule.label.duration.heading')]]">
+      <div class="layout flex horizontal">
+        <div role="widget">
+          <label>[[i18n("retention.rule.label.duration.years")]]</label>
+          <div name="years">[[document.properties.retention_def:durationYears]]</div>
+        </div>
+        <div role="widget">
+          <label>[[i18n("retention.rule.label.duration.months")]]</label>
+          <div name="months">[[document.properties.retention_def:durationMonths]]</div>
+        </div>
+        <div role="widget">
+          <label>[[i18n("retention.rule.label.duration.days")]]</label>
+          <div name="days">[[document.properties.retention_def:durationDays]]</div>
+        </div>
+      </div>
+    </nuxeo-card>
+
+    <nuxeo-card heading="[[i18n('retention.rule.label.actions.heading')]]">
+      <div class="layout flex">
+         <nuxeo-directory-suggestion
+            role="widget"
+            value="{{document.properties.retention_def:endActions}}"
+            label="[[i18n('retention.rule.label.endactions.description')]]"
+            multiple="true"
+            dbl10n
+            directory-name="RetentionEnd"
+            readonly>
+          </nuxeo-directory-suggestion>
+      </div>
+    </nuxeo-card>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-retentionrule-view-layout',
+      behaviors: [Nuxeo.LayoutBehavior, Nuxeo.RetentionBehavior],
+      properties: {
+
+        /**
+         * @doctype retentionrule
+         */
+        document: {
+          type: Object,
+        }
+      }
+    });
+
+  </script>
+</dom-module>

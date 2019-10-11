@@ -1,0 +1,144 @@
+  <!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-retention-search-form`
+@group Nuxeo UI
+@element nuxeo-retention-search-form
+-->
+<dom-module id="nuxeo-retention-search-form">
+  <template>
+    <style include="nuxeo-styles">
+      .filters {
+        @apply --layout-horizontal;
+        @apply --layout-wrap;
+        @apply --layout-justified;
+      }
+
+      .filters .section {
+        @apply --layout-flex;
+        margin: 16px;
+        min-width: 256px;
+        max-width: 320px;
+      }
+
+      label {
+        @apply --nuxeo-label;
+      }
+
+    </style>
+
+    <div class="filters">
+      <nuxeo-input class="section"
+                   id="searchInput"
+                   type="search"
+                   label="[[i18n('defaultSearch.fullText')]]"
+                   value="{{searchTerm}}"
+                   placeholder="[[i18n('defaultSearch.fullText.placeholder')]]"
+                   autofocus
+                   on-keydown="_checkForEnter">
+      </nuxeo-input>
+
+      <nuxeo-user-suggestion min-chars="1" class="section" search-type="USER_TYPE"
+                             placeholder="[[i18n('defaultSearch.authors.placeholder')]]"
+                             label="[[i18n('defaultSearch.authors')]]"
+                             value="{{params.dc_creator}}"
+                             multiple>
+      </nuxeo-user-suggestion>
+
+      <div class="section">
+        <label>[[i18n('retention.search.rules')]]</label>
+        <nuxeo-dropdown-aggregation
+          data="[[aggregations.rules_agg]]"
+          value="{{params.ecm_retain_agg}}">
+        </nuxeo-dropdown-aggregation>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="section">
+        <label>[[i18n('retention.search.docTypes')]]</label>
+        <nuxeo-checkbox-aggregation
+          data="[[aggregations.doc_type_agg]]"
+          value="{{params.doc_type_agg}}"
+          name="docType">
+        </nuxeo-checkbox-aggregation>
+      </div>
+
+      <div class="section">
+        <label>[[i18n('retention.search.pastRetainUntil')]]</label>
+        <nuxeo-checkbox-aggregation
+          data="[[aggregations.record_retain_agg]]"
+          value="{{params.record_retain_agg}}">
+        </nuxeo-checkbox-aggregation>
+      </div>
+
+      <div class="section">
+        <label>[[i18n('retention.search.futureRetainUntil')]]</label>
+        <nuxeo-checkbox-aggregation
+          data="[[aggregations.ecm_retain_agg]]"
+          value="{{params.ecm_retain_agg}}">
+        </nuxeo-checkbox-aggregation>
+      </div>
+    </div>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-retention-search-form',
+      behaviors: [Nuxeo.LayoutBehavior, Nuxeo.I18nBehavior],
+      properties: {
+        params: {
+          type: Object,
+          value: {},
+          notify: true
+        },
+        aggregations: {
+          type: Object,
+          value: {},
+          notify: true
+        },
+        searchTerm: {
+          type: String,
+          notify: true
+        }
+      },
+
+      clear: function() {
+        this.searchTerm = '';
+        this._search();
+      },
+
+      _search: function() {
+        if (this.searchTerm) {
+          this.set('params.ecm_fulltext', this.formatFulltext(this.searchTerm));
+        } else if (this.params.ecm_fulltext) {
+          this.set('params.ecm_fulltext', '');
+          delete this.params.ecm_fulltext;
+        }
+      },
+
+      _checkForEnter: function(e) {
+        if (e.keyCode === 13) {
+          this._search();
+        }
+      }
+
+    });
+  </script>
+</dom-module>

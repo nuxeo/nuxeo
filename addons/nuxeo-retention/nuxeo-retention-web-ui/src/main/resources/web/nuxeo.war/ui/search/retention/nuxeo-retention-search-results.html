@@ -1,0 +1,135 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-retention-search-results`
+@group Nuxeo UI
+@element nuxeo-retention-search-results
+-->
+<dom-module id="nuxeo-retention-search-results">
+  <template>
+    <style include="nuxeo-styles">
+      nuxeo-data-table,
+      nuxeo-data-grid,
+      nuxeo-data-list {
+        display: block;
+        position: relative;
+        min-height: calc(100vh - 130px - var(--nuxeo-app-top));
+      }
+    </style>
+
+    <nuxeo-results name="default"
+                   nx-provider="[[nxProvider]]"
+                   selected-items="{{selectedItems}}"
+                   display-mode="table"
+                   sort-options="[[sortOptions]]"
+                   display-sort display-quick-filters
+                   on-quick-filters-changed="_updateActions">
+
+      <div slot="actions">
+        <template is="dom-if" if="[[_isWithoutRule]]">
+          <nuxeo-attach-rule-button provider="[[nxProvider]]"></nuxeo-attach-rule-button>
+        </template>
+        <template is="dom-if" if="[[_isHasLegalHold]]">
+          <nuxeo-hold-toggle-button hold provider="[[nxProvider]]"></nuxeo-hold-toggle-button>
+        </template>
+        <template is="dom-if" if="[[_isHasNotLegalHold]]">
+          <nuxeo-hold-toggle-button provider="[[nxProvider]]"></nuxeo-hold-toggle-button>
+        </template>
+      </div>
+
+      <nuxeo-data-table name="table" icon="nuxeo:view-list"
+                        settings-enabled
+                        empty-label="[[i18n('searchResults.noResults')]]"
+                        selection-enabled
+                        on-row-clicked="_navigate">
+
+        <nuxeo-data-table-column name="[[i18n('label.dublincore.title')]]" field="dc:title" sort-by="dc:title">
+          <template>
+            <nuxeo-document-thumbnail document="[[item]]"></nuxeo-document-thumbnail>
+            <a class="ellipsis" href$="[[urlFor('browse', item.path)]]">[[item.title]]</a>
+          </template>
+        </nuxeo-data-table-column>
+
+        <nuxeo-data-table-column name="[[i18n('label.type')]]" field="type">
+          <template>
+            <nuxeo-tag>[[formatDocType(item.type)]]</nuxeo-tag>
+          </template>
+        </nuxeo-data-table-column>
+
+        <nuxeo-data-table-column name="[[i18n('retention.search.retainUntil')]]" field="ecm:retainUntil" sort-by="ecm:retainUntil">
+          <template>
+            <dom-if if="[[!isRetentionDateIndeterminate(item)]]">
+              <template>
+                <nuxeo-date datetime="[[item.retainUntil]]"></nuxeo-date>
+              </template>
+            </dom-if>
+            <dom-if if="[[isRetentionDateIndeterminate(item)]]">
+              <template>
+                <nuxeo-tag>[[i18n('retention.indefinitely')]]</nuxeo-tag>
+              </template>
+            </dom-if>
+          </template>
+        </nuxeo-data-table-column>
+
+      </nuxeo-data-table>
+
+    </nuxeo-results>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-retention-search-results',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        nxProvider: Object,
+
+        sortOptions: {
+          type: Array,
+          value: []
+        }
+      },
+
+      attached: function() {
+        this.sortOptions = [
+          {field: 'dc:title', label: this.i18n('searchResults.sort.field.title'), order: 'asc'},
+          {field: 'dc:retainUntil', label: this.i18n('retention.search.retainUntil'), order: 'asc'},
+        ];
+      },
+
+      _navigate: function(e) {
+        this.fire('navigate', {doc: (e.model || e.detail).item, index: (e.model || e.detail).index});
+      },
+
+      _updateActions: function() {
+        if (this.nxProvider && this.nxProvider.quickFilters) {
+          var rqf = this.nxProvider.quickFilters.find(function(el) { return el.name === 'withoutRule' });
+          var lhqf = this.nxProvider.quickFilters.find(function(el) { return el.name === 'hasLegalHold' });
+          var nlhqf = this.nxProvider.quickFilters.find(function(el) { return el.name === 'hasNotLegalHold' });
+          this._isWithoutRule = rqf && rqf.active && !(lhqf && lhqf.active) && !(nlhqf && nlhqf.active);
+          this._isHasLegalHold = lhqf && lhqf.active && !(rqf && rqf.active) && !(nlhqf && nlhqf.active);
+          this._isHasNotLegalHold = nlhqf && nlhqf.active  && !(rqf && rqf.active) && !(lhqf && lhqf.active);
+        } else {
+          this._isWithoutRule = false;
+          this._isHasLegalHold = false;
+          this._isHasNotLegalHold = false;
+        }
+      }
+    });
+  </script>
+
+</dom-module>
