@@ -1,0 +1,101 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-folder-metadata-layout`
+@group Nuxeo UI
+@element nuxeo-folder-metadata-layout
+-->
+<dom-module id="nuxeo-folder-metadata-layout">
+
+  <template>
+    <style>
+      *[role=widget] {
+        margin-bottom: 16px;
+      }
+
+      label {
+        @apply --nuxeo-label;
+      }
+
+      div.multiline {
+        white-space: pre-line;
+      }
+
+      div {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        -moz-hyphens: auto;
+        -ms-hyphens: auto;
+        -o-hyphens: auto;
+        hyphens: auto;
+      }
+    </style>
+
+    <div role="widget">
+      <label>[[i18n('label.dublincore.title')]]</label>
+      <div name="title">[[document.properties.dc:title]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:description]]">
+      <label>[[i18n('label.dublincore.description')]]</label>
+      <div name="description" class="multiline">[[document.properties.dc:description]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:nature]]">
+      <label>[[i18n('label.dublincore.nature')]]</label>
+      <div name="nature">[[formatDirectory(document.properties.dc:nature)]]</div>
+    </div>
+
+    <nuxeo-directory-suggestion role="widget"
+                                label="[[i18n('label.dublincore.subjects')]]"
+                                directory-name="l10nsubjects"
+                                name="subjects"
+                                value="{{document.properties.dc:subjects}}"
+                                hidden$="[[!document.properties.dc:subjects.length]]"
+                                multiple="true"
+                                dbl10n="true"
+                                readonly>
+    </nuxeo-directory-suggestion>
+
+    <div role="widget" hidden$="[[!document.properties.dc:coverage]]">
+      <label>[[i18n('label.dublincore.coverage')]]</label>
+      <div name="coverage">[[formatDirectory(document.properties.dc:coverage)]]</div>
+    </div>
+
+    <div role="widget" hidden$="[[!document.properties.dc:expired]]">
+      <label>[[i18n('label.dublincore.expire')]]</label>
+      <nuxeo-date name="expired" datetime="[[document.properties.dc:expired]]"></nuxeo-date>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-folder-metadata-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+         * @doctype Folder
+         */
+        document: Object
+      }
+    });
+  </script>
+
+</dom-module>

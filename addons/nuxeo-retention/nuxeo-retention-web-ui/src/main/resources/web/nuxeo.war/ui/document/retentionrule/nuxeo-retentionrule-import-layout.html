@@ -1,0 +1,33 @@
+<!--
+`nuxeo-retentionrule-import-layout`
+@group Nuxeo UI
+@element nuxeo-retentionrule-import-layout
+-->
+<!-- We do not use this layout, everything is displayed in the view layout -->
+<dom-module id="nuxeo-retentionrule-import-layout">
+  <template>
+    <style>
+      *[role=widget] {
+        padding: 5px;
+      }
+    </style>
+
+    </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-retentionrule-import-layout',
+      behaviors: [Nuxeo.LayoutBehavior, Nuxeo.RetentionBehavior],
+      properties: {
+
+        /**
+           * @doctype retentionrule
+           */
+        document: {
+          type: Object,
+        },
+
+      }
+    });
+  </script>
+</dom-module>

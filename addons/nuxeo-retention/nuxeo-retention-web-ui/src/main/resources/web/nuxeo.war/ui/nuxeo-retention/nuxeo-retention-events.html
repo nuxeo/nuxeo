@@ -1,0 +1,191 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-retention-events`
+@group Nuxeo UI
+@element nuxeo-retention-events
+-->
+<dom-module id="nuxeo-retention-events">
+  <template>
+    <style include="nuxeo-styles">
+      #heading {
+        @apply --layout-horizontal;
+        @apply --layout-end-justified;
+      }
+
+      #table {
+        height: 50vh;
+      }
+
+      nuxeo-date-picker {
+        padding: 0 16px;
+      }
+    </style>
+    <nuxeo-page>
+      <div slot="header">
+        <span class="flex">[[i18n('retention.events')]]</span>
+      </div>
+      <nuxeo-card heading="[[i18n('retention.events.fire')]]">
+          <nuxeo-operation id="op" op="Retention.FireEvent" loading="{{firingEvent}}">
+          </nuxeo-operation>
+          <nuxeo-directory-suggestion name="event"
+             role="widget"
+             value="{{_event}}"
+             label="[[i18n('retention.rule.label.startPolicy.eventBased.event.description')]]"
+             dbl10n
+             required
+             query-results-filter="[[_filterEvents]]"
+             directory-name="RetentionEvent"
+             min-chars="0">
+           </nuxeo-directory-suggestion>
+           <nuxeo-input name="eventInput" value="{{_eventInput}}" label="[[i18n('retention.events.input')]]">
+           </nuxeo-input>
+           <div class="buttons">
+             <paper-button name="fire" class="primary" on-tap="_fire" disabled$="[[!_canFire(_event, firingEvent)]]">
+               [[i18n('retention.events.fire')]]
+             </paper-button>
+           </div>
+      </nuxeo-card>
+
+      <nuxeo-card heading="[[i18n('retention.events.history')]]">
+        <nuxeo-audit-page-provider id="provider" page-size="40" params='{"eventCategory":"Retention"}'></nuxeo-audit-page-provider>
+        <div id="heading">
+          <template is="dom-if" if="[[visible]]">
+            <nuxeo-date-picker role="widget" label="[[i18n('documentHistory.filter.after')]]" value="{{startDate}}">
+            </nuxeo-date-picker>
+            <nuxeo-date-picker role="widget" label="[[i18n('documentHistory.filter.before')]]" value="{{endDate}}">
+            </nuxeo-date-picker>
+          </template>
+        </div>
+
+        <nuxeo-data-table id="table" paginable nx-provider="provider" empty-label="[[i18n('retention.events.empty')]]">
+          <nuxeo-data-table-column name="[[i18n('retention.rule.label.startPolicy.eventBased.event.description')]]" sort-by="eventId">
+            <template>[[item.eventId]]</template>
+          </nuxeo-data-table-column>
+          <nuxeo-data-table-column name="[[i18n('documentHistory.date')]]" sort-by="eventDate">
+            <template><nuxeo-date datetime="[[item.eventDate]]"></nuxeo-date></template>
+          </nuxeo-data-table-column>
+          <nuxeo-data-table-column name="[[i18n('documentHistory.username')]]" sort-by="principalName">
+            <template><nuxeo-user-tag user="[[item.principalName]]"></nuxeo-user-tag></template>
+          </nuxeo-data-table-column>
+          <nuxeo-data-table-column name="[[i18n('retention.events.input')]]">
+            <template>
+              [[item.comment]]
+            </template>
+          </nuxeo-data-table-column>
+        </nuxeo-data-table>
+      </nuxeo-card>
+    </nuxeo-page>
+  </template>
+  <script>
+    Polymer({
+      is: 'nuxeo-retention-events',
+      behaviors: [Nuxeo.I18nBehavior],
+      properties: {
+        visible: {
+          type: Boolean,
+          observer: '_refreshHistory'
+        },
+        _event: {
+          type: String,
+          value: ''
+        },
+        _eventInput: String,
+        startDate: {
+          type: String,
+          notify: true,
+          observer: '_observeStartDate'
+        },
+        endDate: {
+          type: String,
+          notify: true,
+          observer: '_observeEndDate'
+        }
+      },
+
+      _observeStartDate: function() {
+        if (this.startDate && this.startDate.length > 0) {
+          this.$.provider.params.startDate = this.startDate;
+          if (this.endDate && this.endDate.length > 0) {
+            var start = Date.parse(this.startDate);
+            var end = Date.parse(this.endDate);
+            if (start > end) {
+              this.endDate = moment(start).add(7, 'day').format('YYYY-MM-DD');
+            }
+          }
+          this._refreshHistory();
+        } else if(this.$.provider.params.startDate) {
+          delete this.$.provider.params.startDate;
+          this._refreshHistory();
+        }
+      },
+
+      _observeEndDate: function() {
+        if (this.endDate && this.endDate.length > 0) {
+          this.$.provider.params.endDate = this.endDate;
+          if (this.startDate && this.startDate.length > 0) {
+            var start = Date.parse(this.startDate);
+            var end = Date.parse(this.endDate);
+            if (start > end) {
+              this.startDate = moment(end).subtract(7, 'day').format('YYYY-MM-DD');
+            }
+          }
+          this._refreshHistory();
+        } else if(this.$.provider.params.endDate) {
+          delete this.$.provider.params.endDate;
+          this._refreshHistory();
+        }
+      },
+
+      _refreshHistory: function(delay) {
+        if (this.visible) {
+          this.$.provider.page = 1;
+          this.$.table.reset();
+          this.$.table.loading = true;
+          this.$.table.emptyLabel= this.i18n('label.loading');
+          window.setTimeout(function() {
+            this.$.table.fetch().then(function() {
+              this.$.table.emptyLabel= this.i18n('retention.events.empty');
+            }.bind(this));
+          }.bind(this), delay);
+        }
+      },
+
+      _fire: function() {
+        this.$.op.params = {name: this._event};
+        this.$.op.input = this._eventInput;
+        this.$.op.execute().then(function() {
+          this.fire('notify', {message: this.i18n('retention.events.fired.success') });
+          this._event = null;
+          this._eventInput = null;
+          // Audit is async, let's give it a little time to index
+          this._refreshHistory(1000);
+        }.bind(this));
+      },
+
+      _canFire: function() {
+        return !this.firingEvent && !!this._event;
+      },
+
+      _filterEvents: function(evt) {
+        return evt && evt.id && evt.id.indexOf('Retention.') === 0;
+      }
+
+    });
+  </script>
+</dom-module>
