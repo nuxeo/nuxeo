@@ -1,0 +1,90 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+`nuxeo-retentionrules-create-layout`
+@group Nuxeo UI
+@element nuxeo-retentionrules-create-layout
+-->
+<dom-module id="nuxeo-retentionrules-create-layout">
+
+  <template>
+    <style>
+      *[role=widget] {
+        margin-bottom: 8px;
+      }
+    </style>
+
+    <nuxeo-input role="widget"
+                 label="[[i18n('title')]]"
+                 name="title"
+                 value="{{document.properties.dc:title}}"
+                 autofocus required>
+    </nuxeo-input>
+
+    <nuxeo-textarea role="widget"
+                    label="[[i18n('label.description')]]"
+                    name="description"
+                    value="{{document.properties.dc:description}}">
+    </nuxeo-textarea>
+
+    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.nature')]]"
+                                name="nature"
+                                directory-name="nature"
+                                value="{{document.properties.dc:nature}}"
+                                placeholder="[[i18n('dublincoreEdit.directorySuggestion.placeholder')]]"
+                                min-chars="0">
+    </nuxeo-directory-suggestion>
+
+    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.subjects')]]"
+                                directory-name="l10nsubjects"
+                                name="subjects"
+                                value="{{document.properties.dc:subjects}}"
+                                multiple="true"
+                                dbl10n="true"
+                                placeholder="[[i18n('dublincoreEdit.directorySuggestion.placeholder')]]"
+                                min-chars="0">
+    </nuxeo-directory-suggestion>
+
+    <nuxeo-directory-suggestion role="widget" label="[[i18n('label.dublincore.coverage')]]"
+                                directory-name="l10ncoverage"
+                                name="coverage"
+                                value="{{document.properties.dc:coverage}}"
+                                dbl10n="true"
+                                placeholder="[[i18n('dublincoreEdit.directorySuggestion.placeholder')]]"
+                                min-chars="0">
+    </nuxeo-directory-suggestion>
+
+    <nuxeo-date-picker role="widget" label="[[i18n('label.dublincore.expire')]]" name="expired"
+                       value="{{document.properties.dc:expired}}">
+    </nuxeo-date-picker>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'nuxeo-retentionrules-create-layout',
+      behaviors: [Nuxeo.LayoutBehavior],
+      properties: {
+        /**
+         * @doctype retentionrules
+         */
+        document: Object
+      }
+    });
+  </script>
+
+</dom-module>

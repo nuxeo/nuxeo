@@ -1,0 +1,103 @@
+<!--
+(C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="nuxeo-attach-rule-button.html">
+<link rel="import" href="nuxeo-hold-toggle-button.html">
+<link rel="import" href="nuxeo-retention-behavior.html">
+<link rel="import" href="nuxeo-retention-events.html">
+<link rel="import" href="nuxeo-retention-menu.html">
+<link rel="import" href="nuxeo-retention-rules.html">
+<link rel="import" href="nuxeo-retain-button.html">
+
+<nuxeo-slot-content name="retentionRulesDrawerItem" slot="DRAWER_ITEMS" order="65">
+  <template>
+    <nuxeo-filter user="[[user]]" group="RecordManager,administrators">
+      <template>
+        <nuxeo-menu-icon name="retention" icon="nuxeo:retention" label="app.retention"></nuxeo-menu-icon>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+<nuxeo-slot-content name="retentionRulesDrawerPage" slot="DRAWER_PAGES">
+  <template>
+    <nuxeo-filter user="[[user]]" group="RecordManager,administrators">
+      <template>
+        <nuxeo-retention-menu name="retention"></nuxeo-retention-menu>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="retentionSearch" slot="PAGES">
+  <template>
+    <nuxeo-filter user="[[user]]" group="RecordManager,administrators">
+      <template>
+        <nuxeo-search-page id="retentionSearch"
+                           name="retentionSearch"
+                           heading="retention.search"
+                           provider="retention_search"
+                           schemas="dublincore,common,retention_def"
+                           search-name="retention"
+                           show-filters opened stop-error-propagation></nuxeo-search-page>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="retentionEvents" slot="PAGES" >
+  <template>
+    <nuxeo-filter user="[[user]]" group="RecordManager,administrators">
+      <template>
+        <nuxeo-retention-events name="retentionEvents"></nuxeo-retention-events>
+      </template>
+  </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="holdToggleDocumentAction" slot="DOCUMENT_ACTIONS" order="75">
+  <template>
+    <nuxeo-filter user="[[user]]" permissions="MakeRecord,ManageLegalHold">
+      <template>
+        <nuxeo-hold-toggle-button document="[[document]]"></nuxeo-hold-toggle-button>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="attachRetentionRuleDocumentAction" slot="DOCUMENT_ACTIONS" order="76">
+  <template>
+    <nuxeo-filter user="[[user]]" document="[[document]]"  expression="!this.document.retainUntil
+                                                                    && !this.hasFacet(document, 'Folderish')
+                                                                    && this.hasPermission(document, 'MakeRecord')
+                                                                    && this.hasPermission(document, 'SetRetention')">
+      <template>
+        <nuxeo-attach-rule-button document="[[document]]"></nuxeo-attach-rule-button>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>
+
+<nuxeo-slot-content name="retainDocumentAction" slot="DOCUMENT_ACTIONS" order="77">
+  <template>
+    <nuxeo-filter user="[[user]]" document="[[document]]"  expression="this.document.retainUntil
+                                                                    && this.hasPermission(document, 'MakeRecord')
+                                                                    && this.hasPermission(document, 'SetRetention')">
+      <template>
+        <nuxeo-retain-button document="[[document]]"></nuxeo-retain-button>
+      </template>
+    </nuxeo-filter>
+  </template>
+</nuxeo-slot-content>

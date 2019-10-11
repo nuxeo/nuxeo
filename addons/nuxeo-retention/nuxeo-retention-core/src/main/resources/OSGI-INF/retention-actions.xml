@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.retention.actions">
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="holdDocumentsAction" bucketSize="100"
+      batchSize="20" />
+    <action name="unholdDocumentsAction" bucketSize="100"
+      batchSize="20" />
+    <action name="attachRetentionRule" bucketSize="100"
+      batchSize="20" />
+    <action name="evalInputEventBasedRule" bucketSize="100"
+      batchSize="20" />
+    <action name="processRetentionEvent" bucketSize="100"
+      batchSize="20" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service"
+    point="streamProcessor">
+    <streamProcessor name="holdDocumentsAction"
+      class="org.nuxeo.retention.actions.HoldDocumentsAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      <policy name="default" maxRetries="3" delay="1s"
+        maxDelay="10s" continueOnFailure="true" />
+      <option name="produceImmediate">false</option>
+    </streamProcessor>
+      <streamProcessor name="unholdDocumentsAction"
+      class="org.nuxeo.retention.actions.UnholdDocumentsAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      <policy name="default" maxRetries="3" delay="1s"
+        maxDelay="10s" continueOnFailure="true" />
+      <option name="produceImmediate">false</option>
+    </streamProcessor>
+    <streamProcessor name="attachRetentionRule"
+      class="org.nuxeo.retention.actions.AttachRetentionRuleAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      <policy name="default" maxRetries="3" delay="1s"
+        maxDelay="10s" continueOnFailure="true" />
+      <option name="produceImmediate">false</option>
+    </streamProcessor>
+    <streamProcessor name="evalInputEventBasedRule"
+      class="org.nuxeo.retention.actions.EvalInputEventBasedRuleAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      <policy name="default" maxRetries="3" delay="1s"
+        maxDelay="10s" continueOnFailure="true" />
+      <option name="produceImmediate">false</option>
+    </streamProcessor>
+    <streamProcessor name="processRetentionEvent"
+      class="org.nuxeo.retention.actions.ProcessRetentionEventAction"
+      logConfig="bulk" defaultConcurrency="2" defaultPartitions="4">
+      <policy name="default" maxRetries="3" delay="1s"
+        maxDelay="10s" continueOnFailure="true" />
+      <option name="produceImmediate">false</option>
+    </streamProcessor>
+  </extension>
+
+</component>

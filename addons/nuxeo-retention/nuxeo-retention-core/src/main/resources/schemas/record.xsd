@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/common/"
+  xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/"
+  xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+  <xs:include schemaLocation="base.xsd" />
+  <xs:element name="ruleIds">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string"
+            ref:resolver="documentResolver" ref:store="idOnly" />
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="retainUntil" type="xs:date" />
+</xs:schema>
