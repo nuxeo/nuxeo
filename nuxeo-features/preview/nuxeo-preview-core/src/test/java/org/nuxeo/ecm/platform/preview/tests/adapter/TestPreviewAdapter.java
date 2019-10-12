@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview" })
+@Deploy({ "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.htmlsanitizer" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy({ "org.nuxeo.ecm.platform.preview:doctype-contrib-test.xml" })
 public class TestPreviewAdapter {
@@ -65,16 +65,44 @@ public class TestPreviewAdapter {
     @Inject
     CoreSession session;
 
+    protected static final String BAD = "<html>\n" //
+            + "<body>\n" //
+            + "<script>alert(1)</script>\n" //
+            + "<b>test</b>" //
+            + "</body>\n" //
+            + "</html>";
+
     @Test
-    public void testFileDocument() throws Exception {
+    public void testNoBlob() throws Exception {
         DocumentModel document = session.createDocumentModel("File");
         HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
         assertEquals(false, adapter.hasBlobToPreview());
         assertFalse(PreviewHelper.blobSupportsPreview(document, "file:content"));
         List<Blob> blobs = adapter.getFilePreviewBlobs();
         assertEquals(Collections.emptyList(), blobs);
+    }
 
-        Blob blob = new StringBlob("test");
+    @Test
+    public void testFileDocument() throws Exception {
+        Blob blob = new StringBlob("test", "text/plain");
+        doTestFileDocument(blob, "<pre>test</pre>");
+    }
+
+    @Test
+    public void testHTMLDocument() throws Exception {
+        Blob blob = new StringBlob(BAD, "text/html");
+        doTestFileDocument(blob, "\n\n\n<b>test</b>\n\n");
+    }
+
+    @Test
+    public void testXMLDocument() throws Exception {
+        Blob blob = new StringBlob(BAD, "text/xml");
+        doTestFileDocument(blob, "\n\n\n<b>test</b>\n\n");
+    }
+
+    protected void doTestFileDocument(Blob blob, String expectedBody) throws Exception {
+        DocumentModel document = session.createDocumentModel("File");
+        HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
         Map<String, Serializable> file = new HashMap<>();
         // Attach one file to the list
         file.put("file", (Serializable) blob);
@@ -82,10 +110,10 @@ public class TestPreviewAdapter {
         document.setPropertyValue("file:content", (Serializable) blob);
         assertEquals(true, adapter.hasBlobToPreview());
         assertTrue(PreviewHelper.blobSupportsPreview(document, "file:content"));
-        blobs = adapter.getFilePreviewBlobs();
+        List<Blob> blobs = adapter.getFilePreviewBlobs();
         assertEquals(1, blobs.size());
         String preview = blobs.get(0).getString();
-        assertTrue(preview, preview.contains("<pre>test</pre>"));
+        assertEquals("<!doctype html><html><body>" + expectedBody + "</body></html>", preview);
     }
 
     @Test

@@ -21,18 +21,22 @@
 
 package org.nuxeo.ecm.platform.preview.converters;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.ecm.core.convert.extension.ExternalConverter;
+import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
+import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 import org.nuxeo.runtime.api.Framework;
 
 public class HtmlPreviewConverter implements ExternalConverter {
@@ -117,10 +121,24 @@ public class HtmlPreviewConverter implements ExternalConverter {
         for (String converterName : subConverters) {
             result = getConversionService().convert(converterName, result, parameters);
         }
+
         Blob blob = result.getBlob();
-        if (blob != null && blob.getEncoding() == null) {
-            blob.setEncoding("UTF-8");
+
+        // sanitize result
+        HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
+        if (sanitizer == null) {
+            throw new RuntimeException("Cannot find HtmlSanitizerService");
         }
+        String body;
+        try {
+            body = sanitizer.sanitizeString(blob.getString(), null);
+        } catch (IOException e) {
+            throw new ConversionException(e);
+        }
+        String html = PreviewHelper.makeHtmlPage(body);
+        blob = Blobs.createBlob(html, "text/html", null, blob.getFilename());
+        result.setBlob(blob);
+
         return result;
     }
 
