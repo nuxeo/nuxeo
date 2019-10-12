@@ -33,9 +33,6 @@ public class HtmlPreviewer extends PlainTextPreviewer implements MimeTypePreview
     public String htmlContent(String content) {
         HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
         if (sanitizer == null) {
-            if (Framework.isTestModeSet()) {
-                return content;
-            }
             throw new RuntimeException("Cannot find HtmlSanitizerService");
         }
         return sanitizer.sanitizeString(content, null);

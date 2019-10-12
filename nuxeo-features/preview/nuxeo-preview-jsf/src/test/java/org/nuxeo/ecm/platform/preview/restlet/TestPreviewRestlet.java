@@ -53,6 +53,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.preview")
 @Deploy("org.nuxeo.ecm.platform.preview.jsf")
+@Deploy("org.nuxeo.ecm.platform.htmlsanitizer")
 public class TestPreviewRestlet extends AbstractRestletTest {
 
     protected static final String ENDPOINT = "/preview";
@@ -82,11 +83,8 @@ public class TestPreviewRestlet extends AbstractRestletTest {
     public void testPreview() throws Exception {
         String path = ENDPOINT + "/" + repositoryName + "/" + doc.getId() + "/default/";
         String content = executeRequest(path, HttpGet::new, SC_OK, "text/html;charset=UTF-8");
-        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"/>" //
+        String expected = "<!doctype html>" //
                 + "<html>" //
-                + "<head>" //
-                + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>" //
-                + "</head>" //
                 + "<body>" //
                 + "Hello <b>World!</b>" //
                 + "</body>" //
