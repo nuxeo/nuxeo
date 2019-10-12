@@ -140,6 +140,11 @@
       <artifactId>nuxeo-platform-userworkspace-types</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-htmlsanitizer</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
