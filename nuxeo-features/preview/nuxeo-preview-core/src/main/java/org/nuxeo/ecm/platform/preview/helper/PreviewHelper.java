@@ -106,4 +106,12 @@ public class PreviewHelper {
         DocumentBlobHolder bh = (DocumentBlobHolder) doc.getAdapter(BlobHolder.class);
         return bh != null && bh.getXpath().equals(xpath);
     }
+
+    /**
+     * @since 11.1
+     */
+    public static String makeHtmlPage(String body) {
+        return "<!doctype html><html><body>" + body + "</body></html>";
+    }
+
 }
