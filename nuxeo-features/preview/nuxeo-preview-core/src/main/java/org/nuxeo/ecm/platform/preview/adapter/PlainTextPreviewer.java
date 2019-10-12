@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
+import org.nuxeo.ecm.platform.preview.helper.PreviewHelper;
 
 import com.ibm.icu.text.CharsetDetector;
 
@@ -48,8 +49,6 @@ public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePre
     @Override
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();
-
-        StringBuilder htmlPage = new StringBuilder();
 
         byte[] data;
         try {
@@ -71,14 +70,8 @@ public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePre
             throw new PreviewException("Cannot encode blob content to string", e);
         }
 
-        htmlPage.append("<?xml version=\"1.0\" encoding=\"UTF-8\"/>");
-        htmlPage.append("<html>");
-        htmlPage.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/></head>");
-        htmlPage.append("<body>");
-        htmlPage.append(htmlContent(content));
-        htmlPage.append("</body></html>");
-
-        Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", "UTF-8", "index.html");
+        String html = PreviewHelper.makeHtmlPage(htmlContent(content));
+        Blob mainBlob = Blobs.createBlob(html, "text/html", "UTF-8", "index.html");
 
         blobResults.add(mainBlob);
         return blobResults;
