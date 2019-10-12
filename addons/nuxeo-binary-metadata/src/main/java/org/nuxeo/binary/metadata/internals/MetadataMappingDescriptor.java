@@ -46,7 +46,7 @@ public class MetadataMappingDescriptor implements Serializable {
 
     @XNode("@ignorePrefix")
     protected Boolean ignorePrefix;
-    
+
     /** @since 11.1 */
     @XNode("@readOnly")
     protected Boolean readOnly;
@@ -100,10 +100,10 @@ public class MetadataMappingDescriptor implements Serializable {
     }
 
     public boolean ignorePrefix() {
-    	return !Boolean.FALSE.equals(ignorePrefix);
+        return !Boolean.FALSE.equals(ignorePrefix);
     }
 
     public boolean isReadOnly() {
-    	return Boolean.TRUE.equals(readOnly);
+        return Boolean.TRUE.equals(readOnly);
     }
 }

@@ -56,7 +56,7 @@ public class TestBinaryMetadataDataMappingReadOnly extends BaseBinaryMetadataTes
         pdfDoc = BinaryMetadataServerInit.getFile(1, session);
         assertEquals("en-US", pdfDoc.getPropertyValue("dc:title"));
         assertEquals("OpenOffice.org 3.2", pdfDoc.getPropertyValue("dc:source"));
-        
+
         // Modify values in the document
         pdfDoc.setPropertyValue("dc:title", "New Title");
         pdfDoc.setPropertyValue("dc:source", "New Source");
@@ -69,6 +69,6 @@ public class TestBinaryMetadataDataMappingReadOnly extends BaseBinaryMetadataTes
         assertNotNull(blobProperties);
         assertEquals("en-US", blobProperties.get("Language").toString());
         assertEquals("New Source", blobProperties.get("Producer").toString());
-        
+
     }
 }

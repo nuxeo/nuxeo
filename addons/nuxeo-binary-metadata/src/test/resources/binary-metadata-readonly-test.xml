@@ -13,7 +13,7 @@
       <metadata name="PDF:Producer" xpath="dc:source"/>
     </metadataMapping>
   </extension>
-  
+
   <extension target="org.nuxeo.binary.metadata" point="metadataRules">
     <rule id="default" order="0" enabled="true" async="false">
       <metadataMappings>
