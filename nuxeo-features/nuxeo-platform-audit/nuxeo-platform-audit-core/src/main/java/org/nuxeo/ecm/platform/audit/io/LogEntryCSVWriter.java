@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
@@ -59,7 +60,7 @@ public class LogEntryCSVWriter extends AbstractCSVWriter<LogEntry> {
 
     @Override
     protected void write(LogEntry entity, CSVPrinter printer) throws IOException {
-        Set<String> propertiesToFetch = new HashSet<>(getPropertiesToFetch());
+        Set<String> propertiesToFetch = new HashSet<>(getPropertiesToFetch(ctx));
         if (propertiesToFetch.contains(LOG_ID)) {
             printer.print(entity.getId());
         }
@@ -100,11 +101,7 @@ public class LogEntryCSVWriter extends AbstractCSVWriter<LogEntry> {
 
     @Override
     protected void writeHeader(LogEntry entity, CSVPrinter printer) throws IOException {
-        List<String> properties = getPropertiesToFetch();
-        for (String property : properties) {
-            printer.print(property);
-        }
-        printer.println();
+        writeHeader(printer, ctx);
     }
 
     /**
@@ -112,13 +109,21 @@ public class LogEntryCSVWriter extends AbstractCSVWriter<LogEntry> {
      *
      * @return the list of properties to fetch
      */
-    protected List<String> getPropertiesToFetch() {
+    protected static List<String> getPropertiesToFetch(RenderingContext ctx) {
         Set<String> fetched = ctx.getFetched(ENTITY_TYPE);
         List<String> propertiesToFetch = DEFAULT_PROPERTIES.stream()
                                                            .filter(fetched::contains)
                                                            .collect(Collectors.toList());
         // if no particular property to fetch, fetch all default properties
         return propertiesToFetch.isEmpty() ? DEFAULT_PROPERTIES : propertiesToFetch;
+    }
+
+    public static void writeHeader(CSVPrinter printer, RenderingContext ctx) throws IOException {
+        List<String> properties = getPropertiesToFetch(ctx);
+        for (String property : properties) {
+            printer.print(property);
+        }
+        printer.println();
     }
 
 }

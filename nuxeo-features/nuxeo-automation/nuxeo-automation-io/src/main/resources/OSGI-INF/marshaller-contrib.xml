@@ -15,7 +15,7 @@
       <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonAdapterWriter</writer>
       <writer>org.nuxeo.ecm.automation.jaxrs.io.JsonRecordSetWriter</writer>
       <!-- delegates marshalling to nuxeo-core-io MarshallerRegistry service -->
-      <writer>org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate</writer>
+      <writer>org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.CoreIODelegate</writer>
     </marshaller>
   </extension>
 </component>

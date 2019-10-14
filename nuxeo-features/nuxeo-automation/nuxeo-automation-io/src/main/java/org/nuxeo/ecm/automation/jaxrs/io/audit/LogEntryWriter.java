@@ -33,14 +33,14 @@ import javax.ws.rs.ext.Provider;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * @since 5.7.3 - LogEntry Writer for Audit.
  * @deprecated since 7.10 this marshaller was migrated to org.nuxeo.ecm.platform.audit.io.LogEntryJsonWriter. To use it
- *             in JAX-RS, register the {@link JsonCoreIODelegate} to forward the JAX-RS marshalling to nuxeo-core-io.
+ *             in JAX-RS, register the {@link org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.CoreIODelegate} to forward
+ *             the JAX-RS marshalling to nuxeo-core-io.
  */
 @Deprecated
 @Provider

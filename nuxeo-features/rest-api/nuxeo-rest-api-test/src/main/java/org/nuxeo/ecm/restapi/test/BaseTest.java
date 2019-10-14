@@ -153,7 +153,8 @@ public class BaseTest {
     }
 
     protected CloseableClientResponse getResponse(RequestType requestType, String path, String data,
-            MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) {
+            MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers,
+            String... acceptedTypes) {
 
         WebResource wr = service.path(path);
 
@@ -161,7 +162,9 @@ public class BaseTest {
             wr = wr.queryParams(queryParams);
         }
         Builder builder;
-        builder = wr.accept(MediaType.APPLICATION_JSON).header("X-NXDocumentProperties", "dublincore");
+
+        String[] types = acceptedTypes.length > 0 ? acceptedTypes : new String[] { MediaType.APPLICATION_JSON };
+        builder = wr.accept(types).header("X-NXDocumentProperties", "dublincore");
 
         // Adding some headers if needed
         if (headers != null && !headers.isEmpty()) {

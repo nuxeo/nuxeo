@@ -33,6 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -46,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 @WebAdapter(name = AuditAdapter.NAME, type = "AuditService")
-@Produces(MediaType.APPLICATION_JSON)
+@Produces({ MediaType.APPLICATION_JSON, AbstractCSVWriter.TEXT_CSV})
 public class AuditAdapter extends PaginableAdapter<LogEntry> {
 
     private static Logger log = LogManager.getLogger(AuditAdapter.class);

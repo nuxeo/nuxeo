@@ -38,7 +38,7 @@ import org.nuxeo.ecm.restapi.jaxrs.io.types.DocumentTypesWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.types.FacetsWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.types.SchemasWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
-import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.CoreIODelegate;
 
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
@@ -75,7 +75,7 @@ public class APIModule extends WebEngineModule {
         result.add(new ConversionStatusWithResultWriter());
 
         // nuxeo-core-io MarshallerRegistry service reading and writing
-        result.add(new JsonCoreIODelegate());
+        result.add(new CoreIODelegate());
 
         return result;
     }
