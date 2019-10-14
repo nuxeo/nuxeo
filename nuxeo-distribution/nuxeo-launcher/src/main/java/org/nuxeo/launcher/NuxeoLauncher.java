@@ -220,16 +220,27 @@ public abstract class NuxeoLauncher {
     /**
      * @since 5.9.1
      */
+    @Deprecated(since = "11.1")
     protected static final String OPTION_FORCE = "force";
 
-    private static final String OPTION_FORCE_DESC = "Deprecated: use '--strict' option instead.";
+    @Deprecated(since = "11.1")
+    private static final String OPTION_FORCE_DESC = "Deprecated since 11.1: strict mode is the default.";
 
     /**
      * @since 7.4
      */
+    @Deprecated(since = "11.1")
     protected static final String OPTION_STRICT = "strict";
 
-    private static final String OPTION_STRICT_DESC = "Abort in error the start command when a component cannot "
+    @Deprecated(since = "11.1")
+    private static final String OPTION_STRICT_DESC = "Deprecated since 11.1: strict mode is the default.";
+
+    /**
+     * @since 11.1
+     */
+    protected static final String OPTION_LENIENT = "lenient";
+
+    protected static final String OPTION_LENIENT_DESC = "Do not abort in error the start command when a component cannot "
             + "be activated or if a server is already running.";
 
     /**
@@ -567,7 +578,7 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl configure [-d [<categories>]|-q|-hdw]\n\n"
             + "        nuxeoctl wizard [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>]\n\n"
             + "        nuxeoctl stop [-d [<categories>]|-q|--gui <true|false|yes|no>]\n\n"
-            + "        nuxeoctl start|restart|console|startbg|restartbg [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>|--strict|-hdw]\n\n"
+            + "        nuxeoctl start|restart|console|startbg|restartbg [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>|--lenient|-hdw]\n\n"
             + "        nuxeoctl mp-show [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
             + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--relax <true|false|yes|no>|--xml|--json]\n\n"
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
@@ -644,7 +655,7 @@ public abstract class NuxeoLauncher {
 
     private static boolean debug = false;
 
-    private static boolean strict = false;
+    private static boolean strict = true;
 
     private boolean xmlOutput = false;
 
@@ -1011,6 +1022,8 @@ public abstract class NuxeoLauncher {
         options.addOption(Option.builder("f").longOpt(OPTION_FORCE).desc(OPTION_FORCE_DESC).build());
         // Strict option
         options.addOption(Option.builder().longOpt(OPTION_STRICT).desc(OPTION_STRICT_DESC).build());
+        // lenient option
+        options.addOption(Option.builder().longOpt(OPTION_LENIENT).desc(OPTION_LENIENT_DESC).build());
 
         // Ignore missing option
         options.addOption(Option.builder("im").longOpt(OPTION_IGNORE_MISSING).desc(OPTION_IGNORE_MISSING_DESC).build());
@@ -1087,7 +1100,10 @@ public abstract class NuxeoLauncher {
             setDebug(cmdLine.getOptionValues(OPTION_DEBUG_CATEGORY));
         }
         if (cmdLine.hasOption(OPTION_FORCE) || cmdLine.hasOption(OPTION_STRICT)) {
-            setStrict(true);
+            log.warn("--force and --strict have no impact, Nuxeo is started in strict mode by default.");
+        }
+        if (cmdLine.hasOption(OPTION_LENIENT)) {
+            setStrict(false);
         }
         return cmdLine;
     }
@@ -2492,7 +2508,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param isStrict if {@code true}, set the launcher strict option
+     * Sets the launcher strict option.
+     *
      * @since 7.4
      * @see #OPTION_STRICT_DESC
      */
