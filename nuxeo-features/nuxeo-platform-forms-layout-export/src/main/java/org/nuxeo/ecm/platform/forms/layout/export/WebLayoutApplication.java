@@ -24,7 +24,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
-import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.JsonCoreIODelegate;
+import org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.CoreIODelegate;
 
 /**
  * Entry point for jax-rs calls to the {@link LayoutStore} service.
@@ -45,7 +45,7 @@ public class WebLayoutApplication extends Application {
     public Set<Object> getSingletons() {
         Set<Object> result = new HashSet<>();
         // nuxeo-core-io MarshallerRegistry service reading and writing
-        result.add(new JsonCoreIODelegate());
+        result.add(new CoreIODelegate());
         return result;
     }
 

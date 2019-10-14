@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  * Contributors:
- *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
+ *     Salem Aouana
  */
 
 package org.nuxeo.ecm.webengine.jaxrs.coreiodelegate;
@@ -44,16 +44,13 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 
 /**
  * A JAX-RS {@link MessageBodyWriter} that try to delegate the marshalling to all nuxeo-core-io {@link Writer} and
- * {@link Reader}.
+ * {@link Reader}. This singleton is also registering an injection of {@link RenderingContext}
  *
- * @since 7.2
- * @implNote since 11.1, this singleton is also registering an injection of {@link RenderingContext}
- * @deprecated since 11.1. Use {@link org.nuxeo.ecm.webengine.jaxrs.coreiodelegate.CoreIODelegate} instead.
+ * @since 11.1
  */
-@Deprecated(since = "11.1", forRemoval = true)
 @Provider
-@Produces(APPLICATION_JSON)
-public final class JsonCoreIODelegate extends PartialCoreIODelegate
+@Produces({ APPLICATION_JSON, "text/csv" })
+public class CoreIODelegate extends PartialCoreIODelegate
         implements InjectableProvider<Context, Type>, Injectable<RenderingContext> {
 
     @Override
@@ -61,9 +58,6 @@ public final class JsonCoreIODelegate extends PartialCoreIODelegate
         return true;
     }
 
-    /**
-     * @since 11.1
-     */
     @Override
     public RenderingContext getValue() {
         return Optional.ofNullable(RequestContext.getActiveContext())
@@ -72,17 +66,11 @@ public final class JsonCoreIODelegate extends PartialCoreIODelegate
                        .orElseThrow(() -> new NuxeoException("No RenderingContext in the request")); // shouldn't happen
     }
 
-    /**
-     * @since 11.1
-     */
     @Override
     public ComponentScope getScope() {
         return ComponentScope.PerRequest;
     }
 
-    /**
-     * @since 11.1
-     */
     @Override
     public Injectable getInjectable(ComponentContext ic, Context a, Type c) {
         if (!c.equals(RenderingContext.class)) {

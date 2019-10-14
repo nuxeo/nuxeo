@@ -22,8 +22,11 @@ package org.nuxeo.ecm.restapi.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
+import static org.nuxeo.ecm.core.io.marshallers.csv.AbstractCSVWriter.TEXT_CSV;
+import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +38,9 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.DateUtils;
@@ -45,6 +51,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.io.LogEntryCSVWriter;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.AuditAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.AuditJsonEnricher;
@@ -70,7 +77,7 @@ public class AuditTest extends BaseTest {
     AuditLogger auditLogger;
 
     @Test
-    public void shouldRetrieveAllLogEntries() throws Exception {
+    public void shouldRetrieveAllLogEntriesAsJson() throws Exception {
         DocumentModel doc = RestServerInit.getFile(1, session);
 
         try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
@@ -82,6 +89,33 @@ public class AuditTest extends BaseTest {
             assertEquals(2, nodes.size());
             assertEquals("documentModified", nodes.get(0).get("eventId").asText());
             assertEquals("documentCreated", nodes.get(1).get("eventId").asText());
+        }
+    }
+
+    @Test
+    public void shouldRetrieveAllLogEntriesAsCsv() throws Exception {
+        DocumentModel doc = RestServerInit.getFile(1, session);
+
+        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+                "id/" + doc.getId() + "/@" + AuditAdapter.NAME, null, null, null, null, TEXT_CSV)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            // Parse the http response to retrieve the csv records
+            CSVParser csvParser = new CSVParser(new InputStreamReader(response.getEntityInputStream()),
+                    CSVFormat.DEFAULT);
+            List<CSVRecord> records = csvParser.getRecords();
+
+            // Csv Header + 2 data lines
+            assertEquals(3, records.size());
+            int nbeOfColumns = LogEntryCSVWriter.DEFAULT_PROPERTIES.size();
+            assertEquals(nbeOfColumns, records.get(0).size());
+            assertEquals(nbeOfColumns, records.get(1).size());
+            assertEquals(nbeOfColumns, records.get(2).size());
+
+            int index = LogEntryCSVWriter.DEFAULT_PROPERTIES.indexOf(LOG_EVENT_ID);
+            assertEquals("eventId", records.get(0).get(index));
+            assertEquals("documentModified", records.get(1).get(index));
+            assertEquals("documentCreated", records.get(2).get(index));
         }
     }
 
