@@ -35,5 +35,3 @@ build:
           repo: ${DOCKER_REGISTRY}/${ORG}/slim/cache
   cluster:
     namespace: platform
-    dockerConfig:
-      secretName: jenkins-docker-cfg
