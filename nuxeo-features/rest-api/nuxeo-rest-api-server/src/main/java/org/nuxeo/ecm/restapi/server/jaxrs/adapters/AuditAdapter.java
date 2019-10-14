@@ -29,8 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
 @Produces(MediaType.APPLICATION_JSON)
 public class AuditAdapter extends PaginableAdapter<LogEntry> {
 
-    private static Log log = LogFactory.getLog(AuditAdapter.class);
+    private static Logger log = LogManager.getLogger(AuditAdapter.class);
 
     public static final String NAME = "audit";
 
@@ -84,9 +84,12 @@ public class AuditAdapter extends PaginableAdapter<LogEntry> {
         DocumentModel searchDocument = session.createDocumentModel("BasicAuditSearch");
         searchDocument.setPropertyValue("bas:eventIds", request.getParameterValues(EVENT_ID_PARAMETER_NAME));
         searchDocument.setPropertyValue("bas:eventCategories", request.getParameterValues(CATEGORY_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:principalNames", request.getParameterValues(PRINCIPAL_NAME_PARAMETER_NAME));
-        searchDocument.setPropertyValue("bas:startDate", getCalendarParameter(request.getParameter(START_EVENT_DATE_PARAMETER_NAME)));
-        searchDocument.setPropertyValue("bas:endDate", getCalendarParameter(request.getParameter(END_EVENT_DATE_PARAMETER_NAME)));
+        searchDocument.setPropertyValue("bas:principalNames",
+                request.getParameterValues(PRINCIPAL_NAME_PARAMETER_NAME));
+        searchDocument.setPropertyValue("bas:startDate",
+                getCalendarParameter(request.getParameter(START_EVENT_DATE_PARAMETER_NAME)));
+        searchDocument.setPropertyValue("bas:endDate",
+                getCalendarParameter(request.getParameter(END_EVENT_DATE_PARAMETER_NAME)));
 
         return searchDocument;
     }

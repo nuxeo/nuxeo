@@ -24,8 +24,8 @@ import java.util.Set;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.jaxrs.JsonFactoryProvider;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.MultiPartFormRequestReader;
 import org.nuxeo.ecm.automation.server.AutomationServer;
@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AutomationModule extends WebEngineModule {
 
-    protected static final Log log = LogFactory.getLog(AutomationModule.class);
+    protected static final Logger log = LogManager.getLogger(AutomationModule.class);
 
     @Override
     public Set<Class<?>> getClasses() {
@@ -60,7 +60,7 @@ public class AutomationModule extends WebEngineModule {
             try {
                 result.add(readerKlass.getDeclaredConstructor().newInstance());
             } catch (ReflectiveOperationException e) {
-                log.error("Unable to instanciate MessageBodyReader : " + readerKlass, e);
+                log.error("Unable to instantiate MessageBodyReader: {}", readerKlass, e);
             }
         }
 
@@ -68,7 +68,7 @@ public class AutomationModule extends WebEngineModule {
             try {
                 result.add(writerKlass.getDeclaredConstructor().newInstance());
             } catch (ReflectiveOperationException e) {
-                log.error("Unable to instanciate MessageBodyWriter : " + writerKlass, e);
+                log.error("Unable to instantiate MessageBodyWriter: {}", writerKlass, e);
             }
         }
 
