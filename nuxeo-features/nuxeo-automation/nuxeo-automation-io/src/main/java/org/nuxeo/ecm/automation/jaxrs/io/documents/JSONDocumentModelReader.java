@@ -38,8 +38,8 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
@@ -79,7 +79,7 @@ public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel>
 
     // private static final String REQUEST_BATCH_ID = "batchId";
 
-    protected static final Log log = LogFactory.getLog(JSONDocumentModelReader.class);
+    protected static final Logger log = LogManager.getLogger(JSONDocumentModelReader.class);
 
     @Context
     HttpServletRequest request;
@@ -95,7 +95,7 @@ public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel>
     @Override
     public DocumentModel readFrom(Class<DocumentModel> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-                    throws IOException, WebApplicationException {
+            throws IOException, WebApplicationException {
         String content = IOUtils.toString(entityStream);
         if (content.isEmpty()) {
             throw new NuxeoException("No content in request body", SC_BAD_REQUEST);
@@ -148,7 +148,7 @@ public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel>
                     throw new WebApplicationException(Response.Status.BAD_REQUEST);
                 }
             } else {
-                log.debug("Unknown key: " + key);
+                log.debug("Unknown key: {}", key);
                 jp.skipChildren();
             }
 
@@ -214,7 +214,7 @@ public class JSONDocumentModelReader implements MessageBodyReader<DocumentModel>
                     }
                     // }
                 } catch (PropertyNotFoundException e) {
-                    log.warn(String.format("Trying to deserialize unexistent field : {%s}", field));
+                    log.warn("Trying to deserialize unExistent field : {}", field);
                 }
             }
         }
