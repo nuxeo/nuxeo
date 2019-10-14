@@ -187,4 +187,30 @@ public class TestLogChronicle extends TestLog {
         }
     }
 
+
+    @Test
+    public void testRecoverAfterExpirationOfRetention() throws Exception {
+        KeyValueMessage msg1 = KeyValueMessage.of("id1");
+        KeyValueMessage msg2 = KeyValueMessage.of("id2");
+        KeyValueMessage msg3 = KeyValueMessage.of("id3");
+        manager.createIfNotExists(logName, 1);
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
+
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("group", logName)) {
+            appender.append(0, msg1);
+            assertEquals(msg1, tailer.read(Duration.ofSeconds(1)).message());
+            tailer.commit();
+        }
+        appender.append(0, msg2);
+        for (int i = 0; i < 5; i++) {
+            Thread.sleep(1100);
+            appender.append(0, msg3);
+        }
+        resetManager();
+        // Now the last committed message has been deleted by retention (3s)
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("group", logName)) {
+            // msg2 has been lost we should be on msg3
+            assertEquals(msg3, tailer.read(Duration.ofSeconds(1)).message());
+        }
+    }
 }
