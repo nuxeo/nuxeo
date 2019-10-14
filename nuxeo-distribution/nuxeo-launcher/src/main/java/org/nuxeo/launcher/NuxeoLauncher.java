@@ -37,13 +37,11 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -53,8 +51,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
-import javax.json.Json;
-import javax.json.stream.JsonGenerator;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -491,9 +487,9 @@ public abstract class NuxeoLauncher {
             + "        NUXEO_HOME\t\tPath to server root directory.\n" //
             + "        NUXEO_CONF\t\tPath to {{nuxeo.conf}} file.\n" //
             + "        PATH\n" //
-            + "\tJAVA\t\t\tPath to the {{java}} executable.\n"
-            + "        JAVA_HOME\t\tPath to the Java home directory. Can also be defined in {{nuxeo.conf}}.\n"
-            + "        JAVA_OPTS\t\tOptional values passed to the JVM. Can also be defined in {{nuxeo.conf}}.\n"
+            + "\tJAVA\t\t\tPath to the {{java}} executable.\n" //
+            + "        JAVA_HOME\t\tPath to the Java home directory. Can also be defined in {{nuxeo.conf}}.\n" //
+            + "        JAVA_OPTS\t\tOptional values passed to the JVM. Can also be defined in {{nuxeo.conf}}.\n" //
             + "        REQUIRED_JAVA_VERSION\tNuxeo requirement on Java version.\n" //
             + "\nJAVA USAGE\n"
             + String.format(
@@ -509,46 +505,47 @@ public abstract class NuxeoLauncher {
                     ConfigurationGenerator.NUXEO_CONF)
             + "        jvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.\n";
 
-    private static final String OPTION_HELP_DESC_COMMANDS = "\nCOMMANDS\n" + "        help\t\t\tPrint this message.\n"
-            + "        gui\t\t\tDeprecated: use '--gui' option instead.\n"
-            + "        start\t\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.\n"
-            + "        stop\t\t\tStop any Nuxeo server started with the same {{nuxeo.conf}} file.\n"
-            + "        restart\t\t\tRestart Nuxeo server.\n"
-            + "        config\t\t\tGet and set template or global parameters.\n"
-            + "        encrypt\t\t\tOutput encrypted value for a given parameter.\n"
-            + "        decrypt\t\t\tOutput decrypted value for a given parameter.\n"
-            + "        configure\t\tConfigure Nuxeo server with parameters from {{nuxeo.conf}}.\n"
-            + "        wizard\t\t\tStart the wizard.\n"
-            + "        console\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.\n"
-            + "        status\t\t\tPrint server running status.\n"
-            + "        startbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.\n"
-            + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
-            + "        pack\t\t\tBuild a static archive.\n"
-            + "        showconf\t\tDisplay the instance configuration.\n"
-            + "        mp-list\t\t\tList local Nuxeo Packages.\n"
-            + "        mp-listall\t\tList all Nuxeo Packages.\n"
-            + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n"
-            + "        mp-update\t\tUpdate cache of Nuxeo Packages list.\n"
-            + "        mp-add\t\t\tAdd Nuxeo Package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "        mp-install\t\tRun Nuxeo Package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "        mp-uninstall\t\tUninstall Nuxeo Package(s). You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
-            + "        mp-remove\t\tRemove Nuxeo Package(s) from the local cache. You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
-            + "        mp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.\n"
-            + "        mp-set\t\t\tInstall a list of Nuxeo Packages and remove those not in the list.\n"
-            + "        mp-request\t\tInstall and uninstall Nuxeo Package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n"
-            + "        mp-purge\t\tUninstall and remove all packages from the local cache.\n"
-            + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform but do not upgrade already installed ones (requires a registered instance).\n"
-            + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n"
-            + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "        register\t\tRegister your instance with an existing Connect account. You must provide the credentials, the project name or ID, its type and a description.\n"
-            + "        register-trial\t\tThis command is deprecated. To register for a free 30 day trial on Nuxeo Online Services, please visit https://connect.nuxeo.com/register\n"
-            + "\nThe following commands are always executed in console/headless mode (no GUI): "
-            + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", "
-            + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", "
-            + "\"status\", \"showconf\", \"mp-show\", \"mp-set\", \"config\", \"encrypt\", \"decrypt\", \"help\".\n"
-            + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", "
-            + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", "
-            + "\"mp-reset\".\n"
+    private static final String OPTION_HELP_DESC_COMMANDS = "\nCOMMANDS\n" //
+            + "        help\t\t\tPrint this message.\n" //
+            + "        gui\t\t\tDeprecated: use '--gui' option instead.\n" //
+            + "        start\t\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.\n" //
+            + "        stop\t\t\tStop any Nuxeo server started with the same {{nuxeo.conf}} file.\n" //
+            + "        restart\t\t\tRestart Nuxeo server.\n" //
+            + "        config\t\t\tGet and set template or global parameters.\n" //
+            + "        encrypt\t\t\tOutput encrypted value for a given parameter.\n" //
+            + "        decrypt\t\t\tOutput decrypted value for a given parameter.\n" //
+            + "        configure\t\tConfigure Nuxeo server with parameters from {{nuxeo.conf}}.\n" //
+            + "        wizard\t\t\tStart the wizard.\n" //
+            + "        console\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.\n" //
+            + "        status\t\t\tPrint server running status.\n" //
+            + "        startbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.\n" //
+            + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n" //
+            + "        pack\t\t\tBuild a static archive.\n" //
+            + "        showconf\t\tDisplay the instance configuration.\n" //
+            + "        mp-list\t\t\tList local Nuxeo Packages.\n" //
+            + "        mp-listall\t\tList all Nuxeo Packages.\n" //
+            + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n" //
+            + "        mp-update\t\tUpdate cache of Nuxeo Packages list.\n" //
+            + "        mp-add\t\t\tAdd Nuxeo Package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n" //
+            + "        mp-install\t\tRun Nuxeo Package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n" //
+            + "        mp-uninstall\t\tUninstall Nuxeo Package(s). You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n" //
+            + "        mp-remove\t\tRemove Nuxeo Package(s) from the local cache. You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n" //
+            + "        mp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.\n" //
+            + "        mp-set\t\t\tInstall a list of Nuxeo Packages and remove those not in the list.\n" //
+            + "        mp-request\t\tInstall and uninstall Nuxeo Package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n" //
+            + "        mp-purge\t\tUninstall and remove all packages from the local cache.\n" //
+            + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform but do not upgrade already installed ones (requires a registered instance).\n" //
+            + "        mp-upgrade\t\tGet all the available upgrades for the Nuxeo Packages currently installed (requires a registered instance).\n" //
+            + "        mp-show\t\t\tShow Nuxeo Package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n" //
+            + "        register\t\tRegister your instance with an existing Connect account. You must provide the credentials, the project name or ID, its type and a description.\n" //
+            + "        register-trial\t\tThis command is deprecated. To register for a free 30 day trial on Nuxeo Online Services, please visit https://connect.nuxeo.com/register\n" //
+            + "\nThe following commands are always executed in console/headless mode (no GUI): " //
+            + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", " //
+            + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", " //
+            + "\"status\", \"showconf\", \"mp-show\", \"mp-set\", \"config\", \"encrypt\", \"decrypt\", \"help\".\n" //
+            + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", " //
+            + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", " //
+            + "\"mp-reset\".\n" //
             + "\nCommand parameters may need to be prefixed with '--' to separate them from option arguments when confusion arises.";
 
     private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [options] [--] [command parameters]\n\n";
@@ -1674,8 +1671,11 @@ public abstract class NuxeoLauncher {
             errorValue = EXIT_CODE_INVALID;
             return null;
         }
-        return Stream.of(values).map(crypto::decrypt).map(Crypto::getChars).map(String::new).collect(
-                Collectors.toList());
+        return Stream.of(values)
+                     .map(crypto::decrypt)
+                     .map(Crypto::getChars)
+                     .map(String::new)
+                     .collect(Collectors.toList());
     }
 
     /**
@@ -2066,8 +2066,8 @@ public abstract class NuxeoLauncher {
 
                 // configuration will be reloaded, keep wizard value
                 System.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE,
-                        configurationGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE,
-                                "true"));
+                        configurationGenerator.getUserConfig()
+                                              .getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "true"));
                 return doStart(logProcessOutput);
             }
 
