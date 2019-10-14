@@ -172,8 +172,18 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
             log.debug(String.format("toLastCommitted: %s, found: %d", id, offset));
             if (!cqTailer.moveToIndex(offset) && cqTailer.index() != offset) {
                 // sometime moveToIndex returns false but offset is moved
-                throw new IllegalStateException(
-                        "Unable to move to the last committed offset, " + this + " offset: " + offset);
+                toStart();
+                long startOffset = cqTailer.index();
+                if (offset < startOffset) {
+                    log.error("The last committed offset: " + offset + " for tailer: " + this
+                            + " points to a record that has been deleted by the retention policy."
+                            + " Records have been lost, continuing from the beginning of the partition offset: "
+                            + startOffset);
+                } else {
+                    // probably a corrupted Log where some cq4 files are missing
+                    throw new IllegalStateException(
+                            "Unable to move to the last committed offset: " + offset + " for tailer: " + this);
+                }
             }
         } else {
             log.debug(String.format("toLastCommitted: %s, not found, move toStart", id));
