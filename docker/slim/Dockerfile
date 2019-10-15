@@ -19,25 +19,6 @@ FROM ${BUILDER_IMAGE} as builder
 FROM ${BASE_IMAGE}
 LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
 
-# Add Nuxeo Yum repository
-COPY nuxeo.repo /etc/yum.repos.d/
-
-# Temporarily include the converters required for the Nuxeo Content Cloud image
-# TODO NXP-28123: remove
-RUN yum -y update && yum -y install epel-release && yum -y --setopt=skip_missing_names_on_install=False install \
-  ccextractor-0.88-1.el7 \
-  ffmpeg-4.1.4-4.el7 \
-  ghostscript \
-  ImageMagick \
-  libreoffice-headless libreoffice-writer libreoffice-calc libreoffice-impress \
-  libwpd-tools \
-  # required by perl-Image-ExifTool to extract binary metadata from open office document
-  perl-Archive-Zip \
-  perl-Image-ExifTool \
-  poppler-utils \
-  ufraw \
-  && yum clean all
-
 # Copy Nuxeo distribution
 COPY --from=builder /distrib $NUXEO_HOME
 
