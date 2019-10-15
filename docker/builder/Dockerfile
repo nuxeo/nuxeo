@@ -42,4 +42,4 @@ RUN mkdir -p /tmp/nuxeo-distribution \
 
 ENV NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf
 
-COPY install-packages.sh /usr/local/bin
+COPY install-packages.sh /usr/local/bin/
