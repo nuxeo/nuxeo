@@ -33,7 +33,8 @@ sed -i "/$noConnectProperty/d" $NUXEO_CONF
 # Clean up package installation directories
 backupDir=$NUXEO_HOME/packages/backup
 tmpDir=$NUXEO_HOME/packages/tmp
-echo "Clean up package installation directories: $backupDir, $tmpDir"
+echo "Clean up package installation directories: $packagesDir, $backupDir, $tmpDir"
+rm -rf $packagesDir
 rm -rf $backupDir
 rm -rf $tmpDir
 echo
