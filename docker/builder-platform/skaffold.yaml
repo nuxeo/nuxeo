@@ -34,5 +34,3 @@ build:
           repo: ${DOCKER_REGISTRY}/${ORG}/builder-platform/cache
   cluster:
     namespace: platform
-    dockerConfig:
-      secretName: jenkins-docker-cfg
