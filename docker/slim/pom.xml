@@ -17,12 +17,12 @@
     <dependency>
       <groupId>org.nuxeo.docker</groupId>
       <artifactId>nuxeo-base-docker-image</artifactId>
-      <classifier>docker-info</classifier>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.docker</groupId>
       <artifactId>nuxeo-builder-docker-image</artifactId>
-      <classifier>docker-info</classifier>
+      <type>pom</type>
     </dependency>
   </dependencies>
 

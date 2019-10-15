@@ -26,25 +26,25 @@
       <dependency>
         <groupId>org.nuxeo.docker</groupId>
         <artifactId>nuxeo-base-docker-image</artifactId>
-        <classifier>docker-info</classifier>
+        <type>pom</type>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.docker</groupId>
         <artifactId>nuxeo-builder-docker-image</artifactId>
-        <classifier>docker-info</classifier>
+        <type>pom</type>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.docker</groupId>
         <artifactId>nuxeo-builder-platform-docker-image</artifactId>
-        <classifier>docker-info</classifier>
+        <type>pom</type>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.docker</groupId>
         <artifactId>nuxeo-slim-docker-image</artifactId>
-        <classifier>docker-info</classifier>
+        <type>pom</type>
         <version>${nuxeo.platform.version}</version>
       </dependency>
     </dependencies>
