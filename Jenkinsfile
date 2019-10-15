@@ -126,7 +126,7 @@ pipeline {
           ----------------------------------------"""
           withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
             echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -DskipTests install'
+            sh 'mvn -V -B -nsu -T0.8C -DskipTests install'
           }
         }
       }
