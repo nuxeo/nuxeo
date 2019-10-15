@@ -278,6 +278,8 @@ pipeline {
             echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
             // Fetch Nuxeo distribution with Maven
             sh "mvn -B -nsu -f docker/builder/pom.xml process-resources"
+            // Fetch Nuxeo Content Platform packages with Maven
+            sh "mvn -B -nsu -f docker/builder-platform/pom.xml process-resources"
             skaffoldBuildAll()
           }
         }
