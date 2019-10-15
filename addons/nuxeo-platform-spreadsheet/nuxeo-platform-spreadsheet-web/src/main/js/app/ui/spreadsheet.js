@@ -54,7 +54,7 @@ class Spreadsheet {
     // fetch parent for directory entries
     this.query.fetch('directoryEntry', 'parent');
     // request max depth
-    this.query.depth = 'max';
+    this.query.depth = 'root';
     // translate directory labels
     this.query.translate('directoryEntry', 'label');
     this.query.pageProvider = pageProvider;
