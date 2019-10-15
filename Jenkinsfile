@@ -116,154 +116,154 @@ pipeline {
     NUXEO_IMAGE_NAME = 'nuxeo'
   }
   stages {
-    stage('Compile') {
-      steps {
-        setGitHubBuildStatus('platform/compile', 'Compile', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Compile
-          ----------------------------------------"""
-          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
-            echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -DskipTests install'
-          }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('platform/compile', 'Compile', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/compile', 'Compile', 'FAILURE')
-        }
-      }
-    }
-    stage('Run "dev" unit tests') {
-      steps {
-        setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Install Redis
-          ----------------------------------------"""
-          sh """
-            # initialize Helm without installing Tiller
-            helm init --client-only --service-account ${SERVICE_ACCOUNT}
+    // stage('Compile') {
+    //   steps {
+    //     setGitHubBuildStatus('platform/compile', 'Compile', 'PENDING')
+    //     container('maven') {
+    //       echo """
+    //       ----------------------------------------
+    //       Compile
+    //       ----------------------------------------"""
+    //       withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+    //         echo "MAVEN_OPTS=$MAVEN_OPTS"
+    //         sh 'mvn -B -nsu -T0.8C -DskipTests install'
+    //       }
+    //     }
+    //   }
+    //   post {
+    //     success {
+    //       setGitHubBuildStatus('platform/compile', 'Compile', 'SUCCESS')
+    //     }
+    //     failure {
+    //       setGitHubBuildStatus('platform/compile', 'Compile', 'FAILURE')
+    //     }
+    //   }
+    // }
+    // stage('Run "dev" unit tests') {
+    //   steps {
+    //     setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'PENDING')
+    //     container('maven') {
+    //       echo """
+    //       ----------------------------------------
+    //       Install Redis
+    //       ----------------------------------------"""
+    //       sh """
+    //         # initialize Helm without installing Tiller
+    //         helm init --client-only --service-account ${SERVICE_ACCOUNT}
 
-            # add local chart repository
-            helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
+    //         # add local chart repository
+    //         helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
 
-            # install the nuxeo-redis chart into a dedicated namespace that will be cleaned up afterwards
-            # use 'jx step helm install' to avoid 'Error: incompatible versions' when running 'helm install'
-            jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO_REDIS} \
-              --name ${HELM_RELEASE_REDIS} \
-              --namespace ${NAMESPACE_REDIS}
-          """
+    //         # install the nuxeo-redis chart into a dedicated namespace that will be cleaned up afterwards
+    //         # use 'jx step helm install' to avoid 'Error: incompatible versions' when running 'helm install'
+    //         jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO_REDIS} \
+    //           --name ${HELM_RELEASE_REDIS} \
+    //           --namespace ${NAMESPACE_REDIS}
+    //       """
 
-          echo """
-          ----------------------------------------
-          Run "dev" unit tests
-          ----------------------------------------"""
-          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
-            echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
-          }
-        }
-      }
-      post {
-        always {
-          junit testResults: '**/target/surefire-reports/*.xml'
-          container('maven') {
-            // clean up the redis namespace
-            sh "kubectl delete namespace ${NAMESPACE_REDIS} --ignore-not-found=true"
-          }
-        }
-        success {
-          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'FAILURE')
-        }
-      }
-    }
-    stage('Package') {
-      steps {
-        setGitHubBuildStatus('platform/package', 'Package', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Package
-          ----------------------------------------"""
-          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
-            echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -f nuxeo-distribution/pom.xml -DskipTests install'
-            sh 'mvn -B -nsu -T0.8C -f packages/pom.xml -DskipTests install'
-          }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('platform/package', 'Package', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/package', 'Package', 'FAILURE')
-        }
-      }
-    }
-    stage('Run "dev" functional tests') {
-      steps {
-        setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Run "dev" functional tests
-          ----------------------------------------"""
-          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
-            script {
-              try {
-                echo "MAVEN_OPTS=$MAVEN_OPTS"
-                runFunctionalTests('nuxeo-distribution/nuxeo-server-tests')
-                runFunctionalTests('nuxeo-distribution/nuxeo-server-hotreload-tests')
-                runFunctionalTests('nuxeo-distribution/nuxeo-server-gatling-tests')
-                runFunctionalTests('ftests')
-                setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
-              } catch (err) {
-                setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
-              }
-            }
-          }
-        }
-      }
-      post {
-        always {
-          junit testResults: '**/target/failsafe-reports/*.xml'
-        }
-      }
-    }
-    stage('Deploy Maven artifacts') {
-      steps {
-        setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Deploy Maven artifacts
-          ----------------------------------------"""
-          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
-            echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -Pdistrib -DskipTests deploy'
-          }
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'FAILURE')
-        }
-      }
-    }
+    //       echo """
+    //       ----------------------------------------
+    //       Run "dev" unit tests
+    //       ----------------------------------------"""
+    //       withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+    //         echo "MAVEN_OPTS=$MAVEN_OPTS"
+    //         sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
+    //       }
+    //     }
+    //   }
+    //   post {
+    //     always {
+    //       junit testResults: '**/target/surefire-reports/*.xml'
+    //       container('maven') {
+    //         // clean up the redis namespace
+    //         sh "kubectl delete namespace ${NAMESPACE_REDIS} --ignore-not-found=true"
+    //       }
+    //     }
+    //     success {
+    //       setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'SUCCESS')
+    //     }
+    //     failure {
+    //       setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'FAILURE')
+    //     }
+    //   }
+    // }
+    // stage('Package') {
+    //   steps {
+    //     setGitHubBuildStatus('platform/package', 'Package', 'PENDING')
+    //     container('maven') {
+    //       echo """
+    //       ----------------------------------------
+    //       Package
+    //       ----------------------------------------"""
+    //       withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+    //         echo "MAVEN_OPTS=$MAVEN_OPTS"
+    //         sh 'mvn -B -nsu -T0.8C -f nuxeo-distribution/pom.xml -DskipTests install'
+    //         sh 'mvn -B -nsu -T0.8C -f packages/pom.xml -DskipTests install'
+    //       }
+    //     }
+    //   }
+    //   post {
+    //     success {
+    //       setGitHubBuildStatus('platform/package', 'Package', 'SUCCESS')
+    //     }
+    //     failure {
+    //       setGitHubBuildStatus('platform/package', 'Package', 'FAILURE')
+    //     }
+    //   }
+    // }
+    // stage('Run "dev" functional tests') {
+    //   steps {
+    //     setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
+    //     container('maven') {
+    //       echo """
+    //       ----------------------------------------
+    //       Run "dev" functional tests
+    //       ----------------------------------------"""
+    //       withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+    //         script {
+    //           try {
+    //             echo "MAVEN_OPTS=$MAVEN_OPTS"
+    //             runFunctionalTests('nuxeo-distribution/nuxeo-server-tests')
+    //             runFunctionalTests('nuxeo-distribution/nuxeo-server-hotreload-tests')
+    //             runFunctionalTests('nuxeo-distribution/nuxeo-server-gatling-tests')
+    //             runFunctionalTests('ftests')
+    //             setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
+    //           } catch (err) {
+    //             setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    //   post {
+    //     always {
+    //       junit testResults: '**/target/failsafe-reports/*.xml'
+    //     }
+    //   }
+    // }
+    // stage('Deploy Maven artifacts') {
+    //   steps {
+    //     setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
+    //     container('maven') {
+    //       echo """
+    //       ----------------------------------------
+    //       Deploy Maven artifacts
+    //       ----------------------------------------"""
+    //       withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+    //         echo "MAVEN_OPTS=$MAVEN_OPTS"
+    //         sh 'mvn -B -nsu -T0.8C -Pdistrib -DskipTests deploy'
+    //       }
+    //     }
+    //   }
+    //   post {
+    //     success {
+    //       setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'SUCCESS')
+    //     }
+    //     failure {
+    //       setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'FAILURE')
+    //     }
+    //   }
+    // }
     stage('Build Docker images') {
       steps {
         setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
