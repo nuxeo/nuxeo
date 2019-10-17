@@ -46,8 +46,8 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument implements Serializable,
-        TemplateSourceDocument {
+public class TemplateSourceDocumentAdapterImpl extends AbstractTemplateDocument
+        implements Serializable, TemplateSourceDocument {
 
     public static final String TEMPLATE_DATA_PROP = "tmpl:templateData";
 

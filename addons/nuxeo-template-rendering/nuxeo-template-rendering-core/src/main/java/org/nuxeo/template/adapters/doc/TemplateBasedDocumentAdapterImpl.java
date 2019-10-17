@@ -58,8 +58,8 @@ import org.nuxeo.template.api.descriptor.OutputFormatDescriptor;
  *
  * @author Tiry (tdelprat@nuxeo.com)
  */
-public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument implements Serializable,
-        TemplateBasedDocument {
+public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument
+        implements Serializable, TemplateBasedDocument {
 
     private static final Logger log = LogManager.getLogger(TemplateBasedDocumentAdapterImpl.class);
 

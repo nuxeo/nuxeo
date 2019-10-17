@@ -18,6 +18,8 @@
  */
 package org.nuxeo.template.automation;
 
+import java.util.List;
+
 import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -25,7 +27,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -36,8 +37,6 @@ import org.nuxeo.template.adapters.doc.TemplateBindings;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessorService;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
-
-import java.util.List;
 
 /**
  * Operation to wrapp the rendition process
@@ -73,9 +72,9 @@ public class RenderWithTemplateOperation {
         if (attach && (renderable == null || !renderable.getTemplateNames().contains(templateName))) {
             TemplateProcessorService tps = Framework.getService(TemplateProcessorService.class);
             DocumentModel template = tps.getTemplateDoc(ctx.getCoreSession(), templateName);
-            renderable = (template == null) ? null :
-                tps.makeTemplateBasedDocument(targetDocument, template, true)
-                    .getAdapter(TemplateBasedDocument.class);
+            renderable = (template == null) ? null
+                    : tps.makeTemplateBasedDocument(targetDocument, template, true)
+                         .getAdapter(TemplateBasedDocument.class);
         }
         if (renderable != null) {
             if (templateData != null) {
