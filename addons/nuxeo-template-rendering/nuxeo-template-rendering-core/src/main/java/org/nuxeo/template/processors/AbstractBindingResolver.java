@@ -83,14 +83,16 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                             context.put(param.getName(), htmlValue);
                             continue;
                         } else if (ContentInputType.BlobContent.getValue().equals(param.getSource())) {
-                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(param.getSource());
+                            Object propValue = templateBasedDocument.getAdaptedDoc()
+                                                                    .getPropertyValue(param.getSource());
                             if (propValue != null && propValue instanceof Blob) {
                                 Blob blobValue = (Blob) propValue;
                                 context.put(param.getName(), blobValue.getString());
                                 handleBlobField(param.getName(), blobValue);
                             }
                         } else {
-                            Object propValue = templateBasedDocument.getAdaptedDoc().getPropertyValue(param.getSource());
+                            Object propValue = templateBasedDocument.getAdaptedDoc()
+                                                                    .getPropertyValue(param.getSource());
                             if (propValue instanceof String) {
                                 String stringContent = (String) propValue;
                                 String htmlValue = handleHtmlField(param.getName(), stringContent);

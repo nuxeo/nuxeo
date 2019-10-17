@@ -24,12 +24,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
+
+import junit.framework.TestCase;
 
 public class TestXMLSerialization extends TestCase {
 
