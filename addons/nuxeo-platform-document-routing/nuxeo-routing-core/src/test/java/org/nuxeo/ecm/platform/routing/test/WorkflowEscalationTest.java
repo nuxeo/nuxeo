@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -92,6 +94,9 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     @Before
     public void setUp() throws Exception {
@@ -307,6 +312,69 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         DocumentRoute routeInstance = session.getDocument(new IdRef(routeInstanceId)).getAdapter(DocumentRoute.class);
         assertTrue(routeInstance.isCanceled());
 
+    }
+
+    /**
+     * Non regression test for NXP-28078.
+     *
+     * @since 11.1
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testGetOpenTasksOperation() throws InterruptedException {
+        // define a start node with an escalation rule
+        DocumentModel node1 = createNode(routeDoc, "node1", session);
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1, transition("trans1", "node2"));
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_DUE_DATE_EXPR, "CurrentDate.days(-1)");
+        setEscalationRules(node1, escalationRule("rule1", "WorkflowFn.timeSinceDueDateIsOver() >=3600000",
+                "test_completeOpenTasks", false));
+        session.saveDocument(node1);
+
+        // define an end node
+        DocumentModel node2 = createNode(routeDoc, "node2", session);
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        session.saveDocument(node2);
+
+        // start the workflow
+        DocumentRoute routeInstance = instantiateAndRun(session);
+        String routeInstanceId = routeInstance.getDocument().getId();
+
+        transactionalFeature.nextTransaction();
+
+        // check suspended nodes with escalation rules
+        List<String> nodes = escalationService.queryForSuspendedNodesWithEscalation(session);
+        assertEquals(1, nodes.size());
+        DocumentRef nodeDocRef = new IdRef(nodes.get(0));
+        DocumentModel nodeDoc = session.getDocument(nodeDocRef);
+        GraphNode node = nodeDoc.getAdapter(GraphNode.class);
+        assertEquals("node1", node.getId());
+
+        // compute and schedule escalation rule
+        List<GraphNode.EscalationRule> rules = escalationService.computeEscalationRulesToExecute(node);
+        assertEquals(1, rules.size());
+        escalationService.scheduleExecution(rules.get(0), session);
+
+        transactionalFeature.nextTransaction();
+
+        // fetch node doc to check that the escalation rule is marked as executed
+        nodeDoc = session.getDocument(nodeDocRef);
+        node = nodeDoc.getAdapter(GraphNode.class);
+        assertTrue(node.getEscalationRules().get(0).isExecuted());
+
+        // check that the rule was executed
+        assertEquals(0, taskService.getAllTaskInstances(routeInstanceId, nodeDoc.getId(), session).size());
+
+        // check that no nodes with escalation rules are found
+        nodes = escalationService.queryForSuspendedNodesWithEscalation(session);
+        assertEquals(0, nodes.size());
+
+        // cancel the route
+        routingService.cancel(routeInstance, session);
+        routeInstance = session.getDocument(new IdRef(routeInstanceId)).getAdapter(DocumentRoute.class);
+        assertTrue(routeInstance.isCanceled());
     }
 
     protected void setEscalationRules(DocumentModel node, Map<String, Serializable>... rules) {
