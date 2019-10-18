@@ -85,6 +85,11 @@
       <operation id="Context.FetchDocument"/>
       <operation id="Workflow.ResumeNodeOperation"/>
     </chain>
+    <chain id="test_completeOpenTasks">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Workflow.GetOpenTasks" />
+      <operation id="WorkflowTask.Complete" />
+    </chain>
 
   </extension>
 </component>
