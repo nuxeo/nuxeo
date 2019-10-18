@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNodeImpl;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -53,10 +54,20 @@ public class GetOpenTasksOperation {
     @Context
     protected CoreSession session;
 
+    /**
+     * If not provided and the operation is run within a workflow (chain called by a transition or an escalation rule
+     * for instance), this parameter is bound to the "nodeId" operation context variable, see
+     * {@link GraphNodeImpl#getWorkflowContextualInfo(CoreSession, boolean)}.
+     */
     @Param(name = "nodeId", required = false)
     protected String nodeId;
 
-    @Param(name = "processId", required = false)
+    /**
+     * If not provided and the operation is run within a workflow (chain called by a transition or an escalation rule
+     * for instance), this parameter is bound to the "workflowInstanceId" operation context variable, see
+     * {@link GraphNodeImpl#getWorkflowContextualInfo(CoreSession, boolean)}.
+     */
+    @Param(name = "processId", alias = "workflowInstanceId", required = false)
     protected String processId;
 
     @Param(name = "username", required = false)
