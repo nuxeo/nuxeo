@@ -188,12 +188,12 @@ case $JAVA_VERSION in
 esac
 
 ## nuxeo.log.dir
-LOG_DIR=$(grep "^nuxeo.log.dir=" "$NUXEO_CONF" | cut -d= -f2-)
+LOG_DIR=$(grep "^nuxeo.log.dir=" "$NUXEO_CONF" | cut -d= -f2- | tail -n 1)
 # Defaults
 : ${LOG_DIR:="$NUXEO_HOME"/log}
 
 ## nuxeo.tmp.dir
-TMP_DIR=$(grep "^nuxeo.tmp.dir=" "$NUXEO_CONF" | cut -d= -f2-)
+TMP_DIR=$(grep "^nuxeo.tmp.dir=" "$NUXEO_CONF" | cut -d= -f2- | tail -n 1)
 # Defaults
 : ${TMP_DIR:="$NUXEO_HOME"/tmp}
 # TMPDIR is the canonical Unix environment variable specified in various Unix and similar standards
