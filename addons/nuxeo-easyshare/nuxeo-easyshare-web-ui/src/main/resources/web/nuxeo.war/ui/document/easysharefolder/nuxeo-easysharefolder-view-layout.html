@@ -45,9 +45,7 @@ limitations under the License.
                            empty-label="[[i18n('collections.noDocument')]]"
                            empty-label-when-filtered="[[i18n('collections.noDocumentWhenFiltered')]]"
                            hide-content-view-actions>
-      <div slot="selectionActions">
-        <nuxeo-slot slot="COLLECTION_ACTIONS" model="[[actionContext]]"></nuxeo-slot>
-      </div>
+      <nuxeo-slot name="COLLECTION_ACTIONS" slot="selectionActions" model="[[actionContext]]"></nuxeo-slot>
     </nuxeo-default-results>
   </template>
   <script>
