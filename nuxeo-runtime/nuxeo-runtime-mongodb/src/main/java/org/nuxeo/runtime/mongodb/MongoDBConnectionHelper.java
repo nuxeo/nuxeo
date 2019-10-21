@@ -121,8 +121,8 @@ public class MongoDBConnectionHelper {
             optionsConsumer.accept(optionsBuilder);
         }
         MongoClient client;
-        if (server.startsWith("mongodb://")) {
-            // allow mongodb:// URI syntax for the server, to pass everything in one string
+        if (server.startsWith("mongodb://") || server.startsWith("mongodb+srv://")) {
+            // allow mongodb*:// URI syntax for the server, to pass everything in one string
             client = new MongoClient(new MongoClientURI(server, optionsBuilder));
         } else {
             client = new MongoClient(new ServerAddress(server), optionsBuilder.build());
