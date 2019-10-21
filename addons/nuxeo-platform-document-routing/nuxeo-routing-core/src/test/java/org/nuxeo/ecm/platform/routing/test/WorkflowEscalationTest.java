@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -66,12 +63,6 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
     @Inject
     protected CoreSession session;
-
-    @Inject
-    protected FeaturesRunner featuresRunner;
-
-    @Inject
-    protected RuntimeHarness harness;
 
     @Inject
     protected DocumentRoutingService routing;
@@ -87,9 +78,6 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     protected TaskService taskService;
 
     @Inject
-    protected AutomationService automationService;
-
-    @Inject
     protected DocumentRoutingEscalationService escalationService;
 
     @Inject
@@ -99,7 +87,7 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     protected TransactionalFeature transactionalFeature;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         assertNotNull(routing);
         routing.invalidateRouteModelsCache();
         doc = session.createDocumentModel("/", "file", "File");
@@ -113,23 +101,22 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testEscalationDeleteTask() throws Exception {
+    public void testEscalationDeleteTask() throws InterruptedException {
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
-        setTransitions(node1,
-                transition("trans1", "node2", "true", "testchain_title1"));
+        setTransitions(node1, transition("trans1", "node2", "true", "testchain_title1"));
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_TASK_DUE_DATE_EXPR, "CurrentDate.days(-1)");
         setEscalationRules(node1,
                 escalationRule("rule1", "WorkflowFn.timeSinceDueDateIsOver() >=3600000", "test_resumeWf", false));
-        node1 = session.saveDocument(node1);
+        session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
         node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
 
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
-        node2 = session.saveDocument(node2);
+        session.saveDocument(node2);
         DocumentRoute routeInstance = instantiateAndRun(session);
         String routeInstanceId = routeInstance.getDocument().getId();
 
@@ -141,7 +128,6 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         session.save();
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-
 
         List<String> nodes = escalationService.queryForSuspendedNodesWithEscalation(session);
         assertEquals(1, nodes.size());
@@ -160,7 +146,8 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testEscalationSingleExecution() throws Exception {
+    @SuppressWarnings("unchecked")
+    public void testEscalationSingleExecution() throws InterruptedException {
         routeDoc = session.saveDocument(routeDoc);
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -170,13 +157,13 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         node1.setPropertyValue(GraphNode.PROP_TASK_DUE_DATE_EXPR, "CurrentDate.days(-1)");
         setEscalationRules(node1,
                 escalationRule("rule1", "WorkflowFn.timeSinceDueDateIsOver() >=3600000", "testchain_title1", false));
-        node1 = session.saveDocument(node1);
+        session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
         node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
 
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
-        node2 = session.saveDocument(node2);
+        session.saveDocument(node2);
         DocumentRoute routeInstance = instantiateAndRun(session);
         String routeInstanceId = routeInstance.getDocument().getId();
 
@@ -216,7 +203,8 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
     }
 
     @Test
-    public void testEscalationMultipleExecution() throws Exception {
+    @SuppressWarnings("unchecked")
+    public void testEscalationMultipleExecution() throws InterruptedException {
         NuxeoPrincipal user1 = userManager.getPrincipal("myuser1");
         assertNotNull(user1);
         routeDoc.setPropertyValue(GraphRoute.PROP_VARIABLES_FACET, "FacetRoute1");
@@ -229,24 +217,22 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
         node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
-        setEscalationRules(node1,
-                escalationRule("rule1",
-                        "( (WorkflowFn.ruleAlreadyExecuted() && WorkflowFn.timeSinceRuleHasBeenFalse() >0 ) ||"
-                                + " !WorkflowFn.ruleAlreadyExecuted()) && "
-                                + "WorkflowFn.timeSinceTaskWasStarted() >=0", "testchain_title1", true),
-                escalationRule("rule2", "true", "testchain_title2", false),
+        setEscalationRules(node1, escalationRule("rule1",
+                "( (WorkflowFn.ruleAlreadyExecuted() && WorkflowFn.timeSinceRuleHasBeenFalse() >0 ) ||"
+                        + " !WorkflowFn.ruleAlreadyExecuted()) && " + "WorkflowFn.timeSinceTaskWasStarted() >=0",
+                "testchain_title1", true), escalationRule("rule2", "true", "testchain_title2", false),
                 escalationRule("rule3", "true", "testchain_stringfield", false),
                 escalationRule("rule4", "true", "testchain_stringfield2", false));
         String[] users = { user1.getName() };
         node1.setPropertyValue(GraphNode.PROP_TASK_ASSIGNEES, users);
         setButtons(node1, button("btn1", "label-btn1", "filterr", null));
-        node1 = session.saveDocument(node1);
+        session.saveDocument(node1);
 
         DocumentModel node2 = createNode(routeDoc, "node2", session);
         node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
 
         node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
-        node2 = session.saveDocument(node2);
+        session.saveDocument(node2);
         DocumentRoute route = instantiateAndRun(session);
         String routeInstanceId = route.getDocument().getId();
 
@@ -377,8 +363,9 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         assertTrue(routeInstance.isCanceled());
     }
 
+    @SuppressWarnings("unchecked")
     protected void setEscalationRules(DocumentModel node, Map<String, Serializable>... rules) {
-        node.setPropertyValue(GraphNode.PROP_ESCALATION_RULES, (Serializable) Arrays.asList(rules));
+        node.setPropertyValue(GraphNode.PROP_ESCALATION_RULES, (Serializable) List.of(rules));
     }
 
     protected Map<String, Serializable> escalationRule(String id, String condition, String chain,
