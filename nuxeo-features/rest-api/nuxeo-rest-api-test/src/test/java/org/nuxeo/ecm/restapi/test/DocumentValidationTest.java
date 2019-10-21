@@ -204,6 +204,24 @@ public class DocumentValidationTest extends BaseTest {
         }
     }
 
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testGlobalValidationMessage() throws IOException {
+        DocumentModel root = session.getDocument(new PathRef("/"));
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + root.getId(),
+                createDocumentJSON("\"Bill\"", "\"Bill\""))) {
+            assertEquals(HttpStatus.SC_UNPROCESSABLE_ENTITY, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertTrue(node.get("has_error").asBoolean());
+            assertEquals(1, node.get("number").asInt());
+            JsonNode violations = node.get("violations");
+            JsonNode violation1 = violations.elements().next();
+            assertEquals("lastname.cannot.be.equals.to.firstname", violation1.get("messageKey").textValue());
+        }
+    }
+
     private void checkResponseHasErrors(ClientResponse response) throws IOException {
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertTrue(node.get("has_error").asBoolean());
