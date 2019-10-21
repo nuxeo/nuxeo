@@ -17,4 +17,11 @@
     <validation context="importDocument" activated="true" />
   </extension>
 
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="dummyGlobalValidation" class="org.nuxeo.ecm.restapi.listeners.DummyGlobalValidationListener">
+      <event>aboutToCreate</event>
+    </listener>
+  </extension>
+
 </component>
