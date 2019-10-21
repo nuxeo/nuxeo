@@ -114,6 +114,8 @@ pipeline {
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
     NUXEO_IMAGE_NAME = 'nuxeo'
+    // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
+    PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
   }
   stages {
     stage('Compile') {
