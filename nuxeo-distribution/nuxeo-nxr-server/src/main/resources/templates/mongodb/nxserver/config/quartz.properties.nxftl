@@ -18,7 +18,7 @@ org.quartz.threadPool.makeThreadsDaemons = true
 
 org.quartz.jobStore.class = com.novemberain.quartz.mongodb.MongoDBJobStore
 org.quartz.jobStore.isClustered = true
-<#if "${nuxeo.mongodb.server}"?starts_with("mongodb://") >
+<#if "${nuxeo.mongodb.server}"?starts_with("mongodb://") || "${nuxeo.mongodb.server}"?starts_with("mongodb+srv://") >
 org.quartz.jobStore.mongoUri=${nuxeo.mongodb.server}
 <#else>
 org.quartz.jobStore.mongoUri=mongodb://${nuxeo.mongodb.server}
