@@ -161,6 +161,24 @@ public class RemovedProperty extends AbstractProperty {
     }
 
     @Override
+    public void set(String name, Property property) throws PropertyException {
+        StringBuilder msg = newRemovedMessage();
+        if (fallback == null) {
+            msg.append("Do nothing");
+        } else {
+            msg.append("Set property to fallback '").append(fallback.getXPath()).append("'");
+        }
+        if (log.isTraceEnabled()) {
+            log.error(msg, new NuxeoException("debug stack trace"));
+        } else {
+            log.error(msg);
+        }
+        if (fallback != null) {
+            fallback.set(name, property);
+        }
+    }
+
+    @Override
     public Property addValue(Object value) throws PropertyException {
         throw new UnsupportedOperationException("Removed properties don't have children");
     }

@@ -378,6 +378,79 @@ public class DocumentBrowsingTest extends BaseTest {
         }
     }
 
+    /*
+     * NXP-25280
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server:test-defaultvalue-docTypes.xml")
+    public void itCanSetSimplePropertyToNullInsideComplexOne() {
+        DocumentModel doc = session.createDocumentModel("/", "myDocument", "DocDefaultValue");
+        doc.setPropertyValue("dv:complexWithoutDefault/foo", "val1");
+        doc.setPropertyValue("dv:complexWithoutDefault/bar", "val2");
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dv:complexWithoutDefault\":{\"foo\":null}}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then the document is updated
+            fetchInvalidations();
+            doc = session.getDocument(doc.getRef());
+            assertNull(doc.getPropertyValue("dv:complexWithoutDefault/foo"));
+            // because of clearComplexPropertyBeforeSet
+            assertNull(doc.getPropertyValue("dv:complexWithoutDefault/bar"));
+        }
+    }
+
+    /*
+     * NXP-25280
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server:test-defaultvalue-docTypes.xml")
+    public void itCanSetAllSimplePropertyToNullInsideComplexOne() {
+        DocumentModel doc = session.createDocumentModel("/", "myDocument", "DocDefaultValue");
+        doc.setPropertyValue("dv:complexWithoutDefault/foo", "val1");
+        doc.setPropertyValue("dv:complexWithoutDefault/bar", "val2");
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dv:complexWithoutDefault\":{\"foo\":null,\"bar\":null}}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then the document is updated
+            fetchInvalidations();
+            doc = session.getDocument(doc.getRef());
+            assertNull(doc.getPropertyValue("dv:complexWithoutDefault/foo"));
+            assertNull(doc.getPropertyValue("dv:complexWithoutDefault/bar"));
+        }
+    }
+
+    /*
+     * NXP-25280
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server:test-defaultvalue-docTypes.xml")
+    public void itCanSetSimplePropertyToNullAndAnotherOneToNonNullInsideComplexOne() {
+        DocumentModel doc = session.createDocumentModel("/", "myDocument", "DocDefaultValue");
+        doc.setPropertyValue("dv:complexWithoutDefault/foo", "val1");
+        doc.setPropertyValue("dv:complexWithoutDefault/bar", "val2");
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dv:complexWithoutDefault\":{\"foo\":\"val3\",\"bar\":null}}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            // Then the document is updated
+            fetchInvalidations();
+            doc = session.getDocument(doc.getRef());
+            assertEquals("val3", doc.getPropertyValue("dv:complexWithoutDefault/foo"));
+            assertNull(doc.getPropertyValue("dv:complexWithoutDefault/bar"));
+        }
+    }
+
     @Test
     public void iCanCreateADocument() throws Exception {
         JsonNode node;

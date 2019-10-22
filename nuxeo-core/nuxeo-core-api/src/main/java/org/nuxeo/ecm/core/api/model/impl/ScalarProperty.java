@@ -98,6 +98,11 @@ public class ScalarProperty extends AbstractProperty {
     }
 
     @Override
+    public void set(String name, Property property) throws PropertyException {
+        throw new UnsupportedOperationException("Scalar properties don't have children");
+    }
+
+    @Override
     public Property addValue(Object value) {
         throw new UnsupportedOperationException("Scalar properties don't have children");
     }

@@ -139,6 +139,18 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     @Override
+    public void set(String name, Property property) throws PropertyException {
+        try {
+            // don't implement set(int, Property) for now as we don't have usage
+            int index = Integer.parseInt(name);
+            children.set(index, property);
+            setIsModified();
+        } catch (NumberFormatException e) {
+            throw new UnsupportedOperationException("Child name: " + name + " cannot be used on property: " + this);
+        }
+    }
+
+    @Override
     protected Serializable getDefaultValue() {
         Serializable value = (Serializable) field.getDefaultValue();
         if (value == null) {
