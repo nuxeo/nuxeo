@@ -156,8 +156,7 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
 
     @Override
     public Serializable internalGetValue() throws PropertyException {
-        // noinspection CollectionDeclaredAsConcreteClass
-        HashMap<String, Serializable> map = new HashMap<>();
+        var map = new HashMap<String, Serializable>();
         for (Property property : getChildren()) {
             map.put(property.getName(), property.getValue());
         }
