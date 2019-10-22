@@ -27,10 +27,6 @@ build:
         buildArgs:
           BUILDER_IMAGE: ${DOCKER_REGISTRY}/${ORG}/builder:${VERSION}
           BASE_IMAGE: ${DOCKER_REGISTRY}/${ORG}/base:${VERSION}
-        flags:
-          - --insecure
-          - --insecure-pull
-          - --insecure-registry=${DOCKER_REGISTRY}
         cache:
           repo: ${DOCKER_REGISTRY}/${ORG}/slim/cache
   cluster:

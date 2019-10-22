@@ -26,10 +26,6 @@ build:
           localDir: {}
         buildArgs:
           BASE_IMAGE: ${DOCKER_REGISTRY}/${ORG}/builder:${VERSION}
-        flags:
-          - --insecure
-          - --insecure-pull
-          - --insecure-registry=${DOCKER_REGISTRY}
         cache:
           repo: ${DOCKER_REGISTRY}/${ORG}/builder-platform/cache
   cluster:
