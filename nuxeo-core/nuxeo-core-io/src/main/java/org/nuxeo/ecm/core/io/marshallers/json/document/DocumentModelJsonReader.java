@@ -97,6 +97,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected DocumentModel readEntity(JsonNode jn) throws IOException {
         DocumentModel doc = getDocument(jn);
 
@@ -106,7 +107,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             List<Property> properties = readEntity(List.class, genericType, propsNode);
             for (Property property : properties) {
                 // security has been applied in previous step while reading properties
-                Framework.doPrivileged(() -> doc.setPropertyValue(getXPath(property), property.getValue()));
+                Framework.doPrivileged(() -> doc.getPart(property.getSchema().getName()).set(property.getName(), property));
             }
         }
 

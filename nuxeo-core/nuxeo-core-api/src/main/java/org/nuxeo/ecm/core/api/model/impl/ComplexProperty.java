@@ -155,6 +155,20 @@ public abstract class ComplexProperty extends AbstractProperty implements Map<St
     }
 
     @Override
+    public void set(String name, Property property) throws PropertyNotFoundException {
+        Field field = getType().getField(name);
+        if (field == null) {
+            Property removedProperty = computeRemovedProperty(name);
+            if (removedProperty != null) {
+                removedProperty.set(name, property);
+            }
+            return;
+        }
+        children.put(property.getName(), property);
+        setIsModified();
+    }
+
+    @Override
     public Serializable internalGetValue() throws PropertyException {
         // noinspection CollectionDeclaredAsConcreteClass
         HashMap<String, Serializable> map = new HashMap<String, Serializable>();
