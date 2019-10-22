@@ -501,6 +501,26 @@ public interface Property extends Cloneable, Serializable, Iterable<Property> {
     Property get(int index) throws PropertyNotFoundException;
 
     /**
+     * Sets the child property having the given name.
+     * <p>
+     * The given name should be the full name (i.e. prefixed name if any prefix exists).
+     * <p>
+     * If a non prefixed name is given, the first child property having the given local name will be returned.
+     * <p>
+     * Relative paths are not resolved. This method is intended to lookup direct children. For path lookups use
+     * {@link Property#resolvePath(String)} instead.
+     *
+     * @param name the child property name (the full name including the prefix if any)
+     * @param property the child property to set
+     * @throws UnsupportedOperationException if the current property is a scalar property (doesn't have children)
+     * @throws PropertyNotFoundException if the child property is not found in the type definition
+     * @since 11.1
+     */
+    default void set(String name, Property property) throws PropertyException {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    /**
      * Sets a child property value given its index. This method is required only for List properties.
      * <p>
      * If this method is not supported, an {@link UnsupportedOperationException} must be thrown.

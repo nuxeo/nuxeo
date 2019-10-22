@@ -97,6 +97,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected DocumentModel readEntity(JsonNode jn) throws IOException {
 
         SimpleDocumentModel simpleDoc = new SimpleDocumentModel();
@@ -119,9 +120,8 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
                 if (!propertyName.contains(":")) {
                     propertyName = property.getField().getDeclaringType().getName() + ":" + propertyName;
                 }
-                String pn = propertyName;
                 // security has been applied in previous step while reading properties
-                Framework.doPrivileged(() -> simpleDoc.setPropertyValue(pn, property.getValue()));
+                Framework.doPrivileged(() -> simpleDoc.getPart(property.getSchema().getName()).set(property.getName(), property));
             }
         }
 
