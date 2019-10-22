@@ -121,6 +121,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     public static final String AWS_SECRET_ENV = "AWS_SECRET_ACCESS_KEY";
 
+    /** Use a proxy or not for an internal server S3 compatible */
+    public static final String CONNECTION_PROXY = "nuxeo.s3storage.connection.proxy";
+
     /** AWS ClientConfiguration default 50 */
     public static final String CONNECTION_MAX_PROPERTY = "connection.max";
 
@@ -213,6 +216,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         int maxErrorRetry = getIntProperty(CONNECTION_RETRY_PROPERTY);
         int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_PROPERTY);
         int socketTimeout = getIntProperty(SOCKET_TIMEOUT_PROPERTY);
+        Boolean connectionProxy = Boolean.parseBoolean(Framework.getProperty(CONNECTION_PROXY));
 
         String keystoreFile = getProperty(KEYSTORE_FILE_PROPERTY);
         String keystorePass = getProperty(KEYSTORE_PASS_PROPERTY);
@@ -255,16 +259,16 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
         // set up client configuration
         clientConfiguration = new ClientConfiguration();
-        if (isNotBlank(proxyHost)) {
+        if (connectionProxy && isNotBlank(proxyHost)) {
             clientConfiguration.setProxyHost(proxyHost);
         }
-        if (isNotBlank(proxyPort)) {
+        if (connectionProxy && isNotBlank(proxyPort)) {
             clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
         }
-        if (isNotBlank(proxyLogin)) {
+        if (connectionProxy && isNotBlank(proxyLogin)) {
             clientConfiguration.setProxyUsername(proxyLogin);
         }
-        if (proxyPassword != null) { // could be blank
+        if (connectionProxy && proxyPassword != null) { // could be blank
             clientConfiguration.setProxyPassword(proxyPassword);
         }
         if (maxConnections > 0) {
