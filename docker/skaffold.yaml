@@ -24,10 +24,6 @@ build:
         dockerfile: Dockerfile
         buildContext:
           localDir: {}
-        flags:
-          - --insecure
-          - --insecure-pull
-          - --insecure-registry=${DOCKER_REGISTRY}
         cache:
           repo: ${DOCKER_REGISTRY}/${ORG}/builder/cache
     - image: base
@@ -36,10 +32,6 @@ build:
         dockerfile: Dockerfile
         buildContext:
           localDir: {}
-        flags:
-          - --insecure
-          - --insecure-pull
-          - --insecure-registry=${DOCKER_REGISTRY}
         cache:
           repo: ${DOCKER_REGISTRY}/${ORG}/base/cache
   cluster:
