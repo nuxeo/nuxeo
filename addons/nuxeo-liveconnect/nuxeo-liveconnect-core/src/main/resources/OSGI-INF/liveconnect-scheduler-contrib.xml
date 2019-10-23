@@ -15,7 +15,6 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
     <listener name="blobProviderDocumentUpdate"
-      async="true" postCommit="true"
       class="org.nuxeo.ecm.liveconnect.update.listener.BlobProviderDocumentsUpdateListener">
       <event>blobProviderDocumentUpdateEvent</event>
     </listener>
