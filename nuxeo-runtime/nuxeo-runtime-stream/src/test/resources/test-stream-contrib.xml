@@ -63,6 +63,14 @@
       <stream name="input2" partitions="1" codec="avro" />
     </streamProcessor>
 
- </extension>
+    <streamProcessor name="failureProcessor" class="org.nuxeo.runtime.stream.tests.FailureStreamProcessor"
+      defaultConcurrency="1" defaultPartitions="1" logConfig="default">
+      <policy name="default" maxRetries="0" continueOnFailure="false" />
+    </streamProcessor>
 
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.stream.health.check.delay">1s</property>
+  </extension>
 </component>

@@ -35,13 +35,18 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
+import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.core.management.probes.AdministrativeStatusProbe;
 import org.nuxeo.ecm.core.management.probes.ProbeManagerImpl;
+import org.nuxeo.ecm.core.management.probes.StreamProbe;
 import org.nuxeo.ecm.core.management.statuses.HealthCheckResult;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,6 +59,8 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.runtime.management")
 @Deploy("org.nuxeo.ecm.core.management")
 @Deploy("org.nuxeo.ecm.core.management.test")
+@Deploy("org.nuxeo.runtime.stream")
+@Deploy("org.nuxeo.runtime.stream:test-stream-contrib.xml")
 public class TestProbes {
 
     private static final String TEST_PROBE_OK_RESULT_AS_JSON = "{\"testProbeStatus\":\"ok\"}";
@@ -74,6 +81,9 @@ public class TestProbes {
 
     @Inject
     FakeService fs;
+
+    @Inject
+    public StreamService service;
 
     protected static final int TEST_INTERVAL_SECONDS = -1;
 
@@ -265,5 +275,28 @@ public class TestProbes {
         assertTrue(result.isHealthy());
         assertTrue(probeInfo.getStatus().isSuccess());
         assertEquals("{\"repositoryStatus\":\"ok\"}", result.toJson());
+    }
+
+    @Test
+    public void testProbe() throws Exception {
+        StreamManager streamManager = service.getStreamManager("default");
+        StreamProbe probe = new StreamProbe();
+        probe.reset();
+        ProbeStatus status = probe.run();
+        assertFalse(status.isFailure());
+        // generate a failure
+        try {
+            streamManager.append("inputFailure", Record.of("key", null));
+            Thread.sleep(500);
+            // the probe failure is delayed by 1s after the first probe run
+            status = probe.run();
+            assertFalse(status.toString(), status.isFailure());
+
+            Thread.sleep(1500);
+            status = probe.run();
+            assertTrue(status.toString(), status.isFailure());
+        } finally {
+            probe.reset();
+        }
     }
 }

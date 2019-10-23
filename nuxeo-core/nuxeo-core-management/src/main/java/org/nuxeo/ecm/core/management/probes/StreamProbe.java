@@ -18,41 +18,96 @@
  */
 package org.nuxeo.ecm.core.management.probes;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
+import org.nuxeo.runtime.api.Framework;
 import static org.nuxeo.lib.stream.computation.log.ComputationRunner.GLOBAL_FAILURE_COUNT_REGISTRY_NAME;
 import static org.nuxeo.lib.stream.computation.log.ComputationRunner.NUXEO_METRICS_REGISTRY_NAME;
 
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
-
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
 /**
- * A probe to detect when computation has been terminated due to failure.
+ * A probe to detect when computation has been terminated due to failure. A
+ * delay is applied before returning the failure code
  *
  * @since 11.1
  */
 public class StreamProbe implements Probe {
 
-    protected static final String FAILURE_MESSAGE = "%d computations have been terminated after failure. This Nuxeo instance must be restarted within the stream retention period.";
+    public static final String STREAM_PROBE_DELAY_PROPERTY = "nuxeo.stream.health.check.delay";
+
+    public static final Duration STREAM_PROBE_DELAY_DEFAULT = Duration.ofHours(36);
+
+    protected static final String FAILURE_MESSAGE = "%d computations have been terminated after failure. "
+            + "First failure detected: %s, probe failure delayed by %s. "
+            + "This Nuxeo instance must be restarted within the stream retention period.";
 
     protected Counter globalFailureCount;
+
+    protected Long detected;
+
+    protected Duration timeout;
+
+    protected static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssz").withZone(
+            ZoneOffset.UTC);
 
     @Override
     public ProbeStatus run() {
         long failures = getFailures();
-        if (failures > 0) {
-            return ProbeStatus.newFailure(String.format(FAILURE_MESSAGE, failures));
+        if (failures == 0) {
+            return ProbeStatus.newSuccess("No failure");
         }
-        return ProbeStatus.newSuccess("No failure");
+        String dateFailure = FORMATTER.format(Instant.ofEpochMilli(detected));
+        String message = String.format(FAILURE_MESSAGE, failures, dateFailure, getTimeout());
+        if (System.currentTimeMillis() - detected < getTimeout().toMillis()) {
+            // Failure is delayed
+            return ProbeStatus.newSuccess(message);
+        }
+        return ProbeStatus.newFailure(message);
+    }
+
+    protected Duration getTimeout() {
+        if (timeout == null) {
+            ConfigurationService confService = Framework.getService(ConfigurationService.class);
+            timeout = confService.getDuration(STREAM_PROBE_DELAY_PROPERTY, STREAM_PROBE_DELAY_DEFAULT);
+        }
+        return timeout;
     }
 
     protected long getFailures() {
+        long failures = getCounter().getCount();
+        if (failures > 0 && detected == null) {
+            detected = System.currentTimeMillis();
+        }
+        return failures;
+    }
+
+    protected Counter getCounter() {
         if (globalFailureCount == null) {
             MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
             globalFailureCount = registry.counter(GLOBAL_FAILURE_COUNT_REGISTRY_NAME);
         }
-        return globalFailureCount.getCount();
+        return globalFailureCount;
+    }
+
+    /**
+     * Reset failure counter for testing purpose.
+     *
+     * @since 11.1
+     */
+    public void reset() {
+        long count = getCounter().getCount();
+        if (count > 0) {
+            getCounter().dec(count);
+        }
+        detected = null;
     }
 }
