@@ -19,7 +19,9 @@
 package org.nuxeo.runtime.stream.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.time.Duration;
@@ -34,6 +36,8 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.runtime.management.api.ProbeStatus;
+import org.nuxeo.runtime.stream.StreamProbe;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -154,6 +158,30 @@ public class TestStreamService {
             fail("Expected exception");
         } catch (IllegalArgumentException e) {
             // expected because processor is disabled so its input streams are not initialized
+        }
+    }
+
+    @Test
+    public void testProbe() throws Exception {
+        @SuppressWarnings("resource")
+        StreamManager streamManager = service.getStreamManager("default");
+        StreamProbe probe = new StreamProbe();
+        probe.reset();
+        ProbeStatus status = probe.run();
+        assertFalse(status.isFailure());
+        // generate a failure
+        try {
+            streamManager.append("inputFailure", Record.of("key", null));
+            Thread.sleep(500);
+            // the probe failure is delayed by 1s after the first probe run
+            status = probe.run();
+            assertFalse(status.toString(), status.isFailure());
+
+            Thread.sleep(1500);
+            status = probe.run();
+            assertTrue(status.toString(), status.isFailure());
+        } finally {
+            probe.reset();
         }
     }
 
