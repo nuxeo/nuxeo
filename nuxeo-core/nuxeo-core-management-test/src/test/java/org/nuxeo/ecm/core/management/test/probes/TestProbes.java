@@ -67,9 +67,9 @@ public class TestProbes {
 
     private static final String TEST_PROBE_FAILED_RESULT_AS_JSON = "{\"testProbeStatus\":\"failed\"}";
 
-    private static final String ALL_PROBES_OK_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\"}";
+    private static final String ALL_PROBES_OK_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\",\"streamStatus\":\"ok\"}";
 
-    private static final String ALL_PROBES_FAILED_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\"}";
+    private static final String ALL_PROBES_FAILED_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"failed\",\"streamStatus\":\"ok\"}";
 
     private static final String ALL_PROBES_AND_STREAM_OK_RESULT_AS_JSON = "{\"runtimeStatus\":\"ok\",\"repositoryStatus\":\"ok\",\"testProbeStatus\":\"ok\",\"streamStatus\":\"ok\"}";
 
@@ -133,7 +133,7 @@ public class TestProbes {
     @Test
     public void testHealthCheck() throws IOException {
         Collection<ProbeInfo> healthCheckProbes = pm.getHealthCheckProbes();
-        assertEquals(3, healthCheckProbes.size());
+        assertEquals(4, healthCheckProbes.size());
         HealthCheckResult result = pm.getOrRunHealthChecks();
         assertTrue(result.isHealthy());
         assertEquals(ALL_PROBES_OK_RESULT_AS_JSON, result.toJson());
