@@ -24,25 +24,16 @@ import java.util.Map;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventBundle;
-import org.nuxeo.ecm.core.event.PostCommitEventListener;
+import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.runtime.api.Framework;
 
-public class BlobProviderDocumentsUpdateListener implements PostCommitEventListener {
+public class BlobProviderDocumentsUpdateListener implements EventListener {
 
     public static final String BLOB_PROVIDER_DOCUMENT_UPDATE_EVENT = "blobProviderDocumentUpdateEvent";
 
     @Override
-    public void handleEvent(EventBundle events) {
-
-        for (Event each : events) {
-            onEvent(each);
-        }
-
-    }
-
-    protected void onEvent(Event event) {
+    public void handleEvent(Event event) {
         Map<String, BlobProvider> blobProviders = Framework.getService(BlobManager.class).getBlobProviders();
         if (BLOB_PROVIDER_DOCUMENT_UPDATE_EVENT.equals(event.getName())) {
             // Trigger update for all providers
