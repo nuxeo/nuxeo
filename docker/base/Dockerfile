@@ -10,7 +10,7 @@
 #
 # It doesn't contain the Nuxeo server distribution itself.
 # To build an image containing a Nuxeo server distribution, you should use a multi-stage build
-# with the nuxeo/builder image and the current image as a base image, as in the following sample Dockerfile:
+# with the nuxeo/builder image and the current image as a base image, as in the following Dockerfile sample:
 #
 # FROM nuxeo/builder:VERSION as builder
 # COPY local/packages /packages
