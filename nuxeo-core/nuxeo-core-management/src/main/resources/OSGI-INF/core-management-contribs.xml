@@ -61,7 +61,7 @@
    <extension target="org.nuxeo.ecm.core.management.CoreManagementComponent" point="healthCheck">
      <probe name="runtimeStatus" enabled="true"/>
      <probe name="repositoryStatus" enabled="true"/>
-     <probe name="streamStatus" enabled="${nuxeo.stream.healthCheck.enabled:=false}" />
+     <probe name="streamStatus" enabled="${nuxeo.stream.health.check.enabled:=true}" />
   </extension>
 
 </component>
