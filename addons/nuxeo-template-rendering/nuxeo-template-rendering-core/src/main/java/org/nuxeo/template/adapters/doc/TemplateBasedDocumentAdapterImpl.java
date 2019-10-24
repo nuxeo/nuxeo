@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.XMLSerializer;
 import org.nuxeo.template.adapters.AbstractTemplateDocument;
@@ -237,6 +238,12 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
             Blob blob;
             try {
                 blob = processor.renderTemplate(this, templateName);
+                if (blob.getMimeType() == null) {
+                    MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
+                    String mimeType = mimetypeRegistry.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(),
+                            blob, null);
+                    blob.setMimeType(mimeType);
+                }
             } catch (IOException e) {
                 throw new NuxeoException("Failed to render template: " + templateName, e);
             }

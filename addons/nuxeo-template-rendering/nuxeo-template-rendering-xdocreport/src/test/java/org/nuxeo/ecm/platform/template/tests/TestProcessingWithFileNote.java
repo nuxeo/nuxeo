@@ -158,6 +158,7 @@ public class TestProcessingWithFileNote {
         assertNotNull(blob);
 
         assertEquals("MyTestNote2.odt", blob.getFilename());
+        assertEquals("application/vnd.oasis.opendocument.text", blob.getMimeType());
 
         String xmlContent = ZipXmlHelper.readXMLContent(blob, ZipXmlHelper.OOO_MAIN_FILE);
 
