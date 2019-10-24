@@ -33,8 +33,15 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -42,7 +49,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +60,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.comment")
 @Deploy("org.nuxeo.ecm.platform.query.api")
-public abstract class AbstractCommentJsonWriterTest extends AbstractJsonWriterTest.External<CommentJsonWriter, Comment> {
+public abstract class AbstractCommentJsonWriterTest
+        extends AbstractJsonWriterTest.External<CommentJsonWriter, Comment> {
 
     @Inject
     protected CommentManager commentManager;
@@ -113,6 +120,11 @@ public abstract class AbstractCommentJsonWriterTest extends AbstractJsonWriterTe
         replies.add(commentManager.createComment(session, firstReply));
         replies.add(commentManager.createComment(session, secondReply));
         replies.add(commentManager.createComment(session, thirdReply));
+
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("james", SecurityConstants.READ, true));
+        session.setACP(doc.getRef(), acp, false);
 
         session.save();
 
@@ -215,6 +227,31 @@ public abstract class AbstractCommentJsonWriterTest extends AbstractJsonWriterTe
     @Test
     public void testUsedCommentManager() {
         assertEquals(getCommentManager(), commentManager.getClass());
+    }
+
+    @Test
+    public void shouldGetCommentsWhenIHaveRightPermissions() throws IOException {
+        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(docModel.getRepositoryName(), "james")) {
+            Comment lastReply = replies.get(replies.size() - 1);
+            lastReply.setModificationDate(Instant.now());
+
+            RenderingContext ctx = RenderingContext.CtxBuilder.session(jamesSession).get();
+            JsonAssert json = jsonAssert(lastReply, ctx);
+            assertCommentProperties(json);
+
+            json.has("id").isEquals(lastReply.getId());
+            json.has("parentId").isEquals(lastReply.getParentId());
+            json.has("ancestorIds").length(2);
+            json.has("author").isEquals(lastReply.getAuthor());
+            json.has("text").isEquals(lastReply.getText());
+            json.has("creationDate").isEquals(lastReply.getCreationDate().toString());
+            json.has("modificationDate").isEquals(lastReply.getModificationDate().toString());
+            json.has("entity").isEquals(((CommentImpl) lastReply).getEntity());
+            json.has("entityId").isEquals(((CommentImpl) lastReply).getEntityId());
+            json.has("origin").isEquals(((CommentImpl) lastReply).getOrigin());
+            json.hasNot("numberOfReplies");
+            json.hasNot("lastReplyDate");
+        }
     }
 
 }

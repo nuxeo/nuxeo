@@ -25,7 +25,6 @@ import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
@@ -388,8 +387,16 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
-        return getAncestorRef(session, session.getDocument(commentIdRef));
+    public DocumentRef getTopLevelCommentAncestor(CoreSession s, DocumentRef commentIdRef) {
+        DocumentModel documentModel = CoreInstance.doPrivileged(s, session -> {
+            if (!session.exists(commentIdRef)) {
+                throw new CommentNotFoundException(String.format("The comment %s does not exist.", commentIdRef));
+            }
+
+            return session.getDocument(commentIdRef);
+        });
+
+        return getAncestorRef(s, documentModel);
     }
 
     @SuppressWarnings("unchecked")
@@ -423,10 +430,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     protected DocumentRef getAncestorRef(CoreSession session, DocumentModel documentModel) {
-        return CoreInstance.doPrivileged(session, s -> {
-            DocumentModel ancestorComment = getThreadForComment(s, documentModel);
-            return ancestorComment.getRef();
-        });
+        DocumentModel ancestorComment = getThreadForComment(session, documentModel);
+        return ancestorComment.getRef();
     }
 
     protected DocumentModel getThreadForComment(CoreSession s, DocumentModel comment)

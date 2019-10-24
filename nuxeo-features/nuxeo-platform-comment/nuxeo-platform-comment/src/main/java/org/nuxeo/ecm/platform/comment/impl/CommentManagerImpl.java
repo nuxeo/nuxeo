@@ -47,10 +47,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
@@ -504,14 +506,27 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
-        DocumentModel documentModel = session.getDocument(commentIdRef);
-        while (documentModel != null && documentModel.hasSchema(COMMENT_SCHEMA)) {
-            List<DocumentModel> ancestors = getDocumentsForComment(documentModel);
-            documentModel = ancestors.isEmpty() ? null : ancestors.get(0);
-        }
+    public DocumentRef getTopLevelCommentAncestor(CoreSession s, DocumentRef commentIdRef) {
+        NuxeoPrincipal principal = s.getPrincipal();
+        return CoreInstance.doPrivileged(s, session -> {
+            if (!session.exists(commentIdRef)) {
+                throw new CommentNotFoundException(String.format("The comment %s does not exist.", commentIdRef));
+            }
 
-        return documentModel != null ? documentModel.getRef() : null;
+            DocumentModel documentModel = session.getDocument(commentIdRef);
+            while (documentModel != null && documentModel.hasSchema(COMMENT_SCHEMA)) {
+                List<DocumentModel> ancestors = getDocumentsForComment(documentModel);
+                documentModel = ancestors.isEmpty() ? null : ancestors.get(0);
+            }
+
+            if (documentModel != null
+                    && !session.hasPermission(principal, documentModel.getRef(), SecurityConstants.READ)) {
+                throw new CommentSecurityException("The user " + principal.getName()
+                        + " does not have access to the comments of document " + documentModel.getRef().reference());
+            }
+
+            return documentModel != null ? documentModel.getRef() : null;
+        });
     }
 
 }
