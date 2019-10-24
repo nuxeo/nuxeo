@@ -11,7 +11,7 @@
       <script><![CDATA[
         function run(input, params) {
           return Repository.Query(null, {
-            'query': 'select * from Document where ecm:mixinType = "Template" AND ecm:isTrashed = 0 AND tmpl:applicableTypes IN ( "all", "' + input['type'] + '")'
+            'query': 'select * from Document where ecm:mixinType = "Template" AND ecm:isTrashed = 0 AND tmpl:applicableTypes IN ( "all", "' + input['type'] + '") AND ecm:isVersion = 0'
           });
         }
       ]]></script>
