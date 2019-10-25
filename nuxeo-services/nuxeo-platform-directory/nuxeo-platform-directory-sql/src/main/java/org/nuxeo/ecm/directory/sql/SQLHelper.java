@@ -33,6 +33,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -89,7 +90,11 @@ public class SQLHelper {
                 }
                 return false;
             } // else policy=always or table doesn't exist
-            createTable(tableExists);
+            try {
+                createTable(tableExists);
+            } catch (ConcurrentUpdateException e) {
+                // ignore concurrent table creation
+            }
             return true; // load data
         }
     }
@@ -133,6 +138,11 @@ public class SQLHelper {
                 stmt.execute(sql);
             }
         } catch (SQLException e) {
+            if (table.getDialect().isConcurrentUpdateException(e)) {
+                log.debug(e, e);
+                log.warn(e.toString());
+                throw new ConcurrentUpdateException(e);
+            }
             throw new DirectoryException(String.format("Table '%s' creation failed: %s", table, e.getMessage()), e);
         }
     }
