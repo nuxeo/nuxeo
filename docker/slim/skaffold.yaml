@@ -18,7 +18,7 @@ build:
     envTemplate:
       template: "{{.DOCKER_REGISTRY}}/nuxeo/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
-    - image: nuxeo
+    - image: slim
       context: docker/slim
       kaniko:
         dockerfile: Dockerfile

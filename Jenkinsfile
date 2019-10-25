@@ -113,7 +113,7 @@ pipeline {
     SERVICE_ACCOUNT = 'jenkins'
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
-    NUXEO_IMAGE_NAME = 'nuxeo'
+    SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
     PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
   }
@@ -317,7 +317,7 @@ pipeline {
               dockerRun(image, 'cat /etc/centos-release; java -version')
 
               // nuxeo image
-              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
+              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${SLIM_IMAGE_NAME}:${VERSION}"
               echo "Test ${image}"
               dockerPull(image)
               echo 'Run image as root (0)'
@@ -354,7 +354,7 @@ pipeline {
             echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
             dockerDeploy("${BUILDER_IMAGE_NAME}")
             dockerDeploy("${BASE_IMAGE_NAME}")
-            dockerDeploy("${NUXEO_IMAGE_NAME}")
+            dockerDeploy("${SLIM_IMAGE_NAME}")
           }
         }
       }

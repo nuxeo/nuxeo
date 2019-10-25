@@ -38,7 +38,7 @@
               <goal>tag</goal>
             </goals>
             <configuration>
-              <repository>nuxeo/nuxeo</repository>
+              <repository>nuxeo/slim</repository>
               <tag>${nuxeo.platform.version}</tag>
               <buildArgs>
                 <BUILDER_IMAGE>nuxeo/builder:${nuxeo.platform.version}</BUILDER_IMAGE>
