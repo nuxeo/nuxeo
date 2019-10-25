@@ -1253,6 +1253,10 @@ public class DialectPostgreSQL extends Dialect {
                 // deadlock detected
                 return true;
             }
+            if ("42P07".equals(sqlState)) {
+                // relation ... already exists
+                return true;
+            }
         }
         return false;
     }
