@@ -144,7 +144,6 @@ This requires to:
 
 It also requires the following environment variables:
 - `DOCKER_REGISTRY`: the Docker registry to push the images to.
-- `ORG`: the organization used as a namespace in the image names, in our case: `nuxeo`.
 - `VERSION`: the image tag, for instance `11.1-SNAPSHOT`.
 
 Because we are using the [Kaniko](https://github.com/GoogleContainerTools/kaniko) builder and there is no support (yet) for [ordering dependant builds](https://github.com/GoogleContainerTools/skaffold/issues/2717), we are relying on several `skaffold.yaml` files and performing a sequential build, see the `skaffoldBuildAll` method in the [Jenkinsfile](../Jenkinsfile).

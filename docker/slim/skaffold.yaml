@@ -16,7 +16,7 @@ kind: Config
 build:
   tagPolicy:
     envTemplate:
-      template: "{{.DOCKER_REGISTRY}}/{{.ORG}}/{{.IMAGE_NAME}}:{{.VERSION}}"
+      template: "{{.DOCKER_REGISTRY}}/nuxeo/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
     - image: nuxeo
       context: docker/slim
@@ -25,9 +25,9 @@ build:
         buildContext:
           localDir: {}
         buildArgs:
-          BUILDER_IMAGE: ${DOCKER_REGISTRY}/${ORG}/builder:${VERSION}
-          BASE_IMAGE: ${DOCKER_REGISTRY}/${ORG}/base:${VERSION}
+          BUILDER_IMAGE: ${DOCKER_REGISTRY}/nuxeo/builder:${VERSION}
+          BASE_IMAGE: ${DOCKER_REGISTRY}/nuxeo/base:${VERSION}
         cache:
-          repo: ${DOCKER_REGISTRY}/${ORG}/slim/cache
+          repo: ${DOCKER_REGISTRY}/nuxeo/slim/cache
   cluster:
     namespace: platform
