@@ -14,10 +14,10 @@ These images are pushed to our [public Docker regsitry](https://packages.nuxeo.c
 docker pull docker.packages.nuxeo.com/IMAGE_NAME:TAG
 ```
 
-For instance, to pull the latest 11.1-SNAPSHOT version of the `nuxeo/nuxeo` image, run:
+For instance, to pull the latest 11.1-SNAPSHOT version of the `nuxeo/slim` image, run:
 
 ```
-docker pull docker.packages.nuxeo.com/nuxeo/nuxeo:11.1-SNAPSHOT
+docker pull docker.packages.nuxeo.com/nuxeo/slim:11.1-SNAPSHOT
 ```
 
 ## Disclaimer
@@ -98,7 +98,7 @@ USER 900
 
 ## Final Images
 
-### Slim: nuxeo/nuxeo
+### Slim: nuxeo/slim
 
 It includes a bare Nuxeo server distribution without any package installed.
 It doesn't include any converter.
@@ -160,7 +160,7 @@ To build the `nuxeo/builder-platform` image, run:
 skaffold build -f builder-platform/skaffold.yaml
 ```
 
-To build the `nuxeo/nuxeo` image, run:
+To build the `nuxeo/slim` image, run:
 
 ```
 skaffold build -f slim/skaffold.yaml
@@ -198,24 +198,24 @@ Then run:
 docker build -t nuxeo/builder-platform:11.1-SNAPSHOT -f builder-platform/Dockerfile --build-arg BASE_IMAGE=nuxeo/builder:11.1-SNAPSHOT builder-platform
 ```
 
-To build the `nuxeo/nuxeo` image, run:
+To build the `nuxeo/slim` image, run:
 
 ```
-docker build -t nuxeo/nuxeo:11.1-SNAPSHOT -f slim/Dockerfile --build-arg BUILDER_IMAGE=nuxeo/builder:11.1-SNAPSHOT --build-arg BASE_IMAGE=nuxeo/base:11.1-SNAPSHOT slim
+docker build -t nuxeo/slim:11.1-SNAPSHOT -f slim/Dockerfile --build-arg BUILDER_IMAGE=nuxeo/builder:11.1-SNAPSHOT --build-arg BASE_IMAGE=nuxeo/base:11.1-SNAPSHOT slim
 ```
 
 ## Run an Image
 
-For instance, to run a container from the `nuxeo/nuxeo` image built locally, run:
+For instance, to run a container from the `nuxeo/slim` image built locally, run:
 
 ```
-docker run -it -p 8080:8080 nuxeo/nuxeo:11.1-SNAPSHOT
+docker run -it -p 8080:8080 nuxeo/slim:11.1-SNAPSHOT
 ```
 
-To pull the `nuxeo/nuxeo` image from our public Docker regsitry and run a container from it, run:
+To pull the `nuxeo/slim` image from our public Docker regsitry and run a container from it, run:
 
 ```
-docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/nuxeo:11.1-SNAPSHOT
+docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/slim:11.1-SNAPSHOT
 ```
 
 ## Inspect an Image
@@ -223,13 +223,13 @@ docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/nuxeo:11.1-SNAPSHOT
 To inspect the different layers included in an image, you can run for instance:
 
 ```
-docker history nuxeo/nuxeo:11.1-SNAPSHOT
+docker history nuxeo/slim:11.1-SNAPSHOT
 ```
 
 The [dive](https://github.com/wagoodman/dive) tool is also very good for exploring an image, its layer contents and discovering ways to shrink the image size:
 
 ```
-dive nuxeo/nuxeo:11.1-SNAPSHOT
+dive nuxeo/slim:11.1-SNAPSHOT
 ```
 
 ## Configure an Image at Runtime
@@ -245,7 +245,7 @@ Currently, the only environment variable that is taken into account by the `nuxe
 For instance, running:
 
 ```
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/nuxeo:11.1-SNAPSHOT
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:11.1-SNAPSHOT
 ```
 
 allows to run a container with a registered Nuxeo instance.
