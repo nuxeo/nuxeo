@@ -70,7 +70,7 @@ COPY --from=builder --chown=UID:GID /distrib NUXEO_HOME
 
 ### Nuxeo Base: nuxeo/base
 
-This image cas be used as the `BASE_IMAGE` in the Dockerfile samples seen above.
+This image can be used as the `BASE_IMAGE` in the Dockerfile samples seen above.
 
 Based on CentOS 7, it includes:
 - OpenJDK.
@@ -207,13 +207,13 @@ docker build -t nuxeo/nuxeo:11.1-SNAPSHOT -f slim/Dockerfile --build-arg BUILDER
 
 ## Run an Image
 
-For instance, to run a container derived from the the `nuxeo/nuxeo` image built locally, run:
+For instance, to run a container from the `nuxeo/nuxeo` image built locally, run:
 
 ```
 docker run -it -p 8080:8080 nuxeo/nuxeo:11.1-SNAPSHOT
 ```
 
-To pull the `nuxeo/nuxeo` image from our public Docker regsitry and run a container derived from it, run:
+To pull the `nuxeo/nuxeo` image from our public Docker regsitry and run a container from it, run:
 
 ```
 docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/nuxeo:11.1-SNAPSHOT
