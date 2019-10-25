@@ -16,7 +16,7 @@ kind: Config
 build:
   tagPolicy:
     envTemplate:
-      template: "{{.DOCKER_REGISTRY}}/{{.ORG}}/{{.IMAGE_NAME}}:{{.VERSION}}"
+      template: "{{.DOCKER_REGISTRY}}/nuxeo/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
     - image: builder-platform
       context: docker/builder-platform
@@ -25,8 +25,8 @@ build:
         buildContext:
           localDir: {}
         buildArgs:
-          BASE_IMAGE: ${DOCKER_REGISTRY}/${ORG}/builder:${VERSION}
+          BASE_IMAGE: ${DOCKER_REGISTRY}/nuxeo/builder:${VERSION}
         cache:
-          repo: ${DOCKER_REGISTRY}/${ORG}/builder-platform/cache
+          repo: ${DOCKER_REGISTRY}/nuxeo/builder-platform/cache
   cluster:
     namespace: platform

@@ -22,6 +22,8 @@ properties([
   disableConcurrentBuilds(),
 ])
 
+String dockerNamespace = 'nuxeo'
+
 void setGitHubBuildStatus(String context, String message, String state) {
   step([
     $class: 'GitHubCommitStatusSetter',
@@ -66,7 +68,7 @@ void dockerPush(String image) {
 }
 
 void dockerDeploy(String imageName) {
-  String imageTag = "${ORG}/${imageName}:${VERSION}"
+  String imageTag = "${dockerNamespace}/${imageName}:${VERSION}"
   String internalImage = "${DOCKER_REGISTRY}/${imageTag}"
   String publicImage = "${PUBLIC_DOCKER_REGISTRY}/${imageTag}"
   echo "Push ${publicImage}"
@@ -79,7 +81,6 @@ void dockerDeploy(String imageName) {
  * Replaces environment variables present in the given yaml file and then runs skaffold build on it.
  * Needed environment variables are generally:
  * - DOCKER_REGISTRY
- * - ORG
  * - VERSION
  */
 void skaffoldBuild(String yaml) {
@@ -110,7 +111,6 @@ pipeline {
     SERVICE_REDIS = 'redis-master'
     REDIS_HOST = "${SERVICE_REDIS}.${NAMESPACE_REDIS}.svc.cluster.local"
     SERVICE_ACCOUNT = 'jenkins'
-    ORG = 'nuxeo'
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
     NUXEO_IMAGE_NAME = 'nuxeo'
@@ -305,19 +305,19 @@ pipeline {
             """
             script {
               // builder image
-              def image = "${DOCKER_REGISTRY}/${ORG}/${BUILDER_IMAGE_NAME}:${VERSION}"
+              def image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BUILDER_IMAGE_NAME}:${VERSION}"
               echo "Test ${image}"
               dockerPull(image)
               dockerRun(image, 'ls -l /distrib')
 
               // base image
-              image = "${DOCKER_REGISTRY}/${ORG}/${BASE_IMAGE_NAME}:${VERSION}"
+              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BASE_IMAGE_NAME}:${VERSION}"
               echo "Test ${image}"
               dockerPull(image)
               dockerRun(image, 'cat /etc/centos-release; java -version')
 
               // nuxeo image
-              image = "${DOCKER_REGISTRY}/${ORG}/${NUXEO_IMAGE_NAME}:${VERSION}"
+              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
               echo "Test ${image}"
               dockerPull(image)
               echo 'Run image as root (0)'
