@@ -39,6 +39,7 @@ RUN alternatives --set java java-11-openjdk.x86_64
 RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
 
 # Add a nuxeo user with a fixed UID
+# We chose an arbitrary UID that doesn't conflict with possibly existing users
 ENV NUXEO_USER nuxeo
 RUN useradd -m -d /home/$NUXEO_USER -u 900 -s /bin/bash $NUXEO_USER
 

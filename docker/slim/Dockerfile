@@ -1,6 +1,6 @@
 # Nuxeo server slim image
 #
-# It includes a bare Nuxeo server distribution without any package installed.
+# It includes a bare Nuxeo server distribution without any Nuxeo package installed.
 # It doesn't include any converter.
 #
 # It uses a multi-stage build relying on a builder image and a base image.
