@@ -243,7 +243,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
                 // In this case we cannot just rely on `comment:parentId` but on the type of doc that contains the comment
                 DocumentRef parentRef = documentModel.getParentRef();
                 // Comment is under property model
-                if (s.getDocument(parentRef).getType().equals("HiddenFolder")) {
+                if (session.getDocument(parentRef).getType().equals("HiddenFolder")) {
                     return function.apply(first);
                 }
                 // Comment is under tree model

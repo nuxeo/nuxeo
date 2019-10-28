@@ -39,11 +39,17 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -51,6 +57,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -78,6 +85,9 @@ public abstract class AbstractTestCommentManager {
 
     @Inject
     protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     public abstract Class<? extends CommentManager> getType();
 
@@ -222,6 +232,11 @@ public abstract class AbstractTestCommentManager {
         session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
         doc = session.createDocument(doc);
+
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("james", SecurityConstants.READ, true));
+        session.setACP(doc.getRef(), acp, false);
         session.save();
 
         String author = "toto";
@@ -233,6 +248,21 @@ public abstract class AbstractTestCommentManager {
 
         comment = commentManager.createComment(session, comment);
         assertEquals(doc.getRef(), commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
+
+        try (CloseableCoreSession jamesSession = coreFeature.openCoreSession("james")) {
+            assertEquals(doc.getRef(),
+                    commentManager.getTopLevelCommentAncestor(jamesSession, new IdRef(comment.getId())));
+        }
+
+        try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
+            assertEquals(doc.getRef(),
+                    commentManager.getTopLevelCommentAncestor(janeSession, new IdRef(comment.getId())));
+            fail("jane should not be able to get the top level comment ancestor");
+        } catch (CommentSecurityException cse) {
+            assertNotNull(cse);
+            assertEquals(String.format("The user jane does not have access to the comments of document %s",
+                    doc.getId()), cse.getMessage());
+        }
     }
 
     @Test
