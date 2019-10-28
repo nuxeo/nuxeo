@@ -292,18 +292,24 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     @Override
     public DocumentRef getTopLevelCommentAncestor(CoreSession s, DocumentRef documentRef) {
-        CoreInstance.doPrivileged(s, session -> {
+        return CoreInstance.doPrivileged(s, session -> {
             if (!session.exists(documentRef)) {
                 throw new CommentNotFoundException(String.format("The comment %s does not exist.", documentRef));
             }
+
+            DocumentModel documentModel = session.getDocument(documentRef);
+            while (documentModel.hasSchema(COMMENT_SCHEMA) || COMMENTS_DIRECTORY_TYPE.equals(documentModel.getType())) {
+                documentModel = session.getDocument(documentModel.getParentRef());
+            }
+
+            NuxeoPrincipal principal = s.getPrincipal();
+            if (!session.hasPermission(principal, documentModel.getRef(), SecurityConstants.READ)) {
+                throw new CommentSecurityException("The user " + principal.getName()
+                        + " does not have access to the comments of document " + documentModel.getRef().reference());
+            }
+
+            return documentModel.getRef();
         });
-
-        DocumentModel documentModel = s.getDocument(documentRef);
-        while (documentModel.hasSchema(COMMENT_SCHEMA) || COMMENTS_DIRECTORY_TYPE.equals(documentModel.getType())) {
-            documentModel = s.getDocument(documentModel.getParentRef());
-        }
-
-        return documentModel.getRef();
     }
 
     /**

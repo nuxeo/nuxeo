@@ -438,7 +438,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throws CommentSecurityException {
         NuxeoPrincipal principal = s.getPrincipal();
         return CoreInstance.doPrivileged(s, session -> {
-            DocumentModel documentModel = comment;
+            // Fetch the document in a case where it is not associated to an open session
+            DocumentModel documentModel = session.getDocument(comment.getRef());
             while (documentModel.hasSchema(COMMENT_SCHEMA) || HIDDEN_FOLDER_TYPE.equals(documentModel.getType())) {
                 documentModel = session.getDocument(new IdRef((String) documentModel.getPropertyValue(COMMENT_PARENT_ID)));
             }

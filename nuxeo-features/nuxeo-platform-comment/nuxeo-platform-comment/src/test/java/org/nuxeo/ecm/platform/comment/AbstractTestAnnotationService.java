@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
@@ -75,7 +76,7 @@ public abstract class AbstractTestAnnotationService {
     protected AnnotationService annotationService;
 
     protected CloseableCoreSession session;
-    
+
     protected abstract Class<? extends CommentManager> getCommentManager();
 
     @Before
@@ -459,7 +460,59 @@ public abstract class AbstractTestAnnotationService {
         assertFalse(session.exists(new IdRef(annotation.getId())));
 
     }
-    
+
+    @Test
+    public void testGetTopLevelAnnotationAncestor() {
+        DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
+        docToAnnotate = session.createDocument(docToAnnotate);
+
+        String entityId = "foo";
+        String docIdToAnnotate = docToAnnotate.getId();
+        String xpathToAnnotate = "files:files/0/file";
+        String comment = "test comment";
+        String origin = "Test";
+        String entity = "<entity><annotation>bar</annotation></entity>";
+
+        Annotation annotation = new AnnotationImpl();
+        annotation.setAuthor("jdoe");
+        annotation.setText(comment);
+        annotation.setParentId(docIdToAnnotate);
+        annotation.setXpath(xpathToAnnotate);
+        annotation.setCreationDate(Instant.now());
+        annotation.setModificationDate(Instant.now());
+        ((ExternalEntity) annotation).setEntityId(entityId);
+        ((ExternalEntity) annotation).setOrigin(origin);
+        ((ExternalEntity) annotation).setEntity(entity);
+        annotation = annotationService.createAnnotation(session, annotation);
+
+        ACP acp = docToAnnotate.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("james", SecurityConstants.READ, true));
+        session.setACP(docToAnnotate.getRef(), acp, false);
+        session.save();
+
+        CommentManager commentManager = Framework.getService(CommentManager.class);
+        try (CloseableCoreSession systemSession = coreFeature.openCoreSession()) {
+            assertEquals(docToAnnotate.getRef(),
+                    commentManager.getTopLevelCommentAncestor(systemSession, new IdRef(annotation.getId())));
+        }
+
+        try (CloseableCoreSession jamesSession = coreFeature.openCoreSession("james")) {
+            assertEquals(docToAnnotate.getRef(),
+                    commentManager.getTopLevelCommentAncestor(jamesSession, new IdRef(annotation.getId())));
+        }
+
+        try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
+            assertEquals(docToAnnotate.getRef(),
+                    commentManager.getTopLevelCommentAncestor(janeSession, new IdRef(annotation.getId())));
+            fail("jane should not be able to get the top level annotation ancestor");
+        } catch (CommentSecurityException cse) {
+            assertNotNull(cse);
+            assertEquals(String.format("The user jane does not have access to the comments of document %s",
+                    docToAnnotate.getId()), cse.getMessage());
+        }
+    }
+
     @Test
     public void testUsedCommentManager() {
         assertEquals(getCommentManager(), Framework.getService(CommentManager.class).getClass());
