@@ -36,6 +36,10 @@ public class WorkStateHelper {
 
     protected static final String OFFSET_SUFFIX = ":offset";
 
+    protected static final String GROUP_JOIN_COUNT_SUFFIX = ":group";
+
+    protected static final long GROUP_JOIN_COUNT_TTL_SECONDS = 600;
+
     protected static final String CANCELED = "canceled";
 
     protected static KeyValueStore getKeyValueStore() {
@@ -68,6 +72,10 @@ public class WorkStateHelper {
         return workId + STATE_SUFFIX;
     }
 
+    protected static String getGroupKey(String group) {
+        return group + GROUP_JOIN_COUNT_SUFFIX;
+    }
+
     protected static boolean isCanceled(String workId) {
         return CANCELED.equals(getKeyValueStore().getString(getStateKey(workId)));
     }
@@ -82,6 +90,21 @@ public class WorkStateHelper {
 
     protected static void setState(String workId, Work.State state, long ttl) {
         getKeyValueStore().put(getStateKey(workId), state == null ? null : state.toString(), ttl);
+    }
+
+    // @since 11.1
+    protected static void addGroupJoinWork(String group) {
+        getKeyValueStore().addAndGet(getGroupKey(group), 1);
+    }
+
+    // @since 11.1
+    protected static boolean removeGroupJoinWork(String group) {
+        long count = getKeyValueStore().addAndGet(getGroupKey(group), -1);
+        if (count <= 0) {
+            getKeyValueStore().setTTL(group, GROUP_JOIN_COUNT_TTL_SECONDS);
+            return true;
+        }
+        return false;
     }
 
     private WorkStateHelper() {
