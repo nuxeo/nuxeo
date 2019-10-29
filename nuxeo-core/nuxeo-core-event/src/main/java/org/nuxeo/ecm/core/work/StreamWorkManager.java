@@ -209,6 +209,13 @@ public class StreamWorkManager extends WorkManagerImpl {
         if (work.isCoalescing()) {
             WorkStateHelper.setLastOffset(work.getId(), offset.offset(), stateTTL);
         }
+        if (work.isGroupJoin()) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Submit Work: %s to GroupJoin: %s, offset: %s", work.getId(),
+                        work.getPartitionKey(), offset));
+            }
+            WorkStateHelper.addGroupJoinWork(work.getPartitionKey());
+        }
         if (storeState) {
             WorkStateHelper.setState(work.getId(), Work.State.SCHEDULED, stateTTL);
         }

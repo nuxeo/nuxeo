@@ -793,6 +793,10 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             break;
 
         }
+        if (work.isGroupJoin()) {
+            log.debug("Submit Work: {} to GroupJoin: {}", work::getId, work::getPartitionKey);
+            WorkStateHelper.addGroupJoinWork(work.getPartitionKey());
+        }
         queuing.workSchedule(queueId, work);
     }
 

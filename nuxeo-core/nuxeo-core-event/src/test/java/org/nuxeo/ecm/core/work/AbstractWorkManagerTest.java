@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -146,6 +148,35 @@ public abstract class AbstractWorkManagerTest {
         }
     }
 
+    /**
+     * @since 11.1
+     */
+    protected static class SleepGroupJoinWork extends SleepWork {
+        private static final long serialVersionUID = 1L;
+
+        protected final String group;
+
+        public SleepGroupJoinWork(String group, long durationMillis) {
+            super(durationMillis);
+            this.group = group;
+        }
+
+        @Override
+        public String getPartitionKey() {
+            return group;
+        }
+
+        @Override
+        public boolean isGroupJoin() {
+            return true;
+        }
+
+        @Override
+        public void onGroupJoinCompletion() {
+            KeyValueStore kv = Framework.getService(KeyValueService.class).getKeyValueStore("default");
+            kv.addAndGet(group, 1);
+        }
+    }
 
     protected class MetricsTracker {
         protected String queueId;
@@ -620,4 +651,38 @@ public abstract class AbstractWorkManagerTest {
         assertEquals(1, dlqCounter.getCount() - initialDlqCount);
     }
 
+    @Test
+    public void testWorkGroupJoinSimple() throws Exception {
+        // Run a groupJoin with a single work
+        String group = "myGroup";
+        SleepWork work = new SleepGroupJoinWork(group, 200);
+        service.schedule(work);
+
+        assertTrue(service.awaitCompletion(2000, TimeUnit.MILLISECONDS));
+        tracker.assertDiff(0, 0, 1, 0);
+
+        // Check that the completion hook has been executed (it increments a long in the kv store)
+        KeyValueStore kv = Framework.getService(KeyValueService.class).getKeyValueStore("default");
+        assertEquals(Long.valueOf(1), kv.getLong(group));
+    }
+
+    @Test
+    public void testWorkGroupJoin() throws Exception {
+        String group1 = "group1";
+        String group2 = "group2";
+        final int NB_WORK = 5;
+        for (int i = 0; i < NB_WORK; i++) {
+            SleepWork work1 = new SleepGroupJoinWork(group1, 200);
+            SleepWork work2 = new SleepGroupJoinWork(group2, 200);
+            service.schedule(work1);
+            service.schedule(work2);
+        }
+        assertTrue(service.awaitCompletion(10, TimeUnit.SECONDS));
+        tracker.assertDiff(0, 0, 2 * NB_WORK, 0);
+
+        // ensure that completion hook is called only once
+        KeyValueStore kv = Framework.getService(KeyValueService.class).getKeyValueStore("default");
+        assertEquals(Long.valueOf(1), kv.getLong(group1));
+        assertEquals(Long.valueOf(1), kv.getLong(group2));
+    }
 }
