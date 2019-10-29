@@ -19,9 +19,11 @@
         <property name="ssl.truststore.type">${kafka.truststore.type}</property>
         <property name="ssl.truststore.location">${kafka.truststore.path}</property>
         <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+<#if "${kafka.keystore.path}"?has_content>
         <property name="ssl.keystore.type">${kafka.keystore.type}</property>
         <property name="ssl.keystore.location">${kafka.keystore.path}</property>
         <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
 </#if>
       </producer>
       <consumer>
@@ -42,9 +44,11 @@
         <property name="ssl.truststore.type">${kafka.truststore.type}</property>
         <property name="ssl.truststore.location">${kafka.truststore.path}</property>
         <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+<#if "${kafka.keystore.path}"?has_content>
         <property name="ssl.keystore.type">${kafka.keystore.type}</property>
         <property name="ssl.keystore.location">${kafka.keystore.path}</property>
         <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
 </#if>
       </consumer>
     </kafkaConfig>
@@ -63,9 +67,11 @@
         <property name="ssl.truststore.type">${kafka.truststore.type}</property>
         <property name="ssl.truststore.location">${kafka.truststore.path}</property>
         <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+<#if "${kafka.keystore.path}"?has_content>
         <property name="ssl.keystore.type">${kafka.keystore.type}</property>
         <property name="ssl.keystore.location">${kafka.keystore.path}</property>
         <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
 </#if>
       </producer>
       <consumer>
@@ -74,6 +80,7 @@
         <property name="max.poll.interval.ms">${kafka.max.poll.interval.ms}</property>
         <property name="session.timeout.ms">${kafka.session.timeout.ms}</property>
         <property name="heartbeat.interval.ms">${kafka.heartbeat.interval.ms}</property>
+        <property name="max.poll.records">${kafka.max.poll.records}</property>
 <#if "${kafka.ssl}" == "true">
 <#if "${kafka.sasl.enabled}" == "true">
         <property name="security.protocol">${kafka.security.protocol}</property>
@@ -82,13 +89,14 @@
 <#else>
         <property name="security.protocol">SSL</property>
 </#if>
-        <property name="max.poll.records">${kafka.max.poll.records}</property>
         <property name="ssl.truststore.type">${kafka.truststore.type}</property>
         <property name="ssl.truststore.location">${kafka.truststore.path}</property>
         <property name="ssl.truststore.password">${kafka.truststore.password}</property>
+<#if "${kafka.keystore.path}"?has_content>
         <property name="ssl.keystore.type">${kafka.keystore.type}</property>
         <property name="ssl.keystore.location">${kafka.keystore.path}</property>
         <property name="ssl.keystore.password">${kafka.keystore.password}</property>
+</#if>
 </#if>
       </consumer>
     </kafkaConfig>
