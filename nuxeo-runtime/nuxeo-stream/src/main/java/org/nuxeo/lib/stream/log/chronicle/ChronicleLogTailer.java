@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -114,22 +115,28 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
             throw new IllegalStateException("The tailer has been closed.");
         }
         List<M> value = new ArrayList<>(1);
-        long offset = cqTailer.index();
+        AtomicLong offset = new AtomicLong();
         if (NO_CODEC.equals(codec)) {
             // default format to keep backward compatibility
             try {
-                if (!cqTailer.readDocument(w -> value.add((M) w.read(MSG_KEY).object()))) {
+                if (!cqTailer.readDocument(w -> {
+                    offset.set(cqTailer.index());
+                    value.add((M) w.read(MSG_KEY).object());
+                })) {
                     return null;
                 }
             } catch (ClassCastException e) {
                 throw new IllegalArgumentException(e);
             }
         } else {
-            if (!cqTailer.readDocument(w -> value.add(codec.decode(w.read().bytes())))) {
+            if (!cqTailer.readDocument(w -> {
+                offset.set(cqTailer.index());
+                value.add(codec.decode(w.read().bytes()));
+            })) {
                 return null;
             }
         }
-        return new LogRecord<>(value.get(0), new LogOffsetImpl(partition, offset));
+        return new LogRecord<>(value.get(0), new LogOffsetImpl(partition, offset.get()));
     }
 
     @Override

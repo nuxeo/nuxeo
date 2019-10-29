@@ -920,6 +920,19 @@ public abstract class TestLog {
 
     }
 
+    @Test
+    public void testInitialOffset() throws Exception {
+        final int LOG_SIZE = 1;
+        KeyValueMessage msg1 = KeyValueMessage.of("1234567890", "0987654321".getBytes(UTF_8));
+        assertTrue(manager.createIfNotExists(logName, LOG_SIZE));
+        LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("someGroup", logName)) {
+            LogOffset offset = appender.append("foo", msg1);
+            LogRecord<KeyValueMessage> record = tailer.read(Duration.ofSeconds(1));
+            assertEquals(offset, record.offset());
+        }
+    }
+
     protected String readKey(LogTailer<KeyValueMessage> tailer) throws InterruptedException {
         try {
             return tailer.read(DEF_TIMEOUT).message().key();
