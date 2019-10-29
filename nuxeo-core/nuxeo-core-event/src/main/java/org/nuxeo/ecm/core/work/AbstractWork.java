@@ -482,6 +482,12 @@ public abstract class AbstractWork implements Work {
             // --- do work
             setStartTime();
             work(); // may throw ConcurrentUpdateException
+            if (isGroupJoin() && WorkStateHelper.removeGroupJoinWork(getPartitionKey())) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Detecting GroupJoin %s completion Work: %s", getPartitionKey(), getId()));
+                }
+                onGroupJoinCompletion();
+            }
             ok = true;
             // --- end work
         } catch (Exception e) {

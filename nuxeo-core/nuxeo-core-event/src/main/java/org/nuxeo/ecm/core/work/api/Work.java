@@ -405,4 +405,22 @@ public interface Work extends Serializable {
         return false;
     }
 
+    /**
+     * When true the Work is part of a group, Works of the group have the same {@link #getPartitionKey()}. When all
+     * Works of the group are done the {@link #onGroupJoinCompletion()} hook is called.
+     *
+     * @since 11.1
+     */
+    default boolean isGroupJoin() {
+        return false;
+    }
+
+    /**
+     * Called when {@link #isGroupJoin()} returns true and after the last Work of the group.
+     *
+     * @since 11.1
+     */
+    default void onGroupJoinCompletion() {
+
+    }
 }
