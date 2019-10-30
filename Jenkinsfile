@@ -22,7 +22,7 @@ properties([
   disableConcurrentBuilds(),
 ])
 
-String dockerNamespace = 'nuxeo'
+dockerNamespace = 'nuxeo'
 
 void setGitHubBuildStatus(String context, String message, String state) {
   step([
