@@ -43,6 +43,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.logging.SequenceTracer;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.WorkFailureEventListener;
 import org.nuxeo.ecm.core.event.test.DummyPostCommitEventListener;
@@ -74,6 +75,14 @@ import com.codahale.metrics.SharedMetricRegistries;
 @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-default-workmanager-config.xml")
 @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-queue-config.xml")
 public abstract class AbstractWorkManagerTest {
+
+    protected static final String CATEGORY = SleepWork.CATEGORY;
+
+    protected static final int DEFAULT_DURATION_MILLIS = 200;
+
+    protected static final String QUEUE = SleepWork.CATEGORY;
+
+    protected static final String SLEEP_WORK = "SleepWork";
 
     protected static class CreateFile extends AbstractWork implements Serializable {
         private final File file;
@@ -109,7 +118,7 @@ public abstract class AbstractWorkManagerTest {
         /**
          * @deprecated since 10.2 debug flag is unused
          */
-        @Deprecated
+        @Deprecated(since = "10.2")
         public SleepAndFailWork(long durationMillis, boolean debug) {
             super(durationMillis, debug);
         }
@@ -117,7 +126,7 @@ public abstract class AbstractWorkManagerTest {
         /**
          * @deprecated since 10.2 debug flag is unused
          */
-        @Deprecated
+        @Deprecated(since = "10.2")
         public SleepAndFailWork(long durationMillis, boolean debug, String id) {
             super(durationMillis, debug, id);
         }
@@ -125,7 +134,7 @@ public abstract class AbstractWorkManagerTest {
         @Override
         public void work() {
             super.work();
-            throw new RuntimeException(getTitle());
+            throw new NuxeoException(getTitle());
         }
     }
 
@@ -142,10 +151,9 @@ public abstract class AbstractWorkManagerTest {
         @Override
         public void cleanUp(boolean ok, Exception e) {
             super.cleanUp(ok, e);
-            throw new RuntimeException("Simulated failure during cleanup:" + getTitle());
+            throw new NuxeoException("Simulated failure during cleanup:" + getTitle());
         }
     }
-
 
     protected class MetricsTracker {
         protected String queueId;
@@ -170,10 +178,6 @@ public abstract class AbstractWorkManagerTest {
         }
     }
 
-    protected static final String CATEGORY = SleepWork.CATEGORY;
-
-    protected static final String QUEUE = SleepWork.CATEGORY;
-
     protected boolean dontClearCompletedWork;
 
     @Inject
@@ -188,7 +192,7 @@ public abstract class AbstractWorkManagerTest {
     protected MetricsTracker tracker;
 
     protected int getDurationMillis() {
-        return 200;
+        return DEFAULT_DURATION_MILLIS;
     }
 
     protected abstract boolean persistent();
@@ -203,6 +207,7 @@ public abstract class AbstractWorkManagerTest {
         try {
             service.awaitCompletion(60, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             fail("works did not finish between tests");
         }
         tracker = new MetricsTracker();
@@ -210,18 +215,18 @@ public abstract class AbstractWorkManagerTest {
     }
 
     @Test
-    public void testWorkManagerConfig() throws Exception {
+    public void testWorkManagerConfig() {
         SleepWork work = new SleepWork(1);
         assertEquals(CATEGORY, work.getCategory());
         assertEquals(QUEUE, service.getCategoryQueueId(CATEGORY));
 
         WorkQueueDescriptor qd = service.getWorkQueueDescriptor(QUEUE);
-        assertEquals("SleepWork", qd.id);
+        assertEquals(SLEEP_WORK, qd.id);
         assertEquals("Sleep Work Queue", qd.name);
         assertEquals(2, qd.getMaxThreads());
 
         assertEquals(2, qd.categories.size());
-        assertTrue(qd.categories.contains("SleepWork"));
+        assertTrue(qd.categories.contains(SLEEP_WORK));
         assertTrue(qd.categories.contains("TestCategory"));
 
         SleepWork testCategory = new SleepWork(1, "TestCategory", "id");
@@ -232,7 +237,7 @@ public abstract class AbstractWorkManagerTest {
     }
 
     @Test
-    public void testWorkManagerWork() throws Exception {
+    public void testWorkManagerWork() throws InterruptedException {
         int duration = getDurationMillis() * 3;
         SleepWork work = new SleepWork(duration);
         service.schedule(work);
@@ -252,7 +257,7 @@ public abstract class AbstractWorkManagerTest {
     }
 
     @Test
-    public void testWorkManagerScheduling() throws Exception {
+    public void testWorkManagerScheduling() throws InterruptedException {
         int duration = getDurationMillis() * 5;
         SleepWork work1 = new SleepWork(duration);
         SleepWork work2 = new SleepWork(duration);
@@ -286,13 +291,13 @@ public abstract class AbstractWorkManagerTest {
         service.schedule(new SleepAndFailWork(0));
         tracker.assertDiff(2, 2, 0, 1);
 
-        assertTrue(service.awaitCompletion(duration * 3, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(duration * 3L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 1);
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event:test-work-failure-listeners.xml")
-    public void itCanFireWorkFailureEvent() throws Exception {
+    public void itCanFireWorkFailureEvent() throws InterruptedException {
         int initCount = DummyPostCommitEventListener.handledCount();
         int initEvtCount = DummyPostCommitEventListener.eventCount();
         int initSyncEvntCount = WorkFailureEventListener.getCount();
@@ -302,16 +307,16 @@ public abstract class AbstractWorkManagerTest {
         assertTrue(service.awaitCompletion(6000, TimeUnit.MILLISECONDS));
 
         // synchronous listener
-        assertEquals(1 + initSyncEvntCount, WorkFailureEventListener.getCount());
+        assertEquals(1L + initSyncEvntCount, WorkFailureEventListener.getCount());
 
         eventService.waitForAsyncCompletion();
 
-        assertEquals(1 + initCount, DummyPostCommitEventListener.handledCount());
-        assertEquals(1 + initEvtCount, DummyPostCommitEventListener.eventCount());
+        assertEquals(1L + initCount, DummyPostCommitEventListener.handledCount());
+        assertEquals(1L + initEvtCount, DummyPostCommitEventListener.eventCount());
     }
 
     @Test
-    public void testWorkManagerCancelScheduling() throws Exception {
+    public void testWorkManagerCancelScheduling() throws InterruptedException {
         int duration = getDurationMillis() * 5;
         SleepWork work1 = new SleepWork(duration);
         SleepWork work2 = new SleepWork(duration);
@@ -326,15 +331,15 @@ public abstract class AbstractWorkManagerTest {
         SleepWork work4 = new SleepWork(duration, work3.getId());
         service.schedule(work4, Scheduling.CANCEL_SCHEDULED);
         // wait
-        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(duration * 2L, TimeUnit.MILLISECONDS));
         // canceled are taken in account as completed and canceled
         tracker.assertDiff(0, 0, 3, 1);
     }
 
     @Test
     @Ignore("Why this test is not run")
-    public void testDuplicatedWorks() throws Exception {
-        service.enableProcessing("SleepWork", false);
+    public void testDuplicatedWorks() throws InterruptedException {
+        service.enableProcessing(SLEEP_WORK, false);
         SleepWork work1 = new SleepWork(getDurationMillis(), "1");
         SleepWork work2 = new SleepWork(getDurationMillis(), "1");
 
@@ -343,15 +348,15 @@ public abstract class AbstractWorkManagerTest {
 
         tracker.assertDiff(1, 0, 0, 0);
 
-        service.enableProcessing("SleepWork", true);
+        service.enableProcessing(SLEEP_WORK, true);
 
-        assertTrue(service.awaitCompletion("SleepWork", getDurationMillis() * 10, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(SLEEP_WORK, getDurationMillis() * 10L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
     }
 
     @Test
     @Ignore
-    public void testWorkManagerShutdown() throws Exception {
+    public void testWorkManagerShutdown() throws InterruptedException {
         int duration = getDurationMillis() * 2;
         SleepWork work1 = new SleepWork(duration, false);
         SleepWork work2 = new SleepWork(duration, false);
@@ -372,7 +377,7 @@ public abstract class AbstractWorkManagerTest {
         // or put in the suspended queue (persistent)
 
         dontClearCompletedWork = true;
-        boolean terminated = service.shutdown(duration * 2, TimeUnit.MILLISECONDS);
+        boolean terminated = service.shutdown(duration * 2L, TimeUnit.MILLISECONDS);
         assertTrue(terminated);
 
         // check work state
@@ -389,39 +394,39 @@ public abstract class AbstractWorkManagerTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-disablequeue.xml")
-    public void testWorkManagerConfigDisableOneBeforeStart() throws Exception {
+    public void testWorkManagerConfigDisableOneBeforeStart() {
         // before first applicationStarted:
         // disable SleepWork queue
         assertTrue(service.isProcessingEnabled("default"));
-        assertFalse(service.isProcessingEnabled("SleepWork"));
+        assertFalse(service.isProcessingEnabled(SLEEP_WORK));
     }
 
     @Test
-    public void testWorkManagerConfigDisableOneAfterStart() throws Exception {
+    public void testWorkManagerConfigDisableOneAfterStart() {
         // after first applicationStarted:
         // disable SleepWork queue
-        service.enableProcessing("SleepWork", false);
+        service.enableProcessing(SLEEP_WORK, false);
         assertTrue(service.isProcessingEnabled("default"));
-        assertFalse(service.isProcessingEnabled("SleepWork"));
+        assertFalse(service.isProcessingEnabled(SLEEP_WORK));
     }
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-disablequeue1.xml")
-    public void testWorkManagerConfigDisableAllBeforeStart() throws Exception {
+    public void testWorkManagerConfigDisableAllBeforeStart() {
         assertFalse(service.isProcessingEnabled("default"));
-        assertTrue(service.isProcessingEnabled("SleepWork"));
+        assertTrue(service.isProcessingEnabled(SLEEP_WORK));
     }
 
     @Test
-    public void testWorkManagerConfigDisableAllAfterStart() throws Exception {
+    public void testWorkManagerConfigDisableAllAfterStart() {
         try {
             service.enableProcessing(false);
             assertFalse(service.isProcessingEnabled());
-            service.enableProcessing("SleepWork", true);
+            service.enableProcessing(SLEEP_WORK, true);
             assertTrue(service.isProcessingEnabled());
         } finally {
             // first disable SleepWork queue, otherwise work manager will register again metrics
-            service.enableProcessing("SleepWork", false);
+            service.enableProcessing(SLEEP_WORK, false);
             // now re-enable all queues
             service.enableProcessing(true);
         }
@@ -430,40 +435,18 @@ public abstract class AbstractWorkManagerTest {
     @Ignore("NXP-15680")
     @Test
     @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-disablequeue.xml")
-    public void testWorkManagerDisableProcessing() throws Exception {
-        assumeTrue(persistent());
-
-        SleepWork work1 = new SleepWork(getDurationMillis());
-        service.schedule(work1);
-
-        Thread.sleep(getDurationMillis() / 2);
-
-        // stays scheduled
-        tracker.assertDiff(1, 0, 0, 0);
-
-        Thread.sleep(getDurationMillis() * 2);
-        // still scheduled
-        tracker.assertDiff(1, 0, 0, 0);
-
-        // now reactivate the queue
-        // use a programmatic work queue descriptor
-        WorkQueueDescriptor descr = new WorkQueueDescriptor();
-        descr.id = "SleepWork";
-        descr.processing = Boolean.TRUE;
-        descr.categories = Collections.emptySet();
-        ((WorkManagerImpl) service).activateQueue(descr);
-
-        Thread.sleep(getDurationMillis() / 2);
-        tracker.assertDiff(0, 1, 0, 0);
-
-        Thread.sleep(getDurationMillis());
-        tracker.assertDiff(0, 0, 1, 0);
+    public void testWorkManagerDisableProcessing() throws InterruptedException {
+        checkWorkManagerDisableProcessing();
     }
 
     @Ignore("NXP-15680")
     @Test
     @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-disablequeue2.xml")
-    public void testWorkManagerDisableProcessing2() throws Exception {
+    public void testWorkManagerDisableProcessing2() throws InterruptedException {
+        checkWorkManagerDisableProcessing();
+    }
+
+    protected void checkWorkManagerDisableProcessing() throws InterruptedException {
         assumeTrue(persistent());
         SleepWork work1 = new SleepWork(getDurationMillis());
         service.schedule(work1);
@@ -474,14 +457,14 @@ public abstract class AbstractWorkManagerTest {
         tracker.assertDiff(1, 0, 0, 0);
 
         // check that we can reenable the queue
-        Thread.sleep(getDurationMillis() * 2);
+        Thread.sleep(getDurationMillis() * 2L);
         // still scheduled
         tracker.assertDiff(1, 0, 0, 0);
 
         // now reactivate the queue
         // use a programmatic work queue descriptor
         WorkQueueDescriptor descr = new WorkQueueDescriptor();
-        descr.id = "SleepWork";
+        descr.id = SLEEP_WORK;
         descr.processing = Boolean.TRUE;
         descr.categories = Collections.emptySet();
         ((WorkManagerImpl) service).activateQueue(descr);
@@ -495,7 +478,7 @@ public abstract class AbstractWorkManagerTest {
 
     @Test
     @Deploy("org.nuxeo.ecm.core.event.test:test-workmanager-disablequeue2.xml")
-    public void testWorkManagerDisableProcessingAll() throws Exception {
+    public void testWorkManagerDisableProcessingAll() throws InterruptedException {
         Assume.assumeTrue(service.supportsProcessingDisabling());
         SleepWork work1 = new SleepWork(getDurationMillis());
         service.schedule(work1);
@@ -505,7 +488,7 @@ public abstract class AbstractWorkManagerTest {
     }
 
     @Test
-    public void transientFilesWorkAreCleaned() throws Exception {
+    public void transientFilesWorkAreCleaned() throws InterruptedException {
         FileEventsTrackingFeature feature = runner.getFeature(FileEventsTrackingFeature.class);
         final File file = feature.resolveAndCreate(new File("pfouh"));
         service.schedule(new CreateFile(file));
@@ -513,7 +496,7 @@ public abstract class AbstractWorkManagerTest {
     }
 
     @Test
-    public void testNoConcurrentJobsWithSameId() throws Exception {
+    public void testNoConcurrentJobsWithSameId() throws InterruptedException {
         // create an init work to warm up the service, this is needed only for the embedded redis mode
         // sometime embedded mode takes around 1s to init, this prevent to put reliable assertion on time execution
         SleepWork initWork = new SleepWork(1);
@@ -546,7 +529,7 @@ public abstract class AbstractWorkManagerTest {
         Thread.sleep(duration);
         tracker.assertDiff(0, 1, 2, 0);
 
-        assertTrue(service.awaitCompletion(duration * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(duration * 2L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 3, 0);
     }
 
@@ -566,22 +549,22 @@ public abstract class AbstractWorkManagerTest {
     public void testFatWork() throws InterruptedException {
         FatWork fatWorkSlim = new FatWork("slim", 1_000);
         service.schedule(fatWorkSlim);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         FatWork fatWork = new FatWork("fatty", 4_000_000);
         service.schedule(fatWork);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 200, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 200L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 2, 0);
         // different work same id
         FatWork fatWorkBis = new FatWork("fatty", 3_000_000);
         service.schedule(fatWorkBis);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 200, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 200L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 3, 0);
     }
 
     @Test
-    public void testWorkFailureOnCleanup() throws Exception {
+    public void testWorkFailureOnCleanup() throws InterruptedException {
         SleepWork work1 = new SleepAndFailAtCleanupWork(200);
         SleepWork work2 = new SleepAndFailWork(200);
 
@@ -595,7 +578,7 @@ public abstract class AbstractWorkManagerTest {
     @Test
     @Deploy("org.nuxeo.runtime.stream")
     @Deploy("org.nuxeo.ecm.core.event:test-work-dead-letter-queue.xml")
-    public void testWorkInDeadLetterQueue() throws Exception {
+    public void testWorkInDeadLetterQueue() throws InterruptedException {
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
         Counter dlqCounter = registry.counter(GLOBAL_DLQ_COUNT_REGISTRY_NAME);
         long initialDlqCount = dlqCounter.getCount();

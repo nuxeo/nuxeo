@@ -71,7 +71,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     @Override
     @Ignore
     @Test
-    public void testWorkManagerConfigDisableOneAfterStart() throws Exception {
+    public void testWorkManagerConfigDisableOneAfterStart() {
         // for now processor can not be enable/disable once started
         super.testWorkManagerConfigDisableOneAfterStart();
     }
@@ -79,7 +79,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     @Override
     @Ignore
     @Test
-    public void testWorkManagerConfigDisableAllAfterStart() throws Exception {
+    public void testWorkManagerConfigDisableAllAfterStart() {
         // for now processor can not be enable/disable once started
         super.testWorkManagerConfigDisableAllAfterStart();
     }
@@ -89,7 +89,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         SleepWork work = new SleepWork(getDurationMillis());
         assertTrue(work.isIdempotent());
         service.schedule(work);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 5, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 5L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         // schedule again the exact same work 3 times
@@ -113,7 +113,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         work.setIdempotent(false);
         assertFalse(work.isIdempotent());
         service.schedule(work);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 10, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 10L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         // schedule again the exact same work 3 times
@@ -124,7 +124,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         // works with the same id are not skipped we need to wait more
         assertFalse(service.awaitCompletion(getDurationMillis() / 2, TimeUnit.MILLISECONDS));
 
-        assertTrue(service.awaitCompletion(getDurationMillis() * 10, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 10L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 0);
     }
 
@@ -140,14 +140,14 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         service.schedule(work2);
         // we don't know if work1 and work2 are executed on the same thread
         // but we assume that the max duration is work1 + work2 because there is only one invocation of each
-        assertTrue(service.awaitCompletion(getDurationMillis() * 3 - 500, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 3L - 500, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 6, 0);
     }
 
     @Override
     @Ignore
     @Test
-    public void testNoConcurrentJobsWithSameId() throws Exception {
+    public void testNoConcurrentJobsWithSameId() throws InterruptedException {
         // default workmanager guaranty that works with the same id can not be scheduled while another is running
         // stream impl provides stronger guaranty, works with same id are executed only once (scheduled, running or
         // completed)
@@ -158,13 +158,13 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     public void onlyLastCoalescingWorkShouldBeExecuted() throws InterruptedException {
         log.debug("StreamWorkManagerTest.onlyLastCoalescingWorkShouldBeExecuted() beginning");
         // long work, to serve as a filler
-        SleepWork longWork = createCoalescing(getDurationMillis() * 100);
+        SleepWork longWork = createCoalescing(getDurationMillis() * 100L);
         // short work the only to be actually computed
         SleepWork shortWork = createCoalescing(getDurationMillis());
 
         // we have to let the service warm up as the first offset is falsely set to 0
         service.schedule(shortWork);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         // a work will actually be executed only if handled before the next one is scheduled
@@ -182,13 +182,13 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     public void onlyFirstAndLastCoalescingWorksShouldBeExecuted() throws InterruptedException {
         log.debug("StreamWorkManagerTest.onlyFirstAndLastCoalescingWorksShouldBeExecuted() beginning");
         // long work, to serve as a filler
-        SleepWork longWork = createCoalescing(getDurationMillis() * 100);
+        SleepWork longWork = createCoalescing(getDurationMillis() * 100L);
         // short work the only to be actually computed
         SleepWork shortWork = createCoalescing(getDurationMillis());
 
         // we have to let the service warm up as the first offset is falsely set to 0
         service.schedule(shortWork);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
         // if we wait a bit for the first one to be started, only the first and last works will be computed
@@ -196,7 +196,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         Thread.sleep(getDurationMillis() / 2);
         service.schedule(longWork);
         service.schedule(shortWork);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(getDurationMillis() * 2L, TimeUnit.MILLISECONDS));
         tracker.assertDiff(0, 0, 4, 0);
         log.debug("StreamWorkManagerTest.onlyFirstAndLastCoalescingWorksShouldBeExecuted() ending");
     }

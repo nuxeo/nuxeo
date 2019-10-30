@@ -41,7 +41,7 @@ public class TestRedisWorkManager extends AbstractWorkManagerTest {
     @Test
     @Override
     @Ignore("NXP-15680")
-    public void testWorkManagerWork() throws Exception {
+    public void testWorkManagerWork() throws InterruptedException {
         super.testWorkManagerWork();
     }
 
