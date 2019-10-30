@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
@@ -115,7 +114,6 @@ public class VideoConversionWork extends AbstractWork {
         openSystemSession();
         doc = session.getDocument(new IdRef(docId));
         saveNewTranscodedVideo(doc, transcodedVideo);
-        fireVideoConversionsDoneEvent(doc);
         log.debug(String.format("End processing %s conversion of Video document %s.", conversionName, doc));
         setStatus("Done");
     }
@@ -124,6 +122,22 @@ public class VideoConversionWork extends AbstractWork {
     public boolean isIdempotent() {
         // when the video is updated the work id is the same
         return false;
+    }
+
+    @Override
+    public boolean isGroupJoin() {
+        // This is a GroupJoin work with a trigger that can be used on the last work execution
+        return true;
+    }
+
+    @Override
+    public String getPartitionKey() {
+        return computeIdPrefix(repositoryName, docId);
+    }
+
+    @Override
+    public void onGroupJoinCompletion() {
+        fireVideoConversionsDoneEvent();
     }
 
     @Override
@@ -179,18 +193,8 @@ public class VideoConversionWork extends AbstractWork {
      *
      * @since 5.8
      */
-    protected void fireVideoConversionsDoneEvent(DocumentModel doc) {
-        WorkManager workManager = Framework.getService(WorkManager.class);
-        List<String> workIds = workManager.listWorkIds(CATEGORY_VIDEO_CONVERSION, null);
-        String idPrefix = computeIdPrefix(repositoryName, docId);
-        int worksCount = 0;
-        for (String workId : workIds) {
-            if (workId.startsWith(idPrefix) && ++worksCount > 1) {
-                // another work scheduled
-                return;
-            }
-        }
-
+    protected void fireVideoConversionsDoneEvent() {
+        DocumentModel doc = session.getDocument(new IdRef(docId));
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(VIDEO_CONVERSIONS_DONE_EVENT);
         Framework.getService(EventService.class).fireEvent(event);
