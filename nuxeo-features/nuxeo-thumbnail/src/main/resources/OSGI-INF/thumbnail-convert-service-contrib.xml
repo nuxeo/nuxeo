@@ -12,6 +12,7 @@
       <sourceMimeType>image/jpeg</sourceMimeType>
       <sourceMimeType>image/png</sourceMimeType>
       <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/tiff</sourceMimeType>
       <destinationMimeType>image/png</destinationMimeType>
     </converter>
 
@@ -30,6 +31,7 @@
       <sourceMimeType>image/jpeg</sourceMimeType>
       <sourceMimeType>image/png</sourceMimeType>
       <sourceMimeType>image/gif</sourceMimeType>
+      <sourceMimeType>image/tiff</sourceMimeType>
 
       <sourceMimeType>text/xml</sourceMimeType>
       <sourceMimeType>text/html</sourceMimeType>
