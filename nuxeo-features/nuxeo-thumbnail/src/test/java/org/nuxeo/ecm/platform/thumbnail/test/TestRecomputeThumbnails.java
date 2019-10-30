@@ -123,4 +123,20 @@ public class TestRecomputeThumbnails {
         assertNotNull(thumbnail);
     }
 
+    @Test
+    public void testThumbnailsForTIFF() throws Exception {
+
+        DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-data/at3_1m4_01.tif"), "image/tiff",
+                StandardCharsets.UTF_8.name(), "at3_1m4_01.tif");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // wait for thumbnail generation
+        txFeature.nextTransaction();
+        doc = session.getDocument(doc.getRef());
+        Blob thumbnail = thumbnailService.getThumbnail(doc, session);
+        assertNotNull("the TIFF thumbnail is not generated", thumbnail);
+    }
+
 }
