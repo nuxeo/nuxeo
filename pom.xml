@@ -6823,6 +6823,14 @@
       </modules>
     </profile>
 
+    <!-- Used to include the docker module, in particular when running mvn versions:set -->
+    <profile>
+      <id>docker</id>
+      <modules>
+        <module>docker</module>
+      </modules>
+    </profile>
+
     <!-- NXP-27709: Temporary profile to clone and build nuxeo-jsf-ui as part of the T&P and nightly build -->
     <profile>
       <id>nuxeo-jsf-ui</id>
