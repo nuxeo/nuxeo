@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.platform.video.core.test.listeners">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="videoConversionDoneListener"
+      class="org.nuxeo.ecm.platform.video.extension.VideoConversionDoneListener" priority="20">
+      <event>videoConversionsDone</event>
+    </listener>
+
+  </extension>
+
+</component>
