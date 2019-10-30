@@ -16,18 +16,20 @@
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
+
+dockerNamespace = 'nuxeo'
+repositoryUrl = 'https://github.com/nuxeo/nuxeo'
+
 properties([
-  [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/nuxeo/nuxeo/'],
+  [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
   disableConcurrentBuilds(),
 ])
 
-dockerNamespace = 'nuxeo'
-
 void setGitHubBuildStatus(String context, String message, String state) {
   step([
     $class: 'GitHubCommitStatusSetter',
-    reposSource: [$class: 'ManuallyEnteredRepositorySource', url: 'https://github.com/nuxeo/nuxeo'],
+    reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
     contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
     statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
   ])
@@ -35,7 +37,7 @@ void setGitHubBuildStatus(String context, String message, String state) {
 
 String getVersion() {
   String nuxeoVersion = readMavenPom().getVersion()
-  return BRANCH_NAME == 'master' ? nuxeoVersion : nuxeoVersion + "-${BRANCH_NAME}"
+  return BRANCH_NAME == 'master' ? nuxeoVersion : "${BRANCH_NAME}-" + nuxeoVersion
 }
 
 void runFunctionalTests(String baseDir) {
@@ -116,8 +118,32 @@ pipeline {
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
     PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
+    VERSION = getVersion()
+    CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
+    CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
   }
   stages {
+    stage('Update version') {
+      when {
+        branch 'PR-*'
+      }
+      steps {
+        container('maven') {
+          withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
+            echo """
+            ----------------------------------------
+            Update version
+            ----------------------------------------
+            New version: ${VERSION}
+            """
+            sh """
+              mvn -nsu -Pdocker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
+              perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
+            """
+          }
+        }
+      }
+    }
     stage('Compile') {
       steps {
         setGitHubBuildStatus('platform/compile', 'Compile', 'PENDING')
@@ -270,18 +296,16 @@ pipeline {
       steps {
         setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
         container('maven') {
-          withEnv(["VERSION=${getVersion()}"]) {
-            echo """
-            ----------------------------------------
-            Build Docker images
-            ----------------------------------------
-            Image tag: ${VERSION}
-            """
-            echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
-            // Fetch Nuxeo distribution and Nuxeo Content Platform packages with Maven
-            sh "mvn -B -nsu -f docker/pom.xml process-resources"
-            skaffoldBuildAll()
-          }
+          echo """
+          ----------------------------------------
+          Build Docker images
+          ----------------------------------------
+          Image tag: ${VERSION}
+          """
+          echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
+          // Fetch Nuxeo distribution and Nuxeo Content Platform packages with Maven
+          sh "mvn -B -nsu -f docker/pom.xml process-resources"
+          skaffoldBuildAll()
         }
       }
       post {
@@ -297,34 +321,32 @@ pipeline {
       steps {
         setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'PENDING')
         container('maven') {
-          withEnv(["VERSION=${getVersion()}"]) {
-            echo """
-            ----------------------------------------
-            Test Docker images
-            ----------------------------------------
-            """
-            script {
-              // builder image
-              def image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BUILDER_IMAGE_NAME}:${VERSION}"
-              echo "Test ${image}"
-              dockerPull(image)
-              dockerRun(image, 'ls -l /distrib')
+          echo """
+          ----------------------------------------
+          Test Docker images
+          ----------------------------------------
+          """
+          script {
+            // builder image
+            def image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BUILDER_IMAGE_NAME}:${VERSION}"
+            echo "Test ${image}"
+            dockerPull(image)
+            dockerRun(image, 'ls -l /distrib')
 
-              // base image
-              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BASE_IMAGE_NAME}:${VERSION}"
-              echo "Test ${image}"
-              dockerPull(image)
-              dockerRun(image, 'cat /etc/centos-release; java -version')
+            // base image
+            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BASE_IMAGE_NAME}:${VERSION}"
+            echo "Test ${image}"
+            dockerPull(image)
+            dockerRun(image, 'cat /etc/centos-release; java -version')
 
-              // nuxeo image
-              image = "${DOCKER_REGISTRY}/${dockerNamespace}/${SLIM_IMAGE_NAME}:${VERSION}"
-              echo "Test ${image}"
-              dockerPull(image)
-              echo 'Run image as root (0)'
-              dockerRun(image, 'nuxeoctl start')
-              echo 'Run image as an arbitrary user (800)'
-              dockerRun(image, 'nuxeoctl start', '800')
-            }
+            // nuxeo image
+            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${SLIM_IMAGE_NAME}:${VERSION}"
+            echo "Test ${image}"
+            dockerPull(image)
+            echo 'Run image as root (0)'
+            dockerRun(image, 'nuxeoctl start')
+            echo 'Run image as an arbitrary user (800)'
+            dockerRun(image, 'nuxeoctl start', '800')
           }
         }
       }
@@ -344,18 +366,16 @@ pipeline {
       steps {
         setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'PENDING')
         container('maven') {
-          withEnv(["VERSION=${getVersion()}"]) {
-            echo """
-            ----------------------------------------
-            Deploy Docker images
-            ----------------------------------------
-            Image tag: ${VERSION}
-            """
-            echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
-            dockerDeploy("${BUILDER_IMAGE_NAME}")
-            dockerDeploy("${BASE_IMAGE_NAME}")
-            dockerDeploy("${SLIM_IMAGE_NAME}")
-          }
+          echo """
+          ----------------------------------------
+          Deploy Docker images
+          ----------------------------------------
+          Image tag: ${VERSION}
+          """
+          echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
+          dockerDeploy("${BUILDER_IMAGE_NAME}")
+          dockerDeploy("${BASE_IMAGE_NAME}")
+          dockerDeploy("${SLIM_IMAGE_NAME}")
         }
       }
       post {
@@ -364,6 +384,27 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'FAILURE')
+        }
+      }
+    }
+    stage('JSF pipeline') {
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Build JSF pipeline
+          ----------------------------------------
+          Parameters:
+            NUXEO_BRANCH: ${CHANGE_BRANCH}
+            NUXEO_COMMIT_SHA: ${GIT_COMMIT}
+            NUXEO_VERSION: ${VERSION}
+          """
+          build job: "/nuxeo/nuxeo-jsf-ui-status/${CHANGE_TARGET}",
+            parameters: [
+              string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
+              string(name: 'NUXEO_COMMIT_SHA', value: "${GIT_COMMIT}"),
+              string(name: 'NUXEO_VERSION', value: "${VERSION}"),
+            ], propagate: false, wait: false
         }
       }
     }
