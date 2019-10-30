@@ -58,6 +58,8 @@ import org.nuxeo.ecm.platform.video.Video;
 import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -386,6 +388,7 @@ public class TestVideoImporterAndListeners {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-listeners-contrib.xml")
     @SuppressWarnings("unchecked")
     public void testVideoConversions() throws IOException, InterruptedException {
         DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VIDEO_TYPE);
@@ -393,7 +396,15 @@ public class TestVideoImporterAndListeners {
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
 
+        // Init the KV and the counter used by the conversion done listener
+        KeyValueStore kv = Framework.getService(KeyValueService.class).getKeyValueStore("default");
+        kv.put(doc.getId(), 0L);
+
         txFeature.nextTransaction();
+
+        // assert that conversion done event is fired only once
+        assertEquals(Long.valueOf(1), kv.getLong(doc.getId()));
+
         doc = session.getDocument(doc.getRef());
 
         // expecting video conversions since they are activated for this test
@@ -412,6 +423,10 @@ public class TestVideoImporterAndListeners {
         videoService.launchAutomaticConversions(doc);
 
         txFeature.nextTransaction();
+
+        // assert that conversion done event is fired only once
+        assertEquals(Long.valueOf(2), kv.getLong(doc.getId()));
+
         doc = session.getDocument(doc.getRef());
 
         transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
