@@ -1550,7 +1550,7 @@ public abstract class NuxeoLauncher {
                 return false;
             }
             return true;
-        }, "This identifier is invalid or cannot be read properly.");
+        }, "This identifier is invalid or cannot be read properly or cannot be saved.");
 
         log.info("Server registration saved");
         log.info("Your Nuxeo Online Services is valid until " + expirationDate);
