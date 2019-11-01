@@ -98,8 +98,6 @@ public class GridFSBinaryManager extends AbstractBinaryManager implements BlobPr
 
     private static final String METADATA_PROPERTY_LENGTH = "length";
 
-    protected Map<String, String> properties;
-
     @Deprecated
     protected GridFS gridFS;
 
