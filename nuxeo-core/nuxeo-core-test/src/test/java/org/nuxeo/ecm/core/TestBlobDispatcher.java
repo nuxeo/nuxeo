@@ -269,4 +269,33 @@ public class TestBlobDispatcher {
         assertTrue(key, key.startsWith("test2:"));
     }
 
+    @Test
+    public void testDispatchECMPath() throws Exception {
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+
+        DocumentModel doc1 = session.createDocumentModel("/folder", "otherdoc", "File");
+        doc1 = session.createDocument(doc1);
+
+        DocumentModel doc2 = session.createDocumentModel("/folder", "mydoc", "File");
+        doc2 = session.createDocument(doc2);
+
+        // create a blob in doc1
+        Blob blob1 = Blobs.createBlob("foo", "text/plain");
+        doc1.setPropertyValue("file:content", (Serializable) blob1);
+        doc1 = session.saveDocument(doc1);
+        // check binary key
+        blob1 = (Blob) doc1.getPropertyValue("file:content");
+        String key1 = ((ManagedBlob) blob1).getKey();
+        assertTrue(key1, key1.startsWith("test:"));
+
+        // create a blob in doc2
+        Blob blob2 = Blobs.createBlob("bar", "text/plain");
+        doc2.setPropertyValue("file:content", (Serializable) blob2);
+        doc2 = session.saveDocument(doc2);
+        // check binary key, in test4
+        blob2 = (Blob) doc2.getPropertyValue("file:content");
+        String key2 = ((ManagedBlob) blob2).getKey();
+        assertTrue(key2, key2.startsWith("test4:"));
+    }
 }
