@@ -9,6 +9,10 @@
       <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
       <property name="path">binaries3</property>
     </blobprovider>
+    <blobprovider name="test4">
+      <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
+      <property name="path">binaries4</property>
+    </blobprovider>
     <blobprovider name="transient">
       <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>
       <property name="transient">true</property>
@@ -28,6 +32,7 @@
       <property name="blob:xpath~files/*/?ile">test2</property>
       <property name="ecm:repositoryName=nosuchrepo,ecm:lifeCycleState=approved">test2</property>
       <property name="ecm:repositoryName=test,ecm:lifeCycleState=approved">test2</property>
+      <property name="ecm:path~/folder*/my*">test4</property>
       <property name="default">test</property>
     </blobdispatcher>
   </extension>
