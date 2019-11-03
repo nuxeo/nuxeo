@@ -32,7 +32,7 @@
       <property name="blob:xpath~files/*/?ile">test2</property>
       <property name="ecm:repositoryName=nosuchrepo,ecm:lifeCycleState=approved">test2</property>
       <property name="ecm:repositoryName=test,ecm:lifeCycleState=approved">test2</property>
-      <property name="ecm:path~/folder*/my*">test4</property>
+      <property name="ecm:path^(/..*)*/folder(/..*)*/my.*">test4</property>
       <property name="default">test</property>
     </blobdispatcher>
   </extension>

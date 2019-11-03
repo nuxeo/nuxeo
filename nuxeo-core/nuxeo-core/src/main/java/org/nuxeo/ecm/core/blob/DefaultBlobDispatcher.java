@@ -55,9 +55,9 @@ import org.nuxeo.runtime.api.Framework;
  * Comma-separated clauses are ANDed together. The special name {@code default} defines the default provider, and must
  * be present.
  * <p>
- * Available operators between property and value are =, !=, &lt, > and ~. The operators &lt; and > work with integer
+ * Available operators between property and value are =, !=, &lt, >, ~ and ^. The operators &lt; and > work with integer
  * values. The operator ~ does glob matching using {@code ?} to match a single arbitrary character, and {@code *} to
- * match any number of characters (including none).
+ * match any number of characters (including none). The operator ^ does full regexp matching.
  * <p>
  * For example, to dispatch to the "first" provider if dc:format is "video", to the "second" provider if the blob's MIME
  * type is "video/mp4", to the "third" provider if the blob is stored as a secondary attached file, to the "fourth"
@@ -69,7 +69,7 @@ import org.nuxeo.runtime.api.Framework;
  * &lt;property name="blob:mime-type=video/mp4">second&lt;/property>
  * &lt;property name="blob:xpath~files/*&#47;file">third&lt;/property>
  * &lt;property name="ecm:repositoryName=default,ecm:lifeCycleState=approved">fourth&lt;/property>
- * &lt;property name="ecm:path~*&#47images&#47*">fifth&lt;/property>
+ * &lt;property name="ecm:path^.*&#47images&#47.*">fifth&lt;/property>
  * &lt;property name="default">other&lt;/property>
  * </pre>
  * <p>
@@ -95,7 +95,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     // name="records" is equivalent to the following clause:
     protected static final String RECORDS_CLAUSE = "ecm:isRecord=true,blob:xpath=" + MAIN_BLOB_XPATH;
 
-    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*)(=|!=|<|>|~)(.*)");
+    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*)(=|!=|<|>|~|\\^)(.*)");
 
     /** Pseudo-property for the repository name. */
     protected static final String REPOSITORY_NAME = "ecm:repositoryName";
@@ -125,7 +125,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     protected static final String BLOB_XPATH = "xpath";
 
     protected enum Op {
-        EQ, NEQ, LT, GT, GLOB;
+        EQ, NEQ, LT, GT, GLOB, RE;
     }
 
     protected static class Clause {
@@ -207,6 +207,10 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                         case "~":
                             op = Op.GLOB;
                             value = getPatternFromGlob((String) value);
+                            break;
+                        case "^":
+                            op = Op.RE;
+                            value = Pattern.compile((String) value);
                             break;
                         default:
                             log.error("Invalid dispatcher configuration operator: " + ops);
@@ -318,6 +322,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                     match = ((Long) value).compareTo((Long) clause.value) > 0;
                     break;
                 case GLOB:
+                case RE:
                     match = ((Pattern) clause.value).matcher(String.valueOf(value)).matches();
                     break;
                 default:
