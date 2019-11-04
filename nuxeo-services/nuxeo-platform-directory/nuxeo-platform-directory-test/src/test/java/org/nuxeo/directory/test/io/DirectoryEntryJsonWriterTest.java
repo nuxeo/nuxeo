@@ -20,14 +20,19 @@
 
 package org.nuxeo.directory.test.io;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter.ENTITY_TYPE;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
@@ -41,6 +46,7 @@ import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @since 9.2
@@ -49,8 +55,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.directory")
 @Deploy("org.nuxeo.ecm.directory.tests:test-directory-resolver-contrib.xml")
-public class DirectoryEntryJsonWriterTest extends
-        AbstractJsonWriterTest.External<DirectoryEntryJsonWriter, DirectoryEntry> {
+public class DirectoryEntryJsonWriterTest
+        extends AbstractJsonWriterTest.External<DirectoryEntryJsonWriter, DirectoryEntry> {
 
     public DirectoryEntryJsonWriterTest() {
         super(DirectoryEntryJsonWriter.class, DirectoryEntry.class);
@@ -155,6 +161,40 @@ public class DirectoryEntryJsonWriterTest extends
             json = json.has("properties").isObject();
             json = json.has("label").isEquals("123");
         }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.directory.tests:test-parent-child-directories.xml")
+    public void testParentChildDirectoriesWithSharedIds() throws IOException, JSONException {
+        String directoryName = "subsubdir";
+        Directory directory = directoryService.getDirectory(directoryName);
+        try (Session session = directory.getSession()) {
+            DocumentModel entryModel = session.getEntry("10");
+            // Parent 10/Sub 20/Sub Sub 10
+            DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
+            String json = asJson(entry, CtxBuilder.fetch(ENTITY_TYPE, "parent").get());
+            assertJSON("json/testParentChildDirectoriesWithSharedIds.json", json);
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.directory.tests:test-parent-child-directories.xml")
+    public void testParentChildDirectoriesWithSameIds() throws IOException, JSONException {
+        String directoryName = "subsubdir";
+        Directory directory = directoryService.getDirectory(directoryName);
+        try (Session session = directory.getSession()) {
+            // Parent 30/Sub 30/Sub Sub 30
+            DocumentModel entryModel = session.getEntry("30");
+            DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
+            String json = asJson(entry, CtxBuilder.fetch(ENTITY_TYPE, "parent").get());
+            assertJSON("json/testParentChildDirectoriesWithSameIds.json", json);
+        }
+    }
+
+    protected void assertJSON(String expectedJSONFile, String actual) throws IOException, JSONException {
+        File file = FileUtils.getResourceFileFromContext(expectedJSONFile);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
+        JSONAssert.assertEquals(expected, actual, true);
     }
 
 }

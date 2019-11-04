@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -90,6 +91,9 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
 
     public static final String ENTITY_TYPE = "directoryEntry";
 
+    /** @since 11.1 */
+    public static final String PARENT_FIELD_NAME = "parent";
+
     private static final String MESSAGES_BUNDLE = "messages";
 
     private static final Log log = LogFactory.getLog(DirectoryEntryJsonWriter.class);
@@ -107,9 +111,12 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
     @Override
     protected void writeEntityBody(DirectoryEntry entry, JsonGenerator jg) throws IOException {
         String directoryName = entry.getDirectoryName();
+        Directory directory = directoryService.getDirectory(directoryName);
+        String parentDirectoryName = directory.getParentDirectory();
+        boolean hasParentDirectory = StringUtils.isNotBlank(parentDirectoryName);
+        String schemaName = directory.getSchema();
+        String passwordField = directory.getPasswordField();
         DocumentModel document = entry.getDocumentModel();
-        String schemaName = directoryService.getDirectorySchema(directoryName);
-        String passwordField = directoryService.getDirectoryPasswordField(directoryName);
         jg.writeStringField("directoryName", directoryName);
         jg.writeStringField("id", document.getId());
         Schema schema = schemaManager.getSchema(schemaName);
@@ -130,14 +137,18 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
                 Object value = property.getValue();
                 if (value instanceof String && StringUtils.isNotEmpty((String) value)) {
                     String valueString = (String) value;
-                    if (fetched.contains(fieldName.getLocalName())) {
+                    String localName = fieldName.getLocalName();
+                    if (fetched.contains(localName)) {
                         // try to fetch a referenced entry (parent for example)
                         try (Closeable resource = ctx.wrap().with(MAX_DEPTH_PARAM, "max").open()) {
-                            managed = writeFetchedValue(jg, directoryName, fieldName.getLocalName(), valueString);
+                            String dName = PARENT_FIELD_NAME.equals(localName) && hasParentDirectory
+                                    ? parentDirectoryName
+                                    : directoryName;
+                            managed = writeFetchedValue(jg, dName, localName, valueString);
                         }
-                    } else if (translated.contains(fieldName.getLocalName())) {
+                    } else if (translated.contains(localName)) {
                         // try to fetch a translated property
-                        managed = writeTranslatedValue(jg, fieldName.getLocalName(), valueString);
+                        managed = writeTranslatedValue(jg, localName, valueString);
                     }
                 }
                 if (!managed) {
