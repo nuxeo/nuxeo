@@ -1,0 +1,33 @@
+{
+  "entity-type": "directoryEntry",
+  "directoryName": "subsubdir",
+  "id": "30",
+  "properties": {
+    "parent": {
+      "entity-type": "directoryEntry",
+      "directoryName": "subdir",
+      "id": "30",
+      "properties": {
+        "parent": {
+          "entity-type": "directoryEntry",
+          "directoryName": "parentdir",
+          "id": "30",
+          "properties": {
+            "ordering": 10000000,
+            "obsolete": 0,
+            "id": "30",
+            "label": "Parent 30"
+          }
+        },
+        "ordering": 10000000,
+        "obsolete": 0,
+        "id": "30",
+        "label": "Sub 30"
+      }
+    },
+    "ordering": 10000000,
+    "obsolete": 0,
+    "id": "30",
+    "label": "Sub Sub 30"
+  }
+}
