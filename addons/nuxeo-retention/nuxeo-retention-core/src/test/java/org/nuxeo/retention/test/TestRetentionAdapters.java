@@ -108,25 +108,25 @@ public class TestRetentionAdapters {
         assertTrue(rule.isManual());
 
         assertTrue(rule.isImmediate());
-        assertFalse(rule.isAfterDely());
+        assertFalse(rule.isAfterDelay());
         assertFalse(rule.isEventBased());
         assertFalse(rule.isMetadataBased());
 
         rule.setStartingPointPolicy(RetentionRule.StartingPointPolicy.AFTER_DELAY);
         assertFalse(rule.isImmediate());
-        assertTrue(rule.isAfterDely());
+        assertTrue(rule.isAfterDelay());
         assertFalse(rule.isEventBased());
         assertFalse(rule.isMetadataBased());
 
         rule.setStartingPointPolicy(RetentionRule.StartingPointPolicy.EVENT_BASED);
         assertFalse(rule.isImmediate());
-        assertFalse(rule.isAfterDely());
+        assertFalse(rule.isAfterDelay());
         assertTrue(rule.isEventBased());
         assertFalse(rule.isMetadataBased());
 
         rule.setStartingPointPolicy(RetentionRule.StartingPointPolicy.METADATA_BASED);
         assertFalse(rule.isImmediate());
-        assertFalse(rule.isAfterDely());
+        assertFalse(rule.isAfterDelay());
         assertFalse(rule.isEventBased());
         assertTrue(rule.isMetadataBased());
     }

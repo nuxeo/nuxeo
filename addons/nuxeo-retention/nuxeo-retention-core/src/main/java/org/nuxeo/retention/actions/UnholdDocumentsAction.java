@@ -65,7 +65,7 @@ public class UnholdDocumentsAction implements StreamProcessorTopology {
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
             ids.stream()
-               .map(id -> new IdRef(id))
+               .map(IdRef::new)
                .filter((docRef) -> session.hasLegalHold(docRef)
                        && session.hasPermission(docRef, SecurityConstants.MANAGE_LEGAL_HOLD))
                .forEach((docRef) -> {

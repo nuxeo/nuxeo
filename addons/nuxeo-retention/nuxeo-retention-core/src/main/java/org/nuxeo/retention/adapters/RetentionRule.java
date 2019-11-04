@@ -26,6 +26,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,7 +49,7 @@ public class RetentionRule {
         IMMEDIATE, AFTER_DELAY, EVENT_BASED, METADATA_BASED
     }
 
-    private static final Logger log = LogManager.getLogger(Record.class);
+    private static final Logger log = LogManager.getLogger(RetentionRule.class);
 
     protected DocumentModel document;
 
@@ -68,17 +69,17 @@ public class RetentionRule {
         return (String) document.getPropertyValue(RetentionConstants.APPLICATION_POLICY_PROP);
     }
 
-    public List<String> getBeginActions() {
+    public Set<String> getBeginActions() {
         Serializable propertyValue = document.getPropertyValue(RetentionConstants.BEGIN_ACTIONS_PROP);
         if (propertyValue == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
-        return Arrays.asList((String[]) propertyValue);
+        return (Set<String>)propertyValue;
     }
 
-    public List<String> getDocTypes() {
+    public Set<String> getDocTypes() {
         @SuppressWarnings("unchecked")
-        List<String> propertyValue = (List<String>) document.getPropertyValue(RetentionConstants.DOC_TYPES_PROP);
+        Set<String> propertyValue = (Set<String>) document.getPropertyValue(RetentionConstants.DOC_TYPES_PROP);
         return propertyValue;
     }
 
@@ -102,12 +103,12 @@ public class RetentionRule {
         return (Long) document.getPropertyValue(RetentionConstants.DURATION_YEARS_PROP);
     }
 
-    public List<String> getEndActions() {
+    public Set<String> getEndActions() {
         Serializable propertyValue = document.getPropertyValue(RetentionConstants.END_ACTIONS_PROP);
         if (propertyValue == null) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
-        return Arrays.asList((String[]) propertyValue);
+        return (Set<String>) propertyValue;
     }
 
     public String getExpression() {
@@ -152,7 +153,7 @@ public class RetentionRule {
 
     }
 
-    public boolean isAfterDely() {
+    public boolean isAfterDelay() {
         return StartingPointPolicy.AFTER_DELAY.equals(getStartingPointPolicy());
     }
 
@@ -161,7 +162,7 @@ public class RetentionRule {
     }
 
     public boolean isDocTypeAccepted(String docType) {
-        List<String> types = getDocTypes();
+        Set<String> types = getDocTypes();
         return types == null || types.isEmpty() || types.contains(docType);
     }
 
@@ -189,11 +190,11 @@ public class RetentionRule {
         document.setPropertyValue(RetentionConstants.APPLICATION_POLICY_PROP, policy.name().toLowerCase());
     }
 
-    public void setBeginActions(List<String> actions) {
+    public void setBeginActions(Set<String> actions) {
         document.setPropertyValue(RetentionConstants.BEGIN_ACTIONS_PROP, (Serializable) actions);
     }
 
-    public void setDocTypes(List<String> types) {
+    public void setDocTypes(Set<String> types) {
         document.setPropertyValue(RetentionConstants.DOC_TYPES_PROP, (Serializable) types);
     }
 
@@ -201,7 +202,7 @@ public class RetentionRule {
         document.setPropertyValue(RetentionConstants.DURATION_DAYS_PROP, days);
     }
 
-    public void setDurationMillis(long millis) {
+    public void setDurationMillis(Long millis) {
         document.setPropertyValue(RetentionConstants.DURATION_MILLIS_PROP, millis);
     }
 
@@ -213,7 +214,7 @@ public class RetentionRule {
         document.setPropertyValue(RetentionConstants.DURATION_YEARS_PROP, years);
     }
 
-    public void setEndActions(List<String> actions) {
+    public void setEndActions(Set<String> actions) {
         document.setPropertyValue(RetentionConstants.END_ACTIONS_PROP, (Serializable) actions);
     }
 

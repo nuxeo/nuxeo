@@ -22,8 +22,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -108,9 +108,9 @@ public class RetentionTestCase {
     }
 
     protected RetentionRule createRuleWithActions(RetentionRule.ApplicationPolicy policy,
-            StartingPointPolicy startingPointPolicy, List<String> docTypes, String startingPointEventId,
+            StartingPointPolicy startingPointPolicy, Set<String> docTypes, String startingPointEventId,
             String startingPointExpression, String matadataXPath, long years, long months, long days,
-            long durationMillis, List<String> beginActions, List<String> endActions) {
+            long durationMillis, Set<String> beginActions, Set<String> endActions) {
         DocumentModel doc = session.createDocumentModel("/RetentionRules", "testRule", "RetentionRule");
         RetentionRule rule = doc.getAdapter(RetentionRule.class);
         rule.setDurationYears(years);
@@ -130,8 +130,8 @@ public class RetentionTestCase {
     }
 
     protected RetentionRule createImmediateRuleMillis(RetentionRule.ApplicationPolicy policy, long durationMillis,
-            List<String> beginActions, List<String> endActions) {
-        return createRuleWithActions(policy, RetentionRule.StartingPointPolicy.IMMEDIATE, Arrays.asList("File"), null,
+            Set<String> beginActions, Set<String> endActions) {
+        return createRuleWithActions(policy, RetentionRule.StartingPointPolicy.IMMEDIATE, Collections.singleton("File"), null,
                 null, null, 0L, 0L, 0L, durationMillis, beginActions, endActions);
     }
 

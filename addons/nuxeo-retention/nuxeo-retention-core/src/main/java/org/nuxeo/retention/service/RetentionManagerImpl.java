@@ -81,7 +81,7 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
             retainUntil = rule.getRetainUntilDateFromNow();
             log.debug("Attaching immediate rule until {}",
                     () -> RetentionConstants.DEFAULT_DATE_FORMAT.format(retainUntil.getTime()));
-        } else if (rule.isAfterDely()) {
+        } else if (rule.isAfterDelay()) {
             log.debug("Attaching after delay rule");
             throw new UnsupportedOperationException("After delay not yet implemented");
         } else if (rule.isEventBased()) {
@@ -190,7 +190,7 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
         }
     }
 
-    protected void executeRuleActions(DocumentModel doc, List<String> actionIds, CoreSession session) {
+    protected void executeRuleActions(DocumentModel doc, Set<String> actionIds, CoreSession session) {
         if (actionIds != null) {
             AutomationService automationService = Framework.getService(AutomationService.class);
             for (String operationId : actionIds) {

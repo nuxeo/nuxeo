@@ -34,7 +34,7 @@ import org.nuxeo.retention.service.RetentionManager;
 /**
  * @since 11.1
  */
-@Operation(id = AttachRetentionRule.ID, category = Constants.CAT_DOCUMENT, label = "Attach Retation Rule", description = "Attach the given retation rule to the input document.")
+@Operation(id = AttachRetentionRule.ID, category = Constants.CAT_DOCUMENT, label = "Attach Retention Rule", description = "Attach the given retention rule to the input document.")
 public class AttachRetentionRule {
 
     public static final String ID = "Retention.AttachRule";
@@ -51,7 +51,7 @@ public class AttachRetentionRule {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel document) {
         if (!rule.hasFacet(RetentionConstants.RETENTION_RULE_FACET)) {
-            throw new NuxeoException(String.format("Document is not a rule"));
+            throw new NuxeoException("Document is not a rule");
         }
         RetentionRule rr = rule.getAdapter(RetentionRule.class);
         if (!rr.isManual()) {

@@ -24,8 +24,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Calendar;
+
 
 import javax.inject.Inject;
 
@@ -87,7 +88,7 @@ public class TestRetentionManager extends RetentionTestCase {
     @Test
     public void testManualImmediateRuleWithActions() throws InterruptedException {
         RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100L,
-                null, Arrays.asList("Document.Trash"));
+                null, Collections.singleton("Document.Trash"));
 
         file = service.attachRule(file, testRule, session);
         assertTrue(session.isRecord(file.getRef()));
