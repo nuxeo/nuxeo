@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.hierarchical.test">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+    point="directories">
+
+    <directory name="template-vocabulary" template="true" extends="template-directory">
+      <schema>vocabulary</schema>
+      <idField>id</idField>
+    </directory>
+
+    <directory name="template-xvocabulary" template="true" extends="template-directory">
+      <schema>xvocabulary</schema>
+      <idField>id</idField>
+    </directory>
+
+    <directory name="parentdir" extends="template-vocabulary">
+      <deleteConstraint
+        class="org.nuxeo.ecm.directory.HierarchicalDirectoryDeleteConstraint">
+        <property name="targetDirectory">subdir</property>
+        <property name="targetDirectoryField">parent</property>
+      </deleteConstraint>
+      <dataFile>test-parentdir.csv</dataFile>
+    </directory>
+
+    <directory name="subdir" extends="template-xvocabulary">
+      <parentDirectory>parentdir</parentDirectory>
+      <dataFile>test-subdir.csv</dataFile>
+    </directory>
+
+    <directory name="subsubdir" extends="template-xvocabulary">
+      <parentDirectory>subdir</parentDirectory>
+      <dataFile>test-subsubdir.csv</dataFile>
+    </directory>
+
+  </extension>
+
+</component>
