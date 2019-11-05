@@ -132,8 +132,8 @@
     <org.apache.log4j.version>2.11.1</org.apache.log4j.version>
     <org.slf4j.version>1.7.21</org.slf4j.version>
     <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
-    <gatling.version>3.2.1</gatling.version>
-    <gatling-plugin.version>3.0.3</gatling-plugin.version>
+    <gatling.version>3.3.0</gatling.version>
+    <gatling-plugin.version>3.0.4</gatling-plugin.version>
     <scala.version>2.12.3</scala.version>
     <scala-logging.version>3.9.0</scala-logging.version>
     <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
