@@ -188,6 +188,18 @@ public class VideoConversionWork extends AbstractWork {
     }
 
     /**
+     * See NXP-28157 and adapt your code to not call this method.
+     *
+     * @deprecated since 10.10-HF18 superseded by {@link #onGroupJoinCompletion()}
+     * @since 5.8
+     */
+    protected void fireVideoConversionsDoneEvent(DocumentModel doc) {
+        log.warn("This method is deprecated and will not work as expected", new Throwable("deprecated"));
+        docId = doc.getId();
+        fireVideoConversionsDoneEvent();
+    }
+
+    /**
      * Fire a {@code VIDEO_CONVERSIONS_DONE_EVENT} event when no other VideoConversionWork is scheduled for this
      * document.
      *
