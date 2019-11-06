@@ -68,7 +68,7 @@ public class IMImageUtils implements ImageUtils {
 
                 Blob targetBlob = Blobs.createBlob(targetFile);
                 targetBlob.setFilename(getFilename(blob, targetExt));
-                Framework.trackFile(targetFile, targetBlob);
+
                 return targetBlob;
             } catch (CommandNotAvailable | CommandException | IOException e) {
                 log.error("ImageMagick failed on command: {}", commandName, e);
@@ -123,6 +123,7 @@ public class IMImageUtils implements ImageUtils {
                 targetExt = ext;
             }
             targetFile = Framework.createTempFile("nuxeoImageTarget", "." + targetExt);
+            Framework.trackFile(targetFile, targetFile);
         }
 
         protected File createTempSource(Blob blob, String ext) throws IOException {
