@@ -258,7 +258,23 @@ docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgr
 
 ### Environment Variables
 
-Currently, the only environment variable that is taken into account by the `nuxeo/base` image or an image built from it is `NUXEO_CLID`. If provided when running a container, the value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/data/instance.clid` at startup.
+Currently, there are two environment variables that are taken into account by a final image: `JAVA_OPTS` and `NUXEO_CLID`.
+
+Later on, with [NXP-28191](https://jira.nuxeo.com/browse/NXP-28191), we should be able to configure any Nuxeo property as an environment variable passed to the container.
+
+#### JAVA_OPTS
+
+If provided when running a container, the value of `JAVA_OPTS` is appended to the `JAVA_OPTS` property defined in `nuxeo.conf` at startup.
+
+For instance, to make the Nuxeo Launcher display the JVM settings in the console, run:
+
+```
+docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/slim:11.1-SNAPSHOT
+```
+
+#### NUXEO_CLID
+
+If provided when running a container, the value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/data/instance.clid` at startup.
 
 For instance, running:
 
@@ -267,5 +283,3 @@ docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:11.1-SNAPSHOT
 ```
 
 allows to run a container with a registered Nuxeo instance.
-
-Later on, with [NXP-28191](https://jira.nuxeo.com/browse/NXP-28191), we should be able to configure any Nuxeo property as an environment variable passed to the container.
