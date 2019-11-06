@@ -234,9 +234,27 @@ dive nuxeo/slim:11.1-SNAPSHOT
 
 ## Configure an Image at Runtime
 
+Though we try to have immutable images configured at build time, in some cases it makes sense to configure a container at runtime. This typically applies to the address and credentials of each back-end store (database, Elasticsearch, S3, etc.) that are specific to a given deployment: development, staging, production, etc.
+
 ### Configuration Properties
 
-TODO: [NXP-28145](https://jira.nuxeo.com/browse/NXP-28145)
+To add some configuration properties when running a container from a final image, you can mount property files as volumes into the `/etc/nuxeo/conf.d` directory of the container. Each property file will be appended to `nuxeo.conf` ordered by filename during startup.
+
+For instance, to append the following `postgresql.conf` file to `nuxeo.conf`:
+
+```
+nuxeo.db.name=nuxeo
+nuxeo.db.user=nuxeo
+nuxeo.db.password=nuxeo
+nuxeo.db.host=localhost
+nuxeo.db.port=5432
+```
+
+you can run:
+
+```
+docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/slim:11.1-SNAPSHOT
+```
 
 ### Environment Variables
 

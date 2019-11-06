@@ -43,13 +43,20 @@ else # nuxeoctl command found
 
   # Handle nuxeo.conf
   if [[ ! -f $NUXEO_HOME/configured && ! -f $NUXEO_CONF ]]; then
-    echo "ENTRYPOINT: Configuration file not found: $NUXEO_CONF"
-    echo "Move $NUXEO_HOME/bin/nuxeo.conf to $NUXEO_CONF"
+    echo "ENTRYPOINT: Initialize server configuration without $NUXEO_CONF"
+
+    echo "ENTRYPOINT: Move $NUXEO_HOME/bin/nuxeo.conf to $NUXEO_CONF"
     mv $NUXEO_HOME/bin/nuxeo.conf $NUXEO_CONF
     
-    echo "Configure server by adding some properties to $NUXEO_CONF:"
+    echo "ENTRYPOINT: Append required properties to $NUXEO_CONF:"
+    echo -e "\n## ENTRYPOINT: Append required properties" >> $NUXEO_CONF
     configure | tee -a $NUXEO_CONF
-    echo '----------------------'
+
+    find /etc/nuxeo/conf.d/ -type f | sort | while read i; do
+      echo "ENTRYPOINT: Append properties from $i to $NUXEO_CONF"
+      echo -e "\n## ENTRYPOINT: Append properties from $i" >> $NUXEO_CONF
+      cat $i >> $NUXEO_CONF
+    done
 
     touch $NUXEO_HOME/configured
   fi
