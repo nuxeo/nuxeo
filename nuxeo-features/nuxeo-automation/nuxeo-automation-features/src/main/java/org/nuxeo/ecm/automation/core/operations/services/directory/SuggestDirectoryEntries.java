@@ -33,8 +33,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -84,7 +83,7 @@ public class SuggestDirectoryEntries {
 
         private final Directory directory;
 
-        private boolean isRoot = false;
+        private boolean isRoot;
 
         private Boolean isLeaf = null;
 
@@ -106,7 +105,7 @@ public class SuggestDirectoryEntries {
             this.isRoot = true;
         }
 
-        public JSONAdapter(Directory directory, DocumentModel entry) throws PropertyException {
+        public JSONAdapter(Directory directory, DocumentModel entry) {
             this(directory);
             // Carry entry, not root
             isRoot = false;
@@ -129,11 +128,9 @@ public class SuggestDirectoryEntries {
                     properties.put(key, value);
                 }
             }
-            if (displayObsoleteEntries) {
-                if (obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID)
-                        && Integer.parseInt(obj.get(SuggestConstants.OBSOLETE_FIELD_ID).toString()) > 0) {
-                    obj.put(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
-                }
+            if (displayObsoleteEntries && obj.containsKey(SuggestConstants.OBSOLETE_FIELD_ID)
+                    && Integer.parseInt(obj.get(SuggestConstants.OBSOLETE_FIELD_ID).toString()) > 0) {
+                obj.put(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
             }
             obj.put("directoryName", directory.getName());
             obj.put("properties", properties);
@@ -230,7 +227,7 @@ public class SuggestDirectoryEntries {
 
         public List<JSONAdapter> getSortedChildren() {
             if (children == null) {
-                return null;
+                return List.of();
             }
             List<JSONAdapter> result = new ArrayList<>(children.values());
             Collections.sort(result);
@@ -289,7 +286,7 @@ public class SuggestDirectoryEntries {
             }
         }
 
-        public JSONAdapter push(final JSONAdapter newEntry) throws PropertyException {
+        public JSONAdapter push(final JSONAdapter newEntry) {
             String parentIdOfNewEntry = newEntry.getParentId();
             if (parentIdOfNewEntry != null && !parentIdOfNewEntry.isEmpty()) {
                 // The given adapter has a parent which could already be in my
@@ -307,10 +304,7 @@ public class SuggestDirectoryEntries {
                     // of one the ancestor.
                     JSONAdapter parentAdapter = getParentAdapter(newEntry);
                     if (parentAdapter == null) {
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("parent %s not found for entry %s", newEntry.getParentId(),
-                                    newEntry.getId()));
-                        }
+                        log.info("parent: {} not found for entry: {}", newEntry::getParentId, newEntry::getId);
                         mergeJsonAdapter(newEntry);
                         return this;
                     } else {
@@ -346,16 +340,16 @@ public class SuggestDirectoryEntries {
                 // we provide an Id or not in the JSON object.
                 if (canSelectParent) {
                     // Make it selectable, keep as it is
-                    Map<String, Object> obj = getObj();
-                    obj.put("children", getChildrenJSONArray());
-                    return obj;
+                    Map<String, Object> o = getObj();
+                    o.put("children", getChildrenJSONArray());
+                    return o;
                 } else {
                     // We don't want it to be selectable, we just serialize the
                     // label
-                    Map<String, Object> obj = new LinkedHashMap<>();
-                    obj.put(SuggestConstants.LABEL, getLabel());
-                    obj.put("children", getChildrenJSONArray());
-                    return obj;
+                    Map<String, Object> o = new LinkedHashMap<>();
+                    o.put(SuggestConstants.LABEL, getLabel());
+                    o.put("children", getChildrenJSONArray());
+                    return o;
                 }
             }
         }
@@ -367,7 +361,7 @@ public class SuggestDirectoryEntries {
 
     }
 
-    private static final Log log = LogFactory.getLog(SuggestDirectoryEntries.class);
+    private static final Logger log = LogManager.getLogger(SuggestDirectoryEntries.class);
 
     public static final String ID = "Directory.SuggestEntries";
 
@@ -490,29 +484,23 @@ public class SuggestDirectoryEntries {
     public Blob run() throws IOException {
         Directory directory = directoryService.getDirectory(directoryName);
         if (directory == null) {
-            log.error("Could not find directory with name " + directoryName);
+            log.error("Could not find directory with name: {}", directoryName);
             return null;
         }
         try (Session session = directory.getSession()) {
             Schema schema = schemaManager.getSchema(directory.getSchema());
-            boolean isChained = isChainedDirectory(directory);
-            boolean hasParentDirectory = hasParentDirectory(directory.getParentDirectory(), directoryName);
-
-            boolean postFilter = true;
-
             label = SuggestConstants.getLabelFieldName(schema, dbl10n, labelFieldName, getLang());
-
-            Map<String, Serializable> filter = new HashMap<>();
+            Map<String, Serializable> filter = new HashMap<>(filters);
             if (!displayObsoleteEntries) {
                 // Exclude obsolete
                 filter.put(SuggestConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
             }
+            boolean postFilter = true;
             Set<String> fullText = new TreeSet<>();
             if (dbl10n || !localize) {
                 postFilter = false;
                 // do the filtering at directory level
                 if (prefix != null && !prefix.isEmpty()) {
-                    // filter.put(directory.getIdField(), prefix);
                     String computedPrefix = prefix;
                     if (contains) {
                         computedPrefix = '%' + computedPrefix;
@@ -522,42 +510,37 @@ public class SuggestDirectoryEntries {
                 }
             }
 
-            for (Map.Entry<String, String> entry : filters.entrySet()) {
-                filter.put(entry.getKey(), entry.getValue());
-            }
-
             // when post filtering we need to get all entries
             DocumentModelList entries = session.query(filter, fullText, Collections.emptyMap(), false,
                     postFilter ? -1 : limit, -1);
 
+            boolean isChained = isChainedDirectory(directory);
+            boolean hasParentDirectory = hasParentDirectory(directory.getParentDirectory(), directoryName);
+            boolean pFilter = postFilter; // effectively final
             JSONAdapter jsonAdapter = new JSONAdapter(directory);
-
-            for (DocumentModel entry : entries) {
-                JSONAdapter adapter = new JSONAdapter(directory, entry);
-                if (!filterParent && isChained && !hasParentDirectory) {
-                    // only called on hierarchical directories
-                    if (!adapter.isLeaf()) {
-                        continue;
-                    }
-                }
-
-                if (prefix != null && !prefix.isEmpty() && postFilter) {
-                    if (contains) {
-                        if (!adapter.getLabel().toLowerCase().contains(prefix.toLowerCase())) {
-                            continue;
-                        }
-                    } else {
-                        if (!adapter.getLabel().toLowerCase().startsWith(prefix.toLowerCase())) {
-                            continue;
-                        }
-                    }
-                }
-
-                jsonAdapter.push(adapter);
-
-            }
+            entries.stream()
+                   .map(entry -> new JSONAdapter(directory, entry))
+                   .filter(adapter -> filterJSONAdapter(adapter, isChained, hasParentDirectory, pFilter))
+                   .forEach(jsonAdapter::push);
             return Blobs.createJSONBlobFromValue(jsonAdapter.getChildrenJSONArray());
         }
+    }
+
+    private boolean filterJSONAdapter(JSONAdapter adapter, boolean isChained, boolean hasParentDirectory,
+            boolean postFilter) {
+        if (!filterParent && isChained && !hasParentDirectory && !adapter.isLeaf()) {
+            // only called on hierarchical directories
+            return false;
+        }
+
+        if (StringUtils.isNotEmpty(prefix) && postFilter) {
+            if (contains) {
+                return adapter.getLabel().toLowerCase().contains(prefix.toLowerCase());
+            } else {
+                return adapter.getLabel().toLowerCase().startsWith(prefix.toLowerCase());
+            }
+        }
+        return true;
     }
 
     protected String translate(final String key) {
@@ -575,8 +558,7 @@ public class SuggestDirectoryEntries {
     }
 
     private boolean hasParentDirectory(String parentDirectoryName, String directoryName) {
-        return StringUtils.isNotBlank(parentDirectoryName)
-                && !parentDirectoryName.equals(directoryName);
+        return StringUtils.isNotBlank(parentDirectoryName) && !parentDirectoryName.equals(directoryName);
     }
 
 }
