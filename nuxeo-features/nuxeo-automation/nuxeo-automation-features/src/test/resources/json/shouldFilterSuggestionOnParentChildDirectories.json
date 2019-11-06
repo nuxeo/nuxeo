@@ -1,0 +1,31 @@
+[
+  {
+    "displayLabel": "Parent 10",
+    "children": [
+      {
+        "displayLabel": "Sub 20",
+        "children": [
+          {
+            "parent": "20",
+            "ordering": 10000000,
+            "obsolete": 0,
+            "id": "10",
+            "displayLabel": "Sub Sub 10",
+            "label": "Sub Sub 10",
+            "directoryName": "subsubdir",
+            "properties": {
+              "parent": "20",
+              "ordering": 10000000,
+              "obsolete": 0,
+              "id": "10",
+              "label": "Sub Sub 10"
+            },
+            "entity-type": "directoryEntry",
+            "computedId": "10/20/10",
+            "absoluteLabel": "Parent 10/Sub 20/Sub Sub 10"
+          }
+        ]
+      }
+    ]
+  }
+]
