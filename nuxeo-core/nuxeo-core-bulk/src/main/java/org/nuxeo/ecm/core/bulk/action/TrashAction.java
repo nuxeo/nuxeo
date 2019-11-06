@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventCategories.EVENT_DOCUMEN
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
@@ -86,7 +87,7 @@ public class TrashAction implements StreamProcessorTopology {
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            Boolean trashValue = (Boolean) properties.get(PARAM_NAME);
+            boolean trashValue = (boolean) properties.get(PARAM_NAME);
             if (trashValue) {
                 removeProxies(session, ids);
             }
@@ -98,7 +99,7 @@ public class TrashAction implements StreamProcessorTopology {
             String query = String.format(PROXY_QUERY_TEMPLATE, String.join("', '", ids));
             try (IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL)) {
                 for (Map<String, Serializable> map : res) {
-                    proxies.add(new IdRef((String) map.get(NXQL.ECM_UUID)));
+                    proxies.add(new IdRef((String) map.get(ECM_UUID)));
                 }
             }
             session.removeDocuments(proxies.toArray(new DocumentRef[0]));
@@ -110,12 +111,12 @@ public class TrashAction implements StreamProcessorTopology {
             }
         }
 
-        public void setSystemProperty(CoreSession session, List<String> ids, Boolean value) {
+        public void setSystemProperty(CoreSession session, List<String> ids, boolean value) {
             List<DocumentRef> updatedRefs = new ArrayList<>(ids.size());
             String query = String.format(SYSPROP_QUERY_TEMPLATE, value ? "0" : "1", String.join("', '", ids));
             try (IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL)) {
                 for (Map<String, Serializable> map : res) {
-                    DocumentRef ref = new IdRef((String) map.get(NXQL.ECM_UUID));
+                    DocumentRef ref = new IdRef((String) map.get(ECM_UUID));
                     try {
                         session.setDocumentSystemProp(ref, "isTrashed", value);
                         updatedRefs.add(ref);

@@ -58,6 +58,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class AbstractTrashService implements TrashService {
 
+    // TrashService does not have to expose this
+    protected static final String PATH_SEPARATOR = "/";
+
     public static final String TRASHED_QUERY = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 1 AND ecm:parentId = '%s'";
 
     @Override
@@ -163,8 +166,9 @@ public abstract class AbstractTrashService implements TrashService {
 
         @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {
-            return doc1.getPathAsString().replace("/", "\u0000").compareTo(
-                    doc2.getPathAsString().replace("/", "\u0000"));
+            return doc1.getPathAsString()
+                       .replace(PATH_SEPARATOR, "\u0000")
+                       .compareTo(doc2.getPathAsString().replace(PATH_SEPARATOR, "\u0000"));
         }
 
     }
@@ -320,10 +324,10 @@ public abstract class AbstractTrashService implements TrashService {
                 if (session != null) {
                     String orig = matcher.group(1);
                     String parentPath = session.getDocument(doc.getParentRef()).getPathAsString();
-                    if (parentPath.equals("/")) {
+                    if (parentPath.equals(PATH_SEPARATOR)) {
                         parentPath = ""; // root
                     }
-                    String newPath = parentPath + "/" + orig;
+                    String newPath = parentPath + PATH_SEPARATOR + orig;
                     if (!session.exists(new PathRef(newPath))) {
                         name = orig;
                     }
@@ -332,5 +336,4 @@ public abstract class AbstractTrashService implements TrashService {
         }
         return name;
     }
-
 }
