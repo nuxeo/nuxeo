@@ -58,11 +58,18 @@ else # nuxeoctl command found
       cat $i >> $NUXEO_CONF
     done
 
+    if [ -n "$JAVA_OPTS" ]; then
+      echo "ENTRYPOINT: Append JAVA_OPTS environment variable to the JVM options set in $NUXEO_CONF:"
+      echo -e "\n## ENTRYPOINT: Append JAVA_OPTS environment variable" >> $NUXEO_CONF
+      echo "JAVA_OPTS=\$JAVA_OPTS $JAVA_OPTS" | tee -a $NUXEO_CONF
+    fi
+
     touch $NUXEO_HOME/configured
   fi
 
   # Handle instance.clid
   if [ -n "$NUXEO_CLID" ]; then
+    echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/data/instance.clid"
     # Replace -- by a carriage return
     NUXEO_CLID="${NUXEO_CLID/--/\\n}"
     printf "%b\n" "$NUXEO_CLID" >> /var/lib/nuxeo/data/instance.clid
