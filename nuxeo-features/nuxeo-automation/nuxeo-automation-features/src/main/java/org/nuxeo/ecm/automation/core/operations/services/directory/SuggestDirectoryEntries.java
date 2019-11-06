@@ -178,10 +178,11 @@ public class SuggestDirectoryEntries {
                 // When serializing in JSON, we are now able to COMPUTED_ID
                 // which is the chained path of the entry (i.e absolute path
                 // considering its ancestor)
-                ja.getObj().put(SuggestConstants.COMPUTED_ID,
-                        (!isRoot ? (getComputedId() + keySeparator) : "") + ja.getId());
-                ja.getObj().put(SuggestConstants.ABSOLUTE_LABEL,
-                        (!isRoot ? (getAbsoluteLabel() + absoluteLabelSeparator) : "") + ja.getLabel());
+                ja.getObj()
+                  .put(SuggestConstants.COMPUTED_ID, (!isRoot ? (getComputedId() + keySeparator) : "") + ja.getId());
+                ja.getObj()
+                  .put(SuggestConstants.ABSOLUTE_LABEL,
+                          (!isRoot ? (getAbsoluteLabel() + absoluteLabelSeparator) : "") + ja.getLabel());
                 result.add(ja.toJSONObject());
             }
             return result;
@@ -509,7 +510,7 @@ public class SuggestDirectoryEntries {
                 }
             }
 
-            for (Map.Entry<String,String> entry : filters.entrySet()) {
+            for (Map.Entry<String, String> entry : filters.entrySet()) {
                 filter.put(entry.getKey(), entry.getValue());
             }
 
