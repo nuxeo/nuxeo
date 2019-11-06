@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
@@ -51,13 +52,13 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * SuggestDirectoryEntries Operation
@@ -81,35 +82,41 @@ public class SuggestDirectoryEntries {
 
         private final Map<String, JSONAdapter> children;
 
-        private final Session session;
-
-        private final Schema schema;
+        private final Directory directory;
 
         private boolean isRoot = false;
 
         private Boolean isLeaf = null;
 
+        private final boolean isChained;
+
+        private final String parentDirectoryName;
+
+        private final boolean hasParentDirectory;
+
         private Map<String, Object> obj;
 
-        public JSONAdapter(Session session, Schema schema) {
-            this.session = session;
-            this.schema = schema;
+        public JSONAdapter(Directory directory) {
+            this.directory = directory;
+            this.parentDirectoryName = directory.getParentDirectory();
+            this.hasParentDirectory = hasParentDirectory(parentDirectoryName, directory.getName());
+            isChained = isChainedDirectory(directory);
             this.children = new HashMap<>();
             // We are the root node
             this.isRoot = true;
         }
 
-        public JSONAdapter(Session session, Schema schema, DocumentModel entry) throws PropertyException {
-            this(session, schema);
+        public JSONAdapter(Directory directory, DocumentModel entry) throws PropertyException {
+            this(directory);
             // Carry entry, not root
             isRoot = false;
             // build JSON object for this entry
             obj = new LinkedHashMap<>();
             Map<String, Object> properties = new LinkedHashMap<>();
-            for (Field field : schema.getFields()) {
-                QName fieldName = field.getName();
-                String key = fieldName.getLocalName();
-                Serializable value = entry.getPropertyValue(fieldName.getPrefixedName());
+            for (Map.Entry<String, Field> e : directory.getSchemaFieldMap().entrySet()) {
+                String key = e.getKey();
+                Field field = e.getValue();
+                Serializable value = entry.getPropertyValue(field.getName().getPrefixedName());
                 if (value != null) {
                     if (label.equals(key)) {
                         if (localize && !dbl10n) {
@@ -128,7 +135,7 @@ public class SuggestDirectoryEntries {
                     obj.put(SuggestConstants.WARN_MESSAGE_LABEL, getObsoleteWarningMessage());
                 }
             }
-            obj.put("directoryName", directoryName);
+            obj.put("directoryName", directory.getName());
             obj.put("properties", properties);
             obj.put(MarshallingConstants.ENTITY_FIELD_NAME, DirectoryEntryJsonWriter.ENTITY_TYPE);
         }
@@ -246,14 +253,15 @@ public class SuggestDirectoryEntries {
          */
         public boolean isLeaf() {
             if (isLeaf == null) {
-                if (isChained) {
+                if (isChained && !hasParentDirectory) {
+                    // hierarchical directory
                     String id = getId();
                     if (id != null) {
                         Map<String, Serializable> filter = Collections.singletonMap(SuggestConstants.PARENT_FIELD_ID,
                                 getId());
-                        try {
-                            isLeaf = session.query(filter, Collections.emptySet(), Collections.emptyMap(), false, 1, -1)
-                                            .isEmpty();
+                        try (Session s = directory.getSession()) {
+                            isLeaf = s.query(filter, Collections.emptySet(), Collections.emptyMap(), false, 1, -1)
+                                      .isEmpty();
                         } catch (DirectoryException ce) {
                             log.error("Could not retrieve children of entry", ce);
                             isLeaf = true;
@@ -262,7 +270,8 @@ public class SuggestDirectoryEntries {
                         isLeaf = true;
                     }
                 } else {
-                    isLeaf = true;
+                    // otherwise rely on the children
+                    isLeaf = children.isEmpty();
                 }
             }
             return isLeaf;
@@ -290,7 +299,8 @@ public class SuggestDirectoryEntries {
             if (parentIdOfNewEntry != null && !parentIdOfNewEntry.isEmpty()) {
                 // The given adapter has a parent which could already be in my
                 // descendants
-                if (parentIdOfNewEntry.equals(this.getId())) {
+                if (parentIdOfNewEntry.equals(this.getId()) && (!newEntry.hasParentDirectory
+                        || newEntry.parentDirectoryName.equals(this.directory.getName()))) {
                     // this is the parent. We must insert the given adapter
                     // here. We merge all its
                     // descendants
@@ -300,16 +310,16 @@ public class SuggestDirectoryEntries {
                     // I am not the parent, let's check if I could be the
                     // parent
                     // of one the ancestor.
-                    final String parentId = newEntry.getParentId();
-                    DocumentModel parent = session.getEntry(parentId);
-                    if (parent == null) {
+                    JSONAdapter parentAdapter = getParentAdapter(newEntry);
+                    if (parentAdapter == null) {
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("parent %s not found for entry %s", parentId, newEntry.getId()));
+                            log.info(String.format("parent %s not found for entry %s", newEntry.getParentId(),
+                                    newEntry.getId()));
                         }
                         mergeJsonAdapter(newEntry);
                         return this;
                     } else {
-                        return push(new JSONAdapter(session, schema, parent).push(newEntry));
+                        return push(parentAdapter.push(newEntry));
                     }
                 }
             } else {
@@ -317,6 +327,17 @@ public class SuggestDirectoryEntries {
                 // descendants.
                 mergeJsonAdapter(newEntry);
                 return this;
+            }
+        }
+
+        private JSONAdapter getParentAdapter(JSONAdapter entry) {
+            String parentId = entry.getParentId();
+            Directory d = entry.hasParentDirectory
+                    ? Framework.getService(DirectoryService.class).getDirectory(entry.parentDirectoryName)
+                    : entry.directory;
+            try (Session session = d.getSession()) {
+                DocumentModel parent = session.getEntry(parentId);
+                return parent != null ? new JSONAdapter(d, parent) : null;
             }
         }
 
@@ -432,8 +453,6 @@ public class SuggestDirectoryEntries {
 
     private String label = null;
 
-    private boolean isChained = false;
-
     private String obsoleteWarningMessage = null;
 
     protected String getLang() {
@@ -480,16 +499,9 @@ public class SuggestDirectoryEntries {
             return null;
         }
         try (Session session = directory.getSession()) {
-            String schemaName = directory.getSchema();
-            Schema schema = schemaManager.getSchema(schemaName);
-
-            Field parentField = schema.getField(SuggestConstants.PARENT_FIELD_ID);
-            isChained = parentField != null;
-
-            String parentDirectory = directory.getParentDirectory();
-            if (parentDirectory == null || parentDirectory.isEmpty() || parentDirectory.equals(directoryName)) {
-                parentDirectory = null;
-            }
+            Schema schema = schemaManager.getSchema(directory.getSchema());
+            boolean isChained = isChainedDirectory(directory);
+            boolean hasParentDirectory = hasParentDirectory(directory.getParentDirectory(), directoryName);
 
             boolean postFilter = true;
 
@@ -523,11 +535,12 @@ public class SuggestDirectoryEntries {
             DocumentModelList entries = session.query(filter, fullText, Collections.emptyMap(), false,
                     postFilter ? -1 : limit, -1);
 
-            JSONAdapter jsonAdapter = new JSONAdapter(session, schema);
+            JSONAdapter jsonAdapter = new JSONAdapter(directory);
 
             for (DocumentModel entry : entries) {
-                JSONAdapter adapter = new JSONAdapter(session, schema, entry);
-                if (!filterParent && isChained && parentDirectory == null) {
+                JSONAdapter adapter = new JSONAdapter(directory, entry);
+                if (!filterParent && isChained && !hasParentDirectory) {
+                    // only called on hierarchical directories
                     if (!adapter.isLeaf()) {
                         continue;
                     }
@@ -557,6 +570,18 @@ public class SuggestDirectoryEntries {
             return "";
         }
         return I18NUtils.getMessageString("messages", key, new Object[0], getLocale());
+    }
+
+    private boolean isChainedDirectory(Directory directory) {
+        String schemaName = directory.getSchema();
+        Schema schema = schemaManager.getSchema(schemaName);
+        Field parentField = schema.getField(SuggestConstants.PARENT_FIELD_ID);
+        return parentField != null;
+    }
+
+    private boolean hasParentDirectory(String parentDirectoryName, String directoryName) {
+        return StringUtils.isNotBlank(parentDirectoryName)
+                && !parentDirectoryName.equals(directoryName);
     }
 
 }

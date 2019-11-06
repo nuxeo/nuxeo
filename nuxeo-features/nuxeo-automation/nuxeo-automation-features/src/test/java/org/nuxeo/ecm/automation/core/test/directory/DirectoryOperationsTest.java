@@ -20,11 +20,14 @@
 
 package org.nuxeo.ecm.automation.core.test.directory;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,8 +36,12 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.json.JSONException;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -59,6 +66,7 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -379,5 +387,59 @@ public class DirectoryOperationsTest {
         assertEquals(2, children.size());
     }
 
+    /** NXP-28113 */
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.features:test-parent-child-directories.xml")
+    public void shouldSuggestOnParentChildDirectories() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("directoryName", "subsubdir");
+        OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
+        OperationChain chain = new OperationChain("filterChain");
+        chain.add(oparams);
+        OperationContext ctx = new OperationContext(session);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+        assertJSON("json/shouldSuggestOnParentChildDirectories.json", result);
+    }
+
+    /** NXP-28113 */
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.features:test-parent-child-directories.xml")
+    public void shouldSuggestWithParentSelectionOnParentChildDirectories() throws Exception {
+        Map<String, Object> params = new HashMap<>();
+        params.put("directoryName", "subsubdir");
+        params.put("canSelectParent", true);
+        OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
+        OperationChain chain = new OperationChain("filterChain");
+        chain.add(oparams);
+        OperationContext ctx = new OperationContext(session);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+        assertJSON("json/shouldSuggestWithParentSelectionOnParentChildDirectories.json", result);
+    }
+
+    /** NXP-28113 */
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.features:test-parent-child-directories.xml")
+    public void shouldFilterSuggestionOnParentChildDirectories() throws Exception {
+        Properties filters = new Properties();
+        filters.put("parent", "20");
+        Map<String, Object> params = new HashMap<>();
+        params.put("directoryName", "subsubdir");
+        params.put("filters", filters);
+        OperationParameters oparams = new OperationParameters(SuggestDirectoryEntries.ID, params);
+        OperationChain chain = new OperationChain("filterChain");
+        chain.add(oparams);
+        OperationContext ctx = new OperationContext(session);
+        Blob result = (Blob) service.run(ctx, chain);
+        assertNotNull(result);
+        assertJSON("json/shouldFilterSuggestionOnParentChildDirectories.json", result);
+    }
+
+    protected void assertJSON(String expectedJSONFile, Blob actual) throws IOException, JSONException {
+        File file = FileUtils.getResourceFileFromContext(expectedJSONFile);
+        String expected = org.apache.commons.io.FileUtils.readFileToString(file, UTF_8);
+        JSONAssert.assertEquals(expected, actual.getString(), true);
+    }
 
 }
