@@ -124,6 +124,11 @@ public class IMImageUtils implements ImageUtils {
                 targetExt = ext;
             }
             targetFile = Framework.createTempFile("nuxeoImageTarget", "." + targetExt);
+
+            Framework.trackFile(targetFile, targetFile);
+            if (tmpFile != null) {
+                Framework.trackFile(tmpFile, tmpFile);
+            }
         }
 
         protected File createTempSource(Blob blob, String ext) throws IOException {
