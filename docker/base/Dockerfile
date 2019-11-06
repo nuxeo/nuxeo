@@ -64,6 +64,8 @@ COPY docker-entrypoint.sh /
 
 # Create directory in which to mount property files appended to nuxeo.conf at runtime.
 RUN mkdir /etc/nuxeo/conf.d
+# Copy base property files.
+COPY conf.d /etc/nuxeo/conf.d/
 
 VOLUME /var/lib/nuxeo/data
 VOLUME /var/log/nuxeo
