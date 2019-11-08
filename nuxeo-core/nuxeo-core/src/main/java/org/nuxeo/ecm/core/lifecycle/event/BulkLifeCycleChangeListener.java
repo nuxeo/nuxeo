@@ -195,15 +195,19 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
      */
     protected void changeDocumentsState(CoreSession session, String transition, String targetState,
             DocumentModelList docs) {
+        TrashService trashService = Framework.getService(TrashService.class);
         for (DocumentModel doc : docs) {
+            if (LifeCycleConstants.UNDELETE_TRANSITION.equals(transition)
+                    && trashService.isMangledName(doc.getName())) {
+                continue;
+            }
             if (doc.getCurrentLifeCycleState() == null) {
                 if (LifeCycleConstants.DELETED_STATE.equals(targetState)) {
                     log.debug("Doc has no lifecycle, deleting ...");
                     session.removeDocument(doc.getRef());
                 }
             } else if (doc.getAllowedStateTransitions().contains(transition) && !doc.isProxy()) {
-                if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)
-                        || LifeCycleConstants.UNDELETE_TRANSITION.equals(transition)) {
+                if (LifeCycleConstants.DELETE_TRANSITION.equals(transition)) {
                     // just skip renaming for trash mechanism
                     // here we leverage backward compatibility mechanism in AbstractSession#followTransition
                     doc.putContextData(TrashService.DISABLE_TRASH_RENAMING, Boolean.TRUE);

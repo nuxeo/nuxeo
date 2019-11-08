@@ -171,6 +171,14 @@ public interface TrashService {
     DocumentModelList getDocuments(DocumentModel parent);
 
     /**
+     * Checks if the name of a document is mangled.
+     *
+     * @param docName the document's name
+     * @since 11.1
+     */
+    boolean isMangledName(String docName);
+
+    /**
      * Mangles the name of a document to avoid collisions with non-trashed documents when it's in the trash.
      *
      * @param doc the document

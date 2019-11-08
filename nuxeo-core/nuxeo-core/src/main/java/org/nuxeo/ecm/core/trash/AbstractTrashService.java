@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,7 @@ public abstract class AbstractTrashService implements TrashService {
             return false;
         }
         // used to do only check on parent perm
-        TrashInfo info = getInfo(docs, principal, checkProxies, false);
-        return info.docs.size() > 0;
+        return !getInfo(docs, principal, checkProxies, false).docs.isEmpty();
     }
 
     @Override
@@ -306,6 +305,11 @@ public abstract class AbstractTrashService implements TrashService {
      * We also attempt to remove this when getting a doc out of the trash.
      */
     protected static final Pattern COLLISION_PATTERN = Pattern.compile("(.*)\\.[0-9]{13,}");
+
+    @Override
+    public boolean isMangledName(String docName) {
+        return TRASHED_PATTERN.matcher(docName).matches();
+    }
 
     @Override
     public String mangleName(DocumentModel doc) {

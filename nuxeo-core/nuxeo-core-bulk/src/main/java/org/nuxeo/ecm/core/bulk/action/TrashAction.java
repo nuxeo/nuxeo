@@ -25,6 +25,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventCategories.EVENT_DOCUMEN
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PARENTID;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
@@ -47,6 +49,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
@@ -67,7 +70,7 @@ public class TrashAction implements StreamProcessorTopology {
 
     public static final String PROXY_QUERY_TEMPLATE = "SELECT ecm:uuid FROM Document WHERE ecm:isProxy=1 AND ecm:uuid IN ('%s')";
 
-    public static final String SYSPROP_QUERY_TEMPLATE = "SELECT ecm:uuid FROM Document WHERE ecm:isProxy=0 AND ecm:isTrashed=%s AND ecm:uuid IN ('%s')";
+    public static final String SYSPROP_QUERY_TEMPLATE = "SELECT ecm:uuid, ecm:name FROM Document WHERE ecm:isProxy=0 AND ecm:isTrashed=%s AND ecm:uuid IN ('%s')";
 
     @Override
     public Topology getTopology(Map<String, String> options) {
@@ -115,11 +118,15 @@ public class TrashAction implements StreamProcessorTopology {
             List<DocumentRef> updatedRefs = new ArrayList<>(ids.size());
             String query = String.format(SYSPROP_QUERY_TEMPLATE, value ? "0" : "1", String.join("', '", ids));
             try (IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL)) {
+                TrashService trashService = Framework.getService(TrashService.class);
                 for (Map<String, Serializable> map : res) {
                     DocumentRef ref = new IdRef((String) map.get(ECM_UUID));
                     try {
-                        session.setDocumentSystemProp(ref, "isTrashed", value);
-                        updatedRefs.add(ref);
+                        String docName = (String) map.get(ECM_NAME);
+                        if (value || !trashService.isMangledName(docName)) {
+                            session.setDocumentSystemProp(ref, "isTrashed", value);
+                            updatedRefs.add(ref);
+                        }
                     } catch (NuxeoException e) {
                         // TODO send to error stream
                         log.warn("Cannot set system property: isTrashed on: " + ref.toString(), e);
