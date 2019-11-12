@@ -304,22 +304,25 @@ public abstract class AbstractTrashService implements TrashService {
     protected static final Pattern COLLISION_PATTERN = Pattern.compile("(.*)\\.[0-9]{13,}");
 
     @Override
+    public boolean isMangledName(String docName) {
+        return TRASHED_PATTERN.matcher(docName).matches();
+    }
+
+    @Override
     public String mangleName(DocumentModel doc) {
         return doc.getName() + "._" + System.currentTimeMillis() + "_.trashed";
     }
 
     @Override
-    public String unmangleName(DocumentModel doc) {
-        String name = doc.getName();
+    public String unmangleName(CoreSession session, DocumentRef parentRef, String name) {
         Matcher matcher = TRASHED_PATTERN.matcher(name);
         if (matcher.matches() && matcher.group(1).length() > 0) {
             name = matcher.group(1);
             matcher = COLLISION_PATTERN.matcher(name);
             if (matcher.matches() && matcher.group(1).length() > 0) {
-                CoreSession session = doc.getCoreSession();
                 if (session != null) {
                     String orig = matcher.group(1);
-                    String parentPath = session.getDocument(doc.getParentRef()).getPathAsString();
+                    String parentPath = session.getDocument(parentRef).getPathAsString();
                     if (parentPath.equals("/")) {
                         parentPath = ""; // root
                     }
