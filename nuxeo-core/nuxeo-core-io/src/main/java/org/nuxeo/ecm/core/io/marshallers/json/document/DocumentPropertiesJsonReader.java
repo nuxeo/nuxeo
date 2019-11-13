@@ -132,10 +132,9 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
 
     protected Property readProperty(Property parent, Field field, JsonNode jn) throws IOException {
         Property property = PropertyFactory.createProperty(parent, field, 0);
+        property.setForceDirty(true);
         if (jn.isNull()) {
-            property.setForceDirty(true);
             property.setValue(null);
-            property.setForceDirty(false);
         } else if (property.isScalar()) {
             fillScalarProperty(property, jn);
         } else if (property.isList()) {
@@ -148,6 +147,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                 property.setValue(blob);
             }
         }
+        property.setForceDirty(false);
         return property;
     }
 
