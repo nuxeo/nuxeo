@@ -67,6 +67,9 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
     public static final String THREED_CONVERSIONS_DONE_EVENT = "threeDConversionsDone";
 
+    // @since 11.1
+    protected static final String STATUS_DONE = "Done";
+
     protected static String computeIdPrefix(String repositoryName, String docId) {
         return repositoryName + ':' + docId + ":threedbatch:";
     }
@@ -104,7 +107,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
 
     @Override
     public void onGroupJoinCompletion() {
-        if ("DONE".equals(getStatus())) {
+        if (STATUS_DONE.equals(getStatus())) {
             try {
                 openSystemSession();
                 fireThreeDConversionsDoneEvent(session.getDocument(new IdRef(docId)));
@@ -215,7 +218,7 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
             return;
         }
         // Finalize
-        setStatus("Done");
+        setStatus(STATUS_DONE);
     }
 
     protected ThreeD getThreeDToConvert(DocumentModel doc) {
