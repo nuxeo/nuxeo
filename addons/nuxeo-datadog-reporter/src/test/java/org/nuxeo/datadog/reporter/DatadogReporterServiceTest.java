@@ -18,7 +18,10 @@
  */
 package org.nuxeo.datadog.reporter;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import javax.inject.Inject;
 
 import org.coursera.metrics.datadog.DatadogReporter;
 import org.junit.Test;
@@ -28,33 +31,24 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.datadog.reporter")
-@Deploy("org.nuxeo.datadog.reporter:datadog-contrib.xml")
+@Deploy("org.nuxeo.datadog.reporter:test-datadog-contrib.xml")
 public class DatadogReporterServiceTest {
 
-
     @Inject
-    DatadogReporterService dds;
-
-
-    @Test
-    public void serviceIsDeployed() throws Exception {
-        assertThat(dds).isNotNull();
-    }
+    protected DatadogReporterService dds;
 
     @Test
-    public void serviceRegisterDatadogReporter() throws Exception {
+    public void serviceRegisterDatadogReporter() {
         DatadogReporterServiceImpl rs = (DatadogReporterServiceImpl) dds;
         DatadogReporter reporter = rs.getReporter();
-        assertThat(reporter).isNotNull();
+        assertNotNull(reporter);
         DatadogReporterConfDescriptor config = rs.getConfig();
-        assertThat(config.getApiKey()).isEqualTo("DATADOG_API_KEY");
-        assertThat(config.getPollInterval()).isEqualTo(25L);
-        assertThat(config.getHost()).isEqualTo("testhost.com");
-
+        assertEquals("DATADOG_API_KEY", config.getApiKey());
+        assertEquals(25L, config.getPollInterval());
+        assertEquals("testhost.com", config.getHost());
     }
 }

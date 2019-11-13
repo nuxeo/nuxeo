@@ -22,8 +22,8 @@ import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.coursera.metrics.datadog.DatadogReporter;
 import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.coursera.metrics.datadog.DefaultMetricNameFormatter;
@@ -39,6 +39,8 @@ import com.codahale.metrics.SharedMetricRegistries;
 
 public class DatadogReporterServiceImpl extends DefaultComponent implements DatadogReporterService {
 
+    private static final Logger log = LogManager.getLogger(DatadogReporterServiceImpl.class);
+
     private static final DefaultStringMatchingStrategy DEFAULT_STRING_MATCHING_STRATEGY = new DefaultStringMatchingStrategy();
 
     private static final RegexStringMatchingStrategy REGEX_STRING_MATCHING_STRATEGY = new RegexStringMatchingStrategy();
@@ -50,8 +52,6 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
     private DatadogReporter reporter;
 
     private DatadogReporterConfDescriptor conf;
-
-    private static final Log log = LogFactory.getLog(DatadogReporterService.class);
 
     @Override
     public void start(ComponentContext context) {
@@ -94,18 +94,20 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
     }
 
     public MetricFilter getFilter() {
-        final StringMatchingStrategy stringMatchingStrategy = conf.filter.getUseRegexFilters()
-                ? REGEX_STRING_MATCHING_STRATEGY
-                : (conf.filter.getUseSubstringMatching() ? SUBSTRING_MATCHING_STRATEGY
-                        : DEFAULT_STRING_MATCHING_STRATEGY);
+        final StringMatchingStrategy stringMatchingStrategy;
+        if (conf.filter.getUseRegexFilters()) {
+            stringMatchingStrategy = REGEX_STRING_MATCHING_STRATEGY;
+        } else if (conf.filter.getUseSubstringMatching()) {
+            stringMatchingStrategy = SUBSTRING_MATCHING_STRATEGY;
+        } else {
+            stringMatchingStrategy = DEFAULT_STRING_MATCHING_STRATEGY;
+        }
 
-        return (name, metric) -> {
-            // Include the metric if its name is not excluded and its name is included
-            // Where, by default, with no includes setting, all names are included.
-            return !stringMatchingStrategy.containsMatch(conf.filter.getExcludes(), name)
-                    && (conf.filter.getIncludes().isEmpty()
-                            || stringMatchingStrategy.containsMatch(conf.filter.getIncludes(), name));
-        };
+        return (name, metric) ->
+        // Include the metric if its name is not excluded and its name is included
+        // Where, by default, with no includes setting, all names are included.
+        !stringMatchingStrategy.containsMatch(conf.filter.getExcludes(), name) && (conf.filter.getIncludes().isEmpty()
+                || stringMatchingStrategy.containsMatch(conf.filter.getIncludes(), name));
     }
 
     @Override

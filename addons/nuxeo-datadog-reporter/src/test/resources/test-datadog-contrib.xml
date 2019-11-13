@@ -1,6 +1,7 @@
-<component name="datadog.test">
+<component name="org.nuxeo.datadog.contrib.test">
 
-  <extension target="org.nuxeo.datadog.service" point="configuration">
+  <extension target="org.nuxeo.datadog.service"
+    point="configuration">
 
     <configuration>
       <apiKey>DATADOG_API_KEY</apiKey>
