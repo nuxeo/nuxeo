@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonW
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -425,6 +426,64 @@ public class DocumentBrowsingTest extends BaseTest {
             doc = session.getDocument(doc.getRef());
             assertEquals("val3", doc.getPropertyValue("dv:complexWithoutDefault/foo"));
             assertNull(doc.getPropertyValue("dv:complexWithoutDefault/bar"));
+        }
+    }
+
+    /*
+     * NXP-28298
+     */
+    @Test
+    public void itCanSetArrayPropertyToEmpty() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "myDocument", "File");
+        doc.setPropertyValue("dc:subjects", new String[] { "foo" });
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:subjects\":[]}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode jsonProperties = node.get("properties");
+            assertNotNull(jsonProperties);
+            JsonNode jsonSubjects = jsonProperties.get("dc:subjects");
+            assertNotNull(jsonSubjects);
+            assertTrue(jsonSubjects.isArray());
+            assertEquals(0, jsonSubjects.size());
+
+            // Then the document is updated
+            fetchInvalidations();
+            doc = session.getDocument(doc.getRef());
+            assertNull(doc.getPropertyValue("dc:subjects"));
+        }
+    }
+
+    /*
+     * NXP-28298
+     */
+    @Test
+    public void itCanSetArrayPropertyToNull() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "myDocument", "File");
+        doc.setPropertyValue("dc:subjects", new String[] { "foo" });
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dc:subjects\":null}}")) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode jsonProperties = node.get("properties");
+            assertNotNull(jsonProperties);
+            JsonNode jsonSubjects = jsonProperties.get("dc:subjects");
+            assertNotNull(jsonSubjects);
+            assertTrue(jsonSubjects.isArray());
+            assertEquals(0, jsonSubjects.size());
+
+            // Then the document is updated
+            fetchInvalidations();
+            doc = session.getDocument(doc.getRef());
+            assertNull(doc.getPropertyValue("dc:subjects"));
         }
     }
 
