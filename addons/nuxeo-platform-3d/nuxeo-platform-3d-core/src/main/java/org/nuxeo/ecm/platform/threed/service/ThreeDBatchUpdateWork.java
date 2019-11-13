@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 
 import org.nuxeo.ecm.platform.filemanager.core.listener.MimetypeIconUpdater;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeEntry;
@@ -90,6 +89,29 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
     @Override
     public boolean isIdempotent() {
         return false;
+    }
+
+    @Override
+    public boolean isGroupJoin() {
+        // This is a GroupJoin work with a trigger that can be used on the last work execution
+        return true;
+    }
+
+    @Override
+    public String getPartitionKey() {
+        return computeIdPrefix(repositoryName, docId);
+    }
+
+    @Override
+    public void onGroupJoinCompletion() {
+        if ("DONE".equals(getStatus())) {
+            try {
+                openSystemSession();
+                fireThreeDConversionsDoneEvent(session.getDocument(new IdRef(docId)));
+            } finally {
+                cleanUp(true, null);
+            }
+        }
     }
 
     @Override
@@ -193,7 +215,6 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
             return;
         }
         // Finalize
-        fireThreeDConversionsDoneEvent(doc);
         setStatus("Done");
     }
 
@@ -234,23 +255,10 @@ public class ThreeDBatchUpdateWork extends AbstractWork {
     }
 
     /**
-     * Fire a {@code THREED_CONVERSIONS_DONE_EVENT} event when no other ThreeDBatchUpdateWork is scheduled for this
-     * document.
+     * Fire a {@code THREED_CONVERSIONS_DONE_EVENT}
      */
     protected void fireThreeDConversionsDoneEvent(DocumentModel doc) {
-        WorkManager workManager = Framework.getService(WorkManager.class);
-        List<String> workIds = workManager.listWorkIds(CATEGORY_THREED_CONVERSION, null);
-        String idPrefix = computeIdPrefix(repositoryName, docId);
-        int worksCount = 0;
-        for (String workId : workIds) {
-            if (workId.startsWith(idPrefix)) {
-                if (++worksCount > 1) {
-                    // another work scheduled
-                    return;
-                }
-            }
-        }
-
+        log.debug("Fire threeDConversionsDone event for doc: " + doc.getId());
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(THREED_CONVERSIONS_DONE_EVENT);
         Framework.getService(EventService.class).fireEvent(event);
