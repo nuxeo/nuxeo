@@ -71,11 +71,11 @@ public class RenditionBasedCodec extends AbstractDocumentViewCodec {
     public static final String PATH_URL_PATTERN = "/" // slash
             + "([\\w\\.]+)" // server name (group 1)
             + "(?:/(.*))?" // path (group 2) (optional)
-            + "@([\\w\\-\\.\\%]+)" // renditionName (group 3)
+            + "@([\\w\\-\\.\\%,]+)" // renditionName (group 3)
             + "/?" // final slash (optional)
             + "(?:\\?(.*)?)?";
 
-    public static final String ID_URL_PATTERN = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([\\w\\-\\.\\%]+))?(/)?(\\?(.*)?)?";
+    public static final String ID_URL_PATTERN = "/(\\w+)/([a-zA-Z_0-9\\-]+)(/([\\w\\-\\.\\%,]+))?(/)?(\\?(.*)?)?";
 
     public static String getRenditionUrl(DocumentModel doc, String renditionName) {
         DocumentView docView = new DocumentViewImpl(doc);
