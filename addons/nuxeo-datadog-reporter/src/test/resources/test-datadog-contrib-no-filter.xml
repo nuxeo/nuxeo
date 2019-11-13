@@ -1,13 +1,12 @@
-<component name="datadog.test">
+<component name="org.nuxeo.datadog.contrib.test.no.filter">
 
-  <extension target="org.nuxeo.datadog.service" point="configuration">
+  <extension target="org.nuxeo.datadog.service"
+    point="configuration">
 
     <configuration>
       <apiKey>DATADOG_API_KEY</apiKey>
       <host>testhost.com</host>
       <pollInterval>25</pollInterval>
-
-
     </configuration>
 
   </extension>

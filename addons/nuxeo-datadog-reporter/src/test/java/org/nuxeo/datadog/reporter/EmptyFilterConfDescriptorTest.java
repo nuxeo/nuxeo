@@ -18,7 +18,12 @@
  */
 package org.nuxeo.datadog.reporter;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
 
 import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.junit.Test;
@@ -29,39 +34,38 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.codahale.metrics.MetricFilter;
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.datadog.reporter")
-@Deploy("org.nuxeo.datadog.reporter.test:datadog-contrib2.xml")
+@Deploy("org.nuxeo.datadog.reporter.test:test-datadog-contrib-no-filter.xml")
 public class EmptyFilterConfDescriptorTest {
 
     @Inject
-    DatadogReporterService reporter;
+    protected DatadogReporterService reporter;
 
     @Test
-    public void canConfigureMetricFilter() throws Exception {
+    public void canConfigureMetricFilter() {
         DatadogReporterServiceImpl service = (DatadogReporterServiceImpl) reporter;
         DatadogReporterConfDescriptor config = service.getConfig();
+        assertNotNull(config);
 
-        assertThat(config.filter.getUseRegexFilters()).isFalse();
-        assertThat(config.filter.getUseSubstringMatching()).isFalse();
+        assertFalse(config.filter.getUseRegexFilters());
+        assertFalse(config.filter.getUseSubstringMatching());
 
         MetricFilter filter = service.getFilter();
 
-        assertThat(filter.matches("jvm.useful", null)).isTrue();
-        assertThat(filter.matches("jvm.useless", null)).isTrue();
-        assertThat(filter.matches("nuxeo.all", null)).isTrue();
-
+        assertTrue(filter.matches("jvm.useful", null));
+        assertTrue(filter.matches("jvm.useless", null));
+        assertTrue(filter.matches("nuxeo.all", null));
     }
 
     @Test
-    public void canConfigureExpansions() throws Exception {
+    public void canConfigureExpansions() {
         DatadogReporterServiceImpl service = (DatadogReporterServiceImpl) reporter;
         DatadogReporterConfDescriptor config = service.getConfig();
 
-        assertThat(config.filter.getExpansions()).isEqualTo(Expansion.ALL);
+        assertEquals(Expansion.ALL, config.filter.getExpansions());
     }
 
 }

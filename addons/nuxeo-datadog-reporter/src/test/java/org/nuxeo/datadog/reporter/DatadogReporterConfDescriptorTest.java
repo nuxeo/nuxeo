@@ -18,7 +18,14 @@
  */
 package org.nuxeo.datadog.reporter;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.EnumSet;
+
+import javax.inject.Inject;
 
 import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.junit.Test;
@@ -31,19 +38,18 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.codahale.metrics.MetricFilter;
-import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.datadog.reporter")
-@Deploy("org.nuxeo.datadog.reporter.test:datadog-contrib.xml")
+@Deploy("org.nuxeo.datadog.reporter.test:test-datadog-contrib.xml")
 public class DatadogReporterConfDescriptorTest {
 
     @Inject
-    DatadogReporterService reporter;
+    protected DatadogReporterService reporter;
 
     @Test
-    public void hostIsComputedFromNuxeoUrl() throws Exception {
+    public void hostIsComputedFromNuxeoUrl() {
         // Given a nuxeo.url property
         OSGiRuntimeService runtime = (OSGiRuntimeService) Framework.getRuntime();
         runtime.setProperty("nuxeo.url", "https://nuxeohost.com:8080/nuxeo/");
@@ -52,12 +58,11 @@ public class DatadogReporterConfDescriptorTest {
         DatadogReporterConfDescriptor conf = new DatadogReporterConfDescriptor();
 
         // Then the host is computed from url
-        assertThat(conf.getHost()).isEqualTo("nuxeohost.com");
-
+        assertEquals("nuxeohost.com", conf.getHost());
     }
 
     @Test
-    public void hostIsSetFromConfiguration() throws Exception {
+    public void hostIsSetFromConfiguration() {
         // Given a Datadog configuration
         DatadogReporterConfDescriptor conf = new DatadogReporterConfDescriptor();
 
@@ -65,32 +70,31 @@ public class DatadogReporterConfDescriptorTest {
         conf.host = "myhost.com";
 
         // The the host refers to the configured value
-        assertThat(conf.getHost()).isEqualTo("myhost.com");
-
+        assertEquals("myhost.com", conf.getHost());
     }
 
     @Test
-    public void canConfigureMetricFilter() throws Exception {
+    public void canConfigureMetricFilter() {
         DatadogReporterServiceImpl service = (DatadogReporterServiceImpl) reporter;
         DatadogReporterConfDescriptor config = service.getConfig();
+        assertNotNull(config);
 
-        assertThat(config.filter.getUseRegexFilters()).isFalse();
-        assertThat(config.filter.getUseSubstringMatching()).isTrue();
+        assertFalse(config.filter.getUseRegexFilters());
+        assertTrue(config.filter.getUseSubstringMatching());
 
         MetricFilter filter = service.getFilter();
 
-        assertThat(filter.matches("jvm.useful", null)).isTrue();
-        assertThat(filter.matches("jvm.useless", null)).isFalse();
-        assertThat(filter.matches("nuxeo.all", null)).isTrue();
-
+        assertTrue(filter.matches("jvm.useful", null));
+        assertFalse(filter.matches("jvm.useless", null));
+        assertTrue(filter.matches("nuxeo.all", null));
     }
 
     @Test
-    public void canConfigureExpansions() throws Exception {
+    public void canConfigureExpansions() {
         DatadogReporterServiceImpl service = (DatadogReporterServiceImpl) reporter;
         DatadogReporterConfDescriptor config = service.getConfig();
 
-        assertThat(config.filter.getExpansions()).containsExactlyInAnyOrder(Expansion.P99, Expansion.COUNT);
+        assertEquals(EnumSet.of(Expansion.P99, Expansion.COUNT), config.filter.getExpansions());
     }
 
 }
