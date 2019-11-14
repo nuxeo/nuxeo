@@ -79,11 +79,13 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
     public void testSupportsUserUpdate() throws Exception {
         BlobProvider blobProvider = blobManager.getBlobProvider(PREFIX);
         assertTrue(blobProvider.supportsUserUpdate());
+        assertTrue(blobProvider.supportsSync());
 
         // check that we can prevent user updates of blobs by configuration
         deployer.deploy("org.nuxeo.ecm.liveconnect.google.drive.core.test:OSGI-INF/test-googledrive-config2.xml");
         blobProvider = blobManager.getBlobProvider(PREFIX);
         assertFalse(blobProvider.supportsUserUpdate());
+        assertFalse(blobProvider.supportsSync());
     }
 
     @Test

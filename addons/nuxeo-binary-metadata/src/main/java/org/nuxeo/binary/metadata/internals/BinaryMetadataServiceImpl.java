@@ -255,9 +255,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 if (isDirtyMapping) {
                     BlobManager blobManager = Framework.getService(BlobManager.class);
                     BlobProvider blobProvider = blobManager.getBlobProvider(blob);
-                    // do not write metadata in blobs backed by extended blob providers (ex: Google Drive) or blobs from
-                    // providers that prevent user updates
-                    if (blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
+                    // do not write metadata in blobs from providers that don't support sync
+                    if (blobProvider != null && !blobProvider.supportsSync()) {
                         return;
                     }
                     // if document metadata dirty, write metadata from doc to Blob

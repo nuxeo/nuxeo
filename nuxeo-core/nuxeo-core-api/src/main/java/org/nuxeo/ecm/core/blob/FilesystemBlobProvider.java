@@ -104,6 +104,11 @@ public class FilesystemBlobProvider extends AbstractBlobProvider {
     }
 
     @Override
+    public boolean supportsSync() {
+        return supportsUserUpdate();
+    }
+
+    @Override
     public String writeBlob(Blob blob) throws IOException {
         throw new UnsupportedOperationException("Writing a blob is not supported");
     }
