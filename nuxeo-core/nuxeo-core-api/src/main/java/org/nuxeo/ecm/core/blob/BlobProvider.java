@@ -158,6 +158,19 @@ public interface BlobProvider {
     boolean supportsUserUpdate();
 
     /**
+     * Checks is sync is supported.
+     * <p>
+     * Sync refers to the fact that a blob from this provider may be synced with a remote system (like Nuxeo Drive or
+     * WOPI) or with a process that updates things in the blob (like Binary Metadata).
+     *
+     * @return {@code true} if sync is supported
+     * @since 11.1
+     */
+    default boolean supportsSync() {
+        return supportsUserUpdate() && getBinaryManager() != null;
+    }
+
+    /**
      * Gets an {@link InputStream} for the data of a managed blob.
      * <p>
      * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.

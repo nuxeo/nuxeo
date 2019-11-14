@@ -149,10 +149,9 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         if (!doc.isFolder()) {
             BlobManager blobManager = Framework.getService(BlobManager.class);
             BlobProvider blobProvider = blobManager.getBlobProvider(blob);
-            if (blobProvider != null
-                    && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null)) {
+            if (blobProvider != null && !blobProvider.supportsSync()) {
                 log.debug(
-                        "Blob for Document {} is backed by a BlobProvider preventing updates, it cannot be adapted as a FileSystemItem.",
+                        "Blob for Document {} is backed by a BlobProvider preventing sync, it cannot be adapted as a FileSystemItem.",
                         doc::getId);
                 return false;
             }
