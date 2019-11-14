@@ -96,12 +96,14 @@ public class TestFilesystemBlobProvider {
     public void testSupportsUserUpdate() throws Exception {
         BlobProvider blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
         assertFalse(blobProvider.supportsUserUpdate());
+        assertFalse(blobProvider.supportsSync());
 
         // check that we can allow user updates of blobs by configuration
         deployer.deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-fs-blobprovider-override.xml");
 
         blobProvider = blobManager.getBlobProvider(PROVIDER_ID);
         assertTrue(blobProvider.supportsUserUpdate());
+        assertTrue(blobProvider.supportsSync());
     }
 
     @Test

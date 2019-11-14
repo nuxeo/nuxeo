@@ -24,7 +24,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.api.Blobs.createBlob;
 import static org.nuxeo.wopi.Constants.ACTION_CONVERT;
 import static org.nuxeo.wopi.Constants.ACTION_EDIT;
 import static org.nuxeo.wopi.Constants.ACTION_VIEW;
@@ -40,6 +39,9 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
@@ -60,6 +62,9 @@ public class TestWOPIService {
 
     @Inject
     protected WOPIService wopiService;
+
+    @Inject
+    protected BlobManager blobManager;
 
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "ERROR")
@@ -149,12 +154,12 @@ public class TestWOPIService {
 
     @Test
     public void testGetWOPIBlobInfo() {
-        Blob blob = createBlob("dummy content", null, null, "content.xlsx");
+        Blob blob = createBlob("dummy content", "content.xlsx");
         // extension not supported by WOPI
-        Blob blobOne = createBlob("one", null, null, "one.bin");
+        Blob blobOne = createBlob("one", "one.bin");
         // extension not supported by Nuxeo
-        Blob blobTwo = createBlob("two", null, null, "two.pdf");
-        Blob blobThree = createBlob("three", null, null, "three.rtf");
+        Blob blobTwo = createBlob("two", "two.pdf");
+        Blob blobThree = createBlob("three", "three.rtf");
 
         WOPIBlobInfo info = wopiService.getWOPIBlobInfo(blob);
         assertEquals("Excel", info.appName);
@@ -169,6 +174,22 @@ public class TestWOPIService {
         assertEquals("Word", info.appName);
         assertEquals(1, info.actions.size());
         assertTrue(info.actions.contains(ACTION_EDIT));
+    }
+
+    // creates a blob that's actually backed by a blob provider, as wopi service requires it
+    protected Blob createBlob(String string, String filename) {
+        BlobProvider blobProvider = blobManager.getBlobProvider("test");
+        try {
+            Blob blob = Blobs.createBlob(string, null, null, filename);
+            String key = blobProvider.writeBlob(blob);
+            // get a blob that comes from the blob provider
+            BlobInfo blobInfo = new BlobInfo();
+            blobInfo.key = key;
+            blobInfo.filename = filename;
+            return blobProvider.readBlob(blobInfo);
+        } catch (IOException e) {
+            throw new UnsupportedOperationException();
+        }
     }
 
 }

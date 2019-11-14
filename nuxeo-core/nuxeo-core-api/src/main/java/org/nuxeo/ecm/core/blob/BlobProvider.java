@@ -100,6 +100,19 @@ public interface BlobProvider {
     boolean supportsUserUpdate();
 
     /**
+     * Checks if sync is supported.
+     * <p>
+     * Sync refers to the fact that a blob from this provider may be synced with a remote system (like Nuxeo Drive) or
+     * with a process that updates things in the blob (like Binary Metadata, or WOPI).
+     *
+     * @return {@code true} if sync is supported
+     * @since 11.1
+     */
+    default boolean supportsSync() {
+        return supportsUserUpdate() && getBinaryManager() != null;
+    }
+
+    /**
      * Gets an {@link InputStream} for the data of a managed blob.
      * <p>
      * Like all {@link InputStream}, the result must be closed when done with it to avoid resource leaks.
@@ -211,14 +224,14 @@ public interface BlobProvider {
 
     /**
      * Returns the properties of the blob provider.
-     * 
+     *
      * @since 10.2
      */
     Map<String, String> getProperties();
 
     /**
      * Checks if current user has the rights to create blobs in the blob provider using a key.
-     * 
+     *
      * @since 10.2
      */
     default boolean hasCreateFromKeyPermission() {

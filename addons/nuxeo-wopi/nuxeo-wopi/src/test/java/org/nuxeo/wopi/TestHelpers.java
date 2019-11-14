@@ -75,6 +75,7 @@ public class TestHelpers {
         // regular blob
         Blob blob = Blobs.createBlob("dummy content");
         doc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
+        doc = session.createDocument(doc);
         assertNotNull(Helpers.getEditableBlob(doc, FILE_CONTENT_PROPERTY));
 
         // external blob provider
