@@ -112,6 +112,11 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         return true;
     }
 
+    @Override
+    public boolean supportsSync() {
+        return supportsUserUpdate();
+    }
+
     /**
      * Should be overriden by subclasses needing something different.
      */

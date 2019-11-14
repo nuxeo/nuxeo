@@ -51,6 +51,7 @@ public class TestDropboxBlobProvider extends DropboxTestCase {
     public void testSupportsUserUpdate() throws Exception {
         BlobProvider blobProvider = blobManager.getBlobProvider(PREFIX);
         assertTrue(blobProvider.supportsUserUpdate());
+        assertTrue(blobProvider.supportsSync());
     }
 
     @Test

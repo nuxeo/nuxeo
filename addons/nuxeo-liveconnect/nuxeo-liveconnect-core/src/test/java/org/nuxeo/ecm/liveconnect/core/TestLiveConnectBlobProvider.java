@@ -91,6 +91,7 @@ public class TestLiveConnectBlobProvider extends LiveConnectTestCase {
     @Test
     public void testSupportsUserUpdate() {
         assertTrue(blobProvider.supportsUserUpdate());
+        assertTrue(blobProvider.supportsSync());
     }
 
     @Test
