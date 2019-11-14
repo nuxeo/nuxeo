@@ -18,7 +18,11 @@
  */
 package org.nuxeo.ecm.admin.runtime;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,16 +95,23 @@ public class ReloadHelper {
             }
 
             // Download
+            List<String> messages = new ArrayList<>();
             DownloadingPackage downloadingPkg = pm.download(packageId);
             while (!downloadingPkg.isCompleted()) {
                 log.trace("Downloading studio snapshot package: {}", packageId);
+                if (isNotEmpty(downloadingPkg.getErrorMessage())) {
+                    messages.add(downloadingPkg.getErrorMessage());
+                }
                 Thread.sleep(100); // NOSONAR (we want the whole hot-reload to be synchronized)
             }
 
             log.info("Installing {}", packageId);
             pkg = pus.getPackage(packageId);
             if (pkg == null || PackageState.DOWNLOADED != pkg.getPackageState()) {
-                throw new NuxeoException("Error while downloading studio snapshot " + pkg);
+                NuxeoException nuxeoException = new NuxeoException(
+                        String.format("Error while downloading studio snapshot: %s, package Id: %s", pkg, packageId));
+                messages.forEach(nuxeoException::addInfo);
+                throw nuxeoException;
             }
 
             // get bundles to deploy
