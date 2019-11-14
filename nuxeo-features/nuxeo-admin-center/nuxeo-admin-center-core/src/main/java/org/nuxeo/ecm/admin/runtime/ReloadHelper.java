@@ -83,7 +83,7 @@ public class ReloadHelper {
                                      .forEachOrdered(reloadContext::undeploy);
                     } else {
                         log.warn("Unable to uninstall previous bundle because {} doesn't exist",
-                                 pkg.getUninstallFile());
+                                pkg.getUninstallFile());
                     }
                 }
                 // remove the package from package update service, unless download will fail
