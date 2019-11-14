@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -101,7 +102,8 @@ public abstract class AbstractTrashService implements TrashService {
             return false;
         }
         // used to do only check on parent perm
-        return !getInfo(docs, principal, checkProxies, false).docs.isEmpty();
+        TrashInfo info = getInfo(docs, principal, checkProxies, false);
+        return !info.docs.isEmpty();
     }
 
     @Override
@@ -309,32 +311,49 @@ public abstract class AbstractTrashService implements TrashService {
     }
 
     @Override
+    public boolean isMangledName(String docName) {
+        return TRASHED_PATTERN.matcher(docName).matches();
+    }
+
+    @Override
     public String mangleName(DocumentModel doc) {
         return doc.getName() + "._" + System.currentTimeMillis() + "_.trashed";
     }
 
     @Override
     public String unmangleName(DocumentModel doc) {
-        String name = doc.getName();
-        Matcher matcher = TRASHED_PATTERN.matcher(name);
-        if (matcher.matches() && matcher.group(1).length() > 0) {
-            name = matcher.group(1);
-            matcher = COLLISION_PATTERN.matcher(name);
-            if (matcher.matches() && matcher.group(1).length() > 0) {
-                CoreSession session = doc.getCoreSession();
-                if (session != null) {
-                    String orig = matcher.group(1);
-                    String parentPath = session.getDocument(doc.getParentRef()).getPathAsString();
-                    if (parentPath.equals(PATH_SEPARATOR)) {
-                        parentPath = ""; // root
-                    }
-                    String newPath = parentPath + PATH_SEPARATOR + orig;
-                    if (!session.exists(new PathRef(newPath))) {
-                        name = orig;
-                    }
-                }
+        return unmangleName(doc.getCoreSession(), doc.getParentRef(), doc.getName());
+    }
+
+    @Override
+    public String unmangleName(CoreSession session, DocumentRef parentRef, String docName) {
+        if (session == null) {
+            return docName;
+        }
+        // remove trashed part
+        String name = getFirstGroup(TRASHED_PATTERN, docName);
+        // remove collision avoidance
+        String orig = getFirstGroup(COLLISION_PATTERN, name);
+        if (!docName.equals(name)) {
+            //check if orig (the supposed name without collision) is available
+            String parentPath = session.getDocument(parentRef).getPathAsString();
+            if (parentPath.equals(PATH_SEPARATOR)) {
+                parentPath = ""; // root
+            }
+            String newPath = parentPath + PATH_SEPARATOR + orig;
+            if (!session.exists(new PathRef(newPath))) {
+                name = orig;
             }
         }
+        return name;
+    }
+
+    protected String getFirstGroup(Pattern pattern, String name) {
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.matches() && StringUtils.isNotEmpty(matcher.group(1))) {
+            return matcher.group(1);
+        }
+
         return name;
     }
 }

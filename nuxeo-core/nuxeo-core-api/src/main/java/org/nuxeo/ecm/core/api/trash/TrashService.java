@@ -171,12 +171,30 @@ public interface TrashService {
     DocumentModelList getDocuments(DocumentModel parent);
 
     /**
+     * @param docName the document's name
+     * @return true if the document's name is mangled, false otherwise
+     * @since 11.1
+     */
+    boolean isMangledName(String docName);
+
+    /**
      * Mangles the name of a document to avoid collisions with non-trashed documents when it's in the trash.
      *
      * @param doc the document
      * @since 7.3
      */
     String mangleName(DocumentModel doc);
+
+    /**
+     * Unmangles the name of a document in the trash to find its un-trashed name.
+     *
+     * @param session the session used for collisions check
+     * @param parentRef the parent document ref
+     * @param docName the document name
+     * @return the unmangled name
+     * @since 11.1
+     */
+    String unmangleName(CoreSession session, DocumentRef parentRef, String docName);
 
     /**
      * Unmangles the name of a document in the trash to find its un-trashed name.
