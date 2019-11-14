@@ -235,6 +235,9 @@ public abstract class AbstractTestTrashService {
     @Test
     public void testUntrashChildren() {
         createDocuments();
+        // trashing /fold/doc1 to mangle its name specifically
+        trashService.trashDocument(doc1);
+        // trashing /fold and recursively /fold/doc2
         trashService.trashDocument(fold);
 
         transactionalFeature.nextTransaction();
@@ -244,9 +247,16 @@ public abstract class AbstractTestTrashService {
         doc1 = session.getDocument(new IdRef(doc1.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertTrue(fold.isTrashed());
-        // doc1 & doc2 done by async BulkLifeCycleChangeListener
+        // doc1 trashed explicitly
         assertTrue(doc1.isTrashed());
+        // doc2 trashed recursively
         assertTrue(doc2.isTrashed());
+        // fold is mangled as it was directly trashed
+        assertTrue(trashService.isMangledName(fold.getName()));
+        // doc1 is mangled as it was directly trashed
+        assertTrue(trashService.isMangledName(doc1.getName()));
+        // doc2 is not mangled as it was indirectly trashed
+        assertFalse(trashService.isMangledName(doc2.getName()));
 
         // untrash fold
         trashService.untrashDocument(fold);
@@ -257,9 +267,15 @@ public abstract class AbstractTestTrashService {
         doc1 = session.getDocument(new IdRef(doc1.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
         assertFalse(fold.isTrashed());
-        // children done by async BulkLifeCycleChangeListener
+        // children recursively untrashed
         assertFalse(doc1.isTrashed());
         assertFalse(doc2.isTrashed());
+        // fold is unmangled
+        assertFalse(trashService.isMangledName(fold.getName()));
+        // doc1 is recursively unmangled
+        assertFalse(trashService.isMangledName(doc1.getName()));
+        // doc2 stays unmangled
+        assertFalse(trashService.isMangledName(doc2.getName()));
     }
 
     @Test
