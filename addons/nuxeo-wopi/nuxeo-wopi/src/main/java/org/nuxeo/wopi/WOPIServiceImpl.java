@@ -192,7 +192,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     @Override
     public WOPIBlobInfo getWOPIBlobInfo(Blob blob) {
-        if (!isEnabled() || Helpers.isExternalBlobProvider(blob)) {
+        if (!isEnabled() || !Helpers.supportsSync(blob)) {
             return null;
         }
 

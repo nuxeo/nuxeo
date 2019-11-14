@@ -100,20 +100,30 @@ public class Helpers {
                     () -> xpath);
             return null;
         }
-        // ignore external blob providers
-        if (isExternalBlobProvider(blob)) {
+        // ignore blob providers that don't support sync
+        if (!supportsSync(blob)) {
             log.debug(
-                    "Blobs: repository={} docId={} xpath={} Ignoring blob as it is backed by a BlobProvider preventing updates",
+                    "Blobs: repository={} docId={} xpath={} Ignoring blob as it is backed by a BlobProvider preventing sync",
                     doc::getRepositoryName, doc::getId, () -> xpath);
             return null;
         }
         return blob;
     }
 
+    /**
+     * @deprecated since 11.1, use {@link #supportsSync} (with opposite semantics) instead
+     */
+    @Deprecated
     protected static boolean isExternalBlobProvider(Blob blob) {
         BlobManager blobManager = Framework.getService(BlobManager.class);
         BlobProvider blobProvider = blobManager.getBlobProvider(blob);
         return blobProvider != null && (!blobProvider.supportsUserUpdate() || blobProvider.getBinaryManager() == null);
+    }
+
+    protected static boolean supportsSync(Blob blob) {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        BlobProvider blobProvider = blobManager.getBlobProvider(blob);
+        return blobProvider != null && blobProvider.supportsSync();
     }
 
     public static String getWOPIURL(String baseURL, String action, DocumentModel doc, String xpath) {
