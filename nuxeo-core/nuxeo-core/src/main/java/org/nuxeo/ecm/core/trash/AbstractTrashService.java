@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,22 @@ public abstract class AbstractTrashService implements TrashService {
 
     public static final String TRASHED_QUERY = "SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation' AND ecm:isVersion = 0 AND ecm:isTrashed = 1 AND ecm:parentId = '%s'";
 
+    /**
+     * @since 11.1
+     */
+    protected static final String PATH_SEPARATOR = "/";
+
+    /**
+     * Matches names of documents in the trash, created by {@link #trashDocuments(List)}.
+     */
+    protected static final Pattern TRASHED_PATTERN = Pattern.compile("(.*)\\._[0-9]{13,}_\\.trashed");
+
+    /**
+     * Matches names resulting from a collision, suffixed with a time in milliseconds, created by DuplicatedNameFixer.
+     * We also attempt to remove this when getting a doc out of the trash.
+     */
+    protected static final Pattern COLLISION_PATTERN = Pattern.compile("(.*)\\.[0-9]{13,}");
+
     @Override
     public boolean folderAllowsDelete(DocumentModel folder) {
         return folder.getCoreSession().hasPermission(folder.getRef(), SecurityConstants.REMOVE_CHILDREN);
@@ -85,8 +101,7 @@ public abstract class AbstractTrashService implements TrashService {
             return false;
         }
         // used to do only check on parent perm
-        TrashInfo info = getInfo(docs, principal, checkProxies, false);
-        return info.docs.size() > 0;
+        return !getInfo(docs, principal, checkProxies, false).docs.isEmpty();
     }
 
     @Override
@@ -163,8 +178,9 @@ public abstract class AbstractTrashService implements TrashService {
 
         @Override
         public int compare(DocumentModel doc1, DocumentModel doc2) {
-            return doc1.getPathAsString().replace("/", "\u0000").compareTo(
-                    doc2.getPathAsString().replace("/", "\u0000"));
+            return doc1.getPathAsString()
+                       .replace(PATH_SEPARATOR, "\u0000")
+                       .compareTo(doc2.getPathAsString().replace(PATH_SEPARATOR, "\u0000"));
         }
 
     }
@@ -292,17 +308,6 @@ public abstract class AbstractTrashService implements TrashService {
         undeleteDocuments(docs);
     }
 
-    /**
-     * Matches names of documents in the trash, created by {@link #trashDocuments(List)}.
-     */
-    protected static final Pattern TRASHED_PATTERN = Pattern.compile("(.*)\\._[0-9]{13,}_\\.trashed");
-
-    /**
-     * Matches names resulting from a collision, suffixed with a time in milliseconds, created by DuplicatedNameFixer.
-     * We also attempt to remove this when getting a doc out of the trash.
-     */
-    protected static final Pattern COLLISION_PATTERN = Pattern.compile("(.*)\\.[0-9]{13,}");
-
     @Override
     public String mangleName(DocumentModel doc) {
         return doc.getName() + "._" + System.currentTimeMillis() + "_.trashed";
@@ -320,10 +325,10 @@ public abstract class AbstractTrashService implements TrashService {
                 if (session != null) {
                     String orig = matcher.group(1);
                     String parentPath = session.getDocument(doc.getParentRef()).getPathAsString();
-                    if (parentPath.equals("/")) {
+                    if (parentPath.equals(PATH_SEPARATOR)) {
                         parentPath = ""; // root
                     }
-                    String newPath = parentPath + "/" + orig;
+                    String newPath = parentPath + PATH_SEPARATOR + orig;
                     if (!session.exists(new PathRef(newPath))) {
                         name = orig;
                     }
@@ -332,5 +337,4 @@ public abstract class AbstractTrashService implements TrashService {
         }
         return name;
     }
-
 }
