@@ -68,6 +68,11 @@
       <policy name="default" maxRetries="0" continueOnFailure="false" />
     </streamProcessor>
 
+    <streamProcessor name="registerProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor3"
+      defaultConcurrency="1" defaultPartitions="1" logConfig="default" registerOnly="true" >
+      <policy name="default" maxRetries="0" continueOnFailure="false" />
+      <stream name="registerInput" partitions="1" />
+    </streamProcessor>
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

@@ -49,6 +49,9 @@ public class StreamProcessorDescriptor implements Descriptor {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
+    @XNode("@registerOnly")
+    protected boolean isRegisterOnly = false;
+
     @XObject(value = "computation")
     public static class ComputationDescriptor implements Descriptor {
 
@@ -272,4 +275,13 @@ public class StreamProcessorDescriptor implements Descriptor {
         return name;
     }
 
+    // @since 11.1
+    public boolean isRegisterOnly() {
+        return isRegisterOnly;
+    }
+
+    // @since 11.1
+    public void setRegisterOnly(boolean registerOnly) {
+        isRegisterOnly = registerOnly;
+    }
 }
