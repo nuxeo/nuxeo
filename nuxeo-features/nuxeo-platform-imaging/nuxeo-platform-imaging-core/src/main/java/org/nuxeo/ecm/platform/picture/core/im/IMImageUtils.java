@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class IMImageUtils implements ImageUtils {
 
-    private static final Log log = LogFactory.getLog(IMImageUtils.class);
+    private static final Logger log = LogManager.getLogger(IMImageUtils.class);
 
     public abstract static class ImageMagickCaller {
 
@@ -71,14 +71,15 @@ public class IMImageUtils implements ImageUtils {
                 Framework.trackFile(targetFile, targetBlob);
                 return targetBlob;
             } catch (CommandNotAvailable | CommandException | IOException e) {
-                log.error("ImageMagick failed on command: " + commandName, e);
+                log.error(() -> String.format("ImageMagick failed on command: %s", commandName), e);
                 return null;
             } finally {
                 if (tmpFile != null) {
                     try {
                         Files.delete(tmpFile.toPath());
                     } catch (IOException e) {
-                        log.error("Unable to delete temporary file when calling ImageMagick command: " + commandName,
+                        log.error(() -> String.format(
+                                "Unable to delete temporary file when calling ImageMagick command: %s", commandName),
                                 e);
                     }
                 }
