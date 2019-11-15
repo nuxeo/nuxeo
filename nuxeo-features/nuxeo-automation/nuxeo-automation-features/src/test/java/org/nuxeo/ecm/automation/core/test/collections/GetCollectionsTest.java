@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.automation.core.test.collections;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.collections.GetCollectionsOperation;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.collections.api.CollectionManager;
@@ -43,7 +42,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class GetCollectionsTest extends CollectionOperationsTestCase {
 
     @Inject
-    CollectionManager collectionManager;
+    protected CollectionManager collectionManager;
 
     List<DocumentModel> listCollections;
 
