@@ -1,5 +1,7 @@
 <component name="org.nuxeo.datadog.contrib.test">
 
+  <require>org.nuxeo.datadog.contrib</require>
+
   <extension target="org.nuxeo.datadog.service"
     point="configuration">
 

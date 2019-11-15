@@ -51,53 +51,52 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
 
     private DatadogReporter reporter;
 
-    private DatadogReporterConfDescriptor conf;
+    private DatadogReporterConfDescriptor configuration;
 
     @Override
     public void start(ComponentContext context) {
-        if (reporter != null) {
-            startReporter();
+        if (configuration == null) {
+            log.error("Missing Datadog configuration: Datadog Reporter disabled");
+            return;
         }
+        if (StringUtils.isBlank(configuration.getApiKey())) {
+            log.warn("Missing Datadog API key: Datadog Reporter disabled. Please make sure that the datadog.apikey"
+                    + " property is set in nuxeo.conf.");
+            return;
+        }
+        buildReporter();
+        startReporter();
     }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("configuration".equals(extensionPoint)) {
-            setConfiguration((DatadogReporterConfDescriptor) contribution);
-        }
-    }
-
-    private void setConfiguration(DatadogReporterConfDescriptor conf) {
-        if (StringUtils.isBlank(conf.getApiKey())) {
-            log.error("Datadog reporter service is not well configured : apiKey is empty. Your metrics won't be sent.");
-        } else {
-            this.conf = conf;
-            buildReporter();
+            // last one wins, no merge
+            this.configuration = (DatadogReporterConfDescriptor) contribution;
         }
     }
 
     private void buildReporter() {
-        HttpTransport httpTransport = new HttpTransport.Builder().withApiKey(conf.getApiKey()).build();
+        HttpTransport httpTransport = new HttpTransport.Builder().withApiKey(configuration.getApiKey()).build();
         reporter = DatadogReporter.forRegistry(metrics)//
-                                  .withHost(conf.getHost())//
-                                  .withTags(conf.getTags())
+                                  .withHost(configuration.getHost())//
+                                  .withTags(configuration.getTags())
                                   .withTransport(httpTransport)//
                                   .withExpansions(getExpansions())//
                                   .filter(getFilter())
                                   .withMetricNameFormatter(new DefaultMetricNameFormatter())//
                                   .build();
-
     }
 
     private EnumSet<Expansion> getExpansions() {
-        return conf.filter.getExpansions();
+        return configuration.filter.getExpansions();
     }
 
     public MetricFilter getFilter() {
         final StringMatchingStrategy stringMatchingStrategy;
-        if (conf.filter.getUseRegexFilters()) {
+        if (configuration.filter.getUseRegexFilters()) {
             stringMatchingStrategy = REGEX_STRING_MATCHING_STRATEGY;
-        } else if (conf.filter.getUseSubstringMatching()) {
+        } else if (configuration.filter.getUseSubstringMatching()) {
             stringMatchingStrategy = SUBSTRING_MATCHING_STRATEGY;
         } else {
             stringMatchingStrategy = DEFAULT_STRING_MATCHING_STRATEGY;
@@ -106,15 +105,16 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
         return (name, metric) ->
         // Include the metric if its name is not excluded and its name is included
         // Where, by default, with no includes setting, all names are included.
-        !stringMatchingStrategy.containsMatch(conf.filter.getExcludes(), name) && (conf.filter.getIncludes().isEmpty()
-                || stringMatchingStrategy.containsMatch(conf.filter.getIncludes(), name));
+        !stringMatchingStrategy.containsMatch(configuration.filter.getExcludes(), name)
+                && (configuration.filter.getIncludes().isEmpty()
+                        || stringMatchingStrategy.containsMatch(configuration.filter.getIncludes(), name));
     }
 
     @Override
     public void startReporter() {
         if (reporter != null) {
             log.info("Starting Datadog reporter");
-            reporter.start(conf.getPollInterval(), TimeUnit.SECONDS);
+            reporter.start(configuration.getPollInterval(), TimeUnit.SECONDS);
         }
     }
 
@@ -129,7 +129,7 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
     }
 
     DatadogReporterConfDescriptor getConfig() {
-        return conf;
+        return configuration;
     }
 
 }

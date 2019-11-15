@@ -20,10 +20,13 @@ package org.nuxeo.datadog.reporter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
-import org.coursera.metrics.datadog.DatadogReporter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -31,24 +34,45 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
 @Deploy("org.nuxeo.datadog.reporter")
-@Deploy("org.nuxeo.datadog.reporter:test-datadog-contrib.xml")
 public class DatadogReporterServiceTest {
 
     @Inject
     protected DatadogReporterService dds;
 
     @Test
-    public void serviceRegisterDatadogReporter() {
+    public void testNoDatadogAPIKeyProperty() {
         DatadogReporterServiceImpl rs = (DatadogReporterServiceImpl) dds;
-        DatadogReporter reporter = rs.getReporter();
-        assertNotNull(reporter);
-        DatadogReporterConfDescriptor config = rs.getConfig();
-        assertEquals("DATADOG_API_KEY", config.getApiKey());
-        assertEquals(25L, config.getPollInterval());
-        assertEquals("testhost.com", config.getHost());
+
+        // default Datadog configuration
+        DatadogReporterConfDescriptor configuration = rs.getConfig();
+        assertNotNull(configuration);
+        assertTrue(configuration.getApiKey().isBlank());
+        assertTrue(configuration.getHost().isBlank());
+        assertEquals(10L, configuration.getPollInterval());
+        assertEquals(List.of("nuxeo"), configuration.getTags());
+
+        // Datadog API key not provided: no reporter
+        assertNull(rs.getReporter());
     }
+
+    @Test
+    @Deploy("org.nuxeo.datadog.reporter:test-datadog-contrib-no-filter.xml")
+    public void testDatadogAPIKeyProperty() {
+        DatadogReporterServiceImpl rs = (DatadogReporterServiceImpl) dds;
+
+        // test Datadog configuration
+        DatadogReporterConfDescriptor configuration = rs.getConfig();
+        assertNotNull(configuration);
+        assertEquals("DATADOG_API_KEY", configuration.getApiKey());
+        assertEquals("testhost.com", configuration.getHost());
+        assertEquals(25L, configuration.getPollInterval());
+        assertTrue(configuration.getTags().isEmpty());
+
+        // Datadog API key provided
+        assertNotNull(rs.getReporter());
+    }
+
 }
