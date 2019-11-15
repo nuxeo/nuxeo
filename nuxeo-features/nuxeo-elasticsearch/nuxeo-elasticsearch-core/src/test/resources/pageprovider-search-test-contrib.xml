@@ -12,6 +12,12 @@
       <maxPageSize>0</maxPageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="default_collection"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </genericPageProvider>
+
   </extension>
 
 

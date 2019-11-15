@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
@@ -60,6 +61,7 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.io.marshallers.json.AggregateJsonWriter;
+import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -67,6 +69,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -91,6 +94,13 @@ public class RestESDocumentsTest extends BaseTest {
     public static final String QUERY = "select * from Document where " + "ecm:isTrashed = 0";
 
     public static final String TEST_MIME_TYPE = "text/plain";
+
+    protected static final String DC_TITLE = "dc:title";
+
+    protected static final String COLLECTION = "Collection";
+
+    @Inject
+    protected PageProviderService pageProviderService;
 
     @Inject
     protected AutomationService automationService;
@@ -138,6 +148,34 @@ public class RestESDocumentsTest extends BaseTest {
         if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
             fail("Should be an elastic search page provider");
         }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.collections.core:OSGI-INF/collection-pageprovider-contrib.xml")
+    public void iCanUseFulltextOperatorWithElasticsearchPageProvider() {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("default_collection");
+
+        HashMap<String, Serializable> props = new HashMap<>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<?> pp = pps.getPageProvider(ppdef.getName(), ppdef, null, null, null, 0L, props, "collection",
+                session.getPrincipal().getName());
+        DocumentModel coll1 = session.createDocumentModel("/", "lapin collection", COLLECTION);
+        coll1.setPropertyValue(DC_TITLE, coll1.getName());
+        DocumentModel coll2 = session.createDocumentModel("/", "collection radis", COLLECTION);
+        coll2.setPropertyValue(DC_TITLE, coll2.getName());
+        DocumentModel lapin = session.createDocumentModel("/", "lapin", COLLECTION);
+        lapin.setPropertyValue(DC_TITLE, lapin.getName());
+
+        session.createDocument(coll1);
+        session.createDocument(coll2);
+        session.createDocument(lapin);
+
+        txFeature.nextTransaction();
+
+        pp.refresh();
+        List<?> page = pp.getCurrentPage();
+        assertEquals(2, page.size());
     }
 
     @Test

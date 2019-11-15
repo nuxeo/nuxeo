@@ -61,6 +61,7 @@ public class GetCollectionsOperation {
     public PaginableDocumentModelListImpl run() throws OperationException {
         StringList sl = new StringList();
         sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
+        sl.add(searchTerm.endsWith("%") ? searchTerm.substring(0, searchTerm.length() - 1) : searchTerm);
         sl.add(PageProviderHelper.CURRENT_USERID_PATTERN);
         OperationChain chain = new OperationChain("operation");
         Map<String, Object> vars = new HashMap<>();
