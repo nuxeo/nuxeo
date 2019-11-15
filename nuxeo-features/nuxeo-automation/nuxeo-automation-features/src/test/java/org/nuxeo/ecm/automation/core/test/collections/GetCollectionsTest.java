@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.automation.core.test.collections;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationChain;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.collections.GetCollectionsOperation;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.collections.api.CollectionManager;
@@ -43,7 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class GetCollectionsTest extends CollectionOperationsTestCase {
 
     @Inject
-    CollectionManager collectionManager;
+    protected CollectionManager collectionManager;
 
     List<DocumentModel> listCollections;
 
@@ -77,7 +75,6 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
 
         PaginableDocumentModelListImpl collectionsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        assertNotNull(collectionsList);
         assertEquals(1, collectionsList.size());
         DocumentModel collection = collectionsList.get(0);
         assertEquals(COLLECTION_NAME + 1, collection.getName());
@@ -88,7 +85,6 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
         chain.add(GetCollectionsOperation.ID).set("searchTerm", COLLECTION_NAME + "%");
         collectionsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        assertNotNull(collectionsList);
         assertEquals(listCollections.size(), collectionsList.size());
 
         // Search a non-existing collection
@@ -96,7 +92,6 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
         chain.add(GetCollectionsOperation.ID).set("searchTerm", "NonExistenting");
         collectionsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
-        assertNotNull(collectionsList);
         assertEquals(0, collectionsList.size());
     }
 
