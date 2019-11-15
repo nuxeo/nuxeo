@@ -44,7 +44,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CollectionFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
-public class CollectionOperationsTestCase {
+public abstract class CollectionOperationsTestCase {
 
     protected static final String TEST_FILE_NAME = "testFile";
 

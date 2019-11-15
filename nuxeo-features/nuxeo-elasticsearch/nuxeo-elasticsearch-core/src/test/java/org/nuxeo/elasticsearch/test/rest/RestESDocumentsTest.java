@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,11 +92,21 @@ public class RestESDocumentsTest extends BaseTest {
 
     public static final String TEST_MIME_TYPE = "text/plain";
 
-    @Inject
-    PageProviderService pageProviderService;
+    /**
+     * @since 11.1
+     */
+    protected static final String ROOT_PATH = "/";
+
+    /**
+     * @since 11.1
+     */
+    protected static final String DC_TITLE = "dc:title";
 
     @Inject
-    AutomationService automationService;
+    protected PageProviderService pageProviderService;
+
+    @Inject
+    protected AutomationService automationService;
 
     @Test
     public void iCanPerformESQLPageProviderOnRepository() throws IOException, InterruptedException {
@@ -268,9 +278,9 @@ public class RestESDocumentsTest extends BaseTest {
     public void iCanQueryESQLPageProviderAndFetchVariousAggregates() throws Exception {
 
         for (int i = 0; i < 50; i++) {
-            DocumentModel doc = session.createDocumentModel("/", "aggTest" + 1, "File");
+            DocumentModel doc = session.createDocumentModel(ROOT_PATH, "aggTest" + 1, "File");
             doc.setPropertyValue("dc:coverage", "europe/Spain");
-            doc.setPropertyValue("dc:title", "tight_" + i % 2);
+            doc.setPropertyValue(DC_TITLE, "tight_" + i % 2);
             if (i % 3 == 0) {
                 doc.setPropertyValue("dc:description", "subs" + i % 4);
             }
