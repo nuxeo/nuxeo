@@ -1,5 +1,7 @@
 <component name="org.nuxeo.datadog.contrib.test.no.filter">
 
+  <require>org.nuxeo.datadog.contrib</require>
+
   <extension target="org.nuxeo.datadog.service"
     point="configuration">
 
