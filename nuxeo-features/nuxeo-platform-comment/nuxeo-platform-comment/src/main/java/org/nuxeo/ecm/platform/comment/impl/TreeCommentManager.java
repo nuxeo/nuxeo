@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
-import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
