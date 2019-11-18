@@ -1059,8 +1059,6 @@ public class TestRenditionService {
         }
 
         String queueId = works.getCategoryQueueId(AbstractRenditionBuilderWork.CATEGORY);
-        assertEquals(1, works.listWorkIds(queueId, Work.State.RUNNING).size());
-        assertEquals(1, works.listWorkIds(queueId, Work.State.SCHEDULED).size());
 
         if (log.isDebugEnabled()) {
             log.debug(DummyDocToTxt.formatLogEntry(folder.getRef(), null, desc, issued) + " before barrier 2");
