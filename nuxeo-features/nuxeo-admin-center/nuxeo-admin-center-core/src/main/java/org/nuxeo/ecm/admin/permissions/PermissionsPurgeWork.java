@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -50,6 +52,8 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
  * @since 7.4
  */
 public class PermissionsPurgeWork extends TransientStoreWork {
+
+    private static final Logger log = LogManager.getLogger(PermissionsPurgeWork.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -98,6 +102,9 @@ public class PermissionsPurgeWork extends TransientStoreWork {
         }
 
         List<String> usernames = (List<String>) searchDocument.getPropertyValue("rs:ace_username");
+        log.info("Purging permissions on {} documents for usernames: {} and ancestorIds: {}", docIds::size,
+                () -> usernames, () -> searchDocument.getPropertyValue("rs:ecm_ancestorIds"));
+
         int acpUpdatedCount = 0;
         for (String docId : docIds) {
             DocumentRef ref = new IdRef(docId);

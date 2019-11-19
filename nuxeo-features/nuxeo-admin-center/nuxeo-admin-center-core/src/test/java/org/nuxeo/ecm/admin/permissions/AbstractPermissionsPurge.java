@@ -72,6 +72,9 @@ public abstract class AbstractPermissionsPurge {
         assertEquals("Read", ace.getPermission());
         assertTrue(ace.isEffective());
 
+        // make sure the document is visible for the PermissionsPurgeWork
+        txFeature.nextTransaction();
+
         scheduleWork(Collections.singletonList("leela"));
 
         txFeature.nextTransaction();
