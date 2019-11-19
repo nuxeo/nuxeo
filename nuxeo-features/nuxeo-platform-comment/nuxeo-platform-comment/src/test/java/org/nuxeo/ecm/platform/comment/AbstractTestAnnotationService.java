@@ -59,6 +59,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 10.1
@@ -74,6 +75,9 @@ public abstract class AbstractTestAnnotationService {
 
     @Inject
     protected AnnotationService annotationService;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     protected CloseableCoreSession session;
 
