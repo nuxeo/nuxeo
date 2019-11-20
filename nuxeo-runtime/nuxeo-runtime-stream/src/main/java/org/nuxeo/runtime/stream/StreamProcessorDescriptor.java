@@ -49,6 +49,7 @@ public class StreamProcessorDescriptor implements Descriptor {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
+    // @since 11.1
     @XNode("@registerOnly")
     protected boolean isRegisterOnly = false;
 
@@ -111,6 +112,9 @@ public class StreamProcessorDescriptor implements Descriptor {
 
         @XNode("@codec")
         public String codec;
+
+        @XNode("@external")
+        public Boolean external;
 
         @XNodeList(value = "filter", type = ArrayList.class, componentType = FilterDescriptor.class)
         public List<FilterDescriptor> filters = new ArrayList<>();
@@ -203,6 +207,10 @@ public class StreamProcessorDescriptor implements Descriptor {
 
     @XNode("@defaultCodec")
     public String defaultCodec;
+
+    // @since 11.1
+    @XNode("@defaultExternal")
+    public boolean defaultExternal;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<>();

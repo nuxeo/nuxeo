@@ -46,6 +46,10 @@ public class Settings {
 
     protected final Map<String, RecordFilterChain> filters = new HashMap<>();
 
+    protected final Map<String, Boolean> externals = new HashMap<>();
+
+    protected final boolean defaultExternal;
+
     // computations
     protected final int defaultConcurrency;
 
@@ -78,9 +82,14 @@ public class Settings {
         this(defaultConcurrency, defaultPartitions, defaultCodec, defaultPolicy, null);
     }
 
-    @SuppressWarnings("unchecked")
     public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec,
             ComputationPolicy defaultPolicy, RecordFilterChain defaultFilter) {
+        this(defaultConcurrency, defaultPartitions, defaultCodec, defaultPolicy, defaultFilter, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Settings(int defaultConcurrency, int defaultPartitions, Codec<Record> defaultCodec,
+            ComputationPolicy defaultPolicy, RecordFilterChain defaultFilter, boolean defaultExternal) {
         this.defaultConcurrency = defaultConcurrency;
         this.defaultPartitions = defaultPartitions;
         if (defaultCodec == null) {
@@ -98,6 +107,7 @@ public class Settings {
         } else {
             this.defaultFilter = defaultFilter;
         }
+        this.defaultExternal = defaultExternal;
     }
 
     /**
@@ -122,6 +132,17 @@ public class Settings {
 
     public int getPartitions(String streamName) {
         return partitions.getOrDefault(streamName, defaultPartitions);
+    }
+
+    // @since 11.1
+    public Settings setExternal(String streamName, boolean external) {
+        this.externals.put(streamName, external);
+        return this;
+    }
+
+    // @since 11.1
+    public boolean isExternal(String streamName) {
+        return externals.getOrDefault(streamName, defaultExternal);
     }
 
     /**

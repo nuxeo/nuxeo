@@ -40,13 +40,13 @@ public class MyStreamProcessor3 extends MyStreamProcessor {
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(() -> new ForwardComputation("myComputation"),
-                               Arrays.asList("i1:input3", "o1:output3", "i2:registerInput"))
+                               Arrays.asList("i1:input3", "i2:registerInput", "o1:output3", "o2:externalOutput"))
                        .build();
     }
 
     protected static class ForwardComputation extends AbstractComputation {
         public ForwardComputation(String name) {
-            super(name, 2, 1);
+            super(name, 2, 2);
         }
 
         @Override
