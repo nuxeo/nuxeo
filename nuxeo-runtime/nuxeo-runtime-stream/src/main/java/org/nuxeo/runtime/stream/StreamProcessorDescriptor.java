@@ -104,7 +104,7 @@ public class StreamProcessorDescriptor implements Descriptor {
         public String name;
 
         @XNode("@partitions")
-        public Integer partitions = DEFAULT_CONCURRENCY;
+        public Integer partitions;
 
         @XNode("@codec")
         public String codec;
