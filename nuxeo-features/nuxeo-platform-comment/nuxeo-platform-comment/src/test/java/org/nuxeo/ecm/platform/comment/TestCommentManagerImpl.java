@@ -49,6 +49,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
+ * @deprecated since 11.1, this is a class test for a deprecated comment manager implementation {@link CommentManagerImpl}
  * @since 10.3
  */
 @Features(PlatformFeature.class)
@@ -57,6 +58,7 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.relations.jena")
 @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/relation-comment-manager-override.xml")
+@Deprecated(since = "11.1")
 public class TestCommentManagerImpl extends AbstractTestCommentManager {
 
     public static final String QUERY_COMMENTS_AS_DOCUMENTS = "SELECT * FROM " + CommentsConstants.COMMENT_DOC_TYPE;
@@ -141,7 +143,7 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
         commentModel = session.createDocument(commentModel);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        Comments.commentToDocumentModel(comment, commentModel);
+        Comments.toDocumentModel(comment, commentModel);
         commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         // Check if Comments folder has been created in the given container

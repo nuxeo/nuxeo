@@ -24,11 +24,9 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
@@ -53,7 +51,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -198,18 +195,14 @@ public class PropertyCommentManager extends AbstractCommentManager {
 
         return CoreInstance.doPrivileged(session, s -> {
             String path = getCommentContainerPath(s, parentId);
-            DocumentModel commentModel = s.createDocumentModel(path, COMMENT_NAME, COMMENT_DOC_TYPE);
-            Comments.commentToDocumentModel(comment, commentModel);
-            if (comment instanceof ExternalEntity) {
-                commentModel.addFacet(EXTERNAL_ENTITY_FACET);
-                Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
-            }
+            DocumentModel commentModel = s.createDocumentModel(path, COMMENT_NAME, Comments.getDocumentType(comment));
+            Comments.toDocumentModel(comment, commentModel);
 
             // Compute the list of ancestor ids
             commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) computeAncestorIds(s, parentId));
             commentModel = s.createDocument(commentModel);
             notifyEvent(s, CommentEvents.COMMENT_ADDED, s.getDocument(docRef), commentModel);
-            return Comments.newComment(commentModel);
+            return Comments.toComment(commentModel);
         });
     }
 
@@ -232,7 +225,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                         + " does not have access to the comments of document " + documentRef.reference());
             }
 
-            return Comments.newComment(commentModel);
+            return Comments.toComment(commentModel);
         });
     }
 
@@ -258,7 +251,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                     props, documentId);
             List<DocumentModel> commentList = pageProvider.getCurrentPage();
             return commentList.stream()
-                              .map(Comments::newComment)
+                              .map(Comments::toComment)
                               .collect(collectingAndThen(toList(),
                                       list -> new PartialList<>(list, pageProvider.getResultsCount())));
         });
@@ -285,12 +278,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
             }
 
             DocumentModel commentModel = s.getDocument(commentRef);
-            Comments.commentToDocumentModel(comment, commentModel);
-            if (comment instanceof ExternalEntity) {
-                Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
-            }
+            Comments.toDocumentModel(comment, commentModel);
             s.saveDocument(commentModel);
-            return Comments.newComment(commentModel);
+            return Comments.toComment(commentModel);
         });
     }
 
@@ -335,10 +325,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
                     + " does not have access to the comments of document " + parentId);
         }
-        return Framework.doPrivileged(() -> COMMENT_DOC_TYPE.equals(commentModel.getType())
-                ? Comments.newComment(commentModel)
-                : Comments.newAnnotation(commentModel)
-        );
+        return Framework.doPrivileged(() -> Comments.toComment(commentModel));
     }
 
     @Override
@@ -354,12 +341,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
                     "The user " + principal.getName() + " can not edit comments of document " + comment.getParentId());
         }
         return CoreInstance.doPrivileged(session, s -> {
-            Comments.commentToDocumentModel(comment, commentModel);
-            if (comment instanceof ExternalEntity) {
-                Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
-            }
+            Comments.toDocumentModel(comment, commentModel);
             s.saveDocument(commentModel);
-            return Comments.newComment(commentModel);
+            return Comments.toComment(commentModel);
         });
     }
 
