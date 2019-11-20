@@ -570,8 +570,8 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
-            + "        nuxeoctl register [<username> [<project> [<type> <description>] [<pwd>]]]\n"
-            + "                Register an instance with Nuxeo Online Services.\n\n"
+            + "        nuxeoctl register [<username> [<project> [<type> <description>] [<token>]]]\n"
+            + "                Register an instance with Nuxeo Online Services. Token can be created at https://connect.nuxeo.com/nuxeo/site/connect/tokens?utm_source=client&utm_medium=nuxeoctl&utm_campaign=sso_migration\n\n"
             + "        nuxeoctl register-trial [<email> <company> <project> <description> [<pwd>]]\n"
             + "                Register a trial instance with Nuxeo Online Services.\n\n"
             + "        nuxeoctl register --clid <arg>\n"
@@ -1390,7 +1390,9 @@ public abstract class NuxeoLauncher {
      * @param confirmation
      *            if true, password is asked twice.
      * @since 8.3
+     * @deprecated since 11.1
      */
+    @Deprecated
     public char[] promptPassword(boolean confirmation) throws IOException, ConfigurationException {
         char[] pwd = promptPassword("Please enter your password: ");
         if (confirmation) {
@@ -1400,6 +1402,14 @@ public abstract class NuxeoLauncher {
             }
         }
         return pwd;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public char[] promptToken() throws IOException {
+        return promptPassword(
+                "Please enter your token (see https://connect.nuxeo.com/nuxeo/site/connect/tokens?utm_source=client&utm_medium=nuxeoctl&utm_campaign=sso_migration): ");
     }
 
     /**
@@ -1521,7 +1531,7 @@ public abstract class NuxeoLauncher {
      *
      * <pre>
      * {@code
-     * nuxeoctl register [<username> [<project> [<type> <description>] [pwd]]]
+     * nuxeoctl register [<username> [<project> [<type> <description>] [token]]]
      *
      * nuxeoctl register --clid <file>
      *
@@ -1576,8 +1586,8 @@ public abstract class NuxeoLauncher {
 
     protected boolean registerRemoteInstance() throws IOException, ConfigurationException, PackageException {
         // 0/1 param: [<username>]
-        // 2/3 params: <username> <project> [pwd]
-        // 4/5 params: <username> <project> <type> <description> [pwd]
+        // 2/3 params: <username> <project> [token]
+        // 4/5 params: <username> <project> <type> <description> [token]
         if (params.length > 5) {
             throw new ConfigurationException("Wrong number of arguments.");
         }
@@ -1587,14 +1597,14 @@ public abstract class NuxeoLauncher {
         } else {
             username = prompt("Username: ", s -> StringUtils.isNotBlank(s), "Username cannot be empty.");
         }
-        char[] password;
+        char[] token;
         if (params.length == 3 || params.length == 5) {
-            password = params[params.length - 1].toCharArray();
+            token = params[params.length - 1].toCharArray();
         } else {
-            password = promptPassword(false);
+            token = promptToken();
         }
         ConnectProject project;
-        List<ConnectProject> projs = getConnectRegistrationBroker().getAvailableProjects(username, password);
+        List<ConnectProject> projs = getConnectRegistrationBroker().getAvailableProjects(username, token);
         if (params.length > 1) {
             String projectName = params[1];
             project = getConnectRegistrationBroker().getProjectByName(projectName, projs);
@@ -1617,13 +1627,13 @@ public abstract class NuxeoLauncher {
             description = promptDescription();
         }
 
-        return registerRemoteInstance(username, password, project, type, description);
+        return registerRemoteInstance(username, token, project, type, description);
     }
 
-    protected boolean registerRemoteInstance(String username, char[] password, ConnectProject project,
+    protected boolean registerRemoteInstance(String username, char[] token, ConnectProject project,
             NuxeoClientInstanceType type, String description)
             throws IOException, ConfigurationException, PackageException {
-        getConnectRegistrationBroker().registerRemote(username, password, project.getUuid(), type, description);
+        getConnectRegistrationBroker().registerRemote(username, token, project.getUuid(), type, description);
         log.info(String.format("Server registered to %s for project %s\nType: %s\nDescription: %s", username, project,
                 type, description));
         return true;
