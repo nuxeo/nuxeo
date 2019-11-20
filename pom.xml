@@ -6083,6 +6083,20 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>1.5.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.sonatype.plugins</groupId>
+          <artifactId>nxrm3-maven-plugin</artifactId>
+          <version>1.0.2</version>
+          <extensions>true</extensions>
+          <configuration>
+            <nexusUrl>https://packages.nuxeo.com</nexusUrl>
+            <serverId>maven-internal-staging</serverId>
+            <repository>maven-internal-staging</repository>
+            <destinationRepository>maven-hotfix-releases</destinationRepository>
+            <tag>hotfix-build-${project.version}</tag>
+            <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
