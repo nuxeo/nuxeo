@@ -18,23 +18,28 @@
     </logConfig>
   </extension>
 
-  <!-- Configure the bulk service processor for this instance, we are using the configuration service -->
-  <!-- because the bulk processor is initialized manually after the Stream service has started the action processors -->
+  <!-- Configure the default scroller behavior -->
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <!-- Scroll computation -->
-    <property name="nuxeo.core.bulk.scroller.continueOnFailure">false</property>
-    <property name="nuxeo.core.bulk.scroller.concurrency">2</property>
     <property name="nuxeo.core.bulk.scroller.scroll.size">200</property>
     <property name="nuxeo.core.bulk.scroller.scroll.keepAliveSeconds">60</property>
     <property name="nuxeo.core.bulk.scroller.produceImmediate">false</property>
-    <!-- Status computation -->
-    <property name="nuxeo.core.bulk.status.continueOnFailure">false</property>
-    <property name="nuxeo.core.bulk.status.maxRetries">3</property>
-    <property name="nuxeo.core.bulk.status.delayMillis">1000</property>
-    <property name="nuxeo.core.bulk.status.maxDelayMillis">10000</property>
-    <property name="nuxeo.core.bulk.status.concurrency">1</property>
   </extension>
 
+  <!-- Bulk service processor -->
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="bulkServiceProcessor" class="org.nuxeo.ecm.core.bulk.BulkServiceProcessor" logConfig="bulk"
+      defaultCodec="avro" defaultConcurrency="1" defaultPartitions="1" defaultExternal="true" registerOnly="true">
+      <stream name="command" external="false" />
+      <stream name="status" external="false" />
+      <stream name="done" external="false" />
+      <policy name="scroller" maxRetries="0" delay="1s" maxDelay="60s"
+        continueOnFailure="${nuxeo.core.bulk.scroller.continueOnFailure:=false}" />
+      <policy name="status" maxRetries="20" delay="1s" maxDelay="60s"
+        continueOnFailure="${nuxeo.core.bulk.status.continueOnFailure:=false}" />
+      <computation name="scroller" concurrency="${nuxeo.core.bulk.scroller.concurrency:=2}" />
+      <computation name="status" concurrency="${nuxeo.core.bulk.status.concurrency:=1}" />
+    </streamProcessor>
+  </extension>
 
   <!-- ======================================================================================= -->
   <!-- Actions configuration -->
