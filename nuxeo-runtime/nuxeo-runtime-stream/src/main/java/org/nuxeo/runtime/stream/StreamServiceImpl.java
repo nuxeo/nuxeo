@@ -187,7 +187,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         descriptor.computations.forEach(comp -> settings.setConcurrency(comp.name, comp.concurrency));
         descriptor.policies.forEach(policy -> settings.setPolicy(policy.name, descriptor.getPolicy(policy.name)));
         for (StreamProcessorDescriptor.StreamDescriptor streamDescriptor : descriptor.streams) {
-            settings.setPartitions(streamDescriptor.name, streamDescriptor.partitions);
+            settings.setPartitions(streamDescriptor.name,
+                    streamDescriptor.partitions != null ? streamDescriptor.partitions : descriptor.defaultPartitions);
             if (streamDescriptor.codec != null) {
                 settings.setCodec(streamDescriptor.name, codecService.getCodec(streamDescriptor.codec, Record.class));
             }
