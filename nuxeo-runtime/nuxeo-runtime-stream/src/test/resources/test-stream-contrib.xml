@@ -55,6 +55,7 @@
       </stream>
       <stream name="output" codec="avroJson" />
       <option name="myOption">value</option>
+      <stream name="s1" />
     </streamProcessor>
 
     <streamProcessor name="disabledStreamProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor2"
@@ -62,6 +63,6 @@
       <stream name="input2" partitions="1" codec="avro" />
     </streamProcessor>
 
-  </extension>
+ </extension>
 
 </component>

@@ -20,6 +20,7 @@ package org.nuxeo.runtime.stream.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.time.Duration;
@@ -151,6 +152,15 @@ public class TestStreamService {
         } catch (IllegalArgumentException e) {
             // expected because processor is disabled so its input streams are not initialized
         }
+    }
+
+    @Test
+    public void testDefaultPartitions() throws Exception {
+        @SuppressWarnings("resource")
+        LogManager manager = service.getLogManager("default");
+        String streamName = "s1";
+        assertTrue(manager.exists(streamName));
+        assertEquals(2, manager.size(streamName));
     }
 
 }
