@@ -162,6 +162,15 @@ public class TestStreamService {
     }
 
     @Test
+    public void testDefaultPartitions() throws Exception {
+        @SuppressWarnings("resource")
+        LogManager manager = service.getLogManager("default");
+        String streamName = "s1";
+        assertTrue(manager.exists(streamName));
+        assertEquals(2, manager.size(streamName));
+    }
+
+    @Test
     public void testProbe() throws Exception {
         @SuppressWarnings("resource")
         StreamManager streamManager = service.getStreamManager("default");
