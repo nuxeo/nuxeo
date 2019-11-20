@@ -81,19 +81,17 @@ public abstract class AbstractTestAnnotationService {
 
     @Before
     public void setup() {
-
         session = coreFeature.openCoreSession();
         DocumentModel domain = session.createDocumentModel("/", "testDomain", "Domain");
         session.createDocument(domain);
         session.close();
 
-        // open a session as a regular user
+        // Open a session as a regular user
         session = coreFeature.openCoreSession("jdoe");
-        // give permission to him
+        // Give permission to him
         ACLImpl acl = new ACLImpl();
-        acl.add(new ACE("jdoe", SecurityConstants.READ));
-        acl.add(new ACE("jdoe", SecurityConstants.WRITE));
-        acl.add(new ACE("jdoe", SecurityConstants.WRITE_SECURITY));
+        acl.addAll(List.of(new ACE("jdoe", SecurityConstants.READ_WRITE), //
+                new ACE("jdoe", SecurityConstants.WRITE_SECURITY)));
         ACPImpl acp = new ACPImpl();
         acp.addACL(acl);
         coreFeature.getCoreSession().setACP(new PathRef("/"), acp, true);
@@ -106,7 +104,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testCreateAnnotation() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -141,7 +138,7 @@ public abstract class AbstractTestAnnotationService {
         assertEquals(origin, ((ExternalEntity) annotation).getOrigin());
 
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
-            annotation = annotationService.createAnnotation(bobSession, annotation);
+            annotationService.createAnnotation(bobSession, annotation);
             fail("bob should not be able to create annotation");
         } catch (CommentSecurityException e) {
             assertEquals("The user bob can not create annotations on document " + docToAnnotate.getId(),
@@ -152,7 +149,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testGetAnnotation() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -190,7 +186,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testUpdateAnnotation() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -229,7 +224,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testDeleteAnnotation() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -264,7 +258,8 @@ public abstract class AbstractTestAnnotationService {
             annotationService.deleteAnnotation(bobSession, annotation.getId());
             fail("bob should not be able to delete annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob cannot delete comments of the document " + docToAnnotate.getId(), e.getMessage());
+            assertEquals("The user bob cannot delete comments of the document " + docToAnnotate.getId(),
+                    e.getMessage());
         }
 
         annotationService.deleteAnnotation(session, annotation.getId());
@@ -274,7 +269,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testGetAnnotationsForDocument() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -329,7 +323,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testGetExternalAnnotation() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -355,7 +348,7 @@ public abstract class AbstractTestAnnotationService {
         session.save();
 
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(docToAnnotate.getRepositoryName(), "bob")) {
-            annotation = annotationService.getExternalAnnotation(bobSession, entityId);
+            annotationService.getExternalAnnotation(bobSession, entityId);
             fail("bob should not be able to get annotation");
         } catch (CommentSecurityException e) {
             assertEquals("The user bob does not have access to the comments of document " + docToAnnotate.getId(),
@@ -365,7 +358,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testUpdateExternalAnnotation() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -414,7 +406,6 @@ public abstract class AbstractTestAnnotationService {
 
     @Test
     public void testDeleteExternalAnnotation() {
-
         DocumentModel docToAnnotate = session.createDocumentModel("/testDomain", "testDoc", "File");
         docToAnnotate = session.createDocument(docToAnnotate);
 
@@ -451,12 +442,12 @@ public abstract class AbstractTestAnnotationService {
             annotationService.deleteAnnotation(bobSession, annotation.getId());
             fail("bob should not be able to delete annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob cannot delete comments of the document " + docToAnnotate.getId(), e.getMessage());
+            assertEquals("The user bob cannot delete comments of the document " + docToAnnotate.getId(),
+                    e.getMessage());
         }
 
         annotationService.deleteExternalAnnotation(session, entityId);
         assertFalse(session.exists(new IdRef(annotation.getId())));
-
     }
 
     @Test
