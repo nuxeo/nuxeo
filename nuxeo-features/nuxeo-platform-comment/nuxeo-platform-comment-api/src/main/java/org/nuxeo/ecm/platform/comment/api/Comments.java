@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
@@ -27,6 +28,7 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
@@ -120,5 +122,54 @@ public class Comments {
         documentModelToAnnotation(annotationModel, annotation);
         documentModelToExternalEntity(annotationModel, (ExternalEntity) annotation);
         return annotation;
+    }
+
+    /**
+     * @return the comment {@link #newComment} or the annotation {@link #newAnnotation} depending on the document model
+     *         type
+     * @throws IllegalArgumentException if the doc model type is unknown
+     * @since 11.1
+     **/
+    public static Comment toComment(DocumentModel documentModel) {
+        String docType = documentModel.getType();
+        switch (docType) {
+        case COMMENT_DOC_TYPE:
+            return newComment(documentModel);
+        case ANNOTATION_DOC_TYPE:
+            return newAnnotation(documentModel);
+        default:
+            throw new IllegalArgumentException(String.format("Undefined behaviour for doc type: %s", docType));
+        }
+    }
+
+    /**
+     * Builds the document model from {@code comment} depending on his class type {@link #commentToDocumentModel},
+     * {@link #annotationToDocumentModel}.
+     * 
+     * @since 11.1
+     **/
+    public static void toDocumentModel(Comment comment, DocumentModel documentModel) {
+        if (comment instanceof ExternalEntity) {
+            documentModel.addFacet(EXTERNAL_ENTITY_FACET);
+            externalEntityToDocumentModel((ExternalEntity) comment, documentModel);
+        }
+
+        if (comment instanceof Annotation) {
+            annotationToDocumentModel((Annotation) comment, documentModel);
+        } else {
+            commentToDocumentModel(comment, documentModel);
+        }
+    }
+
+    /**
+     * @return the comment document type depending on the given {@code comment}
+     * @since 11.1
+     **/
+    public static String getDocumentType(Comment comment) {
+        if (comment instanceof Annotation) {
+            return ANNOTATION_DOC_TYPE;
+        }
+
+        return COMMENT_DOC_TYPE;
     }
 }

@@ -24,7 +24,6 @@ import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -43,10 +42,8 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
-import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -67,32 +64,13 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
     @Override
     public Annotation createAnnotation(CoreSession session, Annotation annotation) throws CommentSecurityException {
-        String parentId = annotation.getParentId();
-        if (!session.hasPermission(new IdRef(parentId), SecurityConstants.READ)) {
-            throw new CommentSecurityException("The user " + session.getPrincipal().getName()
-                    + " can not create annotations on document " + parentId);
-        }
-        return CoreInstance.doPrivileged(session, s -> {
-            // Create base comment in the annotation
-            DocumentModel docToAnnotate = s.getDocument(new IdRef(annotation.getParentId()));
-            DocumentModel annotationModel = s.createDocumentModel(ANNOTATION_DOC_TYPE);
-            Comments.annotationToDocumentModel(annotation, annotationModel);
-            if (annotation instanceof ExternalEntity) {
-                annotationModel.addFacet(EXTERNAL_ENTITY_FACET);
-                Comments.externalEntityToDocumentModel((ExternalEntity) annotation, annotationModel);
-            }
-            annotationModel = Framework.getService(CommentManager.class).createComment(docToAnnotate, annotationModel);
-            return Comments.newAnnotation(annotationModel);
-        });
+        return (Annotation) Framework.getService(CommentManager.class).createComment(session, annotation);
     }
 
     @Override
     public Annotation getAnnotation(CoreSession s, String annotationId)
             throws CommentNotFoundException, CommentSecurityException {
-        Comment comment = Framework.getService(CommentManager.class).getComment(s, annotationId);
-        return CoreInstance.doPrivileged(s, session -> {
-            return Comments.newAnnotation(session.getDocument(new IdRef(comment.getId())));
-        });
+        return (Annotation) Framework.getService(CommentManager.class).getComment(s, annotationId);
     }
 
     @Override

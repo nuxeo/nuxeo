@@ -32,14 +32,12 @@ import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_RESOURCES;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager.COMMENT_NAME;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_NAME;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
@@ -61,12 +59,10 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.Comments;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -106,7 +102,7 @@ public class TreeCommentManager extends AbstractCommentManager {
         checkReadCommentPermissions(s, new IdRef(commentId));
         return CoreInstance.doPrivileged(s, session -> {
             DocumentModel commentModel = getCommentDocumentModel(s, new IdRef(commentId));
-            return Comments.newComment(commentModel);
+            return Comments.toComment(commentModel);
         });
     }
 
@@ -146,14 +142,12 @@ public class TreeCommentManager extends AbstractCommentManager {
         DocumentModel commentModel = getExternalCommentModel(session, entityId);
         // Check the read permissions using the given session
         checkReadCommentPermissions(session, commentModel.getRef());
-        return Framework.doPrivileged(
-                () -> COMMENT_DOC_TYPE.equals(commentModel.getType()) ? Comments.newComment(commentModel)
-                        : Comments.newAnnotation(commentModel));
+        return Framework.doPrivileged(() -> Comments.toComment(commentModel));
     }
 
     @Override
     public Comment createComment(CoreSession s, Comment comment) {
-        checkReadCommentPermissions(s, new IdRef(comment.getParentId()));
+        checkCreateCommentPermissions(s, new IdRef(comment.getParentId()));
 
         // Initiate Creation Date if it is not done yet
         if (comment.getCreationDate() == null) {
@@ -165,20 +159,16 @@ public class TreeCommentManager extends AbstractCommentManager {
             // Get the location where to comment will be stored
             String path = getLocationOfCommentCreation(session, documentModel);
 
-            DocumentModel commentDocModel = session.createDocumentModel(path, COMMENT_NAME, COMMENT_DOC_TYPE);
-            Comments.commentToDocumentModel(comment, commentDocModel);
+            DocumentModel commentDocModel = session.createDocumentModel(path, COMMENT_NAME,
+                    Comments.getDocumentType(comment));
+            Comments.toDocumentModel(comment, commentDocModel);
 
             commentDocModel.setPropertyValue(COMMENT_ANCESTOR_IDS,
                     (Serializable) computeAncestorIds(session, comment.getParentId()));
 
-            if (comment instanceof ExternalEntity) {
-                commentDocModel.addFacet(EXTERNAL_ENTITY_FACET);
-                Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentDocModel);
-            }
-
             // Create the comment document model
             commentDocModel = session.createDocument(commentDocModel);
-            Comment createdComment = Comments.newComment(commentDocModel);
+            Comment createdComment = Comments.toComment(commentDocModel);
 
             // Manage the related text of the top level document
             manageRelatedTextOfTopLevelDocument(session, createdComment);
@@ -210,7 +200,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             commentModelToCreate = session.createDocument(commentModelToCreate);
 
             // Manage the related text of the top level document
-            manageRelatedTextOfTopLevelDocument(session, Comments.newComment(commentModelToCreate));
+            manageRelatedTextOfTopLevelDocument(session, Comments.toComment(commentModelToCreate));
 
             commentModelToCreate.detach(true);
             notifyEvent(session, CommentEvents.COMMENT_ADDED, documentModel, commentModelToCreate);
@@ -251,25 +241,16 @@ public class TreeCommentManager extends AbstractCommentManager {
                 comment.setModificationDate(Instant.now());
             }
 
-            if (comment instanceof Annotation) {
-                Comments.annotationToDocumentModel((Annotation) comment, commentDocumentModel);
-            } else {
-                Comments.commentToDocumentModel(comment, commentDocumentModel);
-            }
-
-            if (comment instanceof ExternalEntity) {
-                Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentDocumentModel);
-            }
+            Comments.toDocumentModel(comment, commentDocumentModel);
 
             // Create the comment document model
             commentDocumentModel = session.saveDocument(commentDocumentModel);
+            Comment updatedComment = Comments.toComment(commentDocumentModel);
 
             // Manage the related text of the top level document
-            manageRelatedTextOfTopLevelDocument(session, Comments.newComment(commentDocumentModel));
+            manageRelatedTextOfTopLevelDocument(session, updatedComment);
 
-            return comment instanceof Annotation //
-                    ? Comments.newAnnotation(commentDocumentModel) //
-                    : Comments.newComment(commentDocumentModel);
+            return updatedComment;
         });
     }
 
@@ -281,15 +262,14 @@ public class TreeCommentManager extends AbstractCommentManager {
         return CoreInstance.doPrivileged(s, session -> {
             // Get the external comment doc model
             DocumentModel commentDocModel = getExternalCommentModel(session, entityId);
-            Comments.commentToDocumentModel(comment, commentDocModel);
-            if (comment instanceof ExternalEntity) {
-                Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentDocModel);
-            }
+            Comments.toDocumentModel(comment, commentDocModel);
             commentDocModel = session.saveDocument(commentDocModel);
+            Comment updatedComment = Comments.toComment(commentDocModel);
 
             // Manage the related text of the top level document
-            manageRelatedTextOfTopLevelDocument(session, Comments.newComment(commentDocModel));
-            return Comments.newComment(commentDocModel);
+            manageRelatedTextOfTopLevelDocument(session, updatedComment);
+
+            return updatedComment;
         });
     }
 
