@@ -293,7 +293,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to create comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+            assertEquals(String.format("The user bob can not create comments on document %s", doc.getId()),
                     cse.getMessage());
         }
     }

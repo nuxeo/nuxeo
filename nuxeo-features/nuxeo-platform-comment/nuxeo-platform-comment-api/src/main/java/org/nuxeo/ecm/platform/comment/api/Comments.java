@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
@@ -27,6 +28,7 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
@@ -49,6 +51,10 @@ public class Comments {
         // no instance allowed
     }
 
+    /**
+     * @deprecated since 11.1 because of public access, use {@link #toDocumentModel(Comment, DocumentModel)} instead.
+     */
+    @Deprecated(since = "11.1")
     public static void commentToDocumentModel(Comment comment, DocumentModel documentModel) {
         // Do not set ancestor ids as it is computed at document creation
         documentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
@@ -64,17 +70,29 @@ public class Comments {
         }
     }
 
+    /**
+     * @deprecated since 11.1 because of public access, use {@link #toDocumentModel(Comment, DocumentModel)} instead.
+     */
+    @Deprecated(since = "11.1")
     public static void annotationToDocumentModel(Annotation annotation, DocumentModel documentModel) {
         commentToDocumentModel(annotation, documentModel);
         documentModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, annotation.getXpath());
     }
 
+    /**
+     * @deprecated since 11.1 because of public access.
+     */
+    @Deprecated(since = "11.1")
     public static void externalEntityToDocumentModel(ExternalEntity entity, DocumentModel documentModel) {
         documentModel.setPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY, entity.getEntityId());
         documentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY, entity.getOrigin());
         documentModel.setPropertyValue(EXTERNAL_ENTITY_PROPERTY, entity.getEntity());
     }
 
+    /**
+     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     */
+    @Deprecated(since = "11.1")
     @SuppressWarnings("unchecked")
     public static void documentModelToComment(DocumentModel documentModel, Comment comment) {
         comment.setId(documentModel.getId());
@@ -95,11 +113,19 @@ public class Comments {
         }
     }
 
+    /**
+     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     */
+    @Deprecated(since = "11.1")
     public static void documentModelToAnnotation(DocumentModel documentModel, Annotation annotation) {
         documentModelToComment(documentModel, annotation);
         annotation.setXpath((String) documentModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY));
     }
 
+    /**
+     * @deprecated since 11.1 because of public access.
+     */
+    @Deprecated(since = "11.1")
     public static void documentModelToExternalEntity(DocumentModel documentModel, ExternalEntity entity) {
         if (documentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
             entity.setEntityId((String) documentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
@@ -108,6 +134,10 @@ public class Comments {
         }
     }
 
+    /**
+     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     */
+    @Deprecated(since = "11.1")
     public static Comment newComment(DocumentModel commentModel) {
         Comment comment = new CommentImpl();
         documentModelToComment(commentModel, comment);
@@ -115,10 +145,63 @@ public class Comments {
         return comment;
     }
 
+    /**
+     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     */
+    @Deprecated(since = "11.1")
     public static Annotation newAnnotation(DocumentModel annotationModel) {
         Annotation annotation = new AnnotationImpl();
         documentModelToAnnotation(annotationModel, annotation);
         documentModelToExternalEntity(annotationModel, (ExternalEntity) annotation);
         return annotation;
+    }
+
+    /**
+     * @return the comment {@link #newComment} or the annotation {@link #newAnnotation} depending on the document model
+     *         type
+     * @throws IllegalArgumentException if the doc model type is unknown
+     * @since 11.1
+     **/
+    public static Comment toComment(DocumentModel documentModel) {
+        String docType = documentModel.getType();
+        switch (docType) {
+        case COMMENT_DOC_TYPE:
+            return newComment(documentModel);
+        case ANNOTATION_DOC_TYPE:
+            return newAnnotation(documentModel);
+        default:
+            throw new IllegalArgumentException(String.format("Undefined behaviour for doc type: %s", docType));
+        }
+    }
+
+    /**
+     * Builds the document model from {@code comment} depending on his class type {@link #commentToDocumentModel},
+     * {@link #annotationToDocumentModel}.
+     * 
+     * @since 11.1
+     **/
+    public static void toDocumentModel(Comment comment, DocumentModel documentModel) {
+        if (comment instanceof ExternalEntity) {
+            documentModel.addFacet(EXTERNAL_ENTITY_FACET);
+            externalEntityToDocumentModel((ExternalEntity) comment, documentModel);
+        }
+
+        if (comment instanceof Annotation) {
+            annotationToDocumentModel((Annotation) comment, documentModel);
+        } else {
+            commentToDocumentModel(comment, documentModel);
+        }
+    }
+
+    /**
+     * @return the comment document type depending on the given {@code comment}
+     * @since 11.1
+     **/
+    public static String getDocumentType(Comment comment) {
+        if (comment instanceof Annotation) {
+            return ANNOTATION_DOC_TYPE;
+        }
+
+        return COMMENT_DOC_TYPE;
     }
 }

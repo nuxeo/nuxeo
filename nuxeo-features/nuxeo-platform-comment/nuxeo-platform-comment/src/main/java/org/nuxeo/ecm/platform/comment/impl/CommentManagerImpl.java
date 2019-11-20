@@ -412,14 +412,10 @@ public class CommentManagerImpl extends AbstractCommentManager {
         DocumentModel commentModel = session.createDocumentModel(COMMENT_DOC_TYPE);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
 
-        Comments.commentToDocumentModel(comment, commentModel);
-        if (comment instanceof ExternalEntity) {
-            commentModel.addFacet(EXTERNAL_ENTITY_FACET);
-            Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
-        }
+        Comments.toDocumentModel(comment, commentModel);
 
         DocumentModel createdCommentModel = createComment(docToComment, commentModel);
-        return Comments.newComment(createdCommentModel);
+        return Comments.toComment(createdCommentModel);
     }
 
     @Override
@@ -430,7 +426,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
             throw new CommentNotFoundException("The document " + commentId + " does not exist.");
         }
         DocumentModel commentModel = session.getDocument(commentRef);
-        return Comments.newComment(commentModel);
+        return Comments.toComment(commentModel);
     }
 
     @Override
@@ -450,7 +446,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
                            .sorted(Comparator.comparing(doc -> (Calendar) doc.getPropertyValue("dc:created")))
                            .skip(offset)
                            .limit(maxSize)
-                           .map(Comments::newComment)
+                           .map(Comments::toComment)
                            .collect(collectingAndThen(toList(), list -> new PartialList<>(list, comments.size())));
         });
     }
