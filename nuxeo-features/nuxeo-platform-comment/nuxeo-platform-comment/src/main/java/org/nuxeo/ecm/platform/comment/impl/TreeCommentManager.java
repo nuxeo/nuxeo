@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
-import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
@@ -136,10 +135,10 @@ public class TreeCommentManager extends AbstractCommentManager {
         DocumentModel commentModel = getExternalCommentModel(session, entityId);
         // Check the read permissions using the given session
         checkReadCommentPermissions(session, commentModel.getRef());
-        return Framework.doPrivileged(() -> COMMENT_DOC_TYPE.equals(commentModel.getType())
-               ? Comments.newComment(commentModel)
-               : Comments.newAnnotation(commentModel)
-        );
+
+        return Framework.doPrivileged(() -> COMMENT_DOC_TYPE.equals(commentModel.getType()) //
+                ? Comments.newComment(commentModel) //
+                : Comments.newAnnotation(commentModel));
     }
 
     @Override
@@ -285,8 +284,8 @@ public class TreeCommentManager extends AbstractCommentManager {
         // Get or create the comments folder
         DocumentModel commentsFolder = getOrCreateCommentsFolder(session, documentModel);
 
-        // If this is the first comment of the thread then it will be created under the 'Comments' folder, otherwise (we
-        // reply on a given comment) it will be under his comment
+        // If this is the first comment of the thread then it will be created under the 'Comments' folder, otherwise
+        // (we reply on a given comment) it will be under his comment
         return documentModel.hasSchema(COMMENT_SCHEMA) ? documentModel.getPathAsString()
                 : commentsFolder.getPathAsString();
     }
@@ -428,8 +427,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             if (!(principal.isAdministrator() //
                     || author.equals(principal.getName()) //
                     || session.hasPermission(principal, ancestorRef, EVERYTHING))) {
-                throw new CommentSecurityException(String.format("The user %s cannot delete comments of the document %s",
-                        principal.getName(), ancestorRef));
+                throw new CommentSecurityException(String.format(
+                        "The user %s cannot delete comments of the document %s", principal.getName(), ancestorRef));
             }
             DocumentModel parent = session.getDocument(commentDocModel.getParentRef());
             commentDocModel.detach(true);
