@@ -164,51 +164,6 @@ pipeline {
         }
       }
     }
-    stage('Run "dev" unit tests') {
-      steps {
-        setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Install Redis
-          ----------------------------------------"""
-          sh """
-            # initialize Helm without installing Tiller
-            helm init --client-only --service-account ${SERVICE_ACCOUNT}
-
-            # add local chart repository
-            helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
-
-            # install the nuxeo-redis chart into a dedicated namespace that will be cleaned up afterwards
-            # use 'jx step helm install' to avoid 'Error: incompatible versions' when running 'helm install'
-            jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO_REDIS} \
-              --name ${HELM_RELEASE_REDIS} \
-              --namespace ${NAMESPACE_REDIS}
-          """
-
-          echo """
-          ----------------------------------------
-          Run "dev" unit tests
-          ----------------------------------------"""
-          sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
-        }
-      }
-      post {
-        always {
-          junit testResults: '**/target/surefire-reports/*.xml'
-          container('maven') {
-            // clean up the redis namespace
-            sh "kubectl delete namespace ${NAMESPACE_REDIS} --ignore-not-found=true"
-          }
-        }
-        success {
-          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'FAILURE')
-        }
-      }
-    }
     stage('Package') {
       steps {
         setGitHubBuildStatus('platform/package', 'Package', 'PENDING')
@@ -230,33 +185,6 @@ pipeline {
         }
       }
     }
-    stage('Run "dev" functional tests') {
-      steps {
-        setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Run "dev" functional tests
-          ----------------------------------------"""
-          script {
-            try {
-              runFunctionalTests('nuxeo-distribution/nuxeo-server-tests')
-              runFunctionalTests('nuxeo-distribution/nuxeo-server-hotreload-tests')
-              runFunctionalTests('nuxeo-distribution/nuxeo-server-gatling-tests')
-              runFunctionalTests('ftests')
-              setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
-            } catch (err) {
-              setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
-            }
-          }
-        }
-      }
-      post {
-        always {
-          junit testResults: '**/target/failsafe-reports/*.xml'
-        }
-      }
-    }
     stage('Deploy Maven artifacts') {
       steps {
         setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
@@ -274,6 +202,27 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'FAILURE')
+        }
+      }
+    }
+    stage('JSF pipeline') {
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Build JSF pipeline
+          ----------------------------------------
+          Parameters:
+            NUXEO_BRANCH: ${CHANGE_BRANCH}
+            NUXEO_COMMIT_SHA: ${GIT_COMMIT}
+            NUXEO_VERSION: ${VERSION}
+          """
+          build job: "/nuxeo/nuxeo-jsf-ui-status/${CHANGE_TARGET}",
+            parameters: [
+              string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
+              string(name: 'NUXEO_COMMIT_SHA', value: "${GIT_COMMIT}"),
+              string(name: 'NUXEO_VERSION', value: "${VERSION}"),
+            ], propagate: false, wait: false
         }
       }
     }
@@ -372,24 +321,75 @@ pipeline {
         }
       }
     }
-    stage('JSF pipeline') {
+    stage('Run "dev" unit tests') {
       steps {
+        setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
-          Build JSF pipeline
-          ----------------------------------------
-          Parameters:
-            NUXEO_BRANCH: ${CHANGE_BRANCH}
-            NUXEO_COMMIT_SHA: ${GIT_COMMIT}
-            NUXEO_VERSION: ${VERSION}
+          Install Redis
+          ----------------------------------------"""
+          sh """
+            # initialize Helm without installing Tiller
+            helm init --client-only --service-account ${SERVICE_ACCOUNT}
+
+            # add local chart repository
+            helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
+
+            # install the nuxeo-redis chart into a dedicated namespace that will be cleaned up afterwards
+            # use 'jx step helm install' to avoid 'Error: incompatible versions' when running 'helm install'
+            jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO_REDIS} \
+              --name ${HELM_RELEASE_REDIS} \
+              --namespace ${NAMESPACE_REDIS}
           """
-          build job: "/nuxeo/nuxeo-jsf-ui-status/${CHANGE_TARGET}",
-            parameters: [
-              string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
-              string(name: 'NUXEO_COMMIT_SHA', value: "${GIT_COMMIT}"),
-              string(name: 'NUXEO_VERSION', value: "${VERSION}"),
-            ], propagate: false, wait: false
+
+          echo """
+          ----------------------------------------
+          Run "dev" unit tests
+          ----------------------------------------"""
+          sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
+        }
+      }
+      post {
+        always {
+          junit testResults: '**/target/surefire-reports/*.xml'
+          container('maven') {
+            // clean up the redis namespace
+            sh "kubectl delete namespace ${NAMESPACE_REDIS} --ignore-not-found=true"
+          }
+        }
+        success {
+          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'FAILURE')
+        }
+      }
+    }
+    stage('Run "dev" functional tests') {
+      steps {
+        setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Run "dev" functional tests
+          ----------------------------------------"""
+          script {
+            try {
+              runFunctionalTests('nuxeo-distribution/nuxeo-server-tests')
+              runFunctionalTests('nuxeo-distribution/nuxeo-server-hotreload-tests')
+              runFunctionalTests('nuxeo-distribution/nuxeo-server-gatling-tests')
+              runFunctionalTests('ftests')
+              setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
+            } catch (err) {
+              setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
+            }
+          }
+        }
+      }
+      post {
+        always {
+          junit testResults: '**/target/failsafe-reports/*.xml'
         }
       }
     }
