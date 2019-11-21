@@ -571,7 +571,7 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
             + "        nuxeoctl register [<username> [<project> [<type> <description>] [<token>]]]\n"
-            + "                Register an instance with Nuxeo Online Services. Token can be created at https://connect.nuxeo.com/nuxeo/site/connect/tokens?utm_source=client&utm_medium=nuxeoctl&utm_campaign=sso_migration\n\n"
+            + "                Register an instance with Nuxeo Online Services. Token can be created at https://connect.nuxeo.com/nuxeo/site/connect/tokens\n\n"
             + "        nuxeoctl register-trial [<email> <company> <project> <description> [<pwd>]]\n"
             + "                Register a trial instance with Nuxeo Online Services.\n\n"
             + "        nuxeoctl register --clid <arg>\n"
@@ -1408,8 +1408,7 @@ public abstract class NuxeoLauncher {
      * @since 11.1
      */
     public char[] promptToken() throws IOException {
-        return promptPassword(
-                "Please enter your token (see https://connect.nuxeo.com/nuxeo/site/connect/tokens?utm_source=client&utm_medium=nuxeoctl&utm_campaign=sso_migration): ");
+        return promptPassword("Please enter your token: ");
     }
 
     /**
