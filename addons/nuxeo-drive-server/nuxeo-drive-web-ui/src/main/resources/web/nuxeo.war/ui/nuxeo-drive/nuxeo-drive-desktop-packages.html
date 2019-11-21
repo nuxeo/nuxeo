@@ -125,26 +125,27 @@ Example:
           var prefix = 'nuxeo-drive';
           var baseUrl = 'https://community.nuxeo.com/static/drive-updates';
 
-          var name = prefix + '.dmg';
+          var name = prefix + '-x86_64.AppImage';
           pkgs.push({
             name: name,
-            platform: 'osx',
+            platform: 'Linux',
+            url: baseUrl + '/' + name
+          });
+
+          name = prefix + '.dmg';
+          pkgs.push({
+            name: name,
+            platform: 'macOS',
             url: baseUrl + '/' + name
           });
 
           name = prefix + '.exe';
           pkgs.push({
             name: name,
-            platform: 'windows',
+            platform: 'Windows',
             url: baseUrl + '/' + name
           });
 
-          pkgs.push({
-            name: window.nuxeo.I18n.translate('driveDesktopPackages.ubuntu.name',
-                                              'Read the documentation about the Linux client'),
-            platform: 'ubuntu',
-            url: 'https://github.com/nuxeo/nuxeo-drive#debian-based-distributions-and-other-gnulinux-variants-client'
-          });
           return pkgs;
         }
       });
