@@ -102,7 +102,7 @@ public class ConnectRegistrationBroker {
                 new String(password));
         if (studioProjects.isEmpty()) {
             throw new ConfigurationException(
-                    "Wrong login or token. Please make sure you use a token created at https://connect.nuxeo.com/nuxeo/site/connect/tokens?utm_source=client&utm_medium=nuxeoctl&utm_campaign=sso_migration");
+                    "Wrong login or token. Please make sure you use a token created at https://connect.nuxeo.com/nuxeo/site/connect/tokens");
         }
         return studioProjects;
     }
