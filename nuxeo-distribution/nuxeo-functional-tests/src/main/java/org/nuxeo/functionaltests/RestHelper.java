@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpStatus;
 import org.nuxeo.client.NuxeoClient;
+import org.nuxeo.client.NuxeoVersion;
 import org.nuxeo.client.objects.Document;
 import org.nuxeo.client.objects.Documents;
 import org.nuxeo.client.objects.acl.ACE;
@@ -50,6 +51,7 @@ import org.nuxeo.client.objects.user.Group;
 import org.nuxeo.client.objects.user.User;
 import org.nuxeo.client.objects.workflow.Workflow;
 import org.nuxeo.client.objects.workflow.Workflows;
+import org.nuxeo.client.spi.NuxeoClientException;
 import org.nuxeo.client.spi.NuxeoClientRemoteException;
 
 import okhttp3.Response;
@@ -59,13 +61,13 @@ import okhttp3.Response;
  */
 public class RestHelper {
 
-    private static final NuxeoClient CLIENT = new NuxeoClient.Builder().url(NUXEO_URL)
-                                                                       .authentication(ADMINISTRATOR, ADMINISTRATOR)
-                                                                       // by default timeout is 10s, hot reload needs a
-                                                                       // bit more
-                                                                       .timeout(120)
-                                                                       .schemas("*")
-                                                                       .connect();
+    // by default timeout is 10s, hot reload needs a bit more
+    private static final NuxeoClient CLIENT = new NuxeoClientForNuxeo.BuilderForNuxeo().url(NUXEO_URL)
+                                                                                       .authentication(ADMINISTRATOR,
+                                                                                               ADMINISTRATOR)
+                                                                                       .timeout(120)
+                                                                                       .schemas("*")
+                                                                                       .connect();
 
     private static final String USER_WORKSPACE_PATH_FORMAT = "/default-domain/UserWorkspaces/%s";
 
@@ -578,6 +580,54 @@ public class RestHelper {
     public static Map<String, Object> fetchDocumentProperties(String docId) {
         Document document = CLIENT.repository().fetchDocumentById(docId);
         return document.getProperties();
+    }
+
+    /**
+     * Nuxeo client that returns a hardcoded version when calling {@link NuxeoClient#getServerVersion()}.
+     * <p>
+     * This is needed when building a pull request since the distribution version is updated with a "PR-" suffix that
+     * wouldn't match the server version pattern expected by the {@link NuxeoVersion} parser.
+     *
+     * @since 11.1
+     */
+    public static class NuxeoClientForNuxeo extends NuxeoClient {
+
+        protected NuxeoClientForNuxeo(Builder builder) {
+            super(builder);
+        }
+
+        /**
+         * Returns a hard coded version.
+         * <p>
+         * This is enough for now. Later on, we will get rid of the Java client for the Nuxeo functional tests.
+         */
+        @Override
+        public NuxeoVersion getServerVersion() {
+            if (serverVersion == null) {
+                serverVersion = NuxeoVersion.parse("11.0");
+            }
+            return serverVersion;
+        }
+
+        public static class BuilderForNuxeo extends Builder {
+
+            /**
+             * Duplicated from {@link NuxeoClient.Builder#connect()}.
+             */
+            @Override
+            public NuxeoClient connect() {
+                // check authentication
+                if (authenticationMethod == null) {
+                    throw new NuxeoClientException(
+                            "Your client need an authentication method to connect to Nuxeo server");
+                }
+                okhttpBuilder.interceptors().add(0, authenticationMethod);
+                // init client
+                return new NuxeoClientForNuxeo(this);
+            }
+
+        }
+
     }
 
 }
