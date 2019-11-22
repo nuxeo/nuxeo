@@ -253,7 +253,7 @@ pipeline {
           ----------------------------------------"""
           withEnv(["MAVEN_OPTS=$MAVEN_OPTS -Xms512m -Xmx3072m"]) {
             echo "MAVEN_OPTS=$MAVEN_OPTS"
-            sh 'mvn -B -nsu -T0.8C -Pdistrib -DskipTests deploy'
+            sh 'mvn -B -nsu -Pdistrib -DskipTests deploy'
           }
         }
       }
