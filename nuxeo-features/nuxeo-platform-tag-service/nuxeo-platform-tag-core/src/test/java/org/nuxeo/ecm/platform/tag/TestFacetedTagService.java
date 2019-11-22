@@ -227,4 +227,41 @@ public class TestFacetedTagService extends AbstractTestTagService {
         }
     }
 
+    /*
+     * NXP-28278
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testUntagNotCleanedLabel() {
+        List<Map<String, Serializable>> tags = new ArrayList<>();
+        Map<String, Serializable> tag = new HashMap<>();
+        tag.put("label", "FOOBAR");
+        tag.put("username", "Administrator");
+        tags.add(tag);
+        tag = new HashMap<>();
+        tag.put("label", "foobar");
+        tag.put("username", "Administrator");
+        tags.add(tag);
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue(TAG_LIST, (Serializable) tags);
+        doc = session.createDocument(doc);
+
+        tags = (List<Map<String, Serializable>>) doc.getPropertyValue(TAG_LIST);
+        assertEquals(2, tags.size());
+        assertEquals("FOOBAR", tags.get(0).get("label"));
+        assertEquals("foobar", tags.get(1).get("label"));
+
+        // remove the exact "FOOBAR" tag label
+        tagService.untag(session, doc.getId(), "FOOBAR");
+        doc = session.getDocument(doc.getRef());
+        tags = (List<Map<String, Serializable>>) doc.getPropertyValue(TAG_LIST);
+        assertEquals(1, tags.size());
+        assertEquals("foobar", tags.get(0).get("label"));
+
+        // now remove the cleaned tag label "foobar" as "FOOBAR" does not exist anymore
+        tagService.untag(session, doc.getId(), "FOOBAR");
+        doc = session.getDocument(doc.getRef());
+        tags = (List<Map<String, Serializable>>) doc.getPropertyValue(TAG_LIST);
+        assertTrue(tags.isEmpty());
+    }
 }

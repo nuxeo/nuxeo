@@ -122,10 +122,11 @@ public abstract class AbstractTagService implements TagService {
         // - document doesn't exist, we're here after documentRemoved event
         // - regular case: check if user can remove this tag on document
         if (!session.exists(new IdRef(docId)) || canUntag(session, docId, label)) {
-            String cleanLabel = cleanLabel(label, true, false);
-            CoreInstance.doPrivileged(session, s -> {
-                doUntag(s, docId, cleanLabel);
-            });
+            Set<String> tags = getTags(session, docId);
+            // if the document has the exact given tag label, remove it
+            // otherwise remove the cleaned label
+            String l = tags.contains(label) ? label : cleanLabel(label, true, false);
+            CoreInstance.doPrivileged(session, (CoreSession s) -> doUntag(s, docId, l));
             if (label != null) {
                 fireUpdateEvent(session, docId);
             }
