@@ -54,7 +54,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
 
     protected static final String XP = "configuration";
 
-    protected static BlobDispatcher DEFAULT_BLOB_DISPATCHER = new DefaultBlobDispatcher();
+    protected static final BlobDispatcher DEFAULT_BLOB_DISPATCHER = new DefaultBlobDispatcher();
 
     protected Deque<BlobDispatcherDescriptor> blobDispatcherDescriptorsRegistry = new LinkedList<>();
 
@@ -207,7 +207,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
                 accessor.setBlob(newBlob);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
     }
 
