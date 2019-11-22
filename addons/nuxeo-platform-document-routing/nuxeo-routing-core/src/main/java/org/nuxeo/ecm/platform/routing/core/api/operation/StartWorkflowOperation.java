@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +32,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -97,13 +97,16 @@ public class StartWorkflowOperation {
     }
 
     protected void startNewInstance(List<String> ids) {
-        Map<String, Serializable> vars = new HashMap<>();
+        Map<String, Serializable> vars = null;
         if (variables != null) {
-            for (Entry<String, String> entry : variables.entrySet()) {
-                vars.put(entry.getKey(), entry.getValue());
+            if (variables instanceof DataModelProperties) {
+                vars = ((DataModelProperties) variables).getMap();
+                vars.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, false);
+            } else {
+                vars = new HashMap<>(variables);
+                vars.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, true);
             }
         }
-        vars.put(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON, Boolean.TRUE);
         String workflowId = documentRoutingService.createNewInstance(id, ids, vars, session, Boolean.TRUE.equals(start));
         ctx.put("WorkflowId", workflowId);
         // to be consistent with all the other workflow variablesin the context

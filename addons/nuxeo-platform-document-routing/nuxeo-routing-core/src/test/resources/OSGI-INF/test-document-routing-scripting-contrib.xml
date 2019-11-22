@@ -1,0 +1,27 @@
+<component name="org.nuxeo.ecm.platform.routing.graph.scripting.test" version="1.0">
+
+  <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
+    <scriptedOperation id="Scripting.starytMyRoute">
+      <inputType>document</inputType>
+      <outputType>document</outputType>
+      <category>javascript</category>
+      <description></description>
+      <script>
+        function run(input) {
+          input = Context.StartWorkflow(
+            input, {
+              'id': 'myroute',
+              'start': true,
+              'variables': {
+                'datefield': (new Date()).toISOString(),
+                'myassignees': ['x', 'y'],
+                'stringfield': 'test'
+              }
+            }
+          );
+          return input;
+        }
+	  </script>
+    </scriptedOperation>
+  </extension>
+ </component>
