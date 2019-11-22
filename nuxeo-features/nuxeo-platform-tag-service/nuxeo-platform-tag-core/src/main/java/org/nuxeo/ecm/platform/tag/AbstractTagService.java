@@ -101,12 +101,10 @@ public abstract class AbstractTagService implements TagService {
     }
 
     @Override
-    public void tag(CoreSession session, String docId, String label) throws DocumentSecurityException {
+    public void tag(CoreSession session, String docId, String label) {
         String cleanLabel = cleanLabel(label, true, false);
         String username = cleanUsername(session.getPrincipal().getName());
-        CoreInstance.doPrivileged(session, s -> {
-            doTag(s, docId, cleanLabel, username);
-        });
+        CoreInstance.doPrivileged(session, (CoreSession s) -> doTag(s, docId, cleanLabel, username));
         fireUpdateEvent(session, docId);
     }
 
@@ -116,16 +114,13 @@ public abstract class AbstractTagService implements TagService {
     }
 
     @Override
-    public void untag(CoreSession session, String docId, String label)
-            throws DocumentSecurityException {
+    public void untag(CoreSession session, String docId, String label) {
         // There's two allowed cases here:
         // - document doesn't exist, we're here after documentRemoved event
         // - regular case: check if user can remove this tag on document
         if (!session.exists(new IdRef(docId)) || canUntag(session, docId, label)) {
             String cleanLabel = cleanLabel(label, true, false);
-            CoreInstance.doPrivileged(session, s -> {
-                doUntag(s, docId, cleanLabel);
-            });
+            CoreInstance.doPrivileged(session, (CoreSession s) -> doUntag(s, docId, cleanLabel));
             if (label != null) {
                 fireUpdateEvent(session, docId);
             }
@@ -137,8 +132,7 @@ public abstract class AbstractTagService implements TagService {
     }
 
     @Override
-    public void untag(CoreSession session, String docId, String label, String username)
-            throws DocumentSecurityException {
+    public void untag(CoreSession session, String docId, String label, String username) {
         untag(session, docId, label);
     }
 
@@ -173,9 +167,7 @@ public abstract class AbstractTagService implements TagService {
     }
 
     protected void copyTags(CoreSession session, String srcDocId, String dstDocId, boolean removeExistingTags) {
-        CoreInstance.doPrivileged(session, s -> {
-            doCopyTags(s, srcDocId, dstDocId, removeExistingTags);
-        });
+        CoreInstance.doPrivileged(session, (CoreSession s) -> doCopyTags(s, srcDocId, dstDocId, removeExistingTags));
     }
 
     @Override
@@ -268,7 +260,7 @@ public abstract class AbstractTagService implements TagService {
             Object... params) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         if (ppService == null) {
-            throw new RuntimeException("Missing PageProvider service");
+            throw new NuxeoException("Missing PageProvider service");
         }
         Map<String, Serializable> props = new HashMap<>();
         // first retrieve potential props from definition
