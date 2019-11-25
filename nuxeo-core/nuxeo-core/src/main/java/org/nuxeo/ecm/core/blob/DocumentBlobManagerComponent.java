@@ -24,6 +24,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,6 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Implementation of the service managing {@link Blob}s associated to a {@link Document} or a repository.
@@ -55,6 +57,8 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     protected static final String XP = "configuration";
 
     protected static BlobDispatcher DEFAULT_BLOB_DISPATCHER = new DefaultBlobDispatcher();
+
+    protected static final int BINARY_GC_TX_TIMEOUT_SEC = 86_400; // 1 day
 
     protected Deque<BlobDispatcherDescriptor> blobDispatcherDescriptorsRegistry = new LinkedList<>();
 
@@ -238,31 +242,62 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
 
     @Override
     public BinaryManagerStatus garbageCollectBinaries(boolean delete) {
-        List<BinaryGarbageCollector> gcs = getGarbageCollectors();
-        // start gc
-        long start = System.currentTimeMillis();
-        for (BinaryGarbageCollector gc : gcs) {
-            gc.start();
+        // do the GC in a long-running transaction to avoid timeouts
+        return runInTransaction(() -> {
+            List<BinaryGarbageCollector> gcs = getGarbageCollectors();
+            // start gc
+            long start = System.currentTimeMillis();
+            for (BinaryGarbageCollector gc : gcs) {
+                gc.start();
+            }
+            // in all repositories, mark referenced binaries
+            // the marking itself will call back into the appropriate gc's mark method
+            RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+            for (String repositoryName : repositoryService.getRepositoryNames()) {
+                Repository repository = repositoryService.getRepository(repositoryName);
+                repository.markReferencedBinaries();
+            }
+            // stop gc
+            BinaryManagerStatus globalStatus = new BinaryManagerStatus();
+            for (BinaryGarbageCollector gc : gcs) {
+                gc.stop(delete);
+                BinaryManagerStatus status = gc.getStatus();
+                globalStatus.numBinaries += status.numBinaries;
+                globalStatus.sizeBinaries += status.sizeBinaries;
+                globalStatus.numBinariesGC += status.numBinariesGC;
+                globalStatus.sizeBinariesGC += status.sizeBinariesGC;
+            }
+            globalStatus.gcDuration = System.currentTimeMillis() - start;
+            return globalStatus;
+        }, BINARY_GC_TX_TIMEOUT_SEC);
+    }
+
+    /**
+     * Runs the given {@link Supplier} in a transaction with the given {@code timeout}.
+     *
+     * @since 11.1
+     */
+    protected <R> R runInTransaction(Supplier<R> supplier, int timeout) {
+        if (TransactionHelper.isTransactionMarkedRollback()) {
+            throw new NuxeoException("Cannot run supplier when current transaction is marked rollback.");
         }
-        // in all repositories, mark referenced binaries
-        // the marking itself will call back into the appropriate gc's mark method
-        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
-        for (String repositoryName : repositoryService.getRepositoryNames()) {
-            Repository repository = repositoryService.getRepository(repositoryName);
-            repository.markReferencedBinaries();
+        boolean txActive = TransactionHelper.isTransactionActive();
+        boolean txStarted = false;
+        try {
+            if (txActive) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+            txStarted = TransactionHelper.startTransaction(timeout);
+            return supplier.get();
+        } finally {
+            if (txStarted) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+            if (txActive) {
+                // go back to default transaction timeout
+                TransactionHelper.startTransaction();
+            }
         }
-        // stop gc
-        BinaryManagerStatus globalStatus = new BinaryManagerStatus();
-        for (BinaryGarbageCollector gc : gcs) {
-            gc.stop(delete);
-            BinaryManagerStatus status = gc.getStatus();
-            globalStatus.numBinaries += status.numBinaries;
-            globalStatus.sizeBinaries += status.sizeBinaries;
-            globalStatus.numBinariesGC += status.numBinariesGC;
-            globalStatus.sizeBinariesGC += status.sizeBinariesGC;
-        }
-        globalStatus.gcDuration = System.currentTimeMillis() - start;
-        return globalStatus;
     }
 
     @Override
