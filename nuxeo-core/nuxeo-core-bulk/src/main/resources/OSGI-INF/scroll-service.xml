@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.scroll.service" version="1.0">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.api.scroll.ScrollService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.scroll.ScrollComponent" />
+
+  <documentation>
+    The scroll service offer an unified API to scroll large result set.
+  </documentation>
+
+  <extension-point name="scroll">
+    <object class="org.nuxeo.ecm.core.scroll.ScrollDescriptor" />
+  </extension-point>
+
+
+</component>
