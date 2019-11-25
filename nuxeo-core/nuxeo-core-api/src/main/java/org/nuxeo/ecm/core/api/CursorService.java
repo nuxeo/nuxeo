@@ -32,7 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * A cursor service which holds cursors on DB in order to perform scroll operations.
+ * A low level holder of DB cursors that manages cleaning on timeout.
  *
  * @param <C> The cursor type.
  * @param <O> The cursor item type.
