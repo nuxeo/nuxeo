@@ -35,6 +35,7 @@ import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActions;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActionsImpl;
@@ -84,7 +85,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
     }
 
     @Override
-    public void stop(ComponentContext context) throws InterruptedException {
+    public void stop(ComponentContext context) {
         sessions.clear();
     }
 
@@ -211,7 +212,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
             message.setText(text);
             Transport.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException("An error occurred while sending a mail", e);
         }
     }
 
@@ -225,7 +226,7 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
             try {
                 fetcher = clazz.getDeclaredConstructor().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
+                throw new NuxeoException("Unable to init properties fetcher: " + name, e);
             }
             fetcher.configureFetcher(descriptor.getProperties());
             configuredFetchers.put(name, fetcher);
