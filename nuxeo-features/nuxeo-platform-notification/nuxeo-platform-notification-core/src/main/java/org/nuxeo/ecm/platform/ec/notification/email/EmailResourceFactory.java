@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,9 @@ public class EmailResourceFactory implements ObjectFactory {
     @Override
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> environment) {
         final Reference ref = (Reference) obj;
-        if (!ref.getClassName().equals("javax.mail.Session"))
-            return (null);
+        if (!Session.class.getName().equals(ref.getClassName())) {
+            return null;
+        }
         final Properties properties = toProperties(ref.getAll());
         return AccessController.doPrivileged((PrivilegedAction<Session>) () -> EmailHelper.newSession(properties));
 

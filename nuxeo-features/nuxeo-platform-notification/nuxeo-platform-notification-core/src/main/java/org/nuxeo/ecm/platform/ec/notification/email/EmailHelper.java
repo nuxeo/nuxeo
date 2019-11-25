@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,10 +87,6 @@ public class EmailHelper {
 
     protected static boolean javaMailNotAvailable = false;
 
-    /* Only static methods here chaps */
-    public EmailHelper() {
-    }
-
     /**
      * Static Method: sendmail(Map mail).
      *
@@ -126,7 +122,6 @@ public class EmailHelper {
         RenderingService rs = Framework.getService(RenderingService.class);
 
         DocumentRenderingContext context = new DocumentRenderingContext();
-        context.remove("doc");
         context.putAll(mail);
         context.setDocument((DocumentModel) mail.get("document"));
         context.put("Runtime", Framework.getRuntime());

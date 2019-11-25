@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.mail.utils;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.CORE_SESSION_KEY;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAILS_LIMIT_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.EMAIL_PROPERTY_NAME;
@@ -65,8 +67,6 @@ import org.nuxeo.ecm.platform.mail.listener.MailEventListener;
 import org.nuxeo.ecm.platform.mail.service.MailService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
-
-import com.sun.mail.imap.IMAPFolder;
 
 /**
  * Helper for Mail Core.
@@ -134,15 +134,14 @@ public final class MailCoreHelper {
 
             initialExecutionContext.put(CORE_SESSION_KEY, coreSession);
 
-            initialExecutionContext.put(LEAVE_ON_SERVER_KEY, Boolean.TRUE); // TODO should be an attribute in 'protocol'
-                                                                            // schema
+            // TODO should be an attribute in 'protocol' schema
+            initialExecutionContext.put(LEAVE_ON_SERVER_KEY, TRUE);
 
             Folder rootFolder = null;
             Store store = null;
             try {
                 String protocolType = (String) currentMailFolder.getPropertyValue(PROTOCOL_TYPE_PROPERTY_NAME);
                 initialExecutionContext.put(PROTOCOL_TYPE_KEY, protocolType);
-                // log.debug(PROTOCOL_TYPE_KEY + ": " + (String) initialExecutionContext.get(PROTOCOL_TYPE_KEY));
 
                 String host = (String) currentMailFolder.getPropertyValue(HOST_PROPERTY_NAME);
                 String port = (String) currentMailFolder.getPropertyValue(PORT_PROPERTY_NAME);
@@ -155,18 +154,17 @@ public final class MailCoreHelper {
                 Long emailsLimit = (Long) currentMailFolder.getPropertyValue(EMAILS_LIMIT_PROPERTY_NAME);
                 long emailsLimitLongValue = emailsLimit == null ? EMAILS_LIMIT_DEFAULT : emailsLimit.longValue();
 
-                String imapDebug = Framework.getProperty(IMAP_DEBUG, "false");
+                String imapDebug = Framework.getProperty(IMAP_DEBUG, FALSE.toString());
 
                 Properties properties = new Properties();
                 properties.put("mail.store.protocol", protocolType);
-                // properties.put("mail.host", host);
                 // Is IMAP connection
                 if (IMAP.equals(protocolType)) {
                     properties.put("mail.imap.host", host);
                     properties.put("mail.imap.port", port);
                     properties.put("mail.imap.starttls.enable", starttlsEnable.toString());
                     properties.put("mail.imap.debug", imapDebug);
-                    properties.put("mail.imap.partialfetch", "false");
+                    properties.put("mail.imap.partialfetch", FALSE.toString());
                 } else if (IMAPS.equals(protocolType)) {
                     properties.put("mail.imaps.host", host);
                     properties.put("mail.imaps.port", port);
@@ -175,8 +173,8 @@ public final class MailCoreHelper {
                     properties.put("mail.imaps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
                     properties.put("mail.imaps.socketFactory.fallback", socketFactoryFallback.toString());
                     properties.put("mail.imaps.socketFactory.port", socketFactoryPort);
-                    properties.put("mail.imap.partialfetch", "false");
-                    properties.put("mail.imaps.partialfetch", "false");
+                    properties.put("mail.imap.partialfetch", FALSE.toString());
+                    properties.put("mail.imaps.partialfetch", FALSE.toString());
                 } else if (POP3S.equals(protocolType)) {
                     properties.put("mail.pop3s.host", host);
                     properties.put("mail.pop3s.port", port);
@@ -217,10 +215,6 @@ public final class MailCoreHelper {
 
                 rootFolder.fetch(allMessages, fetchProfile);
 
-                if (rootFolder instanceof IMAPFolder) {
-                    // ((IMAPFolder)rootFolder).doCommand(FetchProfile)
-                }
-
                 List<Message> unreadMessagesList = new ArrayList<>();
                 for (Message message : allMessages) {
                     Flags flags = message.getFlags();
@@ -233,7 +227,7 @@ public final class MailCoreHelper {
                     }
                 }
 
-                Message[] unreadMessagesArray = unreadMessagesList.toArray(new Message[unreadMessagesList.size()]);
+                Message[] unreadMessagesArray = unreadMessagesList.toArray(new Message[0]);
 
                 // perform email import
                 visitor.visit(unreadMessagesArray, initialExecutionContext);

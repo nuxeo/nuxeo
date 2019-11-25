@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,6 @@ public class Mailer {
 
     /**
      * Create a mailer that use the given properties to configure the session.
-     *
-     * @param config
      */
     public Mailer(Properties config) {
         this(null, config);
@@ -77,8 +75,6 @@ public class Mailer {
 
     /**
      * Create a mailer using a session that lookup for the session in JNDI under the given session name.
-     *
-     * @param sessionName
      */
     public Mailer(String sessionName) {
         this(sessionName, new Properties());
@@ -87,9 +83,6 @@ public class Mailer {
     /**
      * Create a mailer using a session that lookup for the session in JNDI under the given session name. If the JNDI
      * binding doesn't exists use the given properties to cinfiugure the session.
-     *
-     * @param sessionName
-     * @param config
      */
     public Mailer(String sessionName, Properties config) {
         this.config = config;
@@ -116,9 +109,6 @@ public class Mailer {
 
     /**
      * Set the SMTP server address to use
-     *
-     * @param host
-     * @param port
      */
     public void setServer(String host, String port) {
         setServer(host, port, false);
@@ -144,9 +134,6 @@ public class Mailer {
 
     /**
      * Set SMTP credential
-     *
-     * @param user
-     * @param pass
      */
     public void setCredentials(final String user, final String pass) {
         config.setProperty("mail.smtp.auth", "true");

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -364,14 +364,14 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             DocumentModel registrationDoc = session.getDocument(idRef);
 
             // additionnal infos
-            for (String key : additionnalInfo.keySet()) {
+            for (var entry : additionnalInfo.entrySet()) {
                 try {
-                    if (DefaultInvitationUserFactory.PASSWORD_KEY.equals(key)) {
+                    if (DefaultInvitationUserFactory.PASSWORD_KEY.equals(entry.getKey())) {
                         // add the password as a transient context data
                         registrationDoc.putContextData(DefaultInvitationUserFactory.PASSWORD_KEY,
-                                additionnalInfo.get(key));
+                                additionnalInfo.get(entry.getKey()));
                     } else {
-                        registrationDoc.setPropertyValue(key, additionnalInfo.get(key));
+                        registrationDoc.setPropertyValue(entry.getKey(), entry.getValue());
                     }
                 } catch (PropertyException e) {
                     // skip silently
@@ -483,7 +483,6 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             documentTitle = (String) registrationDoc.getPropertyValue("docinfo:documentTitle");
         }
         input.put("documentTitle", documentTitle);
-        input.put("configurationName", configuration.getName());
         input.put("comment", registrationDoc.getPropertyValue("registration:comment"));
         input.put(UserInvitationService.REGISTRATION_CONFIGURATION_NAME, configuration.getName());
         input.put("userinfo", (Serializable) userinfo);
@@ -680,8 +679,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
         Map<String, Serializable> registrationInfo = validateRegistration(requestId, additionnalInfo);
 
-        Map<String, Serializable> input = new HashMap<>();
-        input.putAll(registrationInfo);
+        Map<String, Serializable> input = new HashMap<>(registrationInfo);
         input.put("info", (Serializable) additionnalInfo);
         StringWriter writer = new StringWriter();
 
