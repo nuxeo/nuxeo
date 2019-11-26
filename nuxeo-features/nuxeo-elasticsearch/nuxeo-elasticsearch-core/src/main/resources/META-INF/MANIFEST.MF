@@ -10,4 +10,5 @@ Nuxeo-Component: OSGI-INF/elasticsearch-service.xml,
  OSGI-INF/marshallers-contrib.xml,
  OSGI-INF/elasticsearch-managment-contrib.xml,
  OSGI-INF/bulk-contrib.xml,
- OSGI-INF/elasticsearch-hints-contrib.xml
+ OSGI-INF/elasticsearch-hints-contrib.xml,
+ OSGI-INF/scroll-contrib.xml
