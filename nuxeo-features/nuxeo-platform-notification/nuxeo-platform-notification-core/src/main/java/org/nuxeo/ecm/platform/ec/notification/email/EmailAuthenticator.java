@@ -22,6 +22,10 @@ import java.util.Properties;
 
 import javax.mail.PasswordAuthentication;
 
+/**
+ * @deprecated since 11.1, use {@link org.nuxeo.mail.MailAuthenticator} instead
+ */
+@Deprecated
 public class EmailAuthenticator extends javax.mail.Authenticator {
 
     protected final Properties properties;

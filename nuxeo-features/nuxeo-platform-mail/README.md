@@ -207,39 +207,3 @@ and to follow this step:
 5/ reproduce steps if needed, *do not forget to delete* the local file
    'jssecacerts' that's been created (otherwise the default keystore won't
    be updated anymore)
-
-To test your setting you can use this class:
-A TestConnection class sample
-
-	public class TestImapConnection {
-
-	    public static void main(String args[]) throws Exception {
-		Properties props = new Properties();
-
-		props.put("user", "email@example.com");
-		props.put("password", "password");
-
-		props.put("mail.store.protocol", "imap");
-		props.put("mail.imap.host", "mail.example.com");
-		props.put("mail.imap.port", "993");
-		props.put("mail.imap.ssl.protocols", "SSL");
-		props.put("mail.imap.starttls.enable", "true");
-
-		props.put("mail.imap.socketFactory.class",
-		        "javax.net.ssl.SSLSocketFactory");
-		props.put("mail.imap.socketFactory.port", "993");
-		props.put("mail.imap.socketFactory.fallback", "false");
-
-		Session session = Session.getDefaultInstance(props);
-
-		Store store = session.getStore();
-		System.err.println("connecting");
-		store.connect(props.getProperty("user").toString(), props.getProperty(
-		        "password").toString());
-
-		store.close();
-		System.err.println("done");
-	    }
-
-	}
-
