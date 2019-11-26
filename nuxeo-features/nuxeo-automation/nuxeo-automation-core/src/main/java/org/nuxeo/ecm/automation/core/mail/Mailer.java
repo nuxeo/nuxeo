@@ -30,23 +30,22 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.mail.MailSessionBuilder;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class Mailer {
 
-    private static final Log log = LogFactory.getLog(Mailer.class);
-
     protected Properties config;
 
     protected volatile Session session;
 
+    /**
+     * @deprecated since 11.1, not used anymore
+     */
+    @Deprecated
     protected Authenticator auth;
 
     /**
@@ -61,7 +60,9 @@ public class Mailer {
      * @see #setAuthenticator(Authenticator)
      * @see #setCredentials(String, String)
      * @see #setServer(String)
+     * @deprecated since 11.1, use other constructors instead
      */
+    @Deprecated
     public Mailer() {
         this(null, new Properties());
     }
@@ -97,12 +98,12 @@ public class Mailer {
         final String user = config.getProperty("mail.smtp.user");
         final String pass = config.getProperty("mail.smtp.password");
         if (user != null && pass != null) {
-            setAuthenticator(new Authenticator() {
+            this.auth = new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(user, pass);
                 }
-            });
+            };
         }
     }
 
@@ -147,9 +148,14 @@ public class Mailer {
      *
      * @param user
      * @param pass
+     *
+     * @deprecated since 11.1, use {@code mail.${protocol}.user} and {@code mail.${protocol}.password} instead
      */
+    @Deprecated
     public void setCredentials(final String user, final String pass) {
         config.setProperty("mail.smtp.auth", "true");
+        config.setProperty("mail.smtp.user", user);
+        config.setProperty("mail.smtp.password", user);
         auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -159,6 +165,11 @@ public class Mailer {
         session = null;
     }
 
+    /**
+     * @deprecated since 11.1, this method does nothing, use {@code mail.${protocol}.user} and
+     *             {@code mail.${protocol}.password} instead
+     */
+    @Deprecated
     public void setAuthenticator(Authenticator auth) {
         config.setProperty("mail.smtp.auth", "true");
         this.auth = auth;
@@ -174,16 +185,9 @@ public class Mailer {
             synchronized (this) {
                 if (session == null) {
                     if (sessionName != null) {
-                        try {
-                            InitialContext ic = new InitialContext();
-                            session = (Session) ic.lookup(sessionName);
-                        } catch (NamingException e) {
-                            log.warn("Failed to lookup mail session using JNDI name " + sessionName
-                                    + ". Falling back on local configuration.");
-                            session = Session.getInstance(config, auth);
-                        }
+                        session = MailSessionBuilder.fromJndi(sessionName).fallbackOn(config).build();
                     } else {
-                        session = Session.getInstance(config, auth);
+                        session = MailSessionBuilder.fromProperties(config).build();
                     }
                 }
             }

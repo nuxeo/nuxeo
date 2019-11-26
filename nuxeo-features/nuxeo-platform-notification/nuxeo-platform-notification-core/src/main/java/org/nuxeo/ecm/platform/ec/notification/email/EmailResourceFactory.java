@@ -31,6 +31,7 @@ import javax.naming.RefAddr;
 import javax.naming.Reference;
 import javax.naming.spi.ObjectFactory;
 
+import org.nuxeo.mail.MailSessionBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -44,7 +45,8 @@ public class EmailResourceFactory implements ObjectFactory {
         if (!ref.getClassName().equals("javax.mail.Session"))
             return (null);
         final Properties properties = toProperties(ref.getAll());
-        return AccessController.doPrivileged((PrivilegedAction<Session>) () -> EmailHelper.newSession(properties));
+        return AccessController.doPrivileged(
+                (PrivilegedAction<Session>) () -> MailSessionBuilder.fromProperties(properties).build());
 
     }
 

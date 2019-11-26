@@ -31,15 +31,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -47,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mvel2.MVEL;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
@@ -54,6 +52,7 @@ import org.nuxeo.ecm.platform.rendering.RenderingException;
 import org.nuxeo.ecm.platform.rendering.RenderingResult;
 import org.nuxeo.ecm.platform.rendering.RenderingService;
 import org.nuxeo.ecm.platform.rendering.impl.DocumentRenderingContext;
+import org.nuxeo.mail.MailSessionBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 import freemarker.template.Configuration;
@@ -185,22 +184,18 @@ public class EmailHelper {
      * Gets the session from the JNDI.
      */
     private static Session getSession() {
-        Session session = null;
-        if (javaMailNotAvailable) {
-            return null;
+        if (!javaMailNotAvailable) {
+            // First, try to get the session from JNDI, as would be done under J2EE.
+            try {
+                NotificationService service = (NotificationService) Framework.getRuntime()
+                                                                             .getComponent(NotificationService.NAME);
+                return MailSessionBuilder.fromJndi(service.getMailSessionJndiName()).build();
+            } catch (NuxeoException ex) {
+                log.warn("Unable to find Java mail API", ex);
+                javaMailNotAvailable = true;
+            }
         }
-        // First, try to get the session from JNDI, as would be done under J2EE.
-        try {
-            NotificationService service = (NotificationService) Framework.getRuntime()
-                                                                         .getComponent(NotificationService.NAME);
-            InitialContext ic = new InitialContext();
-            session = (Session) ic.lookup(service.getMailSessionJndiName());
-        } catch (NamingException ex) {
-            log.warn("Unable to find Java mail API", ex);
-            javaMailNotAvailable = true;
-        }
-
-        return session;
+        return null;
     }
 
     /**
@@ -208,15 +203,11 @@ public class EmailHelper {
      * transport protocol handler according to the properties.
      *
      * @since 5.6
+     * @deprecated since 11.1, use {@link MailSessionBuilder}
      */
+    @Deprecated
     public static Session newSession(Properties props) {
-        Authenticator authenticator = new EmailAuthenticator(props);
-        Session session = Session.getInstance(props, authenticator);
-        String protocol = props.getProperty("mail.transport.protocol");
-        if (protocol != null && protocol.length() > 0) {
-            session.setProtocolForAddress("rfc822", protocol);
-        }
-        return session;
+        return MailSessionBuilder.fromProperties(props).build();
     }
 
     protected Map<String, Object> initMvelBindings(Map<String, Serializable> infos) {

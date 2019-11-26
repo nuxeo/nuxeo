@@ -41,8 +41,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -72,6 +70,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
+import org.nuxeo.mail.MailSessionBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -119,10 +118,6 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     protected boolean userAlreadyExists(UserRegistrationInfo userRegistrationInfo) {
         DocumentModel user = Framework.getService(UserManager.class).getUserModel(userRegistrationInfo.getLogin());
         return user != null;
-    }
-
-    protected String getJavaMailJndiName() {
-        return Framework.getProperty("jndi.java.mail", "java:/Mail");
     }
 
     @Override
@@ -506,7 +501,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         if (!isTestModeSet()) {
             try {
                 generateMail(emailAdress, copyTo, emailTitle, body);
-            } catch (NamingException | MessagingException e) {
+            } catch (MessagingException e) {
                 throw new NuxeoException("Error while sending mail: ", e);
             }
         } else {
@@ -540,10 +535,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     protected void generateMail(String destination, String copy, String title, String content)
-            throws NamingException, MessagingException {
+            throws MessagingException {
 
-        InitialContext ic = new InitialContext();
-        Session session = (Session) ic.lookup(getJavaMailJndiName());
+        Session session = MailSessionBuilder.fromNuxeoConf().build();
 
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(session.getProperty("mail.from")));
@@ -699,7 +693,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         if (!Framework.isTestModeSet()) {
             try {
                 generateMail(emailAdress, null, title, body);
-            } catch (NamingException | MessagingException e) {
+            } catch (MessagingException e) {
                 throw new NuxeoException("Error while sending mail : ", e);
             }
         } else {
