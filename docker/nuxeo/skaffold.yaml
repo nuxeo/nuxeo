@@ -18,15 +18,16 @@ build:
     envTemplate:
       template: "{{.DOCKER_REGISTRY}}/nuxeo/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
-    - image: builder-platform
-      context: docker/builder-platform
+    - image: nuxeo
+      context: docker/nuxeo
       kaniko:
         dockerfile: Dockerfile
         buildContext:
           localDir: {}
         buildArgs:
-          BASE_IMAGE: ${DOCKER_REGISTRY}/nuxeo/builder:${VERSION}
+          BUILDER_IMAGE: ${DOCKER_REGISTRY}/nuxeo/builder:${VERSION}
+          BASE_IMAGE: ${DOCKER_REGISTRY}/nuxeo/base:${VERSION}
         cache:
-          repo: ${DOCKER_REGISTRY}/nuxeo/builder-platform/cache
+          repo: ${DOCKER_REGISTRY}/nuxeo/nuxeo/cache
   cluster:
     namespace: platform

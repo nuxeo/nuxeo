@@ -97,7 +97,7 @@ void skaffoldBuildAll() {
   skaffoldBuild('docker/skaffold.yaml')
   // build images depending on the builder and/or base images, waiting for dependent images support in skaffold
   skaffoldBuild('docker/slim/skaffold.yaml')
-  skaffoldBuild('docker/builder-platform/skaffold.yaml')
+  skaffoldBuild('docker/nuxeo/skaffold.yaml')
 }
 
 pipeline {
@@ -115,6 +115,7 @@ pipeline {
     SERVICE_ACCOUNT = 'jenkins'
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
+    NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
     PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
@@ -273,8 +274,17 @@ pipeline {
             dockerPull(image)
             dockerRun(image, 'cat /etc/centos-release; java -version')
 
-            // nuxeo image
+            // nuxeo slim image
             image = "${DOCKER_REGISTRY}/${dockerNamespace}/${SLIM_IMAGE_NAME}:${VERSION}"
+            echo "Test ${image}"
+            dockerPull(image)
+            echo 'Run image as root (0)'
+            dockerRun(image, 'nuxeoctl start')
+            echo 'Run image as an arbitrary user (800)'
+            dockerRun(image, 'nuxeoctl start', '800')
+
+            // nuxeo image
+            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${NUXEO_IMAGE_NAME}:${VERSION}"
             echo "Test ${image}"
             dockerPull(image)
             echo 'Run image as root (0)'
@@ -310,6 +320,7 @@ pipeline {
           dockerDeploy("${BUILDER_IMAGE_NAME}")
           dockerDeploy("${BASE_IMAGE_NAME}")
           dockerDeploy("${SLIM_IMAGE_NAME}")
+          dockerDeploy("${NUXEO_IMAGE_NAME}")
         }
       }
       post {

@@ -54,24 +54,6 @@ FROM BASE_IMAGE
 COPY --from=builder --chown=UID:GID /distrib NUXEO_HOME
 ```
 
-### Platform Builder: nuxeo/builder-platform
-
-This image is similar to the [nuxeo/builder](#base-builder-nuxeobuilder) image, in addition to which it has a set of Nuxeo packages pre-installed in the Nuxeo server distribution. These packages are described by the Maven project's [POM](builder-platform/pom.xml).
-
-In the same way, it must be used within a multi-stage build.
-For instance, you can use the following Dockerfile sample to build an image based on a `BASE_IMAGE`, containing a Nuxeo Platform distribution:
-
-- In the NUXEO_HOME directory.
-- With the set of pre-installed Nuxeo packages mentioned above.
-- Owned by the UID user and GID group.
-
-```Dockerfile
-FROM nuxeo/builder-platform:VERSION as builder
-
-FROM BASE_IMAGE
-COPY --from=builder --chown=UID:GID /distrib NUXEO_HOME
-```
-
 ### Nuxeo Base: nuxeo/base
 
 This image can be used as the `BASE_IMAGE` in the Dockerfile samples seen above.
@@ -88,7 +70,7 @@ Based on CentOS 7, it includes:
 
 It doesn't contain the Nuxeo server distribution itself.
 To build an image containing a Nuxeo server distribution with some packages installed, you must use a multi-stage build
-with the [nuxeo/builder](#base-builder-nuxeobuilder) (or [nuxeo/builder-platform](#platform-builder-nuxeobuilder-platform)) image and the [nuxeo/base](#nuxeo-base-nuxeobase) image, as in the following Dockerfile sample:
+with the [nuxeo/builder](#base-builder-nuxeobuilder) image and the [nuxeo/base](#nuxeo-base-nuxeobase) image, as in the following Dockerfile sample:
 
 ```Dockerfile
 FROM nuxeo/builder:VERSION as builder
@@ -111,9 +93,13 @@ It doesn't include any converter.
 It is a typical example of an image built using multi-stage with the [nuxeo/builder](#base-builder-nuxeobuilder) and [nuxeo/base](#nuxeo-base-nuxeobase) images.
 These images are passed as build args in the [Dockerfile](slim/Dockerfile).
 
-### Content Platform
+### Content Platform: nuxeo/nuxeo
 
-TODO: [NXP-28133](https://jira.nuxeo.com/browse/NXP-28133)
+It includes a bare Nuxeo server distribution with a set of Nuxeo packages pre-installed. These packages are described by the Maven project's [POM](nuxeo/pom.xml).
+It includes basic Open Source converters.
+
+This image is also built using multi-stage with the [nuxeo/builder](#base-builder-nuxeobuilder) and [nuxeo/base](#nuxeo-base-nuxeobase) images.
+These images are passed as build args in the [Dockerfile](nuxeo/Dockerfile).
 
 ## Build the Images
 
@@ -162,16 +148,16 @@ First, to build the `nuxeo/builder` and `nuxeo/base` images, run:
 skaffold build
 ```
 
-To build the `nuxeo/builder-platform` image, run:
-
-```bash
-skaffold build -f builder-platform/skaffold.yaml
-```
-
 To build the `nuxeo/slim` image, run:
 
 ```bash
 skaffold build -f slim/skaffold.yaml
+```
+
+To build the `nuxeo/nuxeo` image, run:
+
+```bash
+skaffold build -f nuxeo/skaffold.yaml
 ```
 
 ### With Docker
@@ -194,22 +180,22 @@ To build the `nuxeo/base` image, run:
 docker build -t nuxeo/base:11.1-SNAPSHOT -f base/Dockerfile base
 ```
 
-To build the `nuxeo/builder-platform` image, you first need to fetch the Nuxeo packages to install and make them available for the Docker build with Maven:
+To build the `nuxeo/slim` image, run:
 
 ```bash
-mvn -nsu -f builder-platform/pom.xml process-resources
+docker build -t nuxeo/slim:11.1-SNAPSHOT -f slim/Dockerfile --build-arg BUILDER_IMAGE=nuxeo/builder:11.1-SNAPSHOT --build-arg BASE_IMAGE=nuxeo/base:11.1-SNAPSHOT slim
+```
+
+To build the `nuxeo/nuxeo` image, you first need to fetch the Nuxeo packages to install and make them available for the Docker build with Maven:
+
+```bash
+mvn -nsu -f nuxeo/pom.xml process-resources
 ```
 
 Then run:
 
 ```bash
-docker build -t nuxeo/builder-platform:11.1-SNAPSHOT -f builder-platform/Dockerfile --build-arg BASE_IMAGE=nuxeo/builder:11.1-SNAPSHOT builder-platform
-```
-
-To build the `nuxeo/slim` image, run:
-
-```bash
-docker build -t nuxeo/slim:11.1-SNAPSHOT -f slim/Dockerfile --build-arg BUILDER_IMAGE=nuxeo/builder:11.1-SNAPSHOT --build-arg BASE_IMAGE=nuxeo/base:11.1-SNAPSHOT slim
+docker build -t nuxeo/nuxeo:11.1-SNAPSHOT -f nuxeo/Dockerfile --build-arg BUILDER_IMAGE=nuxeo/builder:11.1-SNAPSHOT --build-arg BASE_IMAGE=nuxeo/base:11.1-SNAPSHOT nuxeo
 ```
 
 ## Run an Image
