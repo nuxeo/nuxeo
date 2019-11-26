@@ -95,6 +95,9 @@ public class StaticScrollRequest implements ScrollRequest {
             return size == 0 ? DEFAULT_SCROLL_SIZE : size;
         }
 
+        public StaticScrollRequest build() {
+            return new StaticScrollRequest(this);
+        }
     }
 
 }

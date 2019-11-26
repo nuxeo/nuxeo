@@ -175,6 +175,9 @@ public class DocumentScrollRequest implements ScrollRequest {
             return repository;
         }
 
+        public DocumentScrollRequest build() {
+            return new DocumentScrollRequest(this);
+        }
     }
 
 }

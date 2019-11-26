@@ -24,4 +24,9 @@ package org.nuxeo.ecm.core.api.scroll;
 public interface ScrollService {
 
     Scroll scroll(ScrollRequest request);
+
+    /**
+     * Returns {@code true} if there is a scrollName exists
+     */
+    boolean exists(String scrollName);
 }

@@ -55,4 +55,9 @@ public class ScrollServiceImpl implements ScrollService {
         scroll.init(request, descriptor.getOptions());
         return scroll;
     }
+
+    @Override
+    public boolean exists(String scrollName) {
+        return descriptors.containsKey(scrollName);
+    }
 }

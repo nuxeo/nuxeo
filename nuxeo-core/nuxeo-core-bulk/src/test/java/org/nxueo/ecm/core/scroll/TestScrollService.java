@@ -48,13 +48,17 @@ public class TestScrollService {
     @Test
     public void testScrollService() {
         assertNotNull(service);
+        assertTrue(service.exists("default"));
+        assertTrue(service.exists("static"));
+        assertTrue(service.exists("repository"));
+        assertFalse(service.exists("unknown"));
     }
 
     @Test
     public void testStaticScroll() {
         String ids = "first,2,3,4,5,6,7,8,9,last";
         int scrollSize = 4;
-        ScrollRequest request = new StaticScrollRequest(new StaticScrollRequest.Builder(ids).scrollSize(scrollSize));
+        ScrollRequest request = new StaticScrollRequest.Builder(ids).scrollSize(scrollSize).build();
         Scroll scroll = service.scroll(request);
         assertNotNull(scroll);
         assertTrue(scroll.fetch());
