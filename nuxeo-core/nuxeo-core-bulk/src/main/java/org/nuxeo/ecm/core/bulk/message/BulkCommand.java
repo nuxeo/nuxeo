@@ -41,6 +41,8 @@ public class BulkCommand implements Serializable {
 
     private static final long serialVersionUID = 20181021L;
 
+    public static final String DEFAULT_SCROLLER = "default";
+
     protected String id;
 
     protected String action;
@@ -56,6 +58,10 @@ public class BulkCommand implements Serializable {
     protected int bucketSize;
 
     protected int batchSize;
+
+    // @since 11.1
+    @Nullable
+    protected String scroller;
 
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> params;
@@ -73,6 +79,7 @@ public class BulkCommand implements Serializable {
         this.bucketSize = builder.bucketSize;
         this.batchSize = builder.batchSize;
         this.params = builder.params;
+        this.scroller = builder.scroller;
     }
 
     public String getUsername() {
@@ -89,6 +96,10 @@ public class BulkCommand implements Serializable {
 
     public String getAction() {
         return action;
+    }
+
+    public String getScroller() {
+        return scroller == null ? DEFAULT_SCROLLER : scroller;
     }
 
     public Map<String, Serializable> getParams() {
@@ -139,6 +150,10 @@ public class BulkCommand implements Serializable {
         this.repository = repository;
     }
 
+    public void setScroller(String scrollerName) {
+        this.scroller = scrollerName;
+    }
+
     public static class Builder {
         protected final String action;
 
@@ -151,6 +166,8 @@ public class BulkCommand implements Serializable {
         protected int bucketSize;
 
         protected int batchSize;
+
+        protected String scroller;
 
         protected Map<String, Serializable> params = new HashMap<>();
 
@@ -238,6 +255,14 @@ public class BulkCommand implements Serializable {
                 }
                 this.params = params;
             }
+            return this;
+        }
+
+        /**
+         * Set scroller name used to materialized the document set
+         */
+        public Builder scroller(String scrollerName) {
+            this.scroller = scrollerName;
             return this;
         }
 

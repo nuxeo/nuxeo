@@ -36,7 +36,7 @@ public class StaticScrollRequest implements ScrollRequest {
 
     protected final int size;
 
-    public StaticScrollRequest(Builder builder) {
+    protected StaticScrollRequest(Builder builder) {
         this.query = builder.getQuery();
         this.size = builder.getSize();
     }
@@ -64,6 +64,13 @@ public class StaticScrollRequest implements ScrollRequest {
     @Override
     public String toString() {
         return "StaticScrollRequest{" + "query='" + query + '\'' + ", size=" + size + '}';
+    }
+
+    /**
+     * Creates a builder using a comma separated list of identifier.
+     */
+    public static Builder builder(String identifiers) {
+        return new Builder(identifiers);
     }
 
     public static class Builder {
@@ -95,6 +102,9 @@ public class StaticScrollRequest implements ScrollRequest {
             return size == 0 ? DEFAULT_SCROLL_SIZE : size;
         }
 
+        public StaticScrollRequest build() {
+            return new StaticScrollRequest(this);
+        }
     }
 
 }

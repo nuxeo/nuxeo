@@ -46,7 +46,7 @@ public class DocumentScrollRequest implements ScrollRequest {
 
     protected final String repository;
 
-    public DocumentScrollRequest(Builder builder) {
+    protected DocumentScrollRequest(Builder builder) {
         this.type = builder.getType();
         this.query = builder.getQuery();
         this.timeout = builder.getTimeout();
@@ -89,6 +89,13 @@ public class DocumentScrollRequest implements ScrollRequest {
                 + ", size=" + size + ", username='" + username + '\'' + ", repository='" + repository + '\'' + '}';
     }
 
+    /**
+     * Creates a builder using an NXQL query.
+     */
+    public static Builder builder(String nxqlQuery) {
+        return new Builder(nxqlQuery);
+    }
+
     public static class Builder {
 
         protected final String query;
@@ -111,23 +118,29 @@ public class DocumentScrollRequest implements ScrollRequest {
 
         public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(120);
 
-        public Builder(String nxqlQuery) {
-            Objects.requireNonNull(nxqlQuery, "NXQL query cannot be null");
-            this.query = nxqlQuery;
+        protected Builder(String nxqlQuery) {
+            this.query = Objects.requireNonNull(nxqlQuery, "NXQL query cannot be null");
         }
 
+        /**
+         * A registered type of Scroll.
+         */
         public Builder type(String type) {
-            Objects.requireNonNull(type, "Type cannot be null");
-            this.type = type;
+            this.type = Objects.requireNonNull(type, "Type cannot be null");
             return this;
         }
 
+        /**
+         * Maximum time between {@link Scroll#fetch()} calls.
+         */
         public Builder timeout(Duration timeout) {
-            Objects.requireNonNull(timeout, "duration cannot be null");
-            this.timeout = timeout;
+            this.timeout = Objects.requireNonNull(timeout, "Timeout cannot be null");
             return this;
         }
 
+        /**
+         * The number of identifiers per fetch.
+         */
         public Builder scrollSize(int size) {
             if (size <= 0) {
                 throw new IllegalArgumentException("size must be > 0");
@@ -136,11 +149,17 @@ public class DocumentScrollRequest implements ScrollRequest {
             return this;
         }
 
+        /**
+         * The repository to execute the NXQL request.
+         */
         public Builder repository(String repository) {
             this.repository = repository;
             return this;
         }
 
+        /**
+         * The user executing the NXQL request.
+         */
         public Builder username(String username) {
             this.username = username;
             return this;
@@ -177,6 +196,9 @@ public class DocumentScrollRequest implements ScrollRequest {
             return repository;
         }
 
+        public DocumentScrollRequest build() {
+            return new DocumentScrollRequest(this);
+        }
     }
 
 }
