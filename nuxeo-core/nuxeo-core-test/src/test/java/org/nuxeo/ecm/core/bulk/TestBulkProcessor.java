@@ -250,6 +250,47 @@ public class TestBulkProcessor {
                 false));
     }
 
+    @Test
+    public void testScroller() throws InterruptedException {
+        // use the default scroller, everything ok
+        String nxql = "SELECT * FROM Document";
+        String commandId = service.submit(
+                new BulkCommand.Builder("setProperties", nxql).user("user").scroller("default").build());
+        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
+        BulkStatus status = service.getStatus(commandId);
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(0, status.getTotal());
+        assertFalse(status.hasError());
+
+        // explicit use of the repository scroller, everything ok
+        nxql = "SELECT * FROM Document";
+        commandId = service.submit(
+                new BulkCommand.Builder("setProperties", nxql).user("user").scroller("repository").build());
+        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
+        status = service.getStatus(commandId);
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(0, status.getTotal());
+        assertFalse(status.hasError());
+
+        // use a static scroller, everything ok
+        nxql = "unexiting-doc-id1, unexisting-doc-id2";
+        commandId = service.submit(new BulkCommand.Builder("setProperties", nxql).user("user").scroller("static").build());
+        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
+        status = service.getStatus(commandId);
+        assertEquals(COMPLETED, status.getState());
+        assertEquals(2, status.getTotal());
+        assertFalse(status.hasError());
+
+        // use an unknown scroller, error expected
+        try {
+            service.submit(
+                    new BulkCommand.Builder("setProperties", "whatever query").user("user").scroller("unknown").build());
+            fail("unknown scroller should raise error");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
     protected boolean overlapCommands(List<BulkStatus> results, boolean logOverlap) {
         // Check for overlap on scrolling
         results.sort(Comparator.comparing(BulkStatus::getScrollStartTime));

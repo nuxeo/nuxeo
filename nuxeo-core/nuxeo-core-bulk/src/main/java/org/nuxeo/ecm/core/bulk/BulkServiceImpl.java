@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.lib.stream.computation.Record;
@@ -110,6 +111,16 @@ public class BulkServiceImpl implements BulkService {
             if (command.getBatchSize() == 0) {
                 command.setBatchSize(adminService.getBatchSize(command.getAction()));
             }
+        }
+        if (command.isDefaultScroller()) {
+            String actionScroller = adminService.getDefaultScroller(command.getAction());
+            if (!isBlank(actionScroller)) {
+                command.setScroller(actionScroller);
+            }
+        }
+        ScrollService scrollService = Framework.getService(ScrollService.class);
+        if (!scrollService.exists(command.getScroller())) {
+            throw new IllegalArgumentException("Unknown scroller for command: " + command);
         }
 
         // store the bulk command and status in the key/value store

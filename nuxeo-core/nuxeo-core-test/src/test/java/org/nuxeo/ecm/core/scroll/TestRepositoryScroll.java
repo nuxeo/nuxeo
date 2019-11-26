@@ -73,8 +73,7 @@ public class TestRepositoryScroll {
     public void testNormal() throws Exception {
         String docId = createADocument();
         String nxql = "SELECT * FROM Document";
-        ScrollRequest request = new DocumentScrollRequest(
-                new DocumentScrollRequest.Builder(nxql).type(getType()).username(USERNAME));
+        ScrollRequest request = DocumentScrollRequest.builder(nxql).type(getType()).username(USERNAME).build();
         try (Scroll scroll = service.scroll(request)) {
             assertNotNull(scroll);
             assertTrue(scroll.toString(), scroll.fetch());
@@ -88,8 +87,7 @@ public class TestRepositoryScroll {
     @Test
     public void testNoResults() {
         String nxql = "SELECT * FROM Document";
-        ScrollRequest request = new DocumentScrollRequest(
-                new DocumentScrollRequest.Builder(nxql).type(getType()).username(USERNAME));
+        ScrollRequest request = DocumentScrollRequest.builder(nxql).type(getType()).username(USERNAME).build();
         try (Scroll scroll = service.scroll(request)) {
             assertNotNull(scroll);
             assertFalse(scroll.toString(), scroll.fetch());
@@ -100,8 +98,7 @@ public class TestRepositoryScroll {
     @Test
     public void testInvalidQuery() {
         String nxql = "foo,bar";
-        ScrollRequest request = new DocumentScrollRequest(
-                new DocumentScrollRequest.Builder(nxql).type(getType()).username(USERNAME));
+        ScrollRequest request = DocumentScrollRequest.builder(nxql).type(getType()).username(USERNAME).build();
         try (Scroll scroll = service.scroll(request)) {
             scroll.fetch();
             fail("Expecting an NXQL parse execption");
