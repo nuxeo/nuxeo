@@ -22,11 +22,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_PAGE_PROVIDER;
+import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_TYPE;
+import static org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants.DUBLINCORE_TITLE_PROPERTY;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
@@ -60,6 +64,7 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.io.marshallers.json.AggregateJsonWriter;
+import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -67,6 +72,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -100,13 +106,16 @@ public class RestESDocumentsTest extends BaseTest {
     /**
      * @since 11.1
      */
-    protected static final String DC_TITLE = "dc:title";
+    protected static final String COLLECTION_NAME = "testCollection";
 
     @Inject
     protected PageProviderService pageProviderService;
 
     @Inject
     protected AutomationService automationService;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     @Test
     public void iCanPerformESQLPageProviderOnRepository() throws IOException, InterruptedException {
@@ -148,6 +157,37 @@ public class RestESDocumentsTest extends BaseTest {
         if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
             fail("Should be an elastic search page provider");
         }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.collections.core:OSGI-INF/collection-pageprovider-contrib.xml")
+    @Deploy("org.nuxeo.elasticsearch.core.test:pageprovider-replacers-test-contrib.xml")
+    public void iCanUseFulltextOperatorWithElasticsearchPageProvider() {
+        DocumentModel coll1 = session.createDocumentModel(ROOT_PATH, COLLECTION_NAME + 1, COLLECTION_TYPE);
+        coll1.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, coll1.getName());
+        DocumentModel coll2 = session.createDocumentModel(ROOT_PATH, COLLECTION_NAME + 2, COLLECTION_TYPE);
+        coll2.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, coll2.getName());
+        DocumentModel fufu = session.createDocumentModel(ROOT_PATH, "furtiveCollection", COLLECTION_TYPE);
+        fufu.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, fufu.getName());
+
+        session.createDocument(coll1);
+        session.createDocument(coll2);
+        session.createDocument(fufu);
+
+        txFeature.nextTransaction();
+
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition(COLLECTION_PAGE_PROVIDER);
+
+        Map<String, Serializable> props = Map.of(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY,
+                (Serializable) session);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                ppdef.getName(), ppdef, null, null, null, 0L, props, "testCo", session.getPrincipal().getName());
+
+        List<DocumentModel> page = pp.getCurrentPage();
+        assertEquals(2, page.size());
+        assertEquals(coll1.getName(), page.get(0).getName());
+        assertEquals(coll2.getName(), page.get(1).getName());
     }
 
     @Test
@@ -280,7 +320,7 @@ public class RestESDocumentsTest extends BaseTest {
         for (int i = 0; i < 50; i++) {
             DocumentModel doc = session.createDocumentModel(ROOT_PATH, "aggTest" + 1, "File");
             doc.setPropertyValue("dc:coverage", "europe/Spain");
-            doc.setPropertyValue(DC_TITLE, "tight_" + i % 2);
+            doc.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, "tight_" + i % 2);
             if (i % 3 == 0) {
                 doc.setPropertyValue("dc:description", "subs" + i % 4);
             }
