@@ -96,13 +96,13 @@ public class RepositoryScroll implements Scroll {
 
     @Override
     public void close() {
-        if (loginContext != null) {
-            loginContext.close();
-            loginContext = null;
-        }
         if (session != null) {
             session.close();
             session = null;
+        }
+        if (loginContext != null) {
+            loginContext.close();
+            loginContext = null;
         }
     }
 
