@@ -138,7 +138,6 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         }
         // if not define, try to get the config of the class
         return getConfig(type);
-
     }
 
     @Override
