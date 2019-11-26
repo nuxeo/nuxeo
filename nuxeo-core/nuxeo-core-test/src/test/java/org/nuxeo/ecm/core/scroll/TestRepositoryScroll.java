@@ -60,16 +60,21 @@ public class TestRepositoryScroll {
     @Inject
     public TransactionalFeature txFeature;
 
+    public String getType() {
+        return "repository";
+    }
+
     @Test
     public void testService() {
         assertNotNull(service);
     }
 
     @Test
-    public void testNormal() {
+    public void testNormal() throws Exception {
         String docId = createADocument();
         String nxql = "SELECT * FROM Document";
-        ScrollRequest request = new DocumentScrollRequest(new DocumentScrollRequest.Builder(nxql).username(USERNAME));
+        ScrollRequest request = new DocumentScrollRequest(
+                new DocumentScrollRequest.Builder(nxql).type(getType()).username(USERNAME));
         try (Scroll scroll = service.scroll(request)) {
             assertNotNull(scroll);
             assertTrue(scroll.toString(), scroll.fetch());
@@ -83,7 +88,8 @@ public class TestRepositoryScroll {
     @Test
     public void testNoResults() {
         String nxql = "SELECT * FROM Document";
-        ScrollRequest request = new DocumentScrollRequest(new DocumentScrollRequest.Builder(nxql).username(USERNAME));
+        ScrollRequest request = new DocumentScrollRequest(
+                new DocumentScrollRequest.Builder(nxql).type(getType()).username(USERNAME));
         try (Scroll scroll = service.scroll(request)) {
             assertNotNull(scroll);
             assertFalse(scroll.toString(), scroll.fetch());
@@ -94,7 +100,8 @@ public class TestRepositoryScroll {
     @Test
     public void testInvalidQuery() {
         String nxql = "foo,bar";
-        ScrollRequest request = new DocumentScrollRequest(new DocumentScrollRequest.Builder(nxql).username(USERNAME));
+        ScrollRequest request = new DocumentScrollRequest(
+                new DocumentScrollRequest.Builder(nxql).type(getType()).username(USERNAME));
         try (Scroll scroll = service.scroll(request)) {
             scroll.fetch();
             fail("Expecting an NXQL parse execption");
@@ -103,7 +110,7 @@ public class TestRepositoryScroll {
         }
     }
 
-    protected String createADocument() {
+    protected String createADocument() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "myFolder", "Folder");
         doc = session.createDocument(doc);
 
@@ -112,6 +119,7 @@ public class TestRepositoryScroll {
         acp.getOrCreateACL().add(new ACE(USERNAME, "Read", true));
         doc.setACP(acp, false);
         session.save();
+        txFeature.nextTransaction();
         return doc.getId();
     }
 
