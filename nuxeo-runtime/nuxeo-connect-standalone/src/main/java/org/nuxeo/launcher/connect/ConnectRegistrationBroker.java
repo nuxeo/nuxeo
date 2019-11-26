@@ -102,7 +102,8 @@ public class ConnectRegistrationBroker {
         List<ConnectProject> studioProjects = registration().getAvailableProjectsForRegistration(username,
                 new String(password));
         if (studioProjects.isEmpty()) {
-            throw new ConfigurationException("Wrong login or password.");
+            throw new ConfigurationException(
+                    "Wrong login or token. Please make sure you use a token created at https://connect.nuxeo.com/nuxeo/site/connect/tokens");
         }
         return studioProjects;
     }
