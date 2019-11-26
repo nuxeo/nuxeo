@@ -7,7 +7,8 @@
     <coreQueryPageProvider name="default_collection">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="false" escapeParameters="true">
-        SELECT * FROM Document WHERE dc:title ILIKE '?%' AND ecm:mixinType = 'Collection' AND
+        SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */
+        dc:title ILIKE '?%' AND ecm:mixinType = 'Collection' AND
         (ecm:primaryType != 'Favorites' OR (ecm:primaryType = 'Favorites' AND dc:creator = '?')) AND
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isVersion = 0 AND ecm:isTrashed = 0
@@ -19,7 +20,8 @@
 
     <coreQueryPageProvider name="user_collections">
       <pattern quoteParameters="true" escapeParameters="true">
-        SELECT * FROM Document WHERE dc:title ILIKE :searchTerm AND ecm:mixinType = 'Collection' AND
+        SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */
+        dc:title ILIKE :searchTerm AND ecm:mixinType = 'Collection' AND
         ecm:primaryType != 'Favorites' AND
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isVersion = 0 AND ecm:isTrashed = 0
@@ -32,7 +34,7 @@
     <coreQueryPageProvider name="default_collection_candidate">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="false" escapeParameters="true">
-        SELECT * FROM Document where dc:title ILIKE '?%'
+        SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */ ILIKE '?%'
         AND ecm:mixinType != 'SystemDocument' AND ecm:mixinType !=
         'NotCollectionMember' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
