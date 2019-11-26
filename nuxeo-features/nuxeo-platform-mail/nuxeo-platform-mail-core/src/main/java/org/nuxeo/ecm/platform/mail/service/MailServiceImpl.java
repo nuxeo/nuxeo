@@ -36,13 +36,13 @@ import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActions;
 import org.nuxeo.ecm.platform.mail.action.MailBoxActionsImpl;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipe;
 import org.nuxeo.ecm.platform.mail.action.MessageActionPipeDescriptor;
 import org.nuxeo.ecm.platform.mail.fetcher.PropertiesFetcher;
 import org.nuxeo.ecm.platform.mail.fetcher.PropertiesFetcherDescriptor;
+import org.nuxeo.mail.MailSessionBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -246,6 +246,6 @@ public class MailServiceImpl extends DefaultComponent implements MailService {
                                  .map(e -> e.getKey() + "#" + e.getValue())
                                  .sorted()
                                  .collect(Collectors.joining("-", "{", "}"));
-        return sessions.computeIfAbsent(sessionKey, k -> EmailHelper.newSession(props));
+        return sessions.computeIfAbsent(sessionKey, k -> MailSessionBuilder.fromProperties(props).build());
     }
 }

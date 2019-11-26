@@ -51,7 +51,6 @@ import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Session;
 import javax.mail.Store;
 
 import org.apache.commons.lang3.StringUtils;
@@ -66,6 +65,7 @@ import org.nuxeo.ecm.platform.mail.action.Visitor;
 import org.nuxeo.ecm.platform.mail.listener.MailEventListener;
 import org.nuxeo.ecm.platform.mail.service.MailService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.mail.MailSessionBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -191,10 +191,7 @@ public final class MailCoreHelper {
                 properties.put("user", email);
                 properties.put("password", password);
 
-                Session session = Session.getInstance(properties);
-
-                store = session.getStore();
-                store.connect(email, password);
+                store = MailSessionBuilder.fromProperties(properties).buildAndConnect();
 
                 String folderName = INBOX; // TODO should be an attribute in 'protocol' schema
                 rootFolder = store.getFolder(folderName);

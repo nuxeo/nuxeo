@@ -600,6 +600,11 @@
       <!-- Nuxeo Services -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-mail</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -2343,6 +2348,11 @@
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>3.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-exec</artifactId>
+        <version>1.3</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
