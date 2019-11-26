@@ -34,6 +34,7 @@ import org.nuxeo.ecm.automation.core.operations.collections.GetCollectionsOperat
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * Class testing the operation "Collection.GetCollections".
@@ -44,6 +45,9 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
 
     @Inject
     CollectionManager collectionManager;
+
+    @Inject
+    protected TransactionalFeature txFeature;
 
     List<DocumentModel> listCollections;
 
@@ -66,7 +70,7 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
                 COLLECTION_DESCRIPTION, testWorkspace.getPathAsString());
         listCollections.add(collection4);
 
-        session.save();
+        txFeature.nextTransaction();
     }
 
     @Test
@@ -86,7 +90,8 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
 
         // Search several collections
         chain = new OperationChain("test-chain-2");
-        chain.add(GetCollectionsOperation.ID).set("searchTerm", COLLECTION_NAME + "%");
+        chain.add(GetCollectionsOperation.ID)
+             .set("searchTerm", COLLECTION_NAME.substring(0, COLLECTION_NAME.length() - 3));
         collectionsList = (PaginableDocumentModelListImpl) service.run(ctx, chain);
 
         assertNotNull(collectionsList);
