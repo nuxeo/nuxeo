@@ -36,7 +36,7 @@ import org.nuxeo.ecm.core.scroll.StaticScrollRequest;
 public class TestStaticScroll {
 
     protected Scroll getScroll(String ids, int scrollSize) {
-        ScrollRequest request = new StaticScrollRequest(new StaticScrollRequest.Builder(ids).scrollSize(scrollSize));
+        ScrollRequest request = StaticScrollRequest.builder(ids).scrollSize(scrollSize).build();
         Scroll scroll = new StaticScroll();
         scroll.init(request, Collections.emptyMap());
         return scroll;

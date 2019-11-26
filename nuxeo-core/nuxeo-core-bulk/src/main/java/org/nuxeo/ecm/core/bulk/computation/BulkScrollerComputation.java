@@ -20,26 +20,24 @@
 package org.nuxeo.ecm.core.bulk.computation;
 
 import static java.lang.Math.min;
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.STATUS_STREAM;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.RUNNING;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCROLLING_RUNNING;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.security.auth.login.LoginException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.api.scroll.Scroll;
+import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
+import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.bulk.BulkAdminService;
 import org.nuxeo.ecm.core.bulk.BulkCodecs;
 import org.nuxeo.ecm.core.bulk.BulkService;
@@ -47,12 +45,12 @@ import org.nuxeo.ecm.core.bulk.message.BulkBucket;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.query.QueryParseException;
+import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.api.login.NuxeoLoginContext;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -83,7 +81,11 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected final List<String> documentIds;
 
-    private final boolean produceImmediate;
+    protected final boolean produceImmediate;
+
+    protected int scrollSize;
+
+    protected int bucketSize;
 
     /**
      * @param name the computation name
@@ -108,71 +110,75 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected void processRecord(ComputationContext context, Record record) {
         BulkCommand command = null;
+        String commandId = null;
         try {
             command = BulkCodecs.getCommandCodec().decode(record.getData());
-            String commandId = command.getId();
-            int bucketSize = command.getBucketSize() > 0 ? command.getBucketSize()
-                    : Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
-            int scrollSize = scrollBatchSize;
-            if (bucketSize > scrollSize) {
-                if (bucketSize <= MAX_SCROLL_SIZE) {
-                    scrollSize = bucketSize;
-                } else {
-                    log.warn("Bucket size: %d too big for command: %s, reduce to: %d", bucketSize, command,
-                            MAX_SCROLL_SIZE);
-                    scrollSize = bucketSize = MAX_SCROLL_SIZE;
-                }
-            }
+            commandId = command.getId();
+            computeScrollAndBucketSize(command);
             updateStatusAsScrolling(context, commandId);
-            String username = command.getUsername();
-            try (NuxeoLoginContext loginContext = loginSystemOrUser(username);
-                    CloseableCoreSession session = CoreInstance.openCoreSession(command.getRepository())) {
-                // scroll documents
-                ScrollResult<String> scroll = session.scroll(command.getQuery(), scrollSize, scrollKeepAliveSeconds);
-                long documentCount = 0;
-                long bucketNumber = 1;
-                while (scroll.hasResults()) {
+
+            long documentCount = 0;
+            long bucketNumber = 1;
+            try (Scroll scroll = buildScroll(command)) {
+                while (scroll.fetch()) {
                     if (isAbortedCommand(commandId)) {
                         log.debug("Skipping aborted command: {}", commandId);
                         context.askForCheckpoint();
                         return;
                     }
-                    List<String> docIds = scroll.getResults();
+                    List<String> docIds = scroll.getIds();
                     documentIds.addAll(docIds);
                     while (documentIds.size() >= bucketSize) {
                         produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
                     }
-
                     documentCount += docIds.size();
-                    // next batch
-                    scroll = session.scroll(scroll.getScrollId());
-                    TransactionHelper.commitOrRollbackTransaction();
-                    TransactionHelper.startTransaction();
                 }
-                // send remaining document ids
-                // there's at most one record because we loop while scrolling
-                if (!documentIds.isEmpty()) {
-                    produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
-                }
-                updateStatusAfterScroll(context, commandId, documentCount);
-            } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
-                log.error("Invalid query results in an empty document set: {}", command, e);
-                updateStatusAfterScroll(context, commandId, "Invalid query");
             }
-        } catch (NuxeoException | LoginException e) {
+            // send remaining document ids
+            // there's at most one record because we loop while scrolling
+            if (!documentIds.isEmpty()) {
+                produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
+            }
+            updateStatusAfterScroll(context, commandId, documentCount);
+        } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
+            log.error("Invalid query results in an empty document set: {}", command, e);
+            updateStatusAfterScroll(context, commandId, "Invalid query");
+        } catch (NuxeoException e) {
             if (command != null) {
                 log.error("Invalid command produces an empty document set: {}", command, e);
                 updateStatusAfterScroll(context, command.getId(), "Invalid command");
             } else {
                 log.error("Discard invalid record: {}", record, e);
             }
-
         }
         context.askForCheckpoint();
     }
 
-    protected NuxeoLoginContext loginSystemOrUser(String username) throws LoginException {
-        return SYSTEM_USERNAME.equals(username) ? Framework.loginSystem() : Framework.loginUser(username);
+    protected Scroll buildScroll(BulkCommand command) {
+        ScrollRequest request = DocumentScrollRequest.builder(command.getQuery())
+                                                     .username(command.getUsername())
+                                                     .repository(command.getRepository())
+                                                     .scrollSize(scrollSize)
+                                                     .timeout(Duration.ofSeconds(scrollKeepAliveSeconds))
+                                                     .type(command.getScroller())
+                                                     .build();
+        ScrollService service = Framework.getService(ScrollService.class);
+        return service.scroll(request);
+    }
+
+    protected void computeScrollAndBucketSize(BulkCommand command) {
+        bucketSize = command.getBucketSize() > 0 ? command.getBucketSize()
+                : Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
+        scrollSize = scrollBatchSize;
+        if (bucketSize > scrollSize) {
+            if (bucketSize <= MAX_SCROLL_SIZE) {
+                scrollSize = bucketSize;
+            } else {
+                log.warn("Bucket size: {} too big for command: {}, reduce to: {}", bucketSize, command,
+                        MAX_SCROLL_SIZE);
+                scrollSize = bucketSize = MAX_SCROLL_SIZE;
+            }
+        }
     }
 
     protected boolean isAbortedCommand(String commandId) {
