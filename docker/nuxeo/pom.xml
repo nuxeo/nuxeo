@@ -9,11 +9,16 @@
     <version>11.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>nuxeo-builder-platform-docker-image</artifactId>
-  <name>Nuxeo Builder Platform Docker Image</name>
+  <artifactId>nuxeo-docker-image</artifactId>
+  <name>Nuxeo Docker Image</name>
   <packaging>pom</packaging>
 
   <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.docker</groupId>
+      <artifactId>nuxeo-base-docker-image</artifactId>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.nuxeo.docker</groupId>
       <artifactId>nuxeo-builder-docker-image</artifactId>
@@ -33,21 +38,6 @@
     <dependency>
       <groupId>org.nuxeo.packages</groupId>
       <artifactId>nuxeo-dam-package</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.packages</groupId>
-      <artifactId>nuxeo-drive-package</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.packages</groupId>
-      <artifactId>nuxeo-easyshare-package</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.packages</groupId>
-      <artifactId>nuxeo-liveconnect-package</artifactId>
       <type>zip</type>
     </dependency>
     <dependency>
@@ -86,10 +76,11 @@
               <goal>tag</goal>
             </goals>
             <configuration>
-              <repository>nuxeo/builder-platform</repository>
+              <repository>nuxeo/nuxeo</repository>
               <tag>${nuxeo.platform.version}</tag>
               <buildArgs>
-                <BASE_IMAGE>nuxeo/builder:${nuxeo.platform.version}</BASE_IMAGE>
+                <BUILDER_IMAGE>nuxeo/builder:${nuxeo.platform.version}</BUILDER_IMAGE>
+                <BASE_IMAGE>nuxeo/base:${nuxeo.platform.version}</BASE_IMAGE>
               </buildArgs>
               <pullNewerImage>false</pullNewerImage>
             </configuration>
