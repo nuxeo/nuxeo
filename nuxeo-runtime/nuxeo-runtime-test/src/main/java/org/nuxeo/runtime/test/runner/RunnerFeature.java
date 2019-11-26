@@ -102,9 +102,23 @@ public interface RunnerFeature {
     }
 
     /**
+     * Before entering in the @Before methods
+     */
+    default void beforeSetup(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        beforeSetup(runner); // forward calls for backward compatibility
+    }
+
+    /**
      * After the call of the @After methods
      */
     default void afterTeardown(FeaturesRunner runner) throws Exception {
+    }
+
+    /**
+     * After the call of the @After methods
+     */
+    default void afterTeardown(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        afterTeardown(runner); // forward calls for backward compatibility
     }
 
     /**

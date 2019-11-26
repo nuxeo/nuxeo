@@ -38,7 +38,8 @@ import com.google.inject.Binder;
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@Features({ MDCFeature.class, ConditionalIgnoreRule.Feature.class, RandomBug.Feature.class })
+@Features({ MDCFeature.class, ConditionalIgnoreRule.Feature.class, RandomBug.Feature.class,
+        WithFrameworkPropertyFeature.class })
 public class RuntimeFeature implements RunnerFeature {
 
     protected RuntimeHarness harness;
