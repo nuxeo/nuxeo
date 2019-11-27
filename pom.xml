@@ -5273,6 +5273,18 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nxrm3-maven-plugin</artifactId>
+        <configuration>
+          <nexusUrl>https://packages.nuxeo.com</nexusUrl>
+          <serverId>maven-internal-staging</serverId>
+          <repository>maven-internal-staging</repository>
+          <destinationRepository>maven-hotfix-releases</destinationRepository>
+          <tag>hotfix-build-${project.version}</tag>
+          <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+        </configuration>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -6088,14 +6100,6 @@
           <artifactId>nxrm3-maven-plugin</artifactId>
           <version>1.0.2</version>
           <extensions>true</extensions>
-          <configuration>
-            <nexusUrl>https://packages.nuxeo.com</nexusUrl>
-            <serverId>maven-internal-staging</serverId>
-            <repository>maven-internal-staging</repository>
-            <destinationRepository>maven-hotfix-releases</destinationRepository>
-            <tag>hotfix-build-${project.version}</tag>
-            <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -6393,6 +6397,28 @@
         <repository>
           <id>nightly-staging</id>
           <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <uniqueVersion>true</uniqueVersion>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>nexus-staging</id>
+      <repositories>
+        <repository>
+          <id>maven-internal-staging</id>
+          <url>https://packages.nuxeo.com/repository/maven-internal-staging</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <repository>
+          <id>maven-internal-staging</id>
+          <url>https://packages.nuxeo.com/repository/maven-internal-staging</url>
           <uniqueVersion>true</uniqueVersion>
         </repository>
       </distributionManagement>
