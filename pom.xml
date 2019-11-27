@@ -6402,6 +6402,28 @@
       </distributionManagement>
     </profile>
     <profile>
+      <id>nexus-staging</id>
+      <repositories>
+        <repository>
+          <id>maven-internal-staging</id>
+          <url>https://packages.nuxeo.com/nexus/content/repositories/maven-internal-staging</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <repository>
+          <id>maven-internal-staging</id>
+          <url>https://packages.nuxeo.com/nexus/content/repositories/maven-internal-staging</url>
+          <uniqueVersion>true</uniqueVersion>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
       <id>javadoc</id>
       <build>
         <plugins>
