@@ -52,7 +52,7 @@ String iframeUrl = screenConfig.getNewsIframeUrl();
 String backgroundPath = LoginScreenHelper.getValueWithDefault(screenConfig.getBackgroundImage(), context + "/img/login_bg.jpg");
 String bodyBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getBodyBackgroundStyle(), "url('" + backgroundPath + "') no-repeat center center fixed #006ead");
 String loginButtonBackgroundColor = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginButtonBackgroundColor(), "#0066ff");
-String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "none repeat scroll 0 0");
+String loginBoxBackgroundStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getLoginBoxBackgroundStyle(), "#fff repeat scroll 0 0");
 String footerStyle = LoginScreenHelper.getValueWithDefault(screenConfig.getFooterStyle(), "");
 boolean disableBackgroundSizeCover = Boolean.TRUE.equals(screenConfig.getDisableBackgroundSizeCover());
 String fieldAutocomplete = screenConfig.getFieldAutocomplete() ? "on" : "off";
@@ -95,58 +95,6 @@ if (selectedLanguage != null) { %>
 
 <style type="text/css">
 <!--
-/* Mobile devices */
-@media all and (max-width: 850px) {
-  body {
-    height: auto;
-    background-position: center center;
-  }
-  section {
-    flex-direction: column;
-    display: block;
-  }
-  footer, video, .welcome {
-    display: none;
-  }
-}
-
-@media all and (max-height: 880px) and (max-width: 850px) {
-  .news {
-    display: none;
-  }
-
-  form {
-    margin-top: 2em;
-  }
-}
-
-@media all and (max-width: 500px) {
-  form {
-    width: auto;
-    margin-top: 0;
-  }
-
-  .header {
-    background-color: #fff;
-    margin: -1em -1em 2em;
-    width: calc(100% + 2em);
-    padding: .8em 1em .3em;
-  }
-
-  .news {
-    display: none;
-  }
-}
-
-@media all and (min-width: 500px) {
-  form {
-    background-color: #fff;
-    padding: 2.5em;
-    width: 20em;
-  }
-
-}
-
 * {
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -405,7 +353,57 @@ a.mobileAppLink:hover {
 }
 <% } %>
 
+/* Mobile devices */
+@media all and (max-width: 850px) {
+  body {
+    height: auto;
+    background-position: center center;
+  }
+  section {
+    flex-direction: column;
+    display: block;
+  }
+  footer, video, .welcome {
+    display: none;
+  }
+}
 
+@media all and (max-height: 880px) and (max-width: 850px) {
+  .news {
+    display: none;
+  }
+
+  form {
+    margin-top: 2em;
+  }
+}
+
+@media all and (max-width: 500px) {
+  form {
+    width: auto;
+    margin-top: 0;
+  }
+
+  .header {
+    background-color: #fff;
+    margin: -1em -1em 2em;
+    width: calc(100% + 2em);
+    padding: .8em 1em .3em;
+  }
+
+  .news {
+    display: none;
+  }
+}
+
+@media all and (min-width: 500px) {
+  form {
+    background: <%=loginBoxBackgroundStyle%>;
+    padding: 2.5em;
+    width: 20em;
+  }
+
+}
 -->
 </style>
 
