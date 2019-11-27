@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.elasticsearch.provider.testReplacersContrib">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="replacers">
+    <replacer withClass="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <provider>default_collection</provider>
+    </replacer>
+  </extension>
+
+</component>

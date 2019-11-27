@@ -23,13 +23,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_PAGE_PROVIDER;
+import static org.nuxeo.ecm.collections.api.CollectionConstants.COLLECTION_TYPE;
 import static org.nuxeo.ecm.platform.tag.TagConstants.TAG_FACET;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
@@ -60,6 +65,7 @@ import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.io.marshallers.json.AggregateJsonWriter;
+import org.nuxeo.elasticsearch.provider.ElasticSearchNativePageProvider;
 import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -91,11 +97,32 @@ public class RestESDocumentsTest extends BaseTest {
 
     public static final String QUERY = "select * from Document where " + "ecm:currentLifeCycleState <> 'deleted'";
 
+    /**
+     * @since 11.1
+     */
+    protected static final String ROOT_PATH = "/";
+
+    /**
+     * @since 11.1
+     */
+    protected static final String COLLECTION_NAME = "testCollection";
+
+    /**
+     * @since 11.1
+     */
+    public static final String DUBLINCORE_TITLE_PROPERTY = "dc:title";
+
     @Inject
     PageProviderService pageProviderService;
 
     @Inject
     AutomationService automationService;
+
+    /**
+     * @since 11.1
+     */
+    @Inject
+    protected ElasticSearchAdmin esa;
 
     @Test
     public void iCanBrowseTheRepoByItsId() throws Exception {
@@ -158,6 +185,44 @@ public class RestESDocumentsTest extends BaseTest {
         if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
             fail("Should be an elastic search page provider");
         }
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    @Deploy({ "org.nuxeo.ecm.platform.collections.core",
+            "org.nuxeo.elasticsearch.core.test:pageprovider-replacers-test-contrib.xml" })
+    public void iCanUseFulltextOperatorWithElasticsearchPageProvider()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        startTransaction();
+        DocumentModel coll1 = session.createDocumentModel(ROOT_PATH, COLLECTION_NAME + 1, COLLECTION_TYPE);
+        coll1.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, coll1.getName());
+        DocumentModel coll2 = session.createDocumentModel(ROOT_PATH, COLLECTION_NAME + 2, COLLECTION_TYPE);
+        coll2.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, coll2.getName());
+        DocumentModel fufu = session.createDocumentModel(ROOT_PATH, "furtiveCollection", COLLECTION_TYPE);
+        fufu.setPropertyValue(DUBLINCORE_TITLE_PROPERTY, fufu.getName());
+
+        session.createDocument(coll1);
+        session.createDocument(coll2);
+        session.createDocument(fufu);
+
+        // next transaction
+        TransactionHelper.commitOrRollbackTransaction();
+        esa.prepareWaitForIndexing().get(10, TimeUnit.SECONDS);
+        esa.refresh();
+        startTransaction();
+
+        PageProviderDefinition ppdef = pageProviderService.getPageProviderDefinition(COLLECTION_PAGE_PROVIDER);
+        Map<String, Serializable> props = new HashMap<>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        @SuppressWarnings("unchecked")
+        PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                ppdef.getName(), ppdef, null, null, null, 0L, props, "testCo", session.getPrincipal().getName());
+        List<DocumentModel> page = pp.getCurrentPage();
+        assertEquals(2, page.size());
+        assertEquals(coll1.getName(), page.get(0).getName());
+        assertEquals(coll2.getName(), page.get(1).getName());
     }
 
     @Test
@@ -271,5 +336,15 @@ public class RestESDocumentsTest extends BaseTest {
             assertNull(node.get("aggregations").get("path").get("buckets"));
         }
 
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected void startTransaction() {
+        if (!TransactionHelper.isTransactionActive()) {
+            TransactionHelper.startTransaction();
+        }
+        Assert.assertEquals(0, esa.getPendingWorkerCount());
     }
 }
