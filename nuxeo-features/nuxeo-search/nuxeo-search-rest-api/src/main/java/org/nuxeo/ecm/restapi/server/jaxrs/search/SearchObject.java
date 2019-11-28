@@ -126,7 +126,8 @@ public class SearchObject extends QueryExecutor {
     public Object doBulkActionByLang(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(null, queryParams);
-        return newObject("bulkAction", query);
+        String scrollName = queryParams.getFirst(SCROLL_PARAM);
+        return newObject("bulkAction", query, scrollName);
     }
 
     @GET
@@ -150,7 +151,8 @@ public class SearchObject extends QueryExecutor {
             @Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(pageProviderName, queryParams);
-        return newObject("bulkAction", query);
+        String scrollName = queryParams.getFirst(SCROLL_PARAM);
+        return newObject("bulkAction", query, scrollName);
     }
 
     @GET

@@ -48,9 +48,14 @@ public class BulkActionObject extends DefaultObject {
 
     protected String query;
 
+    protected String scroller = null;
+
     @Override
     public void initialize(Object... args) {
         query = (String) args[0];
+        if (args.length == 2 && args[1] != null) {
+            scroller = (String) args[1];
+        }
     }
 
     @POST
@@ -74,6 +79,7 @@ public class BulkActionObject extends DefaultObject {
         BulkCommand command = new BulkCommand.Builder(actionId, query).repository(repository)
                                                                       .user(username)
                                                                       .params(BulkParameters.paramsToMap(actionParams))
+                                                                      .scroller(scroller)
                                                                       .build();
 
         BulkService service = Framework.getService(BulkService.class);
