@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
@@ -96,7 +96,7 @@ public class BulkServiceImpl implements BulkService {
         }
 
         RepositoryManager repoManager = Framework.getService(RepositoryManager.class);
-        if (isEmpty(command.getRepository())) {
+        if (isBlank(command.getRepository())) {
             command.setRepository(repoManager.getDefaultRepositoryName());
         } else {
             if (repoManager.getRepository(command.getRepository()) == null) {
