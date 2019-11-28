@@ -1,0 +1,17 @@
+{
+  "name": "nuxeo-platform-3d-jsf",
+  "version": "0.0.1",
+  "dependencies": {
+    "run-sequence": {
+      "version": "1.2.2",
+      "dependencies": {
+        "chalk": {
+          "version": "2.4.2"
+        },
+        "gulp-util": {
+          "version": "2.2.20"
+        }
+      }
+    }
+  }
+}
