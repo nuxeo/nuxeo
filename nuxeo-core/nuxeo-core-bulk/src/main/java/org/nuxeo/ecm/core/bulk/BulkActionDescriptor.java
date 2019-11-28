@@ -56,6 +56,10 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@validationClass")
     public Class<? extends BulkActionValidation> validationClass;
 
+    // @since 11.1
+    @XNode("@defaultScroller")
+    public String defaultScroller;
+
     @Override
     public String getId() {
         return name;
@@ -90,4 +94,8 @@ public class BulkActionDescriptor implements Descriptor {
         this.isEnabled = isEnabled;
     }
 
+    // @since 11.1
+    public String getDefaultScroller() {
+        return defaultScroller;
+    }
 }
