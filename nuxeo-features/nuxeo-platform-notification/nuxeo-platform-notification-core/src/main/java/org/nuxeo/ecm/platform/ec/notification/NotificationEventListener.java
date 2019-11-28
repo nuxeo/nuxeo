@@ -111,6 +111,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
             }
             List<Notification> notifs = notificationService.getNotificationsForEvents(event.getName());
             if (notifs != null && !notifs.isEmpty()) {
+
                 handleNotifications(event, notifs);
             }
         }

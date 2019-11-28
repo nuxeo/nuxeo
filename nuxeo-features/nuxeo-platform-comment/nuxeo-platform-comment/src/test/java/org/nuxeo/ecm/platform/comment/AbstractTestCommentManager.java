@@ -20,19 +20,33 @@
 
 package org.nuxeo.ecm.platform.comment;
 
+import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOCUMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
+import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
+import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 
+import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -49,6 +63,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -58,7 +75,14 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.ecm.platform.comment.notification.CommentCreationVeto;
+import org.nuxeo.ecm.platform.comment.notification.CommentDeletionVeto;
+import org.nuxeo.ecm.platform.comment.notification.CommentModificationVeto;
+import org.nuxeo.ecm.platform.comment.notification.CommentNotificationVeto;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
+import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -73,6 +97,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.ecm.platform.comment.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
+@Deploy("org.nuxeo.ecm.platform.notification.core")
 public abstract class AbstractTestCommentManager {
 
     public static final String FOLDER_COMMENT_CONTAINER = "/Folder/CommentContainer";
@@ -88,6 +113,9 @@ public abstract class AbstractTestCommentManager {
 
     @Inject
     protected CoreFeature coreFeature;
+
+    @Inject
+    protected NotificationManager notificationService;
 
     public abstract Class<? extends CommentManager> getType();
 
@@ -310,6 +338,127 @@ public abstract class AbstractTestCommentManager {
     @Test
     public void testCommentManagerType() {
         assertEquals(getType(), commentManager.getClass());
+    }
+
+    @Test
+    public void shouldNotifyEventWhenCreateComment() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        final DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
+        DocumentModel documentModel = session.createDocument(doc);
+        transactionalFeature.nextTransaction();
+
+        publishAndVerifyEventNotification(() -> {
+            Comment comment = new CommentImpl();
+            comment.setAuthor("author");
+            comment.setText("any Comment message");
+            comment.setParentId(documentModel.getId());
+
+            Comment createdComment = commentManager.createComment(session, comment);
+            return session.getDocument(new IdRef(createdComment.getId()));
+
+        }, COMMENT_ADDED, DOCUMENT_CREATED);
+    }
+
+    @Test
+    public void shouldNotifyEventWhenUpdateComment() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
+        doc = session.createDocument(doc);
+
+        Comment comment = new CommentImpl();
+        comment.setAuthor("author");
+        comment.setText("any Comment message");
+        comment.setParentId(doc.getId());
+
+        Comment createdComment = commentManager.createComment(session, comment);
+        transactionalFeature.nextTransaction();
+
+        publishAndVerifyEventNotification(() -> {
+            createdComment.setText("i update the message");
+            commentManager.updateComment(session, createdComment.getId(), createdComment);
+            return session.getDocument(new IdRef(createdComment.getId()));
+
+        }, COMMENT_UPDATED, DOCUMENT_UPDATED);
+    }
+
+    @Test
+    public void shouldNotifyEventWhenRemoveComment() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
+        doc = session.createDocument(doc);
+
+        Comment comment = new CommentImpl();
+        comment.setAuthor("author");
+        comment.setText("any Comment message");
+        comment.setParentId(doc.getId());
+
+        Comment createdComment = commentManager.createComment(session, comment);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
+        commentDocModel.detach(true);
+        transactionalFeature.nextTransaction();
+
+        publishAndVerifyEventNotification(() -> {
+            commentManager.deleteComment(session, createdComment.getId());
+            return commentDocModel;
+
+        }, COMMENT_REMOVED, DOCUMENT_REMOVED);
+    }
+
+    protected void publishAndVerifyEventNotification(Supplier<DocumentModel> supplier, String commentEventType,
+            String documentEventType) {
+        try (CapturingEventListener listener = new CapturingEventListener(commentEventType, documentEventType)) {
+            DocumentModel expectedDocModel = supplier.get();
+
+            assertTrue(listener.hasBeenFired(commentEventType));
+            assertTrue(listener.hasBeenFired(documentEventType));
+
+            // Depending on the case of the comment manager implementation, many notifications can be published
+            // But we should handle and process (sending email...) one and only one
+            Class<? extends CommentNotificationVeto> expectedVetoType = getVetoType(commentEventType);
+            Collection<NotificationListenerVeto> notificationVetos = ((NotificationService) notificationService).getNotificationVetos();
+            List<NotificationListenerVeto> expectedVetos = notificationVetos.stream()
+                                                                            .filter(e -> expectedVetoType.isAssignableFrom(
+                                                                                    e.getClass()))
+                                                                            .collect(Collectors.toList());
+
+            assertEquals(1, expectedVetos.size());
+
+            NotificationListenerVeto veto = expectedVetos.get(0);
+            List<Event> events = listener.getCapturedEvents()
+                                         .stream()
+                                         .filter(e -> veto.accept(e) //
+                                                 && !toBoolean((Boolean) e.getContext()
+                                                                          .getProperty(DISABLE_NOTIFICATION_SERVICE)))
+                                         .collect(Collectors.toList());
+
+            assertEquals(1, events.size());
+            assertEquals(commentEventType, events.get(0).getName());
+
+            Event expectedEvent = events.get(0);
+            DocumentEventContext context = (DocumentEventContext) expectedEvent.getContext();
+
+            Map<String, Serializable> properties = context.getProperties();
+            assertFalse(properties.isEmpty());
+
+            assertTrue(properties.containsKey(COMMENT_DOCUMENT));
+            DocumentModel commentDocModel = (DocumentModel) properties.get(COMMENT_DOCUMENT);
+            assertEquals(expectedDocModel.getId(), commentDocModel.getId());
+        }
+    }
+
+    protected Class<? extends CommentNotificationVeto> getVetoType(String commentEventType) {
+        switch (commentEventType) {
+        case COMMENT_ADDED:
+            return CommentCreationVeto.class;
+        case COMMENT_UPDATED:
+            return CommentModificationVeto.class;
+        case COMMENT_REMOVED:
+            return CommentDeletionVeto.class;
+        }
+        throw new IllegalArgumentException("Undefined veto for comment event type: " + commentEventType);
     }
 
     public static CommentServiceConfig newConfig() {

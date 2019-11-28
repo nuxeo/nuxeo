@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
@@ -166,8 +167,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             }
 
             commentDocModel = session.createDocument(commentDocModel);
-            notifyEvent(session, CommentEvents.COMMENT_ADDED, session.getDocument(commentDocModel.getParentRef()),
-                    commentDocModel);
+            notifyEvent(session, commentDocModel, CommentEvents.COMMENT_ADDED);
             return Comments.newComment(commentDocModel);
         });
     }
@@ -191,7 +191,7 @@ public class TreeCommentManager extends AbstractCommentManager {
 
             commentModelToCreate = session.createDocument(commentModelToCreate);
             commentModelToCreate.detach(true);
-            notifyEvent(session, CommentEvents.COMMENT_ADDED, documentModel, commentModelToCreate);
+            notifyEvent(session, commentModelToCreate, CommentEvents.COMMENT_ADDED);
             return commentModelToCreate;
         });
     }
@@ -238,7 +238,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             if (comment instanceof ExternalEntity) {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentDocumentModel);
             }
-            session.saveDocument(commentDocumentModel);
+            commentDocumentModel = session.saveDocument(commentDocumentModel);
+            notifyEvent(session, commentDocumentModel, CommentEvents.COMMENT_UPDATED);
             return Comments.newComment(commentDocumentModel);
         });
     }
@@ -255,7 +256,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             if (comment instanceof ExternalEntity) {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentDocModel);
             }
-            session.saveDocument(commentDocModel);
+            commentDocModel = session.saveDocument(commentDocModel);
+            notifyEvent(session, commentDocModel, CommentEvents.COMMENT_UPDATED);
             return Comments.newComment(commentDocModel);
         });
     }
@@ -429,10 +431,9 @@ public class TreeCommentManager extends AbstractCommentManager {
                 throw new CommentSecurityException(String.format(
                         "The user %s cannot delete comments of the document %s", principal.getName(), ancestorRef));
             }
-            DocumentModel parent = session.getDocument(commentDocModel.getParentRef());
             commentDocModel.detach(true);
             session.removeDocument(documentRef);
-            notifyEvent(session, CommentEvents.COMMENT_REMOVED, parent, commentDocModel);
+            notifyEvent(session, commentDocModel, CommentEvents.COMMENT_REMOVED);
         });
 
     }
@@ -474,5 +475,41 @@ public class TreeCommentManager extends AbstractCommentManager {
 
         return (PageProvider<DocumentModel>) ppService.getPageProvider(GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME,
                 sortInfos, pageSize, currentPageIndex, props, documentId);
+    }
+
+    /**
+     * Notify the event of type {@code eventType} on the given {@code commentDocumentModel}.
+     *
+     * @param session the session
+     * @param commentDocumentModel the document model of the comment
+     * @param eventType the event type to publish
+     * @implSpec This method uses internally {@link #notifyEvent(CoreSession, String, DocumentModel, DocumentModel)}
+     * @since 11.1
+     */
+    protected void notifyEvent(CoreSession session, DocumentModel commentDocumentModel, String eventType) {
+        requireNonNull(eventType);
+
+        // FIXME synchronize dev on NXP-28252
+        DocumentModel commentParent = session.getDocument(getCommentedDocument(session, commentDocumentModel));
+        notifyEvent(session, eventType, commentParent, commentDocumentModel);
+    }
+
+    /**
+     * Gets the document being commented.
+     *
+     * @param session the core session
+     * @param commentDocumentModel the document model of the comment
+     * @return {@code DocumentRef} that {@code commentDocumentModel} comment
+     * @implSpec  This implementation returns the {@link DocumentModel#getParentRef()} if the given
+     *          {@code commentDocumentModel} is a reply, otherwise
+     *          {@link #getTopLevelCommentAncestor(CoreSession, DocumentRef)}
+     * @since 11.1
+     */
+    protected DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
+        DocumentModel parentDocumentModel = session.getDocument(commentDocumentModel.getParentRef());
+        if (COMMENTS_DIRECTORY_TYPE.equals(parentDocumentModel.getType())) {
+            return getTopLevelCommentAncestor(session, commentDocumentModel.getRef());
+        }
+        return parentDocumentModel.getRef();
     }
 }

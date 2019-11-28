@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -148,6 +149,24 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
 
         assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
+    }
+
+    @Test
+    @Override
+    @Ignore("Don't verify this behaviour on this old implementation of comment manager")
+    public void shouldNotifyEventWhenCreateComment() {
+    }
+
+    @Test
+    @Override
+    @Ignore("Don't verify this behaviour on this old implementation of comment manager")
+    public void shouldNotifyEventWhenUpdateComment() {
+    }
+
+    @Test
+    @Override
+    @Ignore("Don't verify this behaviour on this old implementation of comment manager")
+    public void shouldNotifyEventWhenRemoveComment() {
     }
 
     @Override

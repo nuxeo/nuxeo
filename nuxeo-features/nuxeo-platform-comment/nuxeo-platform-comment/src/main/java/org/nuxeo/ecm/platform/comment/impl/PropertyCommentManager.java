@@ -20,6 +20,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -31,6 +32,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -290,6 +292,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
             }
             s.saveDocument(commentModel);
+            notifyEvent(s, CommentEvents.COMMENT_UPDATED, s.getDocument(new IdRef(comment.getParentId())),
+                    commentModel);
             return Comments.newComment(commentModel);
         });
     }
@@ -358,6 +362,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
             }
             s.saveDocument(commentModel);
+            notifyEvent(s, CommentEvents.COMMENT_UPDATED, s.getDocument(new IdRef(comment.getParentId())),
+                    commentModel);
             return Comments.newComment(commentModel);
         });
     }
@@ -431,6 +437,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
             }
             PathRef ref = new PathRef(parentPath, COMMENTS_DIRECTORY);
             DocumentModel commentFolderDoc = s.createDocumentModel(parentPath, COMMENTS_DIRECTORY, HIDDEN_FOLDER_TYPE);
+            // No need to notify the creation of the Comments folder
+            commentFolderDoc.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
             s.getOrCreateDocument(commentFolderDoc);
             s.save();
             return ref.toString();
