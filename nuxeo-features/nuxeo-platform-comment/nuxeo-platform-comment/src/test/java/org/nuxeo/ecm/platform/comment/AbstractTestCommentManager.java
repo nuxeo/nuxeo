@@ -130,8 +130,7 @@ public abstract class AbstractTestCommentManager {
         comment = commentManager.createComment(session, comment);
         assertEquals(author, comment.getAuthor());
         assertEquals(text, comment.getText());
-        assertEquals(doc.getRef(),
-                commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
+        assertEquals(doc.getRef(), commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
     }
 
     @Test
@@ -253,8 +252,9 @@ public abstract class AbstractTestCommentManager {
             fail("jane should not be able to get the top level comment ancestor");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user jane does not have access to the comments of document %s",
-                    doc.getId()), cse.getMessage());
+            assertEquals(
+                    String.format("The user jane does not have access to the comments of document %s", doc.getId()),
+                    cse.getMessage());
         }
     }
 
@@ -290,7 +290,8 @@ public abstract class AbstractTestCommentManager {
         anotherReply = commentManager.createComment(session, anotherReply);
 
         DocumentModel anotherReplyDocModel = session.getDocument(new IdRef(anotherReply.getId()));
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, anotherReplyDocModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+                anotherReplyDocModel.getRef());
         assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
 

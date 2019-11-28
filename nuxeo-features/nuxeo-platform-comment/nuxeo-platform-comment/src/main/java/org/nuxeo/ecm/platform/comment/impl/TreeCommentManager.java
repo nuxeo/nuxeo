@@ -55,7 +55,6 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
-import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
@@ -136,10 +135,9 @@ public class TreeCommentManager extends AbstractCommentManager {
         DocumentModel commentModel = getExternalCommentModel(session, entityId);
         // Check the read permissions using the given session
         checkReadCommentPermissions(session, commentModel.getRef());
-        return Framework.doPrivileged(() -> COMMENT_DOC_TYPE.equals(commentModel.getType())
-               ? Comments.newComment(commentModel)
-               : Comments.newAnnotation(commentModel)
-        );
+        return Framework.doPrivileged(() -> COMMENT_DOC_TYPE.equals(commentModel.getType()) //
+                ? Comments.newComment(commentModel) //
+                : Comments.newAnnotation(commentModel));
     }
 
     @Override
@@ -428,8 +426,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             if (!(principal.isAdministrator() //
                     || author.equals(principal.getName()) //
                     || session.hasPermission(principal, ancestorRef, EVERYTHING))) {
-                throw new CommentSecurityException(String.format("The user %s cannot delete comments of the document %s",
-                        principal.getName(), ancestorRef));
+                throw new CommentSecurityException(String.format(
+                        "The user %s cannot delete comments of the document %s", principal.getName(), ancestorRef));
             }
             DocumentModel parent = session.getDocument(commentDocModel.getParentRef());
             commentDocModel.detach(true);

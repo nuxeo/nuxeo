@@ -335,10 +335,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
                     + " does not have access to the comments of document " + parentId);
         }
-        return Framework.doPrivileged(() -> COMMENT_DOC_TYPE.equals(commentModel.getType())
-                ? Comments.newComment(commentModel)
-                : Comments.newAnnotation(commentModel)
-        );
+        return Framework.doPrivileged(() -> COMMENT_DOC_TYPE.equals(commentModel.getType()) //
+                ? Comments.newComment(commentModel) //
+                : Comments.newAnnotation(commentModel));
     }
 
     @Override
