@@ -90,6 +90,10 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     }
 
     @Override
+    public String getDefaultScroller(String action) {
+        return descriptors.get(action).getDefaultScroller();
+    }
+    @Override
     public boolean isHttpEnabled(String actionId) {
         return descriptors.get(actionId).httpEnabled;
     }
