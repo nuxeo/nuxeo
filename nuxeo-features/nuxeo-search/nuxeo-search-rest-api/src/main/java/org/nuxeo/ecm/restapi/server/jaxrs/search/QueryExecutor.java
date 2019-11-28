@@ -104,6 +104,9 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         NXQL
     }
 
+    // @since 11.1
+    public static final String SCROLL_PARAM = "scroll";
+
     protected PageProviderService pageProviderService;
 
     protected boolean skipAggregates;
