@@ -515,6 +515,22 @@ public class DocumentBrowsingTest extends BaseTest {
         }
     }
 
+    /**
+     * NXP-28349
+     */
+    @Test
+    public void iCanCreateADocumentWithNonExistingField() throws Exception {
+        // Given a folder and a Rest Creation request
+        DocumentModel folder = RestServerInit.getFolder(0, session);
+
+        String data = "{\"entity-type\": \"document\",\"type\": \"File\",\"name\":\"newName\",\"properties\": {\"dc:title\":\"My title\",\"note:note\":\"File does not have note\"}}";
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "path" + folder.getPathAsString(),
+                data)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
+    }
+
     @Test
     public void iCanDeleteADocument() throws Exception {
         // Given a document
