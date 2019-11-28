@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -125,7 +124,8 @@ public class SearchObject extends QueryExecutor {
     public Object doBulkActionByLang(@Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(null, queryParams);
-        return newObject("bulkAction", query);
+        String scrollName = queryParams.getFirst(SCROLL_PARAM);
+        return newObject("bulkAction", query, scrollName);
     }
 
     @GET
@@ -149,7 +149,8 @@ public class SearchObject extends QueryExecutor {
             @Context UriInfo uriInfo) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         String query = getQueryString(pageProviderName, queryParams);
-        return newObject("bulkAction", query);
+        String scrollName = queryParams.getFirst(SCROLL_PARAM);
+        return newObject("bulkAction", query, scrollName);
     }
 
     @GET
