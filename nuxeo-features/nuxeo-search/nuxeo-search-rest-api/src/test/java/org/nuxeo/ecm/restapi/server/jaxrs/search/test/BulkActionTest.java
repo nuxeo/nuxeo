@@ -195,4 +195,12 @@ public class BulkActionTest extends BaseTest {
         }
     }
 
+    @Test
+    public void testExecuteBulkWithAScroller() throws Exception {
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("query", "SELECT * FROM Document WHERE ecm:isVersion = 0");
+        queryParams.add("scroll", "repository");
+        testExecuteBulkAction("search", queryParams);
+    }
+
 }
