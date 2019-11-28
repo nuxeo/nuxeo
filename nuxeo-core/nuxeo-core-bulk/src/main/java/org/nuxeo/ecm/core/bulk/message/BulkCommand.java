@@ -101,6 +101,10 @@ public class BulkCommand implements Serializable {
         return scroller == null ? DEFAULT_SCROLLER : scroller;
     }
 
+    public boolean isDefaultScroller() {
+        return scroller == null || DEFAULT_SCROLLER.equals(scroller);
+    }
+
     public Map<String, Serializable> getParams() {
         return Collections.unmodifiableMap(params);
     }
