@@ -174,8 +174,14 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         }
         Settings settings = getSettings(descriptor);
         log.debug("Starting computation topology: {}\n{}", descriptor::getId, () -> topology.toPlantuml(settings));
-        StreamProcessor streamProcessor = streamManager.registerAndCreateProcessor(descriptor.getId(), topology, settings);
-        processors.put(descriptor.getId(), streamProcessor);
+        if (descriptor.isStart()) {
+            StreamProcessor streamProcessor = streamManager.registerAndCreateProcessor(descriptor.getId(), topology,
+                    settings);
+            processors.put(descriptor.getId(), streamProcessor);
+        } else {
+            streamManager.register(descriptor.getId(), topology, settings);
+            processors.put(descriptor.getId(), null);
+        }
     }
 
     protected Settings getSettings(StreamProcessorDescriptor descriptor) {
@@ -214,7 +220,11 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     }
 
     protected void stopComputations() {
-        processors.forEach((name, manager) -> manager.stop(Duration.ofSeconds(1)));
+        processors.forEach((name, processor) -> {
+            if (processor != null) {
+                processor.stop(Duration.ofSeconds(1));
+            }
+        });
         processors.clear();
     }
 
