@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kafka.KafkaConfigServiceImpl;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -48,6 +49,15 @@ public class BulkComponent extends DefaultComponent {
             return (T) bulkAdminService;
         }
         return null;
+    }
+
+    @Override
+    public int getApplicationStartedOrder() {
+        // The Bulk Service uses a processor. The processor's topology is built using the BulkAdminService that defines
+        // the Bulk Actions. Processor being contributed to the StreamService, the BulkAdminService must be started
+        // before the StreamService. The StreamService is started after the KafkaConfigService, so we use the same
+        // level.
+        return KafkaConfigServiceImpl.APPLICATION_STARTED_ORDER;
     }
 
     @Override
