@@ -251,61 +251,51 @@ public abstract class TestStreamProcessor {
         }
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoOneRecordOneThreadOnePartition() throws Exception {
         testComplexTopo(1, 1, 1);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoOneRecordOneThreadMultiPartitions() throws Exception {
         testComplexTopo(1, 1, 8);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoFewRecordsOneThreadOnePartition() throws Exception {
         testComplexTopo(17, 1, 1);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoManyRecordsOneThread() throws Exception {
         testComplexTopo(1003, 1, 1);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoOneRecord() throws Exception {
         testComplexTopo(1, 4, 4);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoFewRecords() throws Exception {
         testComplexTopo(17, 4, 4);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoManyRecords() throws Exception {
         testComplexTopo(1003, 4, 8);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoManyRecordsOnePartition() throws Exception {
         testComplexTopo(101, 8, 1);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testComplexTopoManyRecordsOneThreadManyPartitions() throws Exception {
         testComplexTopo(100, 6, 8);
     }
 
-    @Ignore(value = "NXP-27559")
     @Test
     public void testStopAndResume() throws Exception {
         final long targetTimestamp = System.currentTimeMillis();
