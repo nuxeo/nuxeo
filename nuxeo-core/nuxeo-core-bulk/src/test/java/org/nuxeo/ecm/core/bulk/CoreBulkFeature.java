@@ -34,6 +34,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 10.2
  */
 @Deploy("org.nuxeo.runtime.kv")
+@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.ecm.core.bulk")
 @Deploy("org.nuxeo.ecm.core.bulk.test")
 @Features({ RuntimeFeature.class, TransactionalFeature.class, RuntimeStreamFeature.class, CoreIOFeature.class })
