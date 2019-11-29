@@ -189,7 +189,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         Codec<Record> actualCodec = descriptor.defaultCodec == null ? codecService.getCodec(DEFAULT_CODEC, Record.class)
                 : codecService.getCodec(descriptor.defaultCodec, Record.class);
         Settings settings = new Settings(descriptor.defaultConcurrency, descriptor.defaultPartitions, actualCodec,
-                descriptor.getDefaultPolicy());
+                descriptor.getDefaultPolicy(), null, descriptor.defaultExternal);
         descriptor.computations.forEach(comp -> settings.setConcurrency(comp.name, comp.concurrency));
         descriptor.policies.forEach(policy -> settings.setPolicy(policy.name, descriptor.getPolicy(policy.name)));
         for (StreamProcessorDescriptor.StreamDescriptor streamDescriptor : descriptor.streams) {
@@ -199,6 +199,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
                 settings.setCodec(streamDescriptor.name, codecService.getCodec(streamDescriptor.codec, Record.class));
             }
             streamDescriptor.filters.forEach(filter -> settings.addFilter(streamDescriptor.name, filter.getFilter()));
+            settings.setExternal(streamDescriptor.name,
+                    streamDescriptor.external != null ? streamDescriptor.external : descriptor.defaultExternal);
         }
         return settings;
     }

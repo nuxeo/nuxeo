@@ -173,12 +173,13 @@ public class TestStreamService {
     }
 
     @Test
-    public void testRegisterOnlyStreamProcessor() throws Exception {
+    public void testRegisterAndExternalStream() throws Exception {
         // make sure the processor is initialized
         LogManager manager = service.getLogManager("default");
         assertTrue(manager.exists("input3"));
         assertTrue(manager.exists("output3"));
         assertTrue(manager.exists("registerInput"));
+        assertFalse(manager.exists("externalOutput"));
 
         // make sure the processor is not started
         @SuppressWarnings("resource")

@@ -113,6 +113,11 @@ public class StreamProcessorDescriptor implements Descriptor {
         @XNode("@codec")
         public String codec;
 
+        // Stream is initialized outside of the processor
+        // @since 11.1
+        @XNode("@external")
+        public Boolean external;
+
         @XNodeList(value = "filter", type = ArrayList.class, componentType = FilterDescriptor.class)
         public List<FilterDescriptor> filters = new ArrayList<>();
 
@@ -204,6 +209,11 @@ public class StreamProcessorDescriptor implements Descriptor {
 
     @XNode("@defaultCodec")
     public String defaultCodec;
+
+    // Default for streams's external property
+    // @since 11.1
+    @XNode("@defaultExternal")
+    public boolean defaultExternal;
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> options = new HashMap<>();

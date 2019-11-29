@@ -20,9 +20,7 @@ package org.nuxeo.lib.stream.computation.log;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -61,8 +59,6 @@ public class LogStreamManager implements StreamManager {
     protected final Map<String, Settings> settings = new HashMap<>();
 
     protected final Map<String, RecordFilterChain> filters = new HashMap<>();
-
-    protected final Set<String> streams = new HashSet<>();
 
     @Override
     public void register(String processorName, Topology topology, Settings settings) {
@@ -140,7 +136,12 @@ public class LogStreamManager implements StreamManager {
     protected void initStreams(Topology topology, Settings settings) {
         log.debug("Initializing streams");
         topology.streamsSet().forEach(streamName -> {
-            if (logManager.exists(streamName)) {
+            if (settings.isExternal(streamName)) {
+                return;
+            }
+            if (!logManager.exists(streamName)) {
+                logManager.createIfNotExists(streamName, settings.getPartitions(streamName));
+            } else {
                 int size = logManager.size(streamName);
                 if (settings.getPartitions(streamName) != size) {
                     log.debug(String.format(
@@ -148,21 +149,26 @@ public class LogStreamManager implements StreamManager {
                             streamName, settings.getPartitions(streamName), size));
                     settings.setPartitions(streamName, size);
                 }
-            } else {
-                logManager.createIfNotExists(streamName, settings.getPartitions(streamName));
             }
-            streams.add(streamName);
         });
     }
 
     protected void initAppenders(Topology topology, Settings settings) {
         log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
         topology.streamsSet()
-                .forEach(stream -> logManager.getAppender(stream, settings.getCodec(stream)));
+                .forEach(stream -> {
+                    if (!settings.isExternal(stream)) {
+                        logManager.getAppender(stream, settings.getCodec(stream));
+                    }
+                });
     }
 
     protected void registerFilters(Topology topology, Settings settings) {
-        topology.streamsSet().forEach(stream -> filters.put(stream, settings.getFilterChain(stream)));
+        topology.streamsSet().forEach(stream -> {
+            if (!settings.isExternal(stream)) {
+                filters.put(stream, settings.getFilterChain(stream));
+            }
+        });
     }
 
 }
