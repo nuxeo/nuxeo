@@ -71,7 +71,8 @@
     <streamProcessor name="registerProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor3"
       defaultConcurrency="1" defaultPartitions="1" logConfig="default" start="false" >
       <policy name="default" maxRetries="0" continueOnFailure="false" />
-      <stream name="registerInput" partitions="1" />
+      <stream name="registerInput" />
+      <stream name="externalOutput" partitions="1" external="true" />
     </streamProcessor>
   </extension>
 
