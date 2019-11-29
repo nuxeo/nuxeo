@@ -21,6 +21,7 @@ package org.nuxeo.runtime.stream.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -32,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.StreamManager;
+import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -168,6 +170,31 @@ public class TestStreamService {
         String streamName = "s1";
         assertTrue(manager.exists(streamName));
         assertEquals(2, manager.size(streamName));
+    }
+
+    @Test
+    public void testRegisterOnlyStreamProcessor() throws Exception {
+        // make sure the processor is initialized
+        LogManager manager = service.getLogManager("default");
+        assertTrue(manager.exists("input3"));
+        assertTrue(manager.exists("output3"));
+        assertTrue(manager.exists("registerInput"));
+
+        // make sure the processor is not started
+        @SuppressWarnings("resource")
+        StreamManager streamManager = service.getStreamManager("default");
+        streamManager.append("input3", Record.of("key", null));
+        LogTailer<Record> tailer = manager.createTailer("test", "output3");
+        assertNull(tailer.read(Duration.ofSeconds(1)));
+
+        // We can get the processor
+        StreamProcessor processor = streamManager.createStreamProcessor("registerProcessor");
+        assertNotNull(processor);
+
+        // and manage it
+        processor.start();
+        processor.drainAndStop(Duration.ofSeconds(5));
+        assertEquals("key", tailer.read(Duration.ofSeconds(1)).message().getKey());
     }
 
     @Test

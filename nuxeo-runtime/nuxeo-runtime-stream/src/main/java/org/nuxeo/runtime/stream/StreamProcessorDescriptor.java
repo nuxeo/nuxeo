@@ -49,6 +49,10 @@ public class StreamProcessorDescriptor implements Descriptor {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
+    // @since 11.1
+    @XNode("@start")
+    protected boolean start = true;
+
     @XObject(value = "computation")
     public static class ComputationDescriptor implements Descriptor {
 
@@ -272,4 +276,13 @@ public class StreamProcessorDescriptor implements Descriptor {
         return name;
     }
 
+    // @since 11.1
+    public boolean isStart() {
+        return start;
+    }
+
+    // @since 11.1
+    public void setStart(boolean start) {
+        this.start = start;
+    }
 }
