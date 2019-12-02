@@ -6098,7 +6098,7 @@
         <plugin>
           <groupId>org.sonatype.plugins</groupId>
           <artifactId>nxrm3-maven-plugin</artifactId>
-          <version>1.0.2</version>
+          <version>1.0.3-NX1</version>
           <extensions>true</extensions>
         </plugin>
       </plugins>
@@ -6422,6 +6422,20 @@
           <uniqueVersion>true</uniqueVersion>
         </repository>
       </distributionManagement>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>maven-vendor</id>
+          <url>https://packages.nuxeo.com/repository/maven-vendor</url>
+          <name>Nuxeo maven plugins repository</name>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <updatePolicy>always</updatePolicy>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
     </profile>
     <profile>
       <id>javadoc</id>
