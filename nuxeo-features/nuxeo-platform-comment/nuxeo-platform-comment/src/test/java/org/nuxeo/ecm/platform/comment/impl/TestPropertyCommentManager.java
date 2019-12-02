@@ -20,8 +20,8 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static java.time.temporal.ChronoUnit.MILLIS;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -31,6 +31,7 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.api.Comments.commentToDocumentModel;
 import static org.nuxeo.ecm.platform.comment.api.Comments.newComment;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -476,6 +477,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         session.save();
 
+        commentModel.setPropertyValue(COMMENT_PARENT_ID, doc.getId());
         commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         DocumentModelList children = session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER), COMMENT_DOC_TYPE);
@@ -823,6 +825,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         commentModel = session.createDocument(commentModel);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
         Comments.commentToDocumentModel(comment, commentModel);
+        commentModel.setPropertyValue(COMMENT_PARENT_ID, doc.getId());
         commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         // Check if Comments folder has been created in the given container
@@ -881,5 +884,9 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     @Override
     public Class<? extends CommentManager> getType() {
         return PropertyCommentManager.class;
+    }
+
+    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
+        return new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID));
     }
 }

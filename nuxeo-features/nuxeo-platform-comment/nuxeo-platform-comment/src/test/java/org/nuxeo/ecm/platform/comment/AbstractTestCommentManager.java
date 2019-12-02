@@ -30,7 +30,9 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOCUMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.PARENT_COMMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
@@ -64,7 +66,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -80,6 +81,7 @@ import org.nuxeo.ecm.platform.comment.notification.CommentDeletionVeto;
 import org.nuxeo.ecm.platform.comment.notification.CommentModificationVeto;
 import org.nuxeo.ecm.platform.comment.notification.CommentNotificationVeto;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
@@ -118,6 +120,10 @@ public abstract class AbstractTestCommentManager {
     protected NotificationManager notificationService;
 
     public abstract Class<? extends CommentManager> getType();
+
+    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
+        throw new UnsupportedOperationException();
+    }
 
     @Before
     public void init() {
@@ -228,7 +234,7 @@ public abstract class AbstractTestCommentManager {
         DocumentModel doc = session.getDocument(new PathRef("/Folder/File"));
         CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
         DocumentModel comment = session.createDocumentModel(COMMENT_DOC_TYPE);
-        comment.setPropertyValue(COMMENT_TEXT, "Test");
+        comment.setPropertyValue(CommentsConstants.COMMENT_TEXT, "Test");
         comment.setPropertyValue(COMMENT_AUTHOR, "bob");
         comment.setPropertyValue(COMMENT_CREATION_DATE, Calendar.getInstance());
 
@@ -239,7 +245,7 @@ public abstract class AbstractTestCommentManager {
         // Creation check
         assertEquals(1, commentableDocument.getComments().size());
         DocumentModel newComment = commentableDocument.getComments().get(0);
-        assertThat(newComment.getPropertyValue(COMMENT_TEXT)).isEqualTo("Test");
+        assertThat(newComment.getPropertyValue(CommentsConstants.COMMENT_TEXT)).isEqualTo("Test");
 
         // Deletion check
         commentableDocument.removeComment(newComment);
@@ -407,46 +413,97 @@ public abstract class AbstractTestCommentManager {
         }, COMMENT_REMOVED, DOCUMENT_REMOVED);
     }
 
+    @Test
+    public void shouldGetCommentedDocModel() {
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        session.createDocument(domain);
+        DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
+        doc = session.createDocument(doc);
+
+        Comment comment = new CommentImpl();
+        comment.setAuthor("author");
+        comment.setText("any Comment message");
+        comment.setParentId(doc.getId());
+
+        Comment createdComment = commentManager.createComment(session, comment);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
+        assertEquals(getCommentedDocRef(session, commentDocModel, false), doc.getRef());
+
+        comment = new CommentImpl();
+        comment.setAuthor("author");
+        comment.setText("I am a reply");
+        comment.setParentId(commentDocModel.getId());
+        Comment replyComment = commentManager.createComment(session, comment);
+        assertEquals( //
+                getCommentedDocRef(session, session.getDocument(new IdRef(replyComment.getId())), true), //
+                commentDocModel.getRef());
+    }
+
     protected void publishAndVerifyEventNotification(Supplier<DocumentModel> supplier, String commentEventType,
             String documentEventType) {
         try (CapturingEventListener listener = new CapturingEventListener(commentEventType, documentEventType)) {
-            DocumentModel expectedDocModel = supplier.get();
+            DocumentModel documentModel = supplier.get();
 
             assertTrue(listener.hasBeenFired(commentEventType));
             assertTrue(listener.hasBeenFired(documentEventType));
 
-            // Depending on the case of the comment manager implementation, many notifications can be published
-            // But we should handle and process (sending email...) one and only one
-            Class<? extends CommentNotificationVeto> expectedVetoType = getVetoType(commentEventType);
-            Collection<NotificationListenerVeto> notificationVetos = ((NotificationService) notificationService).getNotificationVetos();
-            List<NotificationListenerVeto> expectedVetos = notificationVetos.stream()
-                                                                            .filter(e -> expectedVetoType.isAssignableFrom(
-                                                                                    e.getClass()))
-                                                                            .collect(Collectors.toList());
+            Event event = checkAndGetCommentEvent(commentEventType, listener);
 
-            assertEquals(1, expectedVetos.size());
-
-            NotificationListenerVeto veto = expectedVetos.get(0);
-            List<Event> events = listener.getCapturedEvents()
-                                         .stream()
-                                         .filter(e -> veto.accept(e) //
-                                                 && !toBoolean((Boolean) e.getContext()
-                                                                          .getProperty(DISABLE_NOTIFICATION_SERVICE)))
-                                         .collect(Collectors.toList());
-
-            assertEquals(1, events.size());
-            assertEquals(commentEventType, events.get(0).getName());
-
-            Event expectedEvent = events.get(0);
-            DocumentEventContext context = (DocumentEventContext) expectedEvent.getContext();
-
-            Map<String, Serializable> properties = context.getProperties();
-            assertFalse(properties.isEmpty());
-
-            assertTrue(properties.containsKey(COMMENT_DOCUMENT));
-            DocumentModel commentDocModel = (DocumentModel) properties.get(COMMENT_DOCUMENT);
-            assertEquals(expectedDocModel.getId(), commentDocModel.getId());
+            checkDocumentEventContext(documentModel, event);
         }
+    }
+
+    /**
+     * Gets and ensures that the published comment event will be correctly handled
+     */
+    protected Event checkAndGetCommentEvent(String commentEventType, CapturingEventListener listener) {
+        // FIXME ask the Team for the review, it better to add a new method on NotificationListener
+        // To implements this logic inside it and lets us to test it easily
+
+        // Depending on the case of the comment manager implementation, many notifications can be published
+        // But we should handle and process (sending email...) one and only one (commentEventType)
+        Class<? extends CommentNotificationVeto> expectedVetoType = getVetoType(commentEventType);
+        Collection<NotificationListenerVeto> notificationVetos = ((NotificationService) notificationService).getNotificationVetos();
+        List<NotificationListenerVeto> expectedVetos = notificationVetos.stream()
+                                                                        .filter(e -> expectedVetoType.isAssignableFrom(
+                                                                                e.getClass()))
+                                                                        .collect(Collectors.toList());
+
+        assertEquals(1, expectedVetos.size());
+
+        NotificationListenerVeto veto = expectedVetos.get(0);
+        List<Event> handledEvents = listener.getCapturedEvents()
+                                            .stream()
+                                            .filter(e -> veto.accept(e) //
+                                                    && !toBoolean(
+                                                            (Boolean) e.getContext()
+                                                                       .getProperty(DISABLE_NOTIFICATION_SERVICE)))
+                                            .collect(Collectors.toList());
+
+        assertEquals(1, handledEvents.size());
+        Event expectedEvent = handledEvents.get(0);
+        assertEquals(commentEventType, expectedEvent.getName());
+
+        return expectedEvent;
+    }
+
+    /**
+     * Checks the comment event context data (comment document, commented parent...).
+     */
+    protected void checkDocumentEventContext(DocumentModel expectedDocModel, Event event) {
+        Map<String, Serializable> properties = event.getContext().getProperties();
+        assertFalse(properties.isEmpty());
+
+        assertTrue(properties.containsKey(COMMENT_DOCUMENT));
+        DocumentModel commentDocModel = (DocumentModel) properties.get(COMMENT_DOCUMENT);
+        assertEquals(expectedDocModel.getId(), commentDocModel.getId());
+
+        assertTrue(properties.containsKey(COMMENT));
+        assertEquals(expectedDocModel.getPropertyValue(COMMENT_TEXT), properties.get(COMMENT));
+
+        assertTrue(properties.containsKey(PARENT_COMMENT));
+        DocumentModel commentedDocModel = (DocumentModel) properties.get(PARENT_COMMENT);
+        assertEquals(commentManager.getCommentedDocument(session, expectedDocModel), commentedDocModel.getRef());
     }
 
     protected Class<? extends CommentNotificationVeto> getVetoType(String commentEventType) {

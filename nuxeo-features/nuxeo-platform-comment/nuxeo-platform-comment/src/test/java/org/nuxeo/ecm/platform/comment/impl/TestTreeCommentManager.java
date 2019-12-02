@@ -31,6 +31,7 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 
 import java.io.Serializable;
@@ -351,8 +352,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to get comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s",
-                    doc.getId()), cse.getMessage());
+            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+                    cse.getMessage());
         }
 
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
@@ -360,8 +361,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to get comments");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s",
-                    doc.getId()), cse.getMessage());
+            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+                    cse.getMessage());
         }
 
     }
@@ -629,5 +630,21 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
     @Override
     public Class<? extends CommentManager> getType() {
         return TreeCommentManager.class;
+    }
+
+    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel) {
+        assertTrue(commentDocModel.hasSchema(COMMENT_SCHEMA));
+        DocumentModel commentedDocModel = session.getDocument(commentDocModel.getParentRef());
+        if (COMMENTS_DIRECTORY_TYPE.equals(commentedDocModel.getType())) {
+            commentedDocModel = session.getDocument(commentedDocModel.getParentRef());
+        }
+        return commentedDocModel.getRef();
+    }
+
+    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
+        if (reply) {
+            return commentDocModel.getParentRef();
+        }
+        return commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
     }
 }

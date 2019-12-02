@@ -19,12 +19,24 @@
 
 package org.nuxeo.ecm.platform.comment;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOCUMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.PARENT_COMMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+
+import java.io.Serializable;
+import java.util.Map;
 
 import org.junit.Before;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
@@ -59,7 +71,8 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
 
         // Add a comment
         DocumentModel commentDocModel = session.createDocumentModel(null, "Fake comment", COMMENT_DOC_TYPE);
-        boolean setParent = commentManager instanceof PropertyCommentManager || commentManager instanceof TreeCommentManager;
+        boolean setParent = commentManager instanceof PropertyCommentManager
+                || commentManager instanceof TreeCommentManager;
         // Because we don't use the CommentableDocumentAdapter which will set this property, we should fill it here
         if (setParent) {
             commentDocModel.setPropertyValue(COMMENT_PARENT_ID, fileToComment.getId());
@@ -70,7 +83,7 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
         return session.getDocument(new IdRef(createdComment.getId()));
     }
 
-    protected DocumentModel getCommentedDocument(){
+    protected DocumentModel getCommentedDocument() {
         return session.query(String.format("SELECT * FROM Document Where %s = '%s'", NXQL.ECM_NAME, "anyFile")).get(0);
     }
 
@@ -80,4 +93,29 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
     }
 
     protected abstract BridgeCommentManager getBridgeCommentManager();
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * In the case of comment bridge we will ignore the check when we have an event of deletion comment, because the
+     * bridge checks the existence of the comment document and in this case we will end with an exception.
+     * </p>
+     */
+    protected void checkDocumentEventContext(DocumentModel expectedDocModel, Event event) {
+        Map<String, Serializable> properties = event.getContext().getProperties();
+        assertFalse(properties.isEmpty());
+
+        assertTrue(properties.containsKey(COMMENT_DOCUMENT));
+        DocumentModel commentDocModel = (DocumentModel) properties.get(COMMENT_DOCUMENT);
+        assertEquals(expectedDocModel.getId(), commentDocModel.getId());
+
+        assertTrue(properties.containsKey(COMMENT));
+        assertEquals(expectedDocModel.getPropertyValue(COMMENT_TEXT), properties.get(COMMENT));
+
+        if (!COMMENT_REMOVED.equals(event.getName())) {
+            assertTrue(properties.containsKey(PARENT_COMMENT));
+            DocumentModel commentedDocModel = (DocumentModel) properties.get(PARENT_COMMENT);
+            assertEquals(commentManager.getCommentedDocument(session, expectedDocModel), commentedDocModel.getRef());
+        }
+    }
 }

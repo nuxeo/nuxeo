@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -134,6 +135,20 @@ public class TestBridgeFromPropertyToTreeCommentManager extends AbstractTestBrid
                 commentDocModel.getRef());
         assertNotNull(topLevelCommentAncestor);
         assertEquals(getCommentedDocument().getRef(), topLevelCommentAncestor);
+    }
+
+    @Override
+    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
+        DocumentRef parentRef = commentDocModel.getParentRef();
+        // Comment is under property model
+        if (session.getDocument(parentRef).getType().equals("HiddenFolder")) {
+            return new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID));
+        }
+
+        if (reply) {
+            return commentDocModel.getParentRef();
+        }
+        return commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
     }
 
 }

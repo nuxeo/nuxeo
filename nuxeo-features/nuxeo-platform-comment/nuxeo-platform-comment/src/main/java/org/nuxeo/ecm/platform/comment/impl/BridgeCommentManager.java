@@ -203,6 +203,11 @@ public class BridgeCommentManager extends AbstractCommentManager {
         return second.getLocationOfCommentCreation(session, documentModel);
     }
 
+    @Override
+    public DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
+        return execute(session, commentDocumentModel.getRef(), cm -> cm.getCommentedDocument(session, commentDocumentModel));
+    }
+
     /**
      * Executes the given function for a comment document ref, depending on the type of the provided comment manager {@link #first},
      * {@link #second}.

@@ -350,4 +350,16 @@ public interface CommentManager {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Gets the document being commented.
+     *
+     * @param session the core session
+     * @param commentDocumentModel the document model of the comment
+     * @return {@code DocumentRef} that {@code commentDocumentModel} comment
+     * @since 11.1
+     */
+    default DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
+        throw new UnsupportedOperationException();
+    }
+
 }

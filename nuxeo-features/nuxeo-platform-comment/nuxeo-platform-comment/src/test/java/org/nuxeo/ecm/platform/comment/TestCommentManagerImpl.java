@@ -154,6 +154,13 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
     @Test
     @Override
     @Ignore("Don't verify this behaviour on this old implementation of comment manager")
+    public void shouldGetCommentedDocModel() {
+
+    }
+
+    @Test
+    @Override
+    @Ignore("Don't verify this behaviour on this old implementation of comment manager")
     public void shouldNotifyEventWhenCreateComment() {
     }
 

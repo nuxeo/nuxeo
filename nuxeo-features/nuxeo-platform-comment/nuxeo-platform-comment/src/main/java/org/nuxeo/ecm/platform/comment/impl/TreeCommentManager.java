@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
@@ -478,38 +477,25 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     /**
-     * Notify the event of type {@code eventType} on the given {@code commentDocumentModel}.
-     *
-     * @param session the session
-     * @param commentDocumentModel the document model of the comment
-     * @param eventType the event type to publish
-     * @implSpec This method uses internally {@link #notifyEvent(CoreSession, String, DocumentModel, DocumentModel)}
-     * @since 11.1
+     * {@inheritDoc}
+     * 
+     * @implSpec This implementation returns the {@link DocumentModel#getParentRef()} if the given
+     *           {@code commentDocumentModel} is a reply, otherwise
+     *           {@link #getTopLevelCommentAncestor(CoreSession, DocumentRef)}
      */
-    protected void notifyEvent(CoreSession session, DocumentModel commentDocumentModel, String eventType) {
-        requireNonNull(eventType);
+    public DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
+        // Case when commentDocumentModel is already the document being commented
+        DocumentModel commentedDocModel = commentDocumentModel;
 
-        // FIXME synchronize dev on NXP-28252
-        DocumentModel commentParent = session.getDocument(getCommentedDocument(session, commentDocumentModel));
-        notifyEvent(session, eventType, commentParent, commentDocumentModel);
-    }
-
-    /**
-     * Gets the document being commented.
-     *
-     * @param session the core session
-     * @param commentDocumentModel the document model of the comment
-     * @return {@code DocumentRef} that {@code commentDocumentModel} comment
-     * @implSpec  This implementation returns the {@link DocumentModel#getParentRef()} if the given
-     *          {@code commentDocumentModel} is a reply, otherwise
-     *          {@link #getTopLevelCommentAncestor(CoreSession, DocumentRef)}
-     * @since 11.1
-     */
-    protected DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
-        DocumentModel parentDocumentModel = session.getDocument(commentDocumentModel.getParentRef());
-        if (COMMENTS_DIRECTORY_TYPE.equals(parentDocumentModel.getType())) {
-            return getTopLevelCommentAncestor(session, commentDocumentModel.getRef());
+        // Case when commentDocumentModel is a comment (can be the first comment or any reply)
+        if (commentDocumentModel.hasSchema(COMMENT_SCHEMA)) {
+            commentedDocModel = session.getDocument(commentDocumentModel.getParentRef());
         }
-        return parentDocumentModel.getRef();
+
+        if (COMMENTS_DIRECTORY_TYPE.equals(commentedDocModel.getType())) {
+            commentedDocModel = session.getDocument(commentedDocModel.getParentRef());
+        }
+
+        return commentedDocModel.getRef();
     }
 }

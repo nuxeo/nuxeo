@@ -490,8 +490,14 @@ public class TestCommentsMigrator {
             NuxeoPrincipal principal = session.getPrincipal();
             for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
                 DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
+                comment.setPropertyValue(COMMENT_PARENT_ID, fileWithCommentWithoutParent.getId());
                 DocumentModel createdComment = propertyCommentManager.createComment(fileWithCommentWithoutParent,
                         comment);
+
+                // Simulate removing the comment:parentId
+                createdComment.setPropertyValue(COMMENT_PARENT_ID, null);
+                session.saveDocument(createdComment);
+
                 notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
                         principal, "notification" + i);
             }
