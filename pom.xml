@@ -5273,18 +5273,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nxrm3-maven-plugin</artifactId>
-        <configuration>
-          <nexusUrl>https://packages.nuxeo.com</nexusUrl>
-          <serverId>maven-internal-staging</serverId>
-          <repository>maven-internal-staging</repository>
-          <destinationRepository>maven-hotfix-releases</destinationRepository>
-          <tag>hotfix-build-${project.version}</tag>
-          <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
-        </configuration>
-      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -6095,12 +6083,6 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>1.5.0</version>
         </plugin>
-        <plugin>
-          <groupId>org.sonatype.plugins</groupId>
-          <artifactId>nxrm3-maven-plugin</artifactId>
-          <version>1.0.3-NX1</version>
-          <extensions>true</extensions>
-        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -6403,6 +6385,32 @@
     </profile>
     <profile>
       <id>nexus-staging</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nxrm3-maven-plugin</artifactId>
+            <configuration>
+              <nexusUrl>https://packages.nuxeo.com</nexusUrl>
+              <serverId>maven-internal-staging</serverId>
+              <repository>maven-internal-staging</repository>
+              <destinationRepository>maven-hotfix-releases</destinationRepository>
+              <tag>hotfix-build-${project.version}</tag>
+              <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+            </configuration>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.sonatype.plugins</groupId>
+              <artifactId>nxrm3-maven-plugin</artifactId>
+              <version>1.0.3-NX1</version>
+              <extensions>true</extensions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
       <repositories>
         <repository>
           <id>maven-internal-staging</id>
