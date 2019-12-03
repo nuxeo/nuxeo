@@ -6395,7 +6395,6 @@
               <serverId>maven-internal-staging</serverId>
               <repository>maven-internal-staging</repository>
               <destinationRepository>maven-hotfix-releases</destinationRepository>
-              <tag>hotfix-build-${project.version}</tag>
               <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
             </configuration>
           </plugin>
