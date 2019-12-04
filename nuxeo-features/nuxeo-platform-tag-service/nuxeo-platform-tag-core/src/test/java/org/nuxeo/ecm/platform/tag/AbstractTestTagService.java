@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -73,10 +74,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ AuditFeature.class, CoreFeature.class })
+@Features({ LogCaptureFeature.class, AuditFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.datasource")
 @Deploy("org.nuxeo.ecm.platform.tag")
@@ -100,6 +103,18 @@ public abstract class AbstractTestTagService {
 
     @Inject
     protected NXAuditEventsService auditEventsService;
+
+    /**
+     * @since 11.1
+     */
+    @Inject
+    protected TransactionalFeature txFeature;
+
+    /**
+     * @since 11.1
+     */
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     protected boolean proxies;
 
@@ -888,6 +903,26 @@ public abstract class AbstractTestTagService {
                                .queryLogs(new AuditQueryBuilder().predicate(Predicates.eq(LOG_PRINCIPAL_NAME, "bob"))
                                                                  .and(Predicates.eq(LOG_EVENT_ID, DOCUMENT_UPDATED)))
                                .size());
+    }
+
+    /**
+     * The asynchronous {@link TaggedVersionListener} should handle already removed documents.
+     *
+     * @since 11.1
+     */
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "ERROR")
+    public void testTaggedVersionListenerHandleRemovedDocuments() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef version = session.checkIn(doc.getRef(), VersioningOption.MAJOR, "checked in !");
+        // Triggers a tagService#replaceTags ordered by the TaggedVersionListener
+        doc = session.restoreToVersion(doc.getRef(), version);
+        // directly remove the document before the TaggedVersionListener has a chance to handle it.
+        session.removeDocument(doc.getRef());
+        // TagVersionListener is async
+        txFeature.nextTransaction();
+        assertTrue(logCaptureResult.getCaughtEventMessages().isEmpty());
     }
 
     protected abstract void createTags();
