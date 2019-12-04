@@ -75,6 +75,10 @@ public class SendMail {
 
     protected static final Log log = LogFactory.getLog(SendMail.class);
 
+    /**
+     * @deprecated since 11.1 due to its static modifier, it messes up tests, instantiate {@link Composer} instead
+     */
+    @Deprecated(since = "11.1")
     public static final Composer COMPOSER = new Composer();
 
     public static final String ID = "Document.Mail";
@@ -239,11 +243,12 @@ public class SendMail {
 
     protected Mailer.Message createMessage(DocumentModel doc, String message, Map<String, Object> map)
             throws MessagingException, TemplateException, RenderingException, IOException {
+        var composer = new Composer();
         if (blobXpath == null) {
             if (asHtml) {
-                return COMPOSER.newHtmlMessage(message, map);
+                return composer.newHtmlMessage(message, map);
             } else {
-                return COMPOSER.newTextMessage(message, map);
+                return composer.newTextMessage(message, map);
             }
         } else {
             List<Blob> blobs = new ArrayList<>();
@@ -271,7 +276,7 @@ public class SendMail {
                     log.debug(pe, pe);
                 }
             }
-            return COMPOSER.newMixedMessage(message, map, asHtml ? "html" : "plain", blobs);
+            return composer.newMixedMessage(message, map, asHtml ? "html" : "plain", blobs);
         }
     }
 

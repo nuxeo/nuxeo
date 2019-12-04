@@ -24,9 +24,13 @@ package org.nuxeo.mail;
  */
 public final class MailConstants {
 
+    public static final String CONFIGURATION_JNDI_JAVA_MAIL = "jndi.java.mail";
+
     public static final String CONFIGURATION_MAIL_DEBUG = "mail.debug";
 
     public static final String CONFIGURATION_MAIL_SMTP_AUTH = "mail.smtp.auth";
+
+    public static final String CONFIGURATION_MAIL_SMTP_FROM = "mail.smtp.from";
 
     public static final String CONFIGURATION_MAIL_SMTP_HOST = "mail.smtp.host";
 
@@ -41,6 +45,16 @@ public final class MailConstants {
     public static final String CONFIGURATION_MAIL_STORE_PROTOCOL = "mail.store.protocol";
 
     public static final String CONFIGURATION_MAIL_TRANSPORT_PROTOCOL = "mail.transport.protocol";
+
+    public static final String DEFAULT_MAIL_JNDI_NAME = "java:comp/env/Mail";
+
+    public static final String NUXEO_CONFIGURATION_MAIL_TRANSPORT_HOST = "mail.transport.host";
+
+    public static final String NUXEO_CONFIGURATION_MAIL_TRANSPORT_PORT = "mail.transport.port";
+
+    public static final String NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL = CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
+
+    protected static final String CONFIGURATION_MAIL_PREFIX = "mail.";
 
     private MailConstants() {
         // not allowed

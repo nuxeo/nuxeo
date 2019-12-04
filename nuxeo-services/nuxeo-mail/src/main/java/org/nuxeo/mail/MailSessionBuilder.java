@@ -23,8 +23,11 @@ import static java.lang.Boolean.FALSE;
 import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_JNDI_JAVA_MAIL;
 import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_DEBUG;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_PREFIX;
 import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
+import static org.nuxeo.mail.MailConstants.DEFAULT_MAIL_JNDI_NAME;
 
 import java.io.PrintStream;
 import java.util.Map;
@@ -63,12 +66,13 @@ public class MailSessionBuilder {
         Properties frameworkProperties = Framework.getProperties();
         Properties properties = frameworkProperties.stringPropertyNames() // no other clean api
                                                    .stream()
-                                                   .filter(key -> key.startsWith("mail."))
+                                                   .filter(key -> key.startsWith(CONFIGURATION_MAIL_PREFIX))
                                                    .collect(Collectors.toMap(Function.identity(),
                                                            frameworkProperties::getProperty, //
                                                            (v1, v2) -> v2, // should't happen
                                                            Properties::new));
-        return fromJndi(Framework.getProperty("jndi.name")).fallbackOn(properties);
+        String jndiSessionName = Framework.getProperty(CONFIGURATION_JNDI_JAVA_MAIL, DEFAULT_MAIL_JNDI_NAME);
+        return fromJndi(jndiSessionName).fallbackOn(properties);
     }
 
     /**

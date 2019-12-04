@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Mail Services Test
+Bundle-SymbolicName: org.nuxeo.mail.tst;singleton:=true
+Bundle-Vendor: Nuxeo

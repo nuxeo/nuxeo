@@ -605,6 +605,13 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-mail</artifactId>
+        <type>test-jar</type>
+        <scope>test</scope>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>

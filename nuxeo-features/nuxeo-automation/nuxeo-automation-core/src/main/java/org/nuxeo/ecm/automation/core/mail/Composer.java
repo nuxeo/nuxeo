@@ -18,6 +18,9 @@
  */
 package org.nuxeo.ecm.automation.core.mail;
 
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_JNDI_JAVA_MAIL;
+import static org.nuxeo.mail.MailConstants.DEFAULT_MAIL_JNDI_NAME;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,6 +37,7 @@ import javax.activation.DataHandler;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +57,9 @@ import freemarker.template.TemplateException;
 public class Composer {
 
     private static final Log log = LogFactory.getLog(Composer.class);
+
+    /** Mail properties read from mail.properties. */
+    protected static final Properties MAIL_PROPERTIES = new Properties();
 
     protected final FreemarkerEngine engine;
 
@@ -88,30 +95,48 @@ public class Composer {
 
     protected Mailer createMailer() {
         // first try the local configuration
+        // it was used by FakeSmtpMailServerFeature / EmbeddedAutomationClientTest#testSendMail - no runtime usage found
+        var properties = getMailProperties();
+        if (!properties.isEmpty()) {
+            mailer = new Mailer(properties);
+        }
+        // second try using JNDI
+        if (mailer == null) {
+            String name = Framework.getProperty(CONFIGURATION_JNDI_JAVA_MAIL, DEFAULT_MAIL_JNDI_NAME);
+            mailer = new Mailer(name);
+        }
+        return mailer;
+    }
+
+    @NotNull
+    protected static Properties getMailProperties() {
+        File mailFile = getMailPropertiesFile();
+        if ((mailFile != null && MAIL_PROPERTIES.isEmpty()) || Framework.isTestModeSet()) {
+            synchronized (MAIL_PROPERTIES) {
+                if ((mailFile != null && MAIL_PROPERTIES.isEmpty()) || Framework.isTestModeSet()) {
+                    MAIL_PROPERTIES.clear();
+                    if (mailFile != null) {
+                        try (FileInputStream in = new FileInputStream(mailFile)) {
+                            MAIL_PROPERTIES.load(in);
+                        } catch (IOException e) {
+                            log.error("Failed to load mail properties", e);
+                        }
+                    }
+                }
+            }
+        }
+        return MAIL_PROPERTIES;
+    }
+
+    protected static File getMailPropertiesFile() {
         org.nuxeo.common.Environment env = org.nuxeo.common.Environment.getDefault();
         if (env != null) {
             File file = new File(env.getConfig(), "mail.properties");
             if (file.isFile()) {
-                Properties p = new Properties();
-                try {
-                    FileInputStream in = new FileInputStream(file);
-                    try {
-                        p.load(in);
-                        mailer = new Mailer(p);
-                    } finally {
-                        in.close();
-                    }
-                } catch (IOException e) {
-                    log.error("Failed to load mail properties", e);
-                }
+                return file;
             }
         }
-        // second try using JNDI
-        if (mailer == null) {
-            String name = Framework.getProperty("jndi.java.mail", "java:/Mail");
-            mailer = new Mailer(name);
-        }
-        return mailer;
+        return null;
     }
 
     public void registerTemplate(URL url) {

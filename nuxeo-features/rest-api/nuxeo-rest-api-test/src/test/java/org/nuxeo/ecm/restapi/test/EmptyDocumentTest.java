@@ -165,4 +165,5 @@ public class EmptyDocumentTest extends BaseTest {
             assertEquals("dummy subject", subjects.get(0).textValue());
         }
     }
+
 }
