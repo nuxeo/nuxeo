@@ -26,7 +26,6 @@ import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -41,18 +40,16 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
+import org.nuxeo.mail.SmtpMailServerFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.dumbster.smtp.SmtpMessage;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class, FakeSmtpMailServerFeature.class, AutomationFeature.class })
+@Features({ CoreFeature.class, SmtpMailServerFeature.class, AutomationFeature.class })
 @Deploy("org.nuxeo.ecm.platform.notification.core")
 @Deploy("org.nuxeo.ecm.platform.notification.api")
 @Deploy("org.nuxeo.ecm.platform.url.api")
@@ -66,6 +63,9 @@ public class SendMailTest {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    protected SmtpMailServerFeature.MailsResult emailsResult;
 
     protected OperationContext ctx;
 
@@ -87,15 +87,9 @@ public class SendMailTest {
         ctx.close();
     }
 
-    // ------ Tests comes here --------
-
     @Test
-    @Ignore
-    // disabling since it won't pass if the test RestTest.testSendMail is run
-    // before, since this is setting the mail settings in a static final var
     public void testSendMail() throws Exception {
         // add some blobs and then send an email
-
         Blob blob = Blobs.createBlob("my content");
         blob.setFilename("thefile.txt");
 
@@ -108,10 +102,12 @@ public class SendMailTest {
                 "message",
                 "<h3>Current doc: ${Document.path}</h3> title: ${Document['dc:title']}<p>Doc link: <a href=\"${docUrl}\">${Document.title}</a>");
         service.run(ctx, chain);
-        assertTrue(FakeSmtpMailServerFeature.server.getReceivedEmailSize() == 1);
+        assertEquals(1, emailsResult.getSize());
+
         // Check that mandatory headers are present
-        SmtpMessage message = (SmtpMessage) FakeSmtpMailServerFeature.server.getReceivedEmail().next();
-        assertNotNull(message.getHeaderValue("Date"));
-        assertEquals(message.getHeaderValue("From"), "test@nuxeo.org");
+        emailsResult.assertSender("test@nuxeo.org", 1);
+        emailsResult.assertRecipient("bs@nuxeo.com", 1);
+        assertTrue(emailsResult.hasSubject("test mail"));
+        assertNotNull(emailsResult.getMails().get(0).getDate());
     }
 }

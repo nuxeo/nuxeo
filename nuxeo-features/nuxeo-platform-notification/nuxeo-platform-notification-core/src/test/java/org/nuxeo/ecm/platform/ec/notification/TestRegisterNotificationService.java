@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.ec.notification;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.mail.MailConstants.DEFAULT_MAIL_JNDI_NAME;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.notification.api.Notification;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.mail.MailConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -158,7 +160,7 @@ public class TestRegisterNotificationService {
         assertEquals("[Nuxeo5]", getService().getEMailSubjectPrefix());
 
         // this one should not be expanded
-        assertEquals("java:/Mail", getService().getMailSessionJndiName());
+        assertEquals(DEFAULT_MAIL_JNDI_NAME, getService().getMailSessionJndiName());
 
         hotDeployer.deploy("org.nuxeo.ecm.platform.notification.core.tests:notification-contrib-overridden.xml");
 
