@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.platform.tag.TagService.Feature.TAGS_BELONG_TO_DOCUM
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
@@ -82,7 +83,9 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
                 break;
             case DOCUMENT_RESTORED:
                 String versionUUID = (String) ctx.getProperty(VersioningDocument.RESTORED_VERSION_UUID_KEY);
-                tagService.replaceTags(session, versionUUID, docId);
+                if (session.exists(new IdRef(docId))) {
+                    tagService.replaceTags(session, versionUUID, docId);
+                }
                 break;
             case DOCUMENT_REMOVED:
                 if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {

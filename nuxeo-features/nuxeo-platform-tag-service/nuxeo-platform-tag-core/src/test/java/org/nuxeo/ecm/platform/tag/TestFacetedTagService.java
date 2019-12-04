@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -47,7 +45,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 /**
@@ -55,14 +52,10 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
  *
  * @since 9.3
  */
-@Features(LogCaptureFeature.class)
 public class TestFacetedTagService extends AbstractTestTagService {
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
-
-    @Inject
-    protected LogCaptureFeature.Result logCaptureResult;
 
     @Override
     protected void createTags() {
