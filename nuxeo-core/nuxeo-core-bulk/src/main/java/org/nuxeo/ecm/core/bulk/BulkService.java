@@ -39,7 +39,8 @@ import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 public interface BulkService extends AsyncService<String, BulkStatus, Map<String, Serializable>> {
 
     /**
-     * Submits a {@link BulkCommand} that will be processed asynchronously.
+     * Submits a {@link BulkCommand} that will be processed asynchronously, even if the current transaction rolls back
+     * (the method is not transactional).
      *
      * @param command the command to submit
      * @return a unique bulk command identifier
