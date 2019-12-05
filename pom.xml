@@ -1214,12 +1214,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-mail-test</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-mail-types</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
