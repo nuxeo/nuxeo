@@ -21,6 +21,7 @@ package org.nuxeo.lib.stream.tests.tools;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -36,7 +37,7 @@ import org.junit.rules.TemporaryFolder;
 public class TestToolsChronicle extends TestTools {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     protected Path basePath;
 

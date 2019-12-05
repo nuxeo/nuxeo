@@ -18,6 +18,7 @@ package org.nuxeo.lib.stream.tests.pattern;
 
 import static org.junit.Assume.assumeFalse;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 public class TestPatternQueuingChronicle extends TestPatternQueuing {
     protected final static String OS = System.getProperty("os.name").toLowerCase();
@@ -43,7 +45,7 @@ public class TestPatternQueuingChronicle extends TestPatternQueuing {
     }
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
 
     @After
     public void resetBasePath() throws IOException {

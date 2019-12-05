@@ -37,7 +37,7 @@ import org.nuxeo.lib.stream.codec.FileAvroSchemaStore;
  */
 public class TestFileAvroSchemaStore {
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     @Test
     public void testAvroEvolution() throws IOException {

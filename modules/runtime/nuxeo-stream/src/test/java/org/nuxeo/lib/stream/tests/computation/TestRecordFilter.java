@@ -51,7 +51,7 @@ import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
  */
 public class TestRecordFilter {
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     protected File basePath;
 

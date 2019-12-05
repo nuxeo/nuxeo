@@ -21,6 +21,7 @@ package org.nuxeo.importer.stream.tests.importer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class TestAutomation {
     AutomationService automationService;
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
 
     protected OperationContext ctx;
 
