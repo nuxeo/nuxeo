@@ -103,9 +103,9 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
      * {@link #readLastCommittedOffset()} in concurrency.
      */
     public long getLastCommittedOffset() {
-        if (lastCommittedOffset > 0) {
-            return lastCommittedOffset;
-        }
+//        if (lastCommittedOffset > 0) {
+//            return lastCommittedOffset;
+//        }
         return readLastCommittedOffset();
     }
 
