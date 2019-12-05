@@ -1055,6 +1055,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-3d-core-dependencies</artifactId>
+        <type>pom</type>
+        <version>${nuxeo.threed.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-3d-jsf</artifactId>
         <version>${nuxeo.threed.version}</version>
       </dependency>

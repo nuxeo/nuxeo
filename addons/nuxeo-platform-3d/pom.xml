@@ -18,6 +18,7 @@
     <module>nuxeo-platform-3d-convert</module>
     <module>nuxeo-platform-3d-jsf</module>
     <module>nuxeo-platform-3d-web-ui</module>
+    <module>nuxeo-platform-3d-core-dependencies</module>
   </modules>
 
   <repositories>
