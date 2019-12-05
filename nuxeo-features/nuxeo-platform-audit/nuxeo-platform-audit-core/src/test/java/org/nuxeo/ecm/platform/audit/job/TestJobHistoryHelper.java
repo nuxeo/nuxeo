@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -39,7 +38,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@Ignore(value = "NXP-27559")
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
 public class TestJobHistoryHelper {

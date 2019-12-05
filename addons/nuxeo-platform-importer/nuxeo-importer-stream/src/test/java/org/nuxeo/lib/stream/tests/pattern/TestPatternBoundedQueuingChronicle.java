@@ -22,13 +22,11 @@ import java.nio.file.Path;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 
-@Ignore(value = "NXP-27559")
 public class TestPatternBoundedQueuingChronicle extends TestPatternBoundedQueuing {
     protected Path basePath;
 
