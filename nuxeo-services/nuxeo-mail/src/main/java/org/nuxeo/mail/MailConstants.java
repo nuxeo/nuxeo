@@ -26,6 +26,22 @@ public final class MailConstants {
 
     public static final String CONFIGURATION_MAIL_DEBUG = "mail.debug";
 
+    public static final String CONFIGURATION_MAIL_SMTP_AUTH = "mail.smtp.auth";
+
+    public static final String CONFIGURATION_MAIL_SMTP_HOST = "mail.smtp.host";
+
+    public static final String CONFIGURATION_MAIL_SMTP_PORT = "mail.smtp.port";
+
+    public static final String CONFIGURATION_MAIL_SMTP_PASSWORD = "mail.smtp.password";
+
+    public static final String CONFIGURATION_MAIL_SMTP_STARTTLS_ENABLE = "mail.smtp.starttls.enable";
+
+    public static final String CONFIGURATION_MAIL_SMTP_USER = "mail.smtp.user";
+
+    public static final String CONFIGURATION_MAIL_STORE_PROTOCOL = "mail.store.protocol";
+
+    public static final String CONFIGURATION_MAIL_TRANSPORT_PROTOCOL = "mail.transport.protocol";
+
     private MailConstants() {
         // not allowed
     }

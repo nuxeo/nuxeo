@@ -20,6 +20,8 @@ package org.nuxeo.ecm.platform.ec.notification.email;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PASSWORD;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_USER;
 
 import java.util.Enumeration;
 import java.util.Properties;
@@ -56,17 +58,17 @@ public class TestEmailResourceFactory {
         assertNull(properties.getProperty("non.existing.property"));
 
         // raw property
-        initialProperties.add(new StringRefAddr("mail.smtp.user", "joe"));
+        initialProperties.add(new StringRefAddr(CONFIGURATION_MAIL_SMTP_USER, "joe"));
         attributes = initialProperties.elements();
         properties = factory.toProperties(attributes);
-        assertEquals("joe", properties.getProperty("mail.smtp.user"));
+        assertEquals("joe", properties.getProperty(CONFIGURATION_MAIL_SMTP_USER));
 
         // var property, needs to be expanded
         Framework.getProperties().put("mail.transport.password", "varExpandedPassword");
-        initialProperties.add(new StringRefAddr("mail.smtp.password", "${mail.transport.password}"));
+        initialProperties.add(new StringRefAddr(CONFIGURATION_MAIL_SMTP_PASSWORD, "${mail.transport.password}"));
         attributes = initialProperties.elements();
         properties = factory.toProperties(attributes);
-        assertEquals("varExpandedPassword", properties.getProperty("mail.smtp.password"));
+        assertEquals("varExpandedPassword", properties.getProperty(CONFIGURATION_MAIL_SMTP_PASSWORD));
         Framework.getProperties().remove("mail.transport.password");
     }
 }
