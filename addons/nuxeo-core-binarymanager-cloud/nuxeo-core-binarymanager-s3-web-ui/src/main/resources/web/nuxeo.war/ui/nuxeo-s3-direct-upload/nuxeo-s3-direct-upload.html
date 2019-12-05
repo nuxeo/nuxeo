@@ -33,11 +33,14 @@ limitations under the License.
       });
     };
 
-    S3Provider.prototype._resource = function() {
+    S3Provider.prototype._resource = function(path, data) {
       if (!_resource) {
         _resource = document.createElement('nuxeo-resource');
+        _resource.uncancelable = true;
         document.body.appendChild(_resource);
       }
+      _resource.path = path;
+      _resource.data = data;
       return _resource;
     }
 
@@ -49,23 +52,27 @@ limitations under the License.
           ContentType: file.type,
           Body: file
         });
+        this._keepAlive = setInterval(function() {
+          this._resource(['upload', this.batchId].join('/')).get();
+        }.bind(this), 60000);
         file.managedUpload.on('httpUploadProgress', function(evt) {
           if (typeof callback === 'function') {
             callback({ type: 'uploadProgress', fileIdx: file.index, progress: (evt.loaded / evt.total) * 100 });
           }
         }.bind(this)).send(function(error, data) {
+          if (this._keepAlive) {
+            clearInterval(this._keepAlive);
+            this._keepAlive = null;
+          }
           if (error === null) {
             file.managedUpload = null;
-            var resource = this._resource();
-            resource.path = ['upload', this.batchId, file.index, 'complete'].join('/');
-            resource.data = {
+            this._resource(['upload', this.batchId, file.index, 'complete'].join('/'), {
               name: file.name,
               fileSize: file.size,
               key: data.Key,
               bucket: data.Bucket,
               etag: data.ETag
-            };
-            resource.post().then(function() {
+            }).post().then(function() {
               if (typeof callback === 'function') {
                 callback({ type: 'uploadCompleted', fileIdx: file.index })
               }
@@ -97,9 +104,7 @@ limitations under the License.
     };
 
     S3Provider.prototype._newBatch = function() {
-      var resource = this._resource();
-      resource.path = 'upload/new/s3';
-      return resource.post().then(function(response) {
+      return this._resource('upload/new/s3').post().then(function(response) {
         this.batchId = response.batchId;
         this.extraInfo = response.extraInfo;
         this._initCredentials(response.extraInfo);
