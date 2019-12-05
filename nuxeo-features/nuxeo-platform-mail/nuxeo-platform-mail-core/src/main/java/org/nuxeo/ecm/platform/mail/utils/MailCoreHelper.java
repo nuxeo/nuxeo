@@ -39,6 +39,7 @@ import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SOCKET_FACTORY
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SOCKET_FACTORY_PORT_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.SSL_PROTOCOLS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.mail.utils.MailCoreConstants.STARTTLS_ENABLE_PROPERTY_NAME;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_STORE_PROTOCOL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,7 +158,7 @@ public final class MailCoreHelper {
                 String imapDebug = Framework.getProperty(IMAP_DEBUG, FALSE.toString());
 
                 Properties properties = new Properties();
-                properties.put("mail.store.protocol", protocolType);
+                properties.put(CONFIGURATION_MAIL_STORE_PROTOCOL, protocolType);
                 // Is IMAP connection
                 if (IMAP.equals(protocolType)) {
                     properties.put("mail.imap.host", host);

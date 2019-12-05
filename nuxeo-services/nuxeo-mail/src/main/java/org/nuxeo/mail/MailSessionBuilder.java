@@ -24,6 +24,7 @@ import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_DEBUG;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
 
 import java.io.PrintStream;
 import java.util.Map;
@@ -191,7 +192,7 @@ public class MailSessionBuilder {
                 session.setDebug(true);
             }
             // set proper protocol for rfc822
-            String protocol = session.getProperty("mail.transport.protocol");
+            String protocol = session.getProperty(CONFIGURATION_MAIL_TRANSPORT_PROTOCOL);
             if (isNotEmpty(protocol)) {
                 session.setProtocolForAddress("rfc822", protocol);
             }

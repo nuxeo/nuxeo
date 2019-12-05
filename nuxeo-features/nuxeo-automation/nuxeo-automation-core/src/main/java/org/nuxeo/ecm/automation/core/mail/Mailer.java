@@ -33,6 +33,13 @@ import javax.mail.internet.MimeMessage;
 
 import org.nuxeo.mail.MailSessionBuilder;
 
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_DEBUG;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_AUTH;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_HOST;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PASSWORD;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_PORT;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_USER;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -88,8 +95,8 @@ public class Mailer {
     public Mailer(String sessionName, Properties config) {
         this.config = config;
         this.sessionName = sessionName;
-        final String user = config.getProperty("mail.smtp.user");
-        final String pass = config.getProperty("mail.smtp.password");
+        final String user = config.getProperty(CONFIGURATION_MAIL_SMTP_USER);
+        final String pass = config.getProperty(CONFIGURATION_MAIL_SMTP_PASSWORD);
         if (user != null && pass != null) {
             this.auth = new Authenticator() {
                 @Override
@@ -128,8 +135,8 @@ public class Mailer {
         } else if (port == null) {
             port = "25";
         }
-        config.setProperty("mail.smtp.host", host);
-        config.setProperty("mail.smtp.port", port);
+        config.setProperty(CONFIGURATION_MAIL_SMTP_HOST, host);
+        config.setProperty(CONFIGURATION_MAIL_SMTP_PORT, port);
         session = null;
     }
 
@@ -140,9 +147,9 @@ public class Mailer {
      */
     @Deprecated(since = "11.1")
     public void setCredentials(final String user, final String pass) {
-        config.setProperty("mail.smtp.auth", "true");
-        config.setProperty("mail.smtp.user", user);
-        config.setProperty("mail.smtp.password", user);
+        config.setProperty(CONFIGURATION_MAIL_SMTP_AUTH, "true");
+        config.setProperty(CONFIGURATION_MAIL_SMTP_USER, user);
+        config.setProperty(CONFIGURATION_MAIL_SMTP_PASSWORD, user);
         auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -158,13 +165,13 @@ public class Mailer {
      */
     @Deprecated(since = "11.1")
     public void setAuthenticator(Authenticator auth) {
-        config.setProperty("mail.smtp.auth", "true");
+        config.setProperty(CONFIGURATION_MAIL_SMTP_AUTH, "true");
         this.auth = auth;
         session = null;
     }
 
     public void setDebug(boolean debug) {
-        config.setProperty("mail.debug", Boolean.toString(debug));
+        config.setProperty(CONFIGURATION_MAIL_DEBUG, Boolean.toString(debug));
     }
 
     public Session getSession() {
