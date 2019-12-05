@@ -61,7 +61,7 @@ public class TestBlobImport {
     protected static final Log log = LogFactory.getLog(TestBlobImport.class);
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
 
     @Inject
     protected StreamService streamService;

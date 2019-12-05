@@ -90,7 +90,7 @@ public class TestDocumentImport {
     CoreSession session;
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File(FeaturesRunner.getBuildDirectory()));
 
     protected LogManager getLogManager() {
         return streamService.getLogManager();
