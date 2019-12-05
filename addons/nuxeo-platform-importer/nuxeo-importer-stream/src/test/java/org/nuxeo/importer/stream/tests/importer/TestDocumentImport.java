@@ -88,7 +88,7 @@ public abstract class TestDocumentImport {
     CoreSession session;
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     @Test
     public void twoStepsImport() throws Exception {

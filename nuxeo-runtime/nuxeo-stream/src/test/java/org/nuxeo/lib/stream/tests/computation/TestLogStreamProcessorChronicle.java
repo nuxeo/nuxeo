@@ -50,7 +50,7 @@ import net.jodah.failsafe.RetryPolicy;
 public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     protected File basePath;
 

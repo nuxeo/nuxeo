@@ -59,7 +59,7 @@ public abstract class TestBlobImport {
     protected static final Log log = LogFactory.getLog(TestBlobImport.class);
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     public abstract LogManager getManager() throws Exception;
 

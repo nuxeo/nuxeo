@@ -62,7 +62,7 @@ public class TestLibChronicle implements StoreFileListener {
     public final static boolean IS_WIN = OS.startsWith("win");
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     @Before
     public void skipWindowsThatDoNotCleanTempFolder() {

@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.lib.stream.tests.TestLibChronicle.IS_WIN;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,7 +50,7 @@ import org.nuxeo.lib.stream.tests.KeyValueMessage;
 @SuppressWarnings("squid:S2925")
 public class TestLogChronicle extends TestLog {
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder(new File("target"));
 
     protected Path basePath;
 
