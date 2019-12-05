@@ -723,4 +723,20 @@ public abstract class TestStreamProcessor {
         }
     }
 
+    @Test
+    public void testComplexTopoManyRecordsOneThreadManyPartitionsLoop() throws Exception {
+        for (int i=0; i<30; i++) {
+            System.out.println("### Loop " + i);
+            testComplexTopo(250, 6, 8);
+        }
+    }
+
+    @Test
+    public void testStopAndResumeLoop() throws Exception {
+        for (int i=0; i<30; i++) {
+            System.out.println("### Loop " + i);
+            testStopAndResume();
+        }
+    }
+
 }
