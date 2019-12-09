@@ -64,6 +64,7 @@ if (selectedLanguage != null) { %>
     </style>
   </head>
   <body>
+    <!-- Locale: <%= selectedLanguage %> -->
     <div class="container">
       <h1>
         <fmt:message bundle="${messages}" key="login.nuxeoDrive.success.message" />
