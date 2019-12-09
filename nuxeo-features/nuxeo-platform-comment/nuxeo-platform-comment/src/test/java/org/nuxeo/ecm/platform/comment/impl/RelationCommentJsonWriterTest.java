@@ -30,22 +30,19 @@ import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.ecm.platform.comment.RelationCommentFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
+ * @deprecated since 10.3, in order to follow the service deprecation
+ *             {@link org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl}.
  */
-@Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/relation-comment-manager-override.xml")
+@Deprecated
+@Features(RelationCommentFeature.class)
 public class RelationCommentJsonWriterTest extends AbstractCommentJsonWriterTest {
 
     @Test

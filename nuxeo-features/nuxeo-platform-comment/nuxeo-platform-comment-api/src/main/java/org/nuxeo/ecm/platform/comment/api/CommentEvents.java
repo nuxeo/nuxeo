@@ -28,6 +28,9 @@ public final class CommentEvents {
 
     public static final String COMMENT_ADDED = "commentAdded";
 
+    /** @since 11.1 **/
+    public static final String COMMENT_UPDATED = "commentUpdated";
+
     public static final String COMMENT_REMOVED = "commentRemoved";
 
     // Constant utility class.

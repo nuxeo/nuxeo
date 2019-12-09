@@ -27,10 +27,10 @@ import org.nuxeo.runtime.test.runner.Features;
  * @since 11.1
  */
 @Features(PropertyCommentFeature.class)
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
+public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNotification {
 
     @Override
-    protected Class<? extends CommentManager> getCommentManager() {
+    protected Class<? extends CommentManager> getType() {
         return PropertyCommentManager.class;
     }
 }

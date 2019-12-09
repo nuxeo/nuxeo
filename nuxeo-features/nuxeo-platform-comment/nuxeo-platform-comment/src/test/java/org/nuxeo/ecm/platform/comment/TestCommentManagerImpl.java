@@ -43,9 +43,7 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -53,13 +51,8 @@ import org.nuxeo.runtime.test.runner.Features;
  *             {@link CommentManagerImpl}
  * @since 10.3
  */
-@Features(PlatformFeature.class)
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/relation-comment-manager-override.xml")
 @Deprecated(since = "11.1")
+@Features(RelationCommentFeature.class)
 public class TestCommentManagerImpl extends AbstractTestCommentManager {
 
     public static final String QUERY_COMMENTS_AS_DOCUMENTS = "SELECT * FROM " + CommentsConstants.COMMENT_DOC_TYPE;

@@ -20,17 +20,29 @@
 package org.nuxeo.ecm.platform.comment;
 
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
+import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
+ * @deprecated since 10.3, in order to follow the service deprecation
+ *             {@link org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl}.
  */
-@Features(PropertyCommentFeature.class)
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
+@Deprecated
+@Features(RelationCommentFeature.class)
+public class TestBridgeCommentNotificationFromRelationToProperty extends AbstractTestCommentNotification {
 
     @Override
-    protected Class<? extends CommentManager> getCommentManager() {
-        return PropertyCommentManager.class;
+    protected CommentManager getCommentManager() {
+        return new BridgeCommentManager(new CommentManagerImpl(CommentServiceHelper.getCommentService().getConfig()),
+                new PropertyCommentManager());
+    }
+
+    @Override
+    protected Class<? extends CommentManager> getType() {
+        return BridgeCommentManager.class;
     }
 }

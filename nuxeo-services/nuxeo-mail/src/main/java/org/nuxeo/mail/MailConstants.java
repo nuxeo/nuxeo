@@ -54,8 +54,7 @@ public final class MailConstants {
 
     public static final String NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL = CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
 
-    /** @since 11.1 **/
-    public static final String NUXEO_MAIL_FROM = "mail.from";
+    public static final String CONFIGURATION_MAIL_FROM = "mail.from";
 
     protected static final String CONFIGURATION_MAIL_PREFIX = "mail.";
 
