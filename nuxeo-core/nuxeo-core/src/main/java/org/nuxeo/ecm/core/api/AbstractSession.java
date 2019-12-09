@@ -1218,14 +1218,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             SecurityService securityService = getSecurityService();
             NuxeoPrincipal principal = getPrincipal();
             String[] principals = getPrincipalsToCheck();
-            String permission = BROWSE;
-            String[] permissions = securityService.getPermissionsToCheck(permission);
+            String[] permissions = securityService.getPermissionsToCheck(BROWSE);
             Collection<Transformer> transformers = getPoliciesQueryTransformers(queryType);
 
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
-            IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments,
-                    params);
-            return result;
+            return getSession().queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
         } catch (QueryParseException e) {
             e.addInfo("Failed to execute query: " + queryType + ": " + query);
             throw e;
