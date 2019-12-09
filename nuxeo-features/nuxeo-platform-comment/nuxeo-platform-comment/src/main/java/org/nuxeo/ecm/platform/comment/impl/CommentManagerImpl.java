@@ -23,7 +23,6 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 
@@ -56,7 +55,6 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
 import org.nuxeo.ecm.platform.comment.api.Comments;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
@@ -523,4 +521,8 @@ public class CommentManagerImpl extends AbstractCommentManager {
         });
     }
 
+    @Override
+    public DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
+        throw new UnsupportedOperationException();
+    }
 }

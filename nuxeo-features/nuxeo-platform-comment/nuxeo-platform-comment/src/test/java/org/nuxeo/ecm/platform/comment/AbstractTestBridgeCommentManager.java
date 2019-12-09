@@ -30,16 +30,10 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
-import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 10.3
  */
-@Deploy("org.nuxeo.ecm.platform.query.api")
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
 public abstract class AbstractTestBridgeCommentManager extends AbstractTestCommentManager {
 
     protected static final String FILE_DOC_TYPE = "File";

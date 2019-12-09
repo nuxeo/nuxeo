@@ -27,7 +27,9 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
  *
  * @author Thierry Martins <tmartins@nuxeo.com>
  * @since 5.7
+ * @deprecated since 11.1. Use {@link CommentNotificationVeto} instead.
  */
+@Deprecated(since = "11.1", forRemoval = true)
 public class CommentCreationVeto implements NotificationListenerVeto {
 
     @Override

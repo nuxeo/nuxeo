@@ -58,9 +58,6 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -69,10 +66,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.comment.api")
-@Deploy("org.nuxeo.ecm.platform.comment")
+@Features(CommentFeature.class)
 public abstract class AbstractTestCommentManager {
 
     public static final String FOLDER_COMMENT_CONTAINER = "/Folder/CommentContainer";
@@ -310,16 +305,6 @@ public abstract class AbstractTestCommentManager {
     @Test
     public void testCommentManagerType() {
         assertEquals(getType(), commentManager.getClass());
-    }
-
-    public static CommentServiceConfig newConfig() {
-        CommentServiceConfig config = new CommentServiceConfig();
-        config.graphName = "documentComments";
-        config.commentConverterClassName = "org.nuxeo.ecm.platform.comment.impl.CommentConverterImpl";
-        config.documentNamespace = "http://www.nuxeo.org/document/uid";
-        config.commentNamespace = "http://www.nuxeo.org/comments/uid";
-        config.predicateNamespace = "http://www.nuxeo.org/predicates/isCommentFor";
-        return config;
     }
 
 }
