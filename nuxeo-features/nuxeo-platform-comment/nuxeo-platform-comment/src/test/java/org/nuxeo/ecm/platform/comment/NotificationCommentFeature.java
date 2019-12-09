@@ -19,16 +19,19 @@
 
 package org.nuxeo.ecm.platform.comment;
 
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
+ * Feature for the comment notification stack.
+ * 
  * @since 11.1
  */
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
-
-    @Override
-    protected Class<? extends CommentManager> getCommentManager() {
-        return PropertyCommentManager.class;
-    }
+@Features(CommentFeature.class)
+@Deploy("org.nuxeo.ecm.platform.notification.core")
+@Deploy("org.nuxeo.ecm.platform.notification.api")
+@Deploy("org.nuxeo.ecm.platform.url.api")
+@Deploy("org.nuxeo.ecm.platform.url.core")
+public class NotificationCommentFeature implements RunnerFeature {
 }

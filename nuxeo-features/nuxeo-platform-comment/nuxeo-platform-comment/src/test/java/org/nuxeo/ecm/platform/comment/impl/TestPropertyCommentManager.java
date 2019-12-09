@@ -30,6 +30,7 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.api.Comments.commentToDocumentModel;
 import static org.nuxeo.ecm.platform.comment.api.Comments.newComment;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -56,15 +57,10 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 10.3
  */
-@Deploy("org.nuxeo.ecm.platform.query.api")
-// After migration from Property to Secured, the service will be `TreeCommentManager`,
-// but we want to continue testing the `PropertyCommentManager` one
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/property-comment-manager-override.xml")
 public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
     @Test
@@ -477,6 +473,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         session.save();
 
+        commentModel.setPropertyValue(COMMENT_PARENT_ID, doc.getId());
         commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         DocumentModelList children = session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER), COMMENT_DOC_TYPE);
@@ -824,6 +821,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         commentModel = session.createDocument(commentModel);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
         Comments.commentToDocumentModel(comment, commentModel);
+        commentModel.setPropertyValue(COMMENT_PARENT_ID, doc.getId());
         commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         // Check if Comments folder has been created in the given container

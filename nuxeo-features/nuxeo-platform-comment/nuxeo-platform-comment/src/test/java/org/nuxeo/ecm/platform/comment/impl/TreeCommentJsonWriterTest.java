@@ -20,12 +20,13 @@
 package org.nuxeo.ecm.platform.comment.impl;
 
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.platform.comment.TreeCommentFeature;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
  */
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/secured-comment-manager-override.xml")
+@Features(TreeCommentFeature.class)
 public class TreeCommentJsonWriterTest extends AbstractCommentJsonWriterTest {
 
     @Override

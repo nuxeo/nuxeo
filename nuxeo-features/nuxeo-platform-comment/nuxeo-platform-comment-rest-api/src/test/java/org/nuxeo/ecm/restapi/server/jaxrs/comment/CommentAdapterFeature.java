@@ -17,18 +17,18 @@
  *     Salem Aouana
  */
 
-package org.nuxeo.ecm.platform.comment;
+package org.nuxeo.ecm.restapi.server.jaxrs.comment;
 
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.ecm.platform.comment.CommentFeature;
+import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
  * @since 11.1
  */
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
-
-    @Override
-    protected Class<? extends CommentManager> getCommentManager() {
-        return PropertyCommentManager.class;
-    }
+@Features({ CommentFeature.class, RestServerFeature.class })
+@Deploy("org.nuxeo.ecm.platform.comment.restapi")
+public class CommentAdapterFeature implements RunnerFeature {
 }

@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.util.Objects.requireNonNull;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
@@ -165,6 +166,22 @@ public abstract class AbstractCommentManager implements CommentManager {
             parentRef = new IdRef(parentId);
         }
         return ancestorIds;
+    }
+
+    /**
+     * Notifies the event of type {@code eventType} on the given {@code commentDocumentModel}.
+     *
+     * @param session the session
+     * @param eventType the event type to fire
+     * @param commentDocumentModel the document model of the comment
+     * @implSpec This method uses internally {@link #notifyEvent(CoreSession, String, DocumentModel, DocumentModel)}
+     * @since 11.1
+     */
+    protected void notifyEvent(CoreSession session, String eventType, DocumentModel commentDocumentModel) {
+        requireNonNull(eventType);
+
+        DocumentModel commentParent = session.getDocument(getCommentedDocumentRef(session, commentDocumentModel));
+        notifyEvent(session, eventType, commentParent, commentDocumentModel);
     }
 
 }

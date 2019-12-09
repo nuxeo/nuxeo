@@ -17,18 +17,26 @@
       <event name="commentAdded"/>
     </notification>
 
+    <notification name="CommentUpdated" channel="email" enabled="true" availableIn="*"
+      subject="Updated comment on '${docTitle}'"
+      autoSubscribed="false" template="commentUpdated" label="notifications.name.Modification">
+      <event name="commentUpdated" />
+    </notification>
+
   </extension>
 
   <extension
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="templates">
+    <template name="baseComment" src="templates/baseComment.ftl" />
     <template name="commentAdded" src="templates/commentAdded.ftl" />
+    <template name="commentUpdated" src="templates/commentUpdated.ftl" />
   </extension>
 
   <extension
     target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
     point="notificationListenerVeto">
-    <veto name="CommentCreationVeto" class="org.nuxeo.ecm.platform.comment.notification.CommentCreationVeto" />
+    <veto name="CommentNotificationVeto" class="org.nuxeo.ecm.platform.comment.notification.CommentNotificationVeto" />
   </extension>
 
 </component>

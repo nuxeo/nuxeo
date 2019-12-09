@@ -43,7 +43,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -60,10 +59,8 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
-import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -75,15 +72,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  * @since 10.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RestServerFeature.class })
-@Deploy("org.nuxeo.ecm.platform.comment.api")
-@Deploy("org.nuxeo.ecm.platform.comment")
-@Deploy("org.nuxeo.ecm.platform.comment.restapi")
-@Deploy("org.nuxeo.ecm.platform.comment.restapi.test:OSGI-INF/comment-jena-contrib.xml")
-@Deploy("org.nuxeo.ecm.relations.api")
-@Deploy("org.nuxeo.ecm.relations")
-@Deploy("org.nuxeo.ecm.relations.jena")
-public class AnnotationAdapterTest extends BaseTest {
+@Features(CommentAdapterFeature.class)
+public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
     @Inject
     protected AnnotationService annotationService;

@@ -27,15 +27,16 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
  *
  * @author Thierry Martins <tmartins@nuxeo.com>
  * @since 5.7
+ * @deprecated since 11.1. Use {@link CommentNotificationVeto} instead.
  */
+@Deprecated
 public class CommentCreationVeto implements NotificationListenerVeto {
 
     @Override
     public boolean accept(Event event) {
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
-        if ("documentCreated".equals(event.getName())
-                && (docCtx.getSourceDocument().getType().equals("Post") || docCtx.getSourceDocument().getType().equals(
-                        "Comment"))) {
+        if ("documentCreated".equals(event.getName()) && (docCtx.getSourceDocument().getType().equals("Post")
+                || docCtx.getSourceDocument().getType().equals("Comment"))) {
             return false;
         }
         return true;
