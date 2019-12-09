@@ -24,9 +24,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
@@ -98,5 +102,10 @@ public class TestBridgeFromRelationToProperty extends AbstractTestBridgeCommentM
     @Override
     protected BridgeCommentManager getBridgeCommentManager() {
         return new BridgeCommentManager(new CommentManagerImpl(newConfig()), new PropertyCommentManager());
+    }
+
+    @Override
+    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
+        return new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID));
     }
 }

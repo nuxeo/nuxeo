@@ -630,4 +630,11 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
     public Class<? extends CommentManager> getType() {
         return TreeCommentManager.class;
     }
+
+    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
+        if (reply) {
+            return commentDocModel.getParentRef();
+        }
+        return commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
+    }
 }

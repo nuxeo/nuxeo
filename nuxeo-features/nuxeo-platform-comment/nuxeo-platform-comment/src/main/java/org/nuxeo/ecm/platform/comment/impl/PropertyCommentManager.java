@@ -31,6 +31,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -64,7 +65,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Comment service implementation. The comments are linked together thanks to a parent document id property.
- * 
+ *
  * @since 10.3
  */
 public class PropertyCommentManager extends AbstractCommentManager {
@@ -137,7 +138,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                     (Serializable) computeAncestorIds(session, docModel.getId()));
             DocumentModel comment = session.createDocument(commentModelToCreate);
             comment.detach(true);
-            notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, comment);
+            notifyEvent(session, comment, CommentEvents.COMMENT_ADDED);
             return comment;
         }
     }
@@ -170,7 +171,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             commentModel.copyContent(comment);
             commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) computeAncestorIds(s, docModel.getId()));
             commentModel = s.createDocument(commentModel);
-            notifyEvent(s, CommentEvents.COMMENT_ADDED, docModel, commentModel);
+            notifyEvent(s, commentModel, CommentEvents.COMMENT_ADDED);
             return commentModel;
         });
     }
@@ -209,7 +210,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             // Compute the list of ancestor ids
             commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) computeAncestorIds(s, parentId));
             commentModel = s.createDocument(commentModel);
-            notifyEvent(s, CommentEvents.COMMENT_ADDED, s.getDocument(docRef), commentModel);
+            notifyEvent(s, commentModel, CommentEvents.COMMENT_ADDED);
             return Comments.newComment(commentModel);
         });
     }
@@ -287,6 +288,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
             }
             s.saveDocument(commentModel);
+            notifyEvent(s, commentModel, CommentEvents.COMMENT_UPDATED);
             return Comments.newComment(commentModel);
         });
     }
@@ -304,17 +306,16 @@ public class PropertyCommentManager extends AbstractCommentManager {
         CoreInstance.doPrivileged(session, s -> {
             DocumentModel comment = s.getDocument(commentRef);
             String parentId = (String) comment.getPropertyValue(COMMENT_PARENT_ID);
-            DocumentRef parentRef = new IdRef(parentId);
-            DocumentRef ancestorRef = getAncestorRef(s, comment);
+            DocumentRef ancestorRef = getTopLevelCommentAncestor(s, commentRef);
             if (s.exists(ancestorRef) && !principal.isAdministrator()
                     && !comment.getPropertyValue(COMMENT_AUTHOR).equals(principal.getName())
                     && !s.hasPermission(principal, ancestorRef, SecurityConstants.EVERYTHING)) {
                 throw new CommentSecurityException(
                         "The user " + principal.getName() + " can not delete comments of document " + parentId);
             }
-            DocumentModel parent = s.getDocument(parentRef);
+            comment.detach(true);
             s.removeDocument(commentRef);
-            notifyEvent(s, CommentEvents.COMMENT_REMOVED, parent, comment);
+            notifyEvent(s, comment, CommentEvents.COMMENT_REMOVED);
         });
     }
 
@@ -350,6 +351,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentModel);
             }
             s.saveDocument(commentModel);
+            notifyEvent(s, commentModel, CommentEvents.COMMENT_UPDATED);
             return Comments.newComment(commentModel);
         });
     }
@@ -370,9 +372,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
         }
         CoreInstance.doPrivileged(session, s -> {
             DocumentModel comment = s.getDocument(commentModel.getRef());
-            DocumentModel parent = s.getDocument(new IdRef((String) comment.getPropertyValue(COMMENT_PARENT_ID)));
+            comment.detach(true);
             s.removeDocument(commentModel.getRef());
-            notifyEvent(s, CommentEvents.COMMENT_REMOVED, parent, comment);
+            notifyEvent(s, comment, CommentEvents.COMMENT_REMOVED);
         });
     }
 
@@ -423,6 +425,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
             }
             PathRef ref = new PathRef(parentPath, COMMENTS_DIRECTORY);
             DocumentModel commentFolderDoc = s.createDocumentModel(parentPath, COMMENTS_DIRECTORY, HIDDEN_FOLDER_TYPE);
+            // No need to notify the creation of the Comments folder
+            commentFolderDoc.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
             s.getOrCreateDocument(commentFolderDoc);
             s.save();
             return ref.toString();
@@ -450,5 +454,17 @@ public class PropertyCommentManager extends AbstractCommentManager {
             }
             return documentModel;
         });
+    }
+
+    @Override
+    public DocumentRef getCommentedDocument(CoreSession s, DocumentModel commentDocumentModel) {
+        return CoreInstance.doPrivileged(s, session -> {
+            String commentedDocId = commentDocumentModel.getId();
+            if (commentDocumentModel.hasSchema(COMMENT_SCHEMA)) {
+                commentedDocId = (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID);
+            }
+            return new IdRef(commentedDocId);
+        });
+
     }
 }
