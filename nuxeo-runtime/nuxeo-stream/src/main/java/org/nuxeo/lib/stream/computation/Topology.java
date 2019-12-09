@@ -76,19 +76,37 @@ public class Topology {
             if (VertexType.COMPUTATION.equals(vertex.getType())) {
                 String name = vertex.getName();
                 int concurrency = settings.getConcurrency(vertex.getName());
-                ret.append(String.format("node %s [%s%n----%n%d threads]%n", name, name, concurrency));
+                ret.append(String.format("node %s [%s%n----%n%s%nConcurrency: %d threads]%n", getPumlName(vertex), name,
+                        compactPolicy(settings.getPolicy(vertex.getName())), concurrency));
             } else if (VertexType.STREAM.equals(vertex.getType())) {
                 String name = vertex.getName();
                 int partitions = settings.getPartitions(vertex.getName());
-                ret.append(String.format("queue %s [%s%n----%n%d partitions]%n", name, name, partitions));
+                ret.append(String.format("queue %s [%s%n----%n%d partitions]%n", getPumlName(vertex), name, partitions));
             }
         }
         for (DefaultEdge edge : dag.edgeSet()) {
             ret.append(
-                    String.format("%s==>%s%n", dag.getEdgeSource(edge).getName(), dag.getEdgeTarget(edge).getName()));
+                    String.format("%s==>%s%n", getPumlName(dag.getEdgeSource(edge)), getPumlName(dag.getEdgeTarget(edge))));
         }
         ret.append("@enduml\n");
         return ret.toString().replace("%n1 partitions", "%n1 partition").replace("%n1 threads", "%n1 thread");
+    }
+
+    protected String compactPolicy(ComputationPolicy policy) {
+        return String.format("Continue on failure: %s%nRetries: %d, %d ms%nBatch: %d, %dms", policy.continueOnFailure(),
+                policy.getRetryPolicy().getMaxRetries(), policy.getRetryPolicy().getDelay().toMillis(), policy.getBatchCapacity(),
+                policy.getBatchThreshold().toMillis());
+    }
+
+    protected String getPumlName(Topology.Vertex vertex) {
+        if (VertexType.COMPUTATION.equals(vertex.getType())) {
+            return getPumlIdentifier(vertex.getName()) + "Comp";
+        }
+        return getPumlIdentifier(vertex.getName());
+    }
+
+    protected String getPumlIdentifier(String name) {
+        return name.replaceAll("[^a-zA-Z]", ".");
     }
 
     protected void generateDag(Set<ComputationMetadataMapping> metadataSet)
