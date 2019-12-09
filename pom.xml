@@ -4020,13 +4020,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat</artifactId>
-        <version>${tomcat.version}</version>
-        <type>zip</type>
-        <classifier>light</classifier>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-catalina</artifactId>
         <version>${tomcat.version}</version>
         <exclusions>
