@@ -35,7 +35,6 @@ import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_ANCESTORID;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PRIMARYTYPE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
-import static org.nuxeo.ecm.platform.comment.AbstractTestCommentManager.newConfig;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
@@ -82,12 +81,12 @@ import org.nuxeo.ecm.platform.comment.impl.CommentsMigrator;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
@@ -103,9 +102,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, LogFeature.class, LogCaptureFeature.class })
+@Features({ CommentFeature.class, LogFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.comment")
 @Deploy("org.nuxeo.ecm.platform.notification.api")
 @Deploy("org.nuxeo.ecm.platform.notification.core")
 @Deploy("org.nuxeo.ecm.relations.api")
@@ -306,7 +304,7 @@ public class TestCommentsMigrator {
     @Test
     @SuppressWarnings("deprecation")
     public void testProbe() {
-        CommentServiceConfig config = newConfig();
+        CommentServiceConfig config = CommentServiceHelper.getCommentService().getConfig();
         CommentManager relationCommentManager = new CommentManagerImpl(config);
         CommentManager propertyCommentManager = new PropertyCommentManager();
 
@@ -477,7 +475,7 @@ public class TestCommentsMigrator {
     }
 
     protected void createCommentsAsRelations() {
-        createComments(new CommentManagerImpl(newConfig()));
+        createComments(new CommentManagerImpl(CommentServiceHelper.getCommentService().getConfig()));
     }
 
     protected void createCommentsAsProperty(boolean commentsWithoutParent) {
@@ -488,8 +486,14 @@ public class TestCommentsMigrator {
             NuxeoPrincipal principal = session.getPrincipal();
             for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
                 DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
+                comment.setPropertyValue(COMMENT_PARENT_ID, fileWithCommentWithoutParent.getId());
                 DocumentModel createdComment = propertyCommentManager.createComment(fileWithCommentWithoutParent,
                         comment);
+
+                // Simulate removing the comment:parentId
+                createdComment.setPropertyValue(COMMENT_PARENT_ID, null);
+                session.saveDocument(createdComment);
+
                 notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
                         principal, "notification" + i);
             }

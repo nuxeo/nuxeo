@@ -25,10 +25,10 @@ import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 /**
  * @since 11.1
  */
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
+public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNotification {
 
     @Override
-    protected Class<? extends CommentManager> getCommentManager() {
+    protected Class<? extends CommentManager> getType() {
         return PropertyCommentManager.class;
     }
 }

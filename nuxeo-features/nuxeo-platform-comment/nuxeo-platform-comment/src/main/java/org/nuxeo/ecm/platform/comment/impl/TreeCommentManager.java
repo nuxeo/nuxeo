@@ -67,7 +67,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Comment service implementation. The comments are linked together as a tree under a folder related to the root
  * document that we comment.
- * 
+ *
  * @since 11.1
  */
 public class TreeCommentManager extends AbstractCommentManager {
@@ -163,8 +163,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             }
 
             commentDocModel = session.createDocument(commentDocModel);
-            notifyEvent(session, CommentEvents.COMMENT_ADDED, session.getDocument(commentDocModel.getParentRef()),
-                    commentDocModel);
+            notifyEvent(session, CommentEvents.COMMENT_ADDED, documentModel, commentDocModel);
             return Comments.newComment(commentDocModel);
         });
     }
@@ -231,6 +230,7 @@ public class TreeCommentManager extends AbstractCommentManager {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentDocumentModel);
             }
             session.saveDocument(commentDocumentModel);
+            notifyEvent(session, CommentEvents.COMMENT_UPDATED, commentDocumentModel);
             return Comments.newComment(commentDocumentModel);
         });
     }
@@ -248,6 +248,7 @@ public class TreeCommentManager extends AbstractCommentManager {
                 Comments.externalEntityToDocumentModel((ExternalEntity) comment, commentDocModel);
             }
             session.saveDocument(commentDocModel);
+            notifyEvent(session, CommentEvents.COMMENT_UPDATED, commentDocModel);
             return Comments.newComment(commentDocModel);
         });
     }
@@ -424,7 +425,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             DocumentModel parent = session.getDocument(commentDocModel.getParentRef());
             commentDocModel.detach(true);
             session.removeDocument(documentRef);
-            notifyEvent(session, CommentEvents.COMMENT_REMOVED, parent, commentDocModel);
+            notifyEvent(session, CommentEvents.COMMENT_REMOVED, commentDocModel);
         });
 
     }
@@ -466,5 +467,23 @@ public class TreeCommentManager extends AbstractCommentManager {
 
         return (PageProvider<DocumentModel>) ppService.getPageProvider(GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME,
                 sortInfos, pageSize, currentPageIndex, props, documentId);
+    }
+
+    @Override
+    public DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
+        // Case when commentDocumentModel is already the document being commented
+        DocumentModel commentedDocModel = commentDocumentModel;
+
+        // Case when commentDocumentModel is a comment (can be the first comment or any reply)
+        if (commentDocumentModel.hasSchema(COMMENT_SCHEMA)) {
+            commentedDocModel = session.getDocument(commentDocumentModel.getParentRef());
+        }
+
+        // Case when commentDocumentModel is the folder that contains the comments
+        if (COMMENTS_DIRECTORY_TYPE.equals(commentedDocModel.getType())) {
+            commentedDocModel = session.getDocument(commentedDocModel.getParentRef());
+        }
+
+        return commentedDocModel.getRef();
     }
 }

@@ -19,16 +19,17 @@
 
 package org.nuxeo.ecm.platform.comment;
 
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
+ * Feature that provides the {@link org.nuxeo.ecm.platform.comment.impl.TreeCommentManager}.
+ * 
  * @since 11.1
  */
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
-
-    @Override
-    protected Class<? extends CommentManager> getCommentManager() {
-        return PropertyCommentManager.class;
-    }
+@Features(CommentFeature.class)
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/secured-comment-manager-override.xml")
+public class TreeCommentFeature implements RunnerFeature {
 }

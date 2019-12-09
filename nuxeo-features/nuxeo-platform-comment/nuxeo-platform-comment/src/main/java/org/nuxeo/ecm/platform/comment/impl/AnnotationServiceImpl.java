@@ -154,14 +154,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
             throw new CommentSecurityException("The user " + principal.getName()
                     + " can not edit annotations of document " + annotation.getParentId());
         }
-        CoreInstance.doPrivileged(session, s -> {
-            DocumentModel annotationModel = s.getDocument(annotationRef);
-            Comments.annotationToDocumentModel(annotation, annotationModel);
-            if (annotation instanceof ExternalEntity) {
-                Comments.externalEntityToDocumentModel((ExternalEntity) annotation, annotationModel);
-            }
-            s.saveDocument(annotationModel);
-        });
+        Framework.getService(CommentManager.class).updateComment(session, annotationId, annotation);
     }
 
     @Override

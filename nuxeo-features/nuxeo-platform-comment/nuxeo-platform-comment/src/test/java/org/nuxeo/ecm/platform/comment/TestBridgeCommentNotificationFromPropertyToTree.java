@@ -20,15 +20,22 @@
 package org.nuxeo.ecm.platform.comment;
 
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
 
 /**
  * @since 11.1
  */
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
+public class TestBridgeCommentNotificationFromPropertyToTree extends AbstractTestCommentNotification {
 
     @Override
-    protected Class<? extends CommentManager> getCommentManager() {
-        return PropertyCommentManager.class;
+    protected CommentManager getCommentManager() {
+        return new BridgeCommentManager(new PropertyCommentManager(), new TreeCommentManager());
+    }
+
+    @Override
+    protected Class<? extends CommentManager> getType() {
+        return BridgeCommentManager.class;
     }
 }

@@ -19,18 +19,23 @@
 
 package org.nuxeo.ecm.platform.comment;
 
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
+ * Feature that provides the {@link org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl}.
+ * 
  * @since 11.1
+ * @deprecated since 10.3, in order to follow the service deprecation
+ *             {@link org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl}. Use {@link CommentFeature} instead.
  */
-@Features(TreeCommentFeature.class)
-public class TestTreeAnnotationService extends AbstractTestAnnotationService {
-
-    @Override
-    protected Class<? extends CommentManager> getCommentManager() {
-        return TreeCommentManager.class;
-    }
+@Deprecated
+@Features(CommentFeature.class)
+@Deploy("org.nuxeo.ecm.relations.api")
+@Deploy("org.nuxeo.ecm.relations")
+@Deploy("org.nuxeo.ecm.relations.jena")
+@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/comment-jena-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/relation-comment-manager-override.xml")
+public class RelationCommentFeature implements RunnerFeature {
 }
