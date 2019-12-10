@@ -14,6 +14,7 @@ rem ## Lesser General Public License for more details.
 rem ##
 rem ## Contributors:
 rem ##     Julien Carsique
+rem ##     Mickael Schoentgen
 rem ##
 rem ## DOS script calling a multi-OS Nuxeo Java launcher
 rem ##
@@ -33,7 +34,11 @@ set NUXEO_LAUNCHER=%NUXEO_HOME%\bin\nuxeo-launcher.jar
 if exist "%NUXEO_LAUNCHER%" goto FOUND_NUXEO_LAUNCHER
 echo Could not locate %NUXEO_LAUNCHER%.
 echo Please check that you are in the bin directory when running this script.
-timeout /t 30
+REM Using "ping" instead of "timeout /t 30" to prevent issues when
+REM the %PATH% is altered by some third-party softwares that ship
+REM their own version of the "timemout.exe" executable.
+REM Refer to https://jira.nuxeo.com/browse/NXP-27351 for details.
+ping 127.0.0.1 -n 31 > NUL
 goto END
 :FOUND_NUXEO_LAUNCHER
 
@@ -64,14 +69,14 @@ if exist "%NUXEO_CONF%" goto FOUND_NUXEO_CONF
 
 REM ***** All checks failed *****
 echo Could not find nuxeo.conf in the path, the environment or the registry
-timeout /t 30
+ping 127.0.0.1 -n 31 > NUL
 goto END
 
 :FOUND_NUXEO_CONF
 echo Found NUXEO_CONF = %NUXEO_CONF%
 echo. >> "%NUXEO_CONF%" || (
   echo ERROR: "%NUXEO_CONF%" must be writable. Run as the right user or set NUXEO_CONF point to another nuxeo.conf file.
-  timeout /t 30
+  ping 127.0.0.1 -n 31 > NUL
   goto END
 )
 
@@ -168,7 +173,7 @@ if not "%JAVA_HOME%" == "" goto HAS_JAVA_HOME
 
 REM ***** All checks failed *****
 echo Could not find java.exe in the path, the environment or the registry
-timeout /t 30
+ping 127.0.0.1 -n 31 > NUL
 goto END
 
 :FIND_JAVA_HOME
@@ -183,7 +188,7 @@ set JAVA=%JAVA_HOME%\bin\java.exe
 set JAVA_TOOLS=%JAVA_HOME%\lib\tools.jar
 if not exist "%JAVA%" (
 echo Could not find java.exe in JAVA_HOME\bin. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
-timeout /t 30
+ping 127.0.0.1 -n 31 > NUL
 goto END
 )
 goto HAS_JAVA
@@ -200,14 +205,14 @@ for /f tokens^=2-5^ delims^=.-_+^" %%j in ('java -fullversion 2^>^&1') do (
 )
 if %JAVA_VERSION% lss %REQUIRED_JAVA_VERSION% (
   echo Nuxeo requires Java JDK %REQUIRED_JAVA_VERSION_LABEL%+ ^(detected %JAVA_VERSION_LABEL%^)
-  timeout /t 30
+  ping 127.0.0.1 -n 31 > NUL
   goto END
 )
 set JAVA_VERSION_TOOLS=900
 if %JAVA_VERSION% lss %JAVA_VERSION_TOOLS% (
   if not exist "%JAVA_TOOLS%" (
     echo Could not find tools.jar in JAVA_HOME\lib. Please fix or remove JAVA_HOME; ensure JDK is properly installed.
-    timeout /t 30
+    ping 127.0.0.1 -n 31 > NUL
     goto END
   )
 ) 
@@ -215,7 +220,7 @@ REM ***** Check Java JDK
 set JAVAC=%JAVA_HOME%\bin\javac.exe
 if not exist "%JAVAC%" (
   echo Could not find a JDK. Please ensure a Java JDK is properly installed.
-  timeout /t 30
+  ping 127.0.0.1 -n 31 > NUL
 goto END
 )
 
