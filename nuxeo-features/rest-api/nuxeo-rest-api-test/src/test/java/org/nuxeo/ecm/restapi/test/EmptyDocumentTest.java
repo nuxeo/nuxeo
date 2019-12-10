@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.restapi.test;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -163,6 +164,21 @@ public class EmptyDocumentTest extends BaseTest {
             JsonNode subjects = jsonNode.get("properties").get("dc:subjects");
             assertTrue(subjects.isArray());
             assertEquals("dummy subject", subjects.get(0).textValue());
+        }
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.test.test:test-operation-getdocumentparent-contrib.xml")
+    public void testEmptyDocumentCreationAndCallGetDocumentParentOperation() throws IOException {
+        DocumentModel folder = RestServerInit.getFolder(0, session);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("type", "File");
+        queryParams.putSingle("name", "foo");
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "id/" + folder.getId() + "/@emptyWithDefault", null, queryParams, null, HEADERS)) {
+            assertEquals(SC_OK, response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("/folder_0", node.get("parentRef").textValue());
         }
     }
 

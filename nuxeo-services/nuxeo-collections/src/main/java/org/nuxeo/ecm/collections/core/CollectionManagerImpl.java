@@ -164,14 +164,11 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     protected DocumentModel createCollection(final String newTitle, final String newDescription,
             final DocumentModel context, final CoreSession session) {
         DocumentModel defaultCollections = getUserDefaultCollections(session);
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         Map<String, Object> options = new HashMap<>();
         options.put(CoreEventConstants.PARENT_PATH, defaultCollections.getPath().toString());
-        options.put(CoreEventConstants.DESTINATION_NAME, newTitle);
-        options.put(CoreEventConstants.DESTINATION_NAME, newTitle);
+        options.put(CoreEventConstants.DESTINATION_NAME, pss.generatePathSegment(newTitle));
         DocumentModel newCollection = session.createDocumentModel(CollectionConstants.COLLECTION_TYPE, options);
-
-        PathSegmentService pss = Framework.getService(PathSegmentService.class);
-        newCollection.setPathInfo(defaultCollections.getPath().toString(), pss.generatePathSegment(newTitle));
         newCollection.setPropertyValue("dc:title", newTitle);
         newCollection.setPropertyValue("dc:description", newDescription);
         return session.createDocument(newCollection);

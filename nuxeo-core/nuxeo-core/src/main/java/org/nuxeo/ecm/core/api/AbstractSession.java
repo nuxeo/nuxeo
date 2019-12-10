@@ -323,6 +323,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
     }
 
+    protected Document resolveParentReference(DocumentRef docRef) {
+        // first let's try to handle a path reference
+        if (docRef != null && docRef.type() == DocumentRef.PATH && docRef.reference() != null) {
+            String docPath = (String) docRef.reference();
+            if ("/".equals(docPath)) {
+                return null;
+            }
+            String parentPath = docPath.substring(0, docPath.lastIndexOf('/'));
+            if (parentPath.isEmpty()) {
+                parentPath = "/";
+            }
+            return resolveReference(new PathRef(parentPath));
+        }
+        return resolveReference(docRef).getParent();
+    }
+
     /**
      * Gets the document model for the given core document.
      *
@@ -603,6 +619,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType);
         if (options == null) {
             options = new HashMap<>();
+        } else if (options.containsKey(CoreEventConstants.PARENT_PATH)
+                && options.containsKey(CoreEventConstants.DESTINATION_NAME)) {
+            docModel.setPathInfo((String) options.get(CoreEventConstants.PARENT_PATH),
+                    (String) options.get(CoreEventConstants.DESTINATION_NAME));
         }
         notifyEvent(DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED, docModel, options, null, null, false, true);
         return docModel;
@@ -624,9 +644,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
         options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
         options.put(CoreEventConstants.DESTINATION_NAME, name);
-        DocumentModel model = createDocumentModelFromTypeName(typeName, options);
-        model.setPathInfo(parentPath, name);
-        return model;
+        return createDocumentModelFromTypeName(typeName, options);
     }
 
     @Override
@@ -1003,15 +1021,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentRef getParentDocumentRef(DocumentRef docRef) {
-        final Document doc = resolveReference(docRef);
-        Document parentDoc = doc.getParent();
+        Document parentDoc = resolveParentReference(docRef);
         return parentDoc != null ? new IdRef(parentDoc.getUUID()) : null;
     }
 
     @Override
     public DocumentModel getParentDocument(DocumentRef docRef) {
-        Document doc = resolveReference(docRef);
-        Document parentDoc = doc.getParent();
+        Document parentDoc = resolveParentReference(docRef);
         if (parentDoc == null) {
             return null;
         }
@@ -2155,8 +2171,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentRef[] getParentDocumentRefs(DocumentRef docRef) {
         final List<DocumentRef> docRefs = new ArrayList<>();
-        final Document doc = resolveReference(docRef);
-        Document parentDoc = doc.getParent();
+        Document parentDoc = resolveParentReference(docRef);
         while (parentDoc != null) {
             final DocumentRef parentDocRef = new IdRef(parentDoc.getUUID());
             docRefs.add(parentDocRef);

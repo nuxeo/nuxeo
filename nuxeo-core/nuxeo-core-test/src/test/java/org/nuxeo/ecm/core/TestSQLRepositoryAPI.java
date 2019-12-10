@@ -1228,6 +1228,30 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testGetParentDocumentFromPathReference() {
+        DocumentRef rootRef = new PathRef("/");
+        assertNull(session.getParentDocument(rootRef));
+        assertNull(session.getParentDocumentRef(rootRef));
+
+        String name = "folder#" + generateUnique();
+        DocumentModel parentFolder = session.createDocumentModel("/", name, "Folder");
+        DocumentModel shouldBeRoot = session.getParentDocument(parentFolder.getRef());
+        assertEquals("/", shouldBeRoot.getPathAsString());
+
+        parentFolder = session.createDocument(parentFolder);
+        String name2 = "file#" + generateUnique();
+        DocumentModel childFile = session.createDocumentModel(parentFolder.getPathAsString(), name2, "File");
+        DocumentModel shouldBeFolder = session.getParentDocument(childFile.getRef());
+        assertEquals(parentFolder.getPathAsString(), shouldBeFolder.getPathAsString());
+
+        DocumentRef shouldBeRootRef = session.getParentDocumentRef(parentFolder.getRef());
+        assertEquals(session.getRootDocument().getRef(), shouldBeRootRef);
+
+        DocumentRef shouldBeFolderRef = session.getParentDocumentRef(childFile.getRef());
+        assertEquals(parentFolder.getRef(), shouldBeFolderRef);
+    }
+
+    @Test
     public void testGetParentDocuments() {
         List<DocumentModel> docs;
 
