@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.rest.api.operation.test.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="event-handlers">
+    <handler chainId="Document.GetParent">
+      <event>emptyDocumentModelCreated</event>
+      <filters>
+        <doctype>File</doctype>
+      </filters>
+    </handler>
+  </extension>
+
+</component>
