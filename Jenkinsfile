@@ -349,9 +349,11 @@ pipeline {
 
             # install the nuxeo-redis chart into a dedicated namespace that will be cleaned up afterwards
             # use 'jx step helm install' to avoid 'Error: incompatible versions' when running 'helm install'
+            envsubst < ci/redis-values.yaml > redis-values.yaml~gen
             jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO_REDIS} \
               --name ${HELM_RELEASE_REDIS} \
-              --namespace ${NAMESPACE_REDIS}
+              --namespace ${NAMESPACE_REDIS} \
+              --set-file=redis-values.yaml~gen
           """
 
           echo """
