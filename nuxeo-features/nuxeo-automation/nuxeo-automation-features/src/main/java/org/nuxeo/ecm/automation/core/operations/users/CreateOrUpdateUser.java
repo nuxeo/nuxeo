@@ -33,7 +33,10 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -43,6 +46,9 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -69,6 +75,9 @@ public class CreateOrUpdateUser {
 
     @Context
     protected UserManager userManager;
+
+    @Context
+    protected OperationContext ctx;
 
     @Param(name = "username")
     protected String username;
@@ -116,6 +125,9 @@ public class CreateOrUpdateUser {
                 throw new OperationException("Cannot create already-existing user: " + username);
             }
             create = false;
+
+            // make sure the user can be updated
+            checkCanCreateOrUpdateUser(userDoc);
         }
         if (groups != null) {
             userDoc.setProperty(SCHEMA_NAME, GROUPS_COLUMN, groups);
@@ -141,12 +153,30 @@ public class CreateOrUpdateUser {
             }
             userDoc.setProperty(SCHEMA_NAME, key, value);
         }
+
+        // make sure the new user can be created or updated
+        checkCanCreateOrUpdateUser(userDoc);
+
         if (create) {
             userDoc = userManager.createUser(userDoc);
         } else {
             userManager.updateUser(userDoc);
             userDoc = userManager.getUserModel(username);
         }
+    }
+
+    protected void checkCanCreateOrUpdateUser(DocumentModel userDoc) {
+        NuxeoPrincipal currentUser = ctx.getPrincipal();
+        if (!currentUser.isAdministrator()
+                && (!currentUser.isMemberOf("powerusers") || !canCreateOrUpdateUser(userDoc))) {
+            throw new NuxeoException("User is not allowed to create or edit users", HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
+
+    protected boolean canCreateOrUpdateUser(DocumentModel userDoc) {
+        NuxeoPrincipal principal = new NuxeoPrincipalImpl((String) userDoc.getProperty(SCHEMA_NAME, USERNAME_COLUMN));
+        principal.setModel(userDoc);
+        return userManager.getAdministratorsGroups().stream().noneMatch(principal.getAllGroups()::contains);
     }
 
 }
