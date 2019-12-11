@@ -361,14 +361,14 @@ public interface CommentManager {
     }
 
     /**
-     * Gets the document being commented.
+     * Gets the {@link DocumentRef} of the document being commented.
      *
      * @param session the core session
      * @param commentDocumentModel the document model of the comment
-     * @return {@code DocumentRef} that {@code commentDocumentModel} comment
+     * @return the {@code DocumentRef} of the commented document
      * @since 11.1
      */
-    default DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
+    default DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
         throw new UnsupportedOperationException();
     }
 

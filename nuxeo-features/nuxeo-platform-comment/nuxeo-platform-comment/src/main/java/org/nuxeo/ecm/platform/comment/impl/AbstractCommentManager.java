@@ -169,18 +169,18 @@ public abstract class AbstractCommentManager implements CommentManager {
     }
 
     /**
-     * Notify the event of type {@code eventType} on the given {@code commentDocumentModel}.
+     * Notifies the event of type {@code eventType} on the given {@code commentDocumentModel}.
      *
      * @param session the session
      * @param commentDocumentModel the document model of the comment
-     * @param eventType the event type to publish
+     * @param eventType the event type to fire
      * @implSpec This method uses internally {@link #notifyEvent(CoreSession, String, DocumentModel, DocumentModel)}
      * @since 11.1
      */
     protected void notifyEvent(CoreSession session, DocumentModel commentDocumentModel, String eventType) {
         requireNonNull(eventType);
 
-        DocumentModel commentParent = session.getDocument(getCommentedDocument(session, commentDocumentModel));
+        DocumentModel commentParent = session.getDocument(getCommentedDocumentRef(session, commentDocumentModel));
         notifyEvent(session, eventType, commentParent, commentDocumentModel);
     }
 

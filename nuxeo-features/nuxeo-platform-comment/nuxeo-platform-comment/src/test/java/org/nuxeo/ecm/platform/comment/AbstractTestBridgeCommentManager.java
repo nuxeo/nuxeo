@@ -28,9 +28,12 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.junit.Before;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -67,7 +70,8 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
 
         // Add a comment
         DocumentModel commentDocModel = session.createDocumentModel(null, "Fake comment", COMMENT_DOC_TYPE);
-        boolean setParent = commentManager instanceof PropertyCommentManager || commentManager instanceof TreeCommentManager;
+        boolean setParent = commentManager instanceof PropertyCommentManager
+                || commentManager instanceof TreeCommentManager;
         // Because we don't use the CommentableDocumentAdapter which will set this property, we should fill it here
         if (setParent) {
             commentDocModel.setPropertyValue(COMMENT_PARENT_ID, fileToComment.getId());
@@ -78,7 +82,7 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
         return session.getDocument(new IdRef(createdComment.getId()));
     }
 
-    protected DocumentModel getCommentedDocument(){
+    protected DocumentModel getCommentedDocument() {
         return session.query(String.format("SELECT * FROM Document Where %s = '%s'", NXQL.ECM_NAME, "anyFile")).get(0);
     }
 
@@ -91,7 +95,8 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
      * {@inheritDoc}
      * <p>
      * In the case of comment bridge we will ignore the check when we have an event of deletion comment, because the
-     * bridge checks the existence of the comment document and in this case we will end with an exception.
+     * bridge get the document to be able to dispatch it to the good implementation
+     * {@link BridgeCommentManager#execute(CoreSession, DocumentRef, Function)}, and we will end with an exception.
      * </p>
      */
     @Override

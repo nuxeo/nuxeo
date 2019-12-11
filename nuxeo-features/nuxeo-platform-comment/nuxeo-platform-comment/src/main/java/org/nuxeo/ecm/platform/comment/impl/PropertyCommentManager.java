@@ -313,6 +313,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                 throw new CommentSecurityException(
                         "The user " + principal.getName() + " can not delete comments of document " + parentId);
             }
+            // Allows the access to its data if needed in listeners
             comment.detach(true);
             s.removeDocument(commentRef);
             notifyEvent(s, comment, CommentEvents.COMMENT_REMOVED);
@@ -457,12 +458,11 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getCommentedDocument(CoreSession s, DocumentModel commentDocumentModel) {
+    public DocumentRef getCommentedDocumentRef(CoreSession s, DocumentModel commentDocumentModel) {
         return CoreInstance.doPrivileged(s, session -> {
-            String commentedDocId = commentDocumentModel.getId();
-            if (commentDocumentModel.hasSchema(COMMENT_SCHEMA)) {
-                commentedDocId = (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID);
-            }
+            String commentedDocId = commentDocumentModel.hasSchema(COMMENT_SCHEMA)
+                    ? (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)
+                    : commentDocumentModel.getId();
             return new IdRef(commentedDocId);
         });
 

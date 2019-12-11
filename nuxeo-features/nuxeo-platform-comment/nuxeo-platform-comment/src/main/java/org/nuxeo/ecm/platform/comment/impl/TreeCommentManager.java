@@ -470,7 +470,7 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
+    public DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
         // Case when commentDocumentModel is already the document being commented
         DocumentModel commentedDocModel = commentDocumentModel;
 
@@ -479,6 +479,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             commentedDocModel = session.getDocument(commentDocumentModel.getParentRef());
         }
 
+        // Case when commentDocumentModel is the folder that contains the comments
         if (COMMENTS_DIRECTORY_TYPE.equals(commentedDocModel.getType())) {
             commentedDocModel = session.getDocument(commentedDocModel.getParentRef());
         }

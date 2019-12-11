@@ -23,7 +23,6 @@ import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -43,14 +42,14 @@ public interface CommentNotificationVeto extends NotificationListenerVeto {
 
     @Override
     default boolean accept(Event event) {
+        if (!(event.getContext() instanceof DocumentEventContext)) {
+            return false;
+        }
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
         String eventType = getExcludedEventType();
         String docType = docCtx.getSourceDocument().getType();
-        if (eventType.equals(event.getName()) //
-                && (Arrays.asList(COMMENT_DOC_TYPE, ANNOTATION_DOC_TYPE, "Post").contains(docType))) {
 
-            return false;
-        }
-        return true;
+        return eventType.equals(event.getName())
+                && (Arrays.asList(COMMENT_DOC_TYPE, ANNOTATION_DOC_TYPE, "Post").contains(docType));
     }
 }

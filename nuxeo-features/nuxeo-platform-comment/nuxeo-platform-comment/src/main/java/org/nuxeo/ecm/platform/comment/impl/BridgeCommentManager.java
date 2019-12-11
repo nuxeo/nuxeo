@@ -205,8 +205,8 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getCommentedDocument(CoreSession session, DocumentModel commentDocumentModel) {
-        return execute(session, commentDocumentModel.getRef(), cm -> cm.getCommentedDocument(session, commentDocumentModel));
+    public DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
+        return execute(session, commentDocumentModel.getRef(), cm -> cm.getCommentedDocumentRef(session, commentDocumentModel));
     }
 
     /**

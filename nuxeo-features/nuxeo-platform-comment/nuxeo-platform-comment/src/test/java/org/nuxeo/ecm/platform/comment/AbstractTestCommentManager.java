@@ -41,9 +41,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -70,7 +68,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.FakeSmtpMailServerFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -123,10 +120,6 @@ public abstract class AbstractTestCommentManager {
     protected NotificationService notificationService;
 
     public abstract Class<? extends CommentManager> getType();
-
-    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
-        throw new UnsupportedOperationException();
-    }
 
     @Before
     public void init() {
@@ -361,12 +354,10 @@ public abstract class AbstractTestCommentManager {
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
         session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
-        doc.addFacet(SubscriptionAdapter.NOTIFIABLE_FACET);
         DocumentModel documentModel = session.createDocument(doc);
         // We subscribe to the creation document to check that we will not be notified about the comment creation as
         // document (see CommentCreationVeto), only the comment added and the 'test' document creation
         addSubscription(doc, "CommentAdded", "Creation");
-        transactionalFeature.nextTransaction();
 
         publishAndVerifyEventNotification(() -> {
             Comment comment = new CommentImpl();
@@ -377,7 +368,7 @@ public abstract class AbstractTestCommentManager {
             Comment createdComment = commentManager.createComment(session, comment);
             return session.getDocument(new IdRef(createdComment.getId()));
 
-        }, COMMENT_ADDED, DOCUMENT_CREATED, 2);
+        }, COMMENT_ADDED, DOCUMENT_CREATED);
     }
 
     @Test
@@ -402,7 +393,7 @@ public abstract class AbstractTestCommentManager {
             commentManager.updateComment(session, createdComment.getId(), createdComment);
             return session.getDocument(new IdRef(createdComment.getId()));
 
-        }, COMMENT_UPDATED, DOCUMENT_UPDATED, 1);
+        }, COMMENT_UPDATED, DOCUMENT_UPDATED);
     }
 
     @Test
@@ -421,13 +412,12 @@ public abstract class AbstractTestCommentManager {
         DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
         commentDocModel.detach(true);
         addSubscription(doc, "CommentRemoved");
-        transactionalFeature.nextTransaction();
 
         publishAndVerifyEventNotification(() -> {
             commentManager.deleteComment(session, createdComment.getId());
             return commentDocModel;
 
-        }, COMMENT_REMOVED, DOCUMENT_REMOVED, 0);
+        }, COMMENT_REMOVED, DOCUMENT_REMOVED);
     }
 
     @Test
@@ -444,20 +434,20 @@ public abstract class AbstractTestCommentManager {
 
         Comment createdComment = commentManager.createComment(session, comment);
         DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
-        assertEquals(getCommentedDocRef(session, commentDocModel, false), doc.getRef());
+        assertEquals(commentManager.getCommentedDocumentRef(session, commentDocModel), doc.getRef());
 
         comment = new CommentImpl();
         comment.setAuthor("author");
         comment.setText("I am a reply");
         comment.setParentId(commentDocModel.getId());
         Comment replyComment = commentManager.createComment(session, comment);
-        assertEquals( //
-                getCommentedDocRef(session, session.getDocument(new IdRef(replyComment.getId())), true), //
+        assertEquals(
+                commentManager.getCommentedDocumentRef(session, session.getDocument(new IdRef(replyComment.getId()))),
                 commentDocModel.getRef());
     }
 
     protected void publishAndVerifyEventNotification(Supplier<DocumentModel> supplier, String commentEventType,
-            String documentEventType, int expectedMailsCount) {
+            String documentEventType) {
         try (CapturingEventListener listener = new CapturingEventListener(commentEventType, documentEventType)) {
             DocumentModel documentModel = supplier.get();
             transactionalFeature.nextTransaction();
@@ -465,48 +455,17 @@ public abstract class AbstractTestCommentManager {
             assertTrue(listener.hasBeenFired(commentEventType));
             assertTrue(listener.hasBeenFired(documentEventType));
 
-            Event event = checkAndGetCommentEvent(commentEventType, listener);
+            List<Event> handledEvents = listener.getCapturedEvents()
+                                                .stream()
+                                                .filter(e -> commentEventType.equals(e.getName()))
+                                                .collect(Collectors.toList());
 
-            checkDocumentEventContext(documentModel, event);
+            assertEquals(1, handledEvents.size());
+            Event expectedEvent = handledEvents.get(0);
+            assertEquals(commentEventType, expectedEvent.getName());
+
+            checkDocumentEventContext(documentModel, expectedEvent);
         }
-    }
-
-    /**
-     * Gets and ensures that the published comment event will be correctly handled.
-     */
-    protected Event checkAndGetCommentEvent(String commentEventType, CapturingEventListener listener) {
-        List<Event> handledEvents = listener.getCapturedEvents()
-                                            .stream()
-                                            .filter(e -> commentEventType.equals(e.getName()))
-                                            .collect(Collectors.toList());
-
-        assertEquals(1, handledEvents.size());
-        Event expectedEvent = handledEvents.get(0);
-        assertEquals(commentEventType, expectedEvent.getName());
-
-        return expectedEvent;
-    }
-
-    protected String getExpectedMailContent(DocumentModel commentModel, Event event, String eventName) {
-        DocumentRef documentRef = commentManager.getCommentedDocument(session, commentModel);
-        DocumentModel commentedDocument = session.getDocument(documentRef);
-        String date = EVENT_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(event.getTime())));
-
-        StringBuilder builder = new StringBuilder(
-                "(").append(commentModel.getPropertyValue(COMMENT_AUTHOR))
-                    .append(")")
-                    .append(" has")
-                    .append(COMMENT_ADDED.equals(eventName) ? " added" : " updated")
-                    .append(" a comment on ")
-                    .append(commentedDocument.getName())
-                    .append(" at ")
-                    .append(date)
-                    .append(". says: ")
-                    .append(commentModel.getPropertyValue(COMMENT_TEXT))
-                    .append(" » See all the comments of the document")
-                    .append(" You received this notification because you subscribed to 'New comment' notification on this document or on one of its parents.");
-
-        return builder.toString();
     }
 
     /**
@@ -525,15 +484,14 @@ public abstract class AbstractTestCommentManager {
 
         assertTrue(properties.containsKey(PARENT_COMMENT));
         DocumentModel commentedDocModel = (DocumentModel) properties.get(PARENT_COMMENT);
-        assertEquals(commentManager.getCommentedDocument(session, expectedDocModel), commentedDocModel.getRef());
+        assertEquals(commentManager.getCommentedDocumentRef(session, expectedDocModel), commentedDocModel.getRef());
     }
 
     protected void addSubscription(DocumentModel documentModel, String... notifications) {
         NuxeoPrincipal principal = session.getPrincipal();
         String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
-        Arrays.stream(notifications).forEach(n -> {
-            notificationService.addSubscription(subscriber, n, documentModel, false, principal, n);
-        });
+        Arrays.stream(notifications)
+              .forEach(n -> notificationService.addSubscription(subscriber, n, documentModel, false, principal, n));
     }
 
     public static CommentServiceConfig newConfig() {
