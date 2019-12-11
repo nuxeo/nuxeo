@@ -63,8 +63,8 @@ public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
     }
 
     @Override
-    protected boolean isAPowerUserEditableArtifact() {
-        return UserRootObject.isAPowerUserEditableUser(currentArtifact);
+    protected boolean isAPowerUserEditableArtifact(NuxeoPrincipal artifact) {
+        return UserRootObject.isAPowerUserEditableUser(artifact);
 
     }
 
