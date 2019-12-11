@@ -21,9 +21,17 @@ package org.nuxeo.ecm.automation.core.operations.users;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Queue;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -33,7 +41,12 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.platform.usermanager.GroupConfig;
+import org.nuxeo.ecm.platform.usermanager.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 /**
@@ -75,6 +88,9 @@ public class CreateOrUpdateGroup {
 
     @Context
     protected UserManager userManager;
+
+    @Context
+    protected OperationContext ctx;
 
     @Param(name = "groupname")
     protected String groupName;
@@ -120,6 +136,9 @@ public class CreateOrUpdateGroup {
                 throw new OperationException("Cannot create already-existing group: " + groupName);
             }
             create = false;
+
+            // make sure that the group can be updated
+            checkCanCreateOrUpdateGroup(groupDoc);
         }
         if (members != null) {
             groupDoc.setProperty(GROUP_SCHEMA, MEMBERS, members);
@@ -148,6 +167,10 @@ public class CreateOrUpdateGroup {
             }
             groupDoc.setProperty(GROUP_SCHEMA, key, value);
         }
+
+        // make sure that the new group can be created or updated
+        checkCanCreateOrUpdateGroup(groupDoc);
+
         if (create) {
             userManager.createGroup(groupDoc);
         } else {
@@ -166,6 +189,40 @@ public class CreateOrUpdateGroup {
             return groupName;
         }
         return BaseSession.computeMultiTenantDirectoryId(tenantId, groupName);
+    }
+
+    protected void checkCanCreateOrUpdateGroup(DocumentModel groupDoc) {
+        NuxeoPrincipal currentUser = ctx.getPrincipal();
+        if (!currentUser.isAdministrator()
+                && (!currentUser.isMemberOf("powerusers") || !canCreateOrUpdateGroup(groupDoc))) {
+            throw new NuxeoException("User is not allowed to create or edit groups", HttpServletResponse.SC_FORBIDDEN);
+        }
+    }
+
+    protected boolean canCreateOrUpdateGroup(DocumentModel groupDoc) {
+        GroupConfig groupConfig = userManager.getGroupConfig();
+        NuxeoGroup group = new NuxeoGroupImpl(groupDoc, groupConfig);
+        Set<String> allGroups = computeAllGroups(group);
+        List<String> administratorsGroups = userManager.getAdministratorsGroups();
+        return allGroups.stream().noneMatch(administratorsGroups::contains);
+    }
+
+    protected Set<String> computeAllGroups(NuxeoGroup group) {
+        Set<String> allGroups = new HashSet<>();
+        Queue<NuxeoGroup> queue = new LinkedList<>();
+        queue.add(group);
+
+        while (!queue.isEmpty()) {
+            NuxeoGroup nuxeoGroup = queue.poll();
+            allGroups.add(nuxeoGroup.getName());
+            nuxeoGroup.getParentGroups()
+                      .stream()
+                      .filter(pg -> !allGroups.contains(pg))
+                      .map(userManager::getGroup)
+                      .forEach(queue::add);
+        }
+
+        return allGroups;
     }
 
 }
