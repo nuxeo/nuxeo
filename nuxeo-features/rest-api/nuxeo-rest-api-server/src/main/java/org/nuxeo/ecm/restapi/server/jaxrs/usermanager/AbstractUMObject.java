@@ -58,9 +58,12 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
     }
 
     @PUT
-    public T doUpdateArtifact(T principal) {
+    public T doUpdateArtifact(T artifact) {
+        // check that the current artifact can be updated
         checkUpdateGuardPreconditions();
-        return updateArtifact(principal);
+        // check that the new artifact can be updated
+        checkUpdateGuardPreconditions(artifact);
+        return updateArtifact(artifact);
     }
 
     @DELETE
@@ -71,9 +74,13 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
     }
 
     protected void checkUpdateGuardPreconditions() {
+        checkUpdateGuardPreconditions(currentArtifact);
+    }
+
+    protected void checkUpdateGuardPreconditions(T artifact) {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
-            if ((!principal.isMemberOf("powerusers")) || !isAPowerUserEditableArtifact()) {
+            if ((!principal.isMemberOf("powerusers")) || !isAPowerUserEditableArtifact(artifact)) {
                 throw new WebSecurityException("User is not allowed to edit users");
             }
         }
@@ -83,9 +90,20 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
      * Check that the current artifact is editable by a power user. Basically this means not an admin user or not an
      * admin group.
      *
-     * @return
+     * @deprecated since 10.10-HF20, use {@link #isAPowerUserEditableArtifact(Object)} instead.
      */
-    protected abstract boolean isAPowerUserEditableArtifact();
+    @Deprecated
+    protected boolean isAPowerUserEditableArtifact() {
+        return isAPowerUserEditableArtifact(currentArtifact);
+    }
+
+    /**
+     * Check the given artifact is editable by a power user. Basically this means not an admin user or not an admin
+     * group.
+     */
+    protected boolean isAPowerUserEditableArtifact(T artifact) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Updates the current artifact by the one given in parameters in the underlying persistence system.

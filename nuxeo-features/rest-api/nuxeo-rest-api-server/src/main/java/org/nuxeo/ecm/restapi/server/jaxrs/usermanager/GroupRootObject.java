@@ -21,6 +21,12 @@ package org.nuxeo.ecm.restapi.server.jaxrs.usermanager;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -80,8 +86,27 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
 
     static boolean isAPowerUserEditableGroup(NuxeoGroup group) {
         UserManager um = Framework.getService(UserManager.class);
-        return !um.getAdministratorsGroups().contains(group.getName());
+        Set<String> allGroups = computeAllGroups(um, group);
+        List<String> administratorsGroups = um.getAdministratorsGroups();
+        return allGroups.stream().noneMatch(administratorsGroups::contains);
+    }
 
+    protected static Set<String> computeAllGroups(UserManager um, NuxeoGroup group) {
+        Set<String> allGroups = new HashSet<>();
+        Queue<NuxeoGroup> queue = new LinkedList<>();
+        queue.add(group);
+
+        while (!queue.isEmpty()) {
+            NuxeoGroup nuxeoGroup = queue.poll();
+            allGroups.add(nuxeoGroup.getName());
+            nuxeoGroup.getParentGroups()
+                      .stream()
+                      .filter(pg -> !allGroups.contains(pg))
+                      .map(um::getGroup)
+                      .forEach(queue::add);
+        }
+
+        return allGroups;
     }
 
     @Override
