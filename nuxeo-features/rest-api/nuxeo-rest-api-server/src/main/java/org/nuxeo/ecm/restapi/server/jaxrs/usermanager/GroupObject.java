@@ -83,7 +83,7 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
     }
 
     @Override
-    protected boolean isAPowerUserEditableArtifact() {
-        return GroupRootObject.isAPowerUserEditableGroup(currentArtifact);
+    protected boolean isAPowerUserEditableArtifact(NuxeoGroup artifact) {
+        return GroupRootObject.isAPowerUserEditableGroup(artifact);
     }
 }
