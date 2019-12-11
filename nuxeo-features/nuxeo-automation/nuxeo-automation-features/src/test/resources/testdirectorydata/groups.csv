@@ -1,4 +1,5 @@
 groupname, grouplabel, description
 "members","Group of members", "Group of users with read access rights"
 "administrators","Administrators group","Group of users with adminstrative rights"
+"powerusers","Power users group","Group of users with limited administrative rights"
 "myTestGroup","My test group", "Test group"
