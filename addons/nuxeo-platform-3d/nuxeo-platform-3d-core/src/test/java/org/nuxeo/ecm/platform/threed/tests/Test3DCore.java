@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -55,7 +54,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.ecm.platform.threed.api")
 public class Test3DCore {
 
-    protected static final String[] TEST_FILE_NAMES = { "suzanne.dae", "suzanne.x3d" };
+    protected static final String TEST_ZIP3D_FILE_NAME = "dummy3ds.zip";
+
+    protected static final String[] TEST_FILE_NAMES = { "suzanne.dae", "suzanne.x3d", TEST_ZIP3D_FILE_NAME };
 
     @Inject
     private CoreSession session;
@@ -81,7 +82,6 @@ public class Test3DCore {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class)
     public void testThreeDImporter() throws IOException {
         for (String testFileName : TEST_FILE_NAMES) {
             try (InputStream is = Test3DCore.class.getResourceAsStream("/test-data/" + testFileName)) {
@@ -93,10 +93,11 @@ public class Test3DCore {
                 assertNotNull(doc);
                 assertEquals(THREED_TYPE, doc.getType());
                 assertTrue(doc.hasFacet(THREED_FACET));
-                assertEquals(blob.getFilename(), doc.getName());
+                if (!TEST_ZIP3D_FILE_NAME.equals(testFileName)) {
+                    assertEquals(blob.getFilename(), doc.getName());
+                }
                 assertEquals(blob, doc.getPropertyValue("file:content"));
             }
         }
     }
-
 }
