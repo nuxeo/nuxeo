@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -82,7 +83,8 @@ public class ThreeDImporter extends AbstractFileImporter {
         try (ZipInputStream zipInputStream = new ZipInputStream(zipContent.getStream())) {
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                 // skip if the entry is a directory, if it's not a supported extension or if it's hidden (by convention)
-                boolean isSupported = SUPPORTED_EXTENSIONS.contains(FileUtils.getFileExtension(zipEntry.getName()));
+                String ext = FilenameUtils.getExtension(zipEntry.getName()).toLowerCase();
+                boolean isSupported = SUPPORTED_EXTENSIONS.contains(ext);
                 if (zipEntry.isDirectory() || !isSupported || zipEntry.getName().startsWith(".")) {
                     continue;
                 }
