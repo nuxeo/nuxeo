@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
-import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -62,7 +61,6 @@ public class EmptyDocumentTest extends BaseTest {
     protected static final Map<String, String> HEADERS = Collections.singletonMap("properties", "*");
 
     @Test
-    @ConsoleLogLevelThreshold("ERROR")
     public void testEmptyDocumentCreationWithParent() throws IOException {
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
@@ -94,7 +92,6 @@ public class EmptyDocumentTest extends BaseTest {
     }
 
     @Test
-    @ConsoleLogLevelThreshold("ERROR")
     public void testEmptyDocumentCreationWithoutParent() throws IOException {
         try (CloseableClientResponse response = getResponse(RequestType.GET, "@emptyWithDefault")) {
             assertError(response);
