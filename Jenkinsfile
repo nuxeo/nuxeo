@@ -125,6 +125,21 @@ pipeline {
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
   }
   stages {
+    stage('Set labels') {
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Set Kubernetes resource labels
+          ----------------------------------------
+          """
+          echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
+          sh """
+            kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
+          """
+        }
+      }
+    }
     stage('Update version') {
       when {
         branch 'PR-*'
