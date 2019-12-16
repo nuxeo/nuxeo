@@ -10,7 +10,7 @@
           "method":"GET",
           "nickname":"getTasks",
           "type":"tasks",
-          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam", "taskWorkflowModelNameQueryParam"]/>,
+          <@params names = ["taskUserIdQueryParam", "taskWorkflowInstanceIdQueryParam", "taskWorkflowModelNameQueryParam", "paging"]/>,
           "summary":"Query tasks by user and workflow ids",
           "notes": "Only task instance which you have permission to see will be returned",
           <#include "views/doc/errorresponses.ftl"/>

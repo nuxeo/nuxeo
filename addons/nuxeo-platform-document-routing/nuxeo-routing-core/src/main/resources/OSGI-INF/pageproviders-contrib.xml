@@ -48,6 +48,11 @@
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
 
+    <genericPageProvider name="nuxeo_tasks_listing"
+                         class="org.nuxeo.ecm.platform.routing.core.provider.RoutingTaskPageProvider">
+      <pageSize>20</pageSize>
+    </genericPageProvider>
+
   </extension>
 
 </component>
