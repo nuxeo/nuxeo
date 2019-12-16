@@ -8,14 +8,14 @@
 {
   "paramType": "query",
   "name": "offset",
-  "description": "The offset of the returned result set. If set, the 'currentPageIndex' parameter is ignored.",
-  "dataType": "integer",
+  "description": "Offset of the page to retrieve. If set, the 'currentPageIndex' parameter is ignored.",
+  "dataType": "long",
   "required": false
 },
 {
   "paramType": "query",
   "name": "pageSize",
-  "description": "Size of the page to retrieve",
+  "description": "Size of the page to retrieve. Ignored if offset set",
   "dataType": "long",
   "required": false
 },
