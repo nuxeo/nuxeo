@@ -416,7 +416,7 @@ public class DirectoryTest extends BaseTest {
         int maxResults = 5;
         queryParams.putSingle("pageSize", String.valueOf(maxResults));
         queryParams.putSingle("maxResults", String.valueOf(maxResults));
-
+        ArrayNode entriesArrayNode;
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/directory/" + TESTDIRNAME,
                 queryParams)) {
             String json = response.getEntity(String.class);
@@ -424,8 +424,27 @@ public class DirectoryTest extends BaseTest {
             JsonNode entriesNode = jsonNode.get("entries");
 
             assertTrue(entriesNode.isArray());
-            ArrayNode entriesArrayNode = (ArrayNode) entriesNode;
+            entriesArrayNode = (ArrayNode) entriesNode;
             assertEquals(maxResults, entriesArrayNode.size());
+        }
+
+        // Check you can retrieve the same directory entries 1 by 1 with offset param.
+        queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("pageSize", "1");
+        for (int offset = 0; offset < entriesArrayNode.size(); offset++) {
+            String entryId = entriesArrayNode.get(offset).get("id").asText();
+            queryParams.putSingle("offset", String.valueOf(offset));
+            try (CloseableClientResponse response = getResponse(RequestType.GET, "/directory/" + TESTDIRNAME,
+                    queryParams)) {
+                String json = response.getEntity(String.class);
+                JsonNode jsonNode = mapper.readTree(json);
+                JsonNode entriesNode = jsonNode.get("entries");
+
+                assertTrue(entriesNode.isArray());
+                ArrayNode entriesArrayNodeOffset = (ArrayNode) entriesNode;
+                assertEquals(1, entriesArrayNodeOffset.size());
+                assertEquals(entryId, entriesArrayNodeOffset.get(0).get("id").asText());
+            }
         }
     }
 

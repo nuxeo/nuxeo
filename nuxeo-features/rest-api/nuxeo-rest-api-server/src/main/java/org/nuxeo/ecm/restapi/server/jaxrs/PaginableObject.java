@@ -47,6 +47,8 @@ public abstract class PaginableObject<T> extends DefaultObject {
 
     protected Long currentPageIndex;
 
+    protected Long offset;
+
     protected Long pageSize;
 
     protected String maxResults;
@@ -57,6 +59,8 @@ public abstract class PaginableObject<T> extends DefaultObject {
 
         final HttpServletRequest request = ctx.getRequest();
         currentPageIndex = extractLongParam(request, "currentPageIndex", 0L);
+        String offsetParam = request.getParameter("offset");
+        offset = offsetParam == null ? null : Long.parseLong(offsetParam);
         pageSize = extractLongParam(request, "pageSize", 50L);
         maxResults = request.getParameter("maxResults");
     }
@@ -83,7 +87,7 @@ public abstract class PaginableObject<T> extends DefaultObject {
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
 
         return getPaginableEntries((PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), null,
-                pageSize, currentPageIndex, props, getParams()));
+                pageSize, currentPageIndex, offset, props, null, null, getParams()));
     }
 
     protected Paginable<T> getPaginableEntries(PageProvider<T> pageProvider) {
