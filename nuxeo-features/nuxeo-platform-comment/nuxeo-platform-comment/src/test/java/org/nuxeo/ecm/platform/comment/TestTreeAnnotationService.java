@@ -21,12 +21,12 @@ package org.nuxeo.ecm.platform.comment;
 
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
  */
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/secured-comment-manager-override.xml")
+@Features(TreeCommentFeature.class)
 public class TestTreeAnnotationService extends AbstractTestAnnotationService {
 
     @Override

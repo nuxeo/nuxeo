@@ -20,15 +20,17 @@
 package org.nuxeo.ecm.platform.comment;
 
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
  */
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
+@Features(TreeCommentFeature.class)
+public class TestTreeAnnotationNotification extends AbstractTestAnnotationNotification {
 
     @Override
-    protected Class<? extends CommentManager> getCommentManager() {
-        return PropertyCommentManager.class;
+    protected Class<? extends CommentManager> getType() {
+        return TreeCommentManager.class;
     }
 }

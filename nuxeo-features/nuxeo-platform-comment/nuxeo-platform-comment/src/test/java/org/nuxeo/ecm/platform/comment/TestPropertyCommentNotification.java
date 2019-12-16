@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
+ *  
  * Contributors:
  *     Salem Aouana
  */
@@ -25,10 +25,10 @@ import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 /**
  * @since 11.1
  */
-public class TestPropertyAnnotationService extends AbstractTestAnnotationService {
+public class TestPropertyCommentNotification extends AbstractTestCommentNotification {
 
     @Override
-    protected Class<? extends CommentManager> getCommentManager() {
+    protected Class<? extends CommentManager> getType() {
         return PropertyCommentManager.class;
     }
 }

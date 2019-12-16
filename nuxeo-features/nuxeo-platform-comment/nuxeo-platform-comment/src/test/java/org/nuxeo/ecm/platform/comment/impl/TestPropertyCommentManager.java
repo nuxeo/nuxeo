@@ -57,15 +57,10 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 10.3
  */
-@Deploy("org.nuxeo.ecm.platform.query.api")
-// After migration from Property to Secured, the service will be `TreeCommentManager`,
-// but we want to continue testing the `PropertyCommentManager` one
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/property-comment-manager-override.xml")
 public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
     @Test
@@ -886,9 +881,5 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
     @Override
     public Class<? extends CommentManager> getType() {
         return PropertyCommentManager.class;
-    }
-
-    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
-        return new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID));
     }
 }

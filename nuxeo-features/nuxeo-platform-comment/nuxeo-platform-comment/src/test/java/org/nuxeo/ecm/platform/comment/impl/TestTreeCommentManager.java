@@ -70,13 +70,13 @@ import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.ecm.platform.comment.TreeCommentFeature;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
  */
-@Deploy("org.nuxeo.ecm.automation.core")
-@Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/secured-comment-manager-override.xml")
+@Features(TreeCommentFeature.class)
 public class TestTreeCommentManager extends AbstractTestCommentManager {
 
     public static final String COPY_DOC_NAME = "CopyDoc";
@@ -629,12 +629,5 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
     @Override
     public Class<? extends CommentManager> getType() {
         return TreeCommentManager.class;
-    }
-
-    protected DocumentRef getCommentedDocRef(CoreSession session, DocumentModel commentDocModel, boolean reply) {
-        if (reply) {
-            return commentDocModel.getParentRef();
-        }
-        return commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
     }
 }

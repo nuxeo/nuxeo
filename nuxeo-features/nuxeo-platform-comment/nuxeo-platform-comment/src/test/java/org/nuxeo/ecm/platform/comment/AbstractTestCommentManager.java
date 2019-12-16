@@ -26,28 +26,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOCUMENT;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.PARENT_COMMENT;
-import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
-import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
-import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -59,14 +44,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -76,12 +58,6 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.ec.notification.SubscriptionAdapter;
-import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -90,19 +66,11 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
  * @since 10.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.comment.api")
-@Deploy("org.nuxeo.ecm.platform.comment")
-@Deploy("org.nuxeo.ecm.platform.notification.core")
-@Deploy("org.nuxeo.ecm.platform.notification.api")
-@Deploy("org.nuxeo.ecm.platform.url.api")
-@Deploy("org.nuxeo.ecm.platform.url.core")
+@Features(CommentFeature.class)
 public abstract class AbstractTestCommentManager {
 
     public static final String FOLDER_COMMENT_CONTAINER = "/Folder/CommentContainer";
-
-    protected static final SimpleDateFormat EVENT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
 
     @Inject
     protected CoreSession session;
@@ -115,9 +83,6 @@ public abstract class AbstractTestCommentManager {
 
     @Inject
     protected CoreFeature coreFeature;
-
-    @Inject
-    protected NotificationService notificationService;
 
     public abstract Class<? extends CommentManager> getType();
 
@@ -347,161 +312,6 @@ public abstract class AbstractTestCommentManager {
     @Test
     public void testCommentManagerType() {
         assertEquals(getType(), commentManager.getClass());
-    }
-
-    @Test
-    public void shouldNotifyEventWhenCreateComment() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
-        DocumentModel documentModel = session.createDocument(doc);
-        // We subscribe to the creation document to check that we will not be notified about the comment creation as
-        // document (see CommentCreationVeto), only the comment added and the 'test' document creation
-        addSubscription(doc, "CommentAdded", "Creation");
-
-        publishAndVerifyEventNotification(() -> {
-            Comment comment = new CommentImpl();
-            comment.setAuthor("Administrator");
-            comment.setText("any Comment message");
-            comment.setParentId(documentModel.getId());
-
-            Comment createdComment = commentManager.createComment(session, comment);
-            return session.getDocument(new IdRef(createdComment.getId()));
-
-        }, COMMENT_ADDED, DOCUMENT_CREATED);
-    }
-
-    @Test
-    public void shouldNotifyEventWhenUpdateComment() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = new CommentImpl();
-        comment.setAuthor("Administrator");
-        comment.setText("any Comment message");
-        comment.setParentId(doc.getId());
-
-        Comment createdComment = commentManager.createComment(session, comment);
-        // We subscribe to the update document to check that we will not be notified about the comment updated as
-        // document (see CommentModificationVeto), only the comment updated.
-        addSubscription(doc, "CommentUpdated", "Modification");
-
-        publishAndVerifyEventNotification(() -> {
-            createdComment.setText("i update the message");
-            commentManager.updateComment(session, createdComment.getId(), createdComment);
-            return session.getDocument(new IdRef(createdComment.getId()));
-
-        }, COMMENT_UPDATED, DOCUMENT_UPDATED);
-    }
-
-    @Test
-    public void shouldNotifyEventWhenRemoveComment() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = new CommentImpl();
-        comment.setAuthor("Administrator");
-        comment.setText("any Comment message");
-        comment.setParentId(doc.getId());
-
-        Comment createdComment = commentManager.createComment(session, comment);
-        DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
-        commentDocModel.detach(true);
-        addSubscription(doc, "CommentRemoved");
-
-        publishAndVerifyEventNotification(() -> {
-            commentManager.deleteComment(session, createdComment.getId());
-            return commentDocModel;
-
-        }, COMMENT_REMOVED, DOCUMENT_REMOVED);
-    }
-
-    @Test
-    public void shouldGetCommentedDocModel() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel(domain.getPathAsString(), "test", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = new CommentImpl();
-        comment.setAuthor("author");
-        comment.setText("any Comment message");
-        comment.setParentId(doc.getId());
-
-        Comment createdComment = commentManager.createComment(session, comment);
-        DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
-        assertEquals(commentManager.getCommentedDocumentRef(session, commentDocModel), doc.getRef());
-
-        comment = new CommentImpl();
-        comment.setAuthor("author");
-        comment.setText("I am a reply");
-        comment.setParentId(commentDocModel.getId());
-        Comment replyComment = commentManager.createComment(session, comment);
-        assertEquals(
-                commentManager.getCommentedDocumentRef(session, session.getDocument(new IdRef(replyComment.getId()))),
-                commentDocModel.getRef());
-    }
-
-    protected void publishAndVerifyEventNotification(Supplier<DocumentModel> supplier, String commentEventType,
-            String documentEventType) {
-        try (CapturingEventListener listener = new CapturingEventListener(commentEventType, documentEventType)) {
-            DocumentModel documentModel = supplier.get();
-            transactionalFeature.nextTransaction();
-
-            assertTrue(listener.hasBeenFired(commentEventType));
-            assertTrue(listener.hasBeenFired(documentEventType));
-
-            List<Event> handledEvents = listener.getCapturedEvents()
-                                                .stream()
-                                                .filter(e -> commentEventType.equals(e.getName()))
-                                                .collect(Collectors.toList());
-
-            assertEquals(1, handledEvents.size());
-            Event expectedEvent = handledEvents.get(0);
-            assertEquals(commentEventType, expectedEvent.getName());
-
-            checkDocumentEventContext(documentModel, expectedEvent);
-        }
-    }
-
-    /**
-     * Checks the comment event context data (comment document, commented parent...).
-     */
-    protected void checkDocumentEventContext(DocumentModel expectedDocModel, Event event) {
-        Map<String, Serializable> properties = event.getContext().getProperties();
-        assertFalse(properties.isEmpty());
-
-        assertTrue(properties.containsKey(COMMENT_DOCUMENT));
-        DocumentModel commentDocModel = (DocumentModel) properties.get(COMMENT_DOCUMENT);
-        assertEquals(expectedDocModel.getId(), commentDocModel.getId());
-
-        assertTrue(properties.containsKey(COMMENT));
-        assertEquals(expectedDocModel.getPropertyValue(COMMENT_TEXT), properties.get(COMMENT));
-
-        assertTrue(properties.containsKey(PARENT_COMMENT));
-        DocumentModel commentedDocModel = (DocumentModel) properties.get(PARENT_COMMENT);
-        assertEquals(commentManager.getCommentedDocumentRef(session, expectedDocModel), commentedDocModel.getRef());
-    }
-
-    protected void addSubscription(DocumentModel documentModel, String... notifications) {
-        NuxeoPrincipal principal = session.getPrincipal();
-        String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
-        Arrays.stream(notifications)
-              .forEach(n -> notificationService.addSubscription(subscriber, n, documentModel, false, principal, n));
-    }
-
-    public static CommentServiceConfig newConfig() {
-        CommentServiceConfig config = new CommentServiceConfig();
-        config.graphName = "documentComments";
-        config.commentConverterClassName = "org.nuxeo.ecm.platform.comment.impl.CommentConverterImpl";
-        config.documentNamespace = "http://www.nuxeo.org/document/uid";
-        config.commentNamespace = "http://www.nuxeo.org/comments/uid";
-        config.predicateNamespace = "http://www.nuxeo.org/predicates/isCommentFor";
-        return config;
     }
 
 }

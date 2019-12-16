@@ -23,6 +23,9 @@ import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -34,6 +37,9 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationListenerVeto;
  * @since 11.1
  */
 public interface CommentNotificationVeto extends NotificationListenerVeto {
+
+    Set<String> ACCEPTED_COMMENT_TYPE = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(COMMENT_DOC_TYPE, ANNOTATION_DOC_TYPE, "Post")));
 
     /**
      * @return the event type that we don't want to notify
@@ -49,7 +55,6 @@ public interface CommentNotificationVeto extends NotificationListenerVeto {
         String eventType = getExcludedEventType();
         String docType = docCtx.getSourceDocument().getType();
 
-        return eventType.equals(event.getName())
-                && (Arrays.asList(COMMENT_DOC_TYPE, ANNOTATION_DOC_TYPE, "Post").contains(docType));
+        return eventType.equals(event.getName()) && (ACCEPTED_COMMENT_TYPE.contains(docType));
     }
 }

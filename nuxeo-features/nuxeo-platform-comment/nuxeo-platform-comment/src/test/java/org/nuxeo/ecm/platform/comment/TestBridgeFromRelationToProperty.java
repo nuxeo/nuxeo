@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.comment;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -35,20 +34,26 @@ import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
+import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
+ * @deprecated since 10.3, in order to follow the service deprecation
+ *             {@link org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl}.
  */
+@Deprecated
+@Features(RelationCommentFeature.class)
 public class TestBridgeFromRelationToProperty extends AbstractTestBridgeCommentManager {
     @Test
     public void testDeleteCommentAsRelation() {
         // Use the comment as relation
-        CommentManager anotherCommentManager = new CommentManagerImpl(newConfig());
+        CommentManager anotherCommentManager = new CommentManagerImpl(CommentServiceHelper.getCommentService().getConfig());
         DocumentModel commentDocModel = createComment(anotherCommentManager);
         Comment comment = anotherCommentManager.getComment(session, commentDocModel.getId());
         assertNotNull(comment);
@@ -97,6 +102,6 @@ public class TestBridgeFromRelationToProperty extends AbstractTestBridgeCommentM
 
     @Override
     protected BridgeCommentManager getBridgeCommentManager() {
-        return new BridgeCommentManager(new CommentManagerImpl(newConfig()), new PropertyCommentManager());
+        return new BridgeCommentManager(Framework.getService(CommentManager.class), new PropertyCommentManager());
     }
 }
