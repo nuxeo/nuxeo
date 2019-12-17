@@ -49,7 +49,8 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
- * @deprecated since 11.1, this is a class test for a deprecated comment manager implementation {@link CommentManagerImpl}
+ * @deprecated since 11.1, this is a class test for a deprecated comment manager implementation
+ *             {@link CommentManagerImpl}
  * @since 10.3
  */
 @Features(PlatformFeature.class)

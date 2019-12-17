@@ -139,8 +139,7 @@ public class AnnotationAdapterTest extends BaseTest {
 
         // Get permissions
         Set<String> grantedPermissions = new HashSet<>(session.filterGrantedPermissions(session.getPrincipal(),
-                file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class)
-                                                      .getPermissions())));
+                file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class).getPermissions())));
         Set<String> permissions = StreamSupport.stream(node.get(ANNOTATION_PERMISSIONS).spliterator(), false)
                                                .map(JsonNode::textValue)
                                                .collect(Collectors.toSet());
@@ -263,12 +262,10 @@ public class AnnotationAdapterTest extends BaseTest {
 
         assertEquals(annotation1.getId(), node1.get(0).get("id").textValue());
 
-        List<String> node2List = Arrays.asList(node2.get(0).get("id").textValue(),
-                node2.get(1).get("id").textValue());
+        List<String> node2List = Arrays.asList(node2.get(0).get("id").textValue(), node2.get(1).get("id").textValue());
         assertTrue(node2List.contains(annotation2.getId()));
         assertTrue(node2List.contains(annotation3.getId()));
-        List<String> node3List = Arrays.asList(node3.get(0).get("id").textValue(),
-                node3.get(1).get("id").textValue());
+        List<String> node3List = Arrays.asList(node3.get(0).get("id").textValue(), node3.get(1).get("id").textValue());
         assertTrue(node3List.contains(annotation4.getId()));
         assertTrue(node3List.contains(annotation5.getId()));
     }

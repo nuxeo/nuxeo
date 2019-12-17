@@ -59,7 +59,8 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
 
         // Add a comment
         DocumentModel commentDocModel = session.createDocumentModel(null, "Fake comment", COMMENT_DOC_TYPE);
-        boolean setParent = commentManager instanceof PropertyCommentManager || commentManager instanceof TreeCommentManager;
+        boolean setParent = commentManager instanceof PropertyCommentManager
+                || commentManager instanceof TreeCommentManager;
         // Because we don't use the CommentableDocumentAdapter which will set this property, we should fill it here
         if (setParent) {
             commentDocModel.setPropertyValue(COMMENT_PARENT_ID, fileToComment.getId());
@@ -70,7 +71,7 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
         return session.getDocument(new IdRef(createdComment.getId()));
     }
 
-    protected DocumentModel getCommentedDocument(){
+    protected DocumentModel getCommentedDocument() {
         return session.query(String.format("SELECT * FROM Document Where %s = '%s'", NXQL.ECM_NAME, "anyFile")).get(0);
     }
 

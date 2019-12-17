@@ -145,8 +145,7 @@ public abstract class AbstractTestAnnotationService {
             annotationService.createAnnotation(bobSession, annotation);
             fail("bob should not be able to create annotation");
         } catch (CommentSecurityException e) {
-            assertEquals("The user bob can not create comments on document " + docToAnnotate.getId(),
-                    e.getMessage());
+            assertEquals("The user bob can not create comments on document " + docToAnnotate.getId(), e.getMessage());
         }
 
     }
