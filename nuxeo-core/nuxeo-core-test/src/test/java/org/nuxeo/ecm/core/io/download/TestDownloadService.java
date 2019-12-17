@@ -119,12 +119,21 @@ public class TestDownloadService {
     }
 
     protected void doTestBasicDownload(boolean head) throws Exception {
+        // ascii filename is used directly
+        doTestBasicDownload(head, "cafe.txt", "filename=cafe.txt");
+        // non-ascii filename gets RFC2231 encoding
+        doTestBasicDownload(head, "caf\u00e9.txt", "filename*=UTF-8''caf%C3%A9.txt");
+    }
+
+    protected void doTestBasicDownload(boolean head, String filename, String filenameInHeader) throws Exception {
         // blob to download
         String blobValue = "Hello World Caf\u00e9";
+        String mimeType = "text/plain";
         String encoding = "ISO-8859-1";
-        Blob blob = Blobs.createBlob(blobValue, "text/plain", encoding);
-        blob.setFilename("myFile.txt");
-        blob.setDigest("12345");
+        String digest = "12345";
+        Blob blob = Blobs.createBlob(blobValue, mimeType, encoding);
+        blob.setFilename(filename);
+        blob.setDigest(digest);
 
         // prepare mocks
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -149,6 +158,14 @@ public class TestDownloadService {
                                                  .build();
         downloadService.downloadBlob(context);
 
+        // assert headers (mockito wants us to assert all header in same order they were set)
+        verify(response).setHeader(eq("ETag"), eq('"' + digest + '"'));
+        verify(response).setHeader(eq("Content-Disposition"), eq("attachment; " + filenameInHeader));
+        verify(response).setHeader(eq("Accept-Ranges"), eq("bytes"));
+        // assert others interactions
+        verify(response).setContentType(eq(mimeType));
+        verify(response).setCharacterEncoding(encoding);
+        verify(response).setContentLengthLong(eq(blob.getLength()));
         // check that the blob gets returned (except if HEAD)
         assertEquals(head ? "" : blobValue, out.toString(encoding));
     }
@@ -818,7 +835,7 @@ public class TestDownloadService {
 
             // assert headers (mockito wants us to assert all header in same order they were set)
             verify(resp).setHeader(eq("ETag"), eq('"' + digest + '"'));
-            verify(resp).setHeader(eq("Content-Disposition"), eq("attachment; filename*=UTF-8''cafe.txt"));
+            verify(resp).setHeader(eq("Content-Disposition"), eq("attachment; filename=cafe.txt"));
             verify(resp).setHeader(eq("Accept-Ranges"), eq("bytes"));
             verify(resp).setHeader(eq(NginxConstants.X_ACCEL_REDIRECT_HEADER),
                     eq("/protected_files/d2/5e/d25ea4f4642073b7f218024d397dbaef"));
