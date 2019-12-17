@@ -73,7 +73,7 @@ public class TestContentDiffRestlet extends AbstractRestletTest {
     public void testContentDiff() throws Exception {
         String path = ENDPOINT + "/" + repositoryName + "/" + left.getId() + "/" + right.getId() + "/default/";
         String content = executeRequest(path, HttpGet::new, SC_OK, "text/html;charset=UTF-8",
-                "inline; filename*=UTF-8''contentDiff.html");
+                "inline; filename=contentDiff.html");
         checkContentDiff("plain_text_content_diff.html", content);
     }
 
