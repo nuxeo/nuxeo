@@ -185,11 +185,18 @@ public class CmisSuiteSession2 {
     }
 
     protected String getURI(String path) {
+        return getURI(path, false);
+    }
+
+    protected String getURI(String path, boolean downloadAsAttachment) {
         CmisObject file = session.getObjectByPath(path);
         RepositoryInfo ri = session.getRepositoryInfo();
         String uri = ri.getThinClientUri() + ri.getId() + "/";
         uri += isAtomPub ? "content?id=" : "root?objectId=";
         uri += file.getId();
+        if (isBrowser && downloadAsAttachment) {
+            uri += "&download=attachment";
+        }
         return uri;
     }
 
@@ -444,6 +451,16 @@ public class CmisSuiteSession2 {
     }
 
     @Test
+    public void testContentStreamUsingGetMethodAndAttachment() throws Exception {
+        assumeTrue(isBrowser);
+
+        setUpData();
+        session.clear(); // clear cache
+
+        doTestContentStream(new HttpGet(getURI("/testfolder1/testfile1", true)), true);
+    }
+
+    @Test
     public void testContentStreamUsingHeadMethod() throws Exception {
         setUpData();
         session.clear(); // clear cache
@@ -451,7 +468,21 @@ public class CmisSuiteSession2 {
         doTestContentStream(new HttpHead(getURI("/testfolder1/testfile1")));
     }
 
-    private void doTestContentStream(HttpUriRequest request) throws Exception {
+    @Test
+    public void testContentStreamUsingHeadMethodAndAttachment() throws Exception {
+        assumeTrue(isBrowser);
+
+        setUpData();
+        session.clear(); // clear cache
+
+        doTestContentStream(new HttpHead(getURI("/testfolder1/testfile1", true)), true);
+    }
+
+    protected void doTestContentStream(HttpUriRequest request) throws Exception {
+        doTestContentStream(request, false);
+    }
+
+    protected void doTestContentStream(HttpUriRequest request, boolean expectAttachment) throws Exception {
         assumeTrue(isAtomPub || isBrowser);
 
         String contentMD5Hex = DigestUtils.md5Hex(FILE1_CONTENT);
@@ -464,11 +495,18 @@ public class CmisSuiteSession2 {
             DownloadListener.clearMessages();
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 assertEquals(HttpServletResponse.SC_OK, response.getStatusLine().getStatusCode());
+                // content-length
                 Header lengthHeader = response.getFirstHeader("Content-Length");
                 assertNotNull(lengthHeader);
                 byte[] expectedBytes = FILE1_CONTENT.getBytes("UTF-8");
                 int expectedLength = expectedBytes.length;
                 assertEquals(String.valueOf(expectedLength), lengthHeader.getValue());
+                // content-disposition
+                Header contentDispositionHeader = response.getFirstHeader("Content-Disposition");
+                assertNotNull(contentDispositionHeader);
+                assertEquals((expectAttachment ? "attachment" : "inline") + "; filename=testfile.txt",
+                        contentDispositionHeader.getValue());
+                // content-md5 / digest
                 List<String> downloadMessages = DownloadListener.getMessages();
                 if (isHeadRequest) {
                     Header contentMD5Header = response.getFirstHeader("Content-MD5");
