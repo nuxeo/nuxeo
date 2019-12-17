@@ -93,7 +93,8 @@ public class TestBridgeFromPropertyToTreeCommentManager extends AbstractTestBrid
     public void shouldGetThreadCommentAsProperty() {
         CommentManager anotherCommentManager = new PropertyCommentManager();
         DocumentModel commentDocModel = createComment(anotherCommentManager);
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+                commentDocModel.getRef());
         assertNotNull(topLevelCommentAncestor);
         assertEquals(FILE_DOC_TYPE, session.getDocument(topLevelCommentAncestor).getType());
         assertEquals(new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID)), topLevelCommentAncestor);
@@ -104,14 +105,14 @@ public class TestBridgeFromPropertyToTreeCommentManager extends AbstractTestBrid
     public void shouldGetThreadCommentAsTree() {
         CommentManager anotherCommentManager = new TreeCommentManager();
         DocumentModel commentDocModel = createComment(anotherCommentManager);
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+                commentDocModel.getRef());
         assertNotNull(topLevelCommentAncestor);
         assertEquals(FILE_DOC_TYPE, session.getDocument(topLevelCommentAncestor).getType());
 
         // In this case we have a first level comment, his parent is the `Comments` folder
         DocumentModel commentsFolder = session.getDocument(commentDocModel.getParentRef());
-        assertEquals(CommentsConstants.COMMENTS_DIRECTORY_TYPE,
-                commentsFolder.getType());
+        assertEquals(CommentsConstants.COMMENTS_DIRECTORY_TYPE, commentsFolder.getType());
         assertEquals(commentsFolder.getParentRef(), topLevelCommentAncestor);
     }
 
@@ -119,7 +120,8 @@ public class TestBridgeFromPropertyToTreeCommentManager extends AbstractTestBrid
     public void shouldGetTopLevelCommentAncestorAsProperty() {
         CommentManager anotherCommentManager = new PropertyCommentManager();
         DocumentModel commentDocModel = createComment(anotherCommentManager);
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+                commentDocModel.getRef());
         assertNotNull(topLevelCommentAncestor);
         assertEquals(getCommentedDocument().getRef(), topLevelCommentAncestor);
     }
@@ -128,7 +130,8 @@ public class TestBridgeFromPropertyToTreeCommentManager extends AbstractTestBrid
     public void shouldGetTopLevelCommentAncestorAsTree() {
         CommentManager anotherCommentManager = new TreeCommentManager();
         DocumentModel commentDocModel = createComment(anotherCommentManager);
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, commentDocModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+                commentDocModel.getRef());
         assertNotNull(topLevelCommentAncestor);
         assertEquals(getCommentedDocument().getRef(), topLevelCommentAncestor);
     }

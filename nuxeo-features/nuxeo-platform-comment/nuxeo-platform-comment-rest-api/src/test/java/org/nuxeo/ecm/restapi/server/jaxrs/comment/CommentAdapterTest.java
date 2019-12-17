@@ -266,8 +266,7 @@ public class CommentAdapterTest extends BaseTest {
 
         // Get permissions
         Set<String> grantedPermissions = new HashSet<>(session.filterGrantedPermissions(session.getPrincipal(),
-                file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class)
-                                                      .getPermissions())));
+                file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class).getPermissions())));
         Set<String> permissions = StreamSupport.stream(node.get(COMMENT_PERMISSIONS).spliterator(), false)
                                                .map(JsonNode::textValue)
                                                .collect(Collectors.toSet());

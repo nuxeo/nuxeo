@@ -358,8 +358,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to get comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s",
-                    doc.getId()), cse.getMessage());
+            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+                    cse.getMessage());
         }
 
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
@@ -367,8 +367,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to get comments");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s",
-                    doc.getId()), cse.getMessage());
+            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+                    cse.getMessage());
         }
 
     }
