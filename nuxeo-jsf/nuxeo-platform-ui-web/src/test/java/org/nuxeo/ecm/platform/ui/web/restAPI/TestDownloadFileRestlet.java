@@ -58,7 +58,7 @@ public class TestDownloadFileRestlet extends AbstractRestletTest {
     public void before() {
         repositoryName = session.getRepositoryName();
         doc = session.createDocumentModel("/", "doc", "File");
-        doc.setPropertyValue("dc:title", "titleimage.png");
+        doc.setPropertyValue("dc:title", "caf\u00e9.png");
         Blob blob = Blobs.createBlob("somebincontent", "image/png", null, "myimage.png");
         doc.setPropertyValue("file:content", (Serializable) blob);
         doc = session.createDocument(doc);
@@ -70,7 +70,7 @@ public class TestDownloadFileRestlet extends AbstractRestletTest {
     public void testDownload() throws Exception {
         String path = "/" + repositoryName + "/" + doc.getId() + ENDPOINT;
         String content = executeRequest(path, HttpGet::new, SC_OK, "image/png",
-                "attachment; filename*=UTF-8''myimage.png");
+                "attachment; filename=myimage.png");
         assertEquals("somebincontent", content);
     }
 
@@ -79,7 +79,7 @@ public class TestDownloadFileRestlet extends AbstractRestletTest {
         String path = "/" + repositoryName + "/" + doc.getId() + ENDPOINT //
                 + "?blobPropertyName=file:content&filenamePropertyName=dc:title";
         String content = executeRequest(path, HttpGet::new, SC_OK, "image/png",
-                "attachment; filename*=UTF-8''titleimage.png");
+                "attachment; filename*=UTF-8''caf%C3%A9.png");
         assertEquals("somebincontent", content);
     }
 
@@ -88,7 +88,7 @@ public class TestDownloadFileRestlet extends AbstractRestletTest {
         String path = "/" + repositoryName + "/" + doc.getId() + ENDPOINT //
                 + "?schema=file&blobField=content";
         String content = executeRequest(path, HttpGet::new, SC_OK, "image/png",
-                "attachment; filename*=UTF-8''myimage.png");
+                "attachment; filename=myimage.png");
         assertEquals("somebincontent", content);
     }
 

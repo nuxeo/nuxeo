@@ -21,10 +21,8 @@
 
 package org.nuxeo.common.utils;
 
-import static org.nuxeo.common.utils.UserAgentMatcher.isSafari5;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.nuxeo.common.utils.UserAgentMatcher.isMSIE6or7;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * RFC-2231 specifies how a MIME parameter value, like {@code Content-Disposition}'s {@code filename}, can be encoded to
@@ -34,9 +32,13 @@ import java.io.UnsupportedEncodingException;
  */
 public class RFC2231 {
 
-    private static final String UTF8 = "UTF-8";
+    // RFC 2045
+    private static final String MIME_SPECIALS = "()<>@,;:\\\"/[]?=\t ";
 
-    private static final byte[] UNKNOWN_BYTES = { '?' };
+    // RFC 2231
+    private static final String RFC2231_SPECIALS = "*'%" + MIME_SPECIALS;
+
+    private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
     // Utility class
     private RFC2231() {
@@ -49,13 +51,7 @@ public class RFC2231 {
      * @param value the value to escape
      */
     public static void percentEscape(StringBuilder buf, String value) {
-        byte[] bytes;
-        try {
-            bytes = value.getBytes(UTF8);
-        } catch (UnsupportedEncodingException e) {
-            // cannot happen with UTF-8
-            bytes = UNKNOWN_BYTES;
-        }
+        byte[] bytes = value.getBytes(UTF_8);
         for (byte b : bytes) {
             if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
                 buf.append('%');
@@ -71,6 +67,38 @@ public class RFC2231 {
     }
 
     /**
+     * Encodes a MIME parameter per RFC 2231.
+     * <p>
+     * This implementation always uses UTF-8 and no language.
+     *
+     * @param buf the buffer to fill
+     * @param value the value to encode
+     */
+    protected static void encodeRFC2231(StringBuilder buf, String value) {
+        int originalLength = buf.length();
+        buf.append("*=UTF-8''"); // no language
+        byte[] bytes = value.getBytes(UTF_8);
+        boolean encoded = false;
+        for (int i = 0; i < bytes.length; i++) {
+            int c = bytes[i] & 0xff;
+            if (c <= 32 || c >= 127 || RFC2231_SPECIALS.indexOf(c) != -1) {
+                buf.append('%');
+                buf.append(HEX_DIGITS[c >> 4]);
+                buf.append(HEX_DIGITS[c & 0xf]);
+                encoded = true;
+            } else {
+                buf.append((char) c);
+            }
+        }
+        if (!encoded) {
+            // undo and use basic format
+            buf.setLength(originalLength);
+            buf.append('=');
+            buf.append(value);
+        }
+    }
+
+    /**
      * Encodes a {@code Content-Disposition} header. For some user agents the full RFC-2231 encoding won't be performed
      * as they don't understand it.
      *
@@ -80,18 +108,19 @@ public class RFC2231 {
      * @return a full string to set as value of a {@code Content-Disposition} header
      */
     public static String encodeContentDisposition(String filename, boolean inline, String userAgent) {
-        StringBuilder buf = new StringBuilder(inline ? "inline; " : "attachment; ");
+        StringBuilder buf = new StringBuilder();
+        buf.append(inline ? "inline" : "attachment");
+        buf.append("; filename");
         if (userAgent == null) {
             userAgent = "";
         }
         if (isMSIE6or7(userAgent)) {
             // MSIE understands straight %-encoding
-            buf.append("filename=");
+            buf.append("=");
             percentEscape(buf, filename);
         } else {
             // proper RFC2231
-            buf.append("filename*=UTF-8''");
-            percentEscape(buf, filename);
+            encodeRFC2231(buf, filename);
         }
         return buf.toString();
     }
