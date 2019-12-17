@@ -766,9 +766,12 @@ public class NuxeoAuthenticationFilter implements Filter {
             session.removeAttribute(SESSION_TIMEOUT);
         }
 
+        // the presence of this header indicates this request is a service worker's script resource request.
+        boolean isSW = httpRequest.getHeader("service-worker") != null;
+
         // avoid saving to session is start page is not valid or if it's
         // already in the request params
-        if (isStartPageValid(requestPage)) {
+        if (isStartPageValid(requestPage) && !isSW) {
             if (!requestPageInParams) {
                 String uri = URIUtils.getURIPath(requestPage);
                 // strip force anonymous login parameter if it exists
