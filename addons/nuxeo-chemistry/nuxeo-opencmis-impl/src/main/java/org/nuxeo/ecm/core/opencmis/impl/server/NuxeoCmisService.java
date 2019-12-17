@@ -878,9 +878,15 @@ public class NuxeoCmisService extends AbstractCmisService
             BigInteger length, ExtensionsData extension) {
         HttpServletRequest request = (HttpServletRequest) callContext.get(CallContext.HTTP_SERVLET_REQUEST);
         HttpServletResponse response = (HttpServletResponse) callContext.get(CallContext.HTTP_SERVLET_RESPONSE);
+        String binding = callContext.getBinding();
         DocumentModel doc = getDocumentModel(objectId);
         DownloadContext.Builder builder = DownloadContext.builder(request, response) //
                                                          .doc(doc);
+        boolean inline = true;
+        if (BINDING_BROWSER.equals(binding) && "attachment".equalsIgnoreCase(request.getParameter("download"))) {
+            inline = false;
+        }
+        builder.inline(inline);
         if (streamId == null) {
             // do blob checks now to throw proper CMIS exceptions
             BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
@@ -916,7 +922,6 @@ public class NuxeoCmisService extends AbstractCmisService
             builder.reason("cmisRendition");
         }
         DownloadContext context = builder.build();
-        String binding = callContext.getBinding();
         if (BINDING_BROWSER.equals(binding) || BINDING_ATOMPUB.equals(binding)) {
             // delegate to DownloadService
             try {
