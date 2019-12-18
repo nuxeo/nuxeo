@@ -54,7 +54,7 @@ public class S3BinaryManagerStatusProbe implements Probe {
         if (someSuccess) {
             return ProbeStatus.newSuccess("S3BinaryManager can access the configured buckets");
         } else {
-            return ProbeStatus.newFailure("No S3BinaryManager bucket configured");
+            return ProbeStatus.newSuccess("No S3BinaryManager bucket configured");
         }
     }
 
