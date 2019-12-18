@@ -22,9 +22,8 @@ package org.nuxeo.ecm.platform.rendering.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +46,7 @@ public class RenderingServiceImpl extends DefaultComponent implements RenderingS
 
     public static final String EP_RENDER_ENGINES = "engines";
 
-    private final Map<String, RenderingEngine> engines = new HashMap<String, RenderingEngine>();
+    private final ConcurrentHashMap<String, RenderingEngine> engines = new ConcurrentHashMap<>();
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {

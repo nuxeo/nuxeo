@@ -159,7 +159,8 @@ public class EmailHelper {
 
         msg.setSentDate(new Date());
 
-        rs.registerEngine(new NotificationsRenderingEngine((String) mail.get(NotificationConstants.TEMPLATE_KEY)));
+        String template = (String) mail.get(NotificationConstants.TEMPLATE_KEY);
+        rs.registerEngine(new NotificationsRenderingEngine(template));
 
         LoginContext lc = Framework.login();
 
@@ -172,7 +173,7 @@ public class EmailHelper {
 
         lc.logout();
 
-        rs.unregisterEngine("ftl");
+        rs.unregisterEngine(template);
 
         msg.setContent(bodyMail, "text/html; charset=utf-8");
 

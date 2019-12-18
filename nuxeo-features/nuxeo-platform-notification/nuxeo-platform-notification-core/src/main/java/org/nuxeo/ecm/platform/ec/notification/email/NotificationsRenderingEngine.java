@@ -55,8 +55,7 @@ public class NotificationsRenderingEngine extends DocumentRenderingEngine {
     }
 
     public String getFormatName() {
-        // TODO Auto-generated method stub
-        return null;
+        return template;
     }
 
     class NotifsRenderingJob extends DefaultRenderingResult implements FreemarkerRenderingJob {
