@@ -37,6 +37,7 @@ import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_ANCESTORID;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PRIMARYTYPE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
+import static org.nuxeo.ecm.platform.comment.AbstractTestCommentManager.AUTHOR_OF_COMMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
@@ -554,10 +555,9 @@ public class TestCommentsMigrator {
 
     protected DocumentModel createReply(CommentManager commentManager, DocumentRef docRefToComment, int level) {
         DocumentModel documentToComment = session.getDocument(docRefToComment);
-        String author = "anyAuthor";
         String text = String.format("I am a reply level%d on comment %s !", level, docRefToComment);
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
         comment.setParentId(documentToComment.getId());
 
