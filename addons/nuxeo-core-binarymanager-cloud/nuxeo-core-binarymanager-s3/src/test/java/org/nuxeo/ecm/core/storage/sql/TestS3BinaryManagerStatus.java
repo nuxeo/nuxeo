@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.management.api.ProbeStatus;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -58,8 +60,9 @@ public class TestS3BinaryManagerStatus {
         ProbeInfo probeInfo = pm.getProbeInfo("s3BinaryManagerStatus");
         assertNotNull(probeInfo);
         pm.runProbe(probeInfo);
-        // should fail since S3BinaryManager is not configured
-        assertTrue(probeInfo.getStatus().isFailure());
-
+        ProbeStatus status = probeInfo.getStatus();
+        // no S3 blob providers are configured, so no failure
+        assertTrue(status.isSuccess());
+        assertEquals("No S3BinaryManager bucket configured", status.getAsString());
     }
 }
