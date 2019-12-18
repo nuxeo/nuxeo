@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.comment;
 
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
@@ -53,6 +54,7 @@ public abstract class AbstractTestBridgeCommentManager extends AbstractTestComme
 
         // Add a comment
         DocumentModel commentDocModel = session.createDocumentModel(null, "Fake comment", COMMENT_DOC_TYPE);
+        commentDocModel.setPropertyValue(COMMENT_AUTHOR, AUTHOR_OF_COMMENT);
         boolean setParent = commentManager instanceof PropertyCommentManager
                 || commentManager instanceof TreeCommentManager;
         // Because we don't use the CommentableDocumentAdapter which will set this property, we should fill it here

@@ -36,6 +36,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +60,8 @@ import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -70,7 +74,11 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Features(CommentFeature.class)
 public abstract class AbstractTestCommentManager {
 
+    private static final Logger log = LogManager.getLogger(AbstractTestCommentManager.class);
+
     public static final String FOLDER_COMMENT_CONTAINER = "/Folder/CommentContainer";
+
+    protected static final String AUTHOR_OF_COMMENT = "linda";
 
     @Inject
     protected CoreSession session;
@@ -84,6 +92,9 @@ public abstract class AbstractTestCommentManager {
     @Inject
     protected CoreFeature coreFeature;
 
+    @Inject
+    protected UserManager userManager;
+
     public abstract Class<? extends CommentManager> getType();
 
     @Before
@@ -95,6 +106,9 @@ public abstract class AbstractTestCommentManager {
         DocumentModel container = session.createDocumentModel(domain.getPathAsString(), "CommentContainer", "Folder");
         session.createDocument(container);
         session.save();
+
+        // Create the author of the comments
+        createUser(AUTHOR_OF_COMMENT);
     }
 
     @Test
@@ -105,10 +119,9 @@ public abstract class AbstractTestCommentManager {
         doc = session.createDocument(doc);
         session.save();
 
-        String author = "toto";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
         comment.setParentId("fakeId");
 
@@ -123,7 +136,7 @@ public abstract class AbstractTestCommentManager {
 
         comment.setParentId(doc.getId());
         comment = commentManager.createComment(session, comment);
-        assertEquals(author, comment.getAuthor());
+        assertEquals(AUTHOR_OF_COMMENT, comment.getAuthor());
         assertEquals(text, comment.getText());
         assertEquals(doc.getRef(), commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
     }
@@ -136,10 +149,9 @@ public abstract class AbstractTestCommentManager {
         doc = session.createDocument(doc);
         session.save();
 
-        String author = "toto";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
         comment.setParentId(doc.getId());
 
@@ -155,7 +167,7 @@ public abstract class AbstractTestCommentManager {
         }
 
         comment = commentManager.getComment(session, comment.getId());
-        assertEquals(author, comment.getAuthor());
+        assertEquals(AUTHOR_OF_COMMENT, comment.getAuthor());
         assertEquals(text, comment.getText());
     }
 
@@ -167,10 +179,9 @@ public abstract class AbstractTestCommentManager {
         doc = session.createDocument(doc);
         session.save();
 
-        String author = "toto";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
         comment.setParentId(doc.getId());
 
@@ -196,7 +207,7 @@ public abstract class AbstractTestCommentManager {
         CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
         DocumentModel comment = session.createDocumentModel(COMMENT_DOC_TYPE);
         comment.setPropertyValue(COMMENT_TEXT, "Test");
-        comment.setPropertyValue(COMMENT_AUTHOR, "bob");
+        comment.setPropertyValue(COMMENT_AUTHOR, AUTHOR_OF_COMMENT);
         comment.setPropertyValue(COMMENT_CREATION_DATE, Calendar.getInstance());
 
         // Create a comment
@@ -226,10 +237,9 @@ public abstract class AbstractTestCommentManager {
         session.setACP(doc.getRef(), acp, false);
         session.save();
 
-        String author = "toto";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
         comment.setParentId(doc.getId());
 
@@ -261,10 +271,9 @@ public abstract class AbstractTestCommentManager {
         doc = session.createDocument(doc);
         session.save();
 
-        String author = "toto";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
         comment.setParentId(doc.getId());
 
@@ -272,14 +281,14 @@ public abstract class AbstractTestCommentManager {
 
         // Add a reply
         Comment reply = new CommentImpl();
-        reply.setAuthor(author);
+        reply.setAuthor(AUTHOR_OF_COMMENT);
         reply.setText("I am a reply");
         reply.setParentId(comment.getId());
         reply = commentManager.createComment(session, reply);
 
         // Another reply
         Comment anotherReply = new CommentImpl();
-        anotherReply.setAuthor(author);
+        anotherReply.setAuthor(AUTHOR_OF_COMMENT);
         anotherReply.setText("I am a 2nd reply");
         anotherReply.setParentId(reply.getId());
         anotherReply = commentManager.createComment(session, anotherReply);
@@ -305,6 +314,17 @@ public abstract class AbstractTestCommentManager {
     @Test
     public void testCommentManagerType() {
         assertEquals(getType(), commentManager.getClass());
+    }
+
+    public void createUser(String userName) {
+        try {
+            DocumentModel userModel = userManager.getBareUserModel();
+            userModel.setProperty("user", "username", userName);
+            userManager.createUser(userModel);
+        } catch (UserAlreadyExistsException e) {
+            // Avoid failure in tests if the user already exists
+            log.trace("User already exists", e);
+        }
     }
 
 }

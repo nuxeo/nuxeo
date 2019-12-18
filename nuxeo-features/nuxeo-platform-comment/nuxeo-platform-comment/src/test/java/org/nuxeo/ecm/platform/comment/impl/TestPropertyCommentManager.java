@@ -498,7 +498,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.save();
 
         testManageComments(session, comment.getId());
-
+        createUser("bob");
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             comment = createSampleComment(doc.getId(), "bob", "test bob");
             comment = commentManager.createComment(bobSession, comment);
@@ -543,6 +543,8 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.createDocument(domain);
         DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
         doc = session.createDocument(doc);
+        String anotherAuthor = "john";
+        createUser(anotherAuthor);
         ACPImpl acp = new ACPImpl();
         ACL acl = acp.getOrCreateACL();
         acl.add(new ACE("john", SecurityConstants.READ, true));
@@ -550,10 +552,9 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.setACP(doc.getRef(), acp, false);
         session.save();
 
-        String author = "john";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor("john");
         comment.setText(text);
         comment.setParentId(doc.getId());
 
@@ -562,7 +563,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
             assertEquals(doc.getId(), createdComment.getParentId());
 
             Comment subComment = new CommentImpl();
-            subComment.setAuthor(author);
+            subComment.setAuthor(AUTHOR_OF_COMMENT);
             subComment.setText(text);
             subComment.setParentId(createdComment.getId());
 
@@ -593,6 +594,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.save();
 
         String author = "john";
+        createUser(author);
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
         comment.setAuthor(author);
@@ -645,6 +647,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.save();
 
         String author = "john";
+        createUser(author);
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
         comment.setAuthor(author);
@@ -699,6 +702,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         session.save();
 
         String author = "luke";
+        createUser(author);
         Comment comment1 = new CommentImpl();
         comment1.setAuthor(author);
         comment1.setParentId(doc.getId());
@@ -809,10 +813,9 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         doc = session.createDocument(doc);
         session.save();
 
-        String author = "toto";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
 
         // Create a comment in a specific location

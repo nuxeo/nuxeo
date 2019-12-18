@@ -127,10 +127,9 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         doc = session.createDocument(doc);
         session.save();
 
-        String author = "toto";
         String text = "I am a comment !";
         Comment comment = new CommentImpl();
-        comment.setAuthor(author);
+        comment.setAuthor(AUTHOR_OF_COMMENT);
         comment.setText(text);
 
         // Create a comment in a specific location
