@@ -33,6 +33,7 @@ import static org.nuxeo.mail.MailConstants.DEFAULT_MAIL_JNDI_NAME;
 import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_HOST;
 import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PORT;
 import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
+import static org.nuxeo.mail.MailConstants.NUXEO_MAIL_FROM;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -142,6 +143,7 @@ public class SmtpMailServerFeature implements RunnerFeature {
         properties.put(CONFIGURATION_MAIL_SMTP_HOST, SERVER_HOST);
         properties.put(CONFIGURATION_MAIL_SMTP_PORT, String.valueOf(serverPort));
         properties.putIfAbsent(CONFIGURATION_MAIL_SMTP_FROM, DEFAULT_MAIL_SENDER);
+        properties.putIfAbsent(NUXEO_MAIL_FROM, DEFAULT_MAIL_SENDER);
 
         binding(properties);
 
