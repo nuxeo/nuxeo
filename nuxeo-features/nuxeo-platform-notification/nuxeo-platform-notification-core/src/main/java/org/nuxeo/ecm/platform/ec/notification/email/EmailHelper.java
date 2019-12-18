@@ -152,7 +152,8 @@ public class EmailHelper {
 
         msg.setSentDate(new Date());
 
-        rs.registerEngine(new NotificationsRenderingEngine((String) mail.get(NotificationConstants.TEMPLATE_KEY)));
+        String template = (String) mail.get(NotificationConstants.TEMPLATE_KEY);
+        rs.registerEngine(new NotificationsRenderingEngine(template));
 
         String bodyMail = "<HTML><P>No parsing Succedeed !!!</P></HTML>";
 
@@ -164,7 +165,7 @@ public class EmailHelper {
             bodyMail = (String) result.getOutcome();
         }
 
-        rs.unregisterEngine("ftl");
+        rs.unregisterEngine(template);
 
         msg.setContent(bodyMail, "text/html; charset=utf-8");
 
