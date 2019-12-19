@@ -3,38 +3,38 @@
 <component name="org.nuxeo.elasticsearch.PageProviderservice.test.contrib">
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
-    point="providers">
+             point="providers">
 
     <genericPageProvider name="SimpleESAuditPP"
-      class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
-       <pattern>
-       {
-				 "query": {
-           "bool": {
-             "must": {
-               "match": {
+                         class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+      <pattern>
+        {
+          "query": {
+            "bool": {
+              "must": {
+                "match": {
                   "docPath": {
                     "query": "/dummy"
                   }
-               }
-             },
-             "filter": {
-               "term": {
-                 "category": "category1"
-				       }
-				     }
-				   }
-				 }
-       }
+                }
+              },
+              "filter": {
+                "term": {
+                  "category": "category1"
+                }
+              }
+            }
+          }
+        }
       </pattern>
-      <sort ascending="true" column="id"/>
+      <sort ascending="true" column="id" />
       <pageSize>5</pageSize>
     </genericPageProvider>
 
 
     <genericPageProvider name="SimpleESAuditPPWithParams"
-      class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
-       <pattern>
+                         class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+      <pattern>
         {
           "query": {
             "bool": {
@@ -67,30 +67,30 @@
               }
             }
           }
-				}
+        }
       </pattern>
-      <sort ascending="false" column="id"/>
+      <sort ascending="false" column="id" />
       <pageSize>5</pageSize>
     </genericPageProvider>
 
     <genericPageProvider name="SearchById"
-      class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
-       <pattern>
-				{
-				 "query": {
-          "bool" : {
-            "must" : {
-              "match" : {
-                "docUUID" : {
-                  "query" : "?"
+                         class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+      <pattern>
+        {
+          "query": {
+            "bool": {
+              "must": {
+                "match": {
+                  "docUUID": {
+                    "query": "?"
+                  }
                 }
               }
             }
           }
         }
-			 }
       </pattern>
-      <sort ascending="true" column="id"/>
+      <sort ascending="true" column="id" />
       <pageSize>5</pageSize>
     </genericPageProvider>
 

@@ -20,15 +20,12 @@ package org.nuxeo.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -46,33 +43,45 @@ import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
+@RunWith(FeaturesRunner.class)
+@Features(RepositoryElasticSearchFeature.class)
 @Deploy("org.nuxeo.ecm.platform.audit.api")
 @Deploy("org.nuxeo.runtime.metrics")
 @Deploy("org.nuxeo.ecm.platform.audit")
 @Deploy("org.nuxeo.ecm.platform.uidgen.core")
 @Deploy("org.nuxeo.elasticsearch.core")
 @Deploy("org.nuxeo.elasticsearch.seqgen")
-@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit")
 @Deploy("org.nuxeo.admin.center")
-@RunWith(FeaturesRunner.class)
-@Features(RepositoryElasticSearchFeature.class)
+@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:audit-test-contrib.xml")
-@SuppressWarnings("unchecked")
 public class TestESHistoryProvider {
 
     private static final Logger log = LogManager.getLogger(TestESHistoryProvider.class);
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected PageProviderService pageProviderService;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected AuditReader auditReader;
+
+    @Inject
+    protected AuditLogger auditLogger;
 
     protected DocumentModel doc;
 
@@ -84,19 +93,7 @@ public class TestESHistoryProvider {
 
     protected Date t2;
 
-    @Inject
-    protected CoreSession session;
-
-    protected void waitForAsyncCompletion() throws InterruptedException {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        assertTrue(Framework.getService(AuditLogger.class).await(10, TimeUnit.SECONDS));
-    }
-
     protected void createTestEntries() throws Exception {
-
-        AuditReader reader = Framework.getService(AuditReader.class);
-
         DocumentModel section = session.createDocumentModel("/", "section", "Folder");
         section = session.createDocument(section);
 
@@ -110,7 +107,7 @@ public class TestESHistoryProvider {
         // backend
         Thread.sleep(500);
 
-        t1 = new Date();
+        t1 = Date.from(Instant.now());
 
         Thread.sleep(600);
 
@@ -119,21 +116,19 @@ public class TestESHistoryProvider {
             doc.setPropertyValue("dc:description", "Update " + i);
             doc.putContextData("comment", "Update " + i);
             doc = session.saveDocument(doc);
-            waitForAsyncCompletion();
         }
 
         // wait at least 1s to be sure we have a precise timestamp in all DB
         // backend
         Thread.sleep(600);
 
-        t2 = new Date();
+        t2 = Date.from(Instant.now());
 
         Thread.sleep(500);
+
         // create a version
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
         doc = session.saveDocument(doc);
-        session.save();
-        waitForAsyncCompletion();
 
         // wait at least 1s to be sure we have a precise timestamp in all DB
         // backend
@@ -144,8 +139,6 @@ public class TestESHistoryProvider {
             doc.setPropertyValue("dc:description", "Update " + i);
             doc.putContextData("comment", "Update " + i);
             doc = session.saveDocument(doc);
-            session.save();
-            waitForAsyncCompletion();
         }
 
         // wait at least 1s to be sure we have a precise timestamp in all DB
@@ -153,24 +146,19 @@ public class TestESHistoryProvider {
         Thread.sleep(1100);
 
         proxy = session.publishDocument(doc, section);
-        session.save();
-        waitForAsyncCompletion();
 
-        Thread.sleep(1100); // wait at least 1s to be sure we have a precise
-                            // timestamp in all DB backend
+        // wait at least 1s to be sure we have a precise timestamp in all DB
+        // backend
+        Thread.sleep(1100);
 
         // do some more updates
         for (int i = 10; i < 15; i++) {
             doc.setPropertyValue("dc:description", "Update " + i);
             doc.putContextData("comment", "Update " + i);
             doc = session.saveDocument(doc);
-            session.save();
         }
 
         Thread.sleep(500);
-
-        waitForAsyncCompletion();
-
         versions = session.getVersions(doc.getRef());
         assertEquals(2, versions.size());
         for (DocumentModel version : versions) {
@@ -191,89 +179,77 @@ public class TestESHistoryProvider {
         createdEntry.setDocPath(doc.getPathAsString());
         createdEntry.setRepositoryId("test");
 
-        List<LogEntry> entries = new ArrayList<>();
-        entries.add(createdEntry);
-        Framework.getService(AuditLogger.class).addLogEntries(entries);
+        auditLogger.addLogEntries(List.of(createdEntry));
 
         LogEntryGen.flushAndSync();
-        List<LogEntry> logs = reader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
+        transactionalFeature.nextTransaction();
+        List<LogEntry> logs = auditReader.getLogEntriesFor(doc.getId(), doc.getRepositoryName());
         logs.forEach(entry -> log.trace("LogEntry: {}", entry));
     }
 
     @Test
     public void testDocumentHistoryPageProvider() throws Exception {
-
         createTestEntries();
 
-        PageProviderService pps = Framework.getService(PageProviderService.class);
-        assertNotNull(pps);
-        PageProvider<?> pp;
-        List<LogEntry> entries;
-
-        PageProviderDefinition ppdef = pps.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
-        assertNotNull(ppdef);
+        assertNotNull(pageProviderService.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER"));
         long startIdx = 0;
-
-        List<SortInfo> si = Collections.singletonList(new SortInfo("id", true));
 
         DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
         searchDoc.setPathInfo("/", "auditsearch");
         searchDoc = session.createDocument(searchDoc);
 
-        for (String ppName : new String[] { "DOCUMENT_HISTORY_PROVIDER_OLD", "DOCUMENT_HISTORY_PROVIDER" }) {
+        PageProvider<LogEntry> pageProvider;
+        List<LogEntry> entries;
+        var pageProviderConf = Map.of("DOCUMENT_HISTORY_PROVIDER_OLD", doc.getId(), "DOCUMENT_HISTORY_PROVIDER", doc);
+        for (var entry : pageProviderConf.entrySet()) {
+            pageProvider = getPageProvider(entry.getKey(), 20, 0, entry.getValue());
+            assertNotNull(pageProvider);
 
-            if (ppName.endsWith("OLD")) {
-                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(), doc.getId());
-            } else {
-                pp = pps.getPageProvider(ppName, si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(), doc);
-            }
-
-            assertNotNull(pp);
+            // find all (create, 15+1 update , 2 checkin, 1 bonus)
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             searchDoc.setPropertyValue("basicauditsearch:startDate", null);
             searchDoc.setPropertyValue("basicauditsearch:endDate", null);
-            pp.setSearchDocumentModel(searchDoc);
+            pageProvider.setSearchDocumentModel(searchDoc);
 
             // Get Live doc history
-            entries = (List<LogEntry>) pp.getCurrentPage();
+            entries = pageProvider.getCurrentPage();
             log.trace("Live doc history");
-            entries.forEach(entry -> log.trace("LogEntry: {}", entry));
+            entries.forEach(e -> log.trace("LogEntry: {}", e));
 
             // create, 15+1 update , 2 checkin, 1 bonus
             assertEquals(20, entries.size());
             startIdx = entries.get(0).getId();
-            // endIdx = entries.get(17).getId();
 
             // filter on eventId
             searchDoc.setPropertyValue("basicauditsearch:eventIds", new String[] { "documentModified" });
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
-            pp.setSearchDocumentModel(searchDoc);
-            entries = (List<LogEntry>) pp.getCurrentPage();
+            pageProvider.setSearchDocumentModel(searchDoc);
+            entries = pageProvider.getCurrentPage();
             assertEquals(16, entries.size());
 
             // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "eventDocumentCategory" });
-            pp.setSearchDocumentModel(searchDoc);
-            entries = (List<LogEntry>) pp.getCurrentPage();
+            pageProvider.setSearchDocumentModel(searchDoc);
+            entries = pageProvider.getCurrentPage();
             assertEquals(19, entries.size());
 
             // filter on category
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories",
                     new String[] { "eventDocumentCategory", "bonusCategory" });
-            pp.setSearchDocumentModel(searchDoc);
-            entries = (List<LogEntry>) pp.getCurrentPage();
+            pageProvider.setSearchDocumentModel(searchDoc);
+            entries = pageProvider.getCurrentPage();
             assertEquals(20, entries.size());
 
-            // filter on Date !
+            // filter on date !
             searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
             searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
             searchDoc.setPropertyValue("basicauditsearch:startDate", t1);
             searchDoc.setPropertyValue("basicauditsearch:endDate", t2);
-            pp.setSearchDocumentModel(searchDoc);
-            entries = (List<LogEntry>) pp.getCurrentPage();
+            pageProvider.setSearchDocumentModel(searchDoc);
+            entries = pageProvider.getCurrentPage();
             assertEquals(5, entries.size());
         }
 
@@ -283,12 +259,10 @@ public class TestESHistoryProvider {
         searchDoc.setPropertyValue("basicauditsearch:endDate", null);
 
         // Get Proxy history
+        pageProvider = getPageProvider("DOCUMENT_HISTORY_PROVIDER", 30, 0, proxy);
+        pageProvider.setSearchDocumentModel(searchDoc);
 
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(30), Long.valueOf(0), new HashMap<>(),
-                proxy);
-        pp.setSearchDocumentModel(searchDoc);
-
-        entries = (List<LogEntry>) pp.getCurrentPage();
+        entries = pageProvider.getCurrentPage();
         log.trace("Proxy doc history");
         entries.forEach(entry -> log.trace("LogEntry: {}", entry));
 
@@ -301,13 +275,12 @@ public class TestESHistoryProvider {
                 entries.get(proxyEntriesCount - 1).getId());
 
         // Get version 1 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
-                versions.get(0));
-        pp.setSearchDocumentModel(searchDoc);
-        entries = (List<LogEntry>) pp.getCurrentPage();
+        pageProvider = getPageProvider("DOCUMENT_HISTORY_PROVIDER", 20, 0, versions.get(0));
+        pageProvider.setSearchDocumentModel(searchDoc);
+        entries = pageProvider.getCurrentPage();
 
-        log.trace("Verion {} doc history", () -> versions.get(0).getVersionLabel());
-        entries.forEach(entry -> log.trace("LogEntry: {}", entry));
+        log.trace("Version {} doc history", () -> versions.get(0).getVersionLabel());
+        entries.forEach(e -> log.trace("LogEntry: {}", e));
 
         // creation + 5 updates + update + checkin + created
         int version1EntriesCount = 1 + 5 + 1 + 1 + 1;
@@ -316,27 +289,32 @@ public class TestESHistoryProvider {
             assertEquals(Long.valueOf(startIdx + version1EntriesCount - 1).longValue(),
                     entries.get(version1EntriesCount - 1).getId());
         } else {
-            // because update even may be 1ms behind checkin/created !
+            // because update even may be 1ms behind checkin/created
             assertEquals(version1EntriesCount - 1, entries.size());
         }
 
         // get version 2 history
-        pp = pps.getPageProvider("DOCUMENT_HISTORY_PROVIDER", si, Long.valueOf(20), Long.valueOf(0), new HashMap<>(),
-                versions.get(1));
-        pp.setSearchDocumentModel(searchDoc);
+        pageProvider = getPageProvider("DOCUMENT_HISTORY_PROVIDER", 20, 0, versions.get(1));
+        pageProvider.setSearchDocumentModel(searchDoc);
 
-        entries = (List<LogEntry>) pp.getCurrentPage();
+        entries = pageProvider.getCurrentPage();
 
-        log.trace("Verion {} doc history", () -> versions.get(1).getVersionLabel());
-        entries.forEach(entry -> log.trace("LogEntry: {}", entry));
+        log.trace("Version {} doc history", () -> versions.get(1).getVersionLabel());
+        entries.forEach(e -> log.trace("LogEntry: {}", e));
 
         // creation + 5x2 updates + checkin/update + checkin + created
-        int versin2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
-        assertEquals(versin2EntriesCount, entries.size());
+        int version2EntriesCount = 1 + 5 * 2 + 1 + 1 + 1 + 1;
+        assertEquals(version2EntriesCount, entries.size());
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
-        assertEquals(Long.valueOf(startIdx + versin2EntriesCount).longValue(),
-                entries.get(versin2EntriesCount - 1).getId());
-
+        assertEquals(Long.valueOf(startIdx + version2EntriesCount).longValue(),
+                entries.get(version2EntriesCount - 1).getId());
     }
 
+    protected PageProvider<LogEntry> getPageProvider(String name, int pageSize, int currentPage, Object... parameters) {
+        List<SortInfo> sorters = List.of(new SortInfo("id", true));
+        @SuppressWarnings("unchecked")
+        PageProvider<LogEntry> pageProvider = (PageProvider<LogEntry>) pageProviderService.getPageProvider(name,
+                sorters, Long.valueOf(pageSize), Long.valueOf(currentPage), Map.of(), parameters);
+        return pageProvider;
+    }
 }
