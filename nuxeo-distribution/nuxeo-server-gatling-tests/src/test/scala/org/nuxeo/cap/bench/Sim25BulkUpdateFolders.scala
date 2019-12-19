@@ -35,6 +35,7 @@ object ScnBulkUpdateFolders {
           .exec(NuxeoBulk.bulkUpdateDocument("SELECT * FROM Document WHERE ecm:path = '" + Constants.GAT_WS_PATH + "/${parentPath}'", "dc:description", "bulk folder")
           .check(jsonPath("$.commandId").saveAs("commandId")))
           .exec(NuxeoBulk.waitForAction("${commandId}"))
+          .exec(flushCookieJar)
           .pause(pause)
       }
     )
