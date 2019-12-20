@@ -20,8 +20,10 @@
             {
               "bool": {
                 "must": {
-                  "term": {
-                    "docPath.children": "?"
+                  "prefix": {
+                    "docPath.children": {
+                      "value": "?"
+                    }
                   }
                 }
               }
