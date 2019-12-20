@@ -398,9 +398,6 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             size = ImageResizer.scaleToMax(size.x, size.y, pictureConversion.getMaxSize());
         }
 
-        pictureViewMap.put(PictureView.FIELD_WIDTH, size.x);
-        pictureViewMap.put(PictureView.FIELD_HEIGHT, size.y);
-
         // Use the registered conversion format
         String conversionFormat = getConfigurationValue(CONVERSION_FORMAT, JPEG_CONVERSATION_FORMAT);
 
@@ -419,10 +416,14 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         String viewFilename = String.format("%s_%s.%s", title, FilenameUtils.getBaseName(blob.getFilename()),
                 extension);
         viewBlob.setFilename(viewFilename);
+        ImageInfo viewBlobImageInfo = getImageInfo(viewBlob);
         pictureViewMap.put(PictureView.FIELD_FILENAME, viewFilename);
         pictureViewMap.put(PictureView.FIELD_CONTENT, (Serializable) viewBlob);
-        pictureViewMap.put(PictureView.FIELD_INFO, getImageInfo(viewBlob));
-
+        pictureViewMap.put(PictureView.FIELD_INFO, viewBlobImageInfo);
+        if (viewBlobImageInfo != null) {
+            pictureViewMap.put(PictureView.FIELD_WIDTH, viewBlobImageInfo.getWidth());
+            pictureViewMap.put(PictureView.FIELD_HEIGHT, viewBlobImageInfo.getHeight());
+        }
         return new PictureViewImpl(pictureViewMap);
     }
 
