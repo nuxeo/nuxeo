@@ -22,9 +22,11 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.RFC2231;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.io.download.DownloadService.ByteRange;
 
 /**
@@ -130,6 +132,28 @@ public class DownloadHelper {
             binline = inline.booleanValue();
         }
         return RFC2231.encodeContentDisposition(filename, binline, userAgent);
+    }
+
+    /**
+     * Gets the Content-Type header for the given blob, per RFC 2616.
+     * <p>
+     * For example {@code application/pdf} or {@code text/plain; charset=ISO-8859-1}.
+     *
+     * @param blob the blob
+     * @return the header, or {@code null} if the blob has no content type information
+     * @since 11.1
+     */
+    public static String getContentTypeHeader(Blob blob) {
+        String contentType = blob.getMimeType();
+        String encoding = blob.getEncoding();
+        if (contentType != null && StringUtils.isNotBlank(encoding)) {
+            int i = contentType.indexOf(';');
+            if (i >= 0) {
+                contentType = contentType.substring(0, i);
+            }
+            contentType += "; charset=" + encoding;
+        }
+        return contentType;
     }
 
     public static boolean isClientAbortError(Throwable t) {
