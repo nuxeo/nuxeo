@@ -26,11 +26,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,6 +46,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -64,9 +67,12 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:elasticsearch-audit-index-test-contrib.xml")
 @Deploy("org.nuxeo.elasticsearch.audit:audit-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit:es-audit-pageprovider-test-contrib.xml")
 public class TestESHistoryProvider {
 
     private static final Logger log = LogManager.getLogger(TestESHistoryProvider.class);
+
+    public static final String CUSTOM_HISTORY_VIEW = "CUSTOM_HISTORY_VIEW";
 
     @Inject
     protected CoreSession session;
@@ -83,6 +89,11 @@ public class TestESHistoryProvider {
     @Inject
     protected AuditLogger auditLogger;
 
+    @Inject
+    protected ElasticSearchAdmin esa;
+
+    protected DocumentModel folder;
+
     protected DocumentModel doc;
 
     protected DocumentModel proxy;
@@ -93,9 +104,17 @@ public class TestESHistoryProvider {
 
     protected Date t2;
 
+    @Before
+    public void before() throws Exception {
+        LogEntryGen.flushAndSync();
+        esa.initIndexes(true);
+
+        createTestEntries();
+    }
+
     protected void createTestEntries() throws Exception {
-        DocumentModel section = session.createDocumentModel("/", "section", "Folder");
-        section = session.createDocument(section);
+        folder = session.createDocumentModel("/", "section", "Folder");
+        folder = session.createDocument(folder);
 
         doc = session.createDocumentModel("/", "doc", "File");
         doc.setPropertyValue("dc:title", "TestDoc");
@@ -145,7 +164,7 @@ public class TestESHistoryProvider {
         // backend
         Thread.sleep(1100);
 
-        proxy = session.publishDocument(doc, section);
+        proxy = session.publishDocument(doc, folder);
 
         // wait at least 1s to be sure we have a precise timestamp in all DB
         // backend
@@ -188,9 +207,7 @@ public class TestESHistoryProvider {
     }
 
     @Test
-    public void testDocumentHistoryPageProvider() throws Exception {
-        createTestEntries();
-
+    public void testDocumentHistoryPageProvider() {
         assertNotNull(pageProviderService.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER"));
         long startIdx = 0;
 
@@ -308,6 +325,77 @@ public class TestESHistoryProvider {
         assertEquals(Long.valueOf(startIdx).longValue(), entries.get(0).getId());
         assertEquals(Long.valueOf(startIdx + version2EntriesCount).longValue(),
                 entries.get(version2EntriesCount - 1).getId());
+    }
+
+    @Test
+    public void testCustomDocumentHistoryPageProvider() {
+        assertNotNull(pageProviderService.getPageProviderDefinition(CUSTOM_HISTORY_VIEW));
+
+        DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
+        searchDoc.setPathInfo("/", "auditsearch");
+        searchDoc = session.createDocument(searchDoc);
+        searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
+        searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
+        searchDoc.setPropertyValue("basicauditsearch:startDate", null);
+        searchDoc.setPropertyValue("basicauditsearch:endDate", null);
+
+        PageProvider<LogEntry> pageProvider = getPageProvider(CUSTOM_HISTORY_VIEW, 26, 0, "/");
+        List<LogEntry> entries = pageProvider.getCurrentPage();
+        entries.forEach(entry -> log.trace("LogEntry: {}", entry));
+
+        // Folder: creation + proxy published + content published + proxy under it => total of 4 => docPath=/section/
+        // File: 3 docs created (file + 2 versions), 15+1 update, 2 checkin, 1 bonus => total of 22 => docPath=/doc
+        assertEquals(26, entries.size());
+
+        pageProvider = getPageProvider(CUSTOM_HISTORY_VIEW, 4, 0, "/s");
+        entries = pageProvider.getCurrentPage();
+        assertEquals(4, entries.size());
+
+        // section doc + proxy
+        assertEquals(1, entries.stream().map(LogEntry::getDocUUID).distinct().filter(folder.getId()::equals).count());
+        assertEquals(1, entries.stream().map(LogEntry::getDocUUID).distinct().filter(proxy.getId()::equals).count());
+
+        Optional<String> optional = entries.stream().map(LogEntry::getDocUUID).distinct().findAny();
+        assertEquals(folder.getId(), optional.get());
+
+        pageProvider = getPageProvider(CUSTOM_HISTORY_VIEW, 26, 0, "/d");
+        entries = pageProvider.getCurrentPage();
+        assertEquals(22, entries.size());
+        // file + 2 versions
+        assertEquals(1, entries.stream().map(LogEntry::getDocUUID).distinct().filter(doc.getId()::equals).count());
+        assertEquals(1,
+                entries.stream().map(LogEntry::getDocUUID).distinct().filter(versions.get(0).getId()::equals).count());
+        assertEquals(1,
+                entries.stream().map(LogEntry::getDocUUID).distinct().filter(versions.get(1).getId()::equals).count());
+
+        // filter by events ids
+        searchDoc.setPropertyValue("basicauditsearch:eventIds", new String[] { "documentModified" });
+        searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
+        pageProvider.setSearchDocumentModel(searchDoc);
+        entries = pageProvider.getCurrentPage();
+        assertEquals(16, entries.size());
+
+        // filter on category
+        searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
+        searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "eventDocumentCategory" });
+        pageProvider.setSearchDocumentModel(searchDoc);
+        entries = pageProvider.getCurrentPage();
+        assertEquals(21, entries.size());
+
+        searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
+        searchDoc.setPropertyValue("basicauditsearch:eventCategories", new String[] { "bonusCategory" });
+        pageProvider.setSearchDocumentModel(searchDoc);
+        entries = pageProvider.getCurrentPage();
+        assertEquals(1, entries.size());
+
+        // filter on Date
+        searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
+        searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
+        searchDoc.setPropertyValue("basicauditsearch:startDate", t1);
+        searchDoc.setPropertyValue("basicauditsearch:endDate", t2);
+        pageProvider.setSearchDocumentModel(searchDoc);
+        entries = pageProvider.getCurrentPage();
+        assertEquals(5, entries.size());
     }
 
     protected PageProvider<LogEntry> getPageProvider(String name, int pageSize, int currentPage, Object... parameters) {
