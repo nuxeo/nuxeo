@@ -27,17 +27,24 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.SystemPrincipal;
+import org.nuxeo.ecm.core.api.local.ClientLoginModule;
 import org.nuxeo.ecm.core.blob.AbstractBlobGarbageCollector;
 import org.nuxeo.ecm.core.blob.AbstractBlobStore;
+import org.nuxeo.ecm.core.blob.BlobContext;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobStore;
@@ -46,6 +53,7 @@ import org.nuxeo.ecm.core.blob.BlobWriteContext;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonServiceException;
@@ -85,6 +93,9 @@ public class S3BlobStore extends AbstractBlobStore {
 
     /** Separator between object key and version id in the returned key. */
     protected static final char VER_SEP = '@';
+
+    // x-amz-meta-username header
+    protected static final String USER_METADATA_USERNAME = "username";
 
     protected final S3BlobStoreConfiguration config;
 
@@ -137,7 +148,8 @@ public class S3BlobStore extends AbstractBlobStore {
     public String writeBlob(BlobWriteContext blobWriteContext) throws IOException {
 
         // detect copy from another S3 blob provider, to use direct S3-level copy
-        Blob blob = blobWriteContext.blobContext.blob;
+        BlobContext blobContext = blobWriteContext.blobContext;
+        Blob blob = blobContext.blob;
         String copiedKey = copyBlob(blob);
         if (copiedKey != null) {
             return copiedKey;
@@ -183,7 +195,7 @@ public class S3BlobStore extends AbstractBlobStore {
                 throw new NuxeoException(
                         "Invalid key '" + key + "', it contains the version separator '" + VER_SEP + "'");
             }
-            String versionId = writeFile(key, file, fileTraceSource);
+            String versionId = writeFile(key, file, blobContext, fileTraceSource);
             return versionId == null ? key : key + VER_SEP + versionId;
         } finally {
             if (tmp != null) {
@@ -199,7 +211,8 @@ public class S3BlobStore extends AbstractBlobStore {
     }
 
     /** Writes a file with the given key and returns its version id. */
-    protected String writeFile(String key, Path file, String fileTraceSource) throws IOException {
+    protected String writeFile(String key, Path file, BlobContext blobContext, String fileTraceSource)
+            throws IOException {
         String bucketKey = bucketPrefix + key;
         long t0 = 0;
         if (log.isDebugEnabled()) {
@@ -212,6 +225,7 @@ public class S3BlobStore extends AbstractBlobStore {
         }
 
         PutObjectRequest putObjectRequest;
+        ObjectMetadata objectMetadata = new ObjectMetadata();
         if (config.useClientSideEncryption) {
             // client-side encryption
             putObjectRequest = new EncryptedPutObjectRequest(bucketName, bucketKey, file.toFile());
@@ -225,13 +239,13 @@ public class S3BlobStore extends AbstractBlobStore {
                     putObjectRequest.setSSEAwsKeyManagementParams(params);
                 } else {
                     // SSE-S3
-                    ObjectMetadata objectMetadata = new ObjectMetadata();
                     objectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-                    putObjectRequest.setMetadata(objectMetadata);
                 }
                 // TODO SSE-C
             }
         }
+        setMetadata(objectMetadata, blobContext);
+        putObjectRequest.setMetadata(objectMetadata);
         logTrace(fileTraceSource, "->", null, "write " + Files.size(file) + " bytes");
         logTrace("hnote right: " + bucketKey);
         Upload upload = config.transferManager.upload(putObjectRequest);
@@ -250,6 +264,29 @@ public class S3BlobStore extends AbstractBlobStore {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new NuxeoException(e);
+        }
+    }
+
+    protected void setMetadata(ObjectMetadata objectMetadata, BlobContext blobContext) {
+        if (blobContext != null) {
+            Blob blob = blobContext.blob;
+            String filename = blob.getFilename();
+            if (filename != null) {
+                String contentDisposition = RFC2231.encodeContentDisposition(filename, false, null);
+                objectMetadata.setContentDisposition(contentDisposition);
+            }
+            String contentType = DownloadHelper.getContentTypeHeader(blob);
+            objectMetadata.setContentType(contentType);
+        }
+        if (config.metadataAddUsername) {
+            NuxeoPrincipal principal = ClientLoginModule.getCurrentPrincipal();
+            if (principal != null && !(principal instanceof SystemPrincipal)) {
+                String username = principal.getActingUser();
+                if (username != null) {
+                    Map<String, String> userMetadata = Collections.singletonMap(USER_METADATA_USERNAME, username);
+                    objectMetadata.setUserMetadata(userMetadata);
+                }
+            }
         }
     }
 
@@ -567,7 +604,7 @@ public class S3BlobStore extends AbstractBlobStore {
                 file = tmp;
                 fileTraceSource = "tmp";
             }
-            String versionId = writeFile(key, file, fileTraceSource); // always atomic
+            String versionId = writeFile(key, file, null, fileTraceSource); // always atomic
             if (versionId != null) {
                 throw new NuxeoException("Cannot copy blob if store has versioning");
             }
