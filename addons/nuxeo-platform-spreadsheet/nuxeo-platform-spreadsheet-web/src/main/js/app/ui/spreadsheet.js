@@ -103,6 +103,10 @@ class Spreadsheet {
             field = schemas[s].fields[f] || undefined;
           }
 
+          if (field.type.endsWith('[]')) {
+            column.widget.multiple = true;
+          }
+          
           // set column widget type and properties based on field constraints
           if (field) {
             let constraints = field.itemConstraints || field.constraints;
@@ -268,7 +272,7 @@ class Spreadsheet {
         // Split csv values into array
         var column = this._columnsByField[field];
         if (column.multiple && !Array.isArray(newV)) {
-          newV = newV.split(',');
+          newV = newV ? newV.split(',') : [];
         }
 
         assign(doc, field, newV);
