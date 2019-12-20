@@ -114,6 +114,9 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
 
+    /** @since 11.1 */
+    public static final String METADATA_ADD_USERNAME_PROPERTY = "metadata.addusername";
+
     public static final String DELIMITER = "/";
 
     /**
@@ -138,6 +141,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     public final String serverSideKMSKeyID;
 
     public final boolean useClientSideEncryption;
+
+    public final boolean metadataAddUsername;
 
     public S3BlobStoreConfiguration(Map<String, String> properties) throws IOException {
         super(SYSTEM_PROPERTY_PREFIX, properties);
@@ -183,6 +188,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         transferManager = createTransferManager();
 
         abortOldUploads();
+
+        metadataAddUsername = getBooleanProperty(METADATA_ADD_USERNAME_PROPERTY);
     }
 
     /**

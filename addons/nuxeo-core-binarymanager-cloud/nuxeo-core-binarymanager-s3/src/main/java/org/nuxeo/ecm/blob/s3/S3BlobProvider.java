@@ -27,7 +27,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.NameValuePair;
@@ -41,6 +40,7 @@ import org.nuxeo.ecm.core.blob.CachingBlobStore;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
@@ -172,16 +172,7 @@ public class S3BlobProvider extends BlobStoreBlobProvider {
     }
 
     protected String getContentTypeHeader(Blob blob) {
-        String contentType = blob.getMimeType();
-        String encoding = blob.getEncoding();
-        if (contentType != null && !StringUtils.isBlank(encoding)) {
-            int i = contentType.indexOf(';');
-            if (i >= 0) {
-                contentType = contentType.substring(0, i);
-            }
-            contentType += "; charset=" + encoding;
-        }
-        return contentType;
+        return DownloadHelper.getContentTypeHeader(blob);
     }
 
     protected String getContentDispositionHeader(Blob blob) {
