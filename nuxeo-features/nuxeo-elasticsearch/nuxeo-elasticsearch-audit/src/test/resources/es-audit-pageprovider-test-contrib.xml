@@ -94,6 +94,40 @@
       <pageSize>5</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="CUSTOM_HISTORY_VIEW"
+                         class="org.nuxeo.elasticsearch.audit.pageprovider.ESAuditPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <fixedPart>
+          {
+            "bool": {
+              "must": {
+                "prefix": {
+                  "docPath.children": {
+                    "value": "?"
+                  }
+                }
+              }
+            }
+          }
+        </fixedPart>
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
+        </predicate>
+      </whereClause>
+      <pageSize>10</pageSize>
+      <maxPageSize>1000</maxPageSize>
+    </genericPageProvider>
+
   </extension>
 
 </component>
