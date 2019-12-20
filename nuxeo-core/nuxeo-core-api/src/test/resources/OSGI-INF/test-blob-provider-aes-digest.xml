@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.aes.digest" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.core.blob.AESBlobProvider</class>
+      <property name="path">test</property>
+      <property name="keyStoreType">JCEKS</property>
+      <property name="keyStoreFile">${test.keystore.file}</property>
+      <property name="keyStorePassword">keystoresecret</property>
+      <property name="keyAlias">myaeskey</property>
+      <property name="keyPassword">keysecret</property>
+    </blobprovider>
+  </extension>
+</component>
