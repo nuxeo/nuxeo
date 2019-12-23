@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,19 +84,33 @@ public class FilesystemBlobProvider extends AbstractBlobProvider {
         return new SimpleManagedBlob(blobInfo);
     }
 
-    @Override
-    public InputStream getStream(ManagedBlob blob) throws IOException {
-        String key = blob.getKey();
-        // strip prefix
+    protected String stripBlobKeyPrefix(String key) {
         int colon = key.indexOf(':');
         if (colon >= 0 && key.substring(0, colon).equals(blobProviderId)) {
             key = key.substring(colon + 1);
         }
+        return key;
+    }
+
+    @Override
+    public InputStream getStream(ManagedBlob blob) throws IOException {
+        String key = stripBlobKeyPrefix(blob.getKey());
         // final sanity checks
         if (key.contains("..")) {
             throw new FileNotFoundException("Illegal path: " + key);
         }
         return Files.newInputStream(Paths.get(root + key));
+    }
+
+    @Override
+    public File getFile(ManagedBlob blob) {
+        String key = stripBlobKeyPrefix(blob.getKey());
+        // final sanity checks
+        if (key.contains("..")) {
+            throw new IllegalArgumentException("Illegal path: " + key);
+        }
+        Path path = Paths.get(root + key);
+        return Files.exists(path) ? path.toFile() : null;
     }
 
     @Override

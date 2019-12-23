@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.io.download;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -76,6 +77,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.LocalBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -690,14 +692,20 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             String xAccelLocation = request.getHeader(NginxConstants.X_ACCEL_LOCATION_HEADER);
             if (Framework.isBooleanPropertyTrue(NginxConstants.X_ACCEL_ENABLED)
                     && StringUtils.isNotEmpty(xAccelLocation)) {
-                BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob);
-                // can work only on a local and unencrypted binary manager
-                if (blobProvider != null && blobProvider.getBinaryManager() instanceof DefaultBinaryManager) {
-                    DefaultBinaryManager binaryManager = (DefaultBinaryManager) blobProvider.getBinaryManager();
-                    String relative = binaryManager.getStorageDir()
-                                                   .toURI()
-                                                   .relativize(blob.getFile().toURI())
-                                                   .getPath();
+                BlobManager blobManager = Framework.getService(BlobManager.class);
+                File file = blobManager.getFile(blob);
+                if (file != null) {
+                    File storageDir;
+                    BlobProvider blobProvider = blobManager.getBlobProvider(blob);
+                    if (blobProvider instanceof LocalBlobProvider) {
+                        storageDir = ((LocalBlobProvider) blobProvider).getStorageDir().toFile();
+                    } else if (blobProvider.getBinaryManager() instanceof DefaultBinaryManager) {
+                        storageDir = ((DefaultBinaryManager) blobProvider.getBinaryManager()).getStorageDir();
+                    } else {
+                        throw new NuxeoException("Cannot use Nginx accelerated download with blob provider: "
+                                + blobProvider.getClass().getName());
+                    }
+                    String relative = storageDir.toURI().relativize(file.toURI()).getPath();
                     if (xAccelLocation.endsWith("/")) {
                         xAccelLocation = xAccelLocation + relative;
                     } else {

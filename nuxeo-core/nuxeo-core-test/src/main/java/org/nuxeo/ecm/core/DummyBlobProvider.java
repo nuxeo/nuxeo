@@ -58,7 +58,7 @@ public class DummyBlobProvider extends AbstractBlobProvider {
 
     @Override
     public Blob readBlob(BlobInfo blobInfo) {
-        return new SimpleManagedBlob(blobInfo) {
+        return new SimpleManagedBlob(blobProviderId, blobInfo) {
             private static final long serialVersionUID = 1L;
 
             @Override
