@@ -86,12 +86,4 @@ public class DummyBlobDispatcher implements BlobDispatcher {
     public void notifyBeforeRemove(Document doc) {
     }
 
-    @Override
-    public void notifySetRetainUntil(Document doc, Calendar retainUntil) {
-    }
-
-    @Override
-    public void notifySetLegalHold(Document doc, boolean hold) {
-    }
-
 }

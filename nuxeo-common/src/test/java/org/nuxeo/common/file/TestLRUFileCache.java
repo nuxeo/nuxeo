@@ -20,6 +20,7 @@ package org.nuxeo.common.file;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -178,6 +179,31 @@ public class TestLRUFileCache {
         assertEquals(40, getDirSize());
         assertFalse(new File(dir, "1").exists());
         assertTrue(new File(dir, "2").exists());
+    }
+
+    @Test
+    public void testLRUFileCacheKeyCheck() throws IOException {
+        LRUFileCache cache = new LRUFileCache(dir, 100, 9999, 1);
+        byte[] buf = new byte[30];
+        // complex key allowed
+        cache.putFile("10623fe9-1646-40f0-83d6-bda1ba43d305@Llxny6HoJ1_C8CJGJ1rLpRnpWJri4qAS",
+                new ByteArrayInputStream(buf));
+        // other characters forbidden
+        try {
+            cache.putFile("..", new ByteArrayInputStream(buf));
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Invalid key"));
+        }
+        try {
+            cache.putFile("../myfile", new ByteArrayInputStream(buf));
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Invalid key"));
+        }
+        try {
+            cache.putFile("foo/bar", new ByteArrayInputStream(buf));
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Invalid key"));
+        }
     }
 
 }

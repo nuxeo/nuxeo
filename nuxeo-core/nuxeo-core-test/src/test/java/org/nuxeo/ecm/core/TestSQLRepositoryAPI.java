@@ -108,7 +108,6 @@ import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.event.Event;
@@ -4282,8 +4281,7 @@ public class TestSQLRepositoryAPI {
 
     protected BinaryManagerStatus runBinariesGC(boolean delete, boolean addDuringGC) {
         BlobProvider blobProvider = blobManager.getBlobProvider(session.getRepositoryName());
-        BinaryManager binaryManager = blobProvider.getBinaryManager();
-        BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
+        BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
         Repository repository = repositoryService.getRepository(session.getRepositoryName());
 
         assertFalse(gc.isInProgress());
