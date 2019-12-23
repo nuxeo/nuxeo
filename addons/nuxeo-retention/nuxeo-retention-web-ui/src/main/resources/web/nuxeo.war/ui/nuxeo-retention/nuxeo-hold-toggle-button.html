@@ -17,7 +17,7 @@ limitations under the License.
 
 <dom-module id="nuxeo-hold-toggle-button">
   <template>
-    <style include="nuxeo-styles">
+    <style include="nuxeo-styles nuxeo-action-button-styles">
       :host([hold]) paper-icon-button {
         color: var(--icon-toggle-outline-color, var(--nuxeo-action-color-activated));
       }
@@ -37,9 +37,8 @@ limitations under the License.
         <div class="action" on-click="_toggle">
           <paper-icon-button icon="[[icon]]" noink on-clock></paper-icon-button>
           <span class="label" hidden$="[[!showLabel]]">[[_label]]</span>
+          <nuxeo-tooltip>[[tooltip]]</nuxeo-tooltip>
         </div>
-        <!-- TODO align on ELEMENTS-997 -->
-        <nuxeo-tooltip>[[tooltip]]</nuxeo-tooltip>
       </template>
     </dom-if>
 
