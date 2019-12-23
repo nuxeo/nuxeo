@@ -22,6 +22,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.CREATE_FROM_KEY_GROUPS;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.CREATE_FROM_KEY_USERS;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.PREVENT_USER_UPDATE;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.RECORD;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSACTIONAL;
 import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.TRANSIENT;
 
 import java.io.IOException;
@@ -64,6 +66,16 @@ public abstract class AbstractBlobProvider implements BlobProvider {
     @Override
     public boolean isTransient() {
         return Boolean.parseBoolean(properties.get(TRANSIENT));
+    }
+
+    @Override
+    public boolean isRecordMode() {
+        return Boolean.parseBoolean(properties.get(RECORD));
+    }
+
+    @Override
+    public boolean isTransactional() {
+        return Boolean.parseBoolean(properties.get(TRANSACTIONAL)) || isRecordMode();
     }
 
     @Override

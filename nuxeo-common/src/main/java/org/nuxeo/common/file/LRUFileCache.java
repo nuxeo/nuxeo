@@ -18,6 +18,9 @@
  */
 package org.nuxeo.common.file;
 
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,7 +53,7 @@ public class LRUFileCache implements FileCache {
     private static final Log log = LogFactory.getLog(LRUFileCache.class);
 
     /** Allowed key pattern, used as file path. */
-    public static final Pattern SIMPLE_ASCII = Pattern.compile("[-_a-zA-Z0-9]+");
+    public static final Pattern SIMPLE_ASCII = Pattern.compile("[-_.@a-zA-Z0-9]+");
 
     private static final String TMP_PREFIX = "nxbin_";
 
@@ -283,7 +286,7 @@ public class LRUFileCache implements FileCache {
         checkKey(key);
         Path path = dir.resolve(key);
         try {
-            Files.move(source, path);
+            Files.move(source, path, ATOMIC_MOVE, REPLACE_EXISTING);
             recordAccess(path);
             clearOldEntries();
         } catch (FileAlreadyExistsException faee) {

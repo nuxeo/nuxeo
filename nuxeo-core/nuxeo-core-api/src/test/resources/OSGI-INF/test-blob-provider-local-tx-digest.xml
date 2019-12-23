@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.local.tx.digest" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.core.blob.LocalBlobProvider</class>
+      <property name="transactional">true</property>
+      <property name="path">test</property>
+    </blobprovider>
+    <blobprovider name="other">
+      <class>org.nuxeo.ecm.core.blob.LocalBlobProvider</class>
+      <property name="transactional">true</property>
+      <property name="path">other</property>
+    </blobprovider>
+  </extension>
+</component>

@@ -132,20 +132,4 @@ public interface BlobDispatcher {
         // do nothing, for forward compatibility of non-default implementations
     }
 
-    /**
-     * Notifies the blob dispatcher that the document's retention date was changed.
-     *
-     * @param doc the document
-     * @since 11.1
-     */
-    void notifySetRetainUntil(Document doc, Calendar retainUntil);
-
-    /**
-     * Notifies the blob dispatcher that the document's legal hold status was changed.
-     *
-     * @param doc the document
-     * @since 11.1
-     */
-    void notifySetLegalHold(Document doc, boolean hold);
-
 }

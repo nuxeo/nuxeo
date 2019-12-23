@@ -350,8 +350,7 @@ public class TestKeyValueBlobTransientStore {
         // sleep needed because the GC doesn't remove very young files
         Thread.sleep(DefaultBinaryGarbageCollector.TIME_RESOLUTION + 100);
         BinaryGarbageCollector gc = ((KeyValueBlobTransientStore) ts).getBlobProvider()
-                                                                     .getBinaryManager()
-                                                                     .getGarbageCollector();
+                                                                     .getBinaryGarbageCollector();
         gc.start();
         // mark nothing, so remove everything
         gc.stop(true);

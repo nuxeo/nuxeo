@@ -49,6 +49,29 @@ public class BlobProviderDescriptor {
     public static final String TRANSIENT = "transient";
 
     /**
+     * Flags this blob provider as using "record mode".
+     * <p>
+     * Record mode has the following characteristics:
+     * <ul>
+     * <li>transactional (blobs aren't actually written/deleted until the transaction commits, and transaction rollback
+     * is possible),
+     * <li>can replace or delete a document's blob.
+     * </ul>
+     *
+     * @since 11.1
+     */
+    public static final String RECORD = "record";
+
+    /**
+     * Flags this blob provider as transactional.
+     * <p>
+     * A transactional blob provider only writes blobs to final storage at commit time.
+     *
+     * @since 11.1
+     */
+    public static final String TRANSACTIONAL = "transactional";
+
+    /**
      * A comma-separated list of users that can create blobs in this blob provider based only on a key.
      *
      * @since 10.2

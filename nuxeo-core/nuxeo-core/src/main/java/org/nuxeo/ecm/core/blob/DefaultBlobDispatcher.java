@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.blob;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -34,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Document;
@@ -406,6 +404,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         notifyChanges(doc, Collections.singleton(IS_RECORD));
     }
 
+    // TODO move this to caller
+
     @Override
     public void notifyBeforeRemove(Document doc) {
         String xpath = MAIN_BLOB_XPATH;
@@ -435,16 +435,6 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             throw new DocumentSecurityException(
                     "Cannot remove main blob from document " + doc.getUUID() + ", it is under retention / hold");
         }
-    }
-
-    @Override
-    public void notifySetRetainUntil(Document doc, Calendar retainUntil) {
-        // throw new UnsupportedOperationException("TODO");
-    }
-
-    @Override
-    public void notifySetLegalHold(Document doc, boolean hold) {
-        // throw new UnsupportedOperationException("TODO");
     }
 
 }
