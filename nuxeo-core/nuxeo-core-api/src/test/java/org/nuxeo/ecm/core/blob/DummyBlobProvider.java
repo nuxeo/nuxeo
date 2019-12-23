@@ -69,7 +69,7 @@ public class DummyBlobProvider extends AbstractBlobProvider {
         if (!blobs.containsKey(k)) {
             throw new IOException("Unknown blob: " + key);
         }
-        return new SimpleManagedBlob(blobInfo) {
+        return new SimpleManagedBlob(blobProviderId, blobInfo) {
             private static final long serialVersionUID = 1L;
 
             @Override

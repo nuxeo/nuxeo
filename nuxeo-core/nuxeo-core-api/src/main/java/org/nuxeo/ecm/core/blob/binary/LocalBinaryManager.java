@@ -33,13 +33,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.blob.LocalBlobStoreConfiguration;
 import org.nuxeo.runtime.trackers.files.FileEventTracker;
 
 /**
@@ -62,14 +59,24 @@ public class LocalBinaryManager extends AbstractBinaryManager {
 
     private static final Log log = LogFactory.getLog(LocalBinaryManager.class);
 
+    /** @deprecated since 11.1, use {@link LocalBlobStoreConfiguration} instead */
+    @Deprecated
     public static final Pattern WINDOWS_ABSOLUTE_PATH = Pattern.compile("[a-zA-Z]:[/\\\\].*");
 
+    /** @deprecated since 11.1, use {@link LocalBlobStoreConfiguration} instead */
+    @Deprecated
     public static final String DEFAULT_PATH = "binaries";
 
+    /** @deprecated since 11.1, use {@link LocalBlobStoreConfiguration} instead */
+    @Deprecated
     public static final String DATA = "data";
 
+    /** @deprecated since 11.1, use {@link LocalBlobStoreConfiguration} instead */
+    @Deprecated
     public static final String TMP = "tmp";
 
+    /** @deprecated since 11.1, use {@link LocalBlobStoreConfiguration} instead */
+    @Deprecated
     public static final String CONFIG_FILE = "config.xml";
 
     protected File storageDir;
@@ -79,58 +86,20 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
-        File base = getStorageBase(properties);
+        LocalBlobStoreConfiguration config = new LocalBlobStoreConfiguration(properties);
 
         log.info("Registering binary manager '" + blobProviderId + "' using "
                 + (this.getClass().equals(LocalBinaryManager.class) ? "" : (this.getClass().getSimpleName() + " and "))
-                + "binary store: " + base);
-        storageDir = new File(base, DATA);
-        tmpDir = new File(base, TMP);
+                + "binary store: " + config.storageDir.getParent());
+        storageDir = config.storageDir.toFile();
+        tmpDir = config.tmpDir.toFile();
         storageDir.mkdirs();
         tmpDir.mkdirs();
-        setDescriptor(getDescriptor(new File(base, CONFIG_FILE)));
+        setDescriptor(config.descriptor);
         createGarbageCollector();
 
         // be sure FileTracker won't steal our files !
         FileEventTracker.registerProtectedPath(storageDir.getAbsolutePath());
-    }
-
-    /**
-     * Gets the storage base to use, based on the properties.
-     *
-     * @since 11.1
-     */
-    public static File getStorageBase(Map<String, String> properties) throws IOException {
-        String path = properties.get(BinaryManager.PROP_PATH);
-        if (StringUtils.isBlank(path)) {
-            path = DEFAULT_PATH;
-        }
-        path = Framework.expandVars(path);
-        path = path.trim();
-        File base;
-        if (path.startsWith("/") || path.startsWith("\\") || path.contains("://") || path.contains(":\\")
-                || WINDOWS_ABSOLUTE_PATH.matcher(path).matches()) {
-            // absolute
-            base = new File(path);
-        } else {
-            // relative
-            File home = Environment.getDefault().getData();
-            base = new File(home, path);
-            base = base.getCanonicalFile(); // canonicalize /../ components
-
-            // Backward compliance with versions before 5.4 (NXP-5370)
-            File oldBase = new File(Framework.getRuntime().getHome().getPath(), path);
-            if (oldBase.exists()) {
-                log.warn("Old binaries path used (NXP-5370). Please move " + oldBase + " to " + base);
-                base = oldBase;
-            }
-        }
-        // take namespace into account
-        String namespace = properties.get(BlobProviderDescriptor.NAMESPACE);
-        if (StringUtils.isNotBlank(namespace)) {
-            base = new File(base.getParentFile(), base.getName() + "_" + namespace.trim());
-        }
-        return base;
     }
 
     @Override

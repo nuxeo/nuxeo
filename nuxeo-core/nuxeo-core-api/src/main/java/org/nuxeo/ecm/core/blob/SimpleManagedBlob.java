@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,12 +34,15 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
 
     private static final long serialVersionUID = 1L;
 
+    public final String blobProviderId;
+
     public final String key;
 
     public Long length;
 
-    public SimpleManagedBlob(BlobInfo blobInfo) {
-        this.key = blobInfo.key;
+    public SimpleManagedBlob(String blobProviderId, BlobInfo blobInfo) {
+        this.blobProviderId = blobProviderId;
+        key = blobInfo.key;
         setMimeType(blobInfo.mimeType);
         setEncoding(blobInfo.encoding);
         setFilename(blobInfo.filename);
@@ -46,13 +50,21 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
         length = blobInfo.length;
     }
 
+    public SimpleManagedBlob(BlobInfo blobInfo) {
+        this(blobProviderIdFromKey(blobInfo.key), blobInfo);
+    }
+
+    @Override
+    public String getProviderId() {
+        return blobProviderId;
+    }
+
     @Override
     public String getKey() {
         return key;
     }
 
-    @Override
-    public String getProviderId() {
+    protected static String blobProviderIdFromKey(String key) {
         int colon = key.indexOf(':');
         if (colon < 0) {
             // no prefix
@@ -64,6 +76,11 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
     @Override
     public InputStream getStream() throws IOException {
         return Framework.getService(BlobManager.class).getStream(this);
+    }
+
+    @Override
+    public File getFile() {
+        return Framework.getService(BlobManager.class).getFile(this);
     }
 
     @Override

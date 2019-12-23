@@ -275,7 +275,7 @@ public class KeyValueBlobTransientStore implements TransientStoreProvider {
     @Override
     public void doGC() {
         BlobProvider bp = getBlobProvider();
-        BinaryGarbageCollector gc = bp.getBinaryManager().getGarbageCollector();
+        BinaryGarbageCollector gc = bp.getBinaryGarbageCollector();
         boolean delete = false;
         gc.start();
         try {
