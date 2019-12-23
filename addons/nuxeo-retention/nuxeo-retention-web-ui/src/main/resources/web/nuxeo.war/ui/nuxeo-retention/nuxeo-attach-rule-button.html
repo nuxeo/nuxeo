@@ -17,7 +17,7 @@ limitations under the License.
 
 <dom-module id="nuxeo-attach-rule-button">
   <template>
-    <style include="nuxeo-styles">
+    <style include="nuxeo-styles nuxeo-action-button-styles">
       /* Fix known stacking issue in iOS (NXP-24600)
          https://github.com/PolymerElements/paper-dialog-scrollable/issues/72 */
       paper-dialog-scrollable {
@@ -35,8 +35,8 @@ limitations under the License.
         <div class="action" on-click="_toggleDialog">
           <paper-icon-button icon="[[icon]]" noink></paper-icon-button>
           <span class="label" hidden$="[[!showLabel]]">[[_label]]</span>
+          <nuxeo-tooltip>[[_label]]</nuxeo-tooltip>
         </div>
-        <nuxeo-tooltip>[[_label]]</nuxeo-tooltip>
       </template>
     </dom-if>
 
