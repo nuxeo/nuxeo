@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -237,9 +238,19 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
             return blobProvider.getStream((ManagedBlob) blob);
         } catch (IOException e) {
             // we don't want to crash everything if the remote file cannot be accessed
-            log.error("Failed to access file: " + ((ManagedBlob) blob).getKey(), e);
+            log.debug(e, e);
+            log.error("Failed to access file: " + ((ManagedBlob) blob).getKey());
             return new ByteArrayInputStream(new byte[0]);
         }
+    }
+
+    @Override
+    public File getFile(Blob blob) {
+        BlobProvider blobProvider = getBlobProvider(blob);
+        if (blobProvider == null) {
+            return null;
+        }
+        return blobProvider.getFile((ManagedBlob) blob);
     }
 
     @Override

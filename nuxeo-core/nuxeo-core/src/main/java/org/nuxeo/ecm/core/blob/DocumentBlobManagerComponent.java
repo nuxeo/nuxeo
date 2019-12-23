@@ -25,6 +25,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
@@ -33,9 +34,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
@@ -192,7 +193,7 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
             throw new DocumentSecurityException(
                     "Cannot change blob from document " + doc.getUUID() + ", it is under retention / hold");
         }
-        String key = blobProvider.writeBlob(blob, doc.getUUID(), xpath);
+        String key = blobProvider.writeBlob(new BlobContext(blob, doc, xpath));
         if (dispatch.addPrefix) {
             key = dispatch.providerId + ':' + key;
         }
@@ -235,27 +236,79 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         getBlobDispatcher().notifyChanges(doc, xpaths);
     }
 
+    @Override
     public void notifyMakeRecord(Document doc) {
         getBlobDispatcher().notifyMakeRecord(doc);
     }
 
+    @Override
     public void notifyAfterCopy(Document doc) {
         getBlobDispatcher().notifyAfterCopy(doc);
     }
 
+    @Override
     public void notifyBeforeRemove(Document doc) {
         getBlobDispatcher().notifyBeforeRemove(doc);
     }
 
+    @Override
     public void notifySetRetainUntil(Document doc, Calendar retainUntil) {
-        getBlobDispatcher().notifySetRetainUntil(doc, retainUntil);
+        updateBlob(doc, context -> context.withUpdateRetainUntil(retainUntil));
     }
 
+    @Override
     public void notifySetLegalHold(Document doc, boolean hold) {
-        getBlobDispatcher().notifySetLegalHold(doc, hold);
+        updateBlob(doc, context -> context.withUpdateLegalHold(hold));
+    }
+
+    public void updateBlob(Document doc, Consumer<BlobUpdateContext> contextFiller) {
+        ManagedBlob blob = getMainBlob(doc);
+        if (blob == null) {
+            return;
+        }
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blob);
+        if (blobProvider == null) {
+            log.error("No blob provider found for blob: " + blob.getKey());
+            return;
+        }
+        try {
+            String key = stripBlobKeyPrefix(blob.getKey());
+            BlobUpdateContext blobUpdateContext = new BlobUpdateContext(key);
+            contextFiller.accept(blobUpdateContext);
+            blobProvider.updateBlob(blobUpdateContext);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+    }
+
+    protected ManagedBlob getMainBlob(Document doc) {
+        Blob blob;
+        try {
+            blob = (Blob) doc.getValue(MAIN_BLOB_XPATH);
+        } catch (PropertyNotFoundException | ClassCastException e) {
+            // not a standard file schema
+            return null;
+        }
+        if (blob == null) {
+            // no blob in this document
+            return null;
+        }
+        if (blob instanceof ManagedBlob) {
+            return (ManagedBlob) blob;
+        }
+        log.error("Blob is not managed: " + blob);
+        return null;
     }
 
     // TODO restore to version also changes the blob
+
+    protected String stripBlobKeyPrefix(String key) {
+        int colon = key.indexOf(':');
+        if (colon >= 0) {
+            key = key.substring(colon + 1);
+        }
+        return key;
+    }
 
     // find which GCs to use
     // only GC the binary managers to which we dispatch blobs
@@ -263,9 +316,9 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         List<BinaryGarbageCollector> gcs = new LinkedList<>();
         for (String providerId : getBlobDispatcher().getBlobProviderIds()) {
             BlobProvider blobProvider = getBlobProvider(providerId);
-            BinaryManager binaryManager = blobProvider.getBinaryManager();
-            if (binaryManager != null) {
-                gcs.add(binaryManager.getGarbageCollector());
+            BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
+            if (gc != null) {
+                gcs.add(gc);
             }
         }
         return gcs;
@@ -334,14 +387,10 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
     @Override
     public void markReferencedBinary(String key, String repositoryName) {
         BlobProvider blobProvider = getBlobProvider(key, repositoryName);
-        BinaryManager binaryManager = blobProvider.getBinaryManager();
-        if (binaryManager != null) {
-            int colon = key.indexOf(':');
-            if (colon > 0) {
-                // if the key is in the "providerId:digest" format, keep only the real digest
-                key = key.substring(colon + 1);
-            }
-            binaryManager.getGarbageCollector().mark(key);
+        BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
+        if (gc != null) {
+            key = stripBlobKeyPrefix(key);
+            gc.mark(key);
         } else {
             log.error("Unknown binary manager for key: " + key);
         }

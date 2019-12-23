@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -101,6 +102,16 @@ public interface BlobManager {
      * @return the stream
      */
     InputStream getStream(Blob blob) throws IOException;
+
+    /**
+     * INTERNAL - Gets a {@link File} (if one exists) for the data of a managed blob. Used by internal implementations,
+     * regular callers should call {@link Blob#getFile}.
+     *
+     * @param blob the blob
+     * @return the file, or {@code null} if no underlying file is available
+     * @since 11.1
+     */
+    File getFile(Blob blob);
 
     /**
      * Gets an {@link InputStream} for a thumbnail of a blob.

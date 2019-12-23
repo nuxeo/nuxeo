@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 
 /**
  * Adapter between the {@link BinaryManager} and a {@link BlobProvider} for the {@link BlobManager}.
@@ -88,14 +89,17 @@ public class BinaryBlobProvider implements BlobProvider {
         return binaryManager;
     }
 
+    protected String stripBlobKeyPrefix(String key) {
+        int colon = key.indexOf(':');
+        if (colon >= 0) {
+            key = key.substring(colon + 1);
+        }
+        return key;
+    }
+
     @Override
     public Blob readBlob(BlobInfo blobInfo) throws IOException {
-        String digest = blobInfo.key;
-        // strip prefix
-        int colon = digest.indexOf(':');
-        if (colon >= 0) {
-            digest = digest.substring(colon + 1);
-        }
+        String digest = stripBlobKeyPrefix(blobInfo.key);
         Binary binary = binaryManager.getBinary(digest);
         if (binary == null) {
             throw new IOException("Unknown binary: " + digest);
@@ -111,6 +115,16 @@ public class BinaryBlobProvider implements BlobProvider {
         }
         return new BinaryBlob(binary, blobInfo.key, blobInfo.filename, blobInfo.mimeType, blobInfo.encoding,
                 blobInfo.digest, length);
+    }
+
+    @Override
+    public File getFile(ManagedBlob blob) {
+        String key = stripBlobKeyPrefix(blob.getKey());
+        Binary binary = binaryManager.getBinary(key);
+        if (binary == null || binary instanceof LazyBinary) {
+            return null;
+        }
+        return binary.getFile();
     }
 
     @Override

@@ -20,6 +20,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 
 /**
@@ -66,15 +68,23 @@ public interface BlobProvider {
      * <ul>
      * <li>transactional (blobs aren't actually written/deleted until the transaction commits, and transaction rollback
      * is possible),
-     * <li>doesn't do de-duplication, each blob is stored individually,
-     * <li>stores only one blob per document (the main blob, file:content),
-     * <li>can replace or delete a document's blob,
-     * <li>has hooks to store additional metadata alongside the blob (for diagnostics/recovery).
+     * <li>can replace or delete a document's blob.
      * </ul>
      *
      * @since 11.1
      */
     default boolean isRecordMode() {
+        return false;
+    }
+
+    /**
+     * Checks whether this blob provider is transactional.
+     * <p>
+     * A transactional blob provider only writes blobs to final storage at commit time.
+     *
+     * @since 11.1
+     */
+    default boolean isTransactional() {
         return false;
     }
 
@@ -115,25 +125,20 @@ public interface BlobProvider {
      * Called to store a user-created blob.
      *
      * @param blob the blob
-     * @param id the document id
-     * @param xpath the blob xpath
-     * @return the blob key
-     * @since 11.1
-     */
-    default String writeBlob(Blob blob, String id, String xpath) throws IOException {
-        return writeBlob(blob);
-    }
-
-    /**
-     * Writes a {@link Blob} to storage and returns information about it.
-     * <p>
-     * Called to store a user-created blob.
-     *
-     * @param blob the blob
      * @return the blob key
      * @since 9.2
      */
     String writeBlob(Blob blob) throws IOException;
+
+    /**
+     * Updates a blob's properties in storage.
+     *
+     * @param blobUpdateContext the blob update context
+     * @since 11.1
+     */
+    default void updateBlob(BlobUpdateContext blobUpdateContext) throws IOException {
+        // ignore properties updates by default
+    }
 
     /**
      * Deletes a blob from storage. Only meaningful for a record blob provider.
@@ -180,6 +185,17 @@ public interface BlobProvider {
      * @since 7.3
      */
     default InputStream getStream(ManagedBlob blob) throws IOException {
+        return null;
+    }
+
+    /**
+     * Gets a {@link File} (if one exists) for the data of a managed blob.
+     *
+     * @param blob the managed blob
+     * @return the file, or {@code null} if no underlying file is available
+     * @since 11.1
+     */
+    default File getFile(ManagedBlob blob) {
         return null;
     }
 
@@ -267,6 +283,17 @@ public interface BlobProvider {
      */
     default BinaryManager getBinaryManager() {
         return null;
+    }
+
+    /**
+     * Gets the associated garbage collector, if any.
+     *
+     * @return the garbage collector, or {@code null}
+     * @since 11.1
+     */
+    default BinaryGarbageCollector getBinaryGarbageCollector() {
+        BinaryManager binaryManager = getBinaryManager();
+        return binaryManager == null ? null : binaryManager.getGarbageCollector();
     }
 
     /**

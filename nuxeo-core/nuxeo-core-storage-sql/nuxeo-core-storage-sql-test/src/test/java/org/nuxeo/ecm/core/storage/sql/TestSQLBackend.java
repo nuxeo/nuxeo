@@ -78,7 +78,6 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.LockManager;
@@ -906,8 +905,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     protected BinaryManagerStatus runBinariesGC(int moreWork, Session session, boolean delete) throws Exception {
         BlobManager blobManager = Framework.getService(BlobManager.class);
         BlobProvider blobProvider = blobManager.getBlobProvider(session.getRepositoryName());
-        BinaryManager binaryManager = blobProvider.getBinaryManager();
-        BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
+        BinaryGarbageCollector gc = blobProvider.getBinaryGarbageCollector();
         assertFalse(gc.isInProgress());
         gc.start();
         assertTrue(gc.isInProgress());

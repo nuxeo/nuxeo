@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.blob.test-blob-dispatcher-record" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="records1">
+      <class>org.nuxeo.ecm.core.blob.LocalBlobProvider</class>
+      <property name="record">true</property>
+      <property name="path">records1</property>
+    </blobprovider>
+  </extension>
+  <extension target="org.nuxeo.ecm.core.blob.DocumentBlobManager" point="configuration">
+    <blobdispatcher>
+      <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
+      <property name="records">records1</property>
+      <property name="default">test</property>
+    </blobdispatcher>
+  </extension>
+</component>
