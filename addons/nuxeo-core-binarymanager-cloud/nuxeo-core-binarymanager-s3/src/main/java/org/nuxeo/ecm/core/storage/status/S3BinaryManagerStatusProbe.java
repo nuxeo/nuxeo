@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.status;
 
 import java.util.Map;
 
+import org.nuxeo.ecm.blob.s3.S3BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
@@ -38,20 +39,24 @@ public class S3BinaryManagerStatusProbe implements Probe {
     @Override
     public ProbeStatus run() {
         Map<String, BlobProvider> providers = Framework.getService(BlobManager.class).getBlobProviders();
-        boolean someSuccess = false;
+        boolean found = false;
         for (Map.Entry<String, BlobProvider> en : providers.entrySet()) {
             String id = en.getKey();
             BlobProvider blobProvider = en.getValue();
             BinaryManager bm = blobProvider.getBinaryManager();
-            if (bm == null || !(bm instanceof S3BinaryManager)) {
-                continue;
+            if (bm instanceof S3BinaryManager) {
+                if (!((S3BinaryManager) bm).canAccessBucket()) {
+                    return ProbeStatus.newFailure("S3BinaryManager cannot access the configured bucket: " + id);
+                }
+                found = true;
+            } else if (bm instanceof S3BlobProvider) {
+                if (!((S3BlobProvider) bm).canAccessBucket()) {
+                    return ProbeStatus.newFailure("S3BinaryManager cannot access the configured bucket: " + id);
+                }
+                found = true;
             }
-            if (!((S3BinaryManager) bm).canAccessBucket()) {
-                return ProbeStatus.newFailure("S3BinaryManager cannot access the configured bucket: " + id);
-            }
-            someSuccess = true;
         }
-        if (someSuccess) {
+        if (found) {
             return ProbeStatus.newSuccess("S3BinaryManager can access the configured buckets");
         } else {
             return ProbeStatus.newSuccess("No S3BinaryManager bucket configured");
