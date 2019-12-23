@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.blob.s3.record" version="1.0.0">
+  <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+    <blobprovider name="test">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="record">true</property>
+    </blobprovider>
+    <blobprovider name="other">
+      <class>org.nuxeo.ecm.blob.s3.S3BlobProvider</class>
+      <property name="bucket_prefix">other/</property>
+      <property name="record">true</property>
+    </blobprovider>
+  </extension>
+</component>
