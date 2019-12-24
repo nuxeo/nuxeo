@@ -101,3 +101,9 @@ limitations under the License.
     </nuxeo-filter>
   </template>
 </nuxeo-slot-content>
+
+<script>
+  // push RetentionRule and RetentionRules to list of document types that are not available for import
+  window.nuxeo.importBlacklist.push('RetentionRule');
+  window.nuxeo.importBlacklist.push('RetentionRules');
+</script>
