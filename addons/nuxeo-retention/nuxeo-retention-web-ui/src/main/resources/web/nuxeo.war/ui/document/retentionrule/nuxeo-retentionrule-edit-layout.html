@@ -187,20 +187,10 @@ limitations under the License.
       behaviors: [Nuxeo.LayoutBehavior, Nuxeo.RetentionBehavior],
       properties: {
         /**
-         * @doctype retentionrule
+         * @doctype RetentionRule
          */
         document: Object,
       },
-
-      validate: function() {
-        // TODO validate metadataXPath against doc type when needed
-        return true;
-      },
-
-      _refreshDocType: function(types) {
-        return types;
-      }
-
     });
   </script>
 

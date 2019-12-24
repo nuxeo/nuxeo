@@ -7,7 +7,7 @@
   <template>
     <style include="iron-flex iron-flex-alignment nuxeo-styles">
       *[role=widget] {
-        padding: 5px;
+        margin-bottom: 16px;
       }
     </style>
 
@@ -114,9 +114,8 @@
       is: 'nuxeo-retentionrule-view-layout',
       behaviors: [Nuxeo.LayoutBehavior, Nuxeo.RetentionBehavior],
       properties: {
-
         /**
-         * @doctype retentionrule
+         * @doctype RetentionRule
          */
         document: {
           type: Object,

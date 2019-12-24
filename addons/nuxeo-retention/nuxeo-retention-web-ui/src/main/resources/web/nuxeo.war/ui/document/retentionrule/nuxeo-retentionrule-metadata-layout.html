@@ -8,7 +8,7 @@
   <template>
     <style>
       *[role=widget] {
-        padding: 5px;
+        margin-bottom: 16px;
       }
     </style>
 
@@ -19,14 +19,12 @@
       is: 'nuxeo-retentionrule-metadata-layout',
       behaviors: [Nuxeo.LayoutBehavior, Nuxeo.RetentionBehavior],
       properties: {
-
         /**
-           * @doctype retentionrule
-           */
+         * @doctype RetentionRule
+         */
         document: {
           type: Object,
         },
-
       }
     });
   </script>
