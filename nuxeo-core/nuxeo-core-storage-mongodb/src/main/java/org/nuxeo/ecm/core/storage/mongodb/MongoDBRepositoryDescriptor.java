@@ -54,6 +54,15 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
 
     @XNode("sequenceBlockSize")
     public Integer sequenceBlockSize;
+    
+    /** @since 11.1 **/
+    @XNode("childNameUniqueConstraintEnabled")
+    public Boolean childNameUniqueConstraintEnabled;
+
+    /** @since 11.1 **/
+    public Boolean getChildNameUniqueConstraintEnabled() {
+        return childNameUniqueConstraintEnabled;
+    }
 
     @Override
     public MongoDBRepositoryDescriptor clone() {
@@ -73,6 +82,9 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
         }
         if (other.sequenceBlockSize != null) {
             sequenceBlockSize = other.sequenceBlockSize;
+        }
+        if (other.childNameUniqueConstraintEnabled != null) {
+            childNameUniqueConstraintEnabled = other.childNameUniqueConstraintEnabled;
         }
     }
 

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.mongodb.duplicate.key.test.contrib" version="1.0">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+    <listener name="duplicatedNameFixer" enabled="false">
+    </listener>
+  </extension>
+
+</component>
