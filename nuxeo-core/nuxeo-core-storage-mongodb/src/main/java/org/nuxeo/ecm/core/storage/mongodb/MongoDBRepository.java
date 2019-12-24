@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static com.mongodb.ErrorCategory.DUPLICATE_KEY;
+import static com.mongodb.ErrorCategory.fromErrorCode;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
@@ -87,7 +89,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
 import com.mongodb.Block;
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoBulkWriteException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.QueryOperators;
+import com.mongodb.bulk.BulkWriteError;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -199,7 +205,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
         converter = new MongoDBConverter(useCustomId ? null : KEY_ID);
         cursorService = new CursorService<>(ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
-        initRepository();
+        initRepository(descriptor);
     }
 
     @Override
@@ -213,7 +219,21 @@ public class MongoDBRepository extends DBSRepositoryBase {
         cursorService.clear();
     }
 
+    /**
+     * @deprecated since 11.1. use {@link #initRepository(MongoDBRepositoryDescriptor)} instead.
+     */
+    @Deprecated
     protected void initRepository() {
+        initRepository(null);
+    }
+
+    /**
+     * Initializes the MongoDB repository
+     * 
+     * @param descriptor the MongoDB repository descriptor
+     * @since 11.1
+     */
+    protected void initRepository(MongoDBRepositoryDescriptor descriptor) {
         // check root presence
         if (countDocuments(databaseID, coll, Filters.eq(idKey, getRootId())) > 0) {
             return;
@@ -229,7 +249,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending(KEY_PROXY_TARGET_ID));
         coll.createIndex(Indexes.ascending(KEY_PROXY_VERSION_SERIES_ID));
         coll.createIndex(Indexes.ascending(KEY_READ_ACL));
-        coll.createIndex(Indexes.ascending(KEY_PARENT_ID, KEY_NAME));
+        IndexOptions parentNameIndexOptions = new IndexOptions();
+        if (descriptor != null) {
+            parentNameIndexOptions.unique(Boolean.TRUE.equals(descriptor.getChildNameUniqueConstraintEnabled()));
+        }
+        coll.createIndex(Indexes.ascending(KEY_PARENT_ID, KEY_NAME), parentNameIndexOptions);
         // often used in user-generated queries
         coll.createIndex(Indexes.ascending(KEY_PRIMARY_TYPE));
         coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
@@ -302,9 +326,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE " + doc.get(idKey) + ": " + doc);
         }
-        coll.insertOne(doc);
-        // TODO dupe exception
-        // throw new DocumentException("Already exists: " + id);
+        try {
+            coll.insertOne(doc);
+        } catch (DuplicateKeyException dke) {
+            log.trace("MongoDB:    -> DUPLICATE KEY: " + doc.get(idKey));
+            throw new ConcurrentUpdateException(dke);
+        }
     }
 
     @Override
@@ -315,7 +342,24 @@ public class MongoDBRepository extends DBSRepositoryBase {
                     + docs.stream().map(doc -> doc.get(idKey).toString()).collect(Collectors.joining(", ")) + "]: "
                     + docs);
         }
-        coll.insertMany(docs);
+        try {
+            coll.insertMany(docs);
+        } catch (MongoBulkWriteException mbwe) {
+            List<String> duplicates = mbwe.getWriteErrors()
+                                          .stream()
+                                          .filter(wr -> DUPLICATE_KEY.equals(fromErrorCode(wr.getCode())))
+                                          .map(BulkWriteError::getMessage)
+                                          .collect(Collectors.toList());
+            // Avoid hiding any others bulk errors
+            if (duplicates.size() == mbwe.getWriteErrors().size()) {
+                log.trace("MongoDB:    -> DUPLICATE KEY: " + duplicates);
+                ConcurrentUpdateException concurrentUpdateException = new ConcurrentUpdateException();
+                duplicates.forEach(concurrentUpdateException::addInfo);
+                throw concurrentUpdateException;
+            }
+
+            throw mbwe;
+        }
     }
 
     @Override
@@ -361,13 +405,19 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 }
                 filter.putAll(conditions);
             }
-            UpdateResult w = coll.updateMany(filter, update);
-            if (w.getModifiedCount() != 1) {
-                log.trace("MongoDB:    -> CONCURRENT UPDATE: " + id);
-                throw new ConcurrentUpdateException(id);
+            try {
+                UpdateResult w = coll.updateMany(filter, update);
+                if (w.getModifiedCount() != 1) {
+                    log.trace("MongoDB:    -> CONCURRENT UPDATE: " + id);
+                    throw new ConcurrentUpdateException(id);
+                }
+            } catch (MongoWriteException mwe) {
+                if (DUPLICATE_KEY.equals(fromErrorCode(mwe.getCode()))) {
+                    log.trace("MongoDB:    -> DUPLICATE KEY: " + id);
+                    throw new ConcurrentUpdateException(mwe.getError().getMessage(), mwe);
+                }
+                throw mwe;
             }
-            // TODO dupe exception
-            // throw new DocumentException("Missing: " + id);
         }
     }
 
