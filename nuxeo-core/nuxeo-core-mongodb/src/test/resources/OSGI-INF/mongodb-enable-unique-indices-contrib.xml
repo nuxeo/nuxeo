@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.test.mongodb.repository.indices">
+  <extension target="org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService" point="repository">
+    <repository name="test">
+      <childNameUniqueConstraintEnabled>true</childNameUniqueConstraintEnabled>
+    </repository>
+  </extension>
+
+</component>
