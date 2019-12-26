@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2017 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
+ *     Frantz Fischer <ffischer@nuxeo.com>
  *
  */
 
@@ -42,6 +43,8 @@ public abstract class AbstractConfigurationTest {
 
     protected File nuxeoHome;
 
+    protected File nuxeoBinDir;
+
     protected Map<String, String> originSystemProps = new HashMap<>();
 
     public File getResourceFile(String resource) {
@@ -61,6 +64,9 @@ public abstract class AbstractConfigurationTest {
         nuxeoHome.mkdirs();
         File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
+
+        nuxeoBinDir = new File(nuxeoHome, "bin");
+        nuxeoBinDir.mkdir();
 
         setSystemProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
         setSystemProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
