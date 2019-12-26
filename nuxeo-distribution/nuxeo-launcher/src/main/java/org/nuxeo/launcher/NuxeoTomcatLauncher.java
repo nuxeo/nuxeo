@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
+ *     Frantz Fischer <ffischer@nuxeo.com>
  *
  * $Id$
  */
@@ -54,13 +55,24 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
         return serverProperties;
     }
 
+    protected String getBinJarName(File binDir, String pattern) {
+        File[] binJarFiles = ConfigurationGenerator.getJarFilesFromPattern(binDir, pattern);
+        if (binJarFiles.length != 1) {
+            throw new RuntimeException("There should be only 1 file but " + binJarFiles.length + " were found in " + binDir.getAbsolutePath() + " looking for " + pattern);
+        }
+        return binDir.getName() + File.separator + binJarFiles[0].getName();
+    }
+
     @Override
     protected String getClassPath() {
+        File binDir = configurationGenerator.getNuxeoBinDir();
         String cp = ".";
+
         cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
-        cp = addToClassPath(cp, "bin" + File.separator + "bootstrap.jar");
+        cp = addToClassPath(cp, getBinJarName(binDir, ConfigurationGenerator.BOOTSTRAP_JAR_REGEX));
         // Tomcat 7 needs tomcat-juli.jar for bootstrap as well
-        cp = addToClassPath(cp, "bin" + File.separator + "tomcat-juli.jar");
+        cp = addToClassPath(cp, getBinJarName(binDir, ConfigurationGenerator.JULI_JAR_REGEX));
+
         return cp;
     }
 
