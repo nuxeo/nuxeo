@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
+ *     Frantz Fischer <ffischer@nuxeo.com>
  */
 package org.nuxeo.launcher.config;
 
@@ -23,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_NOFAIL;
@@ -574,6 +576,42 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         // userConfig was filled with values from nuxeo.conf and getUserTemplates re-load templates from userConfig
         assertEquals("default,mongodb", configGenerator.getUserTemplates());
         assertEquals("default,mongodb", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+    }
+
+    protected void checkIsTomcat(boolean isTomcat) {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        assertEquals(configGenerator.isTomcat, isTomcat);
+    }
+
+    @Test
+    public void testTomcatDetectionWithoutVersioning() throws Exception {
+        new File(nuxeoBinDir, "bootstrap.jar").createNewFile();
+        checkIsTomcat(true);
+    }
+
+    @Test
+    public void testTomcatDetectionNoBootstrap() throws Exception {
+        checkIsTomcat(false);
+    }
+
+    @Test
+    public void testTomcatDetectionVersionedBootstrap() throws Exception {
+        new File(nuxeoBinDir, "bootstrap-8.0.49.jar").createNewFile();
+        checkIsTomcat(true);
+    }
+
+    @Test
+    public void testTomcatDetectionWrongBootstrap() throws Exception {
+        new File(nuxeoBinDir, "bootstrapzzz.jar").createNewFile();
+        checkIsTomcat(false);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testTomcatDetectionWithMultipleBootstrapFiles() throws Exception {
+        new File(nuxeoBinDir, "bootstrap.jar").createNewFile();
+        new File(nuxeoBinDir, "bootstrap-8.0.49.jar").createNewFile();
+        checkIsTomcat(true);
     }
 
     private static class LogCaptureAppender extends AppenderSkeleton {

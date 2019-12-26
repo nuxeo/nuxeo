@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Julien Carsique
  *     Kevin Leturc <kleturc@nuxeo.com>
+ *     Frantz Fischer <ffischer@nuxeo.com>
  */
 package org.nuxeo.launcher.config;
 
@@ -289,7 +290,15 @@ public class ConfigurationGenerator {
      */
     public static final String JAVA_OPTS_PROP = "launcher.java.opts";
 
+    public static final String VERSIONED_REGEX = "(-\\d+(\\.\\d+)*)?";
+
+    public static final String BOOTSTRAP_JAR_REGEX = "bootstrap" + VERSIONED_REGEX + ".jar";
+
+    public static final String JULI_JAR_REGEX = "tomcat-juli" + VERSIONED_REGEX + ".jar";
+
     private final File nuxeoHome;
+
+    private final File nuxeoBinDir;
 
     // User configuration file
     private final File nuxeoConf;
@@ -375,6 +384,17 @@ public class ConfigurationGenerator {
         }
     };
 
+    public static File[] getJarFilesFromPattern(File dir, String pattern) {
+        Pattern jarPattern = Pattern.compile(pattern);
+        File[] foundJarFiles = dir.listFiles(f -> jarPattern.matcher(f.getName()).matches());
+        if (foundJarFiles == null) {
+            foundJarFiles = new File[0];
+        } else if (foundJarFiles.length > 1) {
+            throw new RuntimeException(foundJarFiles.length + " files found in " + dir.getAbsolutePath() + " looking for " + pattern);
+        }
+        return foundJarFiles;
+    }
+
     /**
      * @param quiet Suppress info level messages from the console output
      * @param debug Activate debug level logging
@@ -393,6 +413,7 @@ public class ConfigurationGenerator {
                 nuxeoHome = userDir.getAbsoluteFile();
             }
         }
+        nuxeoBinDir = new File(nuxeoHome, "bin");
         String nuxeoConfPath = System.getProperty(NUXEO_CONF);
         if (nuxeoConfPath != null) {
             nuxeoConf = new File(nuxeoConfPath).getAbsoluteFile();
@@ -409,7 +430,8 @@ public class ConfigurationGenerator {
         if (!isJBoss && !isJetty && !isTomcat) {
             // fallback on jar detection
             isJBoss = new File(nuxeoHome, "bin/run.jar").exists();
-            isTomcat = new File(nuxeoHome, "bin/bootstrap.jar").exists();
+            isTomcat = getJarFilesFromPattern(getNuxeoBinDir(), BOOTSTRAP_JAR_REGEX).length == 1;
+
             String[] files = nuxeoHome.list();
             for (String file : files) {
                 if (file.startsWith("nuxeo-runtime-launcher")) {
@@ -902,6 +924,10 @@ public class ConfigurationGenerator {
 
     public File getNuxeoHome() {
         return nuxeoHome;
+    }
+
+    public File getNuxeoBinDir() {
+        return nuxeoBinDir;
     }
 
     public File getNuxeoDefaultConf() {
