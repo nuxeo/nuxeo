@@ -1139,7 +1139,7 @@ public class TestSQLRepositoryQuery {
         dml = session.query(sql);
         assertEquals(1, dml.size());
 
-        sql = "SELECT * FROM Document WHERE dc:created < TIMESTAMP '2037-01-01 01:02:03'";
+        sql = "SELECT * FROM Document WHERE dc:created < TIMESTAMP '2100-01-01 01:02:03'";
         dml = session.query(sql);
         assertEquals(2, dml.size());
     }
@@ -1530,13 +1530,13 @@ public class TestSQLRepositoryQuery {
 
         // document for leela with a begin date after 2007-01-01
         checkQueryACL(1, queryBase
-                + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end <= DATE '2020-01-01'");
+                + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end <= DATE '2100-01-01'");
 
-        // document for leela with an end date after 2020-01-01, no match
-        checkQueryACL(0, queryBase + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/end >= DATE '2020-01-01'");
+        // document for leela with an end date after 2100-01-01, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/end >= DATE '2100-01-01'");
 
         // document with valid begin date but not end date, no match
-        checkQueryACL(0, queryBase + "ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end >= DATE '2020-01-01'");
+        checkQueryACL(0, queryBase + "ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end >= DATE '2100-01-01'");
 
         // document with effective acl
         checkQueryACL(1, queryBase + "ecm:acl/*1/status = 1");
