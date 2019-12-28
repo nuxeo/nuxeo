@@ -3,10 +3,10 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>10.10-HF20-SNAPSHOT</version>
+    <version>10.10-HF20</version>
   </parent>
   <artifactId>nuxeo-adobe-connector-parent</artifactId>
-  <version>10.10-HF20-SNAPSHOT</version>
+  <version>10.10-HF20</version>
   <name>Nuxeo adobe connector</name>
   <packaging>pom</packaging>
   <description></description>
