@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
     }
 
     @SuppressWarnings({ "unchecked" })
-    private <T> T[] castArrayPropertyValue(Type type, List<Object> values) throws IOException {
+    private <T> T[] castArrayPropertyValue(Type type, List<Object> values) {
         if (type instanceof StringType) {
             return values.toArray((T[]) Array.newInstance(String.class, values.size()));
         } else if (type instanceof BooleanType) {

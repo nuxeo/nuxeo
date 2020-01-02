@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -543,7 +543,7 @@ public class DocumentBrowsingTest extends BaseTest {
      * NXP-28349
      */
     @Test
-    public void iCanCreateADocumentWithNonExistingField() throws Exception {
+    public void iCanCreateADocumentWithNonExistingField() {
         // Given a folder and a Rest Creation request
         DocumentModel folder = RestServerInit.getFolder(0, session);
 
