@@ -135,7 +135,7 @@ Contributors:
 
       _close: function() {
         this.$.dialog.toggle();
-        this.nxProvider.fetch();
+        this.fire('document-updated');
       },
 
       _onLoad: function() {
