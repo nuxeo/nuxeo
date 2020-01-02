@@ -236,7 +236,11 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (value == null) {
             List<Property> temp = new ArrayList<>(children);
             for (Property p : temp) { // remove all children
-                p.remove();
+                p.remove(); // call #remove(Property) which set isModified flag
+            }
+            // handle SimpleDocumentModel case
+            if (isForceDirty()) {
+                setIsModified();
             }
             return;
         }
