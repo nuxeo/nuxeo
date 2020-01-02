@@ -30,6 +30,7 @@ import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -458,6 +459,7 @@ public class DocumentBrowsingTest extends BaseTest {
             // Then the document is updated
             fetchInvalidations();
             doc = session.getDocument(doc.getRef());
+            // ArrayProperty returns null whenever is empty or null
             assertNull(doc.getPropertyValue("dc:subjects"));
         }
     }
@@ -487,7 +489,82 @@ public class DocumentBrowsingTest extends BaseTest {
             // Then the document is updated
             fetchInvalidations();
             doc = session.getDocument(doc.getRef());
+            // ArrayProperty returns null whenever is empty or null
             assertNull(doc.getPropertyValue("dc:subjects"));
+        }
+    }
+
+    /*
+     * NXP-28433
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server:test-defaultvalue-docTypes.xml")
+    public void itCanSetArrayPropertyOfComplexToEmpty() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "myDocument", "DocDefaultValue");
+        Map<String, String> complex = new HashMap<>();
+        complex.put("foo", "val1");
+        complex.put("bar", "val2");
+        doc.setProperty("defaultvalue", "multiComplexWithoutDefault", Collections.singletonList(complex));
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dv:multiComplexWithoutDefault\":[]}}",
+                Collections.singletonMap("X-NXDocumentProperties", "defaultvalue"))) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode jsonProperties = node.get("properties");
+            assertNotNull(jsonProperties);
+            JsonNode jsonMultiComplex = jsonProperties.get("dv:multiComplexWithoutDefault");
+            assertNotNull(jsonMultiComplex);
+            assertTrue(jsonMultiComplex.isArray());
+            assertEquals(0, jsonMultiComplex.size());
+
+            // Then the document is updated
+            fetchInvalidations();
+            doc = session.getDocument(doc.getRef());
+            // ListProperty returns an empty List whenever is empty or null
+            Serializable multiComplex = doc.getPropertyValue("dv:multiComplexWithoutDefault");
+            assertTrue(multiComplex instanceof List);
+            assertTrue(((List<?>) multiComplex).isEmpty());
+        }
+    }
+
+    /*
+     * NXP-28433
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server:test-defaultvalue-docTypes.xml")
+    public void itCanSetArrayPropertyOfComplexToNull() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "myDocument", "DocDefaultValue");
+        Map<String, String> complex = new HashMap<>();
+        complex.put("foo", "val1");
+        complex.put("bar", "val2");
+        doc.setProperty("defaultvalue", "multiComplexWithoutDefault", Collections.singletonList(complex));
+        doc = session.createDocument(doc);
+        fetchInvalidations();
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "id/" + doc.getId(),
+                "{\"entity-type\":\"document\",\"properties\":{\"dv:multiComplexWithoutDefault\":null}}",
+                Collections.singletonMap("X-NXDocumentProperties", "defaultvalue"))) {
+
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            JsonNode jsonProperties = node.get("properties");
+            assertNotNull(jsonProperties);
+            JsonNode jsonMultiComplex = jsonProperties.get("dv:multiComplexWithoutDefault");
+            assertNotNull(jsonMultiComplex);
+            assertTrue(jsonMultiComplex.isArray());
+            assertEquals(0, jsonMultiComplex.size());
+
+            // Then the document is updated
+            fetchInvalidations();
+            doc = session.getDocument(doc.getRef());
+            // ListProperty returns an empty List whenever is empty or null
+            Serializable multiComplex = doc.getPropertyValue("dv:multiComplexWithoutDefault");
+            assertTrue(multiComplex instanceof List);
+            assertTrue(((List<?>) multiComplex).isEmpty());
         }
     }
 
