@@ -41,7 +41,7 @@ function setupUI() {
   // Setup popup UI
   if (!isStandalone) {
     $('#close').click(function() {
-      if (parent.jQuery.fancybox) {
+      if (parent.jQuery && parent.jQuery.fancybox) {
         parent.jQuery.fancybox.close();
       }
     });
