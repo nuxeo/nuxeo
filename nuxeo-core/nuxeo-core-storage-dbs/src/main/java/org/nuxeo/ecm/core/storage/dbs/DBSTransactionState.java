@@ -1186,7 +1186,7 @@ public class DBSTransactionState {
         }
 
         protected void findDirtyPaths(ListDiff value, String path) {
-            String newPath = path + "/*";
+            String newPath = path;
             if (value.diff != null) {
                 findDirtyPaths(value.diff, newPath);
             }
