@@ -16,7 +16,7 @@
  *     Jackie Aldama <jaldama@nuxeo.com>
  */
 import {DirectoryEditor, DirectoryRenderer} from './editors/directory';
-import {DocumentEditor} from './editors/document';
+import {DocumentEditor, DocumentRenderer} from './editors/document';
 import {UserEditor, UserRenderer} from './editors/user';
 import {ImageRenderer} from './editors/image';
 
@@ -117,11 +117,15 @@ export const WIDGET_TYPES = {
     multiple: true
   },
   singleDocumentSuggestion: {
-    editor: 'document'
+    renderer: DocumentRenderer,
+    editor: 'document',
+    minimumInputLength: 3
   },
   multipleDocumentsSuggestion: {
+    renderer: DocumentRenderer,
     editor: 'document',
-    multiple: true
+    multiple: true,
+    minimumInputLength: 3
   },
 
   // IMAGE
