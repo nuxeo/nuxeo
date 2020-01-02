@@ -13,6 +13,7 @@
   <xs:element name="simpleWithDefault" type="xs:string" default="value" />
   <xs:element name="simpleWithoutDefault" type="xs:string" />
 
+  <!-- simple complex -->
   <xs:complexType name="complexTypeWithoutDefault">
     <xs:sequence>
       <xs:element name="foo" type="xs:string" />
@@ -30,5 +31,22 @@
   </xs:complexType>
 
   <xs:element name="complexWithDefault" type="nxs:complexTypeWithDefault" />
+
+  <!-- multi complex -->
+  <xs:complexType name="complexTypeWithoutDefaultList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complexTypeWithoutDefault" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="multiComplexWithoutDefault" type="nxs:complexTypeWithoutDefaultList" />
+
+  <xs:complexType name="complexTypeWithDefaultList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:complexTypeWithDefault" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="multiComplexWithDefault" type="nxs:complexTypeWithDefaultList" />
 
 </xs:schema>
