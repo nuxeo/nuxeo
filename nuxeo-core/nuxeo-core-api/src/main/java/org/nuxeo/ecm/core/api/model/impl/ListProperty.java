@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,22 +48,21 @@ public class ListProperty extends AbstractProperty implements List<Property> {
      */
     protected final Field field;
 
-    protected final List<Property> children;
+    protected final List<Property> children = new ArrayList<>();
 
     public ListProperty(Property parent, Field field) {
         super(parent);
         this.field = field;
-        children = new ArrayList<>();
     }
 
     public ListProperty(Property parent, Field field, int flags) {
         super(parent, flags);
         this.field = field;
-        children = new ArrayList<>();
     }
 
     @Override
     public void internalSetValue(Serializable value) throws PropertyException {
+        // ListProperty uses a specific setValue implementation
     }
 
     /**
@@ -74,8 +73,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
      */
     @Override
     public boolean isContainer() {
-        // return true; // - this can be uncommented when scalar list will be
-        // fixed
+        // return true; // - this can be uncommented when scalar list will be fixed
         return !getType().isScalarList();
     }
 
@@ -164,12 +162,11 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (children.isEmpty()) {
             return new ArrayList<String>();
         }
-        // noinspection CollectionDeclaredAsConcreteClass
-        ArrayList<Object> list = new ArrayList<>(children.size());
+        var list = new ArrayList<>(children.size());
         for (Property property : children) {
             list.add(property.getValue());
         }
-        // TODO XXX FIXME for compatibility - this treats sclar lists as array
+        // TODO XXX FIXME for compatibility - this treats scalar lists as array
         // see NXP-1653. remove this when will be fixed
         // see also isContainer(), setValue() and accept()
         // if (getType().isScalarList()) {
@@ -201,8 +198,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         if (children.isEmpty()) {
             return new ArrayList<String>();
         }
-        // noinspection CollectionDeclaredAsConcreteClass
-        ArrayList<Object> list = new ArrayList<>(children.size());
+        var list = new ArrayList<>(children.size());
         for (Property property : children) {
             list.add(property.getValueForWrite());
         }
@@ -212,8 +208,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     @Override
     @SuppressWarnings("unchecked")
     public void init(Serializable value) throws PropertyException {
-        if (value == null) { // IGNORE null values - properties will be
-                             // considered PHANTOMS
+        if (value == null) { // IGNORE null values - properties will be considered PHANTOMS
             return;
         }
         List<Serializable> list;
@@ -222,8 +217,7 @@ public class ListProperty extends AbstractProperty implements List<Property> {
         } else {
             list = (List<Serializable>) value;
         }
-        children.clear(); // do not use clear() method since it is marking the
-                          // list as dirty
+        children.clear(); // do not use clear() method since it is marking the list as dirty
         Field lfield = getType().getField();
         for (Serializable obj : list) {
             Property property = getRoot().createProperty(this, lfield, 0);
@@ -299,9 +293,8 @@ public class ListProperty extends AbstractProperty implements List<Property> {
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        ListProperty clone = (ListProperty) super.clone();
-        return clone;
+    public ListProperty clone() throws CloneNotSupportedException {
+        return (ListProperty) super.clone();
     }
 
     @Override
@@ -365,8 +358,6 @@ public class ListProperty extends AbstractProperty implements List<Property> {
 
     /**
      * Supports ListDiff for compatibility.
-     *
-     * @param ld
      */
     public void applyListDiff(ListDiff ld) throws PropertyException {
         for (ListDiff.Entry entry : ld.diff()) {
