@@ -42,7 +42,7 @@ class Select2Editor extends Handsontable.editors.Select2Editor {
       dropdownAutoWidth: true,
       allowClear: true,
       width: 'resolve',
-      minimumInputLength: 0,
+      minimumInputLength: cellProperties.minimumInputLength || 0,
       formatResult: this.resultFormatter.bind(this),
       formatSelection: this.selectionFormatter.bind(this),
       multiple: isMultiple,

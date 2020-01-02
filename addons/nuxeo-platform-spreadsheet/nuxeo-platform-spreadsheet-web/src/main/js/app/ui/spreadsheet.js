@@ -113,6 +113,9 @@ class Spreadsheet {
             if (constraints) {
               for (let constraint of constraints) {
                 switch (constraint.name) {
+                  case 'documentResolver':
+                    column.widget.type = (field.type === 'string[]') ? 'multipleDocumentsSuggestion' : 'singleDocumentSuggestion';
+                    break;
                   case 'directoryResolver':
                     column.widget.type = (field.type === 'string[]') ? 'suggestManyDirectory' : 'suggestOneDirectory';
                     column.widget.properties = {dbl10n: true, directoryName: constraint.parameters.directory};
