@@ -36,13 +36,9 @@ import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 @Deploy("org.nuxeo.ecm.liveconnect.onedrive.core.tests:OSGI-INF/test-config.xml")
 public class TestOneDriveBlobProvider extends OneDriveTestCase {
-
-    @Inject
-    private RuntimeHarness harness;
 
     @Inject
     private BlobManager blobManager;
@@ -142,7 +138,7 @@ public class TestOneDriveBlobProvider extends OneDriveTestCase {
         AppLink appLink = appLinks.get(0);
         assertNotNull(appLink.getLink());
         assertEquals("Microsoft OneDrive", appLink.getAppName());
-        assertEquals("icons/OneDrive.png", appLink.getIcon());
+        assertEquals("/nuxeo/icons/OneDrive.png", appLink.getIcon());
     }
 
 }
