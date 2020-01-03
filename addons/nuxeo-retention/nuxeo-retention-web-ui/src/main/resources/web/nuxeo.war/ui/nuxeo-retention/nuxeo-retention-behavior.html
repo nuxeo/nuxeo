@@ -19,118 +19,131 @@ limitations under the License.
   /* eslint-disable no-var, no-use-before-define */
   var Nuxeo = Nuxeo || {};
 
-  /**
-   * `Nuxeo.RetentionBehavior` provides a set of helpers to format values.
-   *
-   * @polymerBehavior
-   */
-  Nuxeo.RetentionBehavior = {
+  (() => {
+    let fetcher;
 
-    properties: {
-      docTypes: Array,
-      dateFields: Array
-    },
-
-    ready: function() {
-      // XXX inject types and schema in a static namespace and init only once
-      this._fetchDocTypes();
-    },
-
-    _isAuto: function() {
-      return this.documentument && this.document.properties &&
-        this.document.properties['retention_rule:applicationPolicy'] === 'auto';
-    },
-
-    _isImmediate: function() {
-      return this.document && this.document.properties &&
-        this.document.properties['retention_def:startingPointPolicy'] === 'immediate';
-    },
-
-    _isEventBased: function() {
-      return this.document && this.document.properties &&
-        this.document.properties['retention_def:startingPointPolicy'] === 'event_based';
-    },
-
-    _isMetadataBased: function() {
-      return this.document && this.document.properties &&
-        this.document.properties['retention_def:startingPointPolicy'] === 'metadata_based';
-    },
-
-    _isAfterDelay: function() {
-      return this.document && this.document.properties &&
-        this.document.properties['retention_def:startingPointPolicy'] === 'after_delay';
-    },
-
-    _isManual: function() {
-      return this.document && this.document.properties &&
-        this.document.properties['retention_rule:applicationPolicy'] === 'manual';
-    },
-
-    _computeApplicationPolicyLabel: function() {
-      return this.document ? this.i18n(
-        'retention.rule.label.applicationPolicy.' + this.document.properties['retention_rule:applicationPolicy']) : '';
-    },
-
-    _computeStartPolicyLabel: function() {
-      return this.document ? this.i18n(
-        'retention.rule.label.startPolicy.' + this.document.properties['retention_def:startingPointPolicy']) : '';
-    },
-
-    _fetchDocTypes: function() {
-      if (!this.typeFetcher) {
-        this.typeFetcher = document.createElement('nuxeo-resource');
-        this._attachDom(this.typeFetcher);
-      }
-      this.typeFetcher.path = 'config/types';
-      this.typeFetcher.get().then(function(res) {
-        var schemas = new Set();
-        var types = [];
+    function _fetchDocTypes() {
+      let typeFetcher = document.createElement('nuxeo-resource');
+      document.body.appendChild(typeFetcher);
+      typeFetcher.path = 'config/types';
+      return typeFetcher.get().then(async (res) => {
+        let docTypes;
+        let dateFields
         if (res && res.doctypes) {
+          const schemas = new Set();
+          docTypes = [];
           for (var type in res.doctypes) {
             if (
-             res.doctypes[type].schemas.indexOf('file') !== -1 &&
-             res.doctypes[type].facets.indexOf('Folderish') === -1 &&
-             res.doctypes[type].facets.indexOf('HiddenInNavigation') === -1 &&
-             res.doctypes[type].facets.indexOf('SystemDocument') === -1
+              res.doctypes[type].schemas.indexOf('file') !== -1 &&
+              res.doctypes[type].facets.indexOf('Folderish') === -1 &&
+              res.doctypes[type].facets.indexOf('HiddenInNavigation') === -1 &&
+              res.doctypes[type].facets.indexOf('SystemDocument') === -1
             ) {
-              types.push({
+              docTypes.push({
                 id: type,
                 text: type,
               });
-              res.doctypes[type].schemas.forEach(function(schema) {
+              res.doctypes[type].schemas.forEach((schema) => {
                 schemas.add(schema);
               });
             }
           }
-          this.set('docTypes', types);
-          this._fetchDateFields(schemas);
+          dateFields = await _fetchDateFields(schemas);
         }
-      }.bind(this));
-    },
+        return {docTypes, dateFields};
+      }).finally(() => {
+        document.body.removeChild(typeFetcher);
+        typeFetcher = null;
+      });
+    }
 
-    _fetchDateFields: function(onlySchemas) {
+    function _fetchDateFields(onlySchemas) {
       if (onlySchemas.size > 0) {
-        if (!this.schemaFetcher) {
-          this.schemaFetcher = document.createElement('nuxeo-resource');
-          this._attachDom(this.schemaFetcher);
-        }
-        this.schemaFetcher.path = 'config/schemas';
-        this.schemaFetcher.get().then(function(res) {
-          this.dateFields = [];
+        let schemaFetcher = document.createElement('nuxeo-resource');
+        document.body.appendChild(schemaFetcher);
+        schemaFetcher.path = 'config/schemas';
+        return schemaFetcher.get().then((res) => {
+          const dateFields = [];
           if (res) {
-            res.forEach(function(schema) {
+            res.forEach((schema) => {
               if (onlySchemas.has(schema.name)) {
                 for (var fieldName in schema.fields) {
                   if (schema.fields[fieldName] === 'date') {
-                    this.dateFields.push(schema['@prefix'] + ':' + fieldName);
+                    dateFields.push(schema['@prefix'] + ':' + fieldName);
                   }
                 }
               }
-            }.bind(this));
+            });
           }
-        }.bind(this));
+          return dateFields;
+        }).finally(() => {
+          document.body.removeChild(schemaFetcher);
+          schemaFetcher = null;
+        });
       }
     }
 
-  };
+    /**
+     * `Nuxeo.RetentionBehavior` provides a set of helpers to format values.
+     *
+     * @polymerBehavior
+     */
+    Nuxeo.RetentionBehavior = {
+
+      properties: {
+        docTypes: Array,
+        dateFields: Array
+      },
+
+      ready: function() {
+        if (!fetcher) {
+          fetcher = _fetchDocTypes();
+        }
+        fetcher.then(({ docTypes, dateFields }) => {
+          this.docTypes = docTypes;
+          this.dateFields = dateFields;
+        });
+      },
+
+      _isAuto: function() {
+        return this.document && this.document.properties &&
+          this.document.properties['retention_rule:applicationPolicy'] === 'auto';
+      },
+
+      _isImmediate: function() {
+        return this.document && this.document.properties &&
+          this.document.properties['retention_def:startingPointPolicy'] === 'immediate';
+      },
+
+      _isEventBased: function() {
+        return this.document && this.document.properties &&
+          this.document.properties['retention_def:startingPointPolicy'] === 'event_based';
+      },
+
+      _isMetadataBased: function() {
+        return this.document && this.document.properties &&
+          this.document.properties['retention_def:startingPointPolicy'] === 'metadata_based';
+      },
+
+      _isAfterDelay: function() {
+        return this.document && this.document.properties &&
+          this.document.properties['retention_def:startingPointPolicy'] === 'after_delay';
+      },
+
+      _isManual: function() {
+        return this.document && this.document.properties &&
+          this.document.properties['retention_rule:applicationPolicy'] === 'manual';
+      },
+
+      _computeApplicationPolicyLabel: function() {
+        return this.document ? this.i18n(
+          'retention.rule.label.applicationPolicy.' + this.document.properties['retention_rule:applicationPolicy']) : '';
+      },
+
+      _computeStartPolicyLabel: function() {
+        return this.document ? this.i18n(
+          'retention.rule.label.startPolicy.' + this.document.properties['retention_def:startingPointPolicy']) : '';
+      },
+    };
+  })();
 </script>
