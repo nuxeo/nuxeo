@@ -32,10 +32,12 @@ import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.ecm.liveconnect.core.AbstractLiveConnectBlobProvider;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFile;
 import org.nuxeo.ecm.liveconnect.core.LiveConnectFileInfo;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveSharingLink.Type;
 import org.nuxeo.onedrive.client.OneDriveThumbnailSize;
+import org.nuxeo.runtime.api.Framework;
 
 import com.google.api.client.auth.oauth2.Credential;
 
@@ -98,11 +100,12 @@ public class OneDriveBlobProvider extends AbstractLiveConnectBlobProvider<OneDri
         if (fileInfo.getRevisionId().isPresent()) {
             return Collections.emptyList();
         }
+        String baseUrl = Framework.getProperty("nuxeo.url", VirtualHostHelper.getContextPathProperty());
         AppLink appLink = new AppLink();
         String appUrl = prepareOneDriveFile(fileInfo).createSharedLink(Type.EDIT).getLink().getWebUrl();
         appLink.setLink(appUrl);
         appLink.setAppName("Microsoft OneDrive");
-        appLink.setIcon("icons/OneDrive.png");
+        appLink.setIcon(baseUrl + "/icons/OneDrive.png");
         return Collections.singletonList(appLink);
     }
 
