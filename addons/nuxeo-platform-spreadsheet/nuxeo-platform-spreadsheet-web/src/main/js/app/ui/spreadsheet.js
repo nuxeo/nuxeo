@@ -103,12 +103,11 @@ class Spreadsheet {
             field = schemas[s].fields[f] || undefined;
           }
 
-          if (field.type.endsWith('[]')) {
-            column.widget.multiple = true;
-          }
-          
           // set column widget type and properties based on field constraints
           if (field) {
+            if (field.type.endsWith('[]')) {
+              column.widget.multiple = true;
+            }
             let constraints = field.itemConstraints || field.constraints;
             if (constraints) {
               for (let constraint of constraints) {
