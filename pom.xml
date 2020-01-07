@@ -158,8 +158,8 @@
 
     <kafka.version>2.5.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
-    <chronicle.bom.version>2.17.465</chronicle.bom.version>
-    <chronicle.threads.version>2.17.2</chronicle.threads.version>
+    <chronicle.bom.version>2.17.506</chronicle.bom.version>
+    <chronicle.threads.version>2.17.25</chronicle.threads.version>
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.26.0</opencensus.version>
@@ -4987,7 +4987,7 @@
       <dependency>
         <!-- unused dependency, declared to exclude affinity -->
         <groupId>net.openhft</groupId>
-        <artifactId>chronicle-threads</artifactId>
+        <artifactId>chronicle-Threads</artifactId>
         <version>${chronicle.threads.version}</version>
         <exclusions>
           <exclusion>

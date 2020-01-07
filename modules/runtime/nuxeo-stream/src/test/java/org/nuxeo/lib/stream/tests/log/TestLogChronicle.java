@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -116,20 +117,16 @@ public class TestLogChronicle extends TestLog {
         assertEquals(4, Files.list(queuePath).count());
         Thread.sleep(1010);
 
-        // cycle 4:
-        // purge is done on cycle release
-        // cycle 3 is released and there is no purge because we see only 3 cycles
-        // cycle 4 is acquired we now have 4 cycles
+        // cycle 4
+        // purge is done
         appender.append(0, msg);
-        assertEquals(5, Files.list(queuePath).count());
+        assertEquals(4, Files.list(queuePath).count());
         Thread.sleep(1010);
 
-        // cycle 5: cycle 4 is released and purge cycle 1 we have 3 cycles
-        // then cycle 5 is acquired we have 4 cycles files
+        // cycle 5:
+        // purge is done
         appender.append(0, msg);
-        assertEquals(5, Files.list(queuePath).count());
-
-        // in practice we always have one more cycle file than the expected retention
+        assertEquals(4, Files.list(queuePath).count());
     }
 
     @SuppressWarnings("FutureReturnValueIgnored")
