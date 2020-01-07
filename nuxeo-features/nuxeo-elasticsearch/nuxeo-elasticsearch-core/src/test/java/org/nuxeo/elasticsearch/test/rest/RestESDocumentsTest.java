@@ -182,7 +182,7 @@ public class RestESDocumentsTest extends BaseTest {
                 (Serializable) session);
         @SuppressWarnings("unchecked")
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                ppdef.getName(), ppdef, null, null, null, 0L, props, "testCo", session.getPrincipal().getName());
+                ppdef.getName(), ppdef, null, null, null, 0L, props, "testCo");
 
         List<DocumentModel> page = pp.getCurrentPage();
         assertEquals(2, page.size());

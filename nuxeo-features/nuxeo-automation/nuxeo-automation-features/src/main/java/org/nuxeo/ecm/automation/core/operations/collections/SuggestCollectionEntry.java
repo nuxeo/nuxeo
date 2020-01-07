@@ -90,7 +90,6 @@ public class SuggestCollectionEntry {
         {
             StringList sl = new StringList();
             sl.add(searchTerm + (searchTerm.endsWith("%") ? "" : "%"));
-            sl.add(PageProviderHelper.CURRENT_USERID_PATTERN);
             vars.put("queryParams", sl);
             vars.put("providerName", CollectionConstants.COLLECTION_PAGE_PROVIDER);
         }
