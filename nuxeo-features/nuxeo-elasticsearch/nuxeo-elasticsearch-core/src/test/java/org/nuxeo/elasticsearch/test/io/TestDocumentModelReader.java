@@ -23,6 +23,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.schema.FacetNames.COLD_STORAGE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -82,7 +83,7 @@ public class TestDocumentModelReader {
                 + "\"dc:rights\":\"Rights0\",\"file:content\":null,\"uid:uid\":null,\"files:files\":[],"
                 + "\"ecm:acl\":[\"administrators\",\"Administrator\",\"members\"],\"dc:subjects\":[],"
                 + "\"dc:format\":null,\"dc:valid\":null,\"ecm:path\":\"/root/my/path/file0\","
-                + "\"ecm:mixinType\":[\"Downloadable\",\"Commentable\",\"Versionable\",\"Publishable\",\"HasRelatedText\"],"
+                + "\"ecm:mixinType\":[\"Downloadable\",\"Commentable\",\"Versionable\",\"Publishable\",\"HasRelatedText\", \"ColdStorage\"],"
                 + "\"ecm:isProxy\":false,\"ecm:isCheckedIn\":false,"
                 + "\"dc:title\":\"File Title\",\"dc:lastContributor\":null,"
                 + "\"ecm:repository\":\"test\",\"common:icon\":null,\"dc:creator\":null,"
@@ -102,6 +103,7 @@ public class TestDocumentModelReader {
         assertFalse(doc.isFolder());
         assertFalse(doc.isVersion());
         assertFalse(doc.isLocked());
+        assertTrue(doc.hasFacet(COLD_STORAGE));
         assertEquals("File Title", doc.getTitle());
         assertNotNull(doc.getParentRef());
         assertTrue(doc.isImmutable());

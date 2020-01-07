@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertNotNull;
+import static org.nuxeo.ecm.core.schema.FacetNames.COLD_STORAGE;
 import static org.nuxeo.ecm.core.schema.FacetNames.COMMENTABLE;
 import static org.nuxeo.ecm.core.schema.FacetNames.DOWNLOADABLE;
 import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
@@ -59,7 +60,7 @@ public class TestFacet {
     public void shouldGetFacets() {
         var facets = List.of(FOLDERISH, VERSIONABLE, ORDERABLE, DOWNLOADABLE, SUPER_SPACE, PUBLISHABLE, PUBLISH_SPACE,
                 MASTER_PUBLISH_SPACE, COMMENTABLE, HIDDEN_IN_NAVIGATION, SYSTEM_DOCUMENT, NOT_FULLTEXT_INDEXABLE,
-                HAS_RELATED_TEXT);
+                HAS_RELATED_TEXT, COLD_STORAGE);
 
         facets.forEach(fn -> assertNotNull(String.format("Facet %s should exist", fn), schemaManager.getFacet(fn)));
     }

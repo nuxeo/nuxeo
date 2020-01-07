@@ -19,8 +19,11 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.types;
 
+import static org.nuxeo.ecm.core.schema.FacetNames.COLD_STORAGE;
 import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
 import static org.nuxeo.ecm.core.schema.FacetNames.HAS_RELATED_TEXT;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -53,14 +56,17 @@ public class FacetJsonWriterTest extends AbstractJsonWriterTest.Local<FacetJsonW
 
     @Test
     public void testFacetWithSchema() throws Exception {
-        CompositeType type = schemaManager.getFacet(HAS_RELATED_TEXT);
-        JsonAssert json = jsonAssert(type);
-        json.properties(3);
-        json.has("entity-type").isEquals("facet");
-        json.has("name").isEquals(HAS_RELATED_TEXT);
-        json = json.has("schemas").length(1).has(0);
-        json.has("entity-type").isEquals("schema");
-        json.has("name").isEquals("relatedtext");
+        var schemaByFacetName = Map.of(HAS_RELATED_TEXT, "relatedtext", COLD_STORAGE, "coldstorage");
+        for (Map.Entry<String, String> entry : schemaByFacetName.entrySet()) {
+            CompositeType type = schemaManager.getFacet(entry.getKey());
+            JsonAssert json = jsonAssert(type);
+            json.properties(3);
+            json.has("entity-type").isEquals("facet");
+            json.has("name").isEquals(entry.getKey());
+            json = json.has("schemas").length(1).has(0);
+            json.has("entity-type").isEquals("schema");
+            json.has("name").isEquals(entry.getValue());
+        }
     }
 
 }

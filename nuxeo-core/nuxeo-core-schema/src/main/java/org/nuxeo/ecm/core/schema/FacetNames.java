@@ -105,6 +105,14 @@ public final class FacetNames {
      */
     public static final String HAS_RELATED_TEXT = "HasRelatedText";
 
+    /**
+     * The document content will be stored as a cold (cool) storage, this is the case where the content represents:
+     * archiving, compliance...
+     * 
+     * @since 11.1
+     */
+    public static final String COLD_STORAGE = "ColdStorage";
+
     private FacetNames() {
     }
 
