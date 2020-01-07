@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.types;
 
+import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
+import static org.nuxeo.ecm.core.schema.FacetNames.HAS_RELATED_TEXT;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -41,20 +44,20 @@ public class FacetJsonWriterTest extends AbstractJsonWriterTest.Local<FacetJsonW
 
     @Test
     public void testFacetWithoutSchema() throws Exception {
-        CompositeType type = schemaManager.getFacet("Folderish");
+        CompositeType type = schemaManager.getFacet(FOLDERISH);
         JsonAssert json = jsonAssert(type);
         json.properties(2);
         json.has("entity-type").isEquals("facet");
-        json.has("name").isEquals("Folderish");
+        json.has("name").isEquals(FOLDERISH);
     }
 
     @Test
     public void testFacetWithSchema() throws Exception {
-        CompositeType type = schemaManager.getFacet("HasRelatedText");
+        CompositeType type = schemaManager.getFacet(HAS_RELATED_TEXT);
         JsonAssert json = jsonAssert(type);
         json.properties(3);
         json.has("entity-type").isEquals("facet");
-        json.has("name").isEquals("HasRelatedText");
+        json.has("name").isEquals(HAS_RELATED_TEXT);
         json = json.has("schemas").length(1).has(0);
         json.has("entity-type").isEquals("schema");
         json.has("name").isEquals("relatedtext");
