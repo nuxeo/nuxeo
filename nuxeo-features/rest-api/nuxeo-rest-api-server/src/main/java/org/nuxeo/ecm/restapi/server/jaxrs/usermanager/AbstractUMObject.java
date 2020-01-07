@@ -101,7 +101,9 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
      * Check the given artifact is editable by a power user. Basically this means not an admin user or not an admin
      * group.
      */
-    protected abstract boolean isAPowerUserEditableArtifact(T artifact);
+    protected boolean isAPowerUserEditableArtifact(T artifact) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Updates the current artifact by the one given in parameters in the underlying persistence system.
