@@ -39,6 +39,9 @@ public class ScrollDescriptor implements Descriptor {
     @XNode("@enabled")
     protected boolean isEnabled = true;
 
+    @XNode("@type")
+    protected String type;
+
     @XNode("@name")
     protected String name;
 
@@ -55,7 +58,7 @@ public class ScrollDescriptor implements Descriptor {
 
     @Override
     public String getId() {
-        return name;
+        return getType() + ":" + getName();
     }
 
     public Scroll newScrollInstance() {
@@ -70,16 +73,16 @@ public class ScrollDescriptor implements Descriptor {
         return name;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public boolean isEnabled() {
         return isEnabled;
     }
 
     public boolean isDefault() {
         return isDefault;
-    }
-
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
     }
 
     public Map<String, String> getOptions() {

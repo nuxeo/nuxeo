@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestElasticSearchScroll extends TestRepositoryScroll {
 
     @Override
-    public String getType() {
+    public String getScrollName() {
         return "elastic";
     }
 }
