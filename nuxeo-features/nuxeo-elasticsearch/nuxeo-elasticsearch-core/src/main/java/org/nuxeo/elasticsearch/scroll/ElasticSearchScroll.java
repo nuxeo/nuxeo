@@ -19,8 +19,8 @@
 package org.nuxeo.elasticsearch.scroll;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.search.SearchHit;
@@ -38,7 +38,15 @@ public class ElasticSearchScroll extends RepositoryScroll {
     protected EsScrollResult esScroll;
 
     @Override
-    public boolean fetch() {
+    public boolean hasNext() {
+        if (hasNextResult == null) {
+            hasNextResult = fetch();
+        }
+        return hasNextResult;
+    }
+
+    @Override
+    protected boolean fetch() {
         ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
         if (esScroll == null) {
             esScroll = ess.scroll(new NxQueryBuilder(session).nxql(request.getQuery())
@@ -49,18 +57,19 @@ public class ElasticSearchScroll extends RepositoryScroll {
             esScroll = ess.scroll(esScroll);
         }
         SearchHit[] hits = esScroll.getElasticsearchResponse().getHits().getHits();
-        if (hits == null || hits.length == 0) {
-            return false;
-        }
-        return true;
+        return hits != null && hits.length > 0;
     }
 
     @Override
-    public List<String> getIds() {
-        SearchHit[] hits = esScroll.getElasticsearchResponse().getHits().getHits();
-        if (hits == null || hits.length == 0) {
-            return Collections.emptyList();
+    public List<String> next() {
+        if (hasNextResult == null) {
+            hasNextResult = fetch();
         }
+        if (!hasNextResult) {
+            throw new NoSuchElementException();
+        }
+        hasNextResult = null;
+        SearchHit[] hits = esScroll.getElasticsearchResponse().getHits().getHits();
         return Arrays.stream(hits).map(SearchHit::getId).collect(Collectors.toList());
     }
 

@@ -26,12 +26,12 @@ package org.nuxeo.ecm.core.api.scroll;
 public interface ScrollService {
 
     /**
-     * Returns a {@link Scroll} to execute the request
+     * Returns a {@link Scroll} instance to execute the request.
      */
     Scroll scroll(ScrollRequest request);
 
     /**
-     * Returns {@code true} if there is a scroll contribution named {@code scrollName}.
+     * Returns {@code true} if the requested Scroll implementation exists.
      */
-    boolean exists(String scrollName);
+    boolean exists(ScrollRequest request);
 }

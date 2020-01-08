@@ -34,9 +34,13 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DocumentScrollRequest implements ScrollRequest {
 
-    protected final String type;
+    protected static final String SCROLL_TYPE = "document";
+
+    protected final String name;
 
     protected final String query;
+
+    protected final String repository;
 
     protected final Duration timeout;
 
@@ -44,10 +48,9 @@ public class DocumentScrollRequest implements ScrollRequest {
 
     protected final String username;
 
-    protected final String repository;
 
     protected DocumentScrollRequest(Builder builder) {
-        this.type = builder.getType();
+        this.name = builder.getName();
         this.query = builder.getQuery();
         this.timeout = builder.getTimeout();
         this.size = builder.getSize();
@@ -57,22 +60,25 @@ public class DocumentScrollRequest implements ScrollRequest {
 
     @Override
     public String getType() {
-        return type;
+        return SCROLL_TYPE;
     }
 
     @Override
-    public String getQuery() {
-        return query;
-    }
-
-    @Override
-    public Duration getTimeout() {
-        return timeout;
+    public String getName() {
+        return name;
     }
 
     @Override
     public int getSize() {
         return size;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public Duration getTimeout() {
+        return timeout;
     }
 
     public String getUsername() {
@@ -85,8 +91,9 @@ public class DocumentScrollRequest implements ScrollRequest {
 
     @Override
     public String toString() {
-        return "DocumentScrollRequest{" + "type='" + type + '\'' + ", query='" + query + '\'' + ", timeout=" + timeout
-                + ", size=" + size + ", username='" + username + '\'' + ", repository='" + repository + '\'' + '}';
+        return "DocumentScrollRequest{" + "name='" + name + '\'' + ", query='" + query + '\'' + ", repository='"
+                + repository + '\'' + ", timeout=" + timeout + ", size=" + size + ", username='" + username + '\''
+                + '}';
     }
 
     /**
@@ -100,7 +107,7 @@ public class DocumentScrollRequest implements ScrollRequest {
 
         protected final String query;
 
-        protected String type = DEFAULT_TYPE;
+        protected String name;
 
         protected String username;
 
@@ -112,8 +119,6 @@ public class DocumentScrollRequest implements ScrollRequest {
 
         public static final String UNKNOWN = "unknown";
 
-        public static final String DEFAULT_TYPE = "default";
-
         public static final int DEFAULT_SCROLL_SIZE = 50;
 
         public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(120);
@@ -123,15 +128,15 @@ public class DocumentScrollRequest implements ScrollRequest {
         }
 
         /**
-         * A registered type of Scroll.
+         * Uses a registered scroll implementation, {@code null} for default implementation.
          */
-        public Builder type(String type) {
-            this.type = Objects.requireNonNull(type, "Type cannot be null");
+        public Builder name(String name) {
+            this.name = name;
             return this;
         }
 
         /**
-         * Maximum time between {@link Scroll#fetch()} calls.
+         * Maximum duration between iteration on Scroll.
          */
         public Builder timeout(Duration timeout) {
             this.timeout = Objects.requireNonNull(timeout, "Timeout cannot be null");
@@ -139,9 +144,9 @@ public class DocumentScrollRequest implements ScrollRequest {
         }
 
         /**
-         * The number of identifiers per fetch.
+         * The number of item to fetch.
          */
-        public Builder scrollSize(int size) {
+        public Builder size(int size) {
             if (size <= 0) {
                 throw new IllegalArgumentException("size must be > 0");
             }
@@ -165,8 +170,8 @@ public class DocumentScrollRequest implements ScrollRequest {
             return this;
         }
 
-        public String getType() {
-            return type;
+        public String getName() {
+            return name;
         }
 
         public String getQuery() {

@@ -20,9 +20,9 @@ package org.nuxeo.ecm.core.scroll;
 
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.SYSTEM_USERNAME;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.security.auth.login.LoginException;
 
@@ -49,6 +49,8 @@ public class RepositoryScroll implements Scroll {
 
     protected ScrollResult<String> repoScroller;
 
+    protected Boolean hasNextResult;
+
     @Override
     public void init(ScrollRequest request, Map<String, String> options) {
         if (!(request instanceof DocumentScrollRequest)) {
@@ -57,6 +59,7 @@ public class RepositoryScroll implements Scroll {
         this.request = (DocumentScrollRequest) request;
         login();
         openSession();
+        hasNextResult = null;
     }
 
     protected void login() {
@@ -73,7 +76,14 @@ public class RepositoryScroll implements Scroll {
     }
 
     @Override
-    public boolean fetch() {
+    public boolean hasNext() {
+        if (hasNextResult == null) {
+            hasNextResult = fetch();
+        }
+        return hasNextResult;
+    }
+
+    protected boolean fetch() {
         if (repoScroller == null) {
             repoScroller = session.scroll(request.getQuery(), request.getSize(),
                     (int) request.getTimeout().toSeconds());
@@ -84,14 +94,15 @@ public class RepositoryScroll implements Scroll {
     }
 
     @Override
-    public List<String> getIds() {
-        if (repoScroller == null) {
-            throw new IllegalStateException("fetch must be called first");
+    public List<String> next() {
+        if (hasNextResult == null) {
+            hasNextResult = fetch();
         }
-        if (repoScroller.hasResults()) {
-            return repoScroller.getResults();
+        if (!hasNextResult) {
+            throw new NoSuchElementException();
         }
-        return Collections.emptyList();
+        hasNextResult = null;
+        return repoScroller.getResults();
     }
 
     @Override

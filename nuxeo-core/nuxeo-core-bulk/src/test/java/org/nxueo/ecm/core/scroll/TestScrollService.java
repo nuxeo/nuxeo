@@ -22,9 +22,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
@@ -34,6 +37,7 @@ import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
 import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
+import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
 import org.nuxeo.ecm.core.scroll.StaticScrollRequest;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -48,32 +52,84 @@ public class TestScrollService {
     @Test
     public void testScrollService() {
         assertNotNull(service);
-        assertTrue(service.exists("default"));
-        assertTrue(service.exists("static"));
-        assertTrue(service.exists("repository"));
-        assertFalse(service.exists("unknown"));
+        // default implementations
+        assertTrue(service.exists(StaticScrollRequest.builder("").build()));
+        assertTrue(service.exists(DocumentScrollRequest.builder("").build()));
+        // explicit
+        assertTrue(service.exists(DocumentScrollRequest.builder("").name("repository").build()));
+        assertFalse(service.exists(DocumentScrollRequest.builder("").name("unknown").build()));
     }
 
     @Test
     public void testStaticScroll() {
-        String ids = "first,2,3,4,5,6,7,8,9,last";
-        int scrollSize = 4;
-        ScrollRequest request = StaticScrollRequest.builder(ids).scrollSize(scrollSize).build();
-        Scroll scroll = service.scroll(request);
-        assertNotNull(scroll);
-        assertTrue(scroll.fetch());
+        ScrollRequest request = StaticScrollRequest.builder("single").build();
+        try (Scroll scroll = service.scroll(request)) {
+            assertNotNull(scroll);
+            assertTrue(scroll.hasNext());
+            assertEquals(Arrays.asList("single"), scroll.next());
+            assertFalse(scroll.hasNext());
+        }
 
-        assertEquals(scrollSize, scroll.getIds().size());
-        assertEquals(Arrays.asList("first", "2", "3", "4"), scroll.getIds());
+        request = StaticScrollRequest.builder("").build();
+        try (Scroll scroll = service.scroll(request)) {
+            assertNotNull(scroll);
+            assertTrue(scroll.hasNext());
+            assertEquals(Arrays.asList(""), scroll.next());
+            assertFalse(scroll.hasNext());
+        }
+    }
 
-        assertTrue(scroll.fetch());
-        assertEquals(Arrays.asList("5", "6", "7", "8"), scroll.getIds());
+    @Test
+    public void testStaticScrollNormal() {
+        List<String> ids = Arrays.asList("first", "2", "3", "4", "5", "6", "7", "8", "9", "last");
+        int size = 4;
+        ScrollRequest request = StaticScrollRequest.builder(ids).size(size).build();
+        try (Scroll scroll = service.scroll(request)) {
+            assertNotNull(scroll);
 
-        assertTrue(scroll.fetch());
-        assertEquals(Arrays.asList("9", "last"), scroll.getIds());
+            assertTrue(scroll.hasNext());
+            assertEquals(Arrays.asList("first", "2", "3", "4"), scroll.next());
 
-        assertFalse(scroll.fetch());
-        assertEquals(Collections.emptyList(), scroll.getIds());
+            assertTrue(scroll.hasNext());
+            assertEquals(Arrays.asList("5", "6", "7", "8"), scroll.next());
+
+            assertTrue(scroll.hasNext());
+            assertEquals(Arrays.asList("9", "last"), scroll.next());
+
+            assertFalse(scroll.hasNext());
+            try {
+                scroll.next();
+                fail("Exception expected");
+            } catch (NoSuchElementException e) {
+                // expected
+            }
+        }
+    }
+
+    @Test
+    public void testStaticScrollBis() {
+        List<String> ids = Arrays.asList("first", "2", "3", "4", "5", "6", "7", "8", "9", "last");
+        int size = 4;
+        ScrollRequest request = StaticScrollRequest.builder(ids).size(size).build();
+        try (Scroll scroll = service.scroll(request)) {
+            assertNotNull(scroll);
+            assertTrue(scroll.hasNext());
+            assertTrue(scroll.hasNext());
+            assertTrue(scroll.hasNext());
+            assertEquals(Arrays.asList("first", "2", "3", "4"), scroll.next());
+            assertEquals(Arrays.asList("5", "6", "7", "8"), scroll.next());
+            assertTrue(scroll.hasNext());
+            assertTrue(scroll.hasNext());
+            assertEquals(Arrays.asList("9", "last"), scroll.next());
+            assertFalse(scroll.hasNext());
+            assertFalse(scroll.hasNext());
+            try {
+                scroll.next();
+                fail("Exception expected");
+            } catch (NoSuchElementException e) {
+                // expected
+            }
+        }
     }
 
 }

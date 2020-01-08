@@ -120,13 +120,13 @@ public class BulkScrollerComputation extends AbstractComputation {
             long documentCount = 0;
             long bucketNumber = 1;
             try (Scroll scroll = buildScroll(command)) {
-                while (scroll.fetch()) {
+                while (scroll.hasNext()) {
                     if (isAbortedCommand(commandId)) {
                         log.debug("Skipping aborted command: {}", commandId);
                         context.askForCheckpoint();
                         return;
                     }
-                    List<String> docIds = scroll.getIds();
+                    List<String> docIds = scroll.next();
                     documentIds.addAll(docIds);
                     while (documentIds.size() >= bucketSize) {
                         produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
@@ -158,9 +158,9 @@ public class BulkScrollerComputation extends AbstractComputation {
         ScrollRequest request = DocumentScrollRequest.builder(command.getQuery())
                                                      .username(command.getUsername())
                                                      .repository(command.getRepository())
-                                                     .scrollSize(scrollSize)
+                                                     .size(scrollSize)
                                                      .timeout(Duration.ofSeconds(scrollKeepAliveSeconds))
-                                                     .type(command.getScroller())
+                                                     .name(command.getScroller())
                                                      .build();
         ScrollService service = Framework.getService(ScrollService.class);
         return service.scroll(request);

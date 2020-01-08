@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
@@ -60,7 +60,7 @@ public class TestRepositoryScroll {
     @Inject
     public TransactionalFeature txFeature;
 
-    public String getType() {
+    public String getScrollName() {
         return "repository";
     }
 
@@ -73,34 +73,50 @@ public class TestRepositoryScroll {
     public void testNormal() throws Exception {
         String docId = createADocument();
         String nxql = "SELECT * FROM Document";
-        ScrollRequest request = DocumentScrollRequest.builder(nxql).type(getType()).username(USERNAME).build();
+        ScrollRequest request = DocumentScrollRequest.builder(nxql).name(getScrollName()).username(USERNAME).build();
         try (Scroll scroll = service.scroll(request)) {
             assertNotNull(scroll);
-            assertTrue(scroll.toString(), scroll.fetch());
-            assertEquals(Arrays.asList(docId), scroll.getIds());
-
-            assertFalse(scroll.toString(), scroll.fetch());
-            assertEquals(Collections.emptyList(), scroll.getIds());
+            assertTrue(scroll.toString(), scroll.hasNext());
+            assertEquals(Arrays.asList(docId), scroll.next());
+            assertFalse(scroll.toString(), scroll.hasNext());
+            try {
+                scroll.next();
+                fail("Exception expected");
+            } catch (NoSuchElementException e) {
+                // expected
+            }
+        }
+        try (Scroll scroll = service.scroll(request)) {
+            // don't need to call hasNext
+            assertEquals(Arrays.asList(docId), scroll.next());
+            assertFalse(scroll.toString(), scroll.hasNext());
+        }
+        try (Scroll scroll = service.scroll(request)) {
+            // or call it many time
+            assertTrue(scroll.toString(), scroll.hasNext());
+            assertTrue(scroll.toString(), scroll.hasNext());
+            assertTrue(scroll.toString(), scroll.hasNext());
+            assertEquals(Arrays.asList(docId), scroll.next());
+            assertFalse(scroll.toString(), scroll.hasNext());
         }
     }
 
     @Test
     public void testNoResults() {
         String nxql = "SELECT * FROM Document";
-        ScrollRequest request = DocumentScrollRequest.builder(nxql).type(getType()).username(USERNAME).build();
+        ScrollRequest request = DocumentScrollRequest.builder(nxql).name(getScrollName()).username(USERNAME).build();
         try (Scroll scroll = service.scroll(request)) {
             assertNotNull(scroll);
-            assertFalse(scroll.toString(), scroll.fetch());
-            assertEquals(Collections.emptyList(), scroll.getIds());
+            assertFalse(scroll.toString(), scroll.hasNext());
         }
     }
 
     @Test
     public void testInvalidQuery() {
         String nxql = "foo,bar";
-        ScrollRequest request = DocumentScrollRequest.builder(nxql).type(getType()).username(USERNAME).build();
+        ScrollRequest request = DocumentScrollRequest.builder(nxql).name(getScrollName()).username(USERNAME).build();
         try (Scroll scroll = service.scroll(request)) {
-            scroll.fetch();
+            scroll.hasNext();
             fail("Expecting an NXQL parse execption");
         } catch (QueryParseException e) {
             // expected

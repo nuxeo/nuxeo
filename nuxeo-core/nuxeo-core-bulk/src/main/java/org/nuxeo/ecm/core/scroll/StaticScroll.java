@@ -18,12 +18,10 @@
  */
 package org.nuxeo.ecm.core.scroll;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
@@ -37,42 +35,35 @@ import com.google.common.collect.Lists;
  */
 public class StaticScroll implements Scroll {
 
-    protected ScrollRequest request;
+    protected StaticScrollRequest request;
 
     protected List<List<String>> partitions;
 
-    int currentPosition;
+    protected int currentPosition;
 
-    int nextPosition;
+    protected int nextPosition;
 
     @Override
     public void init(ScrollRequest request, Map<String, String> options) {
-        this.request = request;
-        List<String> ids = Arrays.stream(request.getQuery().split(","))
-                                 .map(String::trim)
-                                 .filter(Predicate.not(String::isBlank))
-                                 .collect(Collectors.toList());
-        partitions = Lists.partition(ids, request.getSize());
-        currentPosition = -1;
-        nextPosition = 0;
+        if (!(request instanceof StaticScrollRequest)) {
+            throw new IllegalArgumentException("Requires a StaticScrollRequest");
+        }
+        this.request = (StaticScrollRequest) request;
+        partitions = Lists.partition(this.request.getIdentifiers(), request.getSize());
+        currentPosition = 0;
     }
 
     @Override
-    public boolean fetch() {
-        currentPosition = nextPosition;
-        nextPosition += 1;
+    public boolean hasNext() {
         return currentPosition < partitions.size();
     }
 
     @Override
-    public List<String> getIds() {
+    public List<String> next() {
         if (currentPosition >= partitions.size()) {
-            return Collections.emptyList();
+            throw new NoSuchElementException();
         }
-        if (currentPosition < 0) {
-            throw new IllegalStateException("fetch must be called first");
-        }
-        return partitions.get(currentPosition);
+        return partitions.get(currentPosition++);
     }
 
     @Override
