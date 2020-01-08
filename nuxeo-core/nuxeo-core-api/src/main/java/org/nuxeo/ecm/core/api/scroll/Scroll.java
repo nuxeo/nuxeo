@@ -18,25 +18,21 @@
  */
 package org.nuxeo.ecm.core.api.scroll;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * Execute the scroll on large result set.
+ *
  * @since 11.1
  */
-public interface Scroll extends AutoCloseable {
+public interface Scroll extends Iterator<List<String>>, AutoCloseable {
 
+    /**
+     * Initialization of the iterator.
+     */
     void init(ScrollRequest request, Map<String, String> options);
-
-    /**
-     * Fetch identifiers and returns {@code true} if there are results.
-     */
-    boolean fetch();
-
-    /**
-     * The fetched identifier list.
-     */
-    List<String> getIds();
 
     @Override
     void close();

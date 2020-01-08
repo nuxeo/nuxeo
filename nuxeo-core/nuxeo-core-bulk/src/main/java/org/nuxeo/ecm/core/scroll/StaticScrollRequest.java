@@ -18,42 +18,43 @@
  */
 package org.nuxeo.ecm.core.scroll;
 
-import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
 
 /**
+ * Scroll Request for a static result set.
+ *
  * @since 11.1
  */
 public class StaticScrollRequest implements ScrollRequest {
 
-    public static final String STATIC_TYPE = "static";
+    protected static final String SCROLL_TYPE = "static";
 
-    public static final Duration STATIC_DURATION = Duration.ofDays(1);
-
-    protected final String query;
+    protected static final String SCROLL_NAME = "list";
 
     protected final int size;
 
+    protected final List<String> identifiers;
+
     protected StaticScrollRequest(Builder builder) {
-        this.query = builder.getQuery();
+        this.identifiers = builder.identifiers;
         this.size = builder.getSize();
     }
 
     @Override
     public String getType() {
-        return STATIC_TYPE;
+        return SCROLL_TYPE;
     }
 
     @Override
-    public String getQuery() {
-        return query;
-    }
-
-    @Override
-    public Duration getTimeout() {
-        return STATIC_DURATION;
+    public String getName() {
+        return SCROLL_NAME;
     }
 
     @Override
@@ -61,41 +62,54 @@ public class StaticScrollRequest implements ScrollRequest {
         return size;
     }
 
-    @Override
-    public String toString() {
-        return "StaticScrollRequest{" + "query='" + query + '\'' + ", size=" + size + '}';
+    public List<String> getIdentifiers() {
+        return identifiers;
     }
 
-    /**
-     * Creates a builder using a comma separated list of identifier.
-     */
-    public static Builder builder(String identifiers) {
+    public static Builder builder(String singleIdentifier) {
+        return new Builder(singleIdentifier);
+    }
+
+    public static Builder builder(List<String> identifiers) {
         return new Builder(identifiers);
+    }
+
+    @Override
+    public String toString() {
+        return "StaticScrollRequest{" + "size=" + size + ", identifiers=" + identifiers + '}';
     }
 
     public static class Builder {
 
         public static final int DEFAULT_SCROLL_SIZE = 10;
 
-        protected final String query;
+        protected final List<String> identifiers;
 
         protected int size;
 
-        public Builder(String identifiers) {
-            Objects.requireNonNull(identifiers, "identifiers cannot be null");
-            this.query = identifiers;
+        public Builder(String singleIdentifier) {
+            Objects.requireNonNull(singleIdentifier, "identifier cannot be null");
+            this.identifiers = Collections.singletonList(singleIdentifier);
         }
 
-        public Builder scrollSize(int size) {
+        public Builder(List<String> identifiers) {
+            Objects.requireNonNull(identifiers, "identifiers cannot be null");
+            List<String> ids = identifiers.stream()
+                                          .map(String::trim)
+                                          .filter(StringUtils::isNotBlank)
+                                          .collect(Collectors.toList());
+            if (ids.isEmpty()) {
+                throw new IllegalArgumentException("identifiers cannot be empty");
+            }
+            this.identifiers = Collections.unmodifiableList(ids);
+        }
+
+        public Builder size(int size) {
             if (size <= 0) {
                 throw new IllegalArgumentException("size must be > 0");
             }
             this.size = size;
             return this;
-        }
-
-        public String getQuery() {
-            return query;
         }
 
         public int getSize() {
