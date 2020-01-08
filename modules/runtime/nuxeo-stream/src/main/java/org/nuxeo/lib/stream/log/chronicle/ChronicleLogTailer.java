@@ -61,7 +61,9 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
 
     protected final ExcerptTailer cqTailer;
 
-    protected final ChronicleLogOffsetTracker offsetTracker;
+    protected ChronicleLogOffsetTracker offsetTracker;
+
+    protected final ChronicleRetentionDuration retention;
 
     protected final LogPartitionGroup id;
 
@@ -71,6 +73,8 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
 
     protected volatile boolean closed = false;
 
+    protected boolean initialized;
+
     public ChronicleLogTailer(Codec<M> codec, String basePath, ExcerptTailer cqTailer, LogPartition partition,
                               Name group, ChronicleRetentionDuration retention) {
         Objects.requireNonNull(group);
@@ -78,16 +82,29 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
         this.basePath = basePath;
         this.cqTailer = cqTailer;
         this.partition = partition;
+        this.retention = retention;
         this.id = new LogPartitionGroup(group, partition.name(), partition.partition());
         registerTailer();
-        this.offsetTracker = new ChronicleLogOffsetTracker(basePath, partition.partition(), group, retention);
-        toLastCommitted();
+    }
+
+    protected ChronicleLogOffsetTracker getOffsetTracker() {
+        if (offsetTracker == null) {
+            offsetTracker = new ChronicleLogOffsetTracker(basePath, partition.partition(), group(), retention);
+        }
+        return offsetTracker;
     }
 
     protected void registerTailer() {
         if (!tailersId.add(id)) {
             throw new IllegalArgumentException("A tailer for this queue and namespace already exists: " + id);
         }
+    }
+
+    protected void checkInitialized() {
+        if (initialized) {
+            return;
+        }
+        toLastCommitted();
     }
 
     protected void unregisterTailer() {
@@ -115,6 +132,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
         if (closed) {
             throw new IllegalStateException("The tailer has been closed.");
         }
+        checkInitialized();
         List<M> value = new ArrayList<>(1);
         AtomicLong offset = new AtomicLong();
         if (NO_CODEC.equals(codec)) {
@@ -142,11 +160,12 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
 
     @Override
     public LogOffset commit(LogPartition partition) {
+        checkInitialized();
         if (!this.partition.equals(partition)) {
             throw new IllegalArgumentException("Cannot commit this partition: " + partition + " from " + id);
         }
         long offset = cqTailer.index();
-        offsetTracker.commit(offset);
+        getOffsetTracker().commit(offset);
         if (log.isTraceEnabled()) {
             log.trace(String.format("Commit %s:+%d", id, offset));
         }
@@ -162,6 +181,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     public void toEnd() {
         log.debug(String.format("toEnd: %s", id));
         cqTailer.toEnd();
+        initialized = true;
     }
 
     @Override
@@ -171,11 +191,12 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
         if (!cqTailer.state().equals(TailerState.FOUND_CYCLE)) {
             log.info("Unable to move to start because the tailer is not initialized, " + this);
         }
+        initialized = true;
     }
 
     @Override
     public void toLastCommitted() {
-        long offset = offsetTracker.getLastCommittedOffset();
+        long offset = getOffsetTracker().getLastCommittedOffset();
         if (offset > 0) {
             log.debug(String.format("toLastCommitted: %s, found: %d", id, offset));
             if (!cqTailer.moveToIndex(offset) && cqTailer.index() != offset) {
@@ -197,6 +218,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
             log.debug(String.format("toLastCommitted: %s, not found, move toStart", id));
             cqTailer.toStart();
         }
+        initialized = true;
     }
 
     @Override
@@ -209,6 +231,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
         if (!cqTailer.moveToIndex(offset.offset()) && cqTailer.index() != offset.offset()) {
             throw new IllegalStateException("Unable to seek to offset, " + this + " offset: " + offset);
         }
+        initialized = true;
     }
 
     @Override
@@ -223,6 +246,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
         }
         log.info("Reset offset for partition: " + partition + " from tailer: " + this);
         cqTailer.toStart();
+        initialized = true;
         commit(partition);
     }
 
@@ -245,9 +269,13 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     public void close() {
         if (!closed) {
             log.debug("Closing: " + toString());
-            offsetTracker.close();
+            if (offsetTracker != null) {
+                offsetTracker.close();
+                offsetTracker = null;
+            }
             unregisterTailer();
             closed = true;
+            initialized = false;
         }
     }
 
