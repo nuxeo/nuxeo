@@ -2,6 +2,6 @@
 <component name="org.nuxeo.elasticsearch.scroll.contrib" version="1.0">
   <require>org.nuxeo.ecm.core.scroll.service</require>
   <extension point="scroll" target="org.nuxeo.ecm.core.scroll.service">
-    <scroll name="elastic" class="org.nuxeo.elasticsearch.scroll.ElasticSearchScroll" />
+    <scroll type="document" name="elastic" class="org.nuxeo.elasticsearch.scroll.ElasticSearchScroll" />
   </extension>
 </component>

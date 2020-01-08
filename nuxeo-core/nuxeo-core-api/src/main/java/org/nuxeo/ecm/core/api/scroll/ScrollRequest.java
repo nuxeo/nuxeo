@@ -18,18 +18,25 @@
  */
 package org.nuxeo.ecm.core.api.scroll;
 
-import java.time.Duration;
-
 /**
+ * A Scroll request.
+ *
  * @since 11.1
  */
 public interface ScrollRequest {
 
+    /**
+     * The type of Scroll.
+     */
     String getType();
 
-    String getQuery();
+    /**
+     * The Scroll implementation name. Returns {@code null} for default implementation.
+     */
+    String getName();
 
-    Duration getTimeout();
-
+    /**
+     * The number of items to return per iteration.
+     */
     int getSize();
 }

@@ -41,8 +41,6 @@ public class BulkCommand implements Serializable {
 
     private static final long serialVersionUID = 20181021L;
 
-    public static final String DEFAULT_SCROLLER = "default";
-
     protected String id;
 
     protected String action;
@@ -98,11 +96,7 @@ public class BulkCommand implements Serializable {
     }
 
     public String getScroller() {
-        return scroller == null ? DEFAULT_SCROLLER : scroller;
-    }
-
-    public boolean isDefaultScroller() {
-        return scroller == null || DEFAULT_SCROLLER.equals(scroller);
+        return scroller;
     }
 
     public Map<String, Serializable> getParams() {

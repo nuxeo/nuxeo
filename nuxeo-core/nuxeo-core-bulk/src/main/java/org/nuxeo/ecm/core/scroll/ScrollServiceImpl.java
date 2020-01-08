@@ -33,23 +33,43 @@ import org.nuxeo.ecm.core.api.scroll.ScrollService;
  */
 public class ScrollServiceImpl implements ScrollService {
 
+    protected static final String SEP_KEY = ":";
+
+    protected static final String DEFAULT_NAME = "default";
+
     protected final Map<String, ScrollDescriptor> descriptors;
 
     public ScrollServiceImpl(List<ScrollDescriptor> scrollDescriptors) {
         descriptors = new HashMap<>(scrollDescriptors.size());
-        scrollDescriptors.forEach(descriptor -> descriptors.put(descriptor.getName(), descriptor));
+        scrollDescriptors.forEach(descriptor -> descriptors.put(getKey(descriptor), descriptor));
         scrollDescriptors.stream()
                          .filter(ScrollDescriptor::isDefault)
-                         .forEach(
-                                 descriptor -> descriptors.put(DocumentScrollRequest.Builder.DEFAULT_TYPE, descriptor));
+                         .forEach(descriptor -> descriptors.put(getDefaultKey(descriptor), descriptor));
+    }
+
+    protected String getKey(ScrollDescriptor descriptor) {
+        return getKey(descriptor.getType(), descriptor.getName());
+    }
+
+    protected String getDefaultKey(ScrollDescriptor descriptor) {
+        return getKey(descriptor.getType(), DEFAULT_NAME);
+    }
+
+    protected String getKey(ScrollRequest request) {
+        return getKey(request.getType(), request.getName() == null ? DEFAULT_NAME : request.getName());
+    }
+
+    protected String getKey(String type, String name) {
+        return type + SEP_KEY + name;
     }
 
     @Override
     public Scroll scroll(ScrollRequest request) {
         Objects.requireNonNull(request);
-        ScrollDescriptor descriptor = descriptors.get(request.getType());
+        ScrollDescriptor descriptor = descriptors.get(getKey(request));
         if (descriptor == null) {
-            throw new IllegalArgumentException("Unknown scroll type for request: " + request);
+            throw new IllegalArgumentException(
+                    "Unknown Scroll " + getKey(request) + " implementation for request: " + request);
         }
         Scroll scroll = descriptor.newScrollInstance();
         scroll.init(request, descriptor.getOptions());
@@ -57,7 +77,10 @@ public class ScrollServiceImpl implements ScrollService {
     }
 
     @Override
-    public boolean exists(String scrollName) {
-        return descriptors.containsKey(scrollName);
+    public boolean exists(ScrollRequest request) {
+        if (request == null) {
+            return false;
+        }
+        return descriptors.containsKey(getKey(request));
     }
 }

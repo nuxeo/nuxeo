@@ -255,7 +255,7 @@ public class TestBulkProcessor {
         // use the default scroller, everything ok
         String nxql = "SELECT * FROM Document";
         String commandId = service.submit(
-                new BulkCommand.Builder("setProperties", nxql, "user").scroller("default").build());
+                new BulkCommand.Builder("setProperties", nxql, "user").build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         BulkStatus status = service.getStatus(commandId);
         assertEquals(COMPLETED, status.getState());
@@ -270,15 +270,6 @@ public class TestBulkProcessor {
         status = service.getStatus(commandId);
         assertEquals(COMPLETED, status.getState());
         assertEquals(0, status.getTotal());
-        assertFalse(status.hasError());
-
-        // use a static scroller, everything ok
-        nxql = "unexiting-doc-id1, unexisting-doc-id2";
-        commandId = service.submit(new BulkCommand.Builder("setProperties", nxql, "user").scroller("static").build());
-        assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
-        status = service.getStatus(commandId);
-        assertEquals(COMPLETED, status.getState());
-        assertEquals(2, status.getTotal());
         assertFalse(status.hasError());
 
         // use an unknown scroller, error expected
