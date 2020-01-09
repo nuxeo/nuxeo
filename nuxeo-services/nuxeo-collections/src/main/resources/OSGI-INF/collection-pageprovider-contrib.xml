@@ -8,12 +8,10 @@
       <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="false" escapeParameters="true">
         SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */
-        dc:title ILIKE '?%' AND ecm:mixinType = 'Collection' AND
-        (ecm:primaryType != 'Favorites' OR (ecm:primaryType = 'Favorites' AND dc:creator = '?')) AND
+        dc:title ILIKE '?%' AND ecm:mixinType = 'Collection' AND ecm:primaryType != 'Favorites' AND
         ecm:isProxy = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isVersion = 0 AND ecm:isTrashed = 0
       </pattern>
-      <parameter>#{currentUser.name}</parameter>
       <sort column="dc:title" ascending="true" />
       <pageSize>50</pageSize>
     </coreQueryPageProvider>

@@ -65,4 +65,6 @@ public class Constants {
 
     public static final String TOPIC_TYPE = "Thread";
 
+    public static final String COLLECTION_TYPE = "Collection";
+
 }

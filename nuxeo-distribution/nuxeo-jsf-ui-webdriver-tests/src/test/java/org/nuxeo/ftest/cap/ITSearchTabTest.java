@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_FILE_TITLE;
 import static org.nuxeo.ftest.cap.TestConstants.TEST_WORKSPACE_PATH;
+import static org.nuxeo.functionaltests.Constants.COLLECTION_TYPE;
 import static org.nuxeo.functionaltests.Constants.FILE_TYPE;
 import static org.nuxeo.functionaltests.Constants.NXDOC_URL_FORMAT;
 import static org.nuxeo.functionaltests.Constants.WORKSPACES_PATH;
@@ -74,8 +75,6 @@ public class ITSearchTabTest extends AbstractTest {
 
     private static final String SEARCH_PATH = "/Domain/Workspaces/" + WORKSPACE1_TITLE;
 
-    private static final String MY_FAVORITES_COLLECTION = "My Favorites";
-
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
     public final static String[] FULL_PATH_SUBJECTS = { "Art/Comics", "Society/Religion", "Society/Education" };
@@ -97,6 +96,8 @@ public class ITSearchTabTest extends AbstractTest {
         String wsId = RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE1_TITLE);
         RestHelper.createDocument(WORKSPACES_PATH, WORKSPACE_TYPE, WORKSPACE2_TITLE);
         RestHelper.addPermission(wsId, TEST_USERNAME, "Everything");
+
+        RestHelper.createDocument(WORKSPACES_PATH + WORKSPACE1_TITLE + "/", COLLECTION_TYPE, "Test Collection");
 
         loginAsTestUser();
         open(String.format(NXDOC_URL_FORMAT, wsId));
@@ -210,7 +211,7 @@ public class ITSearchTabTest extends AbstractTest {
         searchLayoutSubPage.selectPath(SEARCH_PATH);
         searchPage = searchLayoutSubPage.filter();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
-        assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
+        assertEquals(2, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
         searchLayoutSubPage = searchPage.getDefaultSearch();
         searchLayoutSubPage.deselectPath(SEARCH_PATH);
         searchPage = searchLayoutSubPage.filter();
@@ -220,14 +221,14 @@ public class ITSearchTabTest extends AbstractTest {
         // Test Collections Widget
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         searchLayoutSubPage = searchPage.getDefaultSearch();
-        searchLayoutSubPage.selectCollections(new String[] { MY_FAVORITES_COLLECTION });
+        searchLayoutSubPage.selectCollections(new String[] { "Test Collection" });
         searchPage = searchLayoutSubPage.filter();
         searchLayoutSubPage = searchPage.getDefaultSearch();
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(0, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
         List<String> selectedCollections = searchLayoutSubPage.getSelectedCollections();
         assertEquals(1, selectedCollections.size());
-        assertEquals(MY_FAVORITES_COLLECTION, selectedCollections.get(0));
+        assertEquals("Test Collection", selectedCollections.get(0));
 
         // save this search
         String ssTitle = "Test Saved Search " + new Date().getTime();
@@ -339,7 +340,7 @@ public class ITSearchTabTest extends AbstractTest {
         assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
         SearchResultsSubPage resultSubPage1 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
-        assertEquals(3, resultSubPage1.getNumberOfDocumentInCurrentPage());
+        assertEquals(4, resultSubPage1.getNumberOfDocumentInCurrentPage());
         // second saved search
         DefaultSearchSubPage saved2 = searchPage.getSearch(ssTitle2, DefaultSearchSubPage.class);
         assertEquals("foo", saved2.getFullTextElement().getInputValue());
@@ -351,7 +352,7 @@ public class ITSearchTabTest extends AbstractTest {
         assertEquals("ITSearchTabTest", saved1.getFullTextElement().getInputValue());
         resultSubPage1 = searchPage.getSearchResultsSubPage();
         assertEquals(ssTitle1, resultSubPage1.getSearchViewTitle());
-        assertEquals(3, resultSubPage1.getNumberOfDocumentInCurrentPage());
+        assertEquals(4, resultSubPage1.getNumberOfDocumentInCurrentPage());
 
         deleteSavedSearches(asPage(SearchPage.class));
         logout();
