@@ -91,10 +91,6 @@ public class ITCollectionsTest extends AbstractTest {
 
     public static final String MY_COLLECTIONS_EN_LABEL = "My Collections";
 
-    public static final String MY_FAVORITES_FR_LABEL = "Mes favoris";
-
-    public static final String MY_FAVORITES_EN_LABEL = "My Favorites";
-
     @Before
     public void before() {
         RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
@@ -194,8 +190,6 @@ public class ITCollectionsTest extends AbstractTest {
         boolean isEnglish = MY_COLLECTIONS_EN_LABEL.equals(myCollectionsDocName);
 
         assertTrue(isEnglish || isFrench);
-        final String myFavoritesDocName = personalWorkspaceRootDocs.get(1).findElement(By.xpath("td[3]")).getText();
-        assertEquals(isEnglish ? MY_FAVORITES_EN_LABEL : MY_FAVORITES_FR_LABEL, myFavoritesDocName);
 
         contentTabSubPage.switchToDocumentBase();
 
