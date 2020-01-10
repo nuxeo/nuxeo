@@ -26,11 +26,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -126,9 +128,19 @@ public class TestDownloadService {
     }
 
     protected void doTestBasicDownload(boolean head, String filename, String filenameInHeader) throws Exception {
+        // regular download
+        doTestBasicDownload(head, filename, filenameInHeader, false);
+        // download with empty=true in Content-Type
+        doTestBasicDownload(head, filename, filenameInHeader, true);
+    }
+
+    protected void doTestBasicDownload(boolean head, String filename, String filenameInHeader, boolean empty) throws Exception {
         // blob to download
         String blobValue = "Hello World Caf\u00e9";
         String mimeType = "text/plain";
+        if (empty) {
+            mimeType += "; empty=true";
+        }
         String encoding = "ISO-8859-1";
         String digest = "12345";
         Blob blob = Blobs.createBlob(blobValue, mimeType, encoding);
@@ -159,7 +171,11 @@ public class TestDownloadService {
         downloadService.downloadBlob(context);
 
         // assert headers (mockito wants us to assert all header in same order they were set)
-        verify(response).setHeader(eq("ETag"), eq('"' + digest + '"'));
+        if (empty) {
+            verify(response, never()).setHeader(eq("ETag"), any());
+        } else {
+            verify(response).setHeader(eq("ETag"), eq('"' + digest + '"'));
+        }
         verify(response).setHeader(eq("Content-Disposition"), eq("attachment; " + filenameInHeader));
         verify(response).setHeader(eq("Accept-Ranges"), eq("bytes"));
         // assert others interactions
