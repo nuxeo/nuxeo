@@ -576,6 +576,10 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         }
 
         try {
+            String contentType = blob.getMimeType();
+            // empty is true for an unavailable lazy rendition
+            boolean empty = contentType != null && contentType.contains("empty=true");
+
             long length = blob.getLength();
             ByteRange byteRange = getByteRange(request, length);
 
@@ -625,30 +629,32 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
 
             // If-None-Match / ETag
-            String etag = '"' + digest + '"'; // with quotes per RFC7232 2.3
-            response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
-            String ifNoneMatch = request.getHeader("If-None-Match");
-            if (ifNoneMatch != null) {
-                boolean match = false;
-                if (ifNoneMatch.equals("*")) {
-                    match = true;
-                } else {
-                    for (String previousEtag : StringUtils.split(ifNoneMatch, ", ")) {
-                        if (previousEtag.equals(etag)) {
-                            match = true;
-                            break;
+            if (!empty) {
+                String etag = '"' + digest + '"'; // with quotes per RFC7232 2.3
+                response.setHeader("ETag", etag); // re-send even on SC_NOT_MODIFIED
+                String ifNoneMatch = request.getHeader("If-None-Match");
+                if (ifNoneMatch != null) {
+                    boolean match = false;
+                    if (ifNoneMatch.equals("*")) {
+                        match = true;
+                    } else {
+                        for (String previousEtag : StringUtils.split(ifNoneMatch, ", ")) {
+                            if (previousEtag.equals(etag)) {
+                                match = true;
+                                break;
+                            }
                         }
                     }
-                }
-                if (match) {
-                    String method = request.getMethod();
-                    if (method.equals("GET") || method.equals("HEAD")) {
-                        response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-                    } else {
-                        // per RFC7232 3.2
-                        response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+                    if (match) {
+                        String method = request.getMethod();
+                        if (method.equals("GET") || method.equals("HEAD")) {
+                            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+                        } else {
+                            // per RFC7232 3.2
+                            response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED);
+                        }
+                        return;
                     }
-                    return;
                 }
             }
 
@@ -659,7 +665,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
             String contentDisposition = DownloadHelper.getRFC2231ContentDisposition(request, filename, inline);
             response.setHeader("Content-Disposition", contentDisposition);
-            response.setContentType(blob.getMimeType());
+            response.setContentType(contentType);
             if (StringUtils.isNotBlank(blob.getEncoding())) {
                 try {
                     response.setCharacterEncoding(blob.getEncoding());
