@@ -293,8 +293,8 @@ public class ActionTagHandler extends MetaTagHandler {
                 String reRender = (String) props.get("ajaxReRender");
                 if (!StringUtils.isEmpty(reRender)) {
                     ExpressionFactory eFactory = ctx.getExpressionFactory();
-                    ValueExpression ve = eFactory.createValueExpression(
-                            "#{nxu:joinRender(ajaxReRender, " + reRender + ")}", String.class);
+                    ValueExpression ve = eFactory.createValueExpression(ctx,
+                            "#{nxu:joinRender(ajaxReRender, '" + reRender + "')}", String.class);
                     vm.setVariable("ajaxReRender", ve);
                 }
 
