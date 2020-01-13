@@ -25,7 +25,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RepositoryLightElasticSearchFeature.class })
+@Features(RepositoryLightElasticSearchFeature.class)
 public class TestElasticSearchScroll extends TestRepositoryScroll {
 
     @Override
