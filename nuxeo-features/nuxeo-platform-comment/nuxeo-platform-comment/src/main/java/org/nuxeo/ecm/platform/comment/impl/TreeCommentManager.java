@@ -172,7 +172,7 @@ public class TreeCommentManager extends AbstractCommentManager {
 
             manageRelatedTextOfTopLevelDocument(session, createdComment);
 
-            notifyEvent(session, CommentEvents.COMMENT_ADDED, documentModel, commentDocModel);
+            notifyEvent(session, CommentEvents.COMMENT_ADDED, commentDocModel);
 
             return createdComment;
         });
@@ -201,7 +201,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             manageRelatedTextOfTopLevelDocument(session, Comments.newComment(commentModelToCreate));
 
             commentModelToCreate.detach(true);
-            notifyEvent(session, CommentEvents.COMMENT_ADDED, documentModel, commentModelToCreate);
+            notifyEvent(session, CommentEvents.COMMENT_ADDED, commentModelToCreate);
             return commentModelToCreate;
         });
     }
@@ -332,7 +332,7 @@ public class TreeCommentManager extends AbstractCommentManager {
     /**
      * Gets or creates the 'Comments' folder, this folder will be under the document being commented and it contains the
      * whole comments of the first document that we comment.
-     * 
+     *
      * @param session the core session
      * @param documentModel the document model to comment, it's can be the first document of the hierarchy or any
      *            comment that being replied

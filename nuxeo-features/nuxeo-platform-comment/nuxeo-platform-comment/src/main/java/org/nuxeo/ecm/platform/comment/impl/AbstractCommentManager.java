@@ -114,10 +114,14 @@ public abstract class AbstractCommentManager implements CommentManager {
                 }
             }
         }
+        DocumentRef topLevelDocRef = getTopLevelCommentAncestor(session, commentedDoc.getRef());
+        DocumentModel topLevelDocument = session.getDocument(topLevelDocRef);
         DocumentEventContext ctx = new DocumentEventContext(session, principal, commentedDoc);
         Map<String, Serializable> props = new HashMap<>();
+        props.put(CommentConstants.TOP_LEVEL_DOCUMENT, topLevelDocument);
         props.put(CommentConstants.PARENT_COMMENT, commentedDoc);
         props.put(CommentConstants.COMMENT_DOCUMENT, comment);
+
         props.put(CommentConstants.COMMENT, (String) comment.getProperty("comment", "text"));
         // Keep comment_text for compatibility
         props.put(CommentConstants.COMMENT_TEXT, (String) comment.getProperty("comment", "text"));

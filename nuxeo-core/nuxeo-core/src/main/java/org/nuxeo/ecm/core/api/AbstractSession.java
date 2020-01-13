@@ -304,7 +304,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected Document resolveReference(DocumentRef docRef) {
         if (docRef == null) {
-            throw new IllegalArgumentException("null docRref");
+            throw new IllegalArgumentException(NULL_DOC_REF);
         }
         Object ref = docRef.reference();
         if (ref == null) {
@@ -1041,7 +1041,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public List<DocumentModel> getParentDocuments(final DocumentRef docRef) {
 
         if (null == docRef) {
-            throw new IllegalArgumentException("null docRef");
+            throw new IllegalArgumentException(NULL_DOC_REF);
         }
 
         final List<DocumentModel> docsList = new ArrayList<>();

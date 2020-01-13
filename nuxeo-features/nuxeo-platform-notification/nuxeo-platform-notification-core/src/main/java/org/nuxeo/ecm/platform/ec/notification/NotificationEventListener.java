@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.platform.ec.notification;
 
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.TOP_LEVEL_DOCUMENT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -237,9 +239,9 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         log.debug("Producing notification message.");
 
         Map<String, Serializable> eventInfo = ctx.getProperties();
-        DocumentModel doc = ctx.getSourceDocument();
+        DocumentModel doc = (DocumentModel) ctx.getProperty(TOP_LEVEL_DOCUMENT);
         String author = ctx.getPrincipal().getName();
-        Calendar created = (Calendar) ctx.getSourceDocument().getPropertyValue("dc:created");
+        Calendar created = (Calendar) doc.getPropertyValue("dc:created");
 
         // Get notification document codec
         DocumentViewCodecManager codecService = Framework.getService(DocumentViewCodecManager.class);

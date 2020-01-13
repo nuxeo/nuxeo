@@ -134,6 +134,44 @@ public abstract class AbstractTestCommentNotification {
         }, COMMENT_REMOVED, DOCUMENT_REMOVED);
     }
 
+    @Test
+    public void shouldNotifyWithTheRightCommentedDocument() {
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED, DOCUMENT_CREATED)) {
+            Comment createdComment = createCommentAndAddSubscription("CommentAdded", "Creation");
+            DocumentModel commentDocumentModel = session.getDocument(new IdRef(createdComment.getId()));
+            transactionalFeature.nextTransaction();
+
+            assertTrue(listener.hasBeenFired(COMMENT_ADDED));
+            assertTrue(listener.hasBeenFired(DOCUMENT_CREATED));
+
+            List<Event> handledEvents = listener.streamCapturedEvents()
+                                                .filter(e -> COMMENT_ADDED.equals(e.getName()))
+                                                .collect(Collectors.toList());
+
+            assertEquals(1, handledEvents.size());
+
+            checkDocumentEventContext(handledEvents.get(0), commentDocumentModel, commentedDocumentModel,
+                    commentedDocumentModel);
+            checkReceivedMail(emailsResult.getMails(), commentDocumentModel, commentedDocumentModel,
+                    handledEvents.get(0), COMMENT_ADDED);
+
+
+            Comment reply = createComment(commentDocumentModel);
+            DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
+            transactionalFeature.nextTransaction();
+
+            handledEvents = listener.streamCapturedEvents()
+                    .filter(e -> COMMENT_ADDED.equals(e.getName()))
+                    .collect(Collectors.toList());
+            assertEquals(2, handledEvents.size());
+
+            checkDocumentEventContext(handledEvents.get(1), replyDocumentModel, commentDocumentModel,
+                    commentedDocumentModel);
+            checkReceivedMail(emailsResult.getMails(), replyDocumentModel, commentedDocumentModel,
+                    handledEvents.get(1), COMMENT_ADDED);
+        }
+    }
+
     protected void captureAndVerifyCommentEventNotification(Supplier<DocumentModel> supplier, String commentEventType,
             String documentEventType) {
         try (CapturingEventListener listener = new CapturingEventListener(commentEventType, documentEventType)) {
@@ -149,7 +187,8 @@ public abstract class AbstractTestCommentNotification {
 
             assertEquals(1, handledEvents.size());
 
-            checkDocumentEventContext(handledEvents.get(0), commentDocumentModel, commentedDocumentModel);
+            checkDocumentEventContext(handledEvents.get(0), commentDocumentModel, commentedDocumentModel,
+                    commentedDocumentModel);
             checkReceivedMail(emailsResult.getMails(), commentDocumentModel, commentedDocumentModel,
                     handledEvents.get(0), commentEventType);
         }
@@ -167,10 +206,14 @@ public abstract class AbstractTestCommentNotification {
             notificationService.addSubscription(subscriber, notif, commentedDocumentModel, false, principal, notif);
         }
 
+        return createComment(commentedDocumentModel);
+    }
+
+    protected Comment createComment(DocumentModel commentedDocModel) {
         Comment comment = new CommentImpl();
         comment.setAuthor("Administrator");
         comment.setText("any Comment message");
-        comment.setParentId(commentedDocumentModel.getId());
+        comment.setParentId(commentedDocModel.getId());
 
         return commentManager.createComment(session, comment);
     }

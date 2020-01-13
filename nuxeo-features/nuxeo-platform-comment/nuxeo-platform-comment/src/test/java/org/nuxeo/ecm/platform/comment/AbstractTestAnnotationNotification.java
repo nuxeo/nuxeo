@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
+import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
@@ -153,9 +154,49 @@ public abstract class AbstractTestAnnotationNotification {
             assertEquals(1, handledEvents.size());
             Event expectedEvent = handledEvents.get(0);
             assertEquals(annotationEventType, expectedEvent.getName());
-            checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotatedDocumentModel);
+
+            checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotatedDocumentModel,
+                    annotatedDocumentModel);
             checkReceivedMail(emailsResult.getMails(), annotationDocumentModel, annotatedDocumentModel,
                     handledEvents.get(0), annotationEventType);
+        }
+    }
+
+    @Test
+    public void shouldNotifyWithTheRightAnnotatedDocument() {
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED, DOCUMENT_CREATED)) {
+            Comment createdAnnotation = createAnnotationAndAddSubscription("CommentAdded", "Creation");
+            DocumentModel annotationDocumentModel = session.getDocument(new IdRef(createdAnnotation.getId()));
+            transactionalFeature.nextTransaction();
+
+            assertTrue(listener.hasBeenFired(COMMENT_ADDED));
+            assertTrue(listener.hasBeenFired(DOCUMENT_CREATED));
+
+            List<Event> handledEvents = listener.streamCapturedEvents()
+                                                .filter(e -> COMMENT_ADDED.equals(e.getName()))
+                                                .collect(Collectors.toList());
+
+            assertEquals(1, handledEvents.size());
+
+            checkDocumentEventContext(handledEvents.get(0), annotationDocumentModel, annotatedDocumentModel,
+                    annotatedDocumentModel);
+            checkReceivedMail(emailsResult.getMails(), annotationDocumentModel, annotatedDocumentModel,
+                    handledEvents.get(0), COMMENT_ADDED);
+
+
+            Comment reply = createAnnotation(annotationDocumentModel);
+            DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
+            transactionalFeature.nextTransaction();
+
+            handledEvents = listener.streamCapturedEvents()
+                    .filter(e -> COMMENT_ADDED.equals(e.getName()))
+                    .collect(Collectors.toList());
+            assertEquals(2, handledEvents.size());
+
+            checkDocumentEventContext(handledEvents.get(1), replyDocumentModel, annotationDocumentModel,
+                    annotatedDocumentModel);
+            checkReceivedMail(emailsResult.getMails(), replyDocumentModel, annotatedDocumentModel,
+                    handledEvents.get(1), COMMENT_ADDED);
         }
     }
 
@@ -166,10 +207,14 @@ public abstract class AbstractTestAnnotationNotification {
             notificationService.addSubscription(subscriber, notif, annotatedDocumentModel, false, principal, notif);
         }
 
+        return createAnnotation(annotatedDocumentModel);
+    }
+
+    protected Annotation createAnnotation(DocumentModel annotatedDocModel) {
         Annotation annotation = new AnnotationImpl();
         annotation.setAuthor(session.getPrincipal().getName());
         annotation.setText("Any annotation message");
-        annotation.setParentId(annotatedDocumentModel.getId());
+        annotation.setParentId(annotatedDocModel.getId());
         annotation.setXpath("files:files/0/file");
         annotation.setCreationDate(Instant.now());
         annotation.setModificationDate(Instant.now());

@@ -136,6 +136,11 @@ public interface CoreSession {
     String USER_CHANGE = "userChange";
 
     /**
+     * @since 11.1
+     */
+    String NULL_DOC_REF = "null docRef";
+
+    /**
      * Closes this session.
      *
      * @since 5.9.3

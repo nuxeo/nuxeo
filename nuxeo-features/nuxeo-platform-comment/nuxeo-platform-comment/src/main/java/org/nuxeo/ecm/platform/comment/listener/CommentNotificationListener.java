@@ -16,11 +16,15 @@
  */
 package org.nuxeo.ecm.platform.comment.listener;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.comment.api.AnnotationConstants;
+import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 import org.nuxeo.runtime.api.Framework;
@@ -37,12 +41,23 @@ public class CommentNotificationListener implements NotificationListenerHook {
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         if (docCtx.getSourceDocument().getType().equals("Post")
+                || docCtx.getSourceDocument().getType().equals(AnnotationConstants.ANNOTATION_DOC_TYPE)
                 || docCtx.getSourceDocument().getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
             CommentManager commentManager = Framework.getService(CommentManager.class);
-            DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
-            if (thread != null) {
-                Object[] args = { thread, null };
-                docCtx.setArgs(args);
+            try {
+                DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
+                if (thread != null) {
+                    Object[] args = { thread, null };
+                    docCtx.setArgs(args);
+                }
+            } catch (IllegalArgumentException e) {
+                // CommentManagerImpl#getTopLevelCommentAncestor has been called and returned a null reference
+                if (e.getMessage().equals(CoreSession.NULL_DOC_REF) && commentManager instanceof CommentManagerImpl) {
+                    Object[] args = { docCtx.getProperty(CommentConstants.TOP_LEVEL_DOCUMENT) };
+                    docCtx.setArgs(args);
+                } else {
+                    throw e;
+                }
             }
         }
     }
