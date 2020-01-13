@@ -95,6 +95,7 @@ public class BulkCommand implements Serializable {
         return action;
     }
 
+    // @since 11.1
     public String getScroller() {
         return scroller;
     }
@@ -147,6 +148,7 @@ public class BulkCommand implements Serializable {
         this.repository = repository;
     }
 
+    // @since 11.1
     public void setScroller(String scrollerName) {
         this.scroller = scrollerName;
     }
@@ -284,7 +286,9 @@ public class BulkCommand implements Serializable {
         }
 
         /**
-         * Set scroller name used to materialized the document set
+         * Choose a scroller implementation used to materialized the document set.
+         *
+         * @since 11.1
          */
         public Builder scroller(String scrollerName) {
             this.scroller = scrollerName;

@@ -48,7 +48,6 @@ public class DocumentScrollRequest implements ScrollRequest {
 
     protected final String username;
 
-
     protected DocumentScrollRequest(Builder builder) {
         this.name = builder.getName();
         this.query = builder.getQuery();

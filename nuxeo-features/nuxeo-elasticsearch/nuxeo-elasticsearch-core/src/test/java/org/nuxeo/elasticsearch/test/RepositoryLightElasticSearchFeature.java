@@ -40,7 +40,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * @since 11.1
  */
-@Features({ CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy("org.nuxeo.elasticsearch.core")
 @Deploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)

@@ -131,7 +131,6 @@ public class TestRepositoryScroll {
         acp.getOrCreateACL().add(new ACE("Administrator", "Everything", true));
         acp.getOrCreateACL().add(new ACE(USERNAME, "Read", true));
         doc.setACP(acp, false);
-        session.save();
         txFeature.nextTransaction();
         return doc.getId();
     }
