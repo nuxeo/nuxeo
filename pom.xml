@@ -6421,7 +6421,7 @@
             <plugin>
               <groupId>org.sonatype.plugins</groupId>
               <artifactId>nxrm3-maven-plugin</artifactId>
-              <version>1.0.3-NX2</version>
+              <version>1.0.3</version>
               <extensions>true</extensions>
             </plugin>
           </plugins>
