@@ -35,12 +35,13 @@ import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.mongodb.MongoDBSerializationHelper;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
+import com.mongodb.ErrorCategory;
 import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 
 import java.util.ArrayList;
@@ -74,12 +75,20 @@ public class MongoDBUIDSequencer extends AbstractUIDSequencer {
 
     @Override
     public void initSequence(String key, long id) {
+        Bson filter = and(eq(MongoDBSerializationHelper.MONGODB_ID, key), not(gte(SEQUENCE_VALUE_FIELD, id)));
+        Document sequence = new Document();
+        sequence.put(MongoDBSerializationHelper.MONGODB_ID, key);
+        sequence.put(SEQUENCE_VALUE_FIELD, id);
         try {
-            Bson filter = and(eq(MongoDBSerializationHelper.MONGODB_ID, key), not(gte(SEQUENCE_VALUE_FIELD, id)));
-            Document sequence = new Document();
-            sequence.put(MongoDBSerializationHelper.MONGODB_ID, key);
-            sequence.put(SEQUENCE_VALUE_FIELD, id);
-            getSequencerCollection().replaceOne(filter, sequence, new UpdateOptions().upsert(true));
+            try {
+                getSequencerCollection().replaceOne(filter, sequence, new ReplaceOptions().upsert(true));
+            } catch (MongoWriteException e) {
+                if (ErrorCategory.fromErrorCode(e.getCode()) != ErrorCategory.DUPLICATE_KEY) {
+                    throw e;
+                }
+                // retry once, as not all server versions do server-side retries on upsert
+                getSequencerCollection().replaceOne(filter, sequence, new ReplaceOptions().upsert(true));
+            }
         } catch (MongoWriteException e) {
             throw new NuxeoException("Failed to update the sequence '" + key + "' with value " + id, e);
         }
