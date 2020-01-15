@@ -610,7 +610,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             addCacheControlHeaders(request, response);
 
             // If-Modified-Since / Last-Modified
-            if (lastModified != null) {
+            if (!empty && lastModified != null) {
                 long lastModifiedMillis = lastModified.getTimeInMillis();
                 response.setDateHeader("Last-Modified", lastModifiedMillis);
                 long ifModifiedSince;
