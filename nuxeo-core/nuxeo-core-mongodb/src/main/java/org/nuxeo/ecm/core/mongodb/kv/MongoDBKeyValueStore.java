@@ -57,8 +57,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
@@ -347,7 +347,15 @@ public class MongoDBKeyValueStore extends AbstractKeyValueStoreProvider {
             if (log.isTraceEnabled()) {
                 log.trace("MongoDB: PUT " + key + " = " + value + (ttl == 0 ? "" : " (TTL " + ttl + ")"));
             }
-            coll.replaceOne(filter, doc, new UpdateOptions().upsert(true));
+            try {
+                coll.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+            } catch (MongoWriteException e) {
+                if (ErrorCategory.fromErrorCode(e.getCode()) != ErrorCategory.DUPLICATE_KEY) {
+                    throw e;
+                }
+                // retry once, as not all server versions do server-side retries on upsert
+                coll.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+            }
         }
     }
 
