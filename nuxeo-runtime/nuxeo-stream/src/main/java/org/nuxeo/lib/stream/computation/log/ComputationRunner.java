@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.nuxeo.lib.stream.computation.Computation;
 import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.ComputationPolicy;
@@ -235,12 +236,17 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected void processLoop() throws InterruptedException {
         boolean timerActivity;
         while (continueLoop()) {
-            timerActivity = processTimer();
-            recordActivity = processRecord();
-            counter++;
-            if (!timerActivity && !recordActivity) {
-                // no activity take a break
-                Thread.sleep(INACTIVITY_BREAK_MS);
+            try {
+                timerActivity = processTimer();
+                recordActivity = processRecord();
+                counter++;
+                if (!timerActivity && !recordActivity) {
+                    // no activity take a break
+                    Thread.sleep(INACTIVITY_BREAK_MS);
+                }
+            } catch(CommitFailedException cfe) {
+                log.error(cfe.getMessage(), cfe);
+                onPartitionsAssigned(null);
             }
         }
     }
