@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
@@ -47,9 +48,12 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,6 +150,7 @@ public class TestDownloadService {
         Blob blob = Blobs.createBlob(blobValue, mimeType, encoding);
         blob.setFilename(filename);
         blob.setDigest(digest);
+        Calendar lastModified = GregorianCalendar.from(ZonedDateTime.parse("2001-02-03T04:05:06Z"));
 
         // prepare mocks
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -167,6 +172,7 @@ public class TestDownloadService {
         // send download request
         DownloadContext context = DownloadContext.builder(request, response)
                                                  .blob(blob)
+                                                 .lastModified(lastModified)
                                                  .build();
         downloadService.downloadBlob(context);
 
@@ -182,6 +188,11 @@ public class TestDownloadService {
         verify(response).setContentType(eq(mimeType));
         verify(response).setCharacterEncoding(encoding);
         verify(response).setContentLengthLong(eq(blob.getLength()));
+        if (empty) {
+            verify(response, never()).setDateHeader(eq("Last-Modified"), anyLong());
+        } else {
+            verify(response).setDateHeader(eq("Last-Modified"), eq(lastModified.getTimeInMillis()));
+        }
         // check that the blob gets returned (except if HEAD)
         assertEquals(head ? "" : blobValue, out.toString(encoding));
     }
