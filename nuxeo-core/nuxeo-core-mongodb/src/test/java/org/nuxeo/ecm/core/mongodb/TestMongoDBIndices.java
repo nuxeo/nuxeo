@@ -23,7 +23,6 @@ import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.runtime.mongodb.MongoDBFeature.DEFAULT_MONGODB_DBNAME;
 
 import javax.inject.Inject;
 
@@ -83,11 +82,10 @@ public class TestMongoDBIndices {
             fail("should throw a ConcurrentUpdateException");
         } catch (ConcurrentUpdateException cue) {
             assertEquals(SC_CONFLICT, cue.getStatusCode());
-            assertTrue(
-                    cue.getMessage()
-                       .contains(String.format(
-                               "E11000 duplicate key error collection: %s.test index: ecm:parentId_1_ecm:name_1 dup key: { : \"%s\", : \"%s\" }",
-                               DEFAULT_MONGODB_DBNAME, folder.getId(), DOCUMENT_NAME)));
+            String message = cue.getMessage();
+            assertTrue(message, message.contains("E11000 duplicate key error collection"));
+            assertTrue(message, message.contains(DOCUMENT_NAME));
+            assertTrue(message, message.contains(folder.getId()));
         }
     }
 
