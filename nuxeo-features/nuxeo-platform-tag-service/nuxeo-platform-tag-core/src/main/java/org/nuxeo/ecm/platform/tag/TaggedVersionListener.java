@@ -58,58 +58,58 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
 
     protected void handleEvent(Event event) {
         EventContext ctx = event.getContext();
-        if (ctx instanceof DocumentEventContext) {
-            String name = event.getName();
-            DocumentEventContext docCtx = (DocumentEventContext) ctx;
-            CoreSession session = docCtx.getCoreSession();
-            DocumentModel doc = docCtx.getSourceDocument();
-            if (doc == null) {
-                return;
+        if (!(ctx instanceof DocumentEventContext)) {
+            return;
+        }
+
+        String name = event.getName();
+        DocumentEventContext docCtx = (DocumentEventContext) ctx;
+        CoreSession session = docCtx.getCoreSession();
+        DocumentModel doc = docCtx.getSourceDocument();
+        if (doc == null) {
+            return;
+        }
+
+        String docId = doc.getId();
+        TagService tagService = Framework.getService(TagService.class);
+        if (doc instanceof DeletedDocumentModel && !tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
+            tagService.removeTags(session, docId);
+            return;
+        }
+
+        switch (name) {
+        case DOCUMENT_PROXY_PUBLISHED:
+            if (doc.isProxy()) {
+                DocumentModel version = session.getSourceDocument(doc.getRef());
+                tagService.copyTags(session, version.getId(), docId);
             }
-            String docId = doc.getId();
-            TagService tagService = Framework.getService(TagService.class);
-            if (doc instanceof DeletedDocumentModel) {
-                if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
-                    tagService.removeTags(session, docId);
-                    return;
-                }
+            break;
+        case DOCUMENT_RESTORED:
+            String versionUUID = (String) ctx.getProperty(VersioningDocument.RESTORED_VERSION_UUID_KEY);
+            if (session.exists(new IdRef(docId))) {
+                tagService.replaceTags(session, versionUUID, docId);
             }
-            switch (name) {
-            case DOCUMENT_PROXY_PUBLISHED:
-                if (doc.isProxy()) {
-                    DocumentModel version = session.getSourceDocument(doc.getRef());
-                    tagService.copyTags(session, version.getId(), docId);
-                }
-                break;
-            case DOCUMENT_RESTORED:
-                String versionUUID = (String) ctx.getProperty(VersioningDocument.RESTORED_VERSION_UUID_KEY);
-                if (session.exists(new IdRef(docId))) {
-                    tagService.replaceTags(session, versionUUID, docId);
-                }
-                break;
-            case DOCUMENT_REMOVED:
-                if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
-                    tagService.removeTags(session, docId);
-                }
-                break;
-            case DOCUMENT_TRASHED:
-            case TRANSITION_EVENT:
+            break;
+        case DOCUMENT_REMOVED:
+            if (!tagService.hasFeature(TAGS_BELONG_TO_DOCUMENT)) {
                 tagService.removeTags(session, docId);
-                break;
-            default:
-                break;
             }
+            break;
+        case DOCUMENT_TRASHED:
+        case TRANSITION_EVENT:
+            tagService.removeTags(session, docId);
+            break;
+        default:
+            break;
         }
     }
 
     @Override
     public boolean acceptEvent(Event event) {
         String name = event.getName();
-        return DOCUMENT_PROXY_PUBLISHED.equals(name)
-                || DOCUMENT_RESTORED.equals(name)
-                || DOCUMENT_REMOVED.equals(name)
+        return DOCUMENT_PROXY_PUBLISHED.equals(name) || DOCUMENT_RESTORED.equals(name) || DOCUMENT_REMOVED.equals(name)
                 || DOCUMENT_TRASHED.equals(name)
-                || (LifeCycleConstants.TRANSITION_EVENT.equals(name) && LifeCycleConstants.DELETED_STATE.equals(event.getContext().getProperty(
-                LifeCycleConstants.TRANSTION_EVENT_OPTION_TO)));
+                || (LifeCycleConstants.TRANSITION_EVENT.equals(name) && LifeCycleConstants.DELETED_STATE.equals(
+                        event.getContext().getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO)));
     }
 }

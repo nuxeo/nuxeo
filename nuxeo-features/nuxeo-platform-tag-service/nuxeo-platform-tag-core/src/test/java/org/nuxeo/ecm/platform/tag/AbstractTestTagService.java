@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.tag;
 
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -41,6 +42,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.awaitility.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
@@ -51,14 +53,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Predicates;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -73,13 +73,11 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.HotDeployer;
 import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ LogCaptureFeature.class, AuditFeature.class, CoreFeature.class })
+@Features({ LogCaptureFeature.class, AuditFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.datasource")
 @Deploy("org.nuxeo.ecm.platform.tag")
@@ -97,9 +95,6 @@ public abstract class AbstractTestTagService {
 
     @Inject
     protected TagService tagService;
-
-    @Inject
-    protected HotDeployer deployer;
 
     @Inject
     protected NXAuditEventsService auditEventsService;
@@ -120,17 +115,17 @@ public abstract class AbstractTestTagService {
 
     // Oracle fails if we do too many connections in a short time, sleep
     // here to prevent this.
-    public void maybeSleep() throws Exception {
+    public void maybeSleep() {
         StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
         if (storageConfiguration.isVCSOracle() || storageConfiguration.isVCSSQLServer()) {
-            Thread.sleep(5 * 1000);
+            await().atLeast(Duration.FIVE_SECONDS);
         }
     }
 
     @Test
-    public void testTags() throws Exception {
+    public void testTags() {
         DocumentModel fold = session.createDocumentModel("/", "fold", "Folder");
-        fold = session.createDocument(fold);
+        session.createDocument(fold);
         DocumentModel file1 = session.createDocumentModel("/", "foo", "File");
         file1.setPropertyValue("dc:title", "File1");
         file1 = session.createDocument(file1);
@@ -183,7 +178,7 @@ public abstract class AbstractTestTagService {
     }
 
     @Test
-    public void testUntagOnTrash() throws Exception {
+    public void testUntagOnTrash() {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
         file = session.createDocument(file);
@@ -396,102 +391,19 @@ public abstract class AbstractTestTagService {
 
     protected DocumentRef checkIn(DocumentRef ref) {
         DocumentRef versionRef = session.checkIn(ref, null, null);
-        TransactionHelper.commitOrRollbackTransaction();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
         return versionRef;
     }
 
     protected DocumentModel publishDocument(DocumentModel doc) {
         DocumentModel proxy = session.publishDocument(doc, session.getRootDocument());
-        TransactionHelper.commitOrRollbackTransaction();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
         return proxy;
     }
 
-    protected DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) {
-        DocumentModel docModel = session.restoreToVersion(docRef, versionRef);
-        TransactionHelper.commitOrRollbackTransaction();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
-        TransactionHelper.startTransaction();
-        return docModel;
-    }
-
-    @Test
-    public void testCloudNormalization() throws Exception {
-        List<Tag> cloud = new ArrayList<>();
-        RelationTagService.normalizeCloud(cloud, 0, 0, true);
-
-        // linear
-        cloud.add(new Tag("a", 3));
-        RelationTagService.normalizeCloud(cloud, 3, 3, true);
-        assertEquals(100, cloud.get(0).getWeight());
-
-        // logarithmic
-        cloud.add(new Tag("a", 3));
-        RelationTagService.normalizeCloud(cloud, 3, 3, false);
-        assertEquals(100, cloud.get(0).getWeight());
-
-        // linear
-        cloud = new ArrayList<>();
-        cloud.add(new Tag("a", 1));
-        cloud.add(new Tag("b", 5));
-        RelationTagService.normalizeCloud(cloud, 1, 5, true);
-        assertEquals(0, cloud.get(0).getWeight());
-        assertEquals(100, cloud.get(1).getWeight());
-
-        // logarithmic
-        cloud = new ArrayList<>();
-        cloud.add(new Tag("a", 1));
-        cloud.add(new Tag("b", 5));
-        RelationTagService.normalizeCloud(cloud, 1, 5, false);
-        assertEquals(0, cloud.get(0).getWeight());
-        assertEquals(100, cloud.get(1).getWeight());
-
-        // linear
-        cloud = new ArrayList<>();
-        cloud.add(new Tag("a", 1));
-        cloud.add(new Tag("b", 2));
-        cloud.add(new Tag("c", 5));
-        RelationTagService.normalizeCloud(cloud, 1, 5, true);
-        assertEquals(0, cloud.get(0).getWeight());
-        assertEquals(25, cloud.get(1).getWeight());
-        assertEquals(100, cloud.get(2).getWeight());
-
-        // logarithmic
-        cloud = new ArrayList<>();
-        cloud.add(new Tag("a", 1));
-        cloud.add(new Tag("b", 2));
-        cloud.add(new Tag("c", 5));
-        RelationTagService.normalizeCloud(cloud, 1, 5, false);
-        assertEquals(0, cloud.get(0).getWeight());
-        assertEquals(43, cloud.get(1).getWeight());
-        assertEquals(100, cloud.get(2).getWeight());
-
-        // linear
-        cloud = new ArrayList<>();
-        cloud.add(new Tag("a", 1));
-        cloud.add(new Tag("b", 2));
-        cloud.add(new Tag("c", 5));
-        cloud.add(new Tag("d", 12));
-        RelationTagService.normalizeCloud(cloud, 1, 12, true);
-        assertEquals(0, cloud.get(0).getWeight());
-        assertEquals(9, cloud.get(1).getWeight());
-        assertEquals(36, cloud.get(2).getWeight());
-        assertEquals(100, cloud.get(3).getWeight());
-
-        // logarithmic
-        cloud = new ArrayList<>();
-        cloud.add(new Tag("a", 1));
-        cloud.add(new Tag("b", 2));
-        cloud.add(new Tag("c", 5));
-        cloud.add(new Tag("d", 12));
-        RelationTagService.normalizeCloud(cloud, 1, 12, false);
-        assertEquals(0, cloud.get(0).getWeight());
-        assertEquals(28, cloud.get(1).getWeight());
-        assertEquals(65, cloud.get(2).getWeight());
-        assertEquals(100, cloud.get(3).getWeight());
+    protected void restoreToVersion(DocumentRef docRef, DocumentRef versionRef) {
+        session.restoreToVersion(docRef, versionRef);
+        txFeature.nextTransaction();
     }
 
     /*
@@ -596,7 +508,7 @@ public abstract class AbstractTestTagService {
     }
 
     @Test
-    public void testSanitize() throws Exception {
+    public void testSanitize() {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File");
         file = session.createDocument(file);
@@ -647,26 +559,26 @@ public abstract class AbstractTestTagService {
     }
 
     @Test
-    public void testQueriesOnTagsWithProxies() throws Exception {
+    public void testQueriesOnTagsWithProxies() {
         proxies = true;
         testQueriesOnTags();
     }
 
     @Test
-    public void testQueriesOnTagsWithoutProxies() throws Exception {
+    public void testQueriesOnTagsWithoutProxies() {
         proxies = false;
         testQueriesOnTags();
     }
 
     @SuppressWarnings("resource") // test
-    protected void testQueriesOnTags() throws Exception {
+    protected void testQueriesOnTags() {
         String nxql;
         DocumentModelList dml;
         IterableQueryResult res;
 
         DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
         file1.setPropertyValue("dc:title", "file1");
-        session.createDocument(file1);
+        file1 = session.createDocument(file1);
         DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
         file2.setPropertyValue("dc:title", "file2");
         session.createDocument(file2);
@@ -677,10 +589,9 @@ public abstract class AbstractTestTagService {
 
         createTags();
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        txFeature.nextTransaction();
 
-        file1 = session.getDocument(new PathRef("/file1"));
+        file1.refresh();
 
         nxql = nxql("SELECT * FROM File WHERE ecm:tag = 'tag0'");
         assertEquals(0, session.query(nxql).size());
@@ -826,21 +737,19 @@ public abstract class AbstractTestTagService {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
         file = session.createDocument(file);
         String fileId = file.getId();
-        DocumentRef fileRef = file.getRef();
         session.save();
         assertEquals("0.0", file.getVersionLabel());
         assertEquals(0, tagService.getTags(session, fileId).size());
 
         // Test tagging
         tagService.tag(session, fileId, "tag1");
-        file = session.getDocument(fileRef);
+        file.refresh();
         assertEquals("0.0", file.getVersionLabel());
         assertEquals(1, tagService.getTags(session, fileId).size());
 
         DocumentModel note = session.createDocumentModel("/", "note", "TestNote");
         note = session.createDocument(note);
         String noteId = note.getId();
-        DocumentRef noteRef = note.getRef();
         session.save();
         assertEquals("0.1", note.getVersionLabel());
         assertEquals(0, tagService.getTags(session, noteId).size());
@@ -848,13 +757,13 @@ public abstract class AbstractTestTagService {
         // Test tagging
         tagService.tag(session, noteId, "tag1");
         tagService.tag(session, noteId, "tag2");
-        note = session.getDocument(noteRef);
+        note.refresh();
         assertEquals("0.1", note.getVersionLabel());
         assertEquals(2, tagService.getTags(session, noteId).size());
 
         // Test untagging
         tagService.untag(session, noteId, "tag2");
-        note = session.getDocument(noteRef);
+        note.refresh();
         assertEquals("0.1", note.getVersionLabel());
         assertEquals(1, tagService.getTags(session, noteId).size());
 
@@ -867,7 +776,7 @@ public abstract class AbstractTestTagService {
         tagService.tag(session, otherId, "othertag3");
 
         tagService.copyTags(session, otherId, noteId);
-        note = session.getDocument(noteRef);
+        note.refresh();
         assertEquals("0.1", note.getVersionLabel());
         assertEquals(4, tagService.getTags(session, noteId).size());
     }
@@ -893,7 +802,7 @@ public abstract class AbstractTestTagService {
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
             // Tag with bob user does not chang the last contributor on the document
             tagService.tag(bobSession, file1Id, "tag");
-            file1 = bobSession.getDocument(file1.getRef());
+            file1.refresh();
             assertEquals("Administrator", file1.getPropertyValue("dc:lastContributor"));
         }
 
