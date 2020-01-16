@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.tag.removal.on.trash.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="nuxeo.tag.removal.on.trash.enabled">false</property>
+  </extension>
+
+</component>
