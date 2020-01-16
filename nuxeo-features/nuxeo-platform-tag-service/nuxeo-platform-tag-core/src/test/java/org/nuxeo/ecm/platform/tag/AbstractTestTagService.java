@@ -185,8 +185,37 @@ public abstract class AbstractTestTagService {
         coreFeature.waitForAsyncCompletion();
 
         // check no more tag
+        file.refresh();
+        assertTrue(file.isTrashed());
         tags = tagService.getTags(session, file1Id);
         assertEquals(Collections.emptySet(), tags);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.tag.tests:test-no-tag-removal-on-trash-contrib.xml")
+    public void testNoTagRemovalOnTrash() {
+        DocumentModel file = session.createDocumentModel("/", "foo", "File");
+        file.setPropertyValue("dc:title", "File1");
+        file = session.createDocument(file);
+        String file1Id = file.getId();
+
+        tagService.tag(session, file1Id, "mytag");
+
+        // check tag present
+        Set<String> tags = tagService.getTags(session, file1Id);
+        assertEquals(Collections.singleton("mytag"), tags);
+
+        // trash doc
+        Framework.getService(TrashService.class).trashDocument(file);
+
+        // wait for async tag removal
+        coreFeature.waitForAsyncCompletion();
+
+        // check tag is still present
+        file.refresh();
+        assertTrue(file.isTrashed());
+        tags = tagService.getTags(session, file1Id);
+        assertEquals(Collections.singleton("mytag"), tags);
     }
 
     @Test

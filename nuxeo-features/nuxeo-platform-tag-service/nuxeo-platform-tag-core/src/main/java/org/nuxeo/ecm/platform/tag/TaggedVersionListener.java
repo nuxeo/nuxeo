@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Listener that copy tags applied on the live document to a version or proxy of this document or replace the existing
@@ -45,6 +46,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 public class TaggedVersionListener implements PostCommitFilteringEventListener {
+
+    protected static final String TAGS_REMOVAL_ON_TRASH_PROP = "nuxeo.tag.removal.on.trash.enabled";
 
     @Override
     public void handleEvent(EventBundle events) {
@@ -91,7 +94,9 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
                 break;
             case DOCUMENT_TRASHED:
             case TRANSITION_EVENT:
-                tagService.removeTags(session, docId);
+                if (Framework.getService(ConfigurationService.class).isBooleanTrue(TAGS_REMOVAL_ON_TRASH_PROP)) {
+                    tagService.removeTags(session, docId);
+                }
                 break;
             default:
                 break;

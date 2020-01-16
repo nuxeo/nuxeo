@@ -6,6 +6,14 @@
       Property that enables sanitization on tags.
     </documentation>
     <property name="nuxeo.tag.sanitization.enabled">true</property>
+
+    <documentation>
+      Property that enables tags removal when trashing a document.
+
+      @since 10.10-HF21
+      @deprecated since 10.10-HF21, introduced only for backward compatibility.
+    </documentation>
+    <property name="nuxeo.tag.removal.on.trash.enabled">true</property>
   </extension>
 
 </component>
