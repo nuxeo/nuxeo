@@ -19,17 +19,16 @@
 
 package org.nuxeo.ecm.platform.tag;
 
-import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_RESTORED;
-import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 import static org.nuxeo.ecm.platform.tag.TagService.Feature.TAGS_BELONG_TO_DOCUMENT;
+
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -46,6 +45,9 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7.3
  */
 public class TaggedVersionListener implements PostCommitFilteringEventListener {
+
+    protected static final Set<String> ACCEPTED_EVENTS = Set.of(DOCUMENT_PROXY_PUBLISHED, DOCUMENT_RESTORED,
+            DOCUMENT_REMOVED);
 
     @Override
     public void handleEvent(EventBundle events) {
@@ -95,10 +97,6 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
                 tagService.removeTags(session, docId);
             }
             break;
-        case DOCUMENT_TRASHED:
-        case TRANSITION_EVENT:
-            tagService.removeTags(session, docId);
-            break;
         default:
             break;
         }
@@ -106,10 +104,6 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
 
     @Override
     public boolean acceptEvent(Event event) {
-        String name = event.getName();
-        return DOCUMENT_PROXY_PUBLISHED.equals(name) || DOCUMENT_RESTORED.equals(name) || DOCUMENT_REMOVED.equals(name)
-                || DOCUMENT_TRASHED.equals(name)
-                || (LifeCycleConstants.TRANSITION_EVENT.equals(name) && LifeCycleConstants.DELETED_STATE.equals(
-                        event.getContext().getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO)));
+        return ACCEPTED_EVENTS.contains(event.getName());
     }
 }
