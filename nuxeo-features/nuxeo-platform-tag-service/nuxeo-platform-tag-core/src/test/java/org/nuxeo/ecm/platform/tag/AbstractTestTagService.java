@@ -178,7 +178,7 @@ public abstract class AbstractTestTagService {
     }
 
     @Test
-    public void testUntagOnTrash() {
+    public void testKeepTagsOnTrash() {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
         file = session.createDocument(file);
@@ -193,12 +193,14 @@ public abstract class AbstractTestTagService {
         // trash doc
         Framework.getService(TrashService.class).trashDocument(file);
 
-        // wait for async tag removal
-        coreFeature.waitForAsyncCompletion();
+        // wait for async tag listener
+        txFeature.nextTransaction();
 
-        // check no more tag
+        // check tag is still present
+        file.refresh();
+        assertTrue(file.isTrashed());
         tags = tagService.getTags(session, file1Id);
-        assertEquals(Collections.emptySet(), tags);
+        assertEquals(Collections.singleton("mytag"), tags);
     }
 
     @Test
