@@ -20,13 +20,18 @@
 
 package org.nuxeo.ecm.platform.tag;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeTrue;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test class for tag service based on SQL relations
@@ -99,5 +104,81 @@ public class TestRelationTagService extends AbstractTestTagService {
             TransactionHelper.startTransaction();
         }
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
+    }
+
+    @Test
+    public void testCloudNormalization() {
+        List<Tag> cloud = new ArrayList<>();
+        RelationTagService.normalizeCloud(cloud, 0, 0, true);
+
+        // linear
+        cloud.add(new Tag("a", 3));
+        RelationTagService.normalizeCloud(cloud, 3, 3, true);
+        assertEquals(100, cloud.get(0).getWeight());
+
+        // logarithmic
+        cloud.add(new Tag("a", 3));
+        RelationTagService.normalizeCloud(cloud, 3, 3, false);
+        assertEquals(100, cloud.get(0).getWeight());
+
+        // linear
+        cloud = new ArrayList<>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 5));
+        RelationTagService.normalizeCloud(cloud, 1, 5, true);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(100, cloud.get(1).getWeight());
+
+        // logarithmic
+        cloud = new ArrayList<>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 5));
+        RelationTagService.normalizeCloud(cloud, 1, 5, false);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(100, cloud.get(1).getWeight());
+
+        // linear
+        cloud = new ArrayList<>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        RelationTagService.normalizeCloud(cloud, 1, 5, true);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(25, cloud.get(1).getWeight());
+        assertEquals(100, cloud.get(2).getWeight());
+
+        // logarithmic
+        cloud = new ArrayList<>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        RelationTagService.normalizeCloud(cloud, 1, 5, false);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(43, cloud.get(1).getWeight());
+        assertEquals(100, cloud.get(2).getWeight());
+
+        // linear
+        cloud = new ArrayList<>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        cloud.add(new Tag("d", 12));
+        RelationTagService.normalizeCloud(cloud, 1, 12, true);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(9, cloud.get(1).getWeight());
+        assertEquals(36, cloud.get(2).getWeight());
+        assertEquals(100, cloud.get(3).getWeight());
+
+        // logarithmic
+        cloud = new ArrayList<>();
+        cloud.add(new Tag("a", 1));
+        cloud.add(new Tag("b", 2));
+        cloud.add(new Tag("c", 5));
+        cloud.add(new Tag("d", 12));
+        RelationTagService.normalizeCloud(cloud, 1, 12, false);
+        assertEquals(0, cloud.get(0).getWeight());
+        assertEquals(28, cloud.get(1).getWeight());
+        assertEquals(65, cloud.get(2).getWeight());
+        assertEquals(100, cloud.get(3).getWeight());
     }
 }
