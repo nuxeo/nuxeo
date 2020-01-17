@@ -91,7 +91,7 @@ public class DirectoryObject extends PaginableObject<DirectoryEntry> {
     @POST
     public Response addEntry(final DirectoryEntry entry) {
         checkEditGuards();
-        DirectoryEntry result = withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
+        DirectoryEntry result = withDirectorySession(directory, new DirectorySessionRunner<>() {
 
             @Override
             DirectoryEntry run(Session session) {
@@ -119,7 +119,7 @@ public class DirectoryObject extends PaginableObject<DirectoryEntry> {
 
     @Path("{entryId:((?:(?!/@).)*)}")
     public Object getEntry(@PathParam("entryId") final String entryId) {
-        return withDirectorySession(directory, new DirectorySessionRunner<Object>() {
+        return withDirectorySession(directory, new DirectorySessionRunner<>() {
 
             @Override
             Object run(Session session) {

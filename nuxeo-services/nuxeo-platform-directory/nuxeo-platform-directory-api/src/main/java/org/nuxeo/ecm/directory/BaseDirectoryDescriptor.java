@@ -22,10 +22,11 @@ package org.nuxeo.ecm.directory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -39,7 +40,7 @@ import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 @XObject(value = "directory")
 public class BaseDirectoryDescriptor implements Cloneable {
 
-    private static final Log log = LogFactory.getLog(BaseDirectoryDescriptor.class);
+    private static final Logger log = LogManager.getLogger(BaseDirectoryDescriptor.class);
 
     /**
      * How directory semi-"fulltext" searches are matched with a query string.
@@ -199,8 +200,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
         } else {
             sep = dataFileCharacterSeparator.charAt(0);
             if (dataFileCharacterSeparator.length() > 1) {
-                log.warn("More than one character found for character separator, will use the first one \"" + sep
-                        + "\"");
+                log.warn("More than one character found for character separator, will use the first one \"{}\"",sep);
             }
         }
         return sep;
@@ -213,7 +213,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
         if (StringUtils.isBlank(createTablePolicy)) {
             return CREATE_TABLE_POLICY_DEFAULT;
         }
-        String ctp = createTablePolicy.toLowerCase();
+        String ctp = createTablePolicy.toLowerCase(Locale.ENGLISH);
         if (!CREATE_TABLE_POLICIES.contains(ctp)) {
             throw new DirectoryException("Invalid createTablePolicy: " + createTablePolicy + ", it should be one of: "
                     + CREATE_TABLE_POLICIES);
@@ -244,7 +244,7 @@ public class BaseDirectoryDescriptor implements Cloneable {
         try {
             return SubstringMatchType.valueOf(substringMatchType);
         } catch (IllegalArgumentException e) {
-            log.error("Unknown value for <substringMatchType>: " + substringMatchType);
+            log.error("Unknown value for <substringMatchType>: {}", substringMatchType);
             return SUBSTRING_MATCH_TYPE_DEFAULT;
         }
     }
@@ -278,8 +278,9 @@ public class BaseDirectoryDescriptor implements Cloneable {
                                      .toArray(ReferenceDescriptor[]::new);
         }
         if (inverseReferences != null) {
-            clone.inverseReferences = Arrays.stream(inverseReferences).map(InverseReferenceDescriptor::clone).toArray(
-                    InverseReferenceDescriptor[]::new);
+            clone.inverseReferences = Arrays.stream(inverseReferences)
+                                            .map(InverseReferenceDescriptor::clone)
+                                            .toArray(InverseReferenceDescriptor[]::new);
         }
         return clone;
     }

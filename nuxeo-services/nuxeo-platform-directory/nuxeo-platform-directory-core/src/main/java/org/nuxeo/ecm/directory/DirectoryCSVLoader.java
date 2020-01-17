@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.directory;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,8 +36,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -51,7 +53,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class DirectoryCSVLoader {
 
-    private static final Log log = LogFactory.getLog(DirectoryCSVLoader.class);
+    private static final Logger log = LogManager.getLogger(DirectoryCSVLoader.class);
 
     /**
      * The special CSV value ({@value}) used to denote that a {@code null} should be used for a value.
@@ -74,7 +76,7 @@ public class DirectoryCSVLoader {
     public static void loadData(String dataFileName, char delimiter, Schema schema,
             Consumer<Map<String, Object>> loader) {
         try (InputStream in = getResource(dataFileName); //
-                CSVParser csvParser = new CSVParser(new InputStreamReader(in, "UTF-8"),
+                CSVParser csvParser = new CSVParser(new InputStreamReader(in, UTF_8),
                         CSVFormat.DEFAULT.withDelimiter(delimiter).withHeader())) {
             Map<String, Integer> header = csvParser.getHeaderMap();
 
@@ -95,8 +97,8 @@ public class DirectoryCSVLoader {
                     continue;
                 }
                 if (!record.isConsistent()) {
-                    log.error("Invalid column count while reading CSV file: " + dataFileName + ", line: " + lineno
-                            + ", values: " + record);
+                    log.error("Invalid column count while reading CSV file: {}, line: {}, values: {}", dataFileName,
+                            lineno, record);
                     continue;
                 }
 
