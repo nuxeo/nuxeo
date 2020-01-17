@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.bulk.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,10 +63,13 @@ public class TestAction {
         comp.init(context);
 
         // submit a record with an unknown command id
-        comp.processRecord(context, "i1", record1);
+        try {
+            comp.processRecord(context, "i1", record1);
+            fail("Expecting failure");
+        } catch (IllegalStateException e) {
+            // expected
+        }
 
-        // this stop the computation because it requires manual intervention to continue
-        assertTrue(context.requireTerminate());
         assertEquals(0, context.getRecords("o1").size());
         assertFalse(context.requireCheckpoint());
 
