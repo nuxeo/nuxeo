@@ -311,7 +311,8 @@ class Spreadsheet {
         var dataEntry = data[dataRowIndex][dataColIndex];
         var formattedLabel = editor.formatter(dataEntry);
         if (!formattedLabel) {
-          var id = editor.getEntryId(dataEntry) || dataEntry.properties && dataEntry.properties.id;
+          // resolved || unresolved (when just filled in)
+          var id = (dataEntry.properties && dataEntry.properties.id) || dataEntry;
           var cell = ht.getCellMeta(i, j);
           if (!cell._labels) {
             cell._labels = {};
