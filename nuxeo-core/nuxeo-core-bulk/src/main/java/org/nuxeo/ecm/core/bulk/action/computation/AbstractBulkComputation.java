@@ -107,9 +107,8 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
                 context.askForCheckpoint();
             } else {
                 // this requires a manual intervention, the kv store might have been lost
-                log.error("Stopping processing, unknown command: {}, offset: {}, record: {}.",
-                        bucket.getCommandId(), context.getLastOffset(), record);
-                context.askForTermination();
+                throw new IllegalStateException(String.format("Unknown command: %s, offset: %s, record: %s.",
+                        bucket.getCommandId(), context.getLastOffset(), record));
             }
         }
     }
