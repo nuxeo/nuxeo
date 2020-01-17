@@ -21,6 +21,7 @@
   "globals": {
     "nuxeo": true,
     "$": true,
-    "Handsontable": true
+    "Handsontable": true,
+    "WalkontableCellRange": false
   }
 }

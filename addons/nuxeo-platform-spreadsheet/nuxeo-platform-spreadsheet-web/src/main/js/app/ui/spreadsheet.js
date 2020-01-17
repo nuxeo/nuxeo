@@ -19,6 +19,7 @@ import {Layout} from '../nuxeo/layout';
 import {Schemas} from '../nuxeo/rest/schemas';
 import {Directory} from '../nuxeo/rpc/directory';
 import {Query} from '../nuxeo/rpc/query';
+import {DirectoryEditor} from '../ui/editors/directory';
 
 /**
  * Spreadsheet backed by Hansontable
@@ -41,6 +42,7 @@ class Spreadsheet {
       currentColClassName: 'currentCol',
       contextMenu: ['undo', 'redo'],
       afterChange: this.onChange.bind(this),
+      beforeAutofill: this.beforeAutofill.bind(this),
       search: true,
       cells: this.createCell.bind(this),
       language: language
@@ -133,7 +135,7 @@ class Spreadsheet {
                       any: {
                         userSuggestionSearchType: searchType
                       }
-                    }
+                    };
                     break;
                 }
               }
@@ -203,17 +205,16 @@ class Spreadsheet {
   }
 
   _fetch() {
-    return this.query.run()
-        .then((result) => {
-          Array.prototype.push.apply(this._data, result.entries);
-          // prevent adding new rows
-          this.ht.updateSettings({maxRows: this._data.length});
-          this.ht.render();
-          if (result.isNextPageAvailable) {
-            this.query.page++;
-            return this._fetch();
-          }
-        });
+    return this.query.run().then((result) => {
+      Array.prototype.push.apply(this._data, result.entries);
+      // prevent adding new rows
+      this.ht.updateSettings({maxRows: this._data.length});
+      this.ht.render();
+      if (result.isNextPageAvailable) {
+        this.query.page++;
+        return this._fetch();
+      }
+    });
   }
 
   update() {
@@ -231,17 +232,17 @@ class Spreadsheet {
           try {
             // TODO(nfgs) - Move request execution to the connection
             this.connection.request('/id/' + uid)
-                .put(
-                {data: this._dirty[uid]},
-                (error) => {
-                  if (error !== null) {
-                    this._dirty[uid]._error = error;
-                    reject(Error(error));
-                    return;
-                  }
-                  delete this._dirty[uid];
-                  resolve(uid);
-                });
+              .put(
+              {data: this._dirty[uid]},
+              (error) => {
+                if (error !== null) {
+                  this._dirty[uid]._error = error;
+                  reject(Error(error));
+                  return;
+                }
+                delete this._dirty[uid];
+                resolve(uid);
+              });
           } catch (e) {
             this._dirty[uid]._error = e;
             reject(Error(e));
@@ -283,6 +284,58 @@ class Spreadsheet {
         this.save();
       }
       this.ht.render();
+    }
+  }
+
+  beforeAutofill(start, end, data) {
+    var ht = this.ht.getInstance();
+    var editor = ht.getActiveEditor();
+    if (!editor || !(editor instanceof DirectoryEditor)) {
+      return;
+    }
+    if (!data && (data.length === 0 || data[0].length === 0)) {
+      console.warn('It is not expected to have an empty data set.');
+      return;
+    }
+
+    var draggingDirection = new WalkontableCellRange(undefined, ht.getSelectedRange().highlight, start).getDirection();
+    if (draggingDirection.charAt(0) === 'S') {
+      data = data.reverse();
+    }
+
+    var originalCornerCell = this._getCornerCell(ht.getSelectedRange().from, ht.getSelectedRange().to, draggingDirection);
+    for (var i = start.row; i <= end.row; i++) {
+      for (var j = start.col; j <= end.col; j++) {
+        var dataRowIndex = (i - start.row) % data.length;
+        var dataColIndex = (j - start.col) % data[0].length;
+        var dataEntry = data[dataRowIndex][dataColIndex];
+        var formattedLabel = editor.formatter(dataEntry);
+        if (!formattedLabel) {
+          var id = editor.getEntryId(dataEntry) || dataEntry.properties && dataEntry.properties.id;
+          var cell = ht.getCellMeta(i, j);
+          if (!cell._labels) {
+            cell._labels = {};
+          }
+          var originalCell = ht.getCellMeta(originalCornerCell.row + dataRowIndex, originalCornerCell.col + dataColIndex);
+          if (originalCell._labels) {
+            cell._labels[id] = originalCell._labels[id];
+          }
+        }
+      }
+    }
+  }
+
+  _getCornerCell(start, end, draggingDirection) {
+    var range = new WalkontableCellRange(undefined, start, end);
+    switch (draggingDirection) {
+      case 'NW-SE' :
+        return range.getBottomRightCorner();
+      case 'NE-SW' :
+        return range.getBottomLeftCorner();
+      case 'SE-NW' :
+        return range.getTopLeftCorner();
+      case 'SW-NE' :
+        return range.getTopRightCorner();
     }
   }
 
