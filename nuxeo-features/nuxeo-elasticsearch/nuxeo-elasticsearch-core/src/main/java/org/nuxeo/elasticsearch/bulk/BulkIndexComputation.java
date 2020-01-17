@@ -25,6 +25,7 @@ import java.util.Arrays;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkItemResponse;
@@ -107,9 +108,7 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
     @Override
     public void processTimer(ComputationContext context, String key, long timestamp) {
         if (abort) {
-            context.askForTermination();
-            log.error("Terminate computation due to previous error");
-            return;
+            throw new NuxeoException("Terminate computation due to previous error");
         }
         if (updates) {
             // flush is sync because bulkProcessor is initialized with setConcurrentRequests(0)
@@ -122,6 +121,9 @@ public class BulkIndexComputation extends AbstractComputation implements BulkPro
 
     @Override
     public void processRecord(ComputationContext context, String inputStream, Record record) {
+        if (abort) {
+            return;
+        }
         DataBucket in = codec.decode(record.getData());
         if (in.getCount() > 0) {
             BulkRequest bulkRequest = decodeRequest(in);
