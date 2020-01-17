@@ -25,8 +25,8 @@ import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationC
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -40,7 +40,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
 
     protected static final String DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX = "_";
 
-    private static final Log log = LogFactory.getLog(DirectoryServiceImpl.class);
+    private static final Logger log = LogManager.getLogger(DirectoryServiceImpl.class);
 
     protected DirectoryRegistry registry = new DirectoryRegistry();
 
@@ -57,7 +57,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         DirectoryFactoryDescriptor factoryDescriptor = (DirectoryFactoryDescriptor) contribution;
         String factoryName = factoryDescriptor.getFactoryName();
-        log.warn("No need to register factoryDescriptor anymore: " + factoryName);
+        log.warn("No need to register factoryDescriptor anymore: {}", factoryName);
     }
 
     @Override
@@ -114,7 +114,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
                 return directoryName + DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX + suffix;
             }
             log.warn("The local configuration detected is an empty value, we consider it as no configuration set.");
-            log.debug("Directory Local Configuration is on : " + configuration.getDocumentRef());
+            log.debug("Directory Local Configuration is on : {}", configuration::getDocumentRef);
         }
 
         return directoryName;
@@ -143,9 +143,8 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         String localDirectoryName = getWaitingLocalDirectoryName(id, getDirectoryConfiguration(documentContext));
         Directory dir = getDirectory(localDirectoryName);
         if (dir == null && !id.equals(localDirectoryName)) {
-            log.debug(String.format(
-                    "The local directory named '%s' was" + " not found. Look for the default one named: %s",
-                    localDirectoryName, id));
+            log.debug("The local directory named '{}' was not found. Look for the default one named: {}",
+                    localDirectoryName, id);
             dir = getDirectory(id);
         }
         return dir;

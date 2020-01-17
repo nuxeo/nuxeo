@@ -217,13 +217,7 @@ public abstract class AbstractDirectory implements Directory {
     public void addReference(Reference reference) {
         reference.setSourceDirectoryName(getName());
         String fieldName = reference.getFieldName();
-        List<Reference> fieldRefs;
-        if (references.containsKey(fieldName)) {
-            fieldRefs = references.get(fieldName);
-        } else {
-            references.put(fieldName, fieldRefs = new ArrayList<>(1));
-        }
-        fieldRefs.add(reference);
+        references.computeIfAbsent(fieldName, k -> new ArrayList<>(1)).add(reference);
     }
 
     protected void addReferences() {

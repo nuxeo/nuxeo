@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ public class DirectoryOperationsTest {
     protected CoreSession session;
 
     @Inject
-    AutomationService service;
+    protected AutomationService service;
 
     @Inject
     protected DirectoryService directoryService;
@@ -132,7 +132,7 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> createdIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        List<String> createdIds = mapper.readValue(result.getString(), new TypeReference<>() {
         });
 
         assertEquals(2, createdIds.size());
@@ -166,7 +166,7 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> createdIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        List<String> createdIds = mapper.readValue(result.getString(), new TypeReference<>() {
         });
         assertEquals(2, createdIds.size());
         assertEquals("newContinent", createdIds.get(0));
@@ -235,7 +235,7 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> deleteIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        List<String> deleteIds = mapper.readValue(result.getString(), new TypeReference<>() {
         });
         assertEquals(1, deleteIds.size());
         assertEquals("entryToDelete", deleteIds.get(0));
@@ -261,7 +261,7 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> deleteIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        List<String> deleteIds = mapper.readValue(result.getString(), new TypeReference<>() {
         });
         assertEquals(1, deleteIds.size());
         assertEquals("entryToMarkAsObsolete", deleteIds.get(0));
@@ -290,7 +290,7 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<String> updatedIds = mapper.readValue(result.getString(), new TypeReference<List<String>>() {
+        List<String> updatedIds = mapper.readValue(result.getString(), new TypeReference<>() {
         });
         assertEquals(1, updatedIds.size());
         assertEquals("entryToUpdate", updatedIds.get(0));
@@ -317,9 +317,8 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
-                new TypeReference<List<Map<String, Object>>>() {
-                });
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(), new TypeReference<>() {
+        });
         assertEquals(3, entries.size());
 
         Map<String, Object> entry = entries.get(0);
@@ -351,9 +350,8 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
-                new TypeReference<List<Map<String, Object>>>() {
-                });
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(), new TypeReference<>() {
+        });
         assertEquals(7, entries.size());
 
         Map<String, Object> entry = entries.get(0);
@@ -381,11 +379,11 @@ public class DirectoryOperationsTest {
         assertNotNull(result);
 
         ObjectMapper mapper = new ObjectMapper();
-        List<Map<String, Object>> entries = mapper.readValue(result.getString(),
-                new TypeReference<List<Map<String, Object>>>() {
-                });
+        List<Map<String, Object>> entries = mapper.readValue(result.getString(), new TypeReference<>() {
+        });
         assertEquals(1, entries.size());
 
+        @SuppressWarnings("unchecked")
         List<Object> children = (List<Object>) entries.get(0).get("children");
         assertNotNull(children);
         assertEquals(2, children.size());

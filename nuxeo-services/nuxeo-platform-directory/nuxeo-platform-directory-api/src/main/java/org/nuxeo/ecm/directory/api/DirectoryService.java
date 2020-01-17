@@ -75,7 +75,6 @@ public interface DirectoryService {
      *
      * @param id the directory id
      * @return the effective directory descriptor, or {@code null} if not registered
-     *
      * @since 8.2
      */
     BaseDirectoryDescriptor getDirectoryDescriptor(String id);

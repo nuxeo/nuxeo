@@ -31,8 +31,8 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
@@ -44,7 +44,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 
 public class SQLHelper {
 
-    private static final Log log = LogFactory.getLog(SQLHelper.class);
+    private static final Logger log = LogManager.getLogger(SQLHelper.class);
 
     private static final Object DIRECTORY_INIT_LOCK = new Object();
 
@@ -71,9 +71,9 @@ public class SQLHelper {
      * @return {@code true} if CSV data should be loaded
      */
     public boolean setupTable() {
-        log.debug(String.format("setting up table '%s', policy='%s'", tableName, policy));
+        log.debug("setting up table {}, policy={}", tableName, policy);
         if (policy.equals(CREATE_TABLE_POLICY_NEVER)) {
-            log.debug("policy='" + CREATE_TABLE_POLICY_NEVER + "', skipping setup");
+            log.debug("policy='{}', skipping setup", CREATE_TABLE_POLICY_NEVER);
             return false;
         }
         synchronized (DIRECTORY_INIT_LOCK) {
@@ -82,10 +82,10 @@ public class SQLHelper {
             if (policy.equals(CREATE_TABLE_POLICY_ON_MISSING_COLUMNS) && tableExists) {
                 if (hasMatchingColumns()) {
                     // all required columns were found
-                    log.debug("policy='" + CREATE_TABLE_POLICY_ON_MISSING_COLUMNS
-                            + "' and all column matched, skipping data load");
+                    log.debug("policy='{}' and all column matched, skipping data load",
+                            CREATE_TABLE_POLICY_ON_MISSING_COLUMNS);
                 } else {
-                    log.debug("policy='" + CREATE_TABLE_POLICY_ON_MISSING_COLUMNS + "' and some columns are missing");
+                    log.debug("policy='{}' and some columns are missing", CREATE_TABLE_POLICY_ON_MISSING_COLUMNS);
                     addMissingColumns();
                 }
                 return false;
@@ -147,12 +147,11 @@ public class SQLHelper {
     }
 
     public boolean hasMatchingColumns() {
-        Set<Column> missingColumns = getMissingColumns(true);
-        if (missingColumns == null || missingColumns.size() > 0) {
+        if (!getMissingColumns(true).isEmpty()) {
             return false;
         } else {
             // all fields have a matching column, this looks not that bad
-            log.debug(String.format("all fields matched for table '%s'", tableName));
+            log.debug("all fields matched for table {}", tableName);
             return true;
         }
     }
@@ -172,11 +171,11 @@ public class SQLHelper {
                 // TODO: check types as well
                 String fieldName = column.getPhysicalName();
                 if (!columnNames.contains(fieldName)) {
-                    log.debug(String.format("required field: %s is missing", fieldName));
+                    log.debug("required field: {} is missing", fieldName);
                     missingColumns.add(column);
 
                     if (breakAtFirstMissing) {
-                        return null;
+                        return Set.of();
                     }
                 }
             }
@@ -184,7 +183,7 @@ public class SQLHelper {
             return missingColumns;
         } catch (SQLException e) {
             log.warn("error while introspecting table: " + tableName, e);
-            return null;
+            return Set.of();
         }
     }
 
@@ -220,17 +219,18 @@ public class SQLHelper {
             if ("Oracle".equals(productName)) {
                 try (Statement st = connection.createStatement()) {
                     String sql = "SELECT SYS_CONTEXT('USERENV', 'SESSION_USER') FROM DUAL";
-                    log.trace("SQL: " + sql);
+                    log.trace("SQL: {}", sql);
                     try (ResultSet rs = st.executeQuery(sql)) {
                         rs.next();
                         schemaName = rs.getString(1);
-                        log.trace("checking existing tables for oracle database, schema: " + schemaName);
+                        log.trace("checking existing tables for oracle database, schema: {}", schemaName);
                     }
                 }
             }
-            try (ResultSet rs = metaData.getTables(null, schemaName, table.getPhysicalName(), new String[] { "TABLE" })) {
+            try (ResultSet rs = metaData.getTables(null, schemaName, table.getPhysicalName(),
+                    new String[] { "TABLE" })) {
                 boolean exists = rs.next();
-                log.debug(String.format("checking if table %s exists: %s", table.getPhysicalName(), Boolean.valueOf(exists)));
+                log.debug("checking if table {} exists: {}", table.getPhysicalName(), exists);
                 return exists;
             }
         } catch (SQLException e) {
