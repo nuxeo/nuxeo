@@ -85,19 +85,19 @@
     <guice.version>3.0</guice.version>
     <jersey.version>1.19.4</jersey.version>
     <shindig.version>1.1-BETA5-incubating-nx2</shindig.version>
-    <apache.axiom.version>1.2.20</apache.axiom.version>
+    <apache.axiom.version>1.2.22</apache.axiom.version>
     <chemistry.opencmis.version>1.1.0</chemistry.opencmis.version>
     <textcat.version>1.0.1</textcat.version>
-    <apache.httpcore.version>4.4.10</apache.httpcore.version>
-    <apache.httpcomponents.version>4.5.6</apache.httpcomponents.version>
+    <apache.httpcore.version>4.4.13</apache.httpcore.version>
+    <apache.httpcomponents.version>4.5.11</apache.httpcomponents.version>
     <apache.poi.version>3.17</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX01</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>
     <librepdf.version>1.2.1</librepdf.version>
     <librepdf.rtf.version>1.1.0</librepdf.rtf.version>
-    <jclouds.version>2.1.1</jclouds.version>
-    <guava.version>26.0-jre</guava.version>
+    <jclouds.version>2.2.0</jclouds.version>
+    <guava.version>28.2-jre</guava.version>
     <google.http.client.version>1.19.0</google.http.client.version>
     <google.oauth.client.version>1.20.0</google.oauth.client.version>
     <google.api.client.version>1.25.0</google.api.client.version>
@@ -108,15 +108,17 @@
     <selenium.version>2.53.0</selenium.version>
     <pdfbox.version>1.8.16</pdfbox.version>
     <pdfbox.jbig2.version>2.99.0-NX1</pdfbox.jbig2.version>
-    <aws.version>1.11.516</aws.version>
+    <aws.version>1.11.712</aws.version>
     <gcp.version>1.76.0</gcp.version>
     <azure.version>3.1.0</azure.version>
     <jackson1.version>1.8.1</jackson1.version>
-    <jackson.version>2.10.0</jackson.version>
+    <jackson.version>2.10.2</jackson.version>
     <bouncycastle.version>1.60</bouncycastle.version>
     <avro.version>1.8.2</avro.version>
     <xz.version>1.8</xz.version>
-    <restlet.version>2.4.1</restlet.version>
+    <restlet.version>2.4.2</restlet.version>
+    <batik.version>1.12</batik.version>
+    <jmock.version>2.12.0</jmock.version>
 
     <!-- JBoss properties -->
     <version.org.jboss.vfs>2.1.2.GA</version.org.jboss.vfs>
@@ -127,15 +129,15 @@
     <!-- deprecated property since removal of maven-nuxeo-plugin execution -->
     <eclipseVersion>${project.version}</eclipseVersion>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
-    <org.apache.log4j.version>2.11.1</org.apache.log4j.version>
-    <org.slf4j.version>1.7.21</org.slf4j.version>
+    <org.apache.log4j.version>2.13.0</org.apache.log4j.version>
+    <org.slf4j.version>1.7.25</org.slf4j.version>
     <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
-    <gatling.version>3.3.0</gatling.version>
+    <gatling.version>3.3.1</gatling.version>
     <gatling-plugin.version>3.0.4</gatling-plugin.version>
     <scala.version>2.12.3</scala.version>
     <scala-logging.version>3.9.0</scala-logging.version>
     <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
-    <jgiven.version>0.17.1</jgiven.version>
+    <jgiven.version>0.18.2</jgiven.version>
 
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
@@ -159,15 +161,15 @@
     <sonar.jacoco.reportPaths>${it.jacoco.destFile}</sonar.jacoco.reportPaths>
 
     <!-- MongoDB -->
-    <mongo.java.driver.version>3.8.1</mongo.java.driver.version>
+    <mongo.java.driver.version>3.12.1</mongo.java.driver.version>
     <quartz.mongodb.version>2.1.0-NX1</quartz.mongodb.version>
 
     <kafka.version>2.3.0</kafka.version>
     <confluent.version>5.0.0</confluent.version>
     <chronicle.bom.version>2.17.465</chronicle.bom.version>
     <chronicle.threads.version>2.17.2</chronicle.threads.version>
-    <metrics.version>4.0.3</metrics.version>
-    <maven.surefire.version>2.22.1</maven.surefire.version>
+    <metrics.version>4.1.2</metrics.version>
+    <maven.surefire.version>2.22.2</maven.surefire.version>
   </properties>
 
   <dependencyManagement>
@@ -2253,7 +2255,7 @@
       <dependency>
         <groupId>xom</groupId>
         <artifactId>xom</artifactId>
-        <version>1.3.0</version>
+        <version>1.3.2</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -2301,7 +2303,7 @@
       <dependency>
         <groupId>org.jvnet.staxex</groupId>
         <artifactId>stax-ex</artifactId>
-        <version>1.7.8</version>
+        <version>1.8.2</version>
         <exclusions>
           <exclusion>
             <groupId>javax.xml.stream</groupId>
@@ -2365,7 +2367,7 @@
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>1.3.3</version>
+        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -2375,17 +2377,17 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>3.8</version>
+        <version>3.9</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.1</version>
+        <version>4.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.4</version>
+        <version>1.8</version>
       </dependency>
       <!-- Keep the dependency for external libraries -->
       <dependency>
@@ -2476,12 +2478,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-vfs2</artifactId>
-        <version>2.2</version>
+        <version>2.6.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
-        <version>2.6.0</version>
+        <version>2.8.0</version>
       </dependency>
       <dependency>
         <!-- not used by Nuxeo anymore, but needed by some dependencies -->
@@ -2535,7 +2537,7 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore-nio</artifactId>
-        <version>4.4.5</version>
+        <version>${apache.httpcore.version}</version>
       </dependency>
 
       <!-- JNA, required by Elasticsearch and Chronicle Queue -->
@@ -2594,7 +2596,7 @@
       <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derby</artifactId>
-        <version>10.14.2.0</version>
+        <version>10.15.1.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -2680,7 +2682,7 @@
       <dependency>
         <groupId>org.apache.xmlbeans</groupId>
         <artifactId>xmlbeans</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.directory.shared</groupId>
@@ -2785,7 +2787,7 @@
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib-nodep</artifactId>
-        <version>3.2.10</version>
+        <version>3.3.0</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.remoting</groupId>
@@ -2795,7 +2797,7 @@
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.21.0-GA</version>
+        <version>3.26.0-GA</version>
       </dependency>
       <!-- NXP-10566: EL implementation chosen, set as the default
         implementation in Tomcat by nuxeo-platform-el in file at
@@ -3022,7 +3024,7 @@
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
-        <version>2.3.28</version>
+        <version>2.3.29</version>
       </dependency>
       <dependency>
         <groupId>concurrent</groupId>
@@ -3042,13 +3044,13 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>4.13</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.8.0</version>
+        <version>3.14.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -3071,7 +3073,7 @@
       <dependency>
         <groupId>org.fusesource.jansi</groupId>
         <artifactId>jansi</artifactId>
-        <version>1.17.1</version>
+        <version>1.18</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -3095,7 +3097,7 @@
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>2.3.0</version>
+        <version>2.3.2</version>
       </dependency>
       <dependency>
         <groupId>com.novemberain</groupId>
@@ -3133,6 +3135,11 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId> <!-- use log4j-slf4j18-impl when upgrading SLF4j to 1.8 -->
         <version>${org.apache.log4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${org.slf4j.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -3215,7 +3222,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -3247,13 +3254,13 @@
       <dependency>
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
-        <version>1.21</version>
+        <version>1.25</version>
       </dependency>
       <!-- beanshell ; Jetty use 1.3.0 -->
       <dependency>
         <groupId>bsh</groupId>
         <artifactId>bsh</artifactId>
-        <version>2.0b1</version>
+        <version>2.0b4</version>
       </dependency>
       <!-- jsp library for login and error pages -->
       <dependency>
@@ -3269,12 +3276,12 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.2.5</version>
+        <version>42.2.9</version>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
-        <version>8.0.13</version>
+        <version>8.0.19</version>
       </dependency>
       <dependency>
         <groupId>org.mariadb.jdbc</groupId>
@@ -3320,7 +3327,7 @@
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>
-        <version>2.8.4</version>
+        <version>${jmock.version}</version>
         <exclusions>
           <!-- use cglib:cglib-nodep instead to avoid pulling old asm -->
           <exclusion>
@@ -3332,11 +3339,23 @@
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock-junit4</artifactId>
-        <version>2.8.4</version>
+        <version>${jmock.version}</version>
         <exclusions>
           <exclusion>
             <groupId>junit</groupId>
             <artifactId>junit-dep</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-legacy</artifactId>
+        <version>${jmock.version}</version>
+        <exclusions>
+          <!-- use cglib:cglib-nodep instead to avoid pulling old asm -->
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -3373,7 +3392,7 @@
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
-        <version>1.4.11</version>
+        <version>1.4.11.1</version>
         <exclusions>
           <exclusion>
             <groupId>xpp3</groupId>
@@ -3399,7 +3418,7 @@
       <dependency>
         <groupId>org.mvel</groupId>
         <artifactId>mvel2</artifactId>
-        <version>2.4.2.Final</version>
+        <version>2.4.5.Final</version>
       </dependency>
 
       <dependency>
@@ -3444,7 +3463,7 @@
       <dependency>
         <groupId>javax.media</groupId>
         <artifactId>jai_core</artifactId>
-        <version>1.1.2_01</version>
+        <version>1.1.3</version>
       </dependency>
       <dependency>
         <groupId>com.sun.media</groupId>
@@ -3683,7 +3702,7 @@
       <dependency>
         <groupId>com.ibm.icu</groupId>
         <artifactId>icu4j</artifactId>
-        <version>62.1</version>
+        <version>65.1</version>
       </dependency>
       <dependency>
         <groupId>rome</groupId>
@@ -3872,7 +3891,7 @@
       <dependency>
         <groupId>com.googlecode.json-simple</groupId>
         <artifactId>json-simple</artifactId>
-        <version>1.1</version>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>org.json</groupId>
@@ -4216,7 +4235,7 @@
       <dependency>
         <groupId>org.owasp.esapi</groupId>
         <artifactId>esapi</artifactId>
-        <version>2.1.0.1</version>
+        <version>2.2.0.0</version>
       </dependency>
       <!-- SCIM -->
       <dependency>
@@ -4235,7 +4254,7 @@
       <dependency>
         <groupId>org.apache.wink</groupId>
         <artifactId>wink-client-apache-httpclient</artifactId>
-        <version>1.3.0</version>
+        <version>1.4</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
@@ -4330,7 +4349,7 @@
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-webdav</artifactId>
-        <version>2.17.5</version>
+        <version>2.20.0</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -4388,7 +4407,7 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-css</artifactId>
-        <version>1.10</version>
+        <version>${batik.version}</version>
         <exclusions>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -4407,7 +4426,7 @@
       <dependency>
         <groupId>org.apache.xmlgraphics</groupId>
         <artifactId>batik-util</artifactId>
-        <version>1.10</version>
+        <version>${batik.version}</version>
       </dependency>
       <dependency>
         <groupId>org.w3c.css</groupId>
@@ -4479,7 +4498,7 @@
       <dependency>
         <groupId>org.ow2.asm</groupId>
         <artifactId>asm</artifactId>
-        <version>7.0</version>
+        <version>7.3.1</version>
       </dependency>
 
       <dependency>
@@ -4503,7 +4522,7 @@
       <dependency>
         <groupId>dnsjava</groupId>
         <artifactId>dnsjava</artifactId>
-        <version>2.1.8</version>
+        <version>2.1.9</version>
       </dependency>
 
       <dependency>
@@ -4652,7 +4671,7 @@
       <dependency>
         <groupId>org.apache.xbean</groupId>
         <artifactId>xbean-naming</artifactId>
-        <version>3.18</version>
+        <version>4.15</version>
       </dependency>
 
       <dependency>
@@ -4748,7 +4767,7 @@
       <dependency>
         <groupId>com.thetransactioncompany</groupId>
         <artifactId>cors-filter</artifactId>
-        <version>2.6</version>
+        <version>2.8</version>
       </dependency>
       <dependency>
         <groupId>io.github.lukehutch</groupId>
@@ -4772,7 +4791,7 @@
       <dependency>
         <groupId>org.skyscreamer</groupId>
         <artifactId>jsonassert</artifactId>
-        <version>1.2.3</version>
+        <version>1.5.0</version>
         <scope>test</scope>
       </dependency>
 
@@ -4859,17 +4878,17 @@
       <dependency>
         <groupId>org.jolokia</groupId>
         <artifactId>jolokia-core</artifactId>
-        <version>1.3.3</version>
+        <version>1.6.2</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish</groupId>
         <artifactId>javax.json</artifactId>
-        <version>1.1.2</version>
+        <version>1.1.4</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jettison</groupId>
         <artifactId>jettison</artifactId>
-        <version>1.3.7</version>
+        <version>1.4.0</version>
         <!-- exposes a package conflicting with JDK -->
         <exclusions>
           <exclusion>
@@ -4971,12 +4990,12 @@
       <dependency>
         <groupId>org.mp4parser</groupId>
         <artifactId>isoparser</artifactId>
-        <version>1.9.27</version>
+        <version>1.9.41</version>
       </dependency>
       <dependency>
         <groupId>com.auth0</groupId>
         <artifactId>java-jwt</artifactId>
-        <version>3.4.0</version>
+        <version>3.9.0</version>
       </dependency>
       <dependency>
         <groupId>com.beetstra.jutf7</groupId>
@@ -5332,7 +5351,7 @@
               <dependency>
                 <groupId>org.apache.maven.shared</groupId>
                 <artifactId>maven-dependency-analyzer</artifactId>
-                <version>1.11.0</version>
+                <version>1.11.1</version>
             </dependency>
           </dependencies>
           <configuration>
