@@ -8,9 +8,10 @@
     <ignoreVersion type="regex">.*[-_\.]CR[0-9\.]*</ignoreVersion> <!-- org.jboss.el:jboss-el 2.0.2.CR1 -->
     <ignoreVersion type="regex">.*[-_\.]pr[0-9\.]*</ignoreVersion> <!-- com.fasterxml.jackson.core:jackson-core 2.10.0.pr3 -->
     <ignoreVersion type="regex">.*[-_\.]EA[0-9\.]*</ignoreVersion> <!-- javax.annotation:jsr250-api 2.0-JAXWS-2.0-EA3-depot -->
-    <ignoreVersion type="regex">.*[-_\.](rc|RC)[0-9\.]*</ignoreVersion> <!-- io.dropwizard.metrics:metrics-core 4.1.0-rc2 -->
+    <ignoreVersion type="regex">.*[-_\.](rc|RC)-?[0-9\.]*</ignoreVersion> <!-- io.dropwizard.metrics:metrics-core 4.1.0-rc2 -->
     <ignoreVersion type="regex">.*[-_\.][Aa]lpha[0-9\.-]*</ignoreVersion> <!-- javax.resource:connector-api 1.6-alpha-1 -->
     <ignoreVersion type="regex">.*[-_\.][Bb]eta[0-9\.-]*</ignoreVersion> <!-- org.ow2.asm:asm 7.0-beta -->
+    <ignoreVersion type="regex">.*[-_\.]next\.[0-9]+</ignoreVersion> <!-- dnsjava:dnsjava 3.0.0-next.1 -->
     <ignoreVersion type="regex">.*-atlassian-[0-9\.]*</ignoreVersion> <!-- org.hamcrest:hamcrest-core 1.4-atlassian-1 -->
     <ignoreVersion type="regex">.*\.redhat-[0-9]+</ignoreVersion> <!-- org.apache.directory.shared:shared-asn1 0.9.19.redhat-002 -->
     <ignoreVersion type="regex">200[34][0-9\.]*</ignoreVersion> <!-- commons-cli:commons-cli 20040117.000000 -->
