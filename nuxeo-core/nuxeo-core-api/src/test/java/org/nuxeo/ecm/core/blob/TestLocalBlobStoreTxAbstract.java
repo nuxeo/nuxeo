@@ -327,7 +327,11 @@ public abstract class TestLocalBlobStoreTxAbstract extends TestAbstractBlobStore
             try {
                 barrier.await();
                 // delete blob
-                bs.deleteBlob(blobContext(ID1, null));
+                try {
+                    bs.deleteBlob(blobContext(ID1, null));
+                } finally {
+                    barrier.await();
+                }
             } catch (RuntimeException e) {
                 throw e;
             } catch (InterruptedException e) {
