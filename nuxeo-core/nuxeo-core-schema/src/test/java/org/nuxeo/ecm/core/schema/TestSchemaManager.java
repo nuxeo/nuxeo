@@ -445,4 +445,13 @@ public class TestSchemaManager {
         assertEquals(t.getAllowedSubtypes(), Set.of("myDoc2", "myDoc3", "myDoc4"));
     }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.core.schema.tests:OSGI-INF/CoreTestExtensions.xml")
+    public void testGetFacet() {
+        CompositeType component = schemaManager.getFacet("fakeFacet1");
+        assertNotNull(String.format("Facet %s should exist", "fakeFacet1"), component);
+        assertEquals(1, component.getSchemas().size());
+        assertEquals("facetSchema1", component.getSchemaNames()[0]);
+    }
+
 }
