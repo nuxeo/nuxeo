@@ -36,7 +36,9 @@ public class BaseExport {
 
     String uuid;
 
-    protected boolean skipBlobs = true;
+    // don't skip blobs because otherwise when reimporting documents the
+    // "data" field is interpreted as (invalid) base64 instead of a filename
+    protected boolean skipBlobs = false;
 
     public static final String IODIR = "NX-Export-Import";
 
