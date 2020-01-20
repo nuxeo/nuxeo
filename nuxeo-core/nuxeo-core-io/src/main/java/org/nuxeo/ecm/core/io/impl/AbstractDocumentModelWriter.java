@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -382,7 +383,18 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
                 }
                 if (blob == null) { // maybe the blob is embedded in Base64
                     // encoded data
-                    byte[] bytes = Base64.decodeBase64(content);
+                    byte[] bytes;
+                    try {
+                        bytes = Base64.decodeBase64(content);
+                    } catch (IllegalArgumentException e) {
+                        // example invalid base64: fd7b9e4.blob
+                        if (log.isDebugEnabled()) {
+                            log.warn("Invalid blob base64 in document: " + xdoc.getId() + ": " + StringUtils.abbreviate(content, 50));
+                        } else {
+                            log.warn("Invalid blob base64 in document: " + xdoc.getId());
+                        }
+                        bytes = new byte[0];
+                    }
                     blob = Blobs.createBlob(bytes);
                 }
                 blob.setMimeType(mimeType);

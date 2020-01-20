@@ -120,7 +120,12 @@ public class PasswordHelper {
         }
         String digest = hashedPassword.substring(6);
 
-        byte[] bytes = Base64.decodeBase64(digest);
+        byte[] bytes;
+        try {
+            bytes = Base64.decodeBase64(digest);
+        } catch (IllegalArgumentException e) {
+            bytes = null;
+        }
         if (bytes == null) {
             // invalid base64
             return false;

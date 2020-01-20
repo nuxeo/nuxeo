@@ -437,14 +437,17 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             String reqDigestAlgorithm = value.substring(0, equals);
             if (reqDigestAlgorithm.equalsIgnoreCase(digestAlgorithm)) {
                 String digest = value.substring(equals + 1);
-                digest = transcodeBase64ToHex(digest);
-                return digest;
+                try {
+                    return transcodeBase64ToHex(digest);
+                } catch (IllegalArgumentException e) {
+                    return "(invalid base64: " + digest + ")";
+                }
             }
         }
         return null;
     }
 
-    public static String transcodeBase64ToHex(String base64String){
+    public static String transcodeBase64ToHex(String base64String) throws IllegalArgumentException {
         byte[] bytes = Base64.decodeBase64(base64String);
         String hexString = Hex.encodeHexString(bytes);
         return hexString;

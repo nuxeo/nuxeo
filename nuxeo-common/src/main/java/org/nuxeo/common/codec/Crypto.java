@@ -256,7 +256,7 @@ public class Crypto {
             log.trace("Available algorithms: " + Security.getAlgorithms("Cipher"));
             log.trace("Available security providers: " + Arrays.asList(Security.getProviders()));
             log.debug(e, e);
-        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
+        } catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IllegalArgumentException e) {
             log.debug(e, e);
         }
         return strToDecrypt.getBytes();

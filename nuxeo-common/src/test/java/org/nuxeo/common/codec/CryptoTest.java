@@ -98,18 +98,22 @@ public class CryptoTest {
         assertFalse(Crypto.isEncrypted(""));
         assertFalse(Crypto.isEncrypted("{$$}"));
 
+        // bad padding
         String encryptedString = "{$$xoWODkBtRXnsdzIBdosUFA==}";
         String decryptedString = new String(crypto.decrypt(encryptedString));
         assertEquals("Decryption must fail silently", decryptedString, encryptedString);
 
+        // last block FB== is not valid (B is not a possible value)
         encryptedString = "{$$xoWODkCtRXnSuqIBdosUFB==}";
         decryptedString = new String(crypto.decrypt(encryptedString));
         assertEquals("Decryption must fail silently", decryptedString, encryptedString);
 
+        // illegal block size
         encryptedString = "{$REVTL0VDQi9QS0NTNVBhZGRpbmc=$w/wCDLXoGsasskNaEpMt0wg==}";
         decryptedString = new String(crypto.decrypt(encryptedString));
         assertEquals("Decryption must fail silently", decryptedString, encryptedString);
 
+        // bad padding
         encryptedString = "{$REVTL0VDQi9QS0NTNVBhZGRpbmc=$w/wCDLXoG5VFkNbEpMt0wg==}";
         decryptedString = new String(crypto.decrypt(encryptedString));
         assertEquals("Decryption must fail silently", decryptedString, encryptedString);
