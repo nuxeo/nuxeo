@@ -105,6 +105,13 @@ public final class FacetNames {
      */
     public static final String HAS_RELATED_TEXT = "HasRelatedText";
 
+    /**
+     * The document can have its main content stored as cold storage. This can be needed for archiving, compliance, etc.
+     *
+     * @since 11.1
+     */
+    public static final String COLD_STORAGE = "ColdStorage";
+
     private FacetNames() {
     }
 
