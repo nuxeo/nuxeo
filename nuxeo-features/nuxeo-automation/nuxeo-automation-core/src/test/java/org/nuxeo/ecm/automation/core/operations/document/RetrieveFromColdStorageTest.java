@@ -19,12 +19,13 @@
 
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.automation.core.util.ColdStorageTestUtils.createDocument;
 import static org.nuxeo.ecm.automation.core.util.ColdStorageTestUtils.moveContentToColdStorage;
+import static org.nuxeo.ecm.automation.core.util.ColdStorageTestUtils.retrieveContentFromColdStorage;
 
 import java.io.IOException;
 
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,6 +42,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * @since 11.1
@@ -48,40 +51,55 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-coldstorage-contrib.xml")
-public class MoveToColdStorageTest {
+public class RetrieveFromColdStorageTest {
 
     @Inject
     protected CoreSession session;
 
+    @Inject
+    protected AutomationService automationService;
+
+    @Inject
+    protected TransactionalFeature txFeature;
+
     @Test
-    public void shouldMoveToColdStorage() throws OperationException, IOException {
+    public void shouldRetrieveFromColdStorage() throws OperationException, IOException {
         DocumentModel documentModel = createDocument(session, true);
+        // first make the move to cold storage
         moveContentToColdStorage(session, documentModel);
+        // now lets retrieve the cold storage content
+        retrieveContentFromColdStorage(session, documentModel);
     }
 
     @Test
-    public void shouldFailWhenMovingDocumentBlobAlreadyInColdStorage() throws OperationException, IOException {
+    public void shouldFailWhenRetrievingDocumentBlobFromColdStorageBeingRetrieved()
+            throws IOException, OperationException {
         DocumentModel documentModel = createDocument(session, true);
-        // make a move
+
+        // move the blob to cold storage
         moveContentToColdStorage(session, documentModel);
+
+        // retrieve the cold storage content
+        retrieveContentFromColdStorage(session, documentModel);
+
+        // try to retrieve a second time
         try {
-            // try to make a second move
-            moveContentToColdStorage(session, documentModel);
-            fail("Should fail because the content is already in cold storage");
+            retrieveContentFromColdStorage(session, documentModel);
+            fail("Should fail because the cold storage content is being retrieved.");
         } catch (NuxeoException ne) {
             assertEquals(SC_CONFLICT, ne.getStatusCode());
         }
     }
 
     @Test
-    public void shouldFailWhenMovingToColdStorageDocumentWithoutContent() throws OperationException, IOException {
-        DocumentModel documentModel = createDocument(session, false);
+    public void shouldFailWhenRetrievingDocumentBlobWithoutColdStorageContent() throws OperationException {
+        DocumentModel documentModel = createDocument(session, true);
         try {
-            moveContentToColdStorage(session, documentModel);
-            fail("Should fail because there is no main content associated with the document");
+            // retrieve the cold storage content
+            retrieveContentFromColdStorage(session, documentModel);
+            fail("Should fail because there no cold storage content associated to this document.");
         } catch (NuxeoException ne) {
-            assertEquals(SC_NOT_FOUND, ne.getStatusCode());
+            assertEquals(SC_BAD_REQUEST, ne.getStatusCode());
         }
     }
-
 }
