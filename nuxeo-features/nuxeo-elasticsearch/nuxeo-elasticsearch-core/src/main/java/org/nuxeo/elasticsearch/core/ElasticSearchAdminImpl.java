@@ -124,8 +124,13 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             embeddedServer.start();
         }
         client = createClient(embeddedServer);
-        checkClusterHealth();
-        log.info("Elasticsearch Connected");
+        try {
+            checkClusterHealth();
+            log.info("Elasticsearch Connected");
+        } catch (Exception e) {
+            disconnect();
+            throw new IllegalStateException("Unable to check cluster health", e);
+        }
     }
 
     public void disconnect() {
