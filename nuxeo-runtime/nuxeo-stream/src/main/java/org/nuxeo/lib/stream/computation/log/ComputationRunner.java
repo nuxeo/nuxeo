@@ -175,6 +175,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     public void run() {
         threadName = Thread.currentThread().getName();
         boolean interrupted = false;
+        boolean normalTermination = false;
         computation = supplier.get();
         log.debug(metadata.name() + ": Init");
         registerMetrics();
@@ -182,6 +183,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             computation.init(context);
             log.debug(metadata.name() + ": Start");
             processLoop();
+            normalTermination = true;
         } catch (InterruptedException e) {
             interrupted = true; // Thread.currentThread().interrupt() in finally
             // this is expected when the pool is shutdownNow
@@ -203,11 +205,18 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             try {
                 computation.destroy();
                 closeTailer();
-                log.debug(metadata.name() + ": Exited");
             } finally {
                 if (interrupted) {
                     Thread.currentThread().interrupt();
                 }
+            }
+            if (normalTermination || interrupted) {
+                log.debug(metadata.name() + ": Terminated");
+            } else {
+                // Terminating because of unexpected error in the ComputationRunner code
+                log.error(String.format("Terminate computation: %s due to previous failure", metadata.name()));
+                globalFailureCount.inc();
+                failureCount.inc();
             }
         }
     }
