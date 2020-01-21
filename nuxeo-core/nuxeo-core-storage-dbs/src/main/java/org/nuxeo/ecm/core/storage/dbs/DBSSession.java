@@ -1568,8 +1568,13 @@ public class DBSSession implements Session<QueryFilter> {
         }
 
         // notify blob manager before removal
-        DBSDocument doc = getDocument(docState);
-        getDocumentBlobManager().notifyBeforeRemove(doc);
+        try {
+            DBSDocument doc = getDocument(docState);
+            getDocumentBlobManager().notifyBeforeRemove(doc);
+        } catch (DocumentNotFoundException e) {
+            // unknown type in db or null proxy target
+            // ignore blob manager notification
+        }
 
         // remove doc
         transaction.removeStates(Collections.singleton(id));
