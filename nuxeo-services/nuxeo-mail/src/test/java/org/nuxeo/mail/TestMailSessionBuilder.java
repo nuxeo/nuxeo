@@ -69,7 +69,8 @@ public class TestMailSessionBuilder {
         logCaptureResult.assertHasEvent();
         List<String> logs = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, logs.size());
-        assertEquals("setDebug: JavaMail version 1.4.5", logs.get(0));
+        String log = logs.get(0);
+        assertTrue(log, log.startsWith("setDebug: JavaMail version "));
     }
 
     /*
@@ -82,7 +83,7 @@ public class TestMailSessionBuilder {
         assertNotNull(session);
         logCaptureResult.assertHasEvent();
         List<String> logs = logCaptureResult.getCaughtEventMessages();
-        assertEquals(1, logs.size());
-        assertEquals("setDebug: JavaMail version 1.4.5", logs.get(0));
+        String log = logs.get(0);
+        assertTrue(log, log.startsWith("setDebug: JavaMail version "));
     }
 }
