@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -37,8 +36,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 import org.nuxeo.elasticsearch.api.ESClientFactory;
@@ -56,7 +55,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @since 6.0
  */
 public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
-    private static final Log log = LogFactory.getLog(ElasticSearchAdminImpl.class);
+    private static final Logger log = LogManager.getLogger(ElasticSearchAdminImpl.class);
 
     protected static final int TIMEOUT_WAIT_FOR_CLUSTER_SECOND = 30;
 
@@ -144,7 +143,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             try {
                 embeddedServer.close();
             } catch (IOException e) {
-                log.error("Failed to close embedded node: " + e.getMessage(), e);
+                log.error("Failed to close embedded node: {}", e.getMessage(), e);
             }
             embeddedServer = null;
             log.info("Elasticsearch embedded Node Stopped");
@@ -158,7 +157,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             ESClientFactory clientFactory = clientConfig.getKlass().getDeclaredConstructor().newInstance();
             ret = clientFactory.create(node, clientConfig);
         } catch (ReflectiveOperationException e) {
-            log.error("Cannot instantiate Elasticsearch Client from class: " + clientConfig.getKlass());
+            log.error("Cannot instantiate Elasticsearch Client from class: {}", clientConfig::getKlass);
             throw new NuxeoException(e);
         }
         return ret;
@@ -174,7 +173,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     protected void initializeIndexes() {
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             if (conf.isDocumentIndex()) {
-                log.info("Associate index " + conf.getName() + " with repository: " + conf.getRepositoryName());
+                log.info("Associate index: {} with repository: {}", conf::getName, conf::getRepositoryName);
                 indexNames.put(conf.getRepositoryName(), conf.getName());
                 repoNames.put(conf.getName(), conf.getRepositoryName());
                 Set<String> set = new LinkedHashSet<>();
@@ -186,13 +185,13 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                     set.clear();
                     set.add(ALL_FIELDS);
                 }
-                includeSourceFields = set.toArray(new String[set.size()]);
+                includeSourceFields = set.toArray(new String[0]);
                 set.clear();
                 if (excludeSourceFields != null) {
                     set.addAll(Arrays.asList(excludeSourceFields));
                 }
                 set.addAll(Arrays.asList(conf.getExcludes()));
-                excludeSourceFields = set.toArray(new String[set.size()]);
+                excludeSourceFields = set.toArray(new String[0]);
             }
 
         }
@@ -202,13 +201,9 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     // Admin Impl =============================================================
     @Override
     public void refreshRepositoryIndex(String repositoryName) {
-        if (log.isDebugEnabled()) {
-            log.debug("Refreshing index associated with repo: " + repositoryName);
-        }
+        log.debug("Refreshing index associated with repo: {}", repositoryName);
         getClient().refresh(getWriteIndexName(getIndexNameForRepository(repositoryName)));
-        if (log.isDebugEnabled()) {
-            log.debug("Refreshing index done");
-        }
+        log.debug("Refreshing index done");
     }
 
     @Override
@@ -262,7 +257,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void flushRepositoryIndex(String repositoryName) {
-        log.warn("Flushing index associated with repo: " + repositoryName);
+        log.warn("Flushing index associated with repo: {}", repositoryName);
         getClient().flush(getWriteIndexName(getIndexNameForRepository(repositoryName)));
         log.info("Flushing index done");
     }
@@ -283,7 +278,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void optimizeIndex(String indexName) {
-        log.warn("Optimizing index: " + indexName);
+        log.warn("Optimizing index: {}", indexName);
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             if (conf.getName().equals(indexName)) {
                 getClient().optimize(indexName);
@@ -321,7 +316,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void dropAndInitIndex(String indexName) {
-        log.info("Drop and init index: " + indexName);
+        log.info("Drop and init index: {}", indexName);
         indexInitDone = false;
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             if (conf.getName().equals(indexName)) {
@@ -333,7 +328,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public void dropAndInitRepositoryIndex(String repositoryName, boolean syncAlias) {
-        log.info("Drop and init index of repository: " + repositoryName);
+        log.info("Drop and init index of repository: {}", repositoryName);
         indexInitDone = false;
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
             if (conf.isDocumentIndex() && repositoryName.equals(conf.getRepositoryName())) {
@@ -345,7 +340,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     @Override
     public List<String> getRepositoryNames() {
-        return Collections.unmodifiableList(new ArrayList<>(indexNames.keySet()));
+        return List.copyOf(indexNames.keySet());
     }
 
     protected void initIndex(ElasticSearchIndexConfig conf, boolean dropIfExists) {
@@ -407,8 +402,8 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 searchIndex = writeIndex;
             }
         }
-        log.info(String.format("Managed index aliases: Alias: %s ->  index: %s, alias: %s ->  index: %s", searchAlias,
-                searchIndex, writeAlias, writeIndex));
+        log.info("Managed index aliases: Alias: {} ->  index: {}, alias: {} ->  index: {}", searchAlias, searchIndex,
+                writeAlias, writeIndex);
     }
 
     /**
@@ -423,27 +418,23 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         String writeAlias = conf.writeIndexOrAlias();
         String writeIndex = getClient().getFirstIndexForAlias(writeAlias);
         if (!writeIndex.equals(searchIndex)) {
-            log.warn(String.format("Updating search alias %s->%s (previously %s)", searchAlias, writeIndex,
-                    searchIndex));
+            log.warn("Updating search alias {} -> {} (previously {})", searchAlias, writeIndex, searchIndex);
             getClient().updateAlias(searchAlias, writeIndex);
             searchIndex = writeIndex;
         }
-        if (searchIndex != null) {
-            repoNames.put(searchIndex, conf.getRepositoryName());
-        }
+        repoNames.put(searchIndex, conf.getRepositoryName());
     }
 
     protected void initIndex(String indexName, ElasticSearchIndexConfig conf, boolean dropIfExists) {
         if (!conf.mustCreate()) {
             return;
         }
-        log.info(String.format("Initialize index: %s with conf: %s, type: %s", indexName, conf.getName(),
-                conf.getType()));
+        log.info("Initialize index: {} with conf: {}, type: {}", indexName, conf.getName(), conf.getType());
         boolean mappingExists = false;
         boolean indexExists = getClient().indexExists(indexName);
         if (indexExists) {
             if (!dropIfExists) {
-                log.debug("Index " + indexName + " already exists");
+                log.debug("Index: {} already exists", indexName);
                 mappingExists = getClient().mappingExists(indexName, conf.getType());
                 if (conf.isDocumentIndex()) {
                     // Check if the index is actually an alias.
@@ -454,26 +445,21 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
                 }
             } else {
                 if (!Framework.isTestModeSet()) {
-                    log.warn(String.format(
-                            "Initializing index: %s, type: %s with " + "dropIfExists flag, deleting an existing index",
-                            indexName, conf.getType()));
+                    log.warn("Initializing index: {}, type: {} with dropIfExists flag, deleting an existing index",
+                            indexName, conf.getType());
                 }
                 getClient().deleteIndex(indexName, TIMEOUT_DELETE_SECOND);
                 indexExists = false;
             }
         }
         if (!indexExists) {
-            log.info(String.format("Creating index: %s", indexName));
-            if (log.isDebugEnabled()) {
-                log.debug("Using settings: " + conf.getSettings());
-            }
+            log.info("Creating index: {}", indexName);
+            log.debug("Using settings: {}", conf::getSettings);
             getClient().createIndex(indexName, conf.getSettings());
         }
         if (!mappingExists) {
-            log.info(String.format("Creating mapping type: %s on index: %s", indexName, conf.getName()));
-            if (log.isDebugEnabled()) {
-                log.debug("Using mapping: " + conf.getMapping());
-            }
+            log.info("Creating mapping type: {} on index: {}", indexName, conf.getName());
+            log.debug("Using mapping: {}", conf::getMapping);
             getClient().createMapping(indexName, conf.getType(), conf.getMapping());
             if (!dropIfExists && conf.getRepositoryName() != null) {
                 repositoryInitialized.add(conf.getRepositoryName());
@@ -527,7 +513,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     protected String[] getSearchIndexes(List<String> searchRepositories) {
         if (searchRepositories.isEmpty()) {
             Collection<String> values = indexNames.values();
-            return values.toArray(new String[values.size()]);
+            return values.toArray(new String[0]);
         }
         String[] ret = new String[searchRepositories.size()];
         int i = 0;
