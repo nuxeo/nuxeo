@@ -498,6 +498,7 @@ public abstract class TestLocalBlobStoreTxAbstract extends TestAbstractBlobStore
                 String k = bs.writeBlob(blobContext(ID1, "foo2"));
                 barrier.await(); // B
                 assertEquals(ID1, k);
+                barrier.await(); // C
             } catch (RuntimeException e) {
                 throw e;
             } catch (InterruptedException e) {
@@ -512,7 +513,11 @@ public abstract class TestLocalBlobStoreTxAbstract extends TestAbstractBlobStore
                 barrier.await(); // A
                 barrier.await(); // B
                 // delete blob
-                bs.deleteBlob(blobContext(ID1, null));
+                try {
+                    bs.deleteBlob(blobContext(ID1, null));
+                } finally {
+                    barrier.await(); // C
+                }
             } catch (RuntimeException e) {
                 throw e;
             } catch (InterruptedException e) {
@@ -571,17 +576,17 @@ public abstract class TestLocalBlobStoreTxAbstract extends TestAbstractBlobStore
                 barrier.await(); // A
                 barrier.await(); // B
                 // write blob
-                bs.writeBlob(blobContext(ID1, "foo2"));
-                fail("should get ConcurrentUpdateException");
+                try {
+                    bs.writeBlob(blobContext(ID1, "foo2"));
+                } finally {
+                    barrier.await(); // C
+                }
             } catch (RuntimeException e) {
-                barrier.reset();
                 throw e;
             } catch (InterruptedException e) {
-                barrier.reset();
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             } catch (Exception | AssertionError e) {
-                barrier.reset();
                 throw new RuntimeException(e);
             }
         }));
@@ -591,21 +596,13 @@ public abstract class TestLocalBlobStoreTxAbstract extends TestAbstractBlobStore
                 // delete blob first
                 bs.deleteBlob(blobContext(ID1, null));
                 barrier.await(); // B
-                try {
-                    barrier.await(); // C
-                    fail("should get BrokenBarrierException");
-                } catch (BrokenBarrierException bbe) {
-                    // expected, from reset() on exception in first thread
-                }
+                barrier.await(); // C
             } catch (RuntimeException e) {
-                barrier.reset();
                 throw e;
             } catch (InterruptedException e) {
-                barrier.reset();
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             } catch (Exception | AssertionError e) {
-                barrier.reset();
                 throw new RuntimeException(e);
             }
         }));
