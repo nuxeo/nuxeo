@@ -95,6 +95,8 @@ public class ComputationSource extends AbstractComputation {
             } else {
                 log.info("Generate record terminated: " + generated + " last wm " + getWatermark());
                 context.setSourceLowWatermark(Watermark.completedOf(Watermark.ofTimestamp(targetTimestamp)).getValue());
+                // Job is done we can ask for the termination of the computation
+                context.askForTermination();
             }
             context.askForCheckpoint();
         }
