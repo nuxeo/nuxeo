@@ -22,6 +22,7 @@
 package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
@@ -121,6 +122,18 @@ public abstract class AbstractCommentManager implements CommentManager {
         Map<String, Serializable> props = new HashMap<>();
         props.put(CommentConstants.TOP_LEVEL_DOCUMENT, topLevelDocument);
         props.put(CommentConstants.PARENT_COMMENT, commentedDoc);
+        // simplifies template checks and vars expansion
+        if (!topLevelDocument.equals(commentedDoc)) {
+            String commentAuthor;
+            NuxeoPrincipal commentPrincipal = getAuthor(commentedDoc);
+            if (commentPrincipal != null) {
+                commentAuthor = commentPrincipal.getFirstName();
+                commentAuthor = isBlank(commentAuthor) ? commentPrincipal.getName() : commentAuthor;
+            } else {
+                commentAuthor = ((String[]) commentedDoc.getPropertyValue("dc:contributors"))[0];
+            }
+            props.put(CommentConstants.PARENT_COMMENT_AUTHOR, commentAuthor);
+        }
         props.put(CommentConstants.COMMENT_DOCUMENT, comment);
         props.put(CommentConstants.COMMENT, (String) comment.getProperty("comment", "text"));
         // Keep comment_text for compatibility

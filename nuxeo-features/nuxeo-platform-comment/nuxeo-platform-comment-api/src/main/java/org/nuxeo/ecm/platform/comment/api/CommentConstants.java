@@ -35,6 +35,11 @@ public final class CommentConstants {
 
     public static final String PARENT_COMMENT = "parentComment";
 
+    /**
+     * @since 11.1
+     */
+    public static final String PARENT_COMMENT_AUTHOR = "parentCommentAuthor";
+
     public static final String COMMENT_DOCUMENT = "comment_document";
 
     public static final String COMMENT = "comment";

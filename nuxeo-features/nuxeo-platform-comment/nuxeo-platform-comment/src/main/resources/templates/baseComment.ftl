@@ -24,6 +24,12 @@
                         <p style="margin:0;font-size:13px;">${htmlEscape(principalAuthor.firstName)} says:</p>
                         <p style="margin:0;font-size:13px;">${comment_text}</p>
                         <br/>
+                        <#if parentCommentAuthor??>
+                          <p style="margin:0;font-size:13px;">It is a reply to:</p>
+                          <p style="margin:0;font-size:13px;">${htmlEscape(parentCommentAuthor)} says:</p>
+                          <p style="margin:0;font-size:13px;">${parentComment.comment.text}</p>
+                          <br/>
+                        </#if>
                         <p style="margin:0;">
                           <a style="color:#22aee8;text-decoration:underline;word-wrap:break-word !important;" href="${docUrl}?tabIds=%3Aview_comments">&#187; See all the comments of the document</a>
                         </p><br/>
