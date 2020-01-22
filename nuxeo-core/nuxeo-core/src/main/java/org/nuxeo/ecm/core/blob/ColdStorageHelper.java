@@ -48,6 +48,8 @@ public class ColdStorageHelper {
 
     public static final String COLD_STORAGE_CONTENT_PROPERTY = "coldstorage:coldContent";
 
+    public static final String COLD_STORAGE_BEING_RETRIEVED_PROPERTY = "coldstorage:beingRetrieved";
+
     /**
      * Moves the main content associated with the document of the given {@link DocumentRef} to a cold storage.
      * 
@@ -76,6 +78,43 @@ public class ColdStorageHelper {
         documentModel.setPropertyValue(COLD_STORAGE_CONTENT_PROPERTY, mainContent);
         Blob thumbnail = Framework.getService(ThumbnailService.class).getThumbnail(documentModel, session);
         documentModel.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) thumbnail);
+        return session.saveDocument(documentModel);
+    }
+
+    /**
+     * Retrieves the cold storage content associated with the document of the given {@link DocumentRef}.
+     * 
+     * @param session the core session
+     * @param documentRef the document reference
+     * @param numberOfDaysOfAvailability number of days that you want your cold storage content to be accessible after
+     *            restoring
+     * @apiNote This method will initiate a request restore, calling the {@link Blob#getStream()} during this process
+     *          doesn't means you will get the blob content immediately.
+     * @return the updated document model if the retrieve succeeds
+     * @throws NuxeoException if there is no cold storage content associated with the given document, or if it is being
+     *             retrieved
+     */
+    public static DocumentModel retrieveContentFromColdStorage(CoreSession session, DocumentRef documentRef,
+            int numberOfDaysOfAvailability) {
+        DocumentModel documentModel = session.getDocument(documentRef);
+        log.debug("Retrieve from cold storage the content of document: {} for: {} days", () -> documentModel,
+                () -> numberOfDaysOfAvailability);
+
+        if (!documentModel.hasFacet(COLD_STORAGE)
+                || documentModel.getPropertyValue(COLD_STORAGE_CONTENT_PROPERTY) == null) {
+            throw new NuxeoException(String.format("No cold storage content defined for document: %s.", documentModel),
+                    SC_NOT_FOUND);
+        }
+
+        Serializable beingRetrieved = documentModel.getPropertyValue(COLD_STORAGE_BEING_RETRIEVED_PROPERTY);
+        if (Boolean.TRUE.equals(beingRetrieved)) {
+            throw new NuxeoException(
+                    String.format("The cold storage content associated with the document: %s is being retrieved.",
+                            documentModel),
+                    SC_CONFLICT);
+        }
+
+        documentModel.setPropertyValue(COLD_STORAGE_BEING_RETRIEVED_PROPERTY, true);
         return session.saveDocument(documentModel);
     }
 
