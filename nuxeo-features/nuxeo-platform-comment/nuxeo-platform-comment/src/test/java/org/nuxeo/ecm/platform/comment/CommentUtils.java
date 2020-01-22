@@ -26,11 +26,11 @@ import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOCUMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.PARENT_COMMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.TOP_LEVEL_DOCUMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
-import static org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -49,6 +49,8 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
 
 import net.htmlparser.jericho.Renderer;
 import net.htmlparser.jericho.Source;
@@ -70,9 +72,11 @@ public class CommentUtils {
      * @param event the event, cannot be {@code null}
      * @param expectedCommentDocModel the document model of the comment, cannot be {@code null}
      * @param expectedCommentedDocModel the document being commented, cannot be {@code null}
+     * @param expectedTopLevelDocumentModel the non comment document being commented,different from the
+     *            commentedDocModel in the case of a reply, cannot be {@code null}
      */
     public static void checkDocumentEventContext(Event event, DocumentModel expectedCommentDocModel,
-            DocumentModel expectedCommentedDocModel) {
+            DocumentModel expectedCommentedDocModel, DocumentModel expectedTopLevelDocumentModel) {
         Map<String, Serializable> properties = event.getContext().getProperties();
         assertFalse(properties.isEmpty());
 
@@ -87,6 +91,13 @@ public class CommentUtils {
 
         assertTrue(properties.containsKey(COMMENT));
         assertEquals(expectedCommentDocModel.getPropertyValue(COMMENT_TEXT), properties.get(COMMENT));
+
+        // The event source document must be the top level document as is the one linked in the notification.
+        assertTrue(properties.containsKey(TOP_LEVEL_DOCUMENT));
+        DocumentModel topLevelDocument = (DocumentModel) properties.get(TOP_LEVEL_DOCUMENT);
+        assertEquals(expectedTopLevelDocumentModel.getRef(), topLevelDocument.getRef());
+        DocumentModel sourceDoc = ((DocumentEventContext) event.getContext()).getSourceDocument();
+        assertEquals(expectedCommentedDocModel.getRef(), sourceDoc.getRef());
     }
 
     /**

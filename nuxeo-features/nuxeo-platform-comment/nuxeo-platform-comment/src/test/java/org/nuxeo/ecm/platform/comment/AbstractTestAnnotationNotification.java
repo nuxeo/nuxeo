@@ -29,9 +29,12 @@ import static org.nuxeo.ecm.platform.comment.CommentUtils.checkReceivedMail;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -49,6 +52,7 @@ import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
+import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
@@ -140,6 +144,8 @@ public abstract class AbstractTestAnnotationNotification {
             String annotationEventType, String documentEventType) {
         try (CapturingEventListener listener = new CapturingEventListener(annotationEventType, documentEventType)) {
             DocumentModel annotationDocumentModel = supplier.get();
+            DocumentModel annotationParentDocumentModel = session.getDocument(new IdRef(
+                    (String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
             transactionalFeature.nextTransaction();
 
             assertTrue(listener.hasBeenFired(annotationEventType));
@@ -153,23 +159,50 @@ public abstract class AbstractTestAnnotationNotification {
             assertEquals(1, handledEvents.size());
             Event expectedEvent = handledEvents.get(0);
             assertEquals(annotationEventType, expectedEvent.getName());
-            checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotatedDocumentModel);
+
+            checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotationParentDocumentModel,
+                    annotatedDocumentModel);
             checkReceivedMail(emailsResult.getMails(), annotationDocumentModel, annotatedDocumentModel,
                     handledEvents.get(0), annotationEventType);
         }
     }
 
+    @Test
+    public void shouldNotifyWithTheRightAnnotatedDocument() {
+        // First comment
+        Annotation createdAnnotation = createAnnotation(annotatedDocumentModel);
+        DocumentModel createdAnnotationDocModel = session.getDocument(new IdRef(createdAnnotation.getId()));
+        // before subscribing, or previous event will be notified as well
+        transactionalFeature.nextTransaction();
+        // Reply
+        captureAndVerifyAnnotationEventNotification(() -> {
+            // subscribe to notifications
+            addSubscriptions("CommentAdded");
+
+            Comment reply = createAnnotation(createdAnnotationDocModel);
+            DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
+            return session.getDocument(new IdRef(replyDocumentModel.getId()));
+        }, COMMENT_ADDED, DOCUMENT_CREATED);
+    }
+
     protected Annotation createAnnotationAndAddSubscription(String... notifications) {
+        addSubscriptions(notifications);
+        return createAnnotation(annotatedDocumentModel);
+    }
+
+    protected void addSubscriptions(String... notifications) {
         NuxeoPrincipal principal = session.getPrincipal();
         String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
         for (String notif : notifications) {
             notificationService.addSubscription(subscriber, notif, annotatedDocumentModel, false, principal, notif);
         }
+    }
 
+    protected Annotation createAnnotation(DocumentModel annotatedDocModel) {
         Annotation annotation = new AnnotationImpl();
         annotation.setAuthor(session.getPrincipal().getName());
         annotation.setText("Any annotation message");
-        annotation.setParentId(annotatedDocumentModel.getId());
+        annotation.setParentId(annotatedDocModel.getId());
         annotation.setXpath("files:files/0/file");
         annotation.setCreationDate(Instant.now());
         annotation.setModificationDate(Instant.now());
