@@ -16,17 +16,18 @@
  */
 package org.nuxeo.ecm.platform.comment.listener;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.api.AnnotationConstants;
+import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- * @description the related thread of comments is retrieved for sending to its subscribers
+ * @description Sets the top level document being commented as the source document of the event as some implementations
+ *              fail on retrieving it and this avoids useless recursive calls. The top level document is the one holding
+ *              the notification subscriptions, not the comments hierarchy below it.
  * @since 5.5
  * @author vpasquier
  */
@@ -37,13 +38,10 @@ public class CommentNotificationListener implements NotificationListenerHook {
         EventContext ctx = event.getContext();
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         if (docCtx.getSourceDocument().getType().equals("Post")
+                || docCtx.getSourceDocument().getType().equals(AnnotationConstants.ANNOTATION_DOC_TYPE)
                 || docCtx.getSourceDocument().getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
-            CommentManager commentManager = Framework.getService(CommentManager.class);
-            DocumentModel thread = commentManager.getThreadForComment(docCtx.getSourceDocument());
-            if (thread != null) {
-                Object[] args = { thread, null };
-                docCtx.setArgs(args);
-            }
+            Object[] args = { docCtx.getProperty(CommentConstants.TOP_LEVEL_DOCUMENT), null };
+            docCtx.setArgs(args);
         }
     }
 }

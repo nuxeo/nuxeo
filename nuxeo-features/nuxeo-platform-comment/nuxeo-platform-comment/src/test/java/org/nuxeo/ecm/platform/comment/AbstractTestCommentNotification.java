@@ -29,8 +29,11 @@ import static org.nuxeo.ecm.platform.comment.CommentUtils.checkReceivedMail;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -134,10 +137,37 @@ public abstract class AbstractTestCommentNotification {
         }, COMMENT_REMOVED, DOCUMENT_REMOVED);
     }
 
+    @Test
+    public void shouldNotifyWithTheRightCommentedDocument() {
+        // First comment
+        Comment createdComment = createComment(commentedDocumentModel);
+        DocumentModel createdCommentDocModel = session.getDocument(new IdRef(createdComment.getId()));
+        // before subscribing, or previous event will be notified as well
+        transactionalFeature.nextTransaction();
+        // Reply
+        captureAndVerifyCommentEventNotification(() -> {
+            addSubscriptions("CommentAdded");
+
+            Comment reply = createComment(createdCommentDocModel);
+            DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
+            return session.getDocument(new IdRef(replyDocumentModel.getId()));
+        }, COMMENT_ADDED, DOCUMENT_CREATED);
+    }
+
+    private void addSubscriptions(String... notifications) {
+        NuxeoPrincipal principal = session.getPrincipal();
+        String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
+        for (String notif : notifications) {
+            notificationService.addSubscription(subscriber, notif, commentedDocumentModel, false, principal, notif);
+        }
+    }
+
     protected void captureAndVerifyCommentEventNotification(Supplier<DocumentModel> supplier, String commentEventType,
             String documentEventType) {
         try (CapturingEventListener listener = new CapturingEventListener(commentEventType, documentEventType)) {
             DocumentModel commentDocumentModel = supplier.get();
+            DocumentModel commentParentDocumentModel = session.getDocument(new IdRef(
+                    (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
             transactionalFeature.nextTransaction();
 
             assertTrue(listener.hasBeenFired(commentEventType));
@@ -149,7 +179,8 @@ public abstract class AbstractTestCommentNotification {
 
             assertEquals(1, handledEvents.size());
 
-            checkDocumentEventContext(handledEvents.get(0), commentDocumentModel, commentedDocumentModel);
+            checkDocumentEventContext(handledEvents.get(0), commentDocumentModel, commentParentDocumentModel,
+                    commentedDocumentModel);
             checkReceivedMail(emailsResult.getMails(), commentDocumentModel, commentedDocumentModel,
                     handledEvents.get(0), commentEventType);
         }
@@ -161,16 +192,15 @@ public abstract class AbstractTestCommentNotification {
     }
 
     protected Comment createCommentAndAddSubscription(String... notifications) {
-        NuxeoPrincipal principal = session.getPrincipal();
-        String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
-        for (String notif : notifications) {
-            notificationService.addSubscription(subscriber, notif, commentedDocumentModel, false, principal, notif);
-        }
+        addSubscriptions(notifications);
+        return createComment(commentedDocumentModel);
+    }
 
+    protected Comment createComment(DocumentModel commentedDocModel) {
         Comment comment = new CommentImpl();
         comment.setAuthor("Administrator");
         comment.setText("any Comment message");
-        comment.setParentId(commentedDocumentModel.getId());
+        comment.setParentId(commentedDocModel.getId());
 
         return commentManager.createComment(session, comment);
     }
