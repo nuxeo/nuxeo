@@ -28,6 +28,11 @@ public final class CommentConstants {
 
     public static final String EVENT_COMMENT_CATEGORY = "commentCategory";
 
+    /**
+     * @since 11.1
+     */
+    public static final String TOP_LEVEL_DOCUMENT = "topLevelDocument";
+
     public static final String PARENT_COMMENT = "parentComment";
 
     public static final String COMMENT_DOCUMENT = "comment_document";
