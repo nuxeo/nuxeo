@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.orphanVersionsCleanup">
+
+  <!-- define the event that will be fired by the scheduler -->
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+    <schedule id="checkAvailabilityOfBlobsBeingRetrieved">
+      <!-- every hour -->
+      <cronExpression>0 0 * ? * * *</cronExpression>
+      <event>checkAvailabilityOfColdStorageContentBeingRetrieved</event>
+    </schedule>
+  </extension>
+
+  <!-- define the listener that will handle the scheduler event -->
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="checkAvailabilityOfBlobsBeingRetrieved" async="true"
+              class="org.nuxeo.ecm.core.coldstorage.CheckAvailabilityOfColdStorageContentListener">
+      <event>checkAvailabilityOfColdStorageContentBeingRetrieved</event>
+    </listener>
+  </extension>
+
+</component>
