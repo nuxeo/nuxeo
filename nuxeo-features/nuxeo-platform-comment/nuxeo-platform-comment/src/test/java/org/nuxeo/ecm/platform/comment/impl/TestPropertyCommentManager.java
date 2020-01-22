@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
 import static org.nuxeo.ecm.platform.comment.api.Comments.toComment;
 import static org.nuxeo.ecm.platform.comment.api.Comments.toDocumentModel;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;

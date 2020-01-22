@@ -31,9 +31,7 @@ import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -127,12 +125,12 @@ public abstract class AbstractTestCommentNotification {
 
     @Test
     public void shouldNotifyEventWhenRemoveComment() {
-        Comment createdComment = createCommentAndAddSubscription("CommentRemoved");
-        DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
+        Comment comment = createCommentAndAddSubscription("CommentRemoved");
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
         commentDocModel.detach(true);
 
         captureAndVerifyCommentEventNotification(() -> {
-            commentManager.deleteComment(session, createdComment.getId());
+            commentManager.deleteComment(session, comment.getId());
             return commentDocModel;
         }, COMMENT_REMOVED, DOCUMENT_REMOVED);
     }
@@ -140,15 +138,15 @@ public abstract class AbstractTestCommentNotification {
     @Test
     public void shouldNotifyWithTheRightCommentedDocument() {
         // First comment
-        Comment createdComment = createComment(commentedDocumentModel);
-        DocumentModel createdCommentDocModel = session.getDocument(new IdRef(createdComment.getId()));
+        Comment comment = createComment(commentedDocumentModel);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
         // before subscribing, or previous event will be notified as well
         transactionalFeature.nextTransaction();
         // Reply
         captureAndVerifyCommentEventNotification(() -> {
             addSubscriptions("CommentAdded");
 
-            Comment reply = createComment(createdCommentDocModel);
+            Comment reply = createComment(commentDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             return session.getDocument(new IdRef(replyDocumentModel.getId()));
         }, COMMENT_ADDED, DOCUMENT_CREATED);

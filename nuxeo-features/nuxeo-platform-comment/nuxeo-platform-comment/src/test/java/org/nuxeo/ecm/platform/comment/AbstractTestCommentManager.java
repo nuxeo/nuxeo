@@ -26,6 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
@@ -36,8 +37,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,7 +60,6 @@ import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -73,8 +71,6 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Features(CommentFeature.class)
 public abstract class AbstractTestCommentManager {
-
-    private static final Logger log = LogManager.getLogger(AbstractTestCommentManager.class);
 
     public static final String FOLDER_COMMENT_CONTAINER = "/Folder/CommentContainer";
 
@@ -315,16 +311,4 @@ public abstract class AbstractTestCommentManager {
     public void testCommentManagerType() {
         assertEquals(getType(), commentManager.getClass());
     }
-
-    public void createUser(String userName) {
-        try {
-            DocumentModel userModel = userManager.getBareUserModel();
-            userModel.setProperty("user", "username", userName);
-            userManager.createUser(userModel);
-        } catch (UserAlreadyExistsException e) {
-            // Avoid failure in tests if the user already exists
-            log.trace("User already exists", e);
-        }
-    }
-
 }

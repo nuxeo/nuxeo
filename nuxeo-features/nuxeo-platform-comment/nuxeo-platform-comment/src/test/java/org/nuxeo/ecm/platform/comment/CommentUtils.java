@@ -45,12 +45,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
+import org.nuxeo.runtime.api.Framework;
 
 import net.htmlparser.jericho.Renderer;
 import net.htmlparser.jericho.Source;
@@ -59,6 +64,8 @@ import net.htmlparser.jericho.Source;
  * @since 11.1
  */
 public class CommentUtils {
+
+    private static final Logger log = LogManager.getLogger(CommentUtils.class);
 
     public static final SimpleDateFormat EVENT_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
 
@@ -162,4 +169,18 @@ public class CommentUtils {
         }
         return content;
     }
+
+    public static void createUser(String userName) {
+        try {
+            UserManager userManager = Framework.getService(UserManager.class);
+            DocumentModel userModel = userManager.getBareUserModel();
+            userModel.setProperty("user", "username", userName);
+            userModel.setProperty("user", "email", userName + "@nuxeo.com");
+            userManager.createUser(userModel);
+        } catch (UserAlreadyExistsException e) {
+            // Avoid failure in tests if the user already exists
+            log.trace("User already exists", e);
+        }
+    }
+
 }

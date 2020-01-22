@@ -32,9 +32,7 @@ import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -125,12 +123,12 @@ public abstract class AbstractTestAnnotationNotification {
 
     @Test
     public void shouldNotifyEventWhenRemoveAnnotation() {
-        Annotation createdAnnotation = createAnnotationAndAddSubscription("CommentRemoved");
-        DocumentModel annotationDocModel = session.getDocument(new IdRef(createdAnnotation.getId()));
+        Annotation annotation = createAnnotationAndAddSubscription("CommentRemoved");
+        DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
         annotationDocModel.detach(true);
 
         captureAndVerifyAnnotationEventNotification(() -> {
-            annotationService.deleteAnnotation(session, createdAnnotation.getId());
+            annotationService.deleteAnnotation(session, annotation.getId());
             return annotationDocModel;
         }, COMMENT_REMOVED, DOCUMENT_REMOVED);
     }
@@ -170,8 +168,8 @@ public abstract class AbstractTestAnnotationNotification {
     @Test
     public void shouldNotifyWithTheRightAnnotatedDocument() {
         // First comment
-        Annotation createdAnnotation = createAnnotation(annotatedDocumentModel);
-        DocumentModel createdAnnotationDocModel = session.getDocument(new IdRef(createdAnnotation.getId()));
+        Annotation annotation = createAnnotation(annotatedDocumentModel);
+        DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
         // before subscribing, or previous event will be notified as well
         transactionalFeature.nextTransaction();
         // Reply
@@ -179,7 +177,7 @@ public abstract class AbstractTestAnnotationNotification {
             // subscribe to notifications
             addSubscriptions("CommentAdded");
 
-            Comment reply = createAnnotation(createdAnnotationDocModel);
+            Comment reply = createAnnotation(annotationDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             return session.getDocument(new IdRef(replyDocumentModel.getId()));
         }, COMMENT_ADDED, DOCUMENT_CREATED);
