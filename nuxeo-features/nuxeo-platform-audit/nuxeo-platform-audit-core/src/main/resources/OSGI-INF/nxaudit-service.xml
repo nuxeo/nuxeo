@@ -104,7 +104,7 @@
 
   <extension-point name="bulk">
      <documentation>
-       CAUTION: Deprecated since 10.10-HF21-SNAPSHOT, audit bulker is now handled with nuxeo-stream, no replacement
+       CAUTION: Deprecated since 10.10-HF21, audit bulker is now handled with nuxeo-stream, no replacement
       Allows to configure bulk processing
     </documentation>
 
