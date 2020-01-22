@@ -29,17 +29,18 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.PARENT_COMMENT
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.TOP_LEVEL_DOCUMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
@@ -106,15 +107,24 @@ public class CommentUtils {
 
     public static String getExpectedMailContent(DocumentModel commentDocModel, DocumentModel commentedDocModel,
             Event event) {
-        URL url = CommentUtils.class.getResource("/templates/commentNotificationMail.txt");
         try {
-            String content = Files.readString(Paths.get(url.toURI()));
-            var model = Map.of("COMMENT_AUTHOR", commentDocModel.getPropertyValue(COMMENT_AUTHOR), //
-                    "COMMENT_ACTION", COMMENT_ADDED.equals(event.getName()) ? "added" : "updated", //
-                    "COMMENTED_DOCUMENT", commentedDocModel.getName(), //
-                    "COMMENT_DATE", EVENT_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(event.getTime()))), //
-                    "COMMENT_TEXT", commentDocModel.getPropertyValue(COMMENT_TEXT), //
-                    "COMMENT_SUBSCRIPTION_NAME", COMMENT_ADDED.equals(event.getName()) ? "New" : "Updated");
+            var model = new HashMap<String, Serializable>();
+            model.put("COMMENT_AUTHOR", commentDocModel.getPropertyValue(COMMENT_AUTHOR));
+            model.put("COMMENT_ACTION", COMMENT_ADDED.equals(event.getName()) ? "added" : "updated");
+            model.put("COMMENTED_DOCUMENT", commentedDocModel.getName());
+            model.put("COMMENT_DATE", EVENT_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(event.getTime()))));
+            model.put("COMMENT_TEXT", commentDocModel.getPropertyValue(COMMENT_TEXT));
+            model.put("COMMENT_SUBSCRIPTION_NAME", COMMENT_ADDED.equals(event.getName()) ? "New" : "Updated");
+
+            String template = "commentNotificationMail.txt";
+            DocumentModel parentComment = (DocumentModel) event.getContext().getProperties().get(PARENT_COMMENT);
+            if (parentComment.hasSchema(COMMENT_SCHEMA)) {
+                template = "commentReplyNotificationMail.txt";
+                model.put("PARENT_COMMENT_AUTHOR", parentComment.getPropertyValue("comment:author"));
+                model.put("PARENT_COMMENT_TEXT", parentComment.getPropertyValue("comment:text"));
+            }
+            String content = Files.readString(
+                    Paths.get(CommentUtils.class.getResource(String.format("/templates/%s", template)).toURI()));
             return StringUtils.expandVars(content, model);
         } catch (URISyntaxException | IOException e) {
             throw new NuxeoException(e);

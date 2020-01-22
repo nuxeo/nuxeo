@@ -192,7 +192,7 @@ public abstract class AbstractTestCommentNotification {
             assertEquals(2, mails.size());
             String expectedMailContent = getExpectedMailContent(replyDocumentModel, commentedDocumentModel,
                     expectedEvent);
-            assertEquals(expectedMailContent, getMailContent(mails.get(0)));
+            assertEquals(expectedMailContent, getMailContent(mails.get(1)));
         }
     }
 

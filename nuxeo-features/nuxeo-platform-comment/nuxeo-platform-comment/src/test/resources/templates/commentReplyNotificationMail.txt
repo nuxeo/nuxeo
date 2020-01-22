@@ -1,0 +1,13 @@
+
+(${COMMENT_AUTHOR}) has ${COMMENT_ACTION} a comment on ${COMMENTED_DOCUMENT} at ${COMMENT_DATE}.
+
+says:
+${COMMENT_TEXT}
+
+It is a reply to:
+${PARENT_COMMENT_AUTHOR} says:
+${PARENT_COMMENT_TEXT}
+
+» See all the comments of the document
+
+You received this notification because you subscribed to '${COMMENT_SUBSCRIPTION_NAME} comment' notification on this document or on one of its parents.
