@@ -18,6 +18,7 @@
  */
 package org.nuxeo.lib.stream.log.kafka;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -109,7 +110,7 @@ public class KafkaUtils implements AutoCloseable {
             return false;
         } finally {
             // cannot use try with resource because of timeout
-            client.close(0, TimeUnit.SECONDS);
+            client.close(Duration.ofSeconds(1));
         }
     }
 
@@ -273,7 +274,7 @@ public class KafkaUtils implements AutoCloseable {
 
     @Override
     public void close() {
-        adminClient.close(ADMIN_CLIENT_CLOSE_TIMEOUT_S, TimeUnit.SECONDS);
+        adminClient.close(Duration.ofSeconds(ADMIN_CLIENT_CLOSE_TIMEOUT_S));
         log.debug("Closed.");
     }
 
