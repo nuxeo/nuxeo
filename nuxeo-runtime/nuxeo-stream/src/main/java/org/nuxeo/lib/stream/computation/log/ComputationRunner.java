@@ -454,9 +454,9 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         saveOffsets();
         lowWatermark.checkpoint();
         context.removeCheckpointFlag();
-        log.debug(metadata.name() + ": checkpoint");
         inCheckpointRecords = inRecords;
         setThreadName("checkpoint");
+        log.debug(metadata.name() + ": checkpoint done");
     }
 
     protected void saveTimers() {
