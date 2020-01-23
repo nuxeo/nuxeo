@@ -40,6 +40,7 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -64,6 +65,9 @@ public class TestPreviewAdapter {
 
     @Inject
     CoreSession session;
+
+    @Inject
+    protected ConversionService conversionService;
 
     protected static final String BAD = "<html>\n" //
             + "<body>\n" //
@@ -169,6 +173,18 @@ public class TestPreviewAdapter {
         document.addFacet("Folderish");
         HtmlPreviewAdapter adapter = document.getAdapter(HtmlPreviewAdapter.class);
         assertNotNull(adapter);
+    }
+
+    @Test
+    public void testConvertTextToHtml() throws IOException {
+        Blob blob = new StringBlob("thisismytest", "text/plain");
+        // convert using SimpleBlobHolder (like ConvertAdapter)
+        BlobHolder blobHolder = new SimpleBlobHolder(blob);
+        BlobHolder res = conversionService.convertToMimeType("text/html", blobHolder , null);
+        List<Blob> blobs = res.getBlobs();
+        assertEquals(1, blobs.size());
+        String preview = blobs.get(0).getString();
+        assertTrue(preview, preview.contains("thisismytest"));
     }
 
 }
