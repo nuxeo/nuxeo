@@ -56,7 +56,7 @@ limitations under the License.
         <paper-item key="auto">[[i18n('retention.rule.label.applicationPolicy.auto')]]</paper-item>
         <paper-item key="manual">[[i18n('retention.rule.label.applicationPolicy.manual')]]</paper-item>
       </nuxeo-select>
-      <dom-if if="[[_isAuto(document.properties.retention_rule:applicationPolicy)]]">
+      <dom-if if="[[_isAuto(document.properties.retention_rule:applicationPolicy)]]" restamp>
         <template>
           <nuxeo-input role="widget"
                        label="[[i18n('retention.rule.label.applicationPolicy.auto.description')]]"
@@ -103,7 +103,7 @@ limitations under the License.
           [[i18n('retention.rule.label.startPolicy.afterDelay.description')]]
         </template>
       </dom-if>
-      <dom-if if="[[_isEventBased(document.properties.retention_def:startingPointPolicy)]]">
+      <dom-if if="[[_isEventBased(document.properties.retention_def:startingPointPolicy)]]" restamp>
         <template>
           [[i18n('retention.rule.label.startPolicy.eventBased.description')]]
           <nuxeo-directory-suggestion name="event"
@@ -124,7 +124,7 @@ limitations under the License.
            </nuxeo-input>
         </template>
       </dom-if>
-      <dom-if if="[[_isMetadataBased(document.properties.retention_def:startingPointPolicy)]]">
+      <dom-if if="[[_isMetadataBased(document.properties.retention_def:startingPointPolicy)]]" restamp>
         <template>
           [[i18n('retention.rule.label.startPolicy.metadataBased.description')]]
           <nuxeo-selectivity data="[[dateFields]]" name="xpath"
