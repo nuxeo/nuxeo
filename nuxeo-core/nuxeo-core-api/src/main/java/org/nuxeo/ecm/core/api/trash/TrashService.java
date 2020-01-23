@@ -167,7 +167,9 @@ public interface TrashService {
      * @param parent The parent document of trash document.
      * @return All documents in the trash of the current document.
      * @since 7.1
+     * @deprecated since 11.1, not scalable
      */
+    @Deprecated(since = "11.1")
     DocumentModelList getDocuments(DocumentModel parent);
 
     /**

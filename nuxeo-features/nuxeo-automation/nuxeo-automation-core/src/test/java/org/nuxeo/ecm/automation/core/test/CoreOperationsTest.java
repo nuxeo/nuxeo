@@ -30,8 +30,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -80,11 +78,11 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.trash.AbstractTrashService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -523,7 +521,7 @@ public class CoreOperationsTest {
     @Test
     public void testTrashUntrash() throws IOException, OperationException {
         DocumentModel parent = session.getDocument(src.getParentRef());
-        assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+        assertEquals(0, getTrashedDocuments(parent).size());
 
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(src);
@@ -532,8 +530,7 @@ public class CoreOperationsTest {
             chain.add(FetchContextDocument.ID);
             chain.add(TrashDocument.ID);
             src = (DocumentModel) service.run(ctx, chain);
-            Framework.getService(TrashService.class).getDocuments(parent);
-            assertEquals(1, Framework.getService(TrashService.class).getDocuments(parent).size());
+            assertEquals(1, getTrashedDocuments(parent).size());
         }
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(src);
@@ -541,7 +538,7 @@ public class CoreOperationsTest {
             chain.add(UntrashDocument.ID);
             service.run(ctx, chain);
 
-            assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+            assertEquals(0, getTrashedDocuments(parent).size());
         }
     }
 
@@ -551,7 +548,7 @@ public class CoreOperationsTest {
     @Test
     public void testEmptyTrash() throws IOException, OperationException {
         DocumentModel parent = session.getDocument(src.getParentRef());
-        assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+        assertEquals(0, getTrashedDocuments(parent).size());
 
         try (OperationContext ctx = new OperationContext(session)) {
             ctx.setInput(src);
@@ -560,8 +557,7 @@ public class CoreOperationsTest {
             chain.add(FetchContextDocument.ID);
             chain.add(TrashDocument.ID);
             src = (DocumentModel) service.run(ctx, chain);
-            Framework.getService(TrashService.class).getDocuments(parent);
-            assertEquals(1, Framework.getService(TrashService.class).getDocuments(parent).size());
+            assertEquals(1, getTrashedDocuments(parent).size());
         }
 
         try (OperationContext ctx = new OperationContext(session)) {
@@ -569,7 +565,7 @@ public class CoreOperationsTest {
             chain.add(EmptyTrash.ID).set("parent", parent);
             service.run(ctx, chain);
 
-            assertEquals(0, Framework.getService(TrashService.class).getDocuments(parent).size());
+            assertEquals(0, getTrashedDocuments(parent).size());
             assertEquals(1, session.getChildren(parent.getRef()).size());
         }
     }
@@ -805,4 +801,8 @@ public class CoreOperationsTest {
         }
     }
 
+    protected DocumentModelList getTrashedDocuments(DocumentModel parent) {
+        CoreSession session = parent.getCoreSession();
+        return session.query(String.format(AbstractTrashService.TRASHED_QUERY, parent.getId()));
+    }
 }
