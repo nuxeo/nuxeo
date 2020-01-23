@@ -151,7 +151,7 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
         LogOffset ret = new LogOffsetImpl(name, partition, result.offset());
         if (log.isDebugEnabled()) {
             int len = record.value().get().length;
-            log.debug(String.format("append to %s-%02d:+%d, len: %d, key: %s, value: %s", name, partition, ret.offset(),
+            log.debug(String.format("Append to %s-%02d:+%d, len: %d, key: %s, value: %s", name, partition, ret.offset(),
                     len, key, message));
         }
         return ret;

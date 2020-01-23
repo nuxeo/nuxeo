@@ -414,7 +414,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
             } catch (InterruptException | IllegalStateException e) {
                 // this happens if the consumer has already been closed or if it is closed from another
                 // thread.
-                log.warn("Discard error while closing consumer: ", e);
+                log.info("Discard error while closing consumer: ", e);
             } catch (Throwable t) {
                 log.error("interrupted", t);
             }
