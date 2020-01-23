@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.api.blobholder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,11 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
     protected void init(List<Blob> blobs) {
         this.blobs = blobs;
         creationDate = Calendar.getInstance();
+    }
+
+    @Override
+    public void setBlob(Blob blob) {
+        init(new ArrayList<>(Arrays.asList(blob)));
     }
 
     @Override
