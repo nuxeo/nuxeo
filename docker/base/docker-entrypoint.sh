@@ -11,7 +11,7 @@ fi
 
 function configure () {
   cat << EOF
-nuxeo.data.dir=/var/lib/nuxeo/data
+nuxeo.data.dir=/var/lib/nuxeo
 nuxeo.log.dir=/var/log/nuxeo
 nuxeo.tmp.dir=/tmp
 nuxeo.pid.dir=/var/pid/nuxeo
@@ -69,10 +69,10 @@ else # nuxeoctl command found
 
   # Handle instance.clid
   if [ -n "$NUXEO_CLID" ]; then
-    echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/data/instance.clid"
+    echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/instance.clid"
     # Replace -- by a carriage return
     NUXEO_CLID="${NUXEO_CLID/--/\\n}"
-    printf "%b\n" "$NUXEO_CLID" >> /var/lib/nuxeo/data/instance.clid
+    printf "%b\n" "$NUXEO_CLID" >> /var/lib/nuxeo/instance.clid
   fi
 
 fi
