@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2019-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,6 +158,7 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         throw new UnsupportedOperationException(SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE);
     }
@@ -189,8 +190,7 @@ public class TreeCommentManager extends AbstractCommentManager {
                     Comments.getDocumentType(comment));
             Comments.toDocumentModel(comment, commentDocModel);
 
-            commentDocModel.setPropertyValue(COMMENT_ANCESTOR_IDS,
-                    (Serializable) computeAncestorIds(session, comment.getParentId()));
+            commentDocModel.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(session, comment.getParentId()));
 
             // Create the comment document model
             commentDocModel = session.createDocument(commentDocModel);
@@ -221,13 +221,13 @@ public class TreeCommentManager extends AbstractCommentManager {
 
             // Should compute ancestors and set comment:parentId for backward compatibility
             commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS,
-                    (Serializable) computeAncestorIds(session, documentModel.getId()));
+                    computeAncestorIds(session, documentModel.getId()));
 
             // Create the comment doc model
             commentModelToCreate = session.createDocument(commentModelToCreate);
 
             DocumentModel topLevelDocument = manageRelatedTextOfTopLevelDocument(session,
-                    Comments.newComment(commentModelToCreate));
+                    Comments.toComment(commentModelToCreate));
 
             handleNotificationAutoSubscriptions(session, topLevelDocument, commentDocModel);
 
@@ -248,11 +248,13 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, String text, String author) {
         throw new UnsupportedOperationException(SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE);
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child) {
         throw new UnsupportedOperationException(SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE);
     }
@@ -314,6 +316,7 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
         throw new UnsupportedOperationException(SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE);
     }
@@ -387,9 +390,6 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     /**
      * Checks if the user related to the {@code session} can comments the document linked to the {@code documentRef}.
-     *
-     * @return {@code true} if the user session can comments the given document model, otherwise throws a
-     *         {@link CommentSecurityException}
      */
     protected void checkCreateCommentPermissions(CoreSession s, DocumentRef documentRef) {
         DocumentRef rootDocRef = CoreInstance.doPrivileged(s, session -> {
@@ -404,9 +404,6 @@ public class TreeCommentManager extends AbstractCommentManager {
     /**
      * Checks if the user related to the {@code session} can read the comments of the document linked to the given
      * {@code documentRef}.
-     *
-     * @return {@code true} if the user session can read the comments of the given document model, otherwise throws a
-     *         {@link CommentSecurityException}
      */
     protected void checkReadCommentPermissions(CoreSession s, DocumentRef documentRef) {
         DocumentRef rootDocRef = CoreInstance.doPrivileged(s, session -> {
@@ -422,9 +419,6 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     /**
      * Checks if the user related to the {@code session} can update the given {@code comment}.
-     *
-     * @return {@code true} if the user session can update the given {@code comment}, otherwise throws a
-     *         {@link CommentSecurityException}
      */
     protected void checkUpdateCommentPermissions(CoreSession session, Comment comment) {
         NuxeoPrincipal principal = session.getPrincipal();
@@ -478,7 +472,6 @@ public class TreeCommentManager extends AbstractCommentManager {
 
             manageRelatedTextOfTopLevelDocument(session, comment);
 
-            DocumentModel parent = session.getDocument(commentDocModel.getParentRef());
             commentDocModel.detach(true);
             session.removeDocument(documentRef);
             notifyEvent(session, CommentEvents.COMMENT_REMOVED, commentDocModel);
@@ -489,7 +482,6 @@ public class TreeCommentManager extends AbstractCommentManager {
     /**
      * @return the comment document model of the given {@code documentRef} if it exists, otherwise throws a
      *         {@link CommentNotFoundException}
-     * @throws CommentNotFoundException
      */
     public DocumentModel getCommentDocumentModel(CoreSession session, DocumentRef documentRef) {
         try {
@@ -564,7 +556,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             optional.ifPresent(resources::remove);
         } else {
             optional.ifPresentOrElse( //
-                    (map) -> map.put(RELATED_TEXT, comment.getText()), // Update
+                    map -> map.put(RELATED_TEXT, comment.getText()), // Update
                     () -> resources.add(Map.of(RELATED_TEXT_ID, relatedTextId, RELATED_TEXT, comment.getText()))); // Creation
         }
 

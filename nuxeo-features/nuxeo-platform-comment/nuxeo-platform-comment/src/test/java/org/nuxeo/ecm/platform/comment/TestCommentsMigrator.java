@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@ public class TestCommentsMigrator {
     protected NotificationManager notificationManager;
 
     @Inject
-    LogCaptureFeature.Result logCaptureResult;
+    protected LogCaptureFeature.Result logCaptureResult;
 
     protected DocumentModel firstFileToComment;
 
@@ -318,7 +318,6 @@ public class TestCommentsMigrator {
         assertTrue(commentManager.getClass().getName(), commentManager instanceof TreeCommentManager);
     }
 
-    @SuppressWarnings("deprecation")
     protected void runMigration(Runnable migrator) {
         try (CapturingEventListener listener = new CapturingEventListener(DOCUMENT_UPDATED)) {
             migrator.run();
@@ -600,9 +599,9 @@ public class TestCommentsMigrator {
                                                        .limit(NB_COMMENT_TO_REPLY_ON_IT)
                                                        .collect(Collectors.toList());
 
-        for (int i = 0; i < comments.size(); i++) {
+        for (Comment comment : comments) {
             // First reply
-            DocumentModel reply = createReply(propertyCommentManager, new IdRef(comments.get(i).getId()), 1);
+            DocumentModel reply = createReply(propertyCommentManager, new IdRef(comment.getId()), 1);
             for (int j = 1; j < NB_REPLY_BY_COMMENT; j++) {
                 reply = createReply(propertyCommentManager, reply.getRef(), j + 1);
             }

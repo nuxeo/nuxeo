@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 
 /**
  * @since 10.3
@@ -67,11 +68,13 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public DocumentModel createComment(DocumentModel docModel, String comment) {
         return second.createComment(docModel, comment);
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
         return second.createComment(docModel, comment, author);
     }
@@ -82,11 +85,13 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child) {
         return second.createComment(docModel, parent, child);
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
         if (comment.getPropertyValue(COMMENT_PARENT_ID) != null) {
             second.deleteComment(docModel, comment);
@@ -96,6 +101,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         return Stream.concat(first.getDocumentsForComment(comment).stream(),
                 second.getDocumentsForComment(comment).stream()).distinct().collect(Collectors.toList());
@@ -205,29 +211,27 @@ public class BridgeCommentManager extends AbstractCommentManager {
 
     @Override
     public DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
-        return execute(session, commentDocumentModel.getRef(), cm -> cm.getCommentedDocumentRef(session, commentDocumentModel));
+        return execute(session, commentDocumentModel.getRef(),
+                cm -> cm.getCommentedDocumentRef(session, commentDocumentModel));
     }
 
     /**
-     * Executes the given function for a comment document ref, depending on the type of the provided comment manager {@link #first},
-     * {@link #second}.
+     * Executes the given function for a comment document ref, depending on the types of comment managers.
      * <p>
-     * In some cases (see the callers of this method), rely on
-     * {@link org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants#COMMENT_PARENT_ID} is not enough, this
-     * mainly the case where {@link #first} is {@link PropertyCommentManager} and {@link #second} is
-     * {@link TreeCommentManager}, the comment storage structure is different:
+     * In some cases, leveraging {@link CommentsConstants#COMMENT_PARENT_ID} is not enough, this is the case when bridge
+     * is used with {@link PropertyCommentManager} and {@link TreeCommentManager}.
      * <ul>
-     * <li>RelationManager: Comments structures are stored in jenaGraph</li>
-     * <li>PropertyManager: All comments are stored under a hidden folder, and each comment/reply contains his direct
-     * parent in `comment:parentId`, this means if we want the commented document for example we should retrieve the
-     * `comment:parentId` of the comment thread (first comment)</li>
-     * <li>TreeCommentManager: Each comment is stored under his parent, but the first one (thread comment) is stored
-     * under a folder with `CommentRoot` type, in this case if we want to retrieve the commented document we should
-     * retrieve the `ecm:parentId` of the folder with type `CommentRoot`</li>
+     * <li>{@link CommentManagerImpl} (or RelationCommentManager): Comments structures are stored in jenaGraph</li>
+     * <li>{@link PropertyCommentManager}: All comments are stored under a hidden folder and each comment stores its
+     * parent id in {@code comment:parentId} property</li>
+     * <li>{@link TreeCommentManager}: A {@link CommentsConstants#COMMENTS_DIRECTORY_TYPE} document is created under the
+     * top level document to store the comments. Replies are then stored directly under their parent (which is a
+     * comment)</li>
      * </ul>
      * 
      * @since 11.1
      */
+    @SuppressWarnings("deprecation")
     protected <T> T execute(CoreSession s, DocumentRef documentRef, Function<CommentManager, T> function) {
         return CoreInstance.doPrivileged(s, session -> {
             DocumentModel documentModel = session.getDocument(documentRef);
@@ -244,7 +248,8 @@ public class BridgeCommentManager extends AbstractCommentManager {
 
             // From `Property` to `Tree`
             if (first instanceof PropertyCommentManager && second instanceof TreeCommentManager) {
-                // In this case we cannot just rely on `comment:parentId` but on the type of doc that contains the comment
+                // In this case we cannot just rely on `comment:parentId` but on the type of doc that contains the
+                // comment
                 DocumentRef parentRef = documentModel.getParentRef();
                 // Comment is under property model
                 if (session.getDocument(parentRef).getType().equals("HiddenFolder")) {
@@ -258,5 +263,5 @@ public class BridgeCommentManager extends AbstractCommentManager {
                     "Undefined behaviour for document ref: %s, first: %s, second: %s ", documentModel, first, second));
         });
     }
-    
+
 }

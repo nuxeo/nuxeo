@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,9 @@ public class CommentableDocumentAdapter implements CommentableDocument {
 
     private static final long serialVersionUID = 2996381735762615450L;
 
-    final DocumentModel docModel;
+    protected final DocumentModel docModel;
 
-    final CommentManager commentManager;
+    protected final CommentManager commentManager;
 
     public CommentableDocumentAdapter(DocumentModel docModel) {
         this.commentManager = Framework.getService(CommentManager.class);
@@ -54,14 +54,12 @@ public class CommentableDocumentAdapter implements CommentableDocument {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public DocumentModel addComment(DocumentModel comment, String path) {
         comment.setPropertyValue(COMMENT_PARENT_ID, docModel.getId());
         return commentManager.createLocatedComment(docModel, comment, path);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
         comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
         return commentManager.createComment(parent, comment);

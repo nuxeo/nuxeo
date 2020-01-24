@@ -45,9 +45,10 @@ import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
 /**
  * @since 11.1
  */
-public class TestBridgeCommentNotificationFromPropertyToTree extends AbstractTestCommentNotification {
+public class TestBridgeFromPropertyToTreeCommentNotification extends AbstractTestCommentNotification {
 
     @Override
+    @SuppressWarnings("deprecation")
     protected CommentManager getCommentManager() {
         return new BridgeCommentManager(new PropertyCommentManager(), new TreeCommentManager());
     }

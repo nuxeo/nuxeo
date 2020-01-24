@@ -47,7 +47,7 @@ import org.nuxeo.runtime.test.runner.Features;
  */
 @Deprecated
 @Features(RelationCommentFeature.class)
-public class TestBridgeFromRelationToProperty extends AbstractTestBridgeCommentManager {
+public class TestBridgeFromRelationToPropertyCommentManager extends AbstractTestBridgeCommentManager {
 
     @Test
     public void testDeleteCommentAsRelation() {

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,8 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
             if (entity.getId() == null) {
                 return Collections.emptyList();
             }
-            DocumentRef ancestorRef = Framework.getService(CommentManager.class).getTopLevelCommentAncestor(s, new IdRef(entity.getId()));
+            DocumentRef ancestorRef = Framework.getService(CommentManager.class)
+                                               .getTopLevelCommentAncestor(s, new IdRef(entity.getId()));
             return s.filterGrantedPermissions(principal, ancestorRef,
                     Arrays.asList(permissionProvider.getPermissions()));
         });
@@ -128,7 +129,7 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
     protected void writeRepliesSummary(CoreSession session, Comment entity, JsonGenerator jg) throws IOException {
         PartialList<Comment> comments = commentManager.getComments(session, entity.getId(), 1L, 0L, false);
         jg.writeNumberField(COMMENT_NUMBER_OF_REPLIES, comments.totalSize());
-        if (comments.size() > 0) {
+        if (!comments.isEmpty()) {
             jg.writeStringField(COMMENT_LAST_REPLY_DATE, comments.get(0).getCreationDate().toString());
         }
     }

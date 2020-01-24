@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ import org.nuxeo.runtime.api.Framework;
  * Comment service implementation. The comments are linked together thanks to a parent document id property.
  *
  * @since 10.3
+ * @deprecated since 11.1, use {@link TreeCommentManager} instead
  */
+@Deprecated(since = "11.1")
 public class PropertyCommentManager extends AbstractCommentManager {
 
     protected static final String GET_COMMENT_PAGEPROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
@@ -127,8 +129,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             DocumentModel commentModelToCreate = session.createDocumentModel(path, COMMENT_NAME,
                     commentModel.getType());
             commentModelToCreate.copyContent(commentModel);
-            commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS,
-                    (Serializable) computeAncestorIds(session, docModel.getId()));
+            commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(session, docModel.getId()));
             DocumentModel comment = session.createDocument(commentModelToCreate);
             comment.detach(true);
             notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, comment);
@@ -163,7 +164,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         return CoreInstance.doPrivileged(session, s -> {
             DocumentModel commentModel = s.createDocumentModel(path, COMMENT_NAME, comment.getType());
             commentModel.copyContent(comment);
-            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) computeAncestorIds(s, docModel.getId()));
+            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(s, docModel.getId()));
             commentModel = s.createDocument(commentModel);
             notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, commentModel);
             return commentModel;
@@ -201,7 +202,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             Comments.toDocumentModel(comment, commentModel);
 
             // Compute the list of ancestor ids
-            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, (Serializable) computeAncestorIds(s, parentId));
+            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(s, parentId));
             commentModel = s.createDocument(commentModel);
             notifyEvent(s, CommentEvents.COMMENT_ADDED, commentModel);
             return Comments.toComment(commentModel);
