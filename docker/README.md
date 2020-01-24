@@ -268,7 +268,7 @@ docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/slim:11.1-SNAPS
 
 #### NUXEO_CLID
 
-If provided when running a container, the value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/data/instance.clid` at startup.
+If provided when running a container, the value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/instance.clid` at startup.
 
 For instance, running:
 

@@ -52,8 +52,8 @@ RUN mkdir -p $NUXEO_HOME \
   && chown 900:0 $NUXEO_HOME && chmod g+rwX $NUXEO_HOME \
   && mkdir -p /etc/nuxeo \
   && chown 900:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo \
-  && mkdir -p /var/lib/nuxeo/data \
-  && chown 900:0 /var/lib/nuxeo/data && chmod g+rwX /var/lib/nuxeo/data \
+  && mkdir -p /var/lib/nuxeo \
+  && chown 900:0 /var/lib/nuxeo && chmod g+rwX /var/lib/nuxeo \
   && mkdir -p /var/log/nuxeo \
   && chown  900:0 /var/log/nuxeo && chmod g+rwX /var/log/nuxeo \
   && mkdir -p /var/pid/nuxeo \
@@ -67,7 +67,7 @@ RUN mkdir /etc/nuxeo/conf.d
 # Copy base property files.
 COPY conf.d /etc/nuxeo/conf.d/
 
-VOLUME /var/lib/nuxeo/data
+VOLUME /var/lib/nuxeo
 VOLUME /var/log/nuxeo
 VOLUME /tmp
 
