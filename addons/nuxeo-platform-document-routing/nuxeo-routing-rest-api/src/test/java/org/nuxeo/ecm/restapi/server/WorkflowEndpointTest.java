@@ -240,6 +240,28 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     }
 
     @Test
+    public void testTasksPaginationOffset() throws IOException {
+        // Create two dummy tasks
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview"))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("SerialDocumentReview"))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.add("offset", "1");
+        // Check we get only one task due to offset parameter
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, node.get("entries").size());
+        }
+    }
+
+    @Test
     public void testWorkflowModelEndpoint() throws Exception {
 
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/workflowModel")) {
