@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -65,7 +64,6 @@ import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.impl.QNameResourceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Migrator of comments.
@@ -111,6 +109,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         if (!Set.of(MIGRATION_STEP_RELATION_TO_PROPERTY, MIGRATION_STEP_PROPERTY_TO_SECURED).contains(step)) {
             throw new NuxeoException("Unknown migration step: " + step);
         }
+        // needed for reportProgress
         this.migrationContext = migrationContext;
         reportProgress("Initializing", 0, -1); // unknown
         List<String> repositoryNames = Framework.getService(RepositoryService.class).getRepositoryNames();
@@ -119,17 +118,6 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         } catch (MigrationShutdownException e) {
             log.trace("Migration is shutdown");
         }
-    }
-
-    @Override
-    protected void migrateSession(CoreSession session) {
-        migrateSession(null, this.migrationContext, session);
-    }
-
-    @Override
-    protected void migrateRepository(String step, MigrationContext migrationContext, String repositoryName) {
-        TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repositoryName,
-                (CoreSession session) -> migrateSession(step, migrationContext, session)));
     }
 
     @Override
@@ -351,12 +339,6 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
     public void notifyStatusChange() {
         CommentService commentComponent = (CommentService) Framework.getRuntime().getComponent(CommentService.NAME);
         commentComponent.invalidateCommentManagerImplementation();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void migrateComments(CoreSession session, RelationManager relationManager, CommentServiceConfig config,
-            Statement statement) {
-        migrateCommentsFromRelationToProperty(session, relationManager, config, statement);
     }
 
     /**

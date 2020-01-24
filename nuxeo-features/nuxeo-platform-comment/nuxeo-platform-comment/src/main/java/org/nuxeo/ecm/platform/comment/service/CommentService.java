@@ -75,6 +75,10 @@ public class CommentService extends DefaultComponent {
         // do nothing
     }
 
+    /**
+     * @deprecated since 11.1, it's unused and {@link CommentManagerImpl} is deprecated
+     */
+    @Deprecated(since = "11.1")
     public CommentManager getCommentManager() {
         log.debug("getCommentManager");
         if (commentManager == null) {
@@ -103,6 +107,7 @@ public class CommentService extends DefaultComponent {
     }
 
     // called under synchronized (this)
+    @SuppressWarnings("deprecation")
     protected CommentManager recomputeCommentManager() {
         MigrationService migrationService = Framework.getService(MigrationService.class);
         MigrationService.MigrationStatus status = migrationService.getStatus(MIGRATION_ID);

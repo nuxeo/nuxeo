@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -74,6 +75,7 @@ public abstract class AbstractCommentManager implements CommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) {
         return getComments(docModel);
     }
@@ -172,9 +174,9 @@ public abstract class AbstractCommentManager implements CommentManager {
     }
 
     /**
-     * @deprecated since 10.10-HF12. Not used anymore
+     * @deprecated since 11.1. Not used anymore
      */
-    @Deprecated
+    @Deprecated(since = "11.1")
     protected void setCommentPermissions(CoreSession session, DocumentModel documentModel) {
         ACP acp = new ACPImpl();
         ACE grantRead = new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ, true);
@@ -185,8 +187,9 @@ public abstract class AbstractCommentManager implements CommentManager {
         session.setACP(documentModel.getRef(), acp, true);
     }
 
-    protected Collection<String> computeAncestorIds(CoreSession session, String parentId) {
-        Collection<String> ancestorIds = new HashSet<>();
+    @SuppressWarnings("unchecked")
+    protected <S extends Set<String> & Serializable> S computeAncestorIds(CoreSession session, String parentId) {
+        Set<String> ancestorIds = new HashSet<>();
         ancestorIds.add(parentId);
         DocumentRef parentRef = new IdRef(parentId);
         while (session.exists(parentRef) && session.getDocument(parentRef).hasSchema(COMMENT_SCHEMA)) {
@@ -194,7 +197,7 @@ public abstract class AbstractCommentManager implements CommentManager {
             ancestorIds.add(parentId);
             parentRef = new IdRef(parentId);
         }
-        return ancestorIds;
+        return (S) ancestorIds;
     }
 
     /**

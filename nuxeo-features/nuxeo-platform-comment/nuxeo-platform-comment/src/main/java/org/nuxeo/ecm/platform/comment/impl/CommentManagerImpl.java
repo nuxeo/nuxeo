@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2007-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2007-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.comment.impl;
@@ -74,7 +72,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  * @deprecated since 10.3, use {@link PropertyCommentManager} instead.
  */
-@Deprecated
+@Deprecated(since = "10.3")
 public class CommentManagerImpl extends AbstractCommentManager {
 
     private static final Logger log = LogManager.getLogger(CommentManagerImpl.class);
@@ -129,7 +127,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
             }
 
             CommentSorter sorter = new CommentSorter(true);
-            Collections.sort(commentList, sorter);
+            commentList.sort(sorter);
 
             return commentList;
         });

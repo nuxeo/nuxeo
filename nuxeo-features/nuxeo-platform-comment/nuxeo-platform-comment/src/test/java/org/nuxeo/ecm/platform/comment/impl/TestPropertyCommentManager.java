@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,9 @@ import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 10.3
+ * @deprecated since 11.1, in order to follow service depreciation
  */
+@Deprecated(since = "11.1")
 @Features(PropertyCommentFeature.class)
 public class TestPropertyCommentManager extends AbstractTestCommentManager {
 

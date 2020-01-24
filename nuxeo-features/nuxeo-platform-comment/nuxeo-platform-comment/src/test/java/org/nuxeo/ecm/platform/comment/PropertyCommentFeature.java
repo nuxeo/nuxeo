@@ -28,7 +28,9 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  * implementation.
  * 
  * @since 11.1
+ * @deprecated since 11.1, use {@link CommentFeature} instead
  */
+@Deprecated(since = "11.1")
 @Features(CommentFeature.class)
 @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/property-comment-manager-override.xml")
 public class PropertyCommentFeature implements RunnerFeature {

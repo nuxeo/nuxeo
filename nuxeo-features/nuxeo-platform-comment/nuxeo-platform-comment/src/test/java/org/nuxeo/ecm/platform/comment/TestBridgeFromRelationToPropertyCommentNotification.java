@@ -51,7 +51,7 @@ import org.nuxeo.runtime.test.runner.Features;
  */
 @Deprecated
 @Features(RelationCommentFeature.class)
-public class TestBridgeCommentNotificationFromRelationToProperty extends AbstractTestCommentNotification {
+public class TestBridgeFromRelationToPropertyCommentNotification extends AbstractTestCommentNotification {
 
     @Override
     protected CommentManager getCommentManager() {
