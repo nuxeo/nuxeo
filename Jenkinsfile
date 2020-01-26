@@ -222,6 +222,12 @@ pipeline {
       }
     }
     stage('JSF pipeline') {
+      when {
+        expression {
+          // only trigger JSF pipeline if the target branch is master or a maintenance branch
+          return CHANGE_TARGET ==~ 'master|\\d+\\.\\d+'
+        }
+      }
       steps {
         container('maven') {
           echo """
