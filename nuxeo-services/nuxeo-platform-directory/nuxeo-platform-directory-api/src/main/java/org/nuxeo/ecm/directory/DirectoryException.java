@@ -42,4 +42,32 @@ public class DirectoryException extends NuxeoException {
         super(cause);
     }
 
+    /**
+     * @since 11.1
+     */
+    public DirectoryException(int statusCode) {
+        super(statusCode);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public DirectoryException(String message, int statusCode) {
+        super(message, statusCode);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public DirectoryException(String message, Throwable cause, int statusCode) {
+        super(message, cause, statusCode);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public DirectoryException(Throwable cause, int statusCode) {
+        super(cause, statusCode);
+    }
+
 }

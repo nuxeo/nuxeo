@@ -21,6 +21,8 @@
 
 package org.nuxeo.ecm.directory.memory;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -122,7 +124,8 @@ public class MemoryDirectorySession extends BaseSession {
         Map<String, Object> map = data.get(id);
         if (map != null) {
             throw new DirectoryException(
-                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()));
+                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()),
+                    SC_CONFLICT);
         }
         map = new HashMap<>();
         data.put(id, map);

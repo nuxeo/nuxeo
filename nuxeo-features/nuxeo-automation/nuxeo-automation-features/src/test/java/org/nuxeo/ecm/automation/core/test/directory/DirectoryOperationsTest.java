@@ -22,8 +22,10 @@ package org.nuxeo.ecm.automation.core.test.directory;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -49,11 +51,13 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.directory.CreateDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.DeleteDirectoryEntries;
+import org.nuxeo.ecm.automation.core.operations.services.directory.LoadFromCSV;
 import org.nuxeo.ecm.automation.core.operations.services.directory.ReadDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirectoryEntries;
 import org.nuxeo.ecm.automation.core.operations.services.directory.UpdateDirectoryEntries;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -433,4 +437,21 @@ public class DirectoryOperationsTest {
         JSONAssert.assertEquals(expected, actual.getString(), true);
     }
 
+    @Test
+    public void shouldLoadCsvToDirectory() throws Exception {
+        try (Session directorySession = directoryService.open("continent")) {
+            assertFalse(directorySession.hasEntry("atlantis"));
+
+            OperationParameters params = new OperationParameters(LoadFromCSV.ID,
+                    Map.of("directoryName", "continent", "dataLoadingPolicy", "reject_duplicate"));
+            Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("testdirectorydata/continent_local.csv"),
+                    "text/csv", null, "testdirectorydata/continent_local.csv");
+            ctx.setInput(blob);
+            OperationChain chain = new OperationChain("fakeChain");
+            chain.add(params);
+            service.run(ctx, chain);
+
+            assertTrue(directorySession.hasEntry("atlantis"));
+        }
+    }
 }

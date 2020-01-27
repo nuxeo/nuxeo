@@ -20,6 +20,7 @@
 
 package org.nuxeo.directory.mongodb;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_ID;
 import static org.nuxeo.directory.mongodb.MongoDBSerializationHelper.MONGODB_SEQ;
@@ -154,7 +155,8 @@ public class MongoDBSession extends BaseSession {
         // Check if the entry already exists
         if (hasEntry0(id)) {
             throw new DirectoryException(
-                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()));
+                    String.format("Entry with id %s already exists in directory %s", id, directory.getName()),
+                    SC_CONFLICT);
         }
 
         try {

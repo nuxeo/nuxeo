@@ -23,6 +23,7 @@ package org.nuxeo.ecm.directory.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseDirectoryDescriptor;
 import org.nuxeo.ecm.directory.Directory;
@@ -142,4 +143,11 @@ public interface DirectoryService {
      */
     void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor);
 
+    /**
+     * Loads a CSV into the given {@code directoryName}.
+     *
+     * @see BaseDirectoryDescriptor#DATA_LOADING_POLICIES
+     * @since 11.1
+     */
+    void loadFromCSV(String directoryName, Blob dataBlob, String dataLoadingPolicy);
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.csv.loaded.override.error.duplicate">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="csvLoadedDirectory" extends="template-directory">
+      <schema>csvLoadSchema</schema>
+      <idField>id</idField>
+      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <dataLoadingPolicy>reject_duplicate</dataLoadingPolicy>
+      <dataFile>test-load-directory.csv</dataFile>
+    </directory>
+
+  </extension>
+
+</component>

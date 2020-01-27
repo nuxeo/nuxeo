@@ -21,12 +21,16 @@
  */
 package org.nuxeo.ecm.directory;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_NEVER_LOAD;
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
 
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -68,6 +72,15 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     @Override
     public void unregisterDirectoryDescriptor(BaseDirectoryDescriptor descriptor) {
         registry.removeContribution(descriptor);
+    }
+
+    @Override
+    public void loadFromCSV(String directoryName, Blob dataBlob, String dataLoadingPolicy) {
+        if (isBlank(dataLoadingPolicy) || DATA_LOADING_POLICY_NEVER_LOAD.equals(dataLoadingPolicy)) {
+            throw new DirectoryException("Illegal dataLoadingPolicy: " + dataLoadingPolicy, SC_BAD_REQUEST);
+        }
+        Directory directory = getDirectoryOrFail(directoryName);
+        directory.loadFromCSV(dataBlob, dataLoadingPolicy);
     }
 
     @Override

@@ -117,17 +117,17 @@ public class MongoDBDirectory extends AbstractDirectory {
 
         String policy = descriptor.getCreateTablePolicy();
         boolean dropCollection = false;
-        boolean loadData = false;
+        boolean collectionExists = true;
 
         switch (policy) {
         case CREATE_TABLE_POLICY_ALWAYS:
             dropCollection = true;
-            loadData = true;
+            collectionExists = false;
             break;
         case CREATE_TABLE_POLICY_ON_MISSING_COLUMNS:
             // As MongoDB does not have the notion of columns, only load data if collection doesn't exist
             if (!hasCollection(getName())) {
-                loadData = true;
+                collectionExists = false;
             }
             break;
         default:
@@ -139,9 +139,9 @@ public class MongoDBDirectory extends AbstractDirectory {
         if (isMultiTenant()) {
             collection.createIndex(Indexes.hashed(TENANT_ID_FIELD));
         }
-        if (loadData) {
-            loadData();
-        }
+
+        loadDataOnInit(collectionExists);
+
     }
 
     @Override

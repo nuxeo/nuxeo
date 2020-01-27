@@ -1,0 +1,4 @@
+"id","continent","label","parent","obsolete","anInt"
+"8","italy","Italy","europe","0","8"
+"1","europe","European Union","","0","1"
+"5","usa","United States of America","america","0","5"
