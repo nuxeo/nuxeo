@@ -106,11 +106,6 @@
       <artifactId>junit</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>compile</scope>
-    </dependency>
 
     <!-- runtime scope -->
     <dependency>

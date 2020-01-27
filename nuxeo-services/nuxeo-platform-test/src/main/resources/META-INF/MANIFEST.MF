@@ -11,7 +11,6 @@ Bundle-ManifestVersion: 2
 Import-Package: com.google.inject,
  javax.sql,
  junit.framework,
- org.hsqldb.jdbc,
  org.junit,
  org.junit.runner,
  org.nuxeo.ecm.core;api=split,

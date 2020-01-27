@@ -104,12 +104,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <!-- dependency kept for other dependent modules -->
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
       <scope>test</scope>

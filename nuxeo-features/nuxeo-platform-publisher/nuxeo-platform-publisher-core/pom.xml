@@ -134,11 +134,6 @@
       <artifactId>nuxeo-platform-versioning-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>
