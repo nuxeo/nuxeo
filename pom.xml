@@ -128,7 +128,7 @@
     <eclipseVersion>${project.version}</eclipseVersion>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
     <org.apache.log4j.version>2.13.0</org.apache.log4j.version>
-    <org.slf4j.version>1.7.25</org.slf4j.version>
+    <org.slf4j.version>1.7.30</org.slf4j.version>
     <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
     <gatling.version>3.3.1</gatling.version>
     <gatling-plugin.version>3.0.4</gatling-plugin.version>
