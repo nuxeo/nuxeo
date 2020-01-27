@@ -68,11 +68,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.shell</groupId>
-      <artifactId>nuxeo-shell</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo</groupId>
       <artifactId>nuxeo-ecm</artifactId>
       <type>zip</type>
