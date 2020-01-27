@@ -144,6 +144,10 @@
     <event name="documentUntrashed" />
     <event name="addedToCollection" />
     <event name="removedFromCollection" />
+    <event name="afterMakeRecord" />
+    <event name="afterSetRetention" />
+    <event name="retentionExpired" />
+    <event name="afterSetLegalHold" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
