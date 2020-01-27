@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.directory.sql;
 
+import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -931,7 +933,8 @@ public class SQLSession extends BaseSession {
 
             if (hasEntry(id)) {
                 throw new DirectoryException(
-                        String.format("Entry with id %s already exists in directory %s", id, directory.getName()));
+                        String.format("Entry with id %s already exists in directory %s", id, directory.getName()),
+                        SC_CONFLICT);
             }
         }
 

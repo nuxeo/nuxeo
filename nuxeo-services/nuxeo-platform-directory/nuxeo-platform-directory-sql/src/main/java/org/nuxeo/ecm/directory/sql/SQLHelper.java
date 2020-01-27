@@ -68,7 +68,7 @@ public class SQLHelper {
     /**
      * Sets up the table without loading the data in it.
      *
-     * @return {@code true} if CSV data should be loaded
+     * @return {@code true} if table has been created
      */
     public boolean setupTable() {
         log.debug("setting up table {}, policy={}", tableName, policy);

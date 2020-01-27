@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/csvLoadSchema"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="id" type="xs:int" />
+  <xs:element name="continent" type="xs:string" />
+  <xs:element name="label" type="xs:string" />
+  <xs:element name="parent" type="xs:string" />
+  <xs:element name="obsolete" type="xs:boolean" default="false" />
+  <xs:element name="anInt" type="xs:int" />
+
+</xs:schema>

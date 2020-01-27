@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 
@@ -57,6 +58,14 @@ public interface Directory {
      * @since 10.10
      */
     void initializeInverseReferences();
+
+    /**
+     * Loads a CSV into a Directory.
+     *
+     * @see BaseDirectoryDescriptor#DATA_LOADING_POLICIES
+     * @since 11.1
+     */
+    void loadFromCSV(Blob dataBlob, String dataLoadingPolicy);
 
     /**
      * Gets the unique name of the directory, used for registering.

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.directory.csv.loaded.never.override.update.duplicate">
+
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+
+    <directory name="csvLoadedDirectory" extends="template-directory">
+      <schema>csvLoadSchema</schema>
+      <idField>id</idField>
+      <createTablePolicy>never</createTablePolicy>
+      <dataLoadingPolicy>update_duplicate</dataLoadingPolicy>
+      <dataFile>test-append-directory.csv</dataFile>
+    </directory>
+
+  </extension>
+
+</component>

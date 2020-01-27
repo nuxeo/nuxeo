@@ -20,6 +20,13 @@
 
 package org.nuxeo.ecm.directory;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_LEGACY;
+import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_NEVER_LOAD;
+import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_REJECT_DUPLICATE;
+import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_UPDATE_DUPLICATE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,8 +34,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.cache.CacheService;
@@ -47,6 +58,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SharedMetricRegistries;
 
 public abstract class AbstractDirectory implements Directory {
+
+    private static final Logger log = LogManager.getLogger(AbstractDirectory.class);
 
     public static final String TENANT_ID_FIELD = "tenantId";
 
@@ -112,16 +125,47 @@ public abstract class AbstractDirectory implements Directory {
         initSchemaFieldMap();
     }
 
+    /**
+     * @deprecated since 11.1, use {@link #loadDataOnInit(boolean)} instead
+     */
+    @Deprecated(since = "11.1")
     protected void loadData() {
-        if (descriptor.getDataFileName() != null) {
-            try (Session session = getSession()) {
-                TransactionHelper.runInTransaction(() -> Framework.doPrivileged(() -> {
-                    Schema schema = Framework.getService(SchemaManager.class).getSchema(getSchema());
-                    DirectoryCSVLoader.loadData(descriptor.getDataFileName(),
-                            descriptor.getDataFileCharacterSeparator(), schema,
-                            ((BaseSession) session)::createEntryWithoutReferences);
-                }));
-            }
+        loadDataOnInit(false);
+    }
+
+    protected void loadDataOnInit(boolean tableExists) {
+        String dataFileName = descriptor.getDataFileName();
+        if (isBlank(dataFileName)) {
+            return;
+        }
+        String dataLoadingPolicy = descriptor.getDataLoadingPolicy();
+        if (tableExists
+                && (DATA_LOADING_POLICY_LEGACY.equals(dataLoadingPolicy) || descriptor.isAutoincrementIdField())) {
+            log.debug("Don't load directory: {} on init as table already exists", this::getName);
+            return;
+        }
+        if (DATA_LOADING_POLICY_NEVER_LOAD.equals(dataLoadingPolicy)) {
+            log.debug("Don't load directory: {} on init due to never load policy", this::getName);
+            return;
+        }
+        Blob blob = DirectoryCSVLoader.createBlob(dataFileName);
+        log.info("Load directory: {} with dataLoadingPolicy: {} and file: {}", getName(), dataLoadingPolicy,
+                dataFileName);
+        TransactionHelper.runInTransaction(() -> Framework.doPrivileged(() -> loadFromCSV(blob, dataLoadingPolicy)));
+    }
+
+    @Override
+    public void loadFromCSV(Blob dataBlob, String dataLoadingPolicy) {
+        if (dataBlob == null) {
+            throw new DirectoryException("dataBlob must not be null", SC_BAD_REQUEST);
+        }
+        BaseDirectoryDescriptor.checkDataLoadingPolicy(dataLoadingPolicy);
+        try (Session session = getSession()) {
+            String schemaName = getSchema();
+            Schema schema = Framework.getService(SchemaManager.class).getSchema(schemaName);
+            Consumer<Map<String, Object>> loader = new CSVLoaderConsumer(dataLoadingPolicy, session, schemaName);
+            DirectoryCSVLoader.loadData(dataBlob, descriptor.getDataFileCharacterSeparator(), schema, loader);
+            invalidateCaches();
         }
     }
 
@@ -357,6 +401,50 @@ public abstract class AbstractDirectory implements Directory {
                 String cacheEntryWithoutReferencesName = "cacheWithoutReference-" + getName();
                 cache.setEntryCacheWithoutReferencesName(cacheEntryWithoutReferencesName);
                 cacheService.registerCache(cacheEntryWithoutReferencesName);
+            }
+        }
+    }
+
+    /**
+     * Consumer to load data from CSV according to the dataLoadingPolicy.
+     */
+    protected static class CSVLoaderConsumer implements Consumer<Map<String, Object>> {
+
+        protected final String dataLoadingPolicy;
+
+        protected final Session session;
+
+        protected final String schema;
+
+        public CSVLoaderConsumer(String dataLoadingPolicy, Session session, String schema) {
+            this.dataLoadingPolicy = dataLoadingPolicy;
+            this.session = session;
+            this.schema = schema;
+        }
+
+        @Override
+        public void accept(Map<String, Object> fieldMap) {
+            if (DATA_LOADING_POLICY_REJECT_DUPLICATE.equals(dataLoadingPolicy)
+                    || DATA_LOADING_POLICY_LEGACY.equals(dataLoadingPolicy)) {
+                // leverage DB constraints
+                ((BaseSession) session).createEntryWithoutReferences(fieldMap);
+            } else {
+                Object rawId = fieldMap.get(session.getIdField());
+                if (rawId == null) {
+                    throw new DirectoryException("A line is missing the entry id", SC_BAD_REQUEST);
+                }
+                String idValue = String.valueOf(rawId);
+                if (session.hasEntry(idValue)) {
+                    if (DATA_LOADING_POLICY_UPDATE_DUPLICATE.equals(dataLoadingPolicy)) {
+                        DocumentModel dm = session.getEntry(idValue);
+                        fieldMap.forEach((fieldName, value) -> dm.setProperty(schema, fieldName, value));
+                        ((BaseSession) session).updateEntryWithoutReferences(dm);
+                    } else {
+                        log.debug("Skip the entry with id: {}", idValue);
+                    }
+                } else {
+                    ((BaseSession) session).createEntryWithoutReferences(fieldMap);
+                }
             }
         }
     }

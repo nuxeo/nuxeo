@@ -135,6 +135,9 @@
       class="org.nuxeo.ecm.automation.core.operations.services.directory.DirectoryProjection" />
 
     <operation
+      class="org.nuxeo.ecm.automation.core.operations.services.directory.LoadFromCSV" />
+
+    <operation
       class="org.nuxeo.ecm.automation.core.operations.users.GetNuxeoPrincipal" />
 
     <operation

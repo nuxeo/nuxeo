@@ -194,15 +194,14 @@ public class SQLDirectory extends AbstractDirectory {
             }
 
             SQLHelper helper = new SQLHelper(sqlConnection, table, descriptor.getCreateTablePolicy());
-            boolean loadData = helper.setupTable();
+            boolean tableExists = !helper.setupTable();
             // commit the transaction so that tables are committed
             if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                 TransactionHelper.commitOrRollbackTransaction();
                 TransactionHelper.startTransaction();
             }
-            if (loadData) {
-                loadData();
-            }
+            loadDataOnInit(tableExists);
+
         } catch (SQLException e) {
             // exception on close
             throw new DirectoryException(e);
