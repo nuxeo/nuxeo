@@ -47,8 +47,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.MDCFeature;
 import org.nuxeo.runtime.test.runner.RandomBug;
 
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
-
 /**
  * Abstract base class for test cases that require a test runtime service.
  * <p>
@@ -192,16 +190,6 @@ public class NXRuntimeTestCase extends RuntimeHarnessImpl {
 
     protected OSGiRuntimeService handleNewRuntime(OSGiRuntimeService aRuntime) {
         return aRuntime;
-    }
-
-    public static URL[] introspectClasspath(ClassLoader loader) {
-        return new FastClasspathScanner().getUniqueClasspathElements().stream().map(file -> {
-            try {
-                return file.toURI().toURL();
-            } catch (MalformedURLException cause) {
-                throw new Error("Could not get URL from " + file, cause);
-            }
-        }).toArray(URL[]::new);
     }
 
     public static URL getResource(String name) {

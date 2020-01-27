@@ -69,7 +69,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 
-import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner;
+import io.github.classgraph.ClassGraph;
 
 /**
  * Default RuntimeHarness implementation.
@@ -81,7 +81,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     protected static final Logger log = LogManager.getLogger(RuntimeHarnessImpl.class);
 
     protected static URL[] introspectClasspath() {
-        return new FastClasspathScanner().getUniqueClasspathElements().stream().map(file -> {
+        return new ClassGraph().getClasspathFiles().stream().map(file -> {
             try {
                 return file.toURI().toURL();
             } catch (MalformedURLException cause) {
