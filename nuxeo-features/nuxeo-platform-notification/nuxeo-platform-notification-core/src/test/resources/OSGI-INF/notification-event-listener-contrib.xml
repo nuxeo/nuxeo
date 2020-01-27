@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.notification.email.test">
+
+  <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+             point="generalSettings">
+    <settings>
+      <serverPrefix>http://localhost:8080/nuxeo/</serverPrefix>
+      <eMailSubjectPrefix>[Dummy]</eMailSubjectPrefix>
+      <mailSessionJndiName>java:comp/env/Mail</mailSessionJndiName>
+    </settings>
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="notifications">
+
+    <notification name="DummyNotificationToSendMail" channel="email" availableIn="*"
+                  subject="Notification on the document '${docTitle}'" autoSubscribed="false"
+                  template="dummyNotificationToSendMail">
+      <event name="dummyNotificationToSendMail" />
+    </notification>
+
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+    point="templates">
+    <template name="dummyNotificationToSendMail" src="templates/dummyNotificationMail.ftl" />
+  </extension>
+
+</component>
