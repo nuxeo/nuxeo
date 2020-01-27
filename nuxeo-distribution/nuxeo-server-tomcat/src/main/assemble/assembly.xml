@@ -86,9 +86,6 @@
     <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
       <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${maven.project.version}:war" />
     </copy>
-    <copy todir="${tomcat}/client">
-      <artifact:file key="org.nuxeo.shell:nuxeo-shell" />
-    </copy>
   </target>
 
   <target name="copy-packages-xml">

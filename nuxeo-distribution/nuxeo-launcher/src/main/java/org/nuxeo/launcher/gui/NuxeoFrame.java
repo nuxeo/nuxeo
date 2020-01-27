@@ -40,10 +40,6 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.nuxeo.common.Environment;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.Log4JHelper;
-import org.nuxeo.shell.Shell;
-import org.nuxeo.shell.cmds.Interactive;
-import org.nuxeo.shell.cmds.InteractiveShellHandler;
-import org.nuxeo.shell.swing.ConsolePanel;
 
 /**
  * Launcher view for graphical user interface
@@ -189,8 +185,6 @@ public class NuxeoFrame extends JFrame {
 
     protected JTabbedPane tabbedPanel;
 
-    protected ConsolePanel consolePanel;
-
     protected JLabel summaryStatus;
 
     protected JLabel summaryURL;
@@ -244,41 +238,6 @@ public class NuxeoFrame extends JFrame {
         constraints.weighty = 0;
         constraints.insets = new Insets(10, 0, 0, 0);
         getContentPane().add(buildFooter(), constraints);
-    }
-
-    protected Component buildConsolePanel() {
-        try {
-            consolePanel = new ConsolePanel();
-        } catch (Exception e) {
-            log.error(e);
-        }
-        Interactive.setConsoleReaderFactory(consolePanel.getConsole());
-        Interactive.setHandler(new InteractiveShellHandler() {
-            @Override
-            public void enterInteractiveMode() {
-                Interactive.reset();
-            }
-
-            @Override
-            public boolean exitInteractiveMode(int code) {
-                if (code == 1) {
-                    Interactive.reset();
-                    Shell.reset();
-                    return true;
-                } else {
-                    consolePanel.getConsole().reset();
-                    return false;
-                }
-            }
-        });
-        new Thread(() -> {
-            try {
-                Shell.get().main(new String[] { controller.launcher.getURL() + "site/automation" });
-            } catch (Exception e) {
-                setError(e);
-            }
-        }).start();
-        return consolePanel;
     }
 
     protected JComponent buildFooter() {
@@ -410,13 +369,6 @@ public class NuxeoFrame extends JFrame {
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.summary.title"), buildSummaryPanel());
         logsTab = buildLogsTab();
         tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.logs.title"), logsTab);
-        tabbedPanel.addTab(NuxeoLauncherGUI.getMessage("tab.shell.title"), buildConsolePanel());
-        tabbedPanel.addChangeListener(e -> {
-            JTabbedPane pane = (JTabbedPane) e.getSource();
-            if (pane.getSelectedIndex() == 2) {
-                consolePanel.getConsole().requestFocusInWindow();
-            }
-        });
         return tabbedPanel;
     }
 
