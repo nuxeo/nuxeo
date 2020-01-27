@@ -2538,6 +2538,13 @@
         <version>${apache.httpcore.version}</version>
       </dependency>
 
+      <!-- joda-time, required by Elasticsearch, AWS SDK, others -->
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>2.10.5</version>
+      </dependency>
+
       <!-- JNA, required by Elasticsearch and Chronicle Queue -->
       <dependency>
         <groupId>net.java.dev.jna</groupId>
