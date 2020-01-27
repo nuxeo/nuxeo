@@ -83,7 +83,6 @@ commons-httpclient:commons-httpclient|[Apache Commons HttpClient](http://hc.apac
 commons-io:commons-io|[Apache Commons IO](http://commons.apache.org/io/)
 commons-pool:commons-pool|[Apache Commons Pool](http://commons.apache.org/pool/)
 dom4j:dom4j|[dom4j](http://dom4j.sourceforge.net/)
-hsqldb:hsqldb|[HSQLDB](http://hsqldb.org/)
 javax.activation:activation|[JavaBeans Activation Framework](http://www.oracle.com/technetwork/java/jaf11-139815.html)
 javax.annotation:jsr250-api|[Common Annotations for Java (JSR 250)](http://jcp.org/en/jsr/detail?id=250)
 javax.inject:javax.inject|[Dependency Injection for Java (JSR 330)](http://www.jcp.org/en/jsr/detail?id=330)

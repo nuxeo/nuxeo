@@ -29,7 +29,7 @@
           <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
           <autoincrementIdField>false</autoincrementIdField>
           <createTablePolicy>on_missing_columns</createTablePolicy>
-          <dataFile>setup-hsqldb.csv</dataFile>
+          <dataFile>setup-mydb.csv</dataFile>
           <dataFileCharacterSeparator>,</dataFileCharacterSeparator>
           <querySizeLimit>1000</querySizeLimit>
           <references>

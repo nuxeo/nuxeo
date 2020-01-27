@@ -25,7 +25,6 @@
      (BSD 3) firebug (firebug:firebug:1.6.2-fx - no url defined)
      (AL 2.0) groovy-engine (javax.script:groovy-engine:1.0 - no url defined)
      (BSD 2) howl-logger (howl:howl-logger:0.1.11 - no url defined)
-     (BSD) hsqldb (hsqldb:hsqldb:1.8.0.1 - no url defined)
      (HPND) java-cup (cup:java-cup:0.11a - no url defined)
      (BSD) jdbm (jdbm:jdbm:1.0 - no url defined)
      (BSD) jena (com.hp.hpl.jena:jena:2.6.4-NX - no url defined)

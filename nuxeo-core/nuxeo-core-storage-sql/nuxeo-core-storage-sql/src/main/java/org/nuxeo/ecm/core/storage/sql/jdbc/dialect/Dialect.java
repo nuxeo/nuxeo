@@ -105,7 +105,6 @@ public abstract class Dialect {
         DIALECTS.put("Oracle", DialectOracle.class);
         DIALECTS.put("PostgreSQL", DialectPostgreSQL.class);
         DIALECTS.put("Microsoft SQL Server", DialectSQLServer.class);
-        DIALECTS.put("HSQL Database Engine", DialectHSQLDB.class);
         DIALECTS.put("Apache Derby", DialectDerby.class);
         DIALECTS.put("DB2", DialectDB2.class);
     }
