@@ -5915,6 +5915,7 @@
                 |Lesser General Public License, version 3 or greater
                 |GNU General Lesser Public License (LGPL) version 3.0
                 |GNU Lesser General Public License, Version 3
+                |GNU LESSER GENERAL PUBLIC LICENSE, version 3 (LGPL-3.0)
                 |GNU Lesser General Public License, Version 3 or later</licenseMerge>
               <licenseMerge>GPL 2
                 |GPL license
@@ -5928,7 +5929,8 @@
               <licenseMerge>GPL 2 UFOSS
                 |The GNU General Public License, v2 with FOSS exception</licenseMerge>
               <licenseMerge>GPL 3
-                |GPL v3</licenseMerge>
+                |GPL v3
+                |GENERAL PUBLIC LICENSE, version 3 (GPL-3.0)</licenseMerge>
               <licenseMerge>MIT
                 |MIT License
                 |MIT license
@@ -5939,6 +5941,7 @@
                 |JSON License</licenseMerge>
               <licenseMerge>MPL 1.1
                 |Mozilla Public License 1.1 (MPL 1.1)
+                |Mozilla Public License Version 1.1
                 |Mozilla Public License version 1.1</licenseMerge>
               <licenseMerge>MPL 2.0
                 |Mozilla Public License
