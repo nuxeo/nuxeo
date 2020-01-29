@@ -47,6 +47,7 @@ import org.apache.kafka.clients.consumer.internals.PartitionAssignor;
 import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.log.LogPartition;
@@ -161,9 +162,6 @@ public class KafkaUtils implements AutoCloseable {
 
     public void createTopic(String topic, int partitions, short replicationFactor) {
         log.info("Creating topic: " + topic + ", partitions: " + partitions + ", replications: " + replicationFactor);
-        if (topicExists(topic)) {
-            throw new IllegalArgumentException("Cannot create Topic already exists: " + topic);
-        }
         CreateTopicsResult ret = adminClient.createTopics(
                 Collections.singletonList(new NewTopic(topic, partitions, replicationFactor)));
         try {
@@ -172,7 +170,11 @@ public class KafkaUtils implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw new StreamRuntimeException(e);
         } catch (ExecutionException e) {
-            throw new StreamRuntimeException(e);
+            if ((e.getCause() instanceof TopicExistsException)) {
+                log.info("topic: " + topic + " exists");
+            } else {
+                throw new StreamRuntimeException(e);
+            }
         } catch (TimeoutException e) {
             throw new StreamRuntimeException("Unable to create topics " + topic + " within the timeout", e);
         }
