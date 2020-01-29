@@ -20,7 +20,6 @@ package org.nuxeo.ecm.core.security;
 
 import java.util.Calendar;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -39,15 +38,14 @@ public class RetentionExpiredFinderListener implements EventListener {
     public static final String QUERY = "SELECT * FROM Document, Relation"
             + " WHERE ecm:isProxy = 0 AND ecm:retainUntil < TIMESTAMP '%s'";
 
-    public static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
+    @Override
     public void handleEvent(Event event) {
         BulkService bulkService = Framework.getService(BulkService.class);
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
 
         Calendar now = Calendar.getInstance();
-        String formattedDate = FORMATTER.format(now);
-        String nxql = String.format(QUERY, formattedDate);
+        String nxql = String.format(QUERY, now.toInstant());
 
         for (String repositoryName : repositoryService.getRepositoryNames()) {
             BulkCommand command = new BulkCommand.Builder(RetentionExpiredAction.ACTION_NAME, nxql).user(
