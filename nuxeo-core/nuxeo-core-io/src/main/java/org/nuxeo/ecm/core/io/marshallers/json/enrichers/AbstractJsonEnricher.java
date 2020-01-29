@@ -24,6 +24,8 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 
@@ -36,6 +38,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 7.2
  */
 public abstract class AbstractJsonEnricher<EntityType> extends AbstractJsonWriter<Enriched<EntityType>> {
+
+    private static final Logger log = LogManager.getLogger(AbstractJsonEnricher.class);
 
     public static final String ENTITY_ENRICHER_NAME = "_EntityEnricherName";
 
@@ -51,8 +55,18 @@ public abstract class AbstractJsonEnricher<EntityType> extends AbstractJsonWrite
     }
 
     @Override
-    public void write(Enriched<EntityType> enrichable, JsonGenerator jg) throws IOException {
-        write(jg, enrichable.getEntity());
+    public void write(Enriched<EntityType> enrichable, JsonGenerator jg) {
+        try {
+            write(jg, enrichable.getEntity());
+        } catch (Exception e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("interrupted", e); // NOSONAR
+            } else {
+                // TODO collect exception and return it to the caller
+                log.info("enrichment failed", e);
+            }
+        }
     }
 
     /**
