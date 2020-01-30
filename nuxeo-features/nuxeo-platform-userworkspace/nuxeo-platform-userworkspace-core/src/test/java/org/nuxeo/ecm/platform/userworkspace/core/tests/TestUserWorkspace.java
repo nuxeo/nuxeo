@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.platform.userworkspace.core.service.AbstractUserWorkspaceImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -79,6 +80,9 @@ public class TestUserWorkspace {
 
     @Inject
     protected PathSegmentService pathSegments;
+
+    @Inject
+    protected UserManager userManager;
 
     @Test
     public void testRestrictedAccess() throws Exception {
@@ -147,6 +151,8 @@ public class TestUserWorkspace {
 
     @Test
     public void testAnotherUserWorkspaceFinder() {
+        createUser("user1");
+
         DocumentModel context = session.getRootDocument();
         DocumentModel uw = uwm.getCurrentUserPersonalWorkspace("user1", context);
         session.save();
@@ -204,9 +210,10 @@ public class TestUserWorkspace {
 
     @Test
     public void testUserWorkspaceFinderCompat() {
-        DocumentModel context = session.getRootDocument();
+        createUser("John Von Verylonglastname");
 
         // Manually create the user workspace as if the old max size still stands
+        DocumentModel context = session.getRootDocument();
         DocumentModel user1W = uwm.getCurrentUserPersonalWorkspace("user1", context);
         String parentPath = user1W.getPathAsString().replace("/user1", "");
         DocumentModel uw = session.createDocumentModel(parentPath, "John-Von-Verylonglastname", "Workspace");
@@ -389,6 +396,34 @@ public class TestUserWorkspace {
                     uw.getPathAsString() + "/" + CollectionConstants.DEFAULT_COLLECTIONS_NAME + "/newCollection")));
 
         }
+    }
+
+    /**
+     * NXP-26003
+     */
+    @Test
+    public void testGetUserPersonalWorkspaceWithSameCandidateNames() {
+        // create a user a-b, candidate names will have "a-b"
+        createUser("a-b");
+        // create a user a_b, candidate names will have "a-b" also
+        createUser("a_b");
+
+        try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
+            // use another user as #getUserPersonalWorkspace call is launching an UnrestrictedSessionRunner
+            DocumentModel context = userSession.getRootDocument();
+            // this will create the "a-b" user workspace
+            DocumentModel uw = uwm.getUserPersonalWorkspace("a-b", context);
+            assertEquals("a-b", uw.getName());
+            // "a-b" user workspace exists, but a_b user does not have permission on it
+            uw = uwm.getUserPersonalWorkspace("a_b", context);
+            assertEquals("a_b", uw.getName());
+        }
+    }
+
+    protected void createUser(String username) {
+        DocumentModel user = userManager.getBareUserModel();
+        user.setPropertyValue("username", username);
+        userManager.createUser(user);
     }
 
 }
