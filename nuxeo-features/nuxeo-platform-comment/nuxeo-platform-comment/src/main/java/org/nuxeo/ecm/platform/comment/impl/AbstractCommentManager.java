@@ -23,9 +23,9 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -108,7 +108,7 @@ public abstract class AbstractCommentManager implements CommentManager {
         UserManager userManager = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = null;
         if (userManager != null) {
-            principal = userManager.getPrincipal((String) comment.getPropertyValue(COMMENT_AUTHOR));
+            principal = userManager.getPrincipal((String) comment.getPropertyValue(COMMENT_AUTHOR_PROPERTY));
             if (principal == null) {
                 try {
                     principal = getAuthor(comment);
@@ -152,7 +152,7 @@ public abstract class AbstractCommentManager implements CommentManager {
         String author = null;
         if (docModel.hasSchema(COMMENT_SCHEMA)) {
             // means annotation / comment
-            author = (String) docModel.getPropertyValue(COMMENT_AUTHOR);
+            author = (String) docModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY);
         }
         if (StringUtils.isBlank(author)) {
             String[] contributors = (String[]) docModel.getPropertyValue("dc:contributors");
@@ -193,7 +193,7 @@ public abstract class AbstractCommentManager implements CommentManager {
         ancestorIds.add(parentId);
         DocumentRef parentRef = new IdRef(parentId);
         while (session.exists(parentRef) && session.getDocument(parentRef).hasSchema(COMMENT_SCHEMA)) {
-            parentId = (String) session.getDocument(parentRef).getPropertyValue(COMMENT_PARENT_ID);
+            parentId = (String) session.getDocument(parentRef).getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
             ancestorIds.add(parentId);
             parentRef = new IdRef(parentId);
         }

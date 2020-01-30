@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.platform.comment.workflow.utils;
 
+import org.nuxeo.ecm.platform.comment.api.CommentConstants;
+
 /**
  * Utility class used for registering constants.
  */
@@ -59,86 +61,152 @@ public final class CommentsConstants {
 
     /**
      * Schemas and fields.
+     * 
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_DOC_TYPE} instead
      */
-    public static final String COMMENT_DOC_TYPE = "Comment";
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_DOC_TYPE = CommentConstants.COMMENT_DOC_TYPE;
 
-    /** @since 10.3 */
-    public static final String COMMENT_SCHEMA = "comment";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_SCHEMA} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_SCHEMA = CommentConstants.COMMENT_SCHEMA;
 
-    public static final String COMMENT_CREATION_DATE = "comment:creationDate";
+    /**
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_CREATION_DATE_PROPERTY} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_CREATION_DATE = CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
 
-    public static final String COMMENT_AUTHOR = "comment:author";
+    /**
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_AUTHOR_PROPERTY} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_AUTHOR = CommentConstants.COMMENT_AUTHOR_PROPERTY;
 
-    public static final String COMMENT_TEXT = "comment:text";
+    /**
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_TEXT_PROPERTY} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_TEXT = CommentConstants.COMMENT_TEXT_PROPERTY;
 
-    /** @since 10.3 */
-    public static final String COMMENT_PARENT_ID = "comment:parentId";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_PARENT_ID_PROPERTY} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_PARENT_ID = CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 
-    /** @since 10.3 */
-    public static final String COMMENT_MODIFICATION_DATE = "comment:modificationDate";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_MODIFICATION_DATE_PROPERTY} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_MODIFICATION_DATE = CommentConstants.COMMENT_MODIFICATION_DATE_PROPERTY;
 
-    /** @since 10.3 */
-    public static final String COMMENT_ANCESTOR_IDS = "comment:ancestorIds";
+    /**
+     /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_ANCESTOR_IDS_PROPERTY} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_ANCESTOR_IDS = CommentConstants.COMMENT_ANCESTOR_IDS_PROPERTY;
 
     // JSON constant part
 
-    /** @since 10.3 */
-    public static final String COMMENT_ENTITY_TYPE = "comment";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_ENTITY_TYPE} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_ENTITY_TYPE = CommentConstants.COMMENT_ENTITY_TYPE;
 
-    /** @since 10.3 */
-    public static final String COMMENTS_ENTITY_TYPE = "comments";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENTS_ENTITY_TYPE} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENTS_ENTITY_TYPE = CommentConstants.COMMENTS_ENTITY_TYPE;
 
-    /** @since 10.3 */
-    public static final String COMMENT_ID_FIELD = "id";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_ID_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_ID_FIELD = CommentConstants.COMMENT_ID_FIELD;
 
-    /** @since 10.3 */
-    public static final String COMMENT_PARENT_ID_FIELD = "parentId";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_PARENT_ID_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_PARENT_ID_FIELD = CommentConstants.COMMENT_PARENT_ID_FIELD;
 
-    /** @since 10.3 */
-    public static final String COMMENT_ANCESTOR_IDS_FIELD = "ancestorIds";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_ANCESTOR_IDS_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_ANCESTOR_IDS_FIELD = CommentConstants.COMMENT_ANCESTOR_IDS_FIELD;
 
-    /** @since 10.3 */
-    public static final String COMMENT_AUTHOR_FIELD = "author";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_AUTHOR_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_AUTHOR_FIELD = CommentConstants.COMMENT_AUTHOR_FIELD;
 
-    /** @since 10.3 */
-    public static final String COMMENT_TEXT_FIELD = "text";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_TEXT_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_TEXT_FIELD = CommentConstants.COMMENT_TEXT_FIELD;
 
     /**
      * Creation Date in ISO-8601 representation.
      * 
      * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_CREATION_DATE_FIELD} instead
      */
-    public static final String COMMENT_CREATION_DATE_FIELD = "creationDate";
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_CREATION_DATE_FIELD = CommentConstants.COMMENT_CREATION_DATE_FIELD;
 
     /**
      * Modification Date in ISO-8601 representation.
      * 
      * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_MODIFICATION_DATE_FIELD} instead
      */
-    public static final String COMMENT_MODIFICATION_DATE_FIELD = "modificationDate";
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_MODIFICATION_DATE_FIELD = CommentConstants.COMMENT_MODIFICATION_DATE_FIELD;
 
     /**
      * Number of direct replies.
      * 
      * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_NUMBER_OF_REPLIES_FIELD} instead
      */
-    public static final String COMMENT_NUMBER_OF_REPLIES = "numberOfReplies";
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_NUMBER_OF_REPLIES = CommentConstants.COMMENT_NUMBER_OF_REPLIES_FIELD;
 
     /**
      * Last Reply Date in ISO-8601 representation.
      * 
      * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_LAST_REPLY_DATE_FIELD} instead
      */
-    public static final String COMMENT_LAST_REPLY_DATE = "lastReplyDate";
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_LAST_REPLY_DATE = CommentConstants.COMMENT_LAST_REPLY_DATE_FIELD;
 
-    /** @since 10.3 */
-    public static final String COMMENT_PERMISSIONS = "permissions";
-
-    /** @since 11.1 **/
-    public static final String COMMENTS_DIRECTORY_NAME = "Comments";
-
-    /** @since 11.1 **/
-    public static final String COMMENTS_DIRECTORY_TYPE = "CommentRoot";
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link CommentConstants#COMMENT_PERMISSIONS_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String COMMENT_PERMISSIONS = CommentConstants.COMMENT_PERMISSIONS_FIELD;
 
     private CommentsConstants() {
     }

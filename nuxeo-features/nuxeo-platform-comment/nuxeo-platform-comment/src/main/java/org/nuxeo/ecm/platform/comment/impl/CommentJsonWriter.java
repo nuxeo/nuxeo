@@ -21,20 +21,20 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ANCESTOR_IDS_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_LAST_REPLY_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_MODIFICATION_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_NUMBER_OF_REPLIES_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PERMISSIONS_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ID_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_LAST_REPLY_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_NUMBER_OF_REPLIES;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PERMISSIONS;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_FIELD;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -92,7 +92,7 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
             return s.filterGrantedPermissions(principal, ancestorRef,
                     Arrays.asList(permissionProvider.getPermissions()));
         });
-        jg.writeArrayFieldStart(COMMENT_PERMISSIONS);
+        jg.writeArrayFieldStart(COMMENT_PERMISSIONS_FIELD);
         for (String permission : permissions) {
             jg.writeString(permission);
         }
@@ -120,17 +120,17 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
         jg.writeStringField(COMMENT_MODIFICATION_DATE_FIELD, modificationDate);
 
         if (entity instanceof ExternalEntity) {
-            jg.writeStringField(EXTERNAL_ENTITY_ID, ((ExternalEntity) entity).getEntityId());
-            jg.writeStringField(EXTERNAL_ENTITY_ORIGIN, ((ExternalEntity) entity).getOrigin());
+            jg.writeStringField(EXTERNAL_ENTITY_ID_FIELD, ((ExternalEntity) entity).getEntityId());
+            jg.writeStringField(EXTERNAL_ENTITY_ORIGIN_FIELD, ((ExternalEntity) entity).getOrigin());
             jg.writeStringField(EXTERNAL_ENTITY, ((ExternalEntity) entity).getEntity());
         }
     }
 
     protected void writeRepliesSummary(CoreSession session, Comment entity, JsonGenerator jg) throws IOException {
         PartialList<Comment> comments = commentManager.getComments(session, entity.getId(), 1L, 0L, false);
-        jg.writeNumberField(COMMENT_NUMBER_OF_REPLIES, comments.totalSize());
+        jg.writeNumberField(COMMENT_NUMBER_OF_REPLIES_FIELD, comments.totalSize());
         if (!comments.isEmpty()) {
-            jg.writeStringField(COMMENT_LAST_REPLY_DATE, comments.get(0).getCreationDate().toString());
+            jg.writeStringField(COMMENT_LAST_REPLY_DATE_FIELD, comments.get(0).getCreationDate().toString());
         }
     }
 }

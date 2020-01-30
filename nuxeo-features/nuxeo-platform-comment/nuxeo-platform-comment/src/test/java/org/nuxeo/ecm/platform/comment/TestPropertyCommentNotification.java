@@ -23,10 +23,10 @@ import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.checkDocumentEventContext;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.getExpectedMailContent;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.getMailContent;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class TestPropertyCommentNotification extends AbstractTestCommentNotifica
             Comment comment = createComment(commentedDocumentModel);
             DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -88,7 +88,7 @@ public class TestPropertyCommentNotification extends AbstractTestCommentNotifica
             commentManager.updateComment(session, comment.getId(), comment);
             DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -115,7 +115,7 @@ public class TestPropertyCommentNotification extends AbstractTestCommentNotifica
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
             commentManager.deleteComment(session, comment.getId());
             DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -142,7 +142,7 @@ public class TestPropertyCommentNotification extends AbstractTestCommentNotifica
             Comment reply = createComment(commentDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()

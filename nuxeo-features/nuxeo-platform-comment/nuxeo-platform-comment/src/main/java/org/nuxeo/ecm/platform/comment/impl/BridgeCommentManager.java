@@ -20,7 +20,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 
 import java.util.List;
 import java.util.function.Function;
@@ -34,10 +34,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.platform.comment.api.Comment;
+import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 
 /**
  * @since 10.3
@@ -93,7 +93,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
     @Override
     @SuppressWarnings("removal")
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
-        if (comment.getPropertyValue(COMMENT_PARENT_ID) != null) {
+        if (comment.getPropertyValue(COMMENT_PARENT_ID_PROPERTY) != null) {
             second.deleteComment(docModel, comment);
         } else {
             first.deleteComment(docModel, comment);
@@ -150,7 +150,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist");
         }
-        if (session.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID) != null) {
+        if (session.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID_PROPERTY) != null) {
             return second.updateComment(session, commentId, comment);
         } else {
             return first.updateComment(session, commentId, comment);
@@ -164,7 +164,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
         if (!session.exists(commentRef)) {
             throw new CommentNotFoundException("The comment " + commentId + " does not exist");
         }
-        if (session.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID) != null) {
+        if (session.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID_PROPERTY) != null) {
             second.deleteComment(session, commentId);
         } else {
             first.deleteComment(session, commentId);
@@ -218,13 +218,13 @@ public class BridgeCommentManager extends AbstractCommentManager {
     /**
      * Executes the given function for a comment document ref, depending on the types of comment managers.
      * <p>
-     * In some cases, leveraging {@link CommentsConstants#COMMENT_PARENT_ID} is not enough, this is the case when bridge
-     * is used with {@link PropertyCommentManager} and {@link TreeCommentManager}.
+     * In some cases, leveraging {@link CommentConstants#COMMENT_PARENT_ID_PROPERTY} is not enough, this is the case
+     * when bridge is used with {@link PropertyCommentManager} and {@link TreeCommentManager}.
      * <ul>
      * <li>{@link CommentManagerImpl} (or RelationCommentManager): Comments structures are stored in jenaGraph</li>
      * <li>{@link PropertyCommentManager}: All comments are stored under a hidden folder and each comment stores its
      * parent id in {@code comment:parentId} property</li>
-     * <li>{@link TreeCommentManager}: A {@link CommentsConstants#COMMENTS_DIRECTORY_TYPE} document is created under the
+     * <li>{@link TreeCommentManager}: A {@link CommentConstants#COMMENT_ROOT_DOC_TYPE} document is created under the
      * top level document to store the comments. Replies are then stored directly under their parent (which is a
      * comment)</li>
      * </ul>
@@ -238,7 +238,7 @@ public class BridgeCommentManager extends AbstractCommentManager {
 
             // From `Relation` to `Property`
             if (first instanceof CommentManagerImpl && second instanceof PropertyCommentManager) {
-                if (documentModel.getPropertyValue(COMMENT_PARENT_ID) != null) {
+                if (documentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY) != null) {
                     // Comment is in property model
                     return function.apply(second);
                 }

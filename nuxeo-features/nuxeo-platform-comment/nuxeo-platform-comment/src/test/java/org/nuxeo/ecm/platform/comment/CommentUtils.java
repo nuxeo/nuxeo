@@ -24,13 +24,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOCUMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.PARENT_COMMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.TOP_LEVEL_DOCUMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -95,7 +95,7 @@ public class CommentUtils {
         assertEquals(expectedCommentedDocModel.getRef(), commentedDocModel.getRef());
 
         assertTrue(properties.containsKey(COMMENT));
-        assertEquals(expectedCommentDocModel.getPropertyValue(COMMENT_TEXT), properties.get(COMMENT));
+        assertEquals(expectedCommentDocModel.getPropertyValue(COMMENT_TEXT_PROPERTY), properties.get(COMMENT));
 
         // The event source document must be the top level document as is the one linked in the notification.
         assertTrue(properties.containsKey(TOP_LEVEL_DOCUMENT));
@@ -109,11 +109,11 @@ public class CommentUtils {
             Event event) {
         try {
             var model = new HashMap<String, Serializable>();
-            model.put("COMMENT_AUTHOR", commentDocModel.getPropertyValue(COMMENT_AUTHOR));
+            model.put("COMMENT_AUTHOR", commentDocModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY));
             model.put("COMMENT_ACTION", COMMENT_ADDED.equals(event.getName()) ? "added" : "updated");
             model.put("COMMENTED_DOCUMENT", commentedDocModel.getName());
             model.put("COMMENT_DATE", EVENT_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(event.getTime()))));
-            model.put("COMMENT_TEXT", commentDocModel.getPropertyValue(COMMENT_TEXT));
+            model.put("COMMENT_TEXT", commentDocModel.getPropertyValue(COMMENT_TEXT_PROPERTY));
             model.put("COMMENT_SUBSCRIPTION_NAME", COMMENT_ADDED.equals(event.getName()) ? "New" : "Updated");
 
             String template = "commentNotificationMail.txt";

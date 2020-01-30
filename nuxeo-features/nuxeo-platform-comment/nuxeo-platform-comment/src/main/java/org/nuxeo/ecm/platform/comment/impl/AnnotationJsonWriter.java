@@ -21,8 +21,9 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS;
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_FIELD;
 import static org.nuxeo.ecm.platform.comment.impl.CommentJsonWriter.writeCommentEntity;
 
 import java.io.IOException;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
+import org.nuxeo.ecm.platform.comment.api.AnnotationConstants;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -47,16 +49,20 @@ import com.fasterxml.jackson.core.JsonGenerator;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation> {
 
+    /**
+     * @deprecated since 11.1, use {@link AnnotationConstants#ANNOTATION_ENTITY_TYPE} instead.
+     */
+    @Deprecated(since = "11.1")
     public static final String ENTITY_TYPE = "annotation";
 
     public AnnotationJsonWriter() {
-        super(ENTITY_TYPE, Annotation.class);
+        super(ANNOTATION_ENTITY_TYPE, Annotation.class);
     }
 
     @Override
     protected void writeEntityBody(Annotation entity, JsonGenerator jg) throws IOException {
         writeCommentEntity(entity, jg);
-        jg.writeStringField(ANNOTATION_XPATH, entity.getXpath());
+        jg.writeStringField(ANNOTATION_XPATH_FIELD, entity.getXpath());
         // Write permissions of current user on the annotation,
         // which are the ones granted on the annotated document
         CoreSession session = ctx.getSession(null).getSession();
@@ -66,7 +72,7 @@ public class AnnotationJsonWriter extends ExtensibleEntityJsonWriter<Annotation>
             return s.filterGrantedPermissions(principal, new IdRef(entity.getParentId()),
                     Arrays.asList(permissionProvider.getPermissions()));
         });
-        jg.writeArrayFieldStart(ANNOTATION_PERMISSIONS);
+        jg.writeArrayFieldStart(ANNOTATION_PERMISSIONS_FIELD);
         for (String permission : permissions) {
             jg.writeString(permission);
         }

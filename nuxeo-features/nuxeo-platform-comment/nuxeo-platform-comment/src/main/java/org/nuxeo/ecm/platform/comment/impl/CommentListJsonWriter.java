@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENTS_ENTITY_TYPE;
 
 import org.nuxeo.ecm.core.io.marshallers.json.DefaultListJsonWriter;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;

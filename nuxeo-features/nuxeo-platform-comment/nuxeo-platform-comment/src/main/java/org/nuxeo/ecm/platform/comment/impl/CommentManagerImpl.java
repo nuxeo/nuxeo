@@ -21,8 +21,11 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -56,7 +59,6 @@ import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -137,9 +139,9 @@ public class CommentManagerImpl extends AbstractCommentManager {
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel commentDM = session.createDocumentModel(COMMENT_DOC_TYPE);
-            commentDM.setPropertyValue(CommentsConstants.COMMENT_TEXT, comment);
-            commentDM.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, author);
-            commentDM.setPropertyValue(CommentsConstants.COMMENT_CREATION_DATE, Calendar.getInstance());
+            commentDM.setPropertyValue(COMMENT_TEXT_PROPERTY, comment);
+            commentDM.setPropertyValue(COMMENT_AUTHOR_PROPERTY, author);
+            commentDM.setPropertyValue(COMMENT_CREATION_DATE_PROPERTY, Calendar.getInstance());
             commentDM = internalCreateComment(session, docModel, commentDM, null);
             session.save();
 

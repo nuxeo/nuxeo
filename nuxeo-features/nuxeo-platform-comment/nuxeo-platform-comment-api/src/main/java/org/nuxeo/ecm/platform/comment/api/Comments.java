@@ -21,17 +21,17 @@ package org.nuxeo.ecm.platform.comment.api;
 
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ANCESTOR_IDS_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_MODIFICATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -57,16 +57,16 @@ public class Comments {
     @Deprecated(since = "11.1")
     public static void commentToDocumentModel(Comment comment, DocumentModel documentModel) {
         // Do not set ancestor ids as it is computed at document creation
-        documentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
-        documentModel.setPropertyValue(COMMENT_TEXT, comment.getText());
-        documentModel.setPropertyValue(COMMENT_PARENT_ID, comment.getParentId());
+        documentModel.setPropertyValue(COMMENT_AUTHOR_PROPERTY, comment.getAuthor());
+        documentModel.setPropertyValue(COMMENT_TEXT_PROPERTY, comment.getText());
+        documentModel.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, comment.getParentId());
         Instant creationDate = comment.getCreationDate();
         if (creationDate != null) {
-            documentModel.setPropertyValue(COMMENT_CREATION_DATE, Date.from(creationDate));
+            documentModel.setPropertyValue(COMMENT_CREATION_DATE_PROPERTY, Date.from(creationDate));
         }
         Instant modificationDate = comment.getModificationDate();
         if (modificationDate != null) {
-            documentModel.setPropertyValue(COMMENT_MODIFICATION_DATE, Date.from(modificationDate));
+            documentModel.setPropertyValue(COMMENT_MODIFICATION_DATE_PROPERTY, Date.from(modificationDate));
         }
     }
 
@@ -96,18 +96,18 @@ public class Comments {
     @SuppressWarnings("unchecked")
     public static void documentModelToComment(DocumentModel documentModel, Comment comment) {
         comment.setId(documentModel.getId());
-        comment.setAuthor((String) documentModel.getPropertyValue(COMMENT_AUTHOR));
-        comment.setText((String) documentModel.getPropertyValue(COMMENT_TEXT));
-        Collection<String> ancestorIds = (Collection<String>) documentModel.getPropertyValue(COMMENT_ANCESTOR_IDS);
+        comment.setAuthor((String) documentModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY));
+        comment.setText((String) documentModel.getPropertyValue(COMMENT_TEXT_PROPERTY));
+        Collection<String> ancestorIds = (Collection<String>) documentModel.getPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY);
         ancestorIds.forEach(comment::addAncestorId);
-        String parentId = (String) documentModel.getPropertyValue(COMMENT_PARENT_ID);
+        String parentId = (String) documentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
         comment.setParentId(parentId);
 
-        Calendar creationDate = (Calendar) documentModel.getPropertyValue(COMMENT_CREATION_DATE);
+        Calendar creationDate = (Calendar) documentModel.getPropertyValue(COMMENT_CREATION_DATE_PROPERTY);
         if (creationDate != null) {
             comment.setCreationDate(creationDate.toInstant());
         }
-        Calendar modificationDate = (Calendar) documentModel.getPropertyValue(COMMENT_MODIFICATION_DATE);
+        Calendar modificationDate = (Calendar) documentModel.getPropertyValue(COMMENT_MODIFICATION_DATE_PROPERTY);
         if (modificationDate != null) {
             comment.setModificationDate(modificationDate.toInstant());
         }

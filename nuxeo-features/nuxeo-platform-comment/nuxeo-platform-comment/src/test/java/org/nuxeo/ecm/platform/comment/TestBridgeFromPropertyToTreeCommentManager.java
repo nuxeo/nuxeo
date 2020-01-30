@@ -23,7 +23,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,7 +36,6 @@ import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 
 /**
  * @since 11.1
@@ -97,7 +97,7 @@ public class TestBridgeFromPropertyToTreeCommentManager extends AbstractTestBrid
                 commentDocModel.getRef());
         assertNotNull(topLevelCommentAncestor);
         assertEquals(FILE_DOC_TYPE, session.getDocument(topLevelCommentAncestor).getType());
-        assertEquals(new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID)), topLevelCommentAncestor);
+        assertEquals(new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)), topLevelCommentAncestor);
         assertEquals("HiddenFolder", session.getDocument(commentDocModel.getParentRef()).getType());
     }
 
@@ -112,7 +112,7 @@ public class TestBridgeFromPropertyToTreeCommentManager extends AbstractTestBrid
 
         // In this case we have a first level comment, his parent is the `Comments` folder
         DocumentModel commentsFolder = session.getDocument(commentDocModel.getParentRef());
-        assertEquals(CommentsConstants.COMMENTS_DIRECTORY_TYPE, commentsFolder.getType());
+        assertEquals(COMMENT_ROOT_DOC_TYPE, commentsFolder.getType());
         assertEquals(commentsFolder.getParentRef(), topLevelCommentAncestor);
     }
 

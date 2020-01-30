@@ -28,13 +28,39 @@ public class AnnotationConstants {
         // utility class
     }
 
+    // --------------------------------------------
+    // Document type, schema and property constants
+    // --------------------------------------------
+
     public static final String ANNOTATION_DOC_TYPE = "Annotation";
 
     public static final String ANNOTATION_XPATH_PROPERTY = "annotation:xpath";
 
+    // -------------------------------------------
+    // Entity type and field name constants (JSON)
+    // -------------------------------------------
+
+    /** @since 11.1 */
+    public static final String ANNOTATION_ENTITY_TYPE = "comment";
+
+    /** @since 11.1 */
+    public static final String ANNOTATION_XPATH_FIELD = "xpath";
+
+    /** @since 11.1 */
+    public static final String ANNOTATION_PERMISSIONS_FIELD = "permissions";
+
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link AnnotationConstants#ANNOTATION_XPATH_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
     public static final String ANNOTATION_XPATH = "xpath";
 
-    /** @since 10.3 */
+    /**
+     * @since 10.3
+     * @deprecated since 11.1, use {@link AnnotationConstants#ANNOTATION_PERMISSIONS_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
     public static final String ANNOTATION_PERMISSIONS = "permissions";
 
 }

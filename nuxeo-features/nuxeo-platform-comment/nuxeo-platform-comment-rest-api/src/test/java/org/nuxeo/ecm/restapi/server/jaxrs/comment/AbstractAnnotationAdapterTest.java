@@ -23,12 +23,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS;
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_FIELD;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,7 +58,6 @@ import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
-import org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.api.Framework;
@@ -106,7 +106,7 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
-            assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
+            assertEquals(xpath, node.get(ANNOTATION_XPATH_FIELD).textValue());
         }
     }
 
@@ -124,14 +124,14 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/" + annotation.getId());
 
-        assertEquals(AnnotationJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
+        assertEquals(ANNOTATION_ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
-        assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
+        assertEquals(xpath, node.get(ANNOTATION_XPATH_FIELD).textValue());
 
         // Get permissions
         Set<String> grantedPermissions = new HashSet<>(session.filterGrantedPermissions(session.getPrincipal(),
                 file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class).getPermissions())));
-        Set<String> permissions = StreamSupport.stream(node.get(ANNOTATION_PERMISSIONS).spliterator(), false)
+        Set<String> permissions = StreamSupport.stream(node.get(ANNOTATION_PERMISSIONS_FIELD).spliterator(), false)
                                                .map(JsonNode::textValue)
                                                .collect(Collectors.toSet());
 
@@ -234,11 +234,11 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
         fetchInvalidations();
 
         MultivaluedMap<String, String> params1 = new MultivaluedMapImpl();
-        params1.putSingle(ANNOTATION_XPATH, xpath1);
+        params1.putSingle(ANNOTATION_XPATH_FIELD, xpath1);
         MultivaluedMap<String, String> params2 = new MultivaluedMapImpl();
-        params2.putSingle(ANNOTATION_XPATH, xpath2);
+        params2.putSingle(ANNOTATION_XPATH_FIELD, xpath2);
         MultivaluedMap<String, String> params3 = new MultivaluedMapImpl();
-        params3.putSingle(ANNOTATION_XPATH, xpath3);
+        params3.putSingle(ANNOTATION_XPATH_FIELD, xpath3);
 
         JsonNode node1 = getResponseAsJson(RequestType.GET, "id/" + file1.getId() + "/@annotation", params1).get(
                 "entries");
@@ -282,12 +282,12 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/external/" + entityId);
 
-        assertEquals(AnnotationJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
-        assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID).textValue());
-        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+        assertEquals(ANNOTATION_ENTITY_TYPE, node.get("entity-type").asText());
+        assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID_FIELD).textValue());
+        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN_FIELD).textValue());
         assertEquals(entity, node.get(EXTERNAL_ENTITY).textValue());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
-        assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
+        assertEquals(xpath, node.get(ANNOTATION_XPATH_FIELD).textValue());
     }
 
     @Test

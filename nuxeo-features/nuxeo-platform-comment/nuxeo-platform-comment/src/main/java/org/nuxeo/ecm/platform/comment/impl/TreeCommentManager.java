@@ -33,14 +33,12 @@ import static org.nuxeo.ecm.core.schema.FacetNames.HAS_RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_RESOURCES;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ANCESTOR_IDS_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager.COMMENT_NAME;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_NAME;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
@@ -86,16 +84,20 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     private static final Logger log = LogManager.getLogger(TreeCommentManager.class);
 
+    public static final String COMMENT_RELATED_TEXT_ID = "commentRelatedTextId_%s";
+
+    /** The key to the config turning on or off autosubscription. */
+    public static final String AUTOSUBSCRIBE_CONFIG_KEY = "org.nuxeo.ecm.platform.comment.service.notification.autosubscribe";
+
+    protected static final String COMMENTS_DIRECTORY_NAME = "Comments";
+
+    protected static final String COMMENT_NAME = "comment";
+
     protected static final String GET_COMMENT_PAGE_PROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
 
     protected static final String GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT_BY_ECM_PARENT";
 
-    public static final String SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE = "This service implementation does not implement deprecated API.";
-
-    /**
-     * The key to the config turning on or off autosubscription.
-     */
-    public static final String AUTOSUBSCRIBE_CONFIG_KEY = "org.nuxeo.ecm.platform.comment.service.notification.autosubscribe";
+    protected static final String SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE = "This service implementation does not implement deprecated API.";
 
     /**
      * Counts how many comments where made on a specific document.
@@ -107,10 +109,7 @@ public class TreeCommentManager extends AbstractCommentManager {
      * Counts how many comments where made by a specific user on a specific document.
      */
     protected static final String QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR_AND_AUTHOR = //
-            QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR + " AND " + COMMENT_AUTHOR + " = '%s'";
-
-    /** @since 11.1 **/
-    public static final String COMMENT_RELATED_TEXT_ID = "commentRelatedTextId_%s";
+            QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR + " AND " + COMMENT_AUTHOR_PROPERTY + " = '%s'";
 
     @Override
     public List<DocumentModel> getComments(CoreSession s, DocumentModel docModel) {
@@ -190,7 +189,8 @@ public class TreeCommentManager extends AbstractCommentManager {
                     Comments.getDocumentType(comment));
             Comments.toDocumentModel(comment, commentDocModel);
 
-            commentDocModel.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(session, comment.getParentId()));
+            commentDocModel.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY,
+                    computeAncestorIds(session, comment.getParentId()));
 
             // Create the comment document model
             commentDocModel = session.createDocument(commentDocModel);
@@ -220,7 +220,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             commentModelToCreate.copyContent(commentDocModel);
 
             // Should compute ancestors and set comment:parentId for backward compatibility
-            commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS,
+            commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY,
                     computeAncestorIds(session, documentModel.getId()));
 
             // Create the comment doc model
@@ -349,7 +349,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             }
 
             DocumentModel documentModel = session.getDocument(documentRef);
-            while (documentModel.hasSchema(COMMENT_SCHEMA) || COMMENTS_DIRECTORY_TYPE.equals(documentModel.getType())) {
+            while (documentModel.hasSchema(COMMENT_SCHEMA) || COMMENT_ROOT_DOC_TYPE.equals(documentModel.getType())) {
                 documentModel = session.getDocument(documentModel.getParentRef());
             }
 
@@ -379,7 +379,7 @@ public class TreeCommentManager extends AbstractCommentManager {
         DocumentModel rootDocModel = session.getDocument(rootDocumentRef);
 
         DocumentModel commentsFolder = session.createDocumentModel(rootDocModel.getPathAsString(),
-                COMMENTS_DIRECTORY_NAME, COMMENTS_DIRECTORY_TYPE);
+                COMMENTS_DIRECTORY_NAME, COMMENT_ROOT_DOC_TYPE);
         // No need to notify the creation of the Comments folder
         commentsFolder.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
         commentsFolder = session.getOrCreateDocument(commentsFolder);
@@ -456,7 +456,7 @@ public class TreeCommentManager extends AbstractCommentManager {
         CoreInstance.doPrivileged(s, session -> {
             DocumentRef ancestorRef = getTopLevelCommentAncestor(session, documentRef);
             DocumentModel commentDocModel = session.getDocument(documentRef);
-            Serializable author = commentDocModel.getPropertyValue(COMMENT_AUTHOR);
+            Serializable author = commentDocModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY);
             if (!(principal.isAdministrator() //
                     || author.equals(principal.getName()) //
                     || session.hasPermission(principal, ancestorRef, EVERYTHING))) {
@@ -501,7 +501,7 @@ public class TreeCommentManager extends AbstractCommentManager {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
 
         Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
-        List<SortInfo> sortInfos = singletonList(new SortInfo(COMMENT_CREATION_DATE, sortAscending));
+        List<SortInfo> sortInfos = singletonList(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, sortAscending));
 
         // Depending on the case, the `documentModel` can be a comment or not
         // if it's a not comment, then we should retrieve all comments under `Comments` folder
@@ -576,7 +576,7 @@ public class TreeCommentManager extends AbstractCommentManager {
         }
 
         // Case when commentDocumentModel is the folder that contains the comments
-        if (COMMENTS_DIRECTORY_TYPE.equals(commentedDocModel.getType())) {
+        if (COMMENT_ROOT_DOC_TYPE.equals(commentedDocModel.getType())) {
             commentedDocModel = session.getDocument(commentedDocModel.getParentRef());
         }
 

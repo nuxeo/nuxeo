@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.comment.listener;
 
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
 
 import java.util.List;
@@ -32,7 +33,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
 import org.nuxeo.ecm.platform.relations.api.Resource;
@@ -48,7 +48,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
             DocumentModel docMessage) {
         log.debug("Processing relations cleanup on Comment removal");
         String typeName = docMessage.getType();
-        if (CommentsConstants.COMMENT_DOC_TYPE.equals(typeName) || "Post".equals(typeName)) {
+        if (COMMENT_DOC_TYPE.equals(typeName) || "Post".equals(typeName)) {
             CommentManager commentManager = Framework.getService(CommentManager.class);
             if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
                 deleteCommentChildren(coreSession, commentManager, docMessage);
