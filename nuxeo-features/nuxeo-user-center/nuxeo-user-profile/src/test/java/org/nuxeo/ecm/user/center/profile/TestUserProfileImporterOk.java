@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -67,23 +66,16 @@ public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
 
         deployer.deploy("org.nuxeo.ecm.user.center.profile.test:OSGI-INF/user-profile-test-ok-no-update-contrib.xml");
 
-        UserProfileImporter importer = new
-                UserProfileImporter();
+        UserProfileImporter importer = new UserProfileImporter();
         importer.doImport(session);
 
         checkDocs();
     }
 
     private void checkDocs() throws Exception {
-
         File blobsFolder = getBlobsFolder();
 
         DocumentModel doc = userProfileService.getUserProfileDocument("user1", session);
-
-        doc.getId();
-
-        DataModel userProfileData = doc.getDataModel("userprofile");
-        assertNotNull(userProfileData);
 
         Calendar birthDate = (Calendar) doc.getPropertyValue("userprofile:birthdate");
         assertNotNull(birthDate);

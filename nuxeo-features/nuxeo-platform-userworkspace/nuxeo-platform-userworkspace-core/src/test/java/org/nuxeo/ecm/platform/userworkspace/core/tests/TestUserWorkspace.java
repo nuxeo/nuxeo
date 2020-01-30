@@ -113,14 +113,14 @@ public class TestUserWorkspace {
         DocumentModel ws1 = session.createDocumentModel("/default-domain/workspaces", "ws1", "Workspace");
         ws1 = session.createDocument(ws1);
         ws1.setACP(acp, true);
-        ws1 = session.saveDocument(ws1);
+        session.saveDocument(ws1);
 
         DocumentModel alternate = session.createDocumentModel("/", "alternate-domain", "Domain");
-        alternate = session.createDocument(alternate);
+        session.createDocument(alternate);
         DocumentModel ws2 = session.createDocumentModel("/alternate-domain/workspaces", "ws2", "Workspace");
         ws2 = session.createDocument(ws2);
         ws2.setACP(acp, true);
-        ws2 = session.saveDocument(ws2);
+        session.saveDocument(ws2);
 
         session.save();
 
@@ -247,8 +247,6 @@ public class TestUserWorkspace {
         session.save();
 
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("user1")) {
-            context = userSession.getRootDocument();
-
             uw = uwm.getCurrentUserPersonalWorkspace(userSession);
             assertNotNull(uw);
             assertEquals(user1WorkspacePath, uw.getPathAsString());

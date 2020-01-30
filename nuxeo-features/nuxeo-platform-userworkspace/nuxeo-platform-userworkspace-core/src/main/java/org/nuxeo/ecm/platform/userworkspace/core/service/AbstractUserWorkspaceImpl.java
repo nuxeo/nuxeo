@@ -241,9 +241,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
             return null;
         }
         PathRef uwref = getExistingUserWorkspace(userCoreSession, rootref, principal, usedUsername);
-        DocumentModel uw = userCoreSession.getDocument(uwref);
-
-        return uw;
+        return userCoreSession.getDocument(uwref);
     }
 
     protected PathRef getExistingUserWorkspaceRoot(CoreSession session, String username) {
@@ -492,7 +490,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
     protected DocumentModel createFavorites(CoreSession session, DocumentModel userWorkspace) {
         DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
                 FavoritesConstants.DEFAULT_FAVORITES_NAME, FavoritesConstants.FAVORITES_TYPE);
-        String title = null;
+        String title;
         try {
             title = I18NUtils.getMessageString("messages", FavoritesConstants.DEFAULT_FAVORITES_TITLE, new Object[0],
                     getLocale(session));
