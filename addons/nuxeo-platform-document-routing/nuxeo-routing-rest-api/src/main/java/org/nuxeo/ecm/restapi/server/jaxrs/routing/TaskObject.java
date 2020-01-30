@@ -114,8 +114,8 @@ public class TaskObject extends PaginableObject<Task> {
     }
 
     @GET
-    public List<Task> getUserRelatedWorkflowTasks() {
-        if (StringUtils.isNotBlank(workflowModelName)) {
+    public List<Task> getUserRelatedWorkflowTasks(@QueryParam("isPaginated") boolean isPaginated) {
+        if (StringUtils.isNotBlank(workflowModelName) || !isPaginated) {
             return Framework.getService(DocumentRoutingService.class).getTasks(null, userId, workflowInstanceId,
                     workflowModelName, getContext().getCoreSession());
         } else {
