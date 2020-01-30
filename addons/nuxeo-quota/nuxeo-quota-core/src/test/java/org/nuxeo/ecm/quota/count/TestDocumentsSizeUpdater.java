@@ -24,9 +24,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.quota.count.QuotaFeature.assertQuota;
 import static org.nuxeo.ecm.quota.count.QuotaFeature.createFakeBlob;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
-import static org.nuxeo.ecm.quota.count.QuotaFeature.assertQuota;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -481,7 +482,6 @@ public class TestDocumentsSizeUpdater {
         session.createDocument(doc);
         session.save();
 
-        // TODO
         session.removeChildren(firstFolderRef);
         coreFeature.waitForAsyncCompletion(); // commit the transaction
 
@@ -815,8 +815,6 @@ public class TestDocumentsSizeUpdater {
 
     /**
      * NXP-17350
-     *
-     * @since TODO
      */
     @Test
     public void testQuotaOnDeleteFolder() {
@@ -1028,7 +1026,8 @@ public class TestDocumentsSizeUpdater {
         quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L, session.getRootDocument(), session);
         coreFeature.waitForAsyncCompletion(); // commit the transaction
 
-        assertEquals(0, workManager.getQueueSize("quota", null));
+        WorkQueueMetrics metrics = workManager.getMetrics("quota");
+        assertEquals(0, metrics.getRunning().longValue() + metrics.getScheduled().longValue());
 
         DocumentModel totoUW = uwm.getUserPersonalWorkspace("toto",
                 session.getDocument(new PathRef("/default-domain/")));
