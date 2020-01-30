@@ -24,11 +24,11 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ANCESTOR_IDS_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
@@ -90,8 +90,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
         return CoreInstance.doPrivileged(session, s -> {
             Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
             PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME, singletonList(new SortInfo(COMMENT_CREATION_DATE, true)),
-                    null, null, props, docModel.getId());
+                    GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME,
+                    singletonList(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, true)), null, null, props,
+                    docModel.getId());
             return pageProvider.getCurrentPage();
         });
     }
@@ -129,7 +130,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
             DocumentModel commentModelToCreate = session.createDocumentModel(path, COMMENT_NAME,
                     commentModel.getType());
             commentModelToCreate.copyContent(commentModel);
-            commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(session, docModel.getId()));
+            commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY,
+                    computeAncestorIds(session, docModel.getId()));
             DocumentModel comment = session.createDocument(commentModelToCreate);
             comment.detach(true);
             notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, comment);
@@ -164,7 +166,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         return CoreInstance.doPrivileged(session, s -> {
             DocumentModel commentModel = s.createDocumentModel(path, COMMENT_NAME, comment.getType());
             commentModel.copyContent(comment);
-            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(s, docModel.getId()));
+            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY, computeAncestorIds(s, docModel.getId()));
             commentModel = s.createDocument(commentModel);
             notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, commentModel);
             return commentModel;
@@ -202,7 +204,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             Comments.toDocumentModel(comment, commentModel);
 
             // Compute the list of ancestor ids
-            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS, computeAncestorIds(s, parentId));
+            commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY, computeAncestorIds(s, parentId));
             commentModel = s.createDocument(commentModel);
             notifyEvent(s, CommentEvents.COMMENT_ADDED, commentModel);
             return Comments.toComment(commentModel);
@@ -250,8 +252,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
             Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
             PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                     GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME,
-                    singletonList(new SortInfo(COMMENT_CREATION_DATE, sortAscending)), pageSize, currentPageIndex,
-                    props, documentId);
+                    singletonList(new SortInfo(COMMENT_CREATION_DATE_PROPERTY, sortAscending)), pageSize,
+                    currentPageIndex, props, documentId);
             List<DocumentModel> commentList = pageProvider.getCurrentPage();
             return commentList.stream()
                               .map(Comments::toComment)
@@ -302,10 +304,10 @@ public class PropertyCommentManager extends AbstractCommentManager {
         NuxeoPrincipal principal = session.getPrincipal();
         CoreInstance.doPrivileged(session, s -> {
             DocumentModel comment = s.getDocument(commentRef);
-            String parentId = (String) comment.getPropertyValue(COMMENT_PARENT_ID);
+            String parentId = (String) comment.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
             DocumentRef ancestorRef = getTopLevelCommentAncestor(s, commentRef);
             if (s.exists(ancestorRef) && !principal.isAdministrator()
-                    && !comment.getPropertyValue(COMMENT_AUTHOR).equals(principal.getName())
+                    && !comment.getPropertyValue(COMMENT_AUTHOR_PROPERTY).equals(principal.getName())
                     && !s.hasPermission(principal, ancestorRef, SecurityConstants.EVERYTHING)) {
                 throw new CommentSecurityException(
                         "The user " + principal.getName() + " cannot delete comments of the document " + parentId);
@@ -323,7 +325,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         if (commentModel == null) {
             throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
-        String parentId = (String) commentModel.getPropertyValue(COMMENT_PARENT_ID);
+        String parentId = (String) commentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
         if (!session.hasPermission(getTopLevelCommentAncestor(session, commentModel.getRef()),
                 SecurityConstants.READ)) {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
@@ -359,8 +361,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
         NuxeoPrincipal principal = session.getPrincipal();
-        String parentId = (String) commentModel.getPropertyValue(COMMENT_PARENT_ID);
-        if (!principal.isAdministrator() && !commentModel.getPropertyValue(COMMENT_AUTHOR).equals(principal.getName())
+        String parentId = (String) commentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
+        if (!principal.isAdministrator()
+                && !commentModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY).equals(principal.getName())
                 && !session.hasPermission(principal, getTopLevelCommentAncestor(session, commentModel.getRef()),
                         SecurityConstants.EVERYTHING)) {
             throw new CommentSecurityException(
@@ -441,7 +444,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             DocumentModel documentModel = session.getDocument(comment.getRef());
             while (documentModel.hasSchema(COMMENT_SCHEMA) || HIDDEN_FOLDER_TYPE.equals(documentModel.getType())) {
                 documentModel = session.getDocument(
-                        new IdRef((String) documentModel.getPropertyValue(COMMENT_PARENT_ID)));
+                        new IdRef((String) documentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             }
 
             if (!session.hasPermission(principal, documentModel.getRef(), SecurityConstants.READ)) {
@@ -456,7 +459,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
     public DocumentRef getCommentedDocumentRef(CoreSession s, DocumentModel commentDocumentModel) {
         return CoreInstance.doPrivileged(s, session -> {
             String commentedDocId = commentDocumentModel.hasSchema(COMMENT_SCHEMA)
-                    ? (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)
+                    ? (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)
                     : commentDocumentModel.getId();
             return new IdRef(commentedDocId);
         });

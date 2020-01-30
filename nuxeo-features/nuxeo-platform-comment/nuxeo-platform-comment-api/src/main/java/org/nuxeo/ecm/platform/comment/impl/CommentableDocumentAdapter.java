@@ -18,7 +18,7 @@
  */
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,13 +55,13 @@ public class CommentableDocumentAdapter implements CommentableDocument {
 
     @Override
     public DocumentModel addComment(DocumentModel comment, String path) {
-        comment.setPropertyValue(COMMENT_PARENT_ID, docModel.getId());
+        comment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, docModel.getId());
         return commentManager.createLocatedComment(docModel, comment, path);
     }
 
     @Override
     public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
-        comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
+        comment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, parent.getId());
         return commentManager.createComment(parent, comment);
     }
 

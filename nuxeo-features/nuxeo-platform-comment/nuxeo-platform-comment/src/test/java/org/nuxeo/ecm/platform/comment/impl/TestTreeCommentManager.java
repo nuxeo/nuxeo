@@ -33,9 +33,9 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_RESOURCES;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.COMMENT_RELATED_TEXT_ID;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 
 import java.io.Serializable;
@@ -214,7 +214,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         DocumentRef[] parentDocumentRefs = session.getParentDocumentRefs(commentDocModel.getRef());
 
         // Should be the `Comments` folder
-        assertEquals(COMMENTS_DIRECTORY_TYPE, session.getDocument(parentDocumentRefs[0]).getType());
+        assertEquals(COMMENT_ROOT_DOC_TYPE, session.getDocument(parentDocumentRefs[0]).getType());
         assertEquals(commentsFolder.getRef(), parentDocumentRefs[0]);
 
         // Should be the file to comment `anyFile`
@@ -271,7 +271,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(new IdRef(createdComment.getId()), parentDocumentRefs[1]);
 
         // Should be the `Comments` folder
-        assertEquals(COMMENTS_DIRECTORY_TYPE, session.getDocument(parentDocumentRefs[2]).getType());
+        assertEquals(COMMENT_ROOT_DOC_TYPE, session.getDocument(parentDocumentRefs[2]).getType());
         assertEquals(commentsFolder.getRef(), parentDocumentRefs[2]);
 
         // Should be the file to comment `anotherFile`
@@ -633,7 +633,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
 
     protected DocumentModel getCommentsFolder(String documentId) {
         String query = String.format("SELECT * FROM Document WHERE %s = '%s' and %s = '%s'", NXQL.ECM_PARENTID,
-                documentId, NXQL.ECM_PRIMARYTYPE, COMMENTS_DIRECTORY_TYPE);
+                documentId, NXQL.ECM_PRIMARYTYPE, COMMENT_ROOT_DOC_TYPE);
 
         DocumentModelList documents = session.query(query);
         assertEquals(1, documents.size());

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.comment;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.lang.String.valueOf;
 import static java.util.Objects.nonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
@@ -38,6 +37,11 @@ import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PRIMARYTYPE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.platform.comment.AbstractTestCommentManager.AUTHOR_OF_COMMENT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_ID;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STATE_RELATION;
@@ -45,11 +49,6 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STAT
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_PROPERTY_TO_SECURED;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.MIGRATION_STEP_RELATION_TO_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.impl.CommentsMigrator.UNMIGRATED_COMMENTS_FOLDER_NAME;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 
 import java.util.ArrayList;
@@ -213,7 +212,7 @@ public class TestCommentsMigrator {
         List<LogEvent> events = logCaptureResult.getCaughtEvents();
         assertEquals(NB_COMMENTS_BY_FILE + 1, events.size());
 
-        String query = String.format("SELECT %s FROM Comment WHERE %s IS NULL ", ECM_UUID, COMMENT_PARENT_ID);
+        String query = String.format("SELECT %s FROM Comment WHERE %s IS NULL ", ECM_UUID, COMMENT_PARENT_ID_PROPERTY);
         List<String> unMigratedComments = session.queryProjection(query, 0, 0)
                                                  .stream()
                                                  .map(m -> (String) m.get(ECM_UUID))
@@ -256,7 +255,7 @@ public class TestCommentsMigrator {
         List<LogEvent> events = logCaptureResult.getCaughtEvents();
         assertEquals(NB_COMMENTS_BY_FILE + 1, events.size());
 
-        String query = String.format("SELECT %s FROM Comment WHERE %s = '%s'", ECM_UUID, COMMENT_PARENT_ID,
+        String query = String.format("SELECT %s FROM Comment WHERE %s = '%s'", ECM_UUID, COMMENT_PARENT_ID_PROPERTY,
                 fileToCommentAndRemove.getId());
         List<String> unMigratedCommentDocIds = session.queryProjection(query, 0, 0)
                                                       .stream()
@@ -348,12 +347,12 @@ public class TestCommentsMigrator {
 
         // Both a relation-based comment and a property-based comment, detected as not migrated
         DocumentModel comment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
-        comment.setPropertyValue(COMMENT_AUTHOR, session.getPrincipal().getName());
+        comment.setPropertyValue(COMMENT_AUTHOR_PROPERTY, session.getPrincipal().getName());
         relationCommentManager.createComment(file, comment);
         session.save();
 
         DocumentModel otherComment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
-        otherComment.setPropertyValue(COMMENT_PARENT_ID, file.getId());
+        otherComment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, file.getId());
         propertyCommentManager.createComment(file, otherComment);
         session.save();
 
@@ -367,13 +366,13 @@ public class TestCommentsMigrator {
 
         // Just a relation-based comment, detected as not migrated
         comment = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
-        comment.setPropertyValue(COMMENT_AUTHOR, session.getPrincipal().getName());
+        comment.setPropertyValue(COMMENT_AUTHOR_PROPERTY, session.getPrincipal().getName());
         comment = relationCommentManager.createComment(file, comment);
         session.save();
         assertEquals(MIGRATION_STATE_RELATION, migrator.probeState());
 
         // Just a property-based comment, detected as migrated
-        relationCommentManager.deleteComment(file, comment);
+        relationCommentManager.deleteComment(session, comment.getId());
         session.save();
 
         // Simulate comment deletion event
@@ -402,13 +401,13 @@ public class TestCommentsMigrator {
         DocumentModel commentWithEmptyParent = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
         commentWithEmptyParent = propertyCommentManager.createComment(fileWithCommentWithoutParent,
                 commentWithEmptyParent);
-        commentWithEmptyParent.setPropertyValue(COMMENT_PARENT_ID, null);
+        commentWithEmptyParent.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, null);
         session.saveDocument(commentWithEmptyParent);
 
         // add a comment with removed parent
         DocumentModel commentWithRemovedParent = session.createDocumentModel(fileToCommentAndRemove.getPathAsString(),
                 "comment", COMMENT_DOC_TYPE);
-        commentWithRemovedParent.setPropertyValue(COMMENT_PARENT_ID, fileToCommentAndRemove.getId());
+        commentWithRemovedParent.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, fileToCommentAndRemove.getId());
         commentWithRemovedParent = propertyCommentManager.createComment(fileToCommentAndRemove,
                 commentWithRemovedParent);
         session.removeDocument(fileToCommentAndRemove.getRef());
@@ -506,14 +505,13 @@ public class TestCommentsMigrator {
         assertEquals(expectedLines, migrationContext.getProgressLines());
 
         // Check that the comments folder are correctly created
-        DocumentModelList childrenOfFile1 = session.getChildren(firstFileToComment.getRef(), COMMENTS_DIRECTORY_TYPE);
+        DocumentModelList childrenOfFile1 = session.getChildren(firstFileToComment.getRef(), COMMENT_ROOT_DOC_TYPE);
         assertEquals(1, childrenOfFile1.size());
 
-        DocumentModelList childrenOfFile2 = session.getChildren(secondFileToComment.getRef(), COMMENTS_DIRECTORY_TYPE);
+        DocumentModelList childrenOfFile2 = session.getChildren(secondFileToComment.getRef(), COMMENT_ROOT_DOC_TYPE);
         assertEquals(1, childrenOfFile2.size());
 
-        DocumentModelList childrenOfProxyFile = session.getChildren(proxyFileToComment.getRef(),
-                COMMENTS_DIRECTORY_TYPE);
+        DocumentModelList childrenOfProxyFile = session.getChildren(proxyFileToComment.getRef(), COMMENT_ROOT_DOC_TYPE);
         assertEquals(1, childrenOfProxyFile.size());
 
         // Check that the comments are created under the correct folder
@@ -551,6 +549,7 @@ public class TestCommentsMigrator {
         dml.forEach((doc) -> assertNull(doc.getACP().getACL(LOCAL_ACL)));
     }
 
+    @SuppressWarnings("deprecation")
     protected void createCommentsAsRelations() {
         createComments(new CommentManagerImpl(CommentServiceHelper.getCommentService().getConfig()));
     }
@@ -563,12 +562,12 @@ public class TestCommentsMigrator {
         if (commentsWithEmptyParent) {
             for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
                 DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
-                comment.setPropertyValue(COMMENT_PARENT_ID, fileWithCommentWithoutParent.getId());
+                comment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, fileWithCommentWithoutParent.getId());
                 DocumentModel createdComment = propertyCommentManager.createComment(fileWithCommentWithoutParent,
                         comment);
 
                 // Simulate removing the comment:parentId
-                createdComment.setPropertyValue(COMMENT_PARENT_ID, null);
+                createdComment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, null);
                 session.saveDocument(createdComment);
 
                 notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
@@ -580,7 +579,7 @@ public class TestCommentsMigrator {
         if (commentsWithRemovedParent) {
             for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
                 DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
-                comment.setPropertyValue(COMMENT_PARENT_ID, fileToCommentAndRemove.getId());
+                comment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, fileToCommentAndRemove.getId());
                 DocumentModel createdComment = propertyCommentManager.createComment(fileToCommentAndRemove, comment);
                 notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
                         principal, "notification" + i);
@@ -618,7 +617,7 @@ public class TestCommentsMigrator {
             DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
             DocumentModel fileToComment = (i % 2 == 0 ? firstFileToComment : secondFileToComment);
             if (setParent) {
-                comment.setPropertyValue(COMMENT_PARENT_ID, fileToComment.getId());
+                comment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, fileToComment.getId());
             }
             DocumentModel createdComment = commentManager.createComment(fileToComment, comment);
             notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
@@ -628,7 +627,7 @@ public class TestCommentsMigrator {
         for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
             DocumentModel comment = session.createDocumentModel(null, "comment_proxy" + i, COMMENT_DOC_TYPE);
             if (setParent) {
-                comment.setPropertyValue(COMMENT_PARENT_ID, proxyFileToComment.getId());
+                comment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, proxyFileToComment.getId());
             }
             DocumentModel createdComment = commentManager.createComment(proxyFileToComment, comment);
 
@@ -656,9 +655,11 @@ public class TestCommentsMigrator {
         // Get replies of last level
         String replyText = String.format("I am a reply level%d", NB_REPLY_BY_COMMENT);
         List<DocumentModel> replies = commentsOfFirstFile.stream()
-                                                         .filter(c -> nonNull(c.getPropertyValue(COMMENT_TEXT)))
-                                                         .filter(c -> valueOf(
-                                                                 c.getPropertyValue(COMMENT_TEXT)).contains(replyText))
+                                                         .filter(c -> nonNull(
+                                                                 c.getPropertyValue(COMMENT_TEXT_PROPERTY)))
+                                                         .filter(c -> String.valueOf(
+                                                                 c.getPropertyValue(COMMENT_TEXT_PROPERTY))
+                                                                            .contains(replyText))
                                                          .collect(Collectors.toList());
         assertEquals(NB_COMMENT_TO_REPLY_ON_IT, replies.size());
 
@@ -672,7 +673,7 @@ public class TestCommentsMigrator {
         // Should be the first comment of the Thread
         assertEquals(COMMENT_DOC_TYPE, session.getDocument(parentDocumentRefs[NB_REPLY_BY_COMMENT - 1]).getType());
         // Should be the `Comments` folder
-        assertEquals(COMMENTS_DIRECTORY_TYPE, session.getDocument(parentDocumentRefs[NB_REPLY_BY_COMMENT]).getType());
+        assertEquals(COMMENT_ROOT_DOC_TYPE, session.getDocument(parentDocumentRefs[NB_REPLY_BY_COMMENT]).getType());
         // Should be the `firstFileToComment`
         assertEquals(firstFileToComment.getRef(), parentDocumentRefs[NB_REPLY_BY_COMMENT + 1]);
     }

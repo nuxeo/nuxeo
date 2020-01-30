@@ -27,10 +27,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
 
 import java.util.Calendar;
 import java.util.List;
@@ -198,9 +198,9 @@ public abstract class AbstractTestCommentManager {
         DocumentModel doc = session.getDocument(new PathRef("/Folder/File"));
         CommentableDocument commentableDocument = doc.getAdapter(CommentableDocument.class);
         DocumentModel comment = session.createDocumentModel(COMMENT_DOC_TYPE);
-        comment.setPropertyValue(COMMENT_TEXT, "Test");
-        comment.setPropertyValue(COMMENT_AUTHOR, AUTHOR_OF_COMMENT);
-        comment.setPropertyValue(COMMENT_CREATION_DATE, Calendar.getInstance());
+        comment.setPropertyValue(COMMENT_TEXT_PROPERTY, "Test");
+        comment.setPropertyValue(COMMENT_AUTHOR_PROPERTY, AUTHOR_OF_COMMENT);
+        comment.setPropertyValue(COMMENT_CREATION_DATE_PROPERTY, Calendar.getInstance());
 
         // Create a comment
         commentableDocument.addComment(comment);
@@ -209,7 +209,7 @@ public abstract class AbstractTestCommentManager {
         // Creation check
         assertEquals(1, commentableDocument.getComments().size());
         DocumentModel newComment = commentableDocument.getComments().get(0);
-        assertThat(newComment.getPropertyValue(COMMENT_TEXT)).isEqualTo("Test");
+        assertThat(newComment.getPropertyValue(COMMENT_TEXT_PROPERTY)).isEqualTo("Test");
 
         // Deletion check
         commentableDocument.removeComment(newComment);

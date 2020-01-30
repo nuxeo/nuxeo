@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.comment.api.AnnotationConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentConstants;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.ec.notification.NotificationListenerHook;
 
 /**
@@ -39,7 +38,7 @@ public class CommentNotificationListener implements NotificationListenerHook {
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         if (docCtx.getSourceDocument().getType().equals("Post")
                 || docCtx.getSourceDocument().getType().equals(AnnotationConstants.ANNOTATION_DOC_TYPE)
-                || docCtx.getSourceDocument().getType().equals(CommentsConstants.COMMENT_DOC_TYPE)) {
+                || docCtx.getSourceDocument().getType().equals(CommentConstants.COMMENT_DOC_TYPE)) {
             Object[] args = { docCtx.getProperty(CommentConstants.TOP_LEVEL_DOCUMENT), null };
             docCtx.setArgs(args);
         }

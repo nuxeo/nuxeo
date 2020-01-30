@@ -21,14 +21,14 @@ package org.nuxeo.ecm.platform.comment.impl;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_MODIFICATION_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_FIELD;
 
 import java.time.Instant;
 
@@ -74,10 +74,10 @@ public class CommentJsonReader extends EntityJsonReader<Comment> {
                 : null;
         comment.setModificationDate(modificationDate);
 
-        if (jn.has(EXTERNAL_ENTITY_ID)) {
+        if (jn.has(EXTERNAL_ENTITY_ID_FIELD)) {
             ExternalEntity externalEntity = (ExternalEntity) comment;
-            externalEntity.setEntityId(jn.get(EXTERNAL_ENTITY_ID).textValue());
-            externalEntity.setOrigin(jn.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+            externalEntity.setEntityId(jn.get(EXTERNAL_ENTITY_ID_FIELD).textValue());
+            externalEntity.setOrigin(jn.get(EXTERNAL_ENTITY_ORIGIN_FIELD).textValue());
             externalEntity.setEntity(jn.get(EXTERNAL_ENTITY).textValue());
         }
         return comment;

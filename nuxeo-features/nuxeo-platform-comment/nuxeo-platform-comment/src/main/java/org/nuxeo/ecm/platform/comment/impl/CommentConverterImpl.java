@@ -19,9 +19,10 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
+
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.api.CommentConverter;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
@@ -30,7 +31,7 @@ public class CommentConverterImpl implements CommentConverter {
 
     @Override
     public String getDocumentType() {
-        return CommentsConstants.COMMENT_DOC_TYPE;
+        return COMMENT_DOC_TYPE;
     }
 
     @Override

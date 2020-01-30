@@ -27,19 +27,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ENTITY_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_LAST_REPLY_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_MODIFICATION_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_NUMBER_OF_REPLIES_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PERMISSIONS_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ID_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_LAST_REPLY_DATE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_NUMBER_OF_REPLIES;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PERMISSIONS;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_FIELD;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -258,7 +258,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         // Get permissions
         Set<String> grantedPermissions = new HashSet<>(session.filterGrantedPermissions(session.getPrincipal(),
                 file.getRef(), Arrays.asList(Framework.getService(PermissionProvider.class).getPermissions())));
-        Set<String> permissions = StreamSupport.stream(node.get(COMMENT_PERMISSIONS).spliterator(), false)
+        Set<String> permissions = StreamSupport.stream(node.get(COMMENT_PERMISSIONS_FIELD).spliterator(), false)
                                                .map(JsonNode::textValue)
                                                .collect(Collectors.toSet());
 
@@ -286,8 +286,8 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
         assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
         assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
-        assertEquals(0, node.get(COMMENT_NUMBER_OF_REPLIES).intValue());
-        assertFalse(node.has(COMMENT_LAST_REPLY_DATE));
+        assertEquals(0, node.get(COMMENT_NUMBER_OF_REPLIES_FIELD).intValue());
+        assertFalse(node.has(COMMENT_LAST_REPLY_DATE_FIELD));
     }
 
     @Test
@@ -316,9 +316,9 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
         assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
         assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
-        assertEquals(3, node.get(COMMENT_NUMBER_OF_REPLIES).intValue());
-        assertTrue(node.has(COMMENT_LAST_REPLY_DATE));
-        assertEquals(reply3.getCreationDate().toString(), node.get(COMMENT_LAST_REPLY_DATE).textValue());
+        assertEquals(3, node.get(COMMENT_NUMBER_OF_REPLIES_FIELD).intValue());
+        assertTrue(node.has(COMMENT_LAST_REPLY_DATE_FIELD));
+        assertEquals(reply3.getCreationDate().toString(), node.get(COMMENT_LAST_REPLY_DATE_FIELD).textValue());
     }
 
     @Test
@@ -426,8 +426,8 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         assertEquals(COMMENT_ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
-        assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID).textValue());
-        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+        assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID_FIELD).textValue());
+        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN_FIELD).textValue());
         assertEquals(entity, node.get(EXTERNAL_ENTITY).textValue());
     }
 

@@ -28,11 +28,33 @@ public class ExternalEntityConstants {
         // utility class
     }
 
+    // -------------------------------------------
+    // Entity type and field name constants (JSON)
+    // -------------------------------------------
+
     public static final String EXTERNAL_ENTITY = "entity";
 
-    public static final String EXTERNAL_ENTITY_ID = "entityId";
+    /** @since 11.1 */
+    public static final String EXTERNAL_ENTITY_ID_FIELD = "entityId";
 
-    public static final String EXTERNAL_ENTITY_ORIGIN = "origin";
+    /** @since 11.1 */
+    public static final String EXTERNAL_ENTITY_ORIGIN_FIELD = "origin";
+
+    /**
+     * @deprecated since 11.1, use {@link ExternalEntityConstants#EXTERNAL_ENTITY_ID_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String EXTERNAL_ENTITY_ID = EXTERNAL_ENTITY_ID_FIELD;
+
+    /**
+     * @deprecated since 11.1, use {@link ExternalEntityConstants#EXTERNAL_ENTITY_ORIGIN_FIELD} instead
+     */
+    @Deprecated(since = "11.1")
+    public static final String EXTERNAL_ENTITY_ORIGIN = EXTERNAL_ENTITY_ORIGIN_FIELD;
+
+    // --------------------------------------------
+    // Document type, schema and property constants
+    // --------------------------------------------
 
     public static final String EXTERNAL_ENTITY_PROPERTY = "externalEntity:entity";
 

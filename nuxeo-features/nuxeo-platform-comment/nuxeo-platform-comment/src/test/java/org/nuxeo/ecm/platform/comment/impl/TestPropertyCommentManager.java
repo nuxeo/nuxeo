@@ -31,8 +31,8 @@ import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
 import static org.nuxeo.ecm.platform.comment.api.Comments.toComment;
 import static org.nuxeo.ecm.platform.comment.api.Comments.toDocumentModel;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -480,7 +480,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         session.save();
 
-        commentModel.setPropertyValue(COMMENT_PARENT_ID, doc.getId());
+        commentModel.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, doc.getId());
         commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         DocumentModelList children = session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER), COMMENT_DOC_TYPE);
@@ -826,7 +826,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         commentModel = session.createDocument(commentModel);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
         toDocumentModel(comment, commentModel);
-        commentModel.setPropertyValue(COMMENT_PARENT_ID, doc.getId());
+        commentModel.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, doc.getId());
         commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         // Check if Comments folder has been created in the given container

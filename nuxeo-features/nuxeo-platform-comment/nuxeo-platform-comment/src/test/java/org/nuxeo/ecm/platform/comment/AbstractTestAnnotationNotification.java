@@ -23,10 +23,10 @@ import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.checkDocumentEventContext;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.getExpectedMailContent;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.getMailContent;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 
 import java.time.Instant;
 import java.util.List;
@@ -100,7 +100,7 @@ public abstract class AbstractTestAnnotationNotification {
             Annotation annotation = createAnnotationAndAddSubscription("CommentAdded");
             DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
-                    new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -125,7 +125,7 @@ public abstract class AbstractTestAnnotationNotification {
             annotationService.updateAnnotation(session, annotation.getId(), annotation);
             DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
-                    new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -152,7 +152,7 @@ public abstract class AbstractTestAnnotationNotification {
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
             annotationService.deleteAnnotation(session, annotation.getId());
             DocumentModel annotationParentDocumentModel = session.getDocument(
-                    new IdRef((String) annotationDocModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) annotationDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -178,7 +178,7 @@ public abstract class AbstractTestAnnotationNotification {
             Comment reply = createAnnotation(annotationDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
-                    new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+                    new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
