@@ -148,13 +148,15 @@ kafka.enabled=false
 kafka.bootstrap.servers=localhost:9092
 kafka.default.replication.factor=1
 kafka.topicPrefix=nuxeo-
-# must be greater than poll.interval
-kafka.request.timeout.ms=3605000
 # max duration of processing
-kafka.max.poll.interval.ms=3600000
-kafka.session.timeout.ms=50000
-kafka.heartbeat.interval.ms=2000
+kafka.max.poll.interval.ms=7200000
 kafka.max.poll.records=2
+kafka.default.api.timeout.ms=60000
+kafka.delivery.timeout.ms=120000
+kafka.request.timeout.ms=30000
+kafka.session.timeout.ms=50000
+kafka.heartbeat.interval.ms=4000
+kafka.acks=1
 
 # SASL
 kafka.sasl.enabled=false
