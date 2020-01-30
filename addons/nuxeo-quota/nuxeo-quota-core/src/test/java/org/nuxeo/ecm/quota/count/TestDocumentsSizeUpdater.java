@@ -52,6 +52,8 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -71,7 +73,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.6
  */
 @RunWith(FeaturesRunner.class)
-@Features({ QuotaFeature.class })
+@Features({ QuotaFeature.class, PlatformFeature.class })
 public class TestDocumentsSizeUpdater {
 
     @Inject
@@ -91,6 +93,9 @@ public class TestDocumentsSizeUpdater {
 
     @Inject
     protected WorkManager workManager;
+
+    @Inject
+    protected UserManager userManager;
 
     protected DocumentRef wsRef;
 
@@ -1078,6 +1083,8 @@ public class TestDocumentsSizeUpdater {
     @Test
     public void testAllowSettingMaxQuotaOnUserWorkspace() throws Exception {
         addContent();
+        createUser("titi");
+        createUser("toto");
 
         try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
             DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
@@ -1432,4 +1439,9 @@ public class TestDocumentsSizeUpdater {
         return session.getDocument(firstFileRef);
     }
 
+    protected void createUser(String username) {
+        DocumentModel user = userManager.getBareUserModel();
+        user.setPropertyValue("username", username);
+        userManager.createUser(user);
+    }
 }
