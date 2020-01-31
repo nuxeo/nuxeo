@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,16 +175,18 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public String[] getSchemas() {
         Set<String> keys = dataModels.keySet();
-        return keys.toArray(new String[keys.size()]);
+        return keys.toArray(new String[0]);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Object getProperty(String schemaName, String name) {
         DataModel dm = getDataModelInternal(schemaName);
         return dm != null ? dm.getData(name) : null;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Property getPropertyObject(String schema, String name) {
         DocumentPart part = getPart(schema);
         return part == null ? null : part.get(name);
@@ -193,7 +195,7 @@ public class SimpleDocumentModel implements DocumentModel {
     @Override
     public void setProperty(String schemaName, String name, Object value) {
         if (name.contains(":")) {
-            name = name.substring(name.indexOf(":"), name.length());
+            name = name.substring(name.indexOf(':'));
         }
         getDataModelInternal(schemaName).setData(name, value);
     }
@@ -204,6 +206,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void setProperties(String schemaName, Map<String, Object> data) {
         DataModel dm = getDataModelInternal(schemaName);
         dm.setMap(data);
@@ -234,6 +237,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Property getProperty(String xpath) throws PropertyException {
         if (xpath == null) {
             throw new PropertyNotFoundException("null", "Invalid null xpath");
@@ -589,6 +593,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Collection<Property> getPropertyObjects(String schema) {
         DocumentPart part = getPart(schema);
         return part == null ? Collections.emptyList() : part.getChildren();
@@ -610,7 +615,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public DocumentModel clone() throws CloneNotSupportedException {
+    public DocumentModel clone() {
         throw new UnsupportedOperationException();
     }
 
