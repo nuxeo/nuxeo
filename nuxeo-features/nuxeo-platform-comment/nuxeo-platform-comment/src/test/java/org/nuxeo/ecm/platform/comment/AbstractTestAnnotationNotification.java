@@ -20,12 +20,9 @@
 package org.nuxeo.ecm.platform.comment;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.checkDocumentEventContext;
-import static org.nuxeo.ecm.platform.comment.CommentUtils.checkReceivedMail;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.getExpectedMailContent;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.getMailContent;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
@@ -33,8 +30,6 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 
 import java.time.Instant;
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -56,6 +51,7 @@ import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.mail.SmtpMailServerFeature;
+import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -100,68 +96,73 @@ public abstract class AbstractTestAnnotationNotification {
 
     @Test
     public void shouldNotifyEventWhenCreateAnnotation() {
-        // We subscribe to the creation document to check that we will not be notified about the annotation creation as
-        // document (see CommentCreationVeto), only the annotation added, and the 'File' document creation
-        captureAndVerifyAnnotationEventNotification(() -> {
-            Annotation createdAnnotation = createAnnotationAndAddSubscription("CommentAdded", "Creation");
-            return session.getDocument(new IdRef(createdAnnotation.getId()));
-        }, COMMENT_ADDED, DOCUMENT_CREATED);
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
+            Annotation annotation = createAnnotationAndAddSubscription("CommentAdded");
+            DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
+            DocumentModel annotationParentDocumentModel = session.getDocument(
+                    new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            transactionalFeature.nextTransaction();
+
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotationParentDocumentModel,
+                    annotatedDocumentModel);
+
+            List<MailMessage> mails = emailsResult.getMails();
+            assertEquals(1, mails.size());
+            String expectedMailContent = getExpectedMailContent(annotationDocumentModel, annotatedDocumentModel,
+                    expectedEvent);
+            assertEquals(expectedMailContent, getMailContent(mails.get(0)));
+        }
     }
 
     @Test
     public void shouldNotifyEventWhenUpdateAnnotation() {
-        // We subscribe to the update document to check that we will not be notified about the annotation updated as
-        // document (see CommentModificationVeto), only the annotation updated.
-        Annotation annotation = createAnnotationAndAddSubscription("CommentUpdated", "Modification");
-
-        captureAndVerifyAnnotationEventNotification(() -> {
+        Annotation annotation = createAnnotation(annotatedDocumentModel);
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
             annotation.setText("I update the annotation");
             annotationService.updateAnnotation(session, annotation.getId(), annotation);
-            return session.getDocument(new IdRef(annotation.getId()));
-        }, COMMENT_UPDATED, DOCUMENT_UPDATED);
+            DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
+            DocumentModel annotationParentDocumentModel = session.getDocument(
+                    new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            transactionalFeature.nextTransaction();
+
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotationParentDocumentModel,
+                    annotatedDocumentModel);
+            List<MailMessage> mails = emailsResult.getMails();
+            assertEquals(2, mails.size());
+            String expectedMailContent = getExpectedMailContent(annotationDocumentModel, annotatedDocumentModel,
+                    expectedEvent);
+            assertEquals(expectedMailContent, getMailContent(mails.get(1)));
+        }
     }
 
     @Test
     public void shouldNotifyEventWhenRemoveAnnotation() {
-        Annotation annotation = createAnnotationAndAddSubscription("CommentRemoved");
+        Annotation annotation = createAnnotation(annotatedDocumentModel);
         DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
         annotationDocModel.detach(true);
-
-        captureAndVerifyAnnotationEventNotification(() -> {
+        transactionalFeature.nextTransaction();
+        // Notified by comment added
+        assertEquals(1, emailsResult.getMails().size());
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
             annotationService.deleteAnnotation(session, annotation.getId());
-            return annotationDocModel;
-        }, COMMENT_REMOVED, DOCUMENT_REMOVED);
-    }
-
-    @Test
-    public void testCommentManagerType() {
-        assertEquals(getType(), commentManager.getClass());
-    }
-
-    protected void captureAndVerifyAnnotationEventNotification(Supplier<DocumentModel> supplier,
-            String annotationEventType, String documentEventType) {
-        try (CapturingEventListener listener = new CapturingEventListener(annotationEventType, documentEventType)) {
-            DocumentModel annotationDocumentModel = supplier.get();
-            DocumentModel annotationParentDocumentModel = session.getDocument(new IdRef(
-                    (String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            DocumentModel annotationParentDocumentModel = session.getDocument(
+                    new IdRef((String) annotationDocModel.getPropertyValue(COMMENT_PARENT_ID)));
             transactionalFeature.nextTransaction();
 
-            assertTrue(listener.hasBeenFired(annotationEventType));
-            assertTrue(listener.hasBeenFired(documentEventType));
-
-            List<Event> handledEvents = listener.getCapturedEvents()
-                                                .stream()
-                                                .filter(e -> annotationEventType.equals(e.getName()))
-                                                .collect(Collectors.toList());
-
-            assertEquals(1, handledEvents.size());
-            Event expectedEvent = handledEvents.get(0);
-            assertEquals(annotationEventType, expectedEvent.getName());
-
-            checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotationParentDocumentModel,
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, annotationDocModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
-            checkReceivedMail(emailsResult.getMails(), annotationDocumentModel, annotatedDocumentModel,
-                    handledEvents.get(0), annotationEventType);
+            // No new mail was sent when comment removed
+            List<MailMessage> mails = emailsResult.getMails();
+            assertEquals(1, mails.size());
         }
     }
 
@@ -173,21 +174,38 @@ public abstract class AbstractTestAnnotationNotification {
         // before subscribing, or previous event will be notified as well
         transactionalFeature.nextTransaction();
         // Reply
-        captureAndVerifyAnnotationEventNotification(() -> {
-            // subscribe to notifications
-            addSubscriptions("CommentAdded");
-
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
             Comment reply = createAnnotation(annotationDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
-            return session.getDocument(new IdRef(replyDocumentModel.getId()));
-        }, COMMENT_ADDED, DOCUMENT_CREATED);
+            DocumentModel annotationParentDocumentModel = session.getDocument(
+                    new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            transactionalFeature.nextTransaction();
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, replyDocumentModel, annotationParentDocumentModel,
+                    annotatedDocumentModel);
+
+            List<MailMessage> mails = emailsResult.getMails();
+            assertEquals(2, mails.size());
+            String expectedMailContent = getExpectedMailContent(replyDocumentModel, annotatedDocumentModel,
+                    expectedEvent);
+            assertEquals(expectedMailContent, getMailContent(mails.get(1)));
+        }
     }
 
+    @Test
+    public void testCommentManagerType() {
+        assertEquals(getType(), commentManager.getClass());
+    }
+
+    @Deprecated(since = "11.1")
     protected Annotation createAnnotationAndAddSubscription(String... notifications) {
         addSubscriptions(notifications);
         return createAnnotation(annotatedDocumentModel);
     }
 
+    @Deprecated(since = "11.1")
     protected void addSubscriptions(String... notifications) {
         NuxeoPrincipal principal = session.getPrincipal();
         String subscriber = NotificationConstants.USER_PREFIX + principal.getName();

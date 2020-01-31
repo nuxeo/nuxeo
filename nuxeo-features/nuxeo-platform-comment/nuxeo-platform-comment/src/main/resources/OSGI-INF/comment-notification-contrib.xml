@@ -40,4 +40,8 @@
     <veto name="CommentNotificationVeto" class="org.nuxeo.ecm.platform.comment.notification.CommentNotificationVeto" />
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.ecm.platform.comment.service.notification.autosubscribe">true</property>
+  </extension>
+
 </component>

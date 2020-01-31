@@ -27,6 +27,8 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_ANCESTORID;
+import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.schema.FacetNames.HAS_RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
@@ -49,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -65,9 +69,12 @@ import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Comment service implementation. The comments are linked together as a tree under a folder related to the root
@@ -77,11 +84,30 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class TreeCommentManager extends AbstractCommentManager {
 
+    private static final Logger log = LogManager.getLogger(TreeCommentManager.class);
+
     protected static final String GET_COMMENT_PAGE_PROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
 
     protected static final String GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT_BY_ECM_PARENT";
 
     public static final String SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE = "This service implementation does not implement deprecated API.";
+
+    /**
+     * The key to the config turning on or off autosubscription.
+     */
+    public static final String AUTOSUBSCRIBE_CONFIG_KEY = "org.nuxeo.ecm.platform.comment.service.notification.autosubscribe";
+
+    /**
+     * Counts how many comments where made on a specific document.
+     */
+    protected static final String QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR = //
+            "SELECT " + ECM_UUID + " FROM Comment WHERE " + ECM_ANCESTORID + " = '%s'";
+
+    /**
+     * Counts how many comments where made by a specific user on a specific document.
+     */
+    protected static final String QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR_AND_AUTHOR = //
+            QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR + " AND " + COMMENT_AUTHOR + " = '%s'";
 
     /** @since 11.1 **/
     public static final String COMMENT_RELATED_TEXT_ID = "commentRelatedTextId_%s";
@@ -170,7 +196,9 @@ public class TreeCommentManager extends AbstractCommentManager {
             commentDocModel = session.createDocument(commentDocModel);
             Comment createdComment = Comments.toComment(commentDocModel);
 
-            manageRelatedTextOfTopLevelDocument(session, createdComment);
+            DocumentModel topLevelDocument = manageRelatedTextOfTopLevelDocument(session, createdComment);
+
+            handleNotificationAutoSubscriptions(session, topLevelDocument, commentDocModel);
 
             notifyEvent(session, CommentEvents.COMMENT_ADDED, documentModel, commentDocModel);
 
@@ -198,7 +226,10 @@ public class TreeCommentManager extends AbstractCommentManager {
             // Create the comment doc model
             commentModelToCreate = session.createDocument(commentModelToCreate);
 
-            manageRelatedTextOfTopLevelDocument(session, Comments.newComment(commentModelToCreate));
+            DocumentModel topLevelDocument = manageRelatedTextOfTopLevelDocument(session,
+                    Comments.newComment(commentModelToCreate));
+
+            handleNotificationAutoSubscriptions(session, topLevelDocument, commentDocModel);
 
             commentModelToCreate.detach(true);
             notifyEvent(session, CommentEvents.COMMENT_ADDED, documentModel, commentModelToCreate);
@@ -507,7 +538,7 @@ public class TreeCommentManager extends AbstractCommentManager {
      *
      * @since 11.1
      **/
-    protected void manageRelatedTextOfTopLevelDocument(CoreSession session, Comment comment) {
+    protected DocumentModel manageRelatedTextOfTopLevelDocument(CoreSession session, Comment comment) {
         requireNonNull(comment.getId(), "Comment id is required");
         requireNonNull(comment.getParentId(), "Comment parent id is required");
 
@@ -539,7 +570,7 @@ public class TreeCommentManager extends AbstractCommentManager {
 
         topLevelDoc.setPropertyValue(RELATED_TEXT_RESOURCES, (Serializable) resources);
         topLevelDoc.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
-        session.saveDocument(topLevelDoc);
+        return session.saveDocument(topLevelDoc);
     }
 
     @Override
@@ -559,4 +590,78 @@ public class TreeCommentManager extends AbstractCommentManager {
 
         return commentedDocModel.getRef();
     }
+
+    /**
+     * Checks if a document has comments.
+     *
+     * @param session the core session
+     * @param document the document model who's comments are being counted
+     * @return {@code true} if comments were found
+     * @since 11.1
+     */
+    protected boolean hasComments(CoreSession session, DocumentModel document) {
+        String query = String.format( //
+                QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR, document.getId());
+        return !session.queryProjection(query, 1, 0).isEmpty();
+    }
+
+    /**
+     * Checks if a document has comments from a particular user.
+     *
+     * @param session the core session
+     * @param document the document model who's comments are being counted
+     * @param user the name of the user who's comments are being counted
+     * @return {@code true} if comments by user were found
+     * @since 11.1
+     */
+    protected boolean hasComments(CoreSession session, DocumentModel document, String user) {
+        String query = String.format( //
+                QUERY_GET_COMMENTS_UUID_BY_COMMENT_ANCESTOR_AND_AUTHOR, document.getId(), user);
+        return !session.queryProjection(query, 1, 0).isEmpty();
+    }
+
+    protected void handleNotificationAutoSubscriptions(CoreSession session, DocumentModel topLevelDocument,
+            DocumentModel commentDocModel) {
+        if (Framework.getService(ConfigurationService.class).isBooleanFalse(AUTOSUBSCRIBE_CONFIG_KEY)) {
+            log.trace("autosubscription to new comments is disabled");
+            return;
+        }
+
+        NuxeoPrincipal topLevelDocumentAuthor = getAuthor(topLevelDocument);
+        if (!hasComments(session, topLevelDocument)) {
+            // Document author is subscribed on first comment by anybody
+            subscribeToNotifications(topLevelDocument, topLevelDocumentAuthor);
+        }
+
+        NuxeoPrincipal commentAuthor = getAuthor(commentDocModel);
+        if (topLevelDocumentAuthor != null && topLevelDocumentAuthor.equals(commentAuthor)) {
+            // Document author is comment author. He doesn't need to be resubscribed
+            return;
+        }
+
+        if (commentAuthor != null && !hasComments(session, topLevelDocument, commentAuthor.getName())) {
+            // Comment author is writing his first comment on the document
+            subscribeToNotifications(topLevelDocument, commentAuthor);
+        }
+    }
+
+    /**
+     * Subscribes a user to notifications on the document.
+     *
+     * @param document the document being commented
+     * @param user the user to subscribe to notifications
+     * @since 11.1
+     */
+    protected void subscribeToNotifications(DocumentModel document, NuxeoPrincipal user) {
+        // User may have been deleted
+        if (user == null) {
+            return;
+        }
+        String subscriber = NotificationConstants.USER_PREFIX + user.getName();
+        NotificationManager notificationManager = Framework.getService(NotificationManager.class);
+        if (notificationManager != null) {
+            notificationManager.addSubscriptions(subscriber, document, false, user);
+        }
+    }
+
 }

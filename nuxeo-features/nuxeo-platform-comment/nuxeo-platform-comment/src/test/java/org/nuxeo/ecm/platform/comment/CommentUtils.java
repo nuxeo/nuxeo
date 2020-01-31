@@ -28,7 +28,6 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOCUME
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.PARENT_COMMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.TOP_LEVEL_DOCUMENT;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
-import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
@@ -41,9 +40,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -107,46 +104,17 @@ public class CommentUtils {
         assertEquals(expectedCommentedDocModel.getRef(), sourceDoc.getRef());
     }
 
-    /**
-     * Checks the received mail, sent when a comment / annotation is created or updated.
-     *
-     * @param mails the current mails
-     * @param commentDocModel the document model of the comment, cannot be {@code null}
-     * @param commentedDocModel the document being commented, cannot be {@code null}
-     * @param event the event, cannot be {@code null}
-     * @param commentEventType the type of comment event {@link org.nuxeo.ecm.platform.comment.api.CommentEvents},
-     *            cannot be {@code null}
-     */
-    public static void checkReceivedMail(List<MailMessage> mails, DocumentModel commentDocModel,
-            DocumentModel commentedDocModel, Event event, String commentEventType) {
-        int expectedMailsCount = COMMENT_REMOVED.equals(commentEventType) ? 0 : 1;
-        assertEquals(expectedMailsCount, mails.size());
-
-        if (expectedMailsCount > 0) {
-            String subject = String.format("[Nuxeo5]%s comment on '%s'",
-                    COMMENT_ADDED.equals(event.getName()) ? "New" : "Updated", commentedDocModel.getName());
-            List<MailMessage> mailsBySubject = mails.stream()
-                                                    .filter(m -> subject.equals(m.getSubject()))
-                                                    .collect(Collectors.toList());
-            assertEquals(1, mailsBySubject.size());
-
-            String expectedMailContent = getExpectedMailContent(commentDocModel, commentedDocModel, event,
-                    commentEventType);
-            assertEquals(expectedMailContent, getMailContent(mailsBySubject.get(0)));
-        }
-    }
-
     public static String getExpectedMailContent(DocumentModel commentDocModel, DocumentModel commentedDocModel,
-            Event event, String commentEventType) {
+            Event event) {
         URL url = CommentUtils.class.getResource("/templates/commentNotificationMail.txt");
         try {
             String content = Files.readString(Paths.get(url.toURI()));
             var model = Map.of("COMMENT_AUTHOR", commentDocModel.getPropertyValue(COMMENT_AUTHOR), //
-                    "COMMENT_ACTION", COMMENT_ADDED.equals(commentEventType) ? "added" : "updated", //
+                    "COMMENT_ACTION", COMMENT_ADDED.equals(event.getName()) ? "added" : "updated", //
                     "COMMENTED_DOCUMENT", commentedDocModel.getName(), //
                     "COMMENT_DATE", EVENT_DATE_FORMAT.format(Date.from(Instant.ofEpochMilli(event.getTime()))), //
                     "COMMENT_TEXT", commentDocModel.getPropertyValue(COMMENT_TEXT), //
-                    "COMMENT_SUBSCRIPTION_NAME", COMMENT_ADDED.equals(commentEventType) ? "New" : "Updated");
+                    "COMMENT_SUBSCRIPTION_NAME", COMMENT_ADDED.equals(event.getName()) ? "New" : "Updated");
             return StringUtils.expandVars(content, model);
         } catch (URISyntaxException | IOException e) {
             throw new NuxeoException(e);
