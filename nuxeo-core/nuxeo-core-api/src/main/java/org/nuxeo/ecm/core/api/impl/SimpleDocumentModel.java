@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
 
@@ -68,6 +69,8 @@ public class SimpleDocumentModel implements DocumentModel {
     protected final Map<String, DataModel> dataModels = new HashMap<>();
 
     protected final Set<String> schemas = new HashSet<>();
+
+    protected final Set<String> facets = new HashSet<>();
 
     protected final Map<String, Serializable> contextData = new HashMap<>();
 
@@ -425,16 +428,37 @@ public class SimpleDocumentModel implements DocumentModel {
 
     @Override
     public boolean hasFacet(String facet) {
-        throw new UnsupportedOperationException();
+        return facets.contains(facet);
     }
 
     @Override
     public boolean addFacet(String facet) {
-        throw new UnsupportedOperationException();
+        if (facet == null) {
+            throw new IllegalArgumentException("Null facet");
+        }
+        if (facets.contains(facet)) {
+            return false;
+        }
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        CompositeType facetType = schemaManager.getFacet(facet);
+        if (facetType == null) {
+            throw new IllegalArgumentException("No such facet: " + facet);
+        }
+        // add it
+        facets.add(facet);
+        schemas.addAll(Arrays.asList(facetType.getSchemaNames()));
+
+        for (Schema schema : facetType.getSchemas()) {
+            DocumentPart part = new DocumentPartImpl(schema);
+            dataModels.put(schema.getName(), new DataModelImpl(part));
+        }
+
+        return true;
     }
 
     @Override
     public boolean removeFacet(String facet) {
+        // not implemented for now because logic is complex as we need to know initial type/schema
         throw new UnsupportedOperationException();
     }
 
