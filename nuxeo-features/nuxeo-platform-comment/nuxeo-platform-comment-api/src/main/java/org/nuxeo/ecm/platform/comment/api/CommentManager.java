@@ -32,7 +32,13 @@ import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 
 /**
- * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
+ * Service to deal with {@link Comment}.
+ * <p/>
+ * We call comment the document model representing a comment.
+ * <p/>
+ * We call parent/commented document the document model being commented (regular document or comment).
+ * <p/>
+ * We call top level document the regular document which owns all comments.
  */
 public interface CommentManager {
 
@@ -338,38 +344,23 @@ public interface CommentManager {
      * </ul>
      *
      * @param session the CoreSession
-     * @param commentIdRef the comment document model ref
+     * @param commentRef the comment document model ref
      * @return the top level ancestor document ref
      * @since 11.1
      */
-    default DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
-        throw new UnsupportedOperationException();
-    }
+     DocumentRef getTopLevelDocumentRef(CoreSession session, DocumentRef commentRef);
 
     /**
-     * Gets the location where the comment will be stored.
+     * Returns the comments location in repository for the given commented document model.
      *
+     * @param session the session needs to be privileged
+     * @return the comments location in repository for the given commented document model.
      * @apiNote This is dedicated to an internal usage (comment service/migration)
-     * @param session the core session
-     * @param documentModel the document model (can be another comment in the case of reply) for which we create the
-     *            comment
-     * @return the path to the location where will be stored the comment
      * @since 11.1
      */
-    default String getLocationOfCommentCreation(CoreSession session, DocumentModel documentModel) {
+    default String getLocationOfCommentCreation(CoreSession session, DocumentModel commentedDocModel) {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Gets the {@link DocumentRef} of the document being commented.
-     *
-     * @param session the core session
-     * @param commentDocumentModel the document model of the comment
-     * @return the {@code DocumentRef} of the commented document
-     * @since 11.1
-     */
-    default DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
-        throw new UnsupportedOperationException();
-    }
 
 }

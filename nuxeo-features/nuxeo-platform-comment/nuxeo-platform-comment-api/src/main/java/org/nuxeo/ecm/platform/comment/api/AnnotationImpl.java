@@ -19,21 +19,47 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
+
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
+
 /**
  * @since 10.1
  */
 public class AnnotationImpl extends CommentImpl implements Annotation, ExternalEntity {
 
+    /**
+     * @deprecated since 11.1, not used due to {@link #docModel} usage
+     */
+    @Deprecated
     protected String xpath;
+
+    /**
+     * @since 11.1
+     */
+    public AnnotationImpl() {
+        this(SimpleDocumentModel.ofType(ANNOTATION_DOC_TYPE));
+    }
+
+    /**
+     * Constructor for the document adapter factory.
+     *
+     * @since 11.1
+     */
+    protected AnnotationImpl(DocumentModel docModel) {
+        super(docModel);
+    }
 
     @Override
     public String getXpath() {
-        return xpath;
+        return (String) docModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY);
     }
 
     @Override
     public void setXpath(String xpath) {
-        this.xpath = xpath;
+        docModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, xpath);
     }
 
 }

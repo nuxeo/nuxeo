@@ -24,14 +24,14 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE_FIELD;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ENTITY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
 
 import java.time.Instant;
+import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -60,27 +60,23 @@ public class CommentJsonReader extends EntityJsonReader<Comment> {
 
     protected static Comment fillCommentEntity(JsonNode jn, Comment comment) {
         // don't read id from given JsonNode, if needed it is read from path
-        comment.setParentId(jn.get(COMMENT_PARENT_ID_FIELD).textValue());
-        comment.setText(jn.get(COMMENT_TEXT_FIELD).textValue());
-
-        JsonNode creationDateNode = jn.get(COMMENT_CREATION_DATE_FIELD);
-        Instant creationDate = creationDateNode != null && !creationDateNode.isNull()
-                ? Instant.parse(creationDateNode.textValue())
-                : null;
-        comment.setCreationDate(creationDate);
-
-        JsonNode modificationDateNode = jn.get(COMMENT_MODIFICATION_DATE_FIELD);
-        Instant modificationDate = modificationDateNode != null && !modificationDateNode.isNull()
-                ? Instant.parse(modificationDateNode.textValue())
-                : null;
-        comment.setModificationDate(modificationDate);
-
-        if (jn.has(EXTERNAL_ENTITY_ID)) {
+        setIfExist(jn, COMMENT_PARENT_ID_FIELD, comment::setParentId);
+        setIfExist(jn, COMMENT_TEXT_FIELD, comment::setText);
+        setIfExist(jn, COMMENT_CREATION_DATE_FIELD, s -> comment.setCreationDate(s == null ? null : Instant.parse(s)));
+        setIfExist(jn, COMMENT_MODIFICATION_DATE_FIELD,
+                s -> comment.setModificationDate(s == null ? null : Instant.parse(s)));
+        if (jn.has(EXTERNAL_ENTITY_ID) || jn.has(EXTERNAL_ENTITY_ORIGIN) || jn.has(EXTERNAL_ENTITY)) {
             ExternalEntity externalEntity = (ExternalEntity) comment;
-            externalEntity.setEntityId(jn.get(EXTERNAL_ENTITY_ID).textValue());
-            externalEntity.setOrigin(jn.get(EXTERNAL_ENTITY_ORIGIN).textValue());
-            externalEntity.setEntity(jn.get(EXTERNAL_ENTITY).textValue());
+            setIfExist(jn, EXTERNAL_ENTITY_ID, externalEntity::setEntityId);
+            setIfExist(jn, EXTERNAL_ENTITY_ORIGIN, externalEntity::setOrigin);
+            setIfExist(jn, EXTERNAL_ENTITY, externalEntity::setEntity);
         }
         return comment;
+    }
+
+    protected static void setIfExist(JsonNode jn, String key, Consumer<String> consumer) {
+        if (jn.has(key)) {
+            consumer.accept(jn.get(key).textValue());
+        }
     }
 }

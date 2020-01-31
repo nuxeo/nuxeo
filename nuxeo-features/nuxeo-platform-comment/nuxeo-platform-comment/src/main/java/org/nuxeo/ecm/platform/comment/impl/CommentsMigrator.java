@@ -244,8 +244,8 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
      */
     protected void migrateCommentsFromPropertyToSecured(CoreSession session, CommentManager commentManager,
             IdRef commentIdRef) {
-        DocumentModel commentDocModel = session.getDocument(commentIdRef);
-        String parentId = (String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID);
+        DocumentModel commentDoc = session.getDocument(commentIdRef);
+        String parentId = (String) commentDoc.getPropertyValue(COMMENT_PARENT_ID);
         if (StringUtils.isEmpty(parentId)) {
             log.warn(
                     "The comment document model with IdRef: {} cannot be migrated, because his 'comment:parentId' is not defined",
@@ -261,23 +261,23 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
             return;
         }
 
-        DocumentModel parentDocModel = session.getDocument(parentDocRef);
+        DocumentModel parentDoc = session.getDocument(parentDocRef);
 
-        DocumentRef destination = new PathRef(commentManager.getLocationOfCommentCreation(session, parentDocModel));
+        DocumentRef destination = new PathRef(commentManager.getLocationOfCommentCreation(session, parentDoc));
 
         // Move the commentIdRef under the new destination (under the `Comments` folder in the case of the first comment
         // or under the comment itself in the case of reply)
         session.move(commentIdRef, destination, null);
 
         // Remove notifications
-        commentDocModel.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
+        commentDoc.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
 
         // Strip ACLs
         ACP acp = session.getACP(commentIdRef);
         acp.removeACL(LOCAL_ACL);
         session.setACP(commentIdRef, acp, true);
 
-        session.saveDocument(commentDocModel);
+        session.saveDocument(commentDoc);
         session.save();
     }
 

@@ -45,11 +45,10 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.Comments;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -73,19 +72,18 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         String parentId = annotation.getParentId();
         if (!session.hasPermission(new IdRef(parentId), SecurityConstants.READ)) {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
-                    + " can not create annotations on document " + parentId);
+                    + " cannot create annotations on document " + parentId);
         }
         return CoreInstance.doPrivileged(session, s -> {
             // Create base comment in the annotation
             DocumentModel docToAnnotate = s.getDocument(new IdRef(annotation.getParentId()));
             DocumentModel annotationModel = s.createDocumentModel(ANNOTATION_DOC_TYPE);
-            Comments.annotationToDocumentModel(annotation, annotationModel);
-            if (annotation instanceof ExternalEntity) {
+            if (annotation.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
                 annotationModel.addFacet(EXTERNAL_ENTITY_FACET);
-                Comments.externalEntityToDocumentModel((ExternalEntity) annotation, annotationModel);
             }
+            DocumentModelJsonReader.applyDirtyPropertyValues(annotation.getDocument(), annotationModel);
             annotationModel = Framework.getService(CommentManager.class).createComment(docToAnnotate, annotationModel);
-            return Comments.newAnnotation(annotationModel);
+            return annotationModel.getAdapter(Annotation.class);
         });
     }
 
@@ -104,7 +102,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                 throw new CommentSecurityException("The user " + principal.getName()
                         + " does not have access to the annotations of document " + parentId);
             }
-            return Comments.newAnnotation(annotationModel);
+            return annotationModel.getAdapter(Annotation.class);
         });
     }
 
@@ -113,12 +111,13 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     public List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath)
             throws CommentNotFoundException, CommentSecurityException {
         DocumentRef docRef = new IdRef(documentId);
-        if (!session.exists(docRef)) {
-            throw new CommentNotFoundException("The document " + documentId + " does not exist.");
-        }
-        if (!session.hasPermission(docRef, SecurityConstants.READ)) {
-            throw new CommentSecurityException("The user " + session.getPrincipal().getName()
-                    + " does not have access to the annotations of document " + documentId);
+        try {
+            if (!session.hasPermission(docRef, SecurityConstants.READ)) {
+                throw new CommentSecurityException("The user " + session.getPrincipal().getName()
+                        + " does not have access to the annotations of document " + documentId);
+            }
+        } catch (DocumentNotFoundException dnfe) {
+            throw new CommentNotFoundException(String.format("The document %s does not exist.", docRef), dnfe);
         }
         DocumentModel annotatedDoc = session.getDocument(docRef);
         CommentManager commentManager = Framework.getService(CommentManager.class);
@@ -128,17 +127,21 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                 Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
                 PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
                         GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, null, null, null, props, documentId, xpath);
-                return pageProvider.getCurrentPage().stream().map(Comments::newAnnotation).collect(Collectors.toList());
+
+
+                return pageProvider.getCurrentPage()
+                                   .stream()
+                                   .map(doc -> doc.getAdapter(Annotation.class))
+                                   .collect(Collectors.toList());
             });
         }
         return CoreInstance.doPrivileged(session, s -> {
-            return commentManager
-                    .getComments(s, annotatedDoc)
-                    .stream()
-                    .filter(annotationModel -> ANNOTATION_DOC_TYPE.equals(annotationModel.getType())
-                            && xpath.equals(annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
-                    .map(Comments::newAnnotation)
-                    .collect(Collectors.toList());
+            return commentManager.getComments(s, annotatedDoc)
+                                 .stream()
+                                 .filter(annotationModel -> ANNOTATION_DOC_TYPE.equals(annotationModel.getType())
+                                         && xpath.equals(annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
+                                 .map(doc -> doc.getAdapter(Annotation.class))
+                                 .collect(Collectors.toList());
         });
     }
 
@@ -152,7 +155,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         NuxeoPrincipal principal = session.getPrincipal();
         if (!principal.isAdministrator() && !annotation.getAuthor().equals(principal.getName())) {
             throw new CommentSecurityException("The user " + principal.getName()
-                    + " can not edit annotations of document " + annotation.getParentId());
+                    + " cannot edit annotations of document " + annotation.getParentId());
         }
         Framework.getService(CommentManager.class).updateComment(session, annotationId, annotation);
     }
@@ -168,8 +171,8 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                 if (!principal.isAdministrator()
                         && !annotation.getPropertyValue(COMMENT_AUTHOR).equals(principal.getName())
                         && !s.hasPermission(principal, parentRef, SecurityConstants.EVERYTHING)) {
-                    throw new CommentSecurityException(
-                            "The user " + principal.getName() + " can not delete annotations of document " + parentId);
+                    throw new CommentSecurityException("The user " + principal.getName()
+                            + " cannot delete annotations of document " + parentId);
                 }
             } catch (DocumentNotFoundException e) {
                 throw new CommentNotFoundException(e);
@@ -190,25 +193,25 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
                     + " does not have access to the annotations of document " + parentId);
         }
-        return Comments.newAnnotation(annotationModel);
+        return annotationModel.getAdapter(Annotation.class);
     }
 
     @Override
     public void updateExternalAnnotation(CoreSession session, String entityId, Annotation annotation)
             throws CommentNotFoundException, CommentSecurityException {
-        NuxeoPrincipal principal = session.getPrincipal();
-        if (!principal.isAdministrator() && !annotation.getAuthor().equals(principal.getName())) {
-            throw new CommentSecurityException("The user " + session.getPrincipal().getName()
-                    + " can not edit annotations of document " + annotation.getParentId());
-        }
         DocumentModel annotationModel = getAnnotationModel(session, entityId);
         if (annotationModel == null) {
             throw new CommentNotFoundException("The external annotation " + entityId + " does not exist.");
         }
-        Comments.annotationToDocumentModel(annotation, annotationModel);
-        if (annotation instanceof ExternalEntity) {
-            Comments.externalEntityToDocumentModel((ExternalEntity) annotation, annotationModel);
+        NuxeoPrincipal principal = session.getPrincipal();
+        if (!principal.isAdministrator() && !annotation.getAuthor().equals(principal.getName())) {
+            throw new CommentSecurityException("The user " + session.getPrincipal().getName()
+                    + " cannot edit annotations of document " + annotation.getParentId());
         }
+        if (annotation.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
+            annotationModel.addFacet(EXTERNAL_ENTITY_FACET);
+        }
+        DocumentModelJsonReader.applyDirtyPropertyValues(annotation.getDocument(), annotationModel);
         session.saveDocument(annotationModel);
     }
 
@@ -225,7 +228,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                 && !annotationModel.getPropertyValue(COMMENT_AUTHOR).equals(principal.getName())
                 && !session.hasPermission(new IdRef(parentId), SecurityConstants.EVERYTHING)) {
             throw new CommentSecurityException(
-                    "The user " + principal.getName() + " can not delete annotations of document " + parentId);
+                    "The user " + principal.getName() + " cannot delete annotations of document " + parentId);
         }
         Framework.getService(CommentManager.class).deleteComment(session, annotationModel.getId());
     }

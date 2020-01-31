@@ -30,6 +30,9 @@ public class AnnotationConstants {
 
     public static final String ANNOTATION_DOC_TYPE = "Annotation";
 
+    /** @since 11.1 */
+    public static final String ANNOTATION_SCHEMA = "annotation";
+
     public static final String ANNOTATION_XPATH_PROPERTY = "annotation:xpath";
 
     public static final String ANNOTATION_XPATH = "xpath";

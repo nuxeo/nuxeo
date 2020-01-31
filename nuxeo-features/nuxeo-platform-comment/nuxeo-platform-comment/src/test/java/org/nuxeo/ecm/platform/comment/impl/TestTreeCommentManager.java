@@ -65,12 +65,12 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
+import org.nuxeo.ecm.platform.comment.TreeCommentFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.ecm.platform.comment.TreeCommentFeature;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -214,8 +214,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(doc.getRef(), parentDocumentRefs[1]);
 
         // Check the Thread
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
-                commentDocModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session, commentDocModel.getRef());
         assertEquals(doc.getRef(), topLevelCommentAncestor);
 
         // I can create a comment if i have the right permissions on the document
@@ -271,7 +270,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(doc.getRef(), parentDocumentRefs[3]);
 
         // Check the Thread
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session,
                 secondReplyDocModel.getRef());
         assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
@@ -286,7 +285,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to create comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+            assertEquals(String.format("The user bob cannot create comments on document %s", doc.getId()),
                     cse.getMessage());
         }
     }
@@ -340,7 +339,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
     }
 
     @Test
-    public void iCannotGetComments() {
+    public void iCannotGetComment() {
         DocumentModel doc = createDocumentModel("anyFile");
 
         Comment commentToCreate = createSampleComment(doc.getId());
@@ -351,17 +350,17 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to get comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s",
-                    createdComment.getId()), cse.getMessage());
+            assertEquals(String.format("The user bob does not have access to the comment %s", createdComment.getId()),
+                    cse.getMessage());
         }
 
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
-            commentManager.getComments(bobSession, createdComment.getId());
+            commentManager.getComments(bobSession, doc.getId());
             fail("bob should not be able to get comments");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s",
-                    createdComment.getId()), cse.getMessage());
+            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+                    cse.getMessage());
         }
 
     }
@@ -371,24 +370,27 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         DocumentModel doc = createDocumentModel("anyFile");
 
         Comment commentToCreate = createSampleComment(doc.getId());
-        Comment createdComment = createAndCheckComment(session, doc, commentToCreate, 1);
+        Comment comment = createAndCheckComment(session, doc, commentToCreate, 1);
+        String commentId = comment.getId();
 
         Comment newComment = createSampleComment(doc.getId());
         newComment.setText("This a new text on this comment");
-        newComment.setAuthor("james");
 
-        Comment updatedComment = commentManager.updateComment(session, createdComment.getId(), newComment);
+        // I can update the comment if I'm the author
+        Comment updatedComment = commentManager.updateComment(session, commentId, newComment);
         verifyCommonsInfo(doc, newComment, updatedComment, 1);
-        Instant lastModification = updatedComment.getModificationDate();
-        assertNotNull(lastModification);
+        Instant firstModification = updatedComment.getModificationDate();
+        assertNotNull(firstModification);
 
-        // If i am the author of the comment then i can update it
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "james")) {
+        // re-init modification date
+        newComment.setModificationDate(null);
+        // I can update the comment if I'm an administrator
+        try (CloseableCoreSession systemSession = coreFeature.openCoreSessionSystem()) {
             newComment.setText("Can you call me on my phone, please");
-            updatedComment = commentManager.updateComment(jamesSession, createdComment.getId(), newComment);
+            updatedComment = commentManager.updateComment(systemSession, commentId, newComment);
             verifyCommonsInfo(doc, newComment, updatedComment, 1);
             assertNotNull(updatedComment.getModificationDate());
-            assertEquals(lastModification, updatedComment.getModificationDate());
+            assertTrue(firstModification.isBefore(updatedComment.getModificationDate()));
         }
     }
 
@@ -407,7 +409,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to update a comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob cannot edit comments of document %s", doc.getId()),
+            assertEquals(String.format("The user bob does not have access to the comment %s", createdComment.getId()),
                     cse.getMessage());
         }
     }
@@ -475,7 +477,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to delete a comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob cannot delete comment of the document %s", doc.getId()),
+            assertEquals(String.format("The user bob cannot delete comments of the document %s", doc.getId()),
                     cse.getMessage());
         }
     }
