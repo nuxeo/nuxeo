@@ -373,6 +373,41 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         }
     }
 
+    /*
+     * NXP-28484
+     */
+    @Test
+    public void testUpdateCommentWithPartialData() throws IOException {
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        CommentImpl comment = instantiateComment(file.getId());
+        comment.setAuthor(session.getPrincipal().getName());
+        comment.setEntityId("an-id");
+        comment.setEntity("some-content");
+        comment.setOrigin("somewhere");
+        comment = (CommentImpl) commentManager.createComment(session, comment);
+        String commentId = comment.getId();
+        fetchInvalidations();
+
+        String jsonComment = String.format("{\"entity-type\":\"%s\",\"%s\":\"And now I update it\"}",
+                COMMENT_ENTITY_TYPE, COMMENT_TEXT_FIELD);
+
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "id/" + file.getId() + "/@comment/" + commentId, jsonComment)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
+            assertEquals(commentId, node.get(COMMENT_ID_FIELD).textValue());
+            assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
+            assertEquals("an-id", node.get(EXTERNAL_ENTITY_ID).textValue());
+            assertEquals("some-content", node.get(EXTERNAL_ENTITY).textValue());
+            assertEquals("somewhere", node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+        }
+    }
+
     @Test
     public void testDeleteCommentWithNonExistingId() {
         DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
@@ -492,8 +527,8 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         return commentManager.createComment(session, comment);
     }
 
-    protected Comment instantiateComment(String documentId) {
-        Comment comment = new CommentImpl();
+    protected CommentImpl instantiateComment(String documentId) {
+        CommentImpl comment = new CommentImpl();
         comment.setParentId(documentId);
         comment.setText("Here my wonderful comment on " + documentId + "!");
         comment.setCreationDate(Instant.now());

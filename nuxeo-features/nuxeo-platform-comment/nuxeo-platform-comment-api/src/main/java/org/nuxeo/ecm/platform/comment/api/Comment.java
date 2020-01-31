@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+
 import java.time.Instant;
 import java.util.Collection;
 
@@ -40,7 +42,9 @@ public interface Comment {
      * Sets comment id.
      *
      * @param id the id
+     * @deprecated since 11.1, you should use document adapter factory instead
      */
+    @Deprecated
     void setId(String id);
 
     /**
@@ -68,7 +72,9 @@ public interface Comment {
      * Adds an ancestor id.
      * 
      * @param ancestorId the ancestor id
+     * @deprecated since 11.1, should be filled by document adapater factory
      */
+    @Deprecated
     void addAncestorId(String ancestorId);
 
     /**
@@ -126,4 +132,14 @@ public interface Comment {
      * @param modificationDate the modification date
      */
     void setModificationDate(Instant modificationDate);
+
+    /**
+     * Gets the document model backing this pojo.
+     *
+     * @return the document model backing this pojo
+     * @apiNote the returned document is detached
+     */
+    default DocumentModel getDocument() {
+        throw new UnsupportedOperationException();
+    }
 }

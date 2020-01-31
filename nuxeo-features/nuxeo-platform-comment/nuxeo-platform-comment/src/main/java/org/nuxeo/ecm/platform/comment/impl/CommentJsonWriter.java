@@ -32,7 +32,6 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_LAST_REPLY_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_NUMBER_OF_REPLIES;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PERMISSIONS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT_FIELD;
@@ -88,8 +87,8 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
             if (entity.getId() == null) {
                 return Collections.emptyList();
             }
-
-            DocumentRef ancestorRef = commentManager.getTopLevelCommentAncestor(session, new IdRef(entity.getId()));
+            DocumentRef ancestorRef = Framework.getService(CommentManager.class)
+                                               .getTopLevelDocumentRef(s, new IdRef(entity.getId()));
             return s.filterGrantedPermissions(principal, ancestorRef,
                     Arrays.asList(permissionProvider.getPermissions()));
         });

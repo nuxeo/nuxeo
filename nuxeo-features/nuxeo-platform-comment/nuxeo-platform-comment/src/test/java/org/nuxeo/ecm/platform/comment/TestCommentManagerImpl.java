@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.comment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 
 import java.util.Calendar;
 import java.util.List;
@@ -40,9 +41,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -55,7 +54,7 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(RelationCommentFeature.class)
 public class TestCommentManagerImpl extends AbstractTestCommentManager {
 
-    public static final String QUERY_COMMENTS_AS_DOCUMENTS = "SELECT * FROM " + CommentsConstants.COMMENT_DOC_TYPE;
+    public static final String QUERY_COMMENTS_AS_DOCUMENTS = "SELECT * FROM " + COMMENT_DOC_TYPE;
 
     public static final String USERNAME = "Foo";
 
@@ -137,7 +136,7 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
         commentModel = session.createDocument(commentModel);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        Comments.commentToDocumentModel(comment, commentModel);
+        applyDirtyPropertyValues(comment.getDocument(), commentModel);
         commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         // Check if Comments folder has been created in the given container

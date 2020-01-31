@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.ecm.platform.comment.impl.CommentJsonReader.fillCommentEntity;
+import static org.nuxeo.ecm.platform.comment.impl.CommentJsonReader.setIfExist;
 
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -46,7 +47,7 @@ public class AnnotationJsonReader extends EntityJsonReader<Annotation> {
     protected Annotation readEntity(JsonNode jn) {
         Annotation annotation = new AnnotationImpl();
         fillCommentEntity(jn, annotation);
-        annotation.setXpath(jn.get(ANNOTATION_XPATH).textValue());
+        setIfExist(jn, ANNOTATION_XPATH, annotation::setXpath);
         return annotation;
     }
 

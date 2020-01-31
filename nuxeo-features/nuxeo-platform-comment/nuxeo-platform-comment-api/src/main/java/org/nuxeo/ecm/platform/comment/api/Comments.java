@@ -19,18 +19,18 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
+import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_CREATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_MODIFICATION_DATE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
-import java.io.Serializable;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -44,13 +44,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Utility class to convert document model from/to comments, annotations or external entities.
  * 
  * @since 10.3
+ * @deprecated since 11.1, use {@link Comment#getDocument()} or {@link DocumentModel#getAdapter(Class)} instead
  */
+@Deprecated
 public class Comments {
 
     private Comments() {
         // no instance allowed
     }
 
+    /**
+     * @deprecated since 11.1, use {@link Comment#getDocument()} with {@code DocumentModelJsonReader} instead
+     */
+    @Deprecated
     public static void commentToDocumentModel(Comment comment, DocumentModel documentModel) {
         // Do not set ancestor ids as it is computed at document creation
         documentModel.setPropertyValue(COMMENT_AUTHOR, comment.getAuthor());
@@ -68,17 +74,29 @@ public class Comments {
         }
     }
 
+    /**
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated
     public static void annotationToDocumentModel(Annotation annotation, DocumentModel documentModel) {
         commentToDocumentModel(annotation, documentModel);
         documentModel.setPropertyValue(ANNOTATION_XPATH_PROPERTY, annotation.getXpath());
     }
 
+    /**
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated
     public static void externalEntityToDocumentModel(ExternalEntity entity, DocumentModel documentModel) {
         documentModel.setPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY, entity.getEntityId());
         documentModel.setPropertyValue(EXTERNAL_ENTITY_ORIGIN_PROPERTY, entity.getOrigin());
         documentModel.setPropertyValue(EXTERNAL_ENTITY_PROPERTY, entity.getEntity());
     }
 
+    /**
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static void documentModelToComment(DocumentModel documentModel, Comment comment) {
         comment.setId(documentModel.getId());
@@ -99,11 +117,19 @@ public class Comments {
         }
     }
 
+    /**
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated
     public static void documentModelToAnnotation(DocumentModel documentModel, Annotation annotation) {
         documentModelToComment(documentModel, annotation);
         annotation.setXpath((String) documentModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY));
     }
 
+    /**
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated
     public static void documentModelToExternalEntity(DocumentModel documentModel, ExternalEntity entity) {
         if (documentModel.hasFacet(EXTERNAL_ENTITY_FACET)) {
             entity.setEntityId((String) documentModel.getPropertyValue(EXTERNAL_ENTITY_ID_PROPERTY));
@@ -112,6 +138,10 @@ public class Comments {
         }
     }
 
+    /**
+     * @deprecated since 11.1, use {@link DocumentModel#getAdapter(Class)} with {@link Comment} class instead
+     */
+    @Deprecated
     public static Comment newComment(DocumentModel commentModel) {
         Comment comment = new CommentImpl();
         documentModelToComment(commentModel, comment);
@@ -119,6 +149,10 @@ public class Comments {
         return comment;
     }
 
+    /**
+     * @deprecated since 11.1, use {@link DocumentModel#getAdapter(Class)} with {@link Annotation} class instead
+     */
+    @Deprecated
     public static Annotation newAnnotation(DocumentModel annotationModel) {
         Annotation annotation = new AnnotationImpl();
         documentModelToAnnotation(annotationModel, annotation);
