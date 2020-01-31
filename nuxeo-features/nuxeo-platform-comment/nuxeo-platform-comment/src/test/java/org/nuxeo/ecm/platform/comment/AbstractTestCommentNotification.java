@@ -20,19 +20,11 @@
 package org.nuxeo.ecm.platform.comment;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_REMOVED;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.checkDocumentEventContext;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
 import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
-
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -61,6 +53,14 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @RunWith(FeaturesRunner.class)
 @Features(NotificationCommentFeature.class)
 public abstract class AbstractTestCommentNotification {
+
+    protected static final String COMMENT_ADDED_NOTIFICATION = "CommentAdded";
+
+    protected static final String COMMENT_UPDATED_NOTIFICATION = "CommentUpdated";
+
+    protected static final String ADMINISTRATOR = "Administrator";
+
+    protected static final String ANY_COMMENT_MESSAGE = "any Comment message";
 
     @Inject
     protected NotificationService notificationService;
@@ -97,56 +97,84 @@ public abstract class AbstractTestCommentNotification {
 
     @Test
     public void shouldNotifyEventWhenCreateComment() {
-        // We subscribe to the creation document to check that we will not be notified about the comment creation as
-        // document (see CommentCreationVeto), only the comment added, and the 'File' document creation
-        captureAndVerifyCommentEventNotification(() -> {
-            Comment createdComment = createCommentAndAddSubscription("CommentAdded", "Creation");
-            return session.getDocument(new IdRef(createdComment.getId()));
-        }, COMMENT_ADDED, DOCUMENT_CREATED);
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
+            Comment comment = createComment(commentedDocumentModel);
+            DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
+            DocumentModel commentParentDocumentModel = session.getDocument(
+                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            transactionalFeature.nextTransaction();
+
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, commentDocumentModel, commentParentDocumentModel,
+                    commentedDocumentModel);
+        }
     }
 
     @Test
     public void shouldNotifyEventWhenUpdateComment() {
-        // We subscribe to the update document to check that we will not be notified about the comment updated as
-        // document (see CommentModificationVeto), only the comment updated.
-        Comment createdComment = createCommentAndAddSubscription("CommentUpdated", "Modification");
+        Comment comment = createComment(commentedDocumentModel);
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
+            comment.setText("I update the comment");
+            commentManager.updateComment(session, comment.getId(), comment);
+            DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
+            DocumentModel commentParentDocumentModel = session.getDocument(
+                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            transactionalFeature.nextTransaction();
 
-        captureAndVerifyCommentEventNotification(() -> {
-            createdComment.setText("I update the message");
-            commentManager.updateComment(session, createdComment.getId(), createdComment);
-            return session.getDocument(new IdRef(createdComment.getId()));
-        }, COMMENT_UPDATED, DOCUMENT_UPDATED);
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, commentDocumentModel, commentParentDocumentModel,
+                    commentedDocumentModel);
+        }
     }
 
     @Test
     public void shouldNotifyEventWhenRemoveComment() {
-        Comment createdComment = createCommentAndAddSubscription("CommentRemoved");
-        DocumentModel commentDocModel = session.getDocument(new IdRef(createdComment.getId()));
+        Comment comment = createComment(commentedDocumentModel);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
         commentDocModel.detach(true);
+        transactionalFeature.nextTransaction();
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
+            commentManager.deleteComment(session, comment.getId());
+            DocumentModel commentParentDocumentModel = session.getDocument(
+                    new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID)));
+            transactionalFeature.nextTransaction();
 
-        captureAndVerifyCommentEventNotification(() -> {
-            commentManager.deleteComment(session, createdComment.getId());
-            return commentDocModel;
-        }, COMMENT_REMOVED, DOCUMENT_REMOVED);
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, commentDocModel, commentParentDocumentModel,
+                    commentedDocumentModel);
+        }
     }
 
     @Test
     public void shouldNotifyWithTheRightCommentedDocument() {
         // First comment
-        Comment createdComment = createComment(commentedDocumentModel);
-        DocumentModel createdCommentDocModel = session.getDocument(new IdRef(createdComment.getId()));
+        Comment comment = createComment(commentedDocumentModel, ADMINISTRATOR, ANY_COMMENT_MESSAGE);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
         // before subscribing, or previous event will be notified as well
         transactionalFeature.nextTransaction();
         // Reply
-        captureAndVerifyCommentEventNotification(() -> {
-            addSubscriptions("CommentAdded");
-
-            Comment reply = createComment(createdCommentDocModel);
+        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
+            Comment reply = createComment(commentDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
-            return session.getDocument(new IdRef(replyDocumentModel.getId()));
-        }, COMMENT_ADDED, DOCUMENT_CREATED);
+            DocumentModel commentParentDocumentModel = session.getDocument(
+                    new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
+            transactionalFeature.nextTransaction();
+
+            Event expectedEvent = listener.streamCapturedEvents()
+                                          .findFirst()
+                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            checkDocumentEventContext(expectedEvent, replyDocumentModel, commentParentDocumentModel,
+                    commentedDocumentModel);
+        }
     }
 
+    @Deprecated
     protected void addSubscriptions(String... notifications) {
         NuxeoPrincipal principal = session.getPrincipal();
         String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
@@ -155,42 +183,25 @@ public abstract class AbstractTestCommentNotification {
         }
     }
 
-    protected void captureAndVerifyCommentEventNotification(Supplier<DocumentModel> supplier, String commentEventType,
-            String documentEventType) {
-        try (CapturingEventListener listener = new CapturingEventListener(commentEventType, documentEventType)) {
-            DocumentModel commentDocumentModel = supplier.get();
-            DocumentModel commentParentDocumentModel = session.getDocument(new IdRef(
-                    (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
-            transactionalFeature.nextTransaction();
-
-            assertTrue(listener.hasBeenFired(commentEventType));
-            assertTrue(listener.hasBeenFired(documentEventType));
-
-            List<Event> handledEvents = listener.streamCapturedEvents()
-                                                .filter(e -> commentEventType.equals(e.getName()))
-                                                .collect(Collectors.toList());
-
-            assertEquals(1, handledEvents.size());
-
-            checkDocumentEventContext(handledEvents.get(0), commentDocumentModel, commentParentDocumentModel,
-                    commentedDocumentModel);
-        }
-    }
-
     @Test
     public void testCommentManagerType() {
         assertEquals(getType(), commentManager.getClass());
     }
 
+    @Deprecated
     protected Comment createCommentAndAddSubscription(String... notifications) {
         addSubscriptions(notifications);
         return createComment(commentedDocumentModel);
     }
 
     protected Comment createComment(DocumentModel commentedDocModel) {
+        return createComment(commentedDocModel, ADMINISTRATOR, ANY_COMMENT_MESSAGE);
+    }
+
+    protected Comment createComment(DocumentModel commentedDocModel, String author, String text) {
         Comment comment = new CommentImpl();
-        comment.setAuthor("Administrator");
-        comment.setText("any Comment message");
+        comment.setAuthor(author);
+        comment.setText(text);
         comment.setParentId(commentedDocModel.getId());
 
         return commentManager.createComment(session, comment);

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -58,8 +59,11 @@ import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @since 10.3
@@ -176,9 +180,22 @@ public abstract class AbstractCommentManager implements CommentManager {
     protected abstract DocumentModel getCommentedDocument(CoreSession session, DocumentModel commentDoc);
 
     protected NuxeoPrincipal getAuthor(DocumentModel docModel) {
-        String[] contributors = (String[]) docModel.getProperty("dublincore", "contributors");
-        UserManager userManager = Framework.getService(UserManager.class);
-        return userManager.getPrincipal(contributors[0]);
+        String author = null;
+        if (docModel.hasSchema(COMMENT_SCHEMA)) {
+            // means annotation / comment
+            author = (String) docModel.getPropertyValue(COMMENT_AUTHOR);
+        }
+        if (StringUtils.isBlank(author)) {
+            String[] contributors = (String[]) docModel.getPropertyValue("dc:contributors");
+            author = contributors[0];
+        }
+
+        NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(author);
+        // If principal doesn't exist anymore
+        if (principal == null) {
+            log.debug("Principal not found: " + principal);
+        }
+        return principal;
     }
 
     protected void setFolderPermissions(CoreSession session, DocumentModel documentModel) {
