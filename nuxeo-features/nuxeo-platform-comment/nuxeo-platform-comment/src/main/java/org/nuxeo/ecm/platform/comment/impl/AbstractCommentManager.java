@@ -26,9 +26,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +38,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -57,6 +58,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
+import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -97,35 +100,71 @@ public abstract class AbstractCommentManager implements CommentManager {
     }
 
     @Override
-    public DocumentModel getThreadForComment(DocumentModel comment) {
-        DocumentRef topLevelDocRef = getTopLevelCommentAncestor(comment.getCoreSession(), comment.getRef());
-        return comment.getCoreSession().getDocument(topLevelDocRef);
+    public DocumentRef getTopLevelDocumentRef(CoreSession session, DocumentRef commentRef) {
+        NuxeoPrincipal principal = session.getPrincipal();
+        return CoreInstance.doPrivileged(session, s -> {
+            if (!s.exists(commentRef)) {
+                throw new CommentNotFoundException(String.format("The comment %s does not exist.", commentRef));
+            }
+
+            DocumentModel commentDoc = s.getDocument(commentRef);
+            DocumentModel topLevelDoc = getTopLevelDocument(s, commentDoc);
+            DocumentRef topLevelDocRef = topLevelDoc.getRef();
+
+            if (!s.hasPermission(principal, topLevelDocRef, SecurityConstants.READ)) {
+                throw new CommentSecurityException("The user " + principal.getName()
+                        + " does not have access to the comments of document " + topLevelDocRef);
+            }
+
+            return topLevelDocRef;
+        });
+    }
+
+    /**
+     * Notifies the event of type {@code eventType} on the given {@code commentDoc}.
+     *
+     * @param session the session
+     * @param eventType the event type to fire
+     * @param commentDoc the document model of the comment
+     * @implSpec This method uses internally {@link #notifyEvent(CoreSession, String, DocumentModel, DocumentModel)}
+     * @since 11.1
+     */
+    protected void notifyEvent(CoreSession session, String eventType, DocumentModel commentDoc) {
+        DocumentModel commentedDoc = getCommentedDocument(session, commentDoc);
+        notifyEvent(session, eventType, commentedDoc, commentDoc);
     }
 
     protected void notifyEvent(CoreSession session, String eventType, DocumentModel commentedDoc,
-            DocumentModel comment) {
+            DocumentModel commentDoc) {
+        DocumentModel topLevelDoc = getTopLevelDocument(session, commentDoc);
+        notifyEvent(session, eventType, topLevelDoc, commentedDoc, commentDoc);
+    }
 
+    /**
+     * @since 11.1
+     */
+    protected void notifyEvent(CoreSession session, String eventType, DocumentModel topLevelDoc,
+            DocumentModel commentedDoc, DocumentModel commentDoc) {
+        requireNonNull(eventType);
         UserManager userManager = Framework.getService(UserManager.class);
         NuxeoPrincipal principal = null;
         if (userManager != null) {
-            principal = userManager.getPrincipal((String) comment.getPropertyValue(COMMENT_AUTHOR_PROPERTY));
+            principal = userManager.getPrincipal((String) commentDoc.getPropertyValue(COMMENT_AUTHOR_PROPERTY));
             if (principal == null) {
                 try {
-                    principal = getAuthor(comment);
+                    principal = getAuthor(commentDoc);
                 } catch (PropertyException e) {
                     log.error("Error building principal for comment author", e);
                     return;
                 }
             }
         }
-        DocumentRef topLevelDocRef = getTopLevelCommentAncestor(session, commentedDoc.getRef());
-        DocumentModel topLevelDocument = session.getDocument(topLevelDocRef);
         DocumentEventContext ctx = new DocumentEventContext(session, principal, commentedDoc);
         Map<String, Serializable> props = new HashMap<>();
-        props.put(CommentConstants.TOP_LEVEL_DOCUMENT, topLevelDocument);
+        props.put(CommentConstants.TOP_LEVEL_DOCUMENT, topLevelDoc);
         props.put(CommentConstants.PARENT_COMMENT, commentedDoc);
         // simplifies template checks and vars expansion
-        if (!topLevelDocument.equals(commentedDoc)) {
+        if (!topLevelDoc.equals(commentedDoc)) {
             String commentAuthor;
             NuxeoPrincipal commentPrincipal = getAuthor(commentedDoc);
             if (commentPrincipal != null) {
@@ -136,10 +175,10 @@ public abstract class AbstractCommentManager implements CommentManager {
             }
             props.put(CommentConstants.PARENT_COMMENT_AUTHOR, commentAuthor);
         }
-        props.put(CommentConstants.COMMENT_DOCUMENT, comment);
-        props.put(CommentConstants.COMMENT, (String) comment.getProperty("comment", "text"));
+        props.put(CommentConstants.COMMENT_DOCUMENT, commentDoc);
+        props.put(CommentConstants.COMMENT, commentDoc.getPropertyValue(COMMENT_TEXT_PROPERTY));
         // Keep comment_text for compatibility
-        props.put(CommentConstants.COMMENT_TEXT, (String) comment.getProperty("comment", "text"));
+        props.put(CommentConstants.COMMENT_TEXT, commentDoc.getPropertyValue(COMMENT_TEXT_PROPERTY));
         props.put("category", CommentConstants.EVENT_COMMENT_CATEGORY);
         ctx.setProperties(props);
         Event event = ctx.newEvent(eventType);
@@ -147,6 +186,10 @@ public abstract class AbstractCommentManager implements CommentManager {
         EventProducer evtProducer = Framework.getService(EventProducer.class);
         evtProducer.fireEvent(event);
     }
+
+    protected abstract DocumentModel getTopLevelDocument(CoreSession session, DocumentModel commentDoc);
+
+    protected abstract DocumentModel getCommentedDocument(CoreSession session, DocumentModel commentDoc);
 
     protected NuxeoPrincipal getAuthor(DocumentModel docModel) {
         String author = null;
@@ -187,6 +230,9 @@ public abstract class AbstractCommentManager implements CommentManager {
         session.setACP(documentModel.getRef(), acp, true);
     }
 
+    /**
+     * @param session the session allowing to get parent documents, depending on implementation it should be privileged
+     */
     @SuppressWarnings("unchecked")
     protected <S extends Set<String> & Serializable> S computeAncestorIds(CoreSession session, String parentId) {
         Set<String> ancestorIds = new HashSet<>();
@@ -198,22 +244,6 @@ public abstract class AbstractCommentManager implements CommentManager {
             parentRef = new IdRef(parentId);
         }
         return (S) ancestorIds;
-    }
-
-    /**
-     * Notifies the event of type {@code eventType} on the given {@code commentDocumentModel}.
-     *
-     * @param session the session
-     * @param eventType the event type to fire
-     * @param commentDocumentModel the document model of the comment
-     * @implSpec This method uses internally {@link #notifyEvent(CoreSession, String, DocumentModel, DocumentModel)}
-     * @since 11.1
-     */
-    protected void notifyEvent(CoreSession session, String eventType, DocumentModel commentDocumentModel) {
-        requireNonNull(eventType);
-
-        DocumentModel commentParent = session.getDocument(getCommentedDocumentRef(session, commentDocumentModel));
-        notifyEvent(session, eventType, commentParent, commentDocumentModel);
     }
 
 }

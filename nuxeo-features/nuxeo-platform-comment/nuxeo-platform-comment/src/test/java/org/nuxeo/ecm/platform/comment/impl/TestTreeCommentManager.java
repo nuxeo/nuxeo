@@ -33,9 +33,9 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_RESOURCES;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.COMMENT_RELATED_TEXT_ID;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 
 import java.io.Serializable;
@@ -221,8 +221,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(doc.getRef(), parentDocumentRefs[1]);
 
         // Check the Thread
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
-                commentDocModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session, commentDocModel.getRef());
         assertEquals(doc.getRef(), topLevelCommentAncestor);
 
         // I can create a comment if i have the right permissions on the document
@@ -278,7 +277,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(doc.getRef(), parentDocumentRefs[3]);
 
         // Check the Thread
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session,
                 secondReplyDocModel.getRef());
         assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
@@ -347,7 +346,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
     }
 
     @Test
-    public void iCannotGetComments() {
+    public void iCannotGetComment() {
         DocumentModel doc = createDocumentModel("anyFile");
 
         Comment commentToCreate = createSampleComment(doc.getId());
@@ -358,12 +357,12 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to get comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob does not have access to the comments of document %s", doc.getId()),
+            assertEquals(String.format("The user bob does not have access to the comment %s", createdComment.getId()),
                     cse.getMessage());
         }
 
         try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
-            commentManager.getComments(bobSession, createdComment.getId());
+            commentManager.getComments(bobSession, doc.getId());
             fail("bob should not be able to get comments");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
@@ -378,24 +377,27 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         DocumentModel doc = createDocumentModel("anyFile");
 
         Comment commentToCreate = createSampleComment(doc.getId());
-        Comment createdComment = createAndCheckComment(session, doc, commentToCreate, 1);
+        Comment comment = createAndCheckComment(session, doc, commentToCreate, 1);
+        String commentId = comment.getId();
 
         Comment newComment = createSampleComment(doc.getId());
         newComment.setText("This a new text on this comment");
-        newComment.setAuthor("james");
 
-        Comment updatedComment = commentManager.updateComment(session, createdComment.getId(), newComment);
+        // I can update the comment if I'm the author
+        Comment updatedComment = commentManager.updateComment(session, commentId, newComment);
         verifyCommonsInfo(doc, newComment, updatedComment, 1);
-        Instant lastModification = updatedComment.getModificationDate();
-        assertNotNull(lastModification);
+        Instant firstModification = updatedComment.getModificationDate();
+        assertNotNull(firstModification);
 
-        // If i am the author of the comment then i can update it
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "james")) {
+        // re-init modification date
+        newComment.setModificationDate(null);
+        // I can update the comment if I'm an administrator
+        try (CloseableCoreSession systemSession = coreFeature.openCoreSessionSystem()) {
             newComment.setText("Can you call me on my phone, please");
-            updatedComment = commentManager.updateComment(jamesSession, createdComment.getId(), newComment);
+            updatedComment = commentManager.updateComment(systemSession, commentId, newComment);
             verifyCommonsInfo(doc, newComment, updatedComment, 1);
             assertNotNull(updatedComment.getModificationDate());
-            assertEquals(lastModification, updatedComment.getModificationDate());
+            assertTrue(firstModification.isBefore(updatedComment.getModificationDate()));
         }
     }
 
@@ -414,7 +416,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
             fail("bob should not be able to update a comment");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
-            assertEquals(String.format("The user bob cannot edit comments of document %s", doc.getId()),
+            assertEquals(String.format("The user bob does not have access to the comment %s", createdComment.getId()),
                     cse.getMessage());
         }
     }
@@ -698,6 +700,10 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         Comment firstCommentOfFile2 = createSampleComment(secondDocToComment.getId(),
                 "I am the first comment of secondFile");
         firstCommentOfFile2 = commentManager.createComment(session, firstCommentOfFile2);
+
+        // the comment container is created with the atomic CoreSession#getOrCreateDocument operation which commits the
+        // transaction (and trigger async actions) - so wait for these actions to complete
+        transactionalFeature.nextTransaction();
 
         // Create first reply on first comment of first file
         Comment firstReply = createSampleComment(firstCommentOfFile1.getId(), "I am the first reply of first comment");

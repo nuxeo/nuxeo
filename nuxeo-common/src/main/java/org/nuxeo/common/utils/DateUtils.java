@@ -28,6 +28,7 @@ import static java.time.temporal.ChronoField.NANO_OF_SECOND;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 
 import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -36,6 +37,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Java 8 time utilities.
@@ -131,11 +133,27 @@ public class DateUtils {
                                              .withZone(ZoneOffset.UTC);
     }
 
+    public static Calendar toCalendar(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+        // an Instant is on UTC by definition
+        var zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+        return GregorianCalendar.from(zdt);
+    }
+
     public static Date toDate(ZonedDateTime zdt) {
         if (zdt == null) {
             return null;
         }
         return Date.from(zdt.toInstant());
+    }
+
+    public static Instant toInstant(Calendar calendar) {
+        if (calendar == null) {
+            return null;
+        }
+        return calendar.toInstant();
     }
 
     public static ZonedDateTime toZonedDateTime(Calendar calendar) {

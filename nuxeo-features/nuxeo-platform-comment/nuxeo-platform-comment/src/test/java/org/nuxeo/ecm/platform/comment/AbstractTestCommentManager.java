@@ -130,7 +130,7 @@ public abstract class AbstractTestCommentManager {
         comment = commentManager.createComment(session, comment);
         assertEquals(AUTHOR_OF_COMMENT, comment.getAuthor());
         assertEquals(text, comment.getText());
-        assertEquals(doc.getRef(), commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
+        assertEquals(doc.getRef(), commentManager.getTopLevelDocumentRef(session, new IdRef(comment.getId())));
     }
 
     @Test
@@ -236,16 +236,16 @@ public abstract class AbstractTestCommentManager {
         comment.setParentId(doc.getId());
 
         comment = commentManager.createComment(session, comment);
-        assertEquals(doc.getRef(), commentManager.getTopLevelCommentAncestor(session, new IdRef(comment.getId())));
+        assertEquals(doc.getRef(), commentManager.getTopLevelDocumentRef(session, new IdRef(comment.getId())));
 
         try (CloseableCoreSession jamesSession = coreFeature.openCoreSession("james")) {
             assertEquals(doc.getRef(),
-                    commentManager.getTopLevelCommentAncestor(jamesSession, new IdRef(comment.getId())));
+                    commentManager.getTopLevelDocumentRef(jamesSession, new IdRef(comment.getId())));
         }
 
         try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
             assertEquals(doc.getRef(),
-                    commentManager.getTopLevelCommentAncestor(janeSession, new IdRef(comment.getId())));
+                    commentManager.getTopLevelDocumentRef(janeSession, new IdRef(comment.getId())));
             fail("jane should not be able to get the top level comment ancestor");
         } catch (CommentSecurityException cse) {
             assertNotNull(cse);
@@ -286,7 +286,7 @@ public abstract class AbstractTestCommentManager {
         anotherReply = commentManager.createComment(session, anotherReply);
 
         DocumentModel anotherReplyDocModel = session.getDocument(new IdRef(anotherReply.getId()));
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session,
                 anotherReplyDocModel.getRef());
         assertEquals(doc.getRef(), topLevelCommentAncestor);
     }

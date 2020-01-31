@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.comment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 
 import java.util.Calendar;
@@ -38,12 +39,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
-import org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 
@@ -137,7 +135,7 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
         commentModel = session.createDocument(commentModel);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        Comments.toDocumentModel(comment, commentModel);
+        applyDirtyPropertyValues(comment.getDocument(), commentModel);
         commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 
         // Check if Comments folder has been created in the given container
