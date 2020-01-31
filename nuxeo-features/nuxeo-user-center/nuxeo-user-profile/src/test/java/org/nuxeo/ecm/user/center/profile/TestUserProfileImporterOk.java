@@ -73,6 +73,9 @@ public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
     }
 
     private void checkDocs() throws Exception {
+        // make sure user1, user2 and user3 exist
+        createUsers();
+
         File blobsFolder = getBlobsFolder();
 
         DocumentModel doc = userProfileService.getUserProfileDocument("user1", session);
@@ -111,5 +114,11 @@ public class TestUserProfileImporterOk extends AbstractUserProfileImporterTest {
         birthDate = (Calendar) doc.getPropertyValue("userprofile:birthdate");
         assertEquals("03/03/2003",
                 new SimpleDateFormat(ImporterConfig.DEFAULT_DATE_FORMAT).format(birthDate.getTime()));
+    }
+
+    protected void createUsers() {
+        createUser("user1", null);
+        createUser("user2", null);
+        createUser("user3", null);
     }
 }

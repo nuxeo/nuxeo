@@ -265,11 +265,16 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService,
 
     protected PathRef getExistingUserWorkspace(CoreSession session, PathRef rootref, NuxeoPrincipal principal,
             String username) {
+        // try fetching a Principal for the session.hasPermission check
+        if (principal == null) {
+            principal = Framework.getService(UserManager.class).getPrincipal(username);
+        }
+
         PathRef freeRef = null;
         for (String name : getCandidateUserWorkspaceNames(username)) {
             PathRef ref = new PathRef(rootref, name);
-            if (session.exists(ref)
-                    && session.hasPermission(session.getPrincipal(), ref, SecurityConstants.EVERYTHING)) {
+            if (session.exists(ref) && principal != null
+                    && session.hasPermission(principal, ref, SecurityConstants.EVERYTHING)) {
                 return ref;
             }
             @SuppressWarnings("boxing")
