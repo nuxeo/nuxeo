@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,6 +168,7 @@ public interface TrashService {
      * @param parent The parent document of trash document.
      * @return All documents in the trash of the current document.
      */
+    @Deprecated()
     DocumentModelList getDocuments(DocumentModel parent);
 
     /**
