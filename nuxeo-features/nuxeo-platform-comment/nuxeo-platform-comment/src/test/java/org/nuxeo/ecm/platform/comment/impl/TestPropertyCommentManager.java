@@ -29,8 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
-import static org.nuxeo.ecm.platform.comment.api.Comments.toComment;
-import static org.nuxeo.ecm.platform.comment.api.Comments.toDocumentModel;
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 
@@ -200,7 +199,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         Comment comment = commentManager.createComment(session,
                 createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text"));
 
-        Comment storedComment = toComment(session.getDocument(new IdRef(comment.getId())));
+        Comment storedComment = session.getDocument(new IdRef(comment.getId())).getAdapter(Comment.class);
         assertNotNull(storedComment);
         assertEquals(comment.getText(), storedComment.getText());
     }
@@ -238,7 +237,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         comment.setModificationDate(Instant.now());
         commentManager.updateComment(session, comment.getId(), comment);
 
-        Comment storedComment = toComment(session.getDocument(new IdRef(comment.getId())));
+        Comment storedComment = session.getDocument(new IdRef(comment.getId())).getAdapter(Comment.class);
         assertEquals(comment.getText(), storedComment.getText());
     }
 
@@ -255,7 +254,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         comment.setText("my updated text!");
         commentManager.updateComment(session, comment.getId(), comment);
 
-        Comment storedComment = toComment(session.getDocument(new IdRef(comment.getId())));
+        Comment storedComment = session.getDocument(new IdRef(comment.getId())).getAdapter(Comment.class);
         assertEquals(comment.getId(), storedComment.getId());
         assertEquals(comment.getAuthor(), storedComment.getAuthor());
         assertEquals(comment.getCreationDate(), storedComment.getCreationDate());
@@ -346,10 +345,10 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         List<DocumentModel> comments = commentManager.getComments(session, doc);
         assertNotNull(comments);
         assertEquals(4, comments.size());
-        assertEquals(toComment(comments.get(0)).getText(), firstComment.getText());
-        assertEquals(toComment(comments.get(1)).getText(), secondComment.getText());
-        assertEquals(toComment(comments.get(2)).getText(), thirdComment.getText());
-        assertEquals(toComment(comments.get(3)).getText(), fourthComment.getText());
+        assertEquals(comments.get(0).getAdapter(Comment.class).getText(), firstComment.getText());
+        assertEquals(comments.get(1).getAdapter(Comment.class).getText(), secondComment.getText());
+        assertEquals(comments.get(2).getAdapter(Comment.class).getText(), thirdComment.getText());
+        assertEquals(comments.get(3).getAdapter(Comment.class).getText(), fourthComment.getText());
     }
 
     @Test
@@ -444,11 +443,8 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         session.save();
 
-        DocumentModel replyModel = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "Comment", COMMENT_DOC_TYPE);
-        toDocumentModel(fourthLevelReply, replyModel);
-        replyModel = session.createDocument(replyModel);
-        session.save();
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session, replyModel.getRef());
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session,
+                fourthLevelReply.getDocument().getRef());
         assertNotNull(topLevelCommentAncestor);
         assertEquals(doc.getRef(), topLevelCommentAncestor);
     }
@@ -463,7 +459,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         session.save();
 
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelCommentAncestor(session,
+        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session,
                 new IdRef(comment.getId()));
         assertNotNull(topLevelCommentAncestor);
         assertEquals(doc.getRef(), topLevelCommentAncestor);
@@ -476,7 +472,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
         Comment comment = createSampleComment(null, session.getPrincipal().getName(), "some text");
         DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
-        toDocumentModel(comment, commentModel);
+        applyDirtyPropertyValues(comment.getDocument(), commentModel);
 
         session.save();
 
@@ -710,8 +706,6 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         comment1.setAuthor(author);
         comment1.setParentId(doc.getId());
 
-        comment1 = commentManager.createComment(session, comment1);
-
         Comment comment2 = new CommentImpl();
         comment2.setAuthor(author);
         comment2.setParentId(doc.getId());
@@ -825,7 +819,7 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
         commentModel = session.createDocument(commentModel);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        toDocumentModel(comment, commentModel);
+        applyDirtyPropertyValues(comment.getDocument(), commentModel);
         commentModel.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, doc.getId());
         commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
 

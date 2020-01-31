@@ -108,6 +108,19 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
+        // handle only Relation to Property bridge, this method should have been deprecated in 10.10 due to unused
+        if (comment.getPropertyValue(COMMENT_PARENT_ID_PROPERTY) != null) {
+            if (second instanceof TreeCommentManager) {
+                return first.getThreadForComment(comment);
+            } else {
+                return second.getThreadForComment(comment);
+            }
+        }
+        return first.getThreadForComment(comment);
+    }
+
+    @Override
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
             throws CommentSecurityException {
         return second.createLocatedComment(docModel, comment, path);
@@ -200,19 +213,25 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getTopLevelCommentAncestor(CoreSession session, DocumentRef commentIdRef) {
-        return execute(session, commentIdRef, cm -> cm.getTopLevelCommentAncestor(session, commentIdRef));
+    public DocumentRef getTopLevelDocumentRef(CoreSession session, DocumentRef commentIdRef) {
+        return execute(session, commentIdRef, cm -> cm.getTopLevelDocumentRef(session, commentIdRef));
+    }
+
+    @Override
+    protected DocumentModel getTopLevelDocument(CoreSession session, DocumentModel commentDoc) {
+        // this abstract method should be called within an implementation - no need to implement it in the bridge
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected DocumentModel getCommentedDocument(CoreSession session, DocumentModel commentDoc) {
+        // this abstract method should be called within an implementation - no need to implement it in the bridge
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getLocationOfCommentCreation(CoreSession session, DocumentModel documentModel) {
         return second.getLocationOfCommentCreation(session, documentModel);
-    }
-
-    @Override
-    public DocumentRef getCommentedDocumentRef(CoreSession session, DocumentModel commentDocumentModel) {
-        return execute(session, commentDocumentModel.getRef(),
-                cm -> cm.getCommentedDocumentRef(session, commentDocumentModel));
     }
 
     /**

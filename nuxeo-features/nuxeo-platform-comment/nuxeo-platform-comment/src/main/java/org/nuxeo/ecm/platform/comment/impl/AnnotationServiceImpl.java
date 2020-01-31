@@ -24,7 +24,6 @@ import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.Comments.toComment;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
@@ -38,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -78,12 +78,13 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     public List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath)
             throws CommentNotFoundException, CommentSecurityException {
         DocumentRef docRef = new IdRef(documentId);
-        if (!session.exists(docRef)) {
-            throw new CommentNotFoundException("The document " + documentId + " does not exist.");
-        }
-        if (!session.hasPermission(docRef, SecurityConstants.READ)) {
-            throw new CommentSecurityException("The user " + session.getPrincipal().getName()
-                    + " does not have access to the annotations of document " + documentId);
+        try {
+            if (!session.hasPermission(docRef, SecurityConstants.READ)) {
+                throw new CommentSecurityException("The user " + session.getPrincipal().getName()
+                        + " does not have access to the annotations of document " + documentId);
+            }
+        } catch (DocumentNotFoundException dnfe) {
+            throw new CommentNotFoundException(String.format("The document %s does not exist.", docRef), dnfe);
         }
         DocumentModel annotatedDoc = session.getDocument(docRef);
         CommentManager commentManager = Framework.getService(CommentManager.class);
@@ -96,7 +97,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
 
                 return pageProvider.getCurrentPage()
                                    .stream()
-                                   .map(doc -> (Annotation) toComment(doc))
+                                   .map(doc -> doc.getAdapter(Annotation.class))
                                    .collect(Collectors.toList());
             });
         }
@@ -105,7 +106,7 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
                                  .stream()
                                  .filter(annotationModel -> ANNOTATION_DOC_TYPE.equals(annotationModel.getType())
                                          && xpath.equals(annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
-                                 .map(doc -> (Annotation) toComment(doc))
+                                 .map(doc -> doc.getAdapter(Annotation.class))
                                  .collect(Collectors.toList());
         });
     }

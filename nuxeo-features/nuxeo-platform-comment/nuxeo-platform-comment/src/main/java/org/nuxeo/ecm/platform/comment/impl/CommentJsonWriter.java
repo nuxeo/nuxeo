@@ -88,7 +88,7 @@ public class CommentJsonWriter extends ExtensibleEntityJsonWriter<Comment> {
                 return Collections.emptyList();
             }
             DocumentRef ancestorRef = Framework.getService(CommentManager.class)
-                                               .getTopLevelCommentAncestor(s, new IdRef(entity.getId()));
+                                               .getTopLevelDocumentRef(s, new IdRef(entity.getId()));
             return s.filterGrantedPermissions(principal, ancestorRef,
                     Arrays.asList(permissionProvider.getPermissions()));
         });

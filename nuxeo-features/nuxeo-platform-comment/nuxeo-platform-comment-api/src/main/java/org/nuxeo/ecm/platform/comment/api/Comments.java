@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.comment.api;
 
-import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ANCESTOR_IDS_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
@@ -31,7 +30,6 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -44,7 +42,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * Utility class to convert document model from/to comments, annotations or external entities.
  *
  * @since 10.3
+ * @deprecated since 11.1, use {@link Comment#getDocument()} or {@link DocumentModel#getAdapter(Class)} instead
  */
+@Deprecated(since = "11.1")
 public class Comments {
 
     private Comments() {
@@ -52,7 +52,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access, use {@link #toDocumentModel(Comment, DocumentModel)} instead.
+     * @deprecated since 11.1, use {@link Comment#getDocument()} with {@code DocumentModelJsonReader} instead
      */
     @Deprecated(since = "11.1")
     public static void commentToDocumentModel(Comment comment, DocumentModel documentModel) {
@@ -71,7 +71,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access, use {@link #toDocumentModel(Comment, DocumentModel)} instead.
+     * @deprecated since 11.1, unused
      */
     @Deprecated(since = "11.1")
     public static void annotationToDocumentModel(Annotation annotation, DocumentModel documentModel) {
@@ -80,7 +80,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access.
+     * @deprecated since 11.1, unused
      */
     @Deprecated(since = "11.1")
     public static void externalEntityToDocumentModel(ExternalEntity entity, DocumentModel documentModel) {
@@ -90,7 +90,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     * @deprecated since 11.1, unused
      */
     @Deprecated(since = "11.1")
     @SuppressWarnings("unchecked")
@@ -98,7 +98,8 @@ public class Comments {
         comment.setId(documentModel.getId());
         comment.setAuthor((String) documentModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY));
         comment.setText((String) documentModel.getPropertyValue(COMMENT_TEXT_PROPERTY));
-        Collection<String> ancestorIds = (Collection<String>) documentModel.getPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY);
+        Collection<String> ancestorIds = (Collection<String>) documentModel.getPropertyValue(
+                COMMENT_ANCESTOR_IDS_PROPERTY);
         ancestorIds.forEach(comment::addAncestorId);
         String parentId = (String) documentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
         comment.setParentId(parentId);
@@ -114,7 +115,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     * @deprecated since 11.1, unused
      */
     @Deprecated(since = "11.1")
     public static void documentModelToAnnotation(DocumentModel documentModel, Annotation annotation) {
@@ -123,7 +124,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access.
+     * @deprecated since 11.1, unused
      */
     @Deprecated(since = "11.1")
     public static void documentModelToExternalEntity(DocumentModel documentModel, ExternalEntity entity) {
@@ -135,7 +136,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     * @deprecated since 11.1, use {@link DocumentModel#getAdapter(Class)} with {@link Comment} class instead
      */
     @Deprecated(since = "11.1")
     public static Comment newComment(DocumentModel commentModel) {
@@ -146,7 +147,7 @@ public class Comments {
     }
 
     /**
-     * @deprecated since 11.1 because of public access, use {@link #toComment(DocumentModel)} instead.
+     * @deprecated since 11.1, use {@link DocumentModel#getAdapter(Class)} with {@link Annotation} class instead
      */
     @Deprecated(since = "11.1")
     public static Annotation newAnnotation(DocumentModel annotationModel) {
@@ -154,54 +155,5 @@ public class Comments {
         documentModelToAnnotation(annotationModel, annotation);
         documentModelToExternalEntity(annotationModel, (ExternalEntity) annotation);
         return annotation;
-    }
-
-    /**
-     * @return the comment {@link #newComment} or the annotation {@link #newAnnotation} depending on the document model
-     *         type
-     * @throws IllegalArgumentException if the doc model type is unknown
-     * @since 11.1
-     **/
-    public static Comment toComment(DocumentModel documentModel) {
-        String docType = documentModel.getType();
-        switch (docType) {
-        case COMMENT_DOC_TYPE:
-            return newComment(documentModel);
-        case ANNOTATION_DOC_TYPE:
-            return newAnnotation(documentModel);
-        default:
-            throw new IllegalArgumentException(String.format("Undefined behaviour for doc type: %s", docType));
-        }
-    }
-
-    /**
-     * Builds the document model from {@code comment} depending on his class type {@link #commentToDocumentModel},
-     * {@link #annotationToDocumentModel}.
-     * 
-     * @since 11.1
-     **/
-    public static void toDocumentModel(Comment comment, DocumentModel documentModel) {
-        if (comment instanceof ExternalEntity) {
-            documentModel.addFacet(EXTERNAL_ENTITY_FACET);
-            externalEntityToDocumentModel((ExternalEntity) comment, documentModel);
-        }
-
-        if (comment instanceof Annotation) {
-            annotationToDocumentModel((Annotation) comment, documentModel);
-        } else {
-            commentToDocumentModel(comment, documentModel);
-        }
-    }
-
-    /**
-     * @return the comment document type depending on the given {@code comment}
-     * @since 11.1
-     **/
-    public static String getDocumentType(Comment comment) {
-        if (comment instanceof Annotation) {
-            return ANNOTATION_DOC_TYPE;
-        }
-
-        return COMMENT_DOC_TYPE;
     }
 }

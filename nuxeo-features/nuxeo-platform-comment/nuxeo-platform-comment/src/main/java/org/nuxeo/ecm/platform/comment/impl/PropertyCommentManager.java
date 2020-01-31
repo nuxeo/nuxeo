@@ -24,11 +24,13 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ANCESTOR_IDS_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
@@ -51,7 +53,6 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.api.Comment;
 import org.nuxeo.ecm.platform.comment.api.CommentEvents;
-import org.nuxeo.ecm.platform.comment.api.Comments;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -80,7 +81,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
     public List<DocumentModel> getComments(CoreSession session, DocumentModel docModel)
             throws CommentSecurityException {
 
-        DocumentRef docRef = getTopLevelCommentAncestor(session, docModel.getRef());
+        DocumentRef docRef = getAncestorRef(session, docModel);
 
         if (session.exists(docRef) && !session.hasPermission(docRef, SecurityConstants.READ)) {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
@@ -119,7 +120,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         NuxeoPrincipal principal = commentModel.getCoreSession().getPrincipal();
         // Open a session as system user since the parent document model can be a comment
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentRef docRef = getTopLevelCommentAncestor(session, docModel.getRef());
+            DocumentRef docRef = getTopLevelDocumentRef(session, docModel.getRef());
             if (!session.hasPermission(principal, docRef, SecurityConstants.READ)) {
                 throw new CommentSecurityException(
                         "The user " + principal.getName() + " can not create comments on document " + docModel.getId());
@@ -130,6 +131,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
             DocumentModel commentModelToCreate = session.createDocumentModel(path, COMMENT_NAME,
                     commentModel.getType());
             commentModelToCreate.copyContent(commentModel);
+            commentModelToCreate.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, docModel.getId());
             commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY,
                     computeAncestorIds(session, docModel.getId()));
             DocumentModel comment = session.createDocument(commentModelToCreate);
@@ -156,9 +158,14 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    public DocumentModel getThreadForComment(DocumentModel comment) throws CommentSecurityException {
+        return getThreadForComment(comment.getCoreSession(), comment);
+    }
+
+    @Override
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path) {
         CoreSession session = docModel.getCoreSession();
-        DocumentRef docRef = getTopLevelCommentAncestor(session, docModel.getRef());
+        DocumentRef docRef = getTopLevelDocumentRef(session, docModel.getRef());
         if (!session.hasPermission(docRef, SecurityConstants.READ)) {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
                     + " can not create comments on document " + docModel.getId());
@@ -166,6 +173,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         return CoreInstance.doPrivileged(session, s -> {
             DocumentModel commentModel = s.createDocumentModel(path, COMMENT_NAME, comment.getType());
             commentModel.copyContent(comment);
+            commentModel.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, docModel.getId());
             commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY, computeAncestorIds(s, docModel.getId()));
             commentModel = s.createDocument(commentModel);
             notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, commentModel);
@@ -177,16 +185,19 @@ public class PropertyCommentManager extends AbstractCommentManager {
     public Comment createComment(CoreSession session, Comment comment)
             throws CommentNotFoundException, CommentSecurityException {
         String parentId = comment.getParentId();
-        DocumentRef docRef = new IdRef(parentId);
+        DocumentRef parentRef = new IdRef(parentId);
         // Parent document can be a comment, check existence as a privileged user
         if (!CoreInstance.doPrivileged(session, s -> {
-            return s.exists(docRef);
+            return s.exists(parentRef);
         })) {
             throw new CommentNotFoundException("The document or comment " + comment.getParentId() + " does not exist.");
         }
         DocumentRef ancestorRef = CoreInstance.doPrivileged(session, s -> {
-            return getTopLevelCommentAncestor(s, new IdRef(parentId));
-
+            DocumentModel parentDocModel = s.getDocument(parentRef);
+            if (parentDocModel.hasSchema(COMMENT_SCHEMA)) {
+                return getAncestorRef(s, parentDocModel);
+            }
+            return parentDocModel.getRef();
         });
         if (!session.hasPermission(ancestorRef, SecurityConstants.READ)) {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
@@ -200,14 +211,18 @@ public class PropertyCommentManager extends AbstractCommentManager {
 
         return CoreInstance.doPrivileged(session, s -> {
             String path = getCommentContainerPath(s, parentId);
-            DocumentModel commentModel = s.createDocumentModel(path, COMMENT_NAME, Comments.getDocumentType(comment));
-            Comments.toDocumentModel(comment, commentModel);
+            DocumentModel commentModel = session.createDocumentModel(path, COMMENT_NAME,
+                    comment.getDocument().getType());
+            if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
+                commentModel.addFacet(EXTERNAL_ENTITY_FACET);
+            }
+            applyDirtyPropertyValues(comment.getDocument(), commentModel);
 
             // Compute the list of ancestor ids
             commentModel.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY, computeAncestorIds(s, parentId));
             commentModel = s.createDocument(commentModel);
             notifyEvent(s, CommentEvents.COMMENT_ADDED, commentModel);
-            return Comments.toComment(commentModel);
+            return commentModel.getAdapter(Comment.class);
         });
     }
 
@@ -224,13 +239,13 @@ public class PropertyCommentManager extends AbstractCommentManager {
         NuxeoPrincipal principal = session.getPrincipal();
         return CoreInstance.doPrivileged(session, s -> {
             DocumentModel commentModel = s.getDocument(commentRef);
-            DocumentRef documentRef = getTopLevelCommentAncestor(s, commentModel.getRef());
+            DocumentRef documentRef = getTopLevelDocumentRef(s, commentModel.getRef());
             if (!s.hasPermission(principal, documentRef, SecurityConstants.READ)) {
                 throw new CommentSecurityException("The user " + principal.getName()
                         + " does not have access to the comments of document " + documentRef.reference());
             }
 
-            return Comments.toComment(commentModel);
+            return commentModel.getAdapter(Comment.class);
         });
     }
 
@@ -243,7 +258,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         NuxeoPrincipal principal = session.getPrincipal();
         return CoreInstance.doPrivileged(session, s -> {
             if (s.exists(docRef)) {
-                DocumentRef ancestorRef = getTopLevelCommentAncestor(s, docRef);
+                DocumentRef ancestorRef = getTopLevelDocumentRef(s, docRef);
                 if (s.exists(ancestorRef) && !s.hasPermission(principal, ancestorRef, SecurityConstants.READ)) {
                     throw new CommentSecurityException("The user " + principal.getName()
                             + " does not have access to the comments of document " + documentId);
@@ -256,7 +271,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                     currentPageIndex, props, documentId);
             List<DocumentModel> commentList = pageProvider.getCurrentPage();
             return commentList.stream()
-                              .map(Comments::toComment)
+                              .map(doc -> doc.getAdapter(Comment.class))
                               .collect(collectingAndThen(toList(),
                                       list -> new PartialList<>(list, pageProvider.getResultsCount())));
         });
@@ -283,10 +298,13 @@ public class PropertyCommentManager extends AbstractCommentManager {
             }
 
             DocumentModel commentModel = s.getDocument(commentRef);
-            Comments.toDocumentModel(comment, commentModel);
+            if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
+                commentModel.addFacet(EXTERNAL_ENTITY_FACET);
+            }
+            applyDirtyPropertyValues(comment.getDocument(), commentModel);
             s.saveDocument(commentModel);
             notifyEvent(s, CommentEvents.COMMENT_UPDATED, commentModel);
-            return Comments.toComment(commentModel);
+            return commentModel.getAdapter(Comment.class);
         });
     }
 
@@ -305,7 +323,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         CoreInstance.doPrivileged(session, s -> {
             DocumentModel comment = s.getDocument(commentRef);
             String parentId = (String) comment.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
-            DocumentRef ancestorRef = getTopLevelCommentAncestor(s, commentRef);
+            DocumentRef ancestorRef = getTopLevelDocumentRef(s, commentRef);
             if (s.exists(ancestorRef) && !principal.isAdministrator()
                     && !comment.getPropertyValue(COMMENT_AUTHOR_PROPERTY).equals(principal.getName())
                     && !s.hasPermission(principal, ancestorRef, SecurityConstants.EVERYTHING)) {
@@ -326,12 +344,11 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
         String parentId = (String) commentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
-        if (!session.hasPermission(getTopLevelCommentAncestor(session, commentModel.getRef()),
-                SecurityConstants.READ)) {
+        if (!session.hasPermission(getTopLevelDocumentRef(session, commentModel.getRef()), SecurityConstants.READ)) {
             throw new CommentSecurityException("The user " + session.getPrincipal().getName()
                     + " does not have access to the comments of document " + parentId);
         }
-        return Framework.doPrivileged(() -> Comments.toComment(commentModel));
+        return commentModel.getAdapter(Comment.class);
     }
 
     @Override
@@ -347,10 +364,10 @@ public class PropertyCommentManager extends AbstractCommentManager {
                     "The user " + principal.getName() + " can not edit comments of document " + comment.getParentId());
         }
         return CoreInstance.doPrivileged(session, s -> {
-            Comments.toDocumentModel(comment, commentModel);
+            applyDirtyPropertyValues(comment.getDocument(), commentModel);
             s.saveDocument(commentModel);
             notifyEvent(s, CommentEvents.COMMENT_UPDATED, commentModel);
-            return Comments.toComment(commentModel);
+            return commentModel.getAdapter(Comment.class);
         });
     }
 
@@ -364,7 +381,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
         String parentId = (String) commentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
         if (!principal.isAdministrator()
                 && !commentModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY).equals(principal.getName())
-                && !session.hasPermission(principal, getTopLevelCommentAncestor(session, commentModel.getRef()),
+                && !session.hasPermission(principal, getTopLevelDocumentRef(session, commentModel.getRef()),
                         SecurityConstants.EVERYTHING)) {
             throw new CommentSecurityException(
                     "The user " + principal.getName() + " can not delete comments of document " + parentId);
@@ -388,16 +405,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public DocumentRef getTopLevelCommentAncestor(CoreSession s, DocumentRef commentIdRef) {
-        DocumentModel documentModel = CoreInstance.doPrivileged(s, session -> {
-            if (!session.exists(commentIdRef)) {
-                throw new CommentNotFoundException(String.format("The comment %s does not exist.", commentIdRef));
-            }
-
-            return session.getDocument(commentIdRef);
-        });
-
-        return getAncestorRef(s, documentModel);
+    protected DocumentModel getTopLevelDocument(CoreSession s, DocumentModel commentDoc) {
+        DocumentRef ancestorRef = getAncestorRef(s, commentDoc);
+        return s.getDocument(ancestorRef);
     }
 
     @SuppressWarnings("unchecked")
@@ -432,37 +442,38 @@ public class PropertyCommentManager extends AbstractCommentManager {
         });
     }
 
+    // former top level document method
     protected DocumentRef getAncestorRef(CoreSession session, DocumentModel documentModel) {
-        DocumentModel ancestorComment = getThreadForComment(session, documentModel);
-        return ancestorComment.getRef();
+        if (!documentModel.hasSchema(COMMENT_SCHEMA)) {
+            return documentModel.getRef();
+        }
+        // thread is the higher comment in a succession of replies
+        DocumentModel thread = getThreadForComment(session, documentModel);
+        return new IdRef((String) thread.getPropertyValue(COMMENT_PARENT_ID_PROPERTY));
     }
 
     protected DocumentModel getThreadForComment(CoreSession s, DocumentModel comment) throws CommentSecurityException {
         NuxeoPrincipal principal = s.getPrincipal();
         return CoreInstance.doPrivileged(s, session -> {
-            // Fetch the document in a case where it is not associated to an open session
-            DocumentModel documentModel = session.getDocument(comment.getRef());
-            while (documentModel.hasSchema(COMMENT_SCHEMA) || HIDDEN_FOLDER_TYPE.equals(documentModel.getType())) {
-                documentModel = session.getDocument(
-                        new IdRef((String) documentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
+            DocumentModel thread = comment;
+            DocumentModel parent = s.getDocument(
+                    new IdRef((String) thread.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
+            if (parent.hasSchema(COMMENT_SCHEMA)) {
+                thread = getThreadForComment(parent);
             }
-
-            if (!session.hasPermission(principal, documentModel.getRef(), SecurityConstants.READ)) {
+            DocumentRef ancestorRef = s.getDocument(
+                    new IdRef((String) thread.getPropertyValue(COMMENT_PARENT_ID_PROPERTY))).getRef();
+            if (!s.hasPermission(principal, ancestorRef, SecurityConstants.READ)) {
                 throw new CommentSecurityException("The user " + principal.getName()
-                        + " does not have access to the comments of document " + documentModel.getRef().reference());
+                        + " does not have access to the comments of document " + ancestorRef.reference());
             }
-            return documentModel;
+            return thread;
         });
     }
 
     @Override
-    public DocumentRef getCommentedDocumentRef(CoreSession s, DocumentModel commentDocumentModel) {
-        return CoreInstance.doPrivileged(s, session -> {
-            String commentedDocId = commentDocumentModel.hasSchema(COMMENT_SCHEMA)
-                    ? (String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)
-                    : commentDocumentModel.getId();
-            return new IdRef(commentedDocId);
-        });
-
+    protected DocumentModel getCommentedDocument(CoreSession session, DocumentModel commentDoc) {
+        String parentId = (String) commentDoc.getPropertyValue(COMMENT_PARENT_ID_PROPERTY);
+        return session.getDocument(new IdRef(parentId));
     }
 }
