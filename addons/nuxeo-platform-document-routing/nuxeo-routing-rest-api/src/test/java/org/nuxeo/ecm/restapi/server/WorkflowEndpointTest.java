@@ -253,6 +253,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("offset", "1");
+        queryParams.add("isPaginated", "true");
         // Check we get only one task due to offset parameter
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/task", queryParams)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
