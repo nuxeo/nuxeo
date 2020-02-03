@@ -360,20 +360,22 @@ pipeline {
       }
     }
     stage('Run "dev" unit tests') {
-      steps {
-        script {
-          //set aws config
-          def JX_NAMESPACE= sh(script: 'jx --batch-mode ns | cut -d"\'" -f 2')
-          def awsAccessKeyId = sh(script: 'kubectl get secret aws-secret -n ${JX_NAMESPACE} -o=jsonpath=\'{.data.access_key}\' | base64 --decode', returnStdout: true)
-          def awsSecretAccessKey = sh(script: 'kubectl get secret aws-secret -n ${JX_NAMESPACE} -o=jsonpath=\'{.data.secret_key}\' | base64 --decode', returnStdout: true)
-          AWS_SECRET_ACCESS_KEY=${awsAccessKeyId}
-          AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}
-        }
-      }
+
       steps {
         setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'PENDING')
 
         container('maven') {
+
+          script {
+            //set aws config
+            def awsAccessKeyId = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.access_key}\' | base64 --decode', returnStdout: true)
+            def awsSecretAccessKey = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.secret_key}\' | base64 --decode', returnStdout: true)
+            def awsSessionToken = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.token}\' | base64 --decode', returnStdout: true)
+            AWS_SECRET_ACCESS_KEY=${awsAccessKeyId}
+            AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}
+            AWS_SESSION_TOKEN=${awsSessionToken}
+          }
+
           echo """
           ----------------------------------------
           Install Redis
