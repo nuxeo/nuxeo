@@ -212,6 +212,7 @@ nuxeo.stream.pubsub.log.codec=avroBinary
 nuxeo.core.bulk.scroller.concurrencyMax=2
 nuxeo.core.bulk.status.concurrencyMax=2
 nuxeo.core.bulk.done.concurrencyMax=1
+nuxeo.core.bulk.csvExport.scroller=elastic
 
 # Stream Health Check probe activation
 nuxeo.stream.health.check.enabled=true
