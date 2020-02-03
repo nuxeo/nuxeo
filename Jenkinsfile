@@ -249,6 +249,9 @@ pipeline {
       }
     }
     stage('Build Docker images') {
+      when {
+        branch 'master'
+      }
       steps {
         setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
         container('maven') {
@@ -274,6 +277,9 @@ pipeline {
       }
     }
     stage('Test Docker images') {
+      when {
+        branch 'master'
+      }
       steps {
         setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'PENDING')
         container('maven') {
@@ -355,7 +361,18 @@ pipeline {
     }
     stage('Run "dev" unit tests') {
       steps {
+        script {
+          //set aws config
+          def JX_NAMESPACE= sh(script: 'jx --batch-mode ns | cut -d"\'" -f 2')
+          def awsAccessKeyId = sh(script: 'kubectl get secret aws-secret -n ${JX_NAMESPACE} -o=jsonpath=\'{.data.access_key}\' | base64 --decode', returnStdout: true)
+          def awsSecretAccessKey = sh(script: 'kubectl get secret aws-secret -n ${JX_NAMESPACE} -o=jsonpath=\'{.data.secret_key}\' | base64 --decode', returnStdout: true)
+          AWS_SECRET_ACCESS_KEY=${awsAccessKeyId}
+          AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}
+        }
+      }
+      steps {
         setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'PENDING')
+
         container('maven') {
           echo """
           ----------------------------------------
@@ -381,7 +398,9 @@ pipeline {
           ----------------------------------------
           Run "dev" unit tests
           ----------------------------------------"""
-          sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
+          dir('addons/nuxeo-core-binarymanager-cloud/nuxeo-core-binarymanager-s3'){
+            sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
+          }
         }
       }
       post {
