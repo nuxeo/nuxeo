@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.BeforeClass;
 
 /**
@@ -34,8 +35,9 @@ public class TestS3BinaryManagerWithSSE2AndPolicy extends TestS3BinaryManager {
     @BeforeClass
     public static void beforeClass() {
         TestS3BinaryManagerWithSSE.beforeClass();
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_POLICY_NAME_ENV_VAR"),"nuxeo-s3-directupload-policy");
         // use a s3 bucket with encryption enforcement policy
-        PROPERTIES.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-policy");
+        PROPERTIES.put(BUCKET_NAME_PROPERTY, envBucketName);
     }
 
 }

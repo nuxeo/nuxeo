@@ -101,6 +101,11 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
                 System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
         String envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR),
                 "");
+        // Environment variable name for the AWS bucket name , prefix and region
+        // will use default variable if not provided
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_NAME_ENV_VAR"),"nuxeo-s3-directupload");
+        String envBucketPrefix = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_PREFIX_ENV_VAR"),"testfolder/");
+        String envBucketRegion = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_REGION_ENV_VAR"),"eu-west-3");
 
         assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
 
@@ -108,9 +113,9 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
         PROPERTIES.put(AWS_ID_PROPERTY, envId);
         PROPERTIES.put(AWS_SECRET_PROPERTY, envSecret);
         PROPERTIES.put(AWS_SESSION_TOKEN_PROPERTY, envToken);
-        PROPERTIES.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
-        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, "testfolder/");
-        PROPERTIES.put(S3BinaryManager.BUCKET_REGION_PROPERTY, "eu-west-3");
+        PROPERTIES.put(BUCKET_NAME_PROPERTY, envBucketName);
+        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, envBucketPrefix);
+        PROPERTIES.put(S3BinaryManager.BUCKET_REGION_PROPERTY, envBucketRegion);
     }
 
     @Before
