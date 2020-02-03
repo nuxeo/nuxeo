@@ -35,7 +35,7 @@ public class TestS3BinaryManagerWithSSE2AndPolicy extends TestS3BinaryManager {
     @BeforeClass
     public static void beforeClass() {
         TestS3BinaryManagerWithSSE.beforeClass();
-        String envBucketName = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_POLICY_NAME_ENV_VAR"),"nuxeo-s3-directupload-policy");
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_POLICY_NAME_NUXEO_TEST"), "nuxeo-s3-directupload-policy");
         // use a s3 bucket with encryption enforcement policy
         PROPERTIES.put(BUCKET_NAME_PROPERTY, envBucketName);
     }

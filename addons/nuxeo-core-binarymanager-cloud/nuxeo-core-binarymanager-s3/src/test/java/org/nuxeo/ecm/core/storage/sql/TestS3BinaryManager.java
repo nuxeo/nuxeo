@@ -103,9 +103,9 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
                 "");
         // Environment variable name for the AWS bucket name , prefix and region
         // will use default variable if not provided
-        String envBucketName = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_NAME_ENV_VAR"),"nuxeo-s3-directupload");
-        String envBucketPrefix = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_PREFIX_ENV_VAR"),"testfolder/");
-        String envBucketRegion = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_REGION_ENV_VAR"),"eu-west-3");
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_NAME_NUXEO_TEST"), "nuxeo-s3-directupload");
+        String envBucketPrefix = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_PREFIX_NUXEO_TEST"), "testfolder/");
+        String envBucketRegion = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_REGION_NUXEO_TEST"), "eu-west-3");
 
         assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
 
