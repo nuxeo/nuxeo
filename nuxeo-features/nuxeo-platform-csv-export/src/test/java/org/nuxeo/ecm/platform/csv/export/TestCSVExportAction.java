@@ -76,6 +76,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.platform.csv.export.action.CSVExportAction;
+import org.nuxeo.elasticsearch.test.RepositoryLightElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -87,7 +88,8 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreBulkFeature.class, CoreFeature.class, DirectoryFeature.class })
+@Features({ CoreBulkFeature.class, CoreFeature.class, DirectoryFeature.class,
+        RepositoryLightElasticSearchFeature.class })
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.platform.csv.export")
 @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
@@ -296,14 +298,22 @@ public class TestCSVExportAction {
 
     @Test
     public void testDownloadCSV() throws Exception {
+        testDownloadCSV("default");
+    }
 
+    @Test
+    public void testDownloadCSVWithElasticScroller() throws Exception {
+        testDownloadCSV("elastic");
+    }
+
+    protected void testDownloadCSV(String scroller) throws Exception {
         BulkCommand command = createBuilder().param("schemas", ImmutableList.of("dublincore"))
                                              .bucket(100)
                                              .batch(40)
+                                             .scroller(scroller)
                                              .build();
         bulkService.submit(command);
         assertTrue("Bulk action didn't finish", bulkService.await(command.getId(), Duration.ofSeconds(60)));
-
         BulkStatus status = bulkService.getStatus(command.getId());
         assertEquals(COMPLETED, status.getState());
         assertEquals(CREATED_TOTAL, status.getProcessed());
@@ -345,7 +355,8 @@ public class TestCSVExportAction {
 
     protected Builder createBuilder(boolean sorted, boolean zipped) {
         DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));
-        String nxql = String.format("SELECT * from Document where ecm:ancestorId='%s'", model.getId());
+        String nxql = String.format("SELECT * FROM Document WHERE ecm:ancestorId='%s' AND ecm:isVersion=0",
+                model.getId());
         String user = session.getPrincipal().getName();
         return new BulkCommand.Builder(CSVExportAction.ACTION_NAME, nxql, user).repository(session.getRepositoryName())
                                                                                .param(SORT_PARAMETER, sorted)
