@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>10.10-HF21-SNAPSHOT</version>
+    <version>11.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.retention</groupId>
@@ -15,7 +15,6 @@
 
   <modules>
     <module>nuxeo-retention-core</module>
-    <module>nuxeo-retention-web-ui</module>
   </modules>
 
   <repositories>
