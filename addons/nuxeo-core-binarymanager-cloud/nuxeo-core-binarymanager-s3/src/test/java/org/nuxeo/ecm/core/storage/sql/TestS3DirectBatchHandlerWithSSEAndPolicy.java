@@ -20,7 +20,9 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.SYSTEM_PROPERTY_PREFIX;
+import static org.nuxeo.ecm.core.storage.sql.TestS3BinaryManagerWithSSE2AndPolicy.BUCKET_POLICY_NAME_NUXEO_TEST;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.BeforeClass;
 
 /**
@@ -39,6 +41,7 @@ public class TestS3DirectBatchHandlerWithSSEAndPolicy extends TestS3DirectBatchH
     public static void beforeClass() {
         TestS3DirectBatchHandlerWithSSE.beforeClass();
         // use a s3 bucket with encryption enforcement policy
-        System.setProperty(SYSTEM_PROPERTY_PREFIX + "." + BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-policy");
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv(BUCKET_POLICY_NAME_NUXEO_TEST), "nuxeo-s3-directupload-policy");
+        System.setProperty(SYSTEM_PROPERTY_PREFIX + "." + BUCKET_NAME_PROPERTY, envBucketName);
     }
 }

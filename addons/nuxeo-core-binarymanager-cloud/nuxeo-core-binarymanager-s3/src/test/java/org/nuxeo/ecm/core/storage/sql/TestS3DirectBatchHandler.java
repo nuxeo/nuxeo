@@ -85,6 +85,9 @@ public class TestS3DirectBatchHandler {
 
     public static final String S3DIRECT_PREFIX = SYSTEM_PROPERTY_PREFIX + ".transient.";
 
+    public static final String BUCKET_TRANSIENT_NAME_NUXEO_TEST = "BUCKET_TRANSIENT_NAME_NUXEO_TEST";
+
+
     protected static String envId;
 
     protected static String envSecret;
@@ -101,11 +104,16 @@ public class TestS3DirectBatchHandler {
         envSecret = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.SECRET_KEY_ENV_VAR),
                 System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
         envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR), "");
+
+        // Environment variable name for the AWS bucket name , prefix and region
+        // will use default variable if not provided
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv(BUCKET_TRANSIENT_NAME_NUXEO_TEST), "nuxeo-s3-directupload-transient");
+
         assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
         System.setProperty(S3DIRECT_PREFIX + AWS_ID_PROPERTY, envId);
         System.setProperty(S3DIRECT_PREFIX + AWS_SECRET_PROPERTY, envSecret);
         System.setProperty(S3DIRECT_PREFIX + AWS_SESSION_TOKEN_PROPERTY, envToken);
-        System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload-transient");
+        System.setProperty(S3DIRECT_PREFIX + BUCKET_NAME_PROPERTY, envBucketName);
         System.setProperty(SYSTEM_PROPERTY_PREFIX + "." + BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
     }
 

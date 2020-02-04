@@ -92,6 +92,10 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
 
     protected S3BinaryManager binaryManager3;
 
+    public static final String  BUCKET_NAME_NUXEO_TEST = "BUCKET_NAME_NUXEO_TEST";
+
+    public static final String  BUCKET_PREFIX_NUXEO_TEST = "BUCKET_PREFIX_NUXEO_TEST";
+
     @BeforeClass
     public static void beforeClass() {
 
@@ -101,16 +105,23 @@ public class TestS3BinaryManager extends AbstractS3BinaryTest<S3BinaryManager> {
                 System.getenv(SDKGlobalConfiguration.ALTERNATE_SECRET_KEY_ENV_VAR));
         String envToken = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_SESSION_TOKEN_ENV_VAR),
                 "");
+        // Environment variable name for the AWS bucket name , prefix and region
+        // will use default variable if not provided
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv(BUCKET_NAME_NUXEO_TEST), "");
+        String envBucketPrefix = StringUtils.defaultIfBlank(System.getenv(BUCKET_PREFIX_NUXEO_TEST), "testfolder/");
+        String envBucketRegion = StringUtils.defaultIfBlank(System.getenv(SDKGlobalConfiguration.AWS_REGION_ENV_VAR), "");
 
         assumeTrue("AWS Credentials not set in the environment variables", StringUtils.isNoneBlank(envId, envSecret));
+        assumeTrue("AWS Bucket Name not set in the environment variables", StringUtils.isNoneBlank(envBucketName));
 
         PROPERTIES = new HashMap<>();
         PROPERTIES.put(AWS_ID_PROPERTY, envId);
         PROPERTIES.put(AWS_SECRET_PROPERTY, envSecret);
         PROPERTIES.put(AWS_SESSION_TOKEN_PROPERTY, envToken);
-        PROPERTIES.put(BUCKET_NAME_PROPERTY, "nuxeo-s3-directupload");
-        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, "testfolder/");
-        PROPERTIES.put(S3BinaryManager.BUCKET_REGION_PROPERTY, "eu-west-3");
+        PROPERTIES.put(BUCKET_NAME_PROPERTY, envBucketName);
+        PROPERTIES.put(BUCKET_PREFIX_PROPERTY, envBucketPrefix);
+        PROPERTIES.put(S3BinaryManager.BUCKET_REGION_PROPERTY, envBucketRegion);
+
     }
 
     @Before

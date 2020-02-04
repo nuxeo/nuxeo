@@ -37,11 +37,14 @@ import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.AWS_SESSION_TOKEN_P
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.BUCKET_NAME_PROPERTY;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.BUCKET_PREFIX_PROPERTY;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.BUCKET_REGION_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.TestS3BinaryManager.BUCKET_NAME_NUXEO_TEST;
+import static org.nuxeo.ecm.core.storage.sql.TestS3BinaryManager.BUCKET_PREFIX_NUXEO_TEST;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -87,17 +90,18 @@ public abstract class TestS3BlobStoreAbstract extends TestAbstractBlobStore {
         String envSessionToken = defaultIfBlank(System.getenv(AWS_SESSION_TOKEN_ENV_VAR), "");
         String envRegion = defaultIfBlank(System.getenv(AWS_REGION_ENV_VAR), "");
 
-        String bucketName = "nuxeo-test-changeme";
-        String bucketPrefix = "testfolder/";
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv(BUCKET_NAME_NUXEO_TEST), "");
+        String envBucketPrefix = StringUtils.defaultIfBlank(System.getenv(BUCKET_PREFIX_NUXEO_TEST), "testfolder/");
 
         assumeTrue("AWS Credentials not set in the environment variables", isNoneBlank(envId, envSecret));
+        assumeTrue("AWS Bucket Name not set in the environment variables", StringUtils.isNoneBlank(envBucketName));
 
         properties.put(AWS_ID_PROPERTY, envId);
         properties.put(AWS_SECRET_PROPERTY, envSecret);
         properties.put(AWS_SESSION_TOKEN_PROPERTY, envSessionToken);
         properties.put(BUCKET_REGION_PROPERTY, envRegion);
-        properties.put(BUCKET_NAME_PROPERTY, bucketName);
-        properties.put(BUCKET_PREFIX_PROPERTY, bucketPrefix);
+        properties.put(BUCKET_NAME_PROPERTY, envBucketName);
+        properties.put(BUCKET_PREFIX_PROPERTY, envBucketPrefix);
         return properties;
     }
 

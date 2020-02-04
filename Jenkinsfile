@@ -381,7 +381,38 @@ pipeline {
           ----------------------------------------
           Run "dev" unit tests
           ----------------------------------------"""
-          sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
+          script {
+            def secretConfig = "aws-iam-user-credentials"
+            def awsCredentialNamespace = "platform-staging"
+            def bucketRegion = "eu-west-3"
+            def currentTime = new Date()
+            def bucketPrefix = "${BRANCH_NAME}-${BUILD_NUMBER}-"+currentTime.getTime()+"/"
+            def accessKey = ''
+            def secretKey = ''
+            def message = "PLATFORM::WARNING AWS Credentials are not configured"
+            try {
+              def codeStatus = sh (script: "kubectl get secret ${secretConfig} -n ${awsCredentialNamespace}" , returnStatus: true)
+              if ( codeStatus == 0 ){
+                accessKey = sh(script: "kubectl get secret ${secretConfig} -n ${awsCredentialNamespace} -o=jsonpath=\'{.data.access_key_id}\' | base64 --decode", returnStdout: true)
+                secretKey = sh(script: "kubectl get secret ${secretConfig} -n ${awsCredentialNamespace} -o=jsonpath=\'{.data.secret_access_key}\' | base64 --decode", returnStdout: true)
+              } else {
+                echo "${message}"
+              }
+            } catch ( exc ) {
+               echo "PLATFORM::ERROR Cannot retrieve secret from ${secretConfig} "
+            }
+            withEnv([
+              "AWS_ACCESS_KEY_ID=${accessKey}",
+              "AWS_SECRET_ACCESS_KEY=${secretKey}",
+              "BUCKET_NAME_NUXEO_TEST=nuxeo-platform-unit-tests",
+              "BUCKET_POLICY_NAME_NUXEO_TEST=nuxeo-platform-unit-tests-policy",
+              "BUCKET_TRANSIENT_NAME_NUXEO_TEST=nuxeo-platform-unit-tests-transient",
+              "AWS_REGION=${bucketRegion}",
+              "BUCKET_PREFIX_NUXEO_TEST=${bucketPrefix}"
+            ]){
+              sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
+            }
+          }
         }
       }
       post {
