@@ -36,6 +36,7 @@
     <module>nuxeo-multi-tenant-package</module>
     <module>nuxeo-openid-login-package</module>
     <module>nuxeo-quota-package</module>
+    <module>nuxeo-retention-package</module>
     <module>nuxeo-saml2-login-package</module>
     <module>nuxeo-scan-importer-package</module>
     <module>nuxeo-shibboleth-login-package</module>
