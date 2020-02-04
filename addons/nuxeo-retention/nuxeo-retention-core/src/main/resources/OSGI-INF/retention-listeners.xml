@@ -4,13 +4,13 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="retentionDocumentEventListener"
+    <listener name="retentionDocumentEventListener" async="true" postCommit="true"
       class="org.nuxeo.retention.listeners.RetentionDocumentEventListener">
     </listener>
-    <listener name="retentionBusinessEventListener"
+    <listener name="retentionBusinessEventListener" async="true" postCommit="true"
       class="org.nuxeo.retention.listeners.RetentionBusinessEventListener">
     </listener>
-    <listener name="retentionExpiredListener"
+    <listener name="retentionExpiredListener" async="true" postCommit="true"
       class="org.nuxeo.retention.listeners.RetentionExpiredListener">
       <event>retentionExpired</event>
     </listener>
