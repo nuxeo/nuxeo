@@ -40,7 +40,7 @@ public class TestS3DirectBatchHandlerWithSSEAndPolicy extends TestS3DirectBatchH
     public static void beforeClass() {
         TestS3DirectBatchHandlerWithSSE.beforeClass();
         // use a s3 bucket with encryption enforcement policy
-        String envBucketName = StringUtils.defaultIfBlank(System.getenv("AWS_BUCKET_POLICY_NAME_NUXEO_TEST"), "nuxeo-s3-directupload-policy");
+        String envBucketName = StringUtils.defaultIfBlank(System.getenv(TestS3BinaryManagerWithSSE2AndPolicy.BUCKET_POLICY_NAME_NUXEO_TEST), "nuxeo-s3-directupload-policy");
         System.setProperty(SYSTEM_PROPERTY_PREFIX + "." + BUCKET_NAME_PROPERTY, envBucketName);
     }
 }
