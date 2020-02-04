@@ -48,7 +48,6 @@
     <nuxeo.resources.compat.version>8.10-HF48-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>8.10-HF48-SNAPSHOT</nuxeo.dmk.version>
     <nuxeo.style.guide.version>8.10-HF48-SNAPSHOT</nuxeo.style.guide.version>
-    <nuxeo.box.version>8.10-HF48-SNAPSHOT</nuxeo.box.version>
     <nuxeo.easyshare.version>8.10-HF48-SNAPSHOT</nuxeo.easyshare.version>
     <nuxeo.logs.viewer.version>8.10-HF48-SNAPSHOT</nuxeo.logs.viewer.version>
     <nuxeo.spreadsheet.version>8.10-HF48-SNAPSHOT</nuxeo.spreadsheet.version>
@@ -107,10 +106,8 @@
     <module>nuxeo-style-guide</module>
     <module>nuxeo-javaagent</module>
     <module>nuxeo-session-inspector</module>
-    <module>nuxeo-box-api</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
-    <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
     <module>nuxeo-logs-viewer</module>
@@ -752,13 +749,6 @@
         <version>${nuxeo.javaagent.version}</version>
       </dependency>
 
-      <!-- Box API -->
-      <dependency>
-        <groupId>org.nuxeo.box.api</groupId>
-        <artifactId>nuxeo-box-api</artifactId>
-        <version>${nuxeo.box.version}</version>
-      </dependency>
-
       <!-- Easyshare -->
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
@@ -771,13 +761,6 @@
         <groupId>org.nuxeo.io</groupId>
         <artifactId>nuxeo-fsexporter</artifactId>
         <version>${nuxeo.fsexporter.version}</version>
-      </dependency>
-
-      <!-- Audit Web Access -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-audit-web-access</artifactId>
-        <version>${nuxeo.addons.version}</version>
       </dependency>
 
       <!-- DuoWeb Authentication -->
