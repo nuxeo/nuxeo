@@ -366,15 +366,10 @@ pipeline {
 
         container('maven') {
 
-          script {
-            //set aws config
-            def awsAccessKeyId = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.access_key}\' | base64 --decode', returnStdout: true)
-            def awsSecretAccessKey = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.secret_key}\' | base64 --decode', returnStdout: true)
-            def awsSessionToken = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.token}\' | base64 --decode', returnStdout: true)
-            AWS_SECRET_ACCESS_KEY=${awsAccessKeyId}
-            AWS_SECRET_ACCESS_KEY=${awsSecretAccessKey}
-            AWS_SESSION_TOKEN=${awsSessionToken}
-          }
+          //set aws config
+          env.AWS_ACCESS_KEY_ID = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.access_key}\' | base64 --decode', returnStdout: true)
+          env.AWS_SECRET_ACCESS_KEY = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.secret_key}\' | base64 --decode', returnStdout: true)
+          env.AWS_SESSION_TOKEN = sh(script: 'kubectl get secret aws-secret -o=jsonpath=\'{.data.token}\' | base64 --decode', returnStdout: true)
 
           echo """
           ----------------------------------------
