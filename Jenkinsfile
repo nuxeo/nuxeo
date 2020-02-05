@@ -389,7 +389,11 @@ pipeline {
           junit testResults: '**/target/surefire-reports/*.xml'
           container('maven') {
             // clean up the redis namespace
-            sh "kubectl delete namespace ${NAMESPACE_REDIS} --ignore-not-found=true"
+            // workaround for Cannot delete namespace still in Terminating #NXP-28622
+            sh """
+              kubectl get namespace ${NAMESPACE_REDIS} -o json | sed -e s/\\"kubernetes\\"//g  | kubectl replace --raw /api/v1/namespaces/${NAMESPACE_REDIS}/finalize -f -
+              kubectl delete namespace ${NAMESPACE_REDIS} --ignore-not-found=true
+            """
           }
         }
         success {
