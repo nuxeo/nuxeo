@@ -143,6 +143,9 @@ public class TestCommentsMigrator {
     // This file will be the one with comments that doesn't contains the 'comment:parentId'
     protected DocumentModel fileWithCommentWithoutParent;
 
+    // This file will be commented and then removed to simulate comments with removed parent
+    protected DocumentModel fileToCommentAndRemove;
+
     protected DocumentModel proxyFileToComment;
 
     @Before
@@ -163,6 +166,9 @@ public class TestCommentsMigrator {
         fileWithCommentWithoutParent = session.createDocumentModel(domain.getPathAsString(), "file3", "File");
         fileWithCommentWithoutParent = session.createDocument(fileWithCommentWithoutParent);
 
+        fileToCommentAndRemove = session.createDocumentModel(domain.getPathAsString(), "file4", "File");
+        fileToCommentAndRemove = session.createDocument(fileToCommentAndRemove);
+
         // Create a proxy file
         proxyFileToComment = session.createProxy(secondFileToComment.getRef(), anotherDomain.getRef());
     }
@@ -177,33 +183,30 @@ public class TestCommentsMigrator {
     }
 
     /**
-     * Test the migration in the case where all comments are correctly filled (comment:parentId is filled)
+     * Test the migration in the case where all comments are correctly filled (comment:parentId is filled and exists)
      */
     @Test
     public void testMigrationFromPropertyToSecuredWithCommentsCorrectlyFilled() {
         // Create comments as property on these files and add some reply
         // Total of comments:
         // NB_COMMENTS_BY_FILE*3 (files) + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
-        createCommentsAsProperty(false);
+        createCommentsAsProperty(false, false);
 
         // Second step of migrate: from 'Property' to 'Secured'
-        migrateFromPropertyToSecured(new CommentsMigrator(), false);
+        migrateFromPropertyToSecured(new CommentsMigrator(), false, false);
     }
 
     /**
-     * Test the migration in the case where some comments are not correctly filled (comment:parentId is missing)
+     * Test the migration in the case where the {@code comment:parentId} is empty.
      */
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
-    public void testMigrationFromPropertyToSecuredWithCommentsNotCorrectlyFilled() {
-        // Create comments as property on these files, add some reply and remove the 'comment:parentId' of the
-        // fileWithCommentWithoutParent
-        // Total of comments:
-        // NB_COMMENTS_BY_FILE*3 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
-        createCommentsAsProperty(true);
+    public void testMigrationFromPropertyToSecuredWithCommentParentEmpty() {
+        // NB_COMMENTS_BY_FILE*4 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
+        createCommentsAsProperty(true, false);
 
         // Second step of migrate: from 'Property' to 'Secured'
-        migrateFromPropertyToSecured(new CommentsMigrator(), true);
+        migrateFromPropertyToSecured(new CommentsMigrator(), true, false);
 
         transactionalFeature.nextTransaction();
 
@@ -233,6 +236,48 @@ public class TestCommentsMigrator {
             assertTrue(caughtEventMessages.contains(message));
             assertTrue(session.exists(new IdRef(docId)));
         }
+
+    }
+
+    /**
+     * Test the migration in the case where the {@code comment:parentId} is not empty, but it doesn't exist.
+     */
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/disable-removing-comment-children-listener.xml")
+    public void testMigrationFromPropertyToSecuredWithRemovedParentComment() {
+        // NB_COMMENTS_BY_FILE*4 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
+        createCommentsAsProperty(false, true);
+
+        // Second step of migrate: from 'Property' to 'Secured'
+        migrateFromPropertyToSecured(new CommentsMigrator(), false, true);
+        transactionalFeature.nextTransaction();
+
+        List<LogEvent> events = logCaptureResult.getCaughtEvents();
+        assertEquals(NB_COMMENTS_BY_FILE + 1, events.size());
+
+        String query = String.format("SELECT %s FROM Comment WHERE %s = '%s'", ECM_UUID, COMMENT_PARENT_ID,
+                fileToCommentAndRemove.getId());
+        List<String> unMigratedCommentDocIds = session.queryProjection(query, 0, 0)
+                                                      .stream()
+                                                      .map(m -> (String) m.get(ECM_UUID))
+                                                      .collect(Collectors.toList());
+
+        // The comments not migrated should be there but, not under 'fileToCommentAndRemove'
+        assertEquals(NB_COMMENTS_BY_FILE, unMigratedCommentDocIds.size());
+        List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
+
+        assertTrue(caughtEventMessages.contains(String.format(
+                "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
+                UNMIGRATED_COMMENTS_FOLDER_NAME)));
+
+        for (String docId : unMigratedCommentDocIds) {
+            String message = String.format(
+                    "The comment document model with IdRef: %s cannot be migrated, because its parent: %s cannot be found",
+                    docId, fileToCommentAndRemove.getId());
+            assertTrue(caughtEventMessages.contains(message));
+        }
+
     }
 
     @Test
@@ -349,6 +394,53 @@ public class TestCommentsMigrator {
         assertEquals(MIGRATION_STATE_SECURED, migrator.probeState());
     }
 
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/disable-removing-comment-children-listener.xml")
+    public void testProbeWithInConsistentComments() {
+        CommentManager propertyCommentManager = new PropertyCommentManager();
+        // add a comment with empty parent
+        DocumentModel commentWithEmptyParent = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);
+        commentWithEmptyParent = propertyCommentManager.createComment(fileWithCommentWithoutParent,
+                commentWithEmptyParent);
+        commentWithEmptyParent.setPropertyValue(COMMENT_PARENT_ID, null);
+        session.saveDocument(commentWithEmptyParent);
+
+        // add a comment with removed parent
+        DocumentModel commentWithRemovedParent = session.createDocumentModel(fileToCommentAndRemove.getPathAsString(),
+                "comment", COMMENT_DOC_TYPE);
+        commentWithRemovedParent.setPropertyValue(COMMENT_PARENT_ID, fileToCommentAndRemove.getId());
+        commentWithRemovedParent = propertyCommentManager.createComment(fileToCommentAndRemove,
+                commentWithRemovedParent);
+        session.removeDocument(fileToCommentAndRemove.getRef());
+
+        transactionalFeature.nextTransaction();
+
+        Migrator migrator = new CommentsMigrator();
+
+        // At this point we are in property step
+        assertEquals(MIGRATION_STATE_PROPERTY, migrator.probeState());
+
+        // Migrate the created property based comment to secured
+        runMigration(() -> migrator.run(MIGRATION_STEP_PROPERTY_TO_SECURED, new ProgressMigrationContext()));
+
+        // Check even with the prob, we should have the expected behaviour: logs + `secured` step
+        List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
+        assertTrue(caughtEventMessages.contains(String.format(
+                "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
+                UNMIGRATED_COMMENTS_FOLDER_NAME)));
+        assertTrue(caughtEventMessages.contains(String.format(
+                "The comment document model with IdRef: %s cannot be migrated, because its 'comment:parentId' is not defined",
+                commentWithEmptyParent.getId())));
+        assertTrue(caughtEventMessages.contains(String.format(
+                "The comment document model with IdRef: %s cannot be migrated, because its parent: %s cannot be found",
+                commentWithRemovedParent.getId(), fileToCommentAndRemove.getId())));
+
+        // No more unsecured property comments
+        assertEquals(MIGRATION_STATE_SECURED, migrator.probeState());
+
+    }
+
     protected void migrateFromRelationToProperty(Migrator migrator) {
         ProgressMigrationContext migrationContext = new ProgressMigrationContext();
         runMigration(() -> migrator.run(MIGRATION_STEP_RELATION_TO_PROPERTY, migrationContext));
@@ -383,14 +475,15 @@ public class TestCommentsMigrator {
         assertEquals(expectedLines, migrationContext.getProgressLines());
     }
 
-    protected void migrateFromPropertyToSecured(Migrator migrator, boolean commentsWithoutParent) {
+    protected void migrateFromPropertyToSecured(Migrator migrator, boolean commentsWithEmptyParent,
+            boolean commentsWithRemovedParent) {
         ProgressMigrationContext migrationContext = new ProgressMigrationContext();
 
         runMigration(() -> migrator.run(MIGRATION_STEP_PROPERTY_TO_SECURED, migrationContext));
 
         List<String> expectedLines = new ArrayList<>();
 
-        if (commentsWithoutParent) {
+        if (commentsWithEmptyParent || commentsWithRemovedParent) {
             expectedLines.addAll(Arrays.asList( //
                     "Initializing: 0/-1", //
                     "Migrating comments from Property to Secured: 1/250", //
@@ -436,7 +529,7 @@ public class TestCommentsMigrator {
         // Ensure that the Comments folder is correctly renamed if it's required
         String query = String.format("SELECT %s FROM Document WHERE %s = '%s' AND %s ='%s'", ECM_UUID, ECM_NAME,
                 UNMIGRATED_COMMENTS_FOLDER_NAME, ECM_PRIMARYTYPE, "HiddenFolder");
-        assertEquals(commentsWithoutParent ? 2 : 0, session.query(query).size());
+        assertEquals((commentsWithEmptyParent || commentsWithRemovedParent) ? 2 : 0, session.query(query).size());
 
         CommentManager treeCommentManager = new TreeCommentManager();
         assertEquals(NB_COMMENTS_BY_FILE, treeCommentManager.getComments(session, secondFileToComment).size());
@@ -463,12 +556,12 @@ public class TestCommentsMigrator {
         createComments(new CommentManagerImpl(CommentServiceHelper.getCommentService().getConfig()));
     }
 
-    protected void createCommentsAsProperty(boolean commentsWithoutParent) {
+    protected void createCommentsAsProperty(boolean commentsWithEmptyParent, boolean commentsWithRemovedParent) {
         PropertyCommentManager propertyCommentManager = new PropertyCommentManager();
 
         // Add comments without comment:parentId
-        if (commentsWithoutParent) {
-            NuxeoPrincipal principal = session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
+        if (commentsWithEmptyParent) {
             for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
                 DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
                 comment.setPropertyValue(COMMENT_PARENT_ID, fileWithCommentWithoutParent.getId());
@@ -483,6 +576,18 @@ public class TestCommentsMigrator {
                         principal, "notification" + i);
             }
 
+        }
+
+        if (commentsWithRemovedParent) {
+            for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
+                DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
+                comment.setPropertyValue(COMMENT_PARENT_ID, fileToCommentAndRemove.getId());
+                DocumentModel createdComment = propertyCommentManager.createComment(fileToCommentAndRemove, comment);
+                notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
+                        principal, "notification" + i);
+            }
+            // Remove the `fileToCommentAndRemove` which result on comments without a parent.
+            session.removeDocument(fileToCommentAndRemove.getRef());
         }
 
         // Create comments under the others files

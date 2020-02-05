@@ -250,6 +250,13 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         }
 
         DocumentRef parentDocRef = new IdRef(parentId);
+        if (!session.exists(parentDocRef)) {
+            log.warn(
+                    "The comment document model with IdRef: {} cannot be migrated, because its parent: {} cannot be found",
+                    commentIdRef, parentId);
+            return;
+        }
+
         DocumentModel parentDocModel = session.getDocument(parentDocRef);
 
         DocumentRef destination = new PathRef(commentManager.getLocationOfCommentCreation(session, parentDocModel));
