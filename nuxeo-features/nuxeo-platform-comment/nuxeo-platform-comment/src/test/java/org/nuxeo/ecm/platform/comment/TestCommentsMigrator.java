@@ -136,9 +136,6 @@ public class TestCommentsMigrator {
     @Inject
     LogCaptureFeature.Result logCaptureResult;
 
-    @Inject
-    protected LogFeature logFeature;
-
     protected DocumentModel firstFileToComment;
 
     protected DocumentModel secondFileToComment;
@@ -147,15 +144,6 @@ public class TestCommentsMigrator {
     protected DocumentModel fileWithCommentWithoutParent;
 
     protected DocumentModel proxyFileToComment;
-
-    protected static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
 
     @Before
     public void setUp() {
@@ -208,48 +196,42 @@ public class TestCommentsMigrator {
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testMigrationFromPropertyToSecuredWithCommentsNotCorrectlyFilled() {
-        logFeature.hideWarningFromConsoleLog();
+        // Create comments as property on these files, add some reply and remove the 'comment:parentId' of the
+        // fileWithCommentWithoutParent
+        // Total of comments:
+        // NB_COMMENTS_BY_FILE*3 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
+        createCommentsAsProperty(true);
 
-        try {
-            // Create comments as property on these files, add some reply and remove the 'comment:parentId' of the
-            // fileWithCommentWithoutParent
-            // Total of comments:
-            // NB_COMMENTS_BY_FILE*3 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
-            createCommentsAsProperty(true);
+        // Second step of migrate: from 'Property' to 'Secured'
+        migrateFromPropertyToSecured(new CommentsMigrator(), true);
 
-            // Second step of migrate: from 'Property' to 'Secured'
-            migrateFromPropertyToSecured(new CommentsMigrator(), true);
+        transactionalFeature.nextTransaction();
 
-            transactionalFeature.nextTransaction();
+        List<LogEvent> events = logCaptureResult.getCaughtEvents();
+        assertEquals(NB_COMMENTS_BY_FILE + 1, events.size());
 
-            List<LogEvent> events = logCaptureResult.getCaughtEvents();
-            assertEquals(NB_COMMENTS_BY_FILE + 1, events.size());
+        String query = String.format("SELECT %s FROM Comment WHERE %s IS NULL ", ECM_UUID, COMMENT_PARENT_ID);
+        List<String> unMigratedComments = session.queryProjection(query, 0, 0)
+                                                 .stream()
+                                                 .map(m -> (String) m.get(ECM_UUID))
+                                                 .collect(Collectors.toList());
 
-            String query = String.format("SELECT %s FROM Comment WHERE %s IS NULL ", ECM_UUID, COMMENT_PARENT_ID);
-            List<String> unMigratedComments = session.queryProjection(query, 0, 0)
-                                                     .stream()
-                                                     .map(m -> (String) m.get(ECM_UUID))
-                                                     .collect(Collectors.toList());
+        // The comments not migrated should be there but, not under 'fileWithCommentWithoutParent'
+        assertEquals(NB_COMMENTS_BY_FILE, unMigratedComments.size());
+        List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
 
-            // The comments not migrated should be there but, not under 'fileWithCommentWithoutParent'
-            assertEquals(NB_COMMENTS_BY_FILE, unMigratedComments.size());
-            List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
+        // Some comments have not been migrated (how: parentId is null), we make sure that we have the warning
+        // messages
+        assertTrue(caughtEventMessages.contains(String.format(
+                "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
+                UNMIGRATED_COMMENTS_FOLDER_NAME)));
 
-            // Some comments have not been migrated (how: parentId is null), we make sure that we have the warning
-            // messages
-            assertTrue(caughtEventMessages.contains(String.format(
-                    "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
-                    UNMIGRATED_COMMENTS_FOLDER_NAME)));
-
-            for (String docId : unMigratedComments) {
-                String message = String.format(
-                        "The comment document model with IdRef: %s cannot be migrated, because his 'comment:parentId' is not defined",
-                        docId);
-                assertTrue(caughtEventMessages.contains(message));
-                assertTrue(session.exists(new IdRef(docId)));
-            }
-        } finally {
-            logFeature.restoreConsoleLog();
+        for (String docId : unMigratedComments) {
+            String message = String.format(
+                    "The comment document model with IdRef: %s cannot be migrated, because its 'comment:parentId' is not defined",
+                    docId);
+            assertTrue(caughtEventMessages.contains(message));
+            assertTrue(session.exists(new IdRef(docId)));
         }
     }
 

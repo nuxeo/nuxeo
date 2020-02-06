@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         CommentServiceConfig commentServiceConfig = commentComponent.getConfig();
         if (commentServiceConfig != null) {
             Graph graph = Framework.getService(RelationManager.class).getGraph(commentServiceConfig.graphName, session);
-            if (graph.getStatements().size() > 0) {
+            if (!graph.getStatements().isEmpty()) {
                 return MIGRATION_STATE_RELATION;
             }
         }
@@ -117,13 +117,13 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         try {
             repositoryNames.forEach(repoName -> migrateRepository(step, migrationContext, repoName));
         } catch (MigrationShutdownException e) {
-            return;
+            log.trace("Migration is shutdown");
         }
     }
 
     @Override
     protected void migrateSession(CoreSession session) {
-       migrateSession(null, this.migrationContext, session);
+        migrateSession(null, this.migrationContext, session);
     }
 
     @Override
@@ -180,11 +180,11 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
             comment.setPropertyValue(COMMENT_PARENT_ID, parent.getId());
             session.saveDocument(comment);
         } else if (parent == null && comment == null) {
-            log.warn("Documents {} and {} do not exist, they can not be migrated", object.getLocalName(),
+            log.warn("Documents {} and {} do not exist, they cannot be migrated", object.getLocalName(),
                     subject.getLocalName());
         } else {
-            log.warn("Document {} does not exist, it can not be migrated",
-                    parent == null ? object.getLocalName() : subject.getLocalName());
+            log.warn("Document {} does not exist, it cannot be migrated",
+                    () -> parent == null ? object.getLocalName() : subject.getLocalName());
         }
 
         Graph graph = relationManager.getGraph(config.graphName, session);
@@ -219,11 +219,11 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         } else {
             // For some reason some comments still not migrated (for example a comment without a comment:parentId)
             // in this case we just rename the Comments folder (see getCommentFolders)
-            log.warn(String.format(
-                    "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
-                    UNMIGRATED_COMMENTS_FOLDER_NAME));
+            log.warn(
+                    "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to {}",
+                    UNMIGRATED_COMMENTS_FOLDER_NAME);
 
-            session.query(GET_COMMENTS_FOLDERS_QUERY).stream().forEach(docModel -> {
+            session.query(GET_COMMENTS_FOLDERS_QUERY).forEach(docModel -> {
                 session.move(docModel.getRef(), null, UNMIGRATED_COMMENTS_FOLDER_NAME);
                 docModel.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
                 session.saveDocument(docModel);
@@ -244,7 +244,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         String parentId = (String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID);
         if (StringUtils.isEmpty(parentId)) {
             log.warn(
-                    "The comment document model with IdRef: {} cannot be migrated, because his 'comment:parentId' is not defined",
+                    "The comment document model with IdRef: {} cannot be migrated, because its 'comment:parentId' is not defined",
                     commentIdRef);
             return;
         }
