@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.cache.CacheKeyGenerator;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheGCManager;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
+import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.service.ConversionServiceImpl;
 import org.nuxeo.runtime.api.Framework;
@@ -101,27 +102,18 @@ public class TestCache {
 
     @Test
     public void shouldNotReturnNullFileCacheEntries() throws IOException {
-        ConversionService cs = Framework.getService(ConversionService.class);
-
-        String converterName = "identity";
-        Converter cv = ConversionServiceImpl.getConverter(converterName);
-        assertNotNull(cv);
-
         File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
-        assertNotNull(file);
-        assertTrue(file.length() > 0);
 
-        Blob blob = Blobs.createBlob(file, "application/msword", null, "hello.doc");
-        BlobHolder bh = new SimpleBlobHolder(blob);
+        // Put a blobholder in the cache
+        Blob blob = Blobs.createBlob(file);
+        BlobHolder bh = new SimpleCachableBlobHolder(blob);
+        String cacheKey = CacheKeyGenerator.computeKey("identity", bh, null);
+        ConversionCacheHolder.addToCache(cacheKey, bh);
 
-        // first conversion
-        BlobHolder result = cs.convert(converterName, bh, null);
-        assertNotNull(result);
         // check new cache entry was created
         assertEquals(1, ConversionCacheHolder.getNbCacheEntries());
 
-        // retrieve the temp file
-        String cacheKey = CacheKeyGenerator.computeKey(converterName, result, null);
+        // retrieve the cache entry
         BlobHolder blobHolder = ConversionCacheHolder.getFromCache(cacheKey);
 
         // delete the temp file
@@ -130,7 +122,7 @@ public class TestCache {
         assertEquals(1, ConversionCacheHolder.getNbCacheEntries());
         assertTrue(ConversionCacheHolder.getCacheKeys().contains(cacheKey));
 
-        // requesting null file cache entries returns null after clearing the outdated key
+        // requesting a null file cache entry returns null after clearing the outdated key
         assertNull(ConversionCacheHolder.getFromCache(cacheKey));
         assertEquals(0, ConversionCacheHolder.getNbCacheEntries());
     }
