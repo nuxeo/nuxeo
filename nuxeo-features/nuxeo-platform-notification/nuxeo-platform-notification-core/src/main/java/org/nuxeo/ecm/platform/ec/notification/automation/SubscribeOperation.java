@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,7 @@ import org.nuxeo.ecm.platform.notification.api.NotificationManager;
  *
  * @since 8.10
  */
-@Operation(id = SubscribeOperation.ID, category = Constants.CAT_DOCUMENT, label = "Subscribe document",
-    description = "Subscribe one or more documents. No value is returned.")
+@Operation(id = SubscribeOperation.ID, category = Constants.CAT_DOCUMENT, label = "Subscribe document", description = "Subscribe one or more documents. No value is returned.")
 public class SubscribeOperation {
 
     public static final String ID = "Document.Subscribe";
@@ -72,5 +71,4 @@ public class SubscribeOperation {
         }
         return doc;
     }
-
 }

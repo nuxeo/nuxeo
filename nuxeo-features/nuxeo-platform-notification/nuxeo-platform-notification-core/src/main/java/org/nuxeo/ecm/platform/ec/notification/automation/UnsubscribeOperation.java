@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.platform.ec.notification.automation;
 
+import java.util.List;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -31,15 +33,12 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 
-import java.util.List;
-
 /**
  * Operation to unsubscribe a user to the notifications of one or more of documents.
  *
  * @since 8.10
  */
-@Operation(id = UnsubscribeOperation.ID, category = Constants.CAT_DOCUMENT, label = "Unsubscribe document",
-    description = "Unsubscribe one or more documents. No value is returned.")
+@Operation(id = UnsubscribeOperation.ID, category = Constants.CAT_DOCUMENT, label = "Unsubscribe document", description = "Unsubscribe one or more documents. No value is returned.")
 public class UnsubscribeOperation {
 
     public static final String ID = "Document.Unsubscribe";
@@ -75,5 +74,4 @@ public class UnsubscribeOperation {
         }
         return doc;
     }
-
 }
