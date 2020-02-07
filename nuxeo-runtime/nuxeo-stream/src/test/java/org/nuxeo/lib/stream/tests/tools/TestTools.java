@@ -224,6 +224,12 @@ public abstract class TestTools {
     }
 
     @Test
+    public void testDatadog() {
+        run(String.format("datadog %s --verbose -l %s,%s --api-key 1234 -i 2 -c 2", getManagerOptions(),
+                LOG_NAME, LOG_NAME_2));
+    }
+
+    @Test
     public void testTrackerAndRestore() throws InterruptedException {
         // Set a consumer position
         String group = "aGroup2Track";

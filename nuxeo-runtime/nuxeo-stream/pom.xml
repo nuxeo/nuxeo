@@ -71,6 +71,10 @@
       <artifactId>metrics-graphite</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.coursera</groupId>
+      <artifactId>metrics-datadog</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

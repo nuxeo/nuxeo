@@ -40,6 +40,7 @@ import com.codahale.metrics.graphite.GraphiteUDP;
  * @since 10.3
  */
 public class LatencyMonitorComputation extends LatencyTrackerComputation {
+
     private static final Log log = LogFactory.getLog(LatencyMonitorComputation.class);
 
     protected final String host;
@@ -52,13 +53,24 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
 
     protected GraphiteSender graphite;
 
+    protected final boolean partition;
+
+    @Deprecated
     public LatencyMonitorComputation(LogManager manager, List<String> logNames, String host, int port, boolean udp,
             String basePrefix, String computationName, int intervalSecond, int count, boolean verbose,
             Codec<Record> codec) {
+        this(manager, logNames, host, port, udp, basePrefix, computationName, intervalSecond, count, true, verbose,
+                codec);
+    }
+
+    public LatencyMonitorComputation(LogManager manager, List<String> logNames, String host, int port, boolean udp,
+            String basePrefix, String computationName, int intervalSecond, int count, boolean partition,
+            boolean verbose, Codec<Record> codec) {
         super(manager, logNames, computationName, intervalSecond, count, verbose, codec, 0);
         this.host = host;
         this.port = port;
         this.udp = udp;
+        this.partition = partition;
         this.basePrefix = basePrefix;
     }
 
@@ -81,9 +93,12 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
     protected void processLatencies(ComputationContext context, LogPartitionGroup logGroup, List<Latency> latencies) {
         Latency groupLatency = Latency.of(latencies);
         publishMetrics(groupLatency, String.format("%s%s.%s.all.", basePrefix, logGroup.group, logGroup.name));
-        for (int partition = 0; partition < latencies.size(); partition++) {
-            publishMetrics(latencies.get(partition),
-                    String.format("%s%s.%s.p%02d.", basePrefix, logGroup.group, logGroup.name, partition));
+        if (!partition) {
+            return;
+        }
+        for (int part = 0; part < latencies.size(); part++) {
+            publishMetrics(latencies.get(part),
+                    String.format("%s%s.%s.p%02d.", basePrefix, logGroup.group, logGroup.name, part));
         }
     }
 
@@ -112,7 +127,7 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
             } catch (IOException e) {
                 log.debug("Error when closing graphite socket: ", e);
             }
+            graphite = null;
         }
-        graphite = null;
     }
 }

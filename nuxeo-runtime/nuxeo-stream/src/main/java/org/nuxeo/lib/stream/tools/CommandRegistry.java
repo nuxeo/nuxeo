@@ -25,6 +25,7 @@ import org.nuxeo.lib.stream.tools.command.AppendCommand;
 import org.nuxeo.lib.stream.tools.command.CatCommand;
 import org.nuxeo.lib.stream.tools.command.Command;
 import org.nuxeo.lib.stream.tools.command.CopyCommand;
+import org.nuxeo.lib.stream.tools.command.DatadogCommand;
 import org.nuxeo.lib.stream.tools.command.DumpCommand;
 import org.nuxeo.lib.stream.tools.command.HelpCommand;
 import org.nuxeo.lib.stream.tools.command.LagCommand;
@@ -56,6 +57,7 @@ public class CommandRegistry {
         ret.add(new AppendCommand());
         ret.add(new TestCommand());
         ret.add(new MonitorCommand());
+        ret.add(new DatadogCommand());
         return ret;
     }
 }
