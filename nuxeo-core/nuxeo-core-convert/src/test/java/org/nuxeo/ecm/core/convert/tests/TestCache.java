@@ -22,9 +22,13 @@ package org.nuxeo.ecm.core.convert.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +38,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
+import org.nuxeo.ecm.core.convert.cache.CacheKeyGenerator;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheGCManager;
 import org.nuxeo.ecm.core.convert.cache.ConversionCacheHolder;
 import org.nuxeo.ecm.core.convert.extension.Converter;
@@ -92,6 +97,42 @@ public class TestCache {
 
         int cacheSize3 = ConversionCacheHolder.getNbCacheEntries();
         assertEquals(0, cacheSize1 - cacheSize3);
+    }
+
+    @Test
+    public void shouldNotReturnNullFileCacheEntries() throws IOException {
+        ConversionService cs = Framework.getService(ConversionService.class);
+
+        String converterName = "identity";
+        Converter cv = ConversionServiceImpl.getConverter(converterName);
+        assertNotNull(cv);
+
+        File file = FileUtils.getResourceFileFromContext("test-data/hello.doc");
+        assertNotNull(file);
+        assertTrue(file.length() > 0);
+
+        Blob blob = Blobs.createBlob(file, "application/msword", null, "hello.doc");
+        BlobHolder bh = new SimpleBlobHolder(blob);
+
+        // first conversion
+        BlobHolder result = cs.convert(converterName, bh, null);
+        assertNotNull(result);
+        // check new cache entry was created
+        assertEquals(1, ConversionCacheHolder.getNbCacheEntries());
+
+        // retrieve the temp file
+        String cacheKey = CacheKeyGenerator.computeKey(converterName, result, null);
+        BlobHolder blobHolder = ConversionCacheHolder.getFromCache(cacheKey);
+
+        // delete the temp file
+        Files.delete(Paths.get(blobHolder.getBlob().getFile().getPath()));
+        // check the cache is outdated
+        assertEquals(1, ConversionCacheHolder.getNbCacheEntries());
+        assertTrue(ConversionCacheHolder.getCacheKeys().contains(cacheKey));
+
+        // requesting null file cache entries returns null after clearing the outdated key
+        assertNull(ConversionCacheHolder.getFromCache(cacheKey));
+        assertEquals(0, ConversionCacheHolder.getNbCacheEntries());
     }
 
 }

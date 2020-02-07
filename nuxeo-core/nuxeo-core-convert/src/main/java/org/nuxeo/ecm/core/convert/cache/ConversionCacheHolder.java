@@ -163,11 +163,16 @@ public class ConversionCacheHolder {
     }
 
     public static BlobHolder getFromCache(String key) {
-        cacheLock.readLock().lock();
+        // in case of present key but missing file we need to remove the cache key.
+        cacheLock.writeLock().lock();
         try {
-            return doGetFromCache(key);
+            BlobHolder result = doGetFromCache(key);
+            if (result == null) {
+                removeFromCache(key);
+            }
+            return result;
         } finally {
-            cacheLock.readLock().unlock();
+            cacheLock.writeLock().unlock();
         }
     }
 
@@ -178,7 +183,10 @@ public class ConversionCacheHolder {
                 // skip all negative values
                 CACHE_HITS.addAndGet(Long.MIN_VALUE); // back to 0
             }
-            return cacheEntry.restore();
+            BlobHolder restored = cacheEntry.restore();
+            if (restored.getBlob().getFile().exists()) {
+                return restored;
+            }
         }
         return null;
     }
