@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +34,6 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -45,7 +42,6 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.ec.notification.SubscriptionAdapter;
 import org.nuxeo.ecm.platform.ec.notification.automation.SubscribeOperation;
 import org.nuxeo.ecm.platform.ec.notification.automation.UnsubscribeOperation;
-import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -68,12 +64,7 @@ public class SubscribeAndUnsubscribeTest {
     protected CoreSession coreSession;
 
     @Inject
-    protected NotificationManager notificationManager;
-
-    @Inject
     protected AutomationService automationService;
-
-    protected OperationContext ctx;
 
     @Before
     public void setUp() {
@@ -87,91 +78,85 @@ public class SubscribeAndUnsubscribeTest {
             listDocs.add(testFile);
         }
         listDocModel = new DocumentModelListImpl(listDocs);
-        ctx = new OperationContext(coreSession);
-    }
-
-    @After
-    public void closeOperationContext() {
-        ctx.close();
     }
 
     @Test
     public void testSubscribeAndUnsubscribeOperations() throws OperationException {
-        OperationChain chain = new OperationChain("test-chain");
-        chain.add(SubscribeOperation.ID);
-        ctx.setInput(listDocModel);
-        String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            OperationChain chain = new OperationChain("test-chain");
+            chain.add(SubscribeOperation.ID);
+            ctx.setInput(listDocModel);
+            String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
-        for (DocumentModel doc : listDocModel) {
-            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
-            assertTrue(docSubscriptions.isEmpty());
-        }
+            for (DocumentModel doc : listDocModel) {
+                List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+                assertTrue(docSubscriptions.isEmpty());
+            }
 
-        // subscribe all documents
-        listDocModel = (DocumentModelList) automationService.run(ctx, chain);
+            // subscribe all documents
+            listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
-        for (DocumentModel doc : listDocModel) {
-            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
-            assertEquals(4, docSubscriptions.size());
-            assertTrue(docSubscriptions.contains("Creation"));
-            assertTrue(docSubscriptions.contains("Modification"));
-            assertTrue(docSubscriptions.contains("Workflow Change"));
-            assertTrue(docSubscriptions.contains("Approbation review started"));
-        }
+            for (DocumentModel doc : listDocModel) {
+                List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+                assertEquals(4, docSubscriptions.size());
+                assertTrue(docSubscriptions.contains("Creation"));
+                assertTrue(docSubscriptions.contains("Modification"));
+                assertTrue(docSubscriptions.contains("Workflow Change"));
+                assertTrue(docSubscriptions.contains("Approbation review started"));
+            }
 
-        chain = new OperationChain("test-chain");
-        chain.add(UnsubscribeOperation.ID);
-        ctx.clear();
-        ctx.setInput(listDocModel);
-        username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
+            chain = new OperationChain("test-chain");
+            chain.add(UnsubscribeOperation.ID);
+            ctx.clear();
+            ctx.setInput(listDocModel);
+            username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
-        // unsubscribe all documents
-        listDocModel = (DocumentModelList) automationService.run(ctx, chain);
+            // unsubscribe all documents
+            listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
-        for (DocumentModel doc : listDocModel) {
-            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
-            assertTrue(docSubscriptions.isEmpty());
+            for (DocumentModel doc : listDocModel) {
+                List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+                assertTrue(docSubscriptions.isEmpty());
+            }
         }
     }
 
     @Test
     public void testSelectiveSubscribeAndUnsubscribeOperations() throws OperationException {
-        Map<String, Object> params = new HashMap<>();
-        params.put("notifications", new StringList(new ArrayList<String>() {private static final long serialVersionUID = 1L;
+        try (OperationContext ctx = new OperationContext(coreSession)) {
+            Map<String, Object> params = Map.of("notifications", List.of("Creation"));
+            OperationChain chain = new OperationChain("test-chain");
+            chain.add(SubscribeOperation.ID).from(params);
+            ctx.setInput(listDocModel);
+            String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
-        { add("Creation"); }}));
+            for (DocumentModel doc : listDocModel) {
+                List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+                assertTrue(docSubscriptions.isEmpty());
+            }
 
-        OperationChain chain = new OperationChain("test-chain");
-        chain.add(SubscribeOperation.ID).from(params);
-        ctx.setInput(listDocModel);
-        String username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
+            // subscribe all documents
+            listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
-        for (DocumentModel doc : listDocModel) {
-            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
-            assertTrue(docSubscriptions.isEmpty());
-        }
+            for (DocumentModel doc : listDocModel) {
+                List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+                assertEquals(1, docSubscriptions.size());
+                assertTrue(docSubscriptions.contains("Creation"));
+            }
 
-        // subscribe all documents
-        listDocModel = (DocumentModelList) automationService.run(ctx, chain);
+            chain = new OperationChain("test-chain");
+            chain.add(UnsubscribeOperation.ID).from(params);
+            ctx.clear();
+            ctx.setInput(listDocModel);
+            username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
 
-        for (DocumentModel doc : listDocModel) {
-            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
-            assertEquals(1, docSubscriptions.size());
-            assertTrue(docSubscriptions.contains("Creation"));
-        }
+            // unsubscribe all documents
+            listDocModel = (DocumentModelList) automationService.run(ctx, chain);
 
-        chain = new OperationChain("test-chain");
-        chain.add(UnsubscribeOperation.ID).from(params);
-        ctx.clear();
-        ctx.setInput(listDocModel);
-        username = NotificationConstants.USER_PREFIX + ctx.getPrincipal().getName();
-
-        // unsubscribe all documents
-        listDocModel = (DocumentModelList) automationService.run(ctx, chain);
-
-        for (DocumentModel doc : listDocModel) {
-            List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
-            assertTrue(docSubscriptions.isEmpty());
+            for (DocumentModel doc : listDocModel) {
+                List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
+                assertTrue(docSubscriptions.isEmpty());
+            }
         }
     }
 
