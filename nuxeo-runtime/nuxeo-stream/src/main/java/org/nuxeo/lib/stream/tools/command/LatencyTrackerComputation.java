@@ -76,7 +76,8 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     @Override
     public void init(ComputationContext context) {
-        log.info(String.format("Tracking %s, count: %d, interval: %dms", Arrays.toString(logNames.toArray()), count,
+        log.info(String.format("Tracking %d streams: %s, count: %d, interval: %dms", logNames.size(),
+                Arrays.toString(logNames.toArray()), count,
                 intervalMs));
         context.setTimer("tracker", System.currentTimeMillis() + intervalMs);
     }
@@ -103,7 +104,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
                 }
             } catch (Exception e) {
                 if (e.getCause() instanceof ClassNotFoundException || e.getCause() instanceof ClassCastException
-                        || e instanceof IllegalStateException) {
+                        || e instanceof IllegalStateException || e instanceof IllegalArgumentException) {
                     log.warn("log does not contains computation Record, removing partition: " + logGroup);
                     toRemove.add(logGroup);
                     continue;

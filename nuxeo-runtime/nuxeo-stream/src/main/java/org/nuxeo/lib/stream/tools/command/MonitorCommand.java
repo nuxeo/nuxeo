@@ -21,6 +21,7 @@ package org.nuxeo.lib.stream.tools.command;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
 
 /**
- * Monitor consumer latencies to graphite
+ * Monitors consumer latencies to graphite
  *
  * @since 10.3
  */
@@ -58,6 +59,8 @@ public class MonitorCommand extends Command {
     protected static final String DEFAULT_PORT = "2003";
 
     protected boolean verbose = false;
+
+    protected boolean partition = false;
 
     protected List<String> logNames;
 
@@ -108,6 +111,7 @@ public class MonitorCommand extends Command {
                                 .argName("PORT")
                                 .build());
         options.addOption("u", "udp", false, "Carbon instance is listening using UDP");
+        options.addOption(Option.builder().longOpt("partition").desc("Report metrics for each partition").build());
         options.addOption(Option.builder("i")
                                 .longOpt("interval")
                                 .desc("send latency spaced at the specified interval in seconds")
@@ -116,7 +120,7 @@ public class MonitorCommand extends Command {
                                 .build());
         options.addOption(Option.builder("c")
                                 .longOpt("count")
-                                .desc("number of time to send the latency information")
+                                .desc("number of times the latency information is sent")
                                 .hasArg()
                                 .argName("COUNT")
                                 .build());
@@ -139,6 +143,7 @@ public class MonitorCommand extends Command {
     public boolean run(LogManager manager, CommandLine cmd) {
         logNames = getLogNames(manager, cmd.getOptionValue("log-name"));
         codec = cmd.getOptionValue("codec");
+        partition = cmd.hasOption("partition");
         verbose = cmd.hasOption("verbose");
         interval = Integer.parseInt(cmd.getOptionValue("interval", DEFAULT_INTERVAL));
         count = Integer.parseInt(cmd.getOptionValue("count", DEFAULT_COUNT));
@@ -174,8 +179,9 @@ public class MonitorCommand extends Command {
         topology = Topology.builder()
                            .addComputation(
                                    () -> new LatencyMonitorComputation(manager, logNames, host, port, udp, prefix,
-                                           COMPUTATION_NAME, interval, count, verbose, getRecordCodec(codec)),
-                                   Arrays.asList("i1:" + INPUT_STREAM))
+                                           COMPUTATION_NAME, interval, count, partition, verbose,
+                                           getRecordCodec(codec)),
+                                   Collections.singletonList("i1:" + INPUT_STREAM))
                            .build();
     }
 
