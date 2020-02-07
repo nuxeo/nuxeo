@@ -4970,6 +4970,13 @@
         <version>3.1.6</version>
       </dependency>
 
+      <!-- Datadog -->
+      <dependency>
+        <groupId>org.coursera</groupId>
+        <artifactId>metrics-datadog</artifactId>
+        <version>1.0.2</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
