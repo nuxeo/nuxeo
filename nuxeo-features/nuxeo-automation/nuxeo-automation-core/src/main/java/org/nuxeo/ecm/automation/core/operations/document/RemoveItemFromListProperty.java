@@ -80,9 +80,8 @@ public class RemoveItemFromListProperty {
             removeItemFromListProperty(property);
         }
 
-        doc = session.saveDocument(doc);
         if (save) {
-            session.save();
+            doc = session.saveDocument(doc);
         }
         return doc;
     }
