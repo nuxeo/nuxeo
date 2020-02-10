@@ -128,7 +128,6 @@
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
     <org.apache.log4j.version>2.13.0</org.apache.log4j.version>
     <org.slf4j.version>1.7.30</org.slf4j.version>
-    <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
     <gatling.version>3.3.1</gatling.version>
     <gatling-plugin.version>3.0.4</gatling-plugin.version>
     <scala.version>2.12.3</scala.version>
@@ -1050,14 +1049,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-connect-update</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-      <!-- Note: nuxeo-automation-client introduces a dependency to Logback. -->
-      <!-- If using Log4J for instance, then exclude logback and add a bridge -->
-      <!-- such as org.slf4j:slf4j-log4j12 -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.automation</groupId>
-        <artifactId>nuxeo-automation-client</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
@@ -4675,13 +4666,6 @@
             <artifactId>activation</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-parent</artifactId>
-        <version>${ch.qos.logback.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
