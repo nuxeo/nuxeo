@@ -39,8 +39,7 @@ import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummaryImpl;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -53,8 +52,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the {@link NuxeoDriveGetChangeSummary} operation on multiple repositories.
@@ -74,7 +71,7 @@ public class TestGetChangeSummaryMultiRepo {
     protected NuxeoDriveManager nuxeoDriveManager;
 
     @Inject
-    protected Session clientSession;
+    protected HttpAutomationSession clientSession;
 
     protected CloseableCoreSession otherSession;
 
@@ -87,8 +84,6 @@ public class TestGetChangeSummaryMultiRepo {
     protected DocumentModel folder2;
 
     protected DocumentModel folder3;
-
-    protected ObjectMapper mapper;
 
     @Before
     public void init() {
@@ -104,8 +99,6 @@ public class TestGetChangeSummaryMultiRepo {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-
-        mapper = new ObjectMapper();
     }
 
     @After
@@ -183,14 +176,10 @@ public class TestGetChangeSummaryMultiRepo {
     protected FileSystemChangeSummary getChangeSummary() throws IOException, InterruptedException {
         // Wait 1 second as the mock change finder relies on steps of 1 second
         Thread.sleep(1000); // NOSONAR
-        Blob docChangeSummaryJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)
-                                                        .set("lowerBound", lastEventLogId)
-                                                        .set("lastSyncActiveRootDefinitions", lastSyncActiveRoots)
-                                                        .execute();
-        assertNotNull(docChangeSummaryJSON);
-
-        FileSystemChangeSummary changeSummary = mapper.readValue(docChangeSummaryJSON.getStream(),
-                FileSystemChangeSummaryImpl.class);
+        FileSystemChangeSummary changeSummary = clientSession.newRequest(NuxeoDriveGetChangeSummary.ID)
+                                                             .set("lowerBound", lastEventLogId)
+                                                             .set("lastSyncActiveRootDefinitions", lastSyncActiveRoots)
+                                                             .executeReturning(FileSystemChangeSummaryImpl.class);
         assertNotNull(changeSummary);
 
         lastEventLogId = changeSummary.getUpperBound();

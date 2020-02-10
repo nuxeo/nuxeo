@@ -18,34 +18,23 @@
  */
 package org.nuxeo.ecm.automation.server.test;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static junit.framework.TestCase.assertEquals;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.client.Constants;
-import org.nuxeo.ecm.automation.client.RemoteException;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.adapters.AsyncSession;
-import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
-import org.nuxeo.ecm.automation.client.model.FileBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.AttachBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
@@ -54,15 +43,19 @@ import org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkActi
 import org.nuxeo.ecm.automation.core.operations.services.bulk.BulkRunAction;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.HttpAutomationClient;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -77,101 +70,127 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class AsyncOperationAdapterTest {
 
-    @Inject
-    protected Session session;
+    public static final String VOID_OPERATION = "X-NXVoidOperation";
+
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Inject
-    protected AsyncSession async;
+    protected HttpAutomationClient automationClient;
+
+    @Inject
+    protected HttpAutomationSession session;
+
+    protected HttpAutomationSession async;
 
     @Inject
     public TransactionalFeature txFeature;
 
+    public String getDocRef(JsonNode node) {
+        return "doc:" + node.get("uid").asText();
+    }
+
+    public String getTitle(JsonNode node) {
+        return node.get("title").asText();
+    }
+
+    public String getPath(JsonNode node) {
+        return node.get("path").asText();
+    }
+
+    @Before
+    public void setUp() throws IOException {
+        async = automationClient.getSession(ADMINISTRATOR, ADMINISTRATOR);
+        async.setAsync(true);
+    }
+
     @Test
     public void testAsyncOperation() throws Exception {
-        Object r;
 
-        r = async.newRequest(ReturnOperation.ID).setInput(Boolean.TRUE).execute();
-        assertThat(r, is(Boolean.TRUE));
+        boolean b = async.newRequest(ReturnOperation.ID) //
+                         .setInput(Boolean.TRUE)
+                         .executeReturningBooleanEntity();
+        assertTrue(b);
 
         // Document
-        r = async.newRequest(FetchDocument.ID).set("value", "/").execute();
-        assertThat(r, instanceOf(Document.class));
+        JsonNode node = async.newRequest(FetchDocument.ID) //
+                             .set("value", "/")
+                             .executeReturningDocument();
+        assertNotNull(node);
 
         // Documents
-        r = async.newRequest(DocumentPaginatedQuery.ID).set("query", "SELECT * from Document").execute();
-        assertThat(r, instanceOf(Documents.class));
+        List<JsonNode> nodes = async.newRequest(DocumentPaginatedQuery.ID)
+                                    .set("query", "SELECT * from Document")
+                                    .executeReturningDocuments();
+        assertNotNull(nodes);
 
         // Blob
-        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
+        JsonNode root = session.newRequest(FetchDocument.ID) //
+                               .set("value", "/")
+                               .executeReturningDocument();
 
-        Document folder = (Document) session.newRequest(CreateDocument.ID)
-                                            .setInput(root)
-                                            .set("type", "Folder")
-                                            .set("name", "asyncTest")
-                                            .execute();
+        JsonNode folder = session.newRequest(CreateDocument.ID)
+                                 .setInput(root)
+                                 .set("type", "Folder")
+                                 .set("name", "asyncTest")
+                                 .executeReturningDocument();
 
-        Document file = (Document) session.newRequest(CreateDocument.ID)
-                                          .setInput(folder)
-                                          .set("type", "File")
-                                          .set("name", "blobs")
-                                          .execute();
+        JsonNode file = session.newRequest(CreateDocument.ID)
+                               .setInput(folder)
+                               .set("type", "File")
+                               .set("name", "blobs")
+                               .executeReturningDocument();
 
-        File tmp = Framework.createTempFile("async-operation-test-", ".xml");
-        FileUtils.writeStringToFile(tmp, "<doc>mydoc1</doc>", UTF_8);
-
-        FileBlob fb = new FileBlob(tmp);
-        fb.setMimeType("text/xml");
-
+        Blob fb = Blobs.createBlob("<doc>mydoc1</doc>", "text/xml", null, "file.xml");
         session.newRequest(AttachBlob.ID)
-                                          .setHeader(Constants.HEADER_NX_VOIDOP, "true")
-                                          .setInput(fb)
-                                          .set("document", file.getPath())
-                                          .execute();
+               .setHeader(VOID_OPERATION, "true")
+               .setInput(fb)
+               .set("document", getPath(file))
+               .execute();
 
-        r = async.newRequest(GetDocumentBlob.ID).setInput(file).execute();
-        assertThat(r, instanceOf(Blob.class));
+        Blob blob = async.newRequest(GetDocumentBlob.ID) //
+                         .setInput(getDocRef(file))
+                         .executeReturningBlob();
+        assertNotNull(blob);
     }
 
     @Test
     public void testAsyncChain() throws Exception {
-        // get the root
-        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         // create a folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID)
-                                            .setInput(root)
-                                            .set("type", "Folder")
-                                            .set("name", "chainTest")
-                                            .execute();
+        JsonNode folder = session.newRequest(CreateDocument.ID)
+                                 .setInput("doc:/")
+                                 .set("type", "Folder")
+                                 .set("name", "chainTest")
+                                 .executeReturningDocument();
 
-        Document doc = (Document) async.newRequest("testchain").setInput(folder).execute();
-        assertEquals("/chainTest/chain.doc", doc.getPath());
-        assertEquals("Note", doc.getType());
+        JsonNode doc = async.newRequest("testchain") //
+                            .setInput(folder)
+                            .executeReturningDocument();
+        assertEquals("/chainTest/chain.doc", getPath(doc));
+        assertEquals("Note", doc.get("type").asText());
     }
 
     @Test
     public void testError() throws Exception {
-        Object r = session.newRequest("Test.Exit").setInput("Error").execute();
+        String r = session.newRequest("Test.Exit") //
+                          .setInput("Error")
+                          .executeReturningStringEntity();
         assertEquals("Error", r);
 
-        try {
-            r = async.newRequest("Test.Exit").set("error", true).set("rollback", true).execute();
-            fail("expected error");
-        } catch (RemoteException e) {
-            assertEquals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getStatus());
-            assertEquals("Failed to invoke operation Test.Exit", e.getMessage());
-        }
+        String error = async.newRequest("Test.Exit") //
+                            .set("error", true)
+                            .set("rollback", true)
+                            .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation Test.Exit", error);
     }
 
     @Test
     public void testAsyncBulkAction() throws Exception {
-        // get the root
-        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         // create a folder
-        Document folder = (Document) session.newRequest(CreateDocument.ID)
-                                            .setInput(root)
-                                            .set("type", "Folder")
-                                            .set("name", "test")
-                                            .execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput("doc:/")
+               .set("type", "Folder")
+               .set("name", "test")
+               .executeReturningDocument();
 
         // param for the automation operation
         HashMap<String, Serializable> automationParams = new HashMap<>();
@@ -182,20 +201,22 @@ public class AsyncOperationAdapterTest {
         actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
         actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, automationParams);
 
-        Object r = async.newRequest(BulkRunAction.ID)
-                        .set("action", AutomationBulkAction.ACTION_NAME)
-                        .set("query", "SELECT * FROM Folder")
-                        .set("bucketSize", "10")
-                        .set("batchSize", "5")
-                        .set("parameters", (new ObjectMapper()).writeValueAsString(actionParams))
-                        .execute();
+        JsonNode r = async.newRequest(BulkRunAction.ID)
+                          .set("action", AutomationBulkAction.ACTION_NAME)
+                          .set("query", "SELECT * FROM Folder")
+                          .set("bucketSize", "10")
+                          .set("batchSize", "5")
+                          .set("parameters", MAPPER.writeValueAsString(actionParams))
+                          .execute();
         assertNotNull(r);
 
         txFeature.nextTransaction();
 
-        folder = (Document) session.newRequest(FetchDocument.ID).set("value", "/test").execute();
+        JsonNode folder = session.newRequest(FetchDocument.ID) //
+                                 .set("value", "/test")
+                                 .executeReturningDocument();
 
-        assertEquals("foo", folder.getTitle());
+        assertEquals("foo", getTitle(folder));
     }
 
     /**
@@ -215,19 +236,17 @@ public class AsyncOperationAdapterTest {
     }
 
     protected void testAsyncBulkActionWithPP(String pageProviderName) throws IOException {
-        // get the root
-        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
         // create a folder and a file
-        Document folder = (Document) session.newRequest(CreateDocument.ID)
-                                            .setInput(root)
-                                            .set("type", "Folder")
-                                            .set("name", "test")
-                                            .execute();
-        Document file = (Document) session.newRequest(CreateDocument.ID)
-                                          .setInput(folder)
-                                          .set("type", "File")
-                                          .set("name", "file")
-                                          .execute();
+        session.newRequest(CreateDocument.ID)
+               .setInput("doc:/")
+               .set("type", "Folder")
+               .set("name", "test")
+               .executeReturningDocument();
+        session.newRequest(CreateDocument.ID)
+               .setInput("doc:/test")
+               .set("type", "File")
+               .set("name", "file")
+               .executeReturningDocument();
 
         // param for the automation operation
         Map<String, Serializable> automationParams = new HashMap<>();
@@ -238,23 +257,28 @@ public class AsyncOperationAdapterTest {
         actionParams.put(AutomationBulkAction.OPERATION_ID, "Document.Update");
         actionParams.put(AutomationBulkAction.OPERATION_PARAMETERS, (Serializable) automationParams);
 
-        Object r = async.newRequest(BulkRunAction.ID)
-                        .set("action", AutomationBulkAction.ACTION_NAME)
-                        .set("providerName", pageProviderName)
-                        .set("quickFilters", "FileOnly")
-                        .set("bucketSize", "10")
-                        .set("batchSize", "5")
-                        .set("parameters", (new ObjectMapper()).writeValueAsString(actionParams))
-                        .execute();
+        JsonNode r = async.newRequest(BulkRunAction.ID)
+                          .set("action", AutomationBulkAction.ACTION_NAME)
+                          .set("providerName", pageProviderName)
+                          .set("quickFilters", "FileOnly")
+                          .set("bucketSize", "10")
+                          .set("batchSize", "5")
+                          .set("parameters", MAPPER.writeValueAsString(actionParams))
+                          .execute();
         assertNotNull(r);
 
         txFeature.nextTransaction();
 
         // expect only File doc to be modified
-        folder = (Document) session.newRequest(FetchDocument.ID).set("value", "/test").execute();
-        file = (Document) session.newRequest(FetchDocument.ID).set("value", "/test/file").execute();
+        JsonNode folder = session.newRequest(FetchDocument.ID) //
+                                 .set("value", "/test")
+                                 .executeReturningDocument();
+        JsonNode file = session.newRequest(FetchDocument.ID) //
+                               .set("value", "/test/file")
+                               .executeReturningDocument();
 
-        assertEquals("test", folder.getTitle());
-        assertEquals("foo", file.getTitle());
+        assertEquals("test", getTitle(folder));
+        assertEquals("foo", getTitle(file));
     }
+
 }

@@ -18,12 +18,12 @@
  */
 package org.nuxeo.drive.hierarchy.userworkspace;
 
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -56,9 +56,8 @@ import org.nuxeo.drive.operations.NuxeoDriveScrollDescendants;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.test.HttpAutomationClient;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -106,6 +105,12 @@ public class TestUserWorkspaceHierarchy {
     protected static final String TOP_LEVEL_ID_PREFIX = "org.nuxeo.drive.hierarchy.userworkspace.factory.UserWorkspaceTopLevelFactory#test#";
 
     protected static final String USER_1 = "user1";
+
+    protected static final TypeReference<List<DefaultSyncRootFolderItem>> LIST_DEFAULT_SYNC_ROOT_FOLDER_ITEM = new TypeReference<List<DefaultSyncRootFolderItem>>() {
+    };
+
+    protected static final TypeReference<List<DocumentBackedFileItem>> LIST_DOCUMENT_BACKED_FILE_ITEM = new TypeReference<List<DocumentBackedFileItem>>() {
+    };
 
     @Inject
     protected CoreFeature coreFeature;
@@ -156,7 +161,7 @@ public class TestUserWorkspaceHierarchy {
 
     protected String syncRootParentItemPath;
 
-    protected Session clientSession1;
+    protected HttpAutomationSession clientSession1;
 
     protected ObjectMapper mapper;
 
@@ -295,11 +300,8 @@ public class TestUserWorkspaceHierarchy {
         // ---------------------------------------------
         // Check top level folder: "Nuxeo Drive"
         // ---------------------------------------------
-        Blob topLevelFolderJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetTopLevelFolder.ID).execute();
-        assertNotNull(topLevelFolderJSON);
-
-        UserWorkspaceTopLevelFolderItem topLevelFolder = mapper.readValue(topLevelFolderJSON.getStream(),
-                UserWorkspaceTopLevelFolderItem.class);
+        UserWorkspaceTopLevelFolderItem topLevelFolder = clientSession1.newRequest(NuxeoDriveGetTopLevelFolder.ID) //
+                .executeReturning(UserWorkspaceTopLevelFolderItem.class);
         assertNotNull(topLevelFolder);
         assertEquals(userWorkspace1ItemId, topLevelFolder.getId());
         assertNull(topLevelFolder.getParentId());
@@ -314,22 +316,16 @@ public class TestUserWorkspaceHierarchy {
 
         // Check descendants
         assertFalse(topLevelFolder.getCanScrollDescendants());
-        try {
-            clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
-                          .set("id", topLevelFolder.getId())
-                          .set("batchSize", 10)
-                          .execute();
-            fail("Scrolling through the descendants of the user workspace top level folder item should be unsupported.");
-        } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
-        }
+        String error = clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
+                                     .set("id", topLevelFolder.getId())
+                                     .set("batchSize", 10)
+                                     .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", error);
 
         // Get children
-        Blob topLevelChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                         .set("id", topLevelFolder.getId())
-                                                         .execute();
-
-        ArrayNode topLevelChildren = mapper.readValue(topLevelChildrenJSON.getStream(), ArrayNode.class);
+        ArrayNode topLevelChildren = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
+                                                   .set("id", topLevelFolder.getId())
+                                                   .executeReturning(ArrayNode.class);
         assertNotNull(topLevelChildren);
         assertEquals(3, topLevelChildren.size());
 
@@ -354,24 +350,16 @@ public class TestUserWorkspaceHierarchy {
 
         // Check descendants
         assertFalse(syncRootParent.getCanScrollDescendants());
-        try {
-            clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
-                          .set("id", syncRootParent.getId())
-                          .set("batchSize", 10)
-                          .execute();
-            fail("Scrolling through the descendants of a virtual folder item should be unsupported.");
-        } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
-        }
+        error = clientSession1.newRequest(NuxeoDriveScrollDescendants.ID)
+                              .set("id", syncRootParent.getId())
+                              .set("batchSize", 10)
+                              .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", error);
 
         // Get children
-        Blob syncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                  .set("id", syncRootParent.getId())
-                                                  .execute();
-
-        List<DefaultSyncRootFolderItem> syncRoots = mapper.readValue(syncRootsJSON.getStream(),
-                new TypeReference<List<DefaultSyncRootFolderItem>>() {
-                });
+        List<DefaultSyncRootFolderItem> syncRoots = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
+                .set("id", syncRootParent.getId())
+                .executeReturning(LIST_DEFAULT_SYNC_ROOT_FOLDER_ITEM);
         assertNotNull(syncRoots);
         assertEquals(2, syncRoots.size());
         Collections.sort(syncRoots);
@@ -380,12 +368,10 @@ public class TestUserWorkspaceHierarchy {
         DefaultSyncRootFolderItem syncRootItem = syncRoots.get(0);
         checkFolderItem(syncRootItem, SYNC_ROOT_ID_PREFIX, user1Folder3, SYNC_ROOT_PARENT_ID, syncRootParentItemPath,
                 "user1Folder3", USER_1, USER_1);
-        Blob syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                             .set("id", syncRootItem.getId())
-                                                             .execute();
-        List<DocumentBackedFileItem> syncRootItemChildren = mapper.readValue(syncRootItemChildrenJSON.getStream(),
-                new TypeReference<List<DocumentBackedFileItem>>() {
-                });
+        List<DocumentBackedFileItem> syncRootItemChildren = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
+                                                                          .set("id", syncRootItem.getId())
+                                                                          .executeReturning(
+                                                                                  LIST_DOCUMENT_BACKED_FILE_ITEM);
         assertNotNull(syncRootItemChildren);
         assertEquals(1, syncRootItemChildren.size());
         // user1File3
@@ -396,12 +382,9 @@ public class TestUserWorkspaceHierarchy {
         syncRootItem = syncRoots.get(1);
         checkFolderItem(syncRootItem, SYNC_ROOT_ID_PREFIX, user1Folder4, SYNC_ROOT_PARENT_ID, syncRootParentItemPath,
                 "user1Folder4", USER_1, USER_1);
-        syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                        .set("id", syncRootItem.getId())
-                                                        .execute();
-        syncRootItemChildren = mapper.readValue(syncRootItemChildrenJSON.getStream(),
-                new TypeReference<List<DocumentBackedFileItem>>() {
-                });
+        syncRootItemChildren = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
+                                             .set("id", syncRootItem.getId())
+                                             .executeReturning(LIST_DOCUMENT_BACKED_FILE_ITEM);
         assertNotNull(syncRootItemChildren);
         assertEquals(1, syncRootItemChildren.size());
         // user1File4
@@ -420,10 +403,9 @@ public class TestUserWorkspaceHierarchy {
         DocumentBackedFolderItem folderItem = readValue(topLevelChildrenNodes[2], DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder1, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1Folder1", USER_1, USER_1);
-        Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                           .set("id", folderItem.getId())
-                                                           .execute();
-        ArrayNode folderItemChildren = mapper.readValue(folderItemChildrenJSON.getStream(), ArrayNode.class);
+        ArrayNode folderItemChildren = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
+                                                     .set("id", folderItem.getId())
+                                                     .executeReturning(ArrayNode.class);
         assertNotNull(folderItemChildren);
         assertEquals(2, folderItemChildren.size());
 
@@ -449,12 +431,9 @@ public class TestUserWorkspaceHierarchy {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
 
-            syncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                 .set("id", syncRootParent.getId())
-                                                 .execute();
-            syncRoots = mapper.readValue(syncRootsJSON.getStream(),
-                    new TypeReference<List<DefaultSyncRootFolderItem>>() {
-                    });
+            syncRoots = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
+                                      .set("id", syncRootParent.getId())
+                                      .executeReturning(LIST_DEFAULT_SYNC_ROOT_FOLDER_ITEM);
             assertEquals(2, syncRoots.size());
         } finally {
             TransactionHelper.commitOrRollbackTransaction();

@@ -22,26 +22,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.model.DocRef;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.client.model.Documents;
-import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 7.4
@@ -55,73 +54,66 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestRemoteAutomationScript {
 
     @Inject
-    Session session;
+    HttpAutomationSession session;
 
     @Inject
     AutomationService service;
 
-    @Inject
-    HttpAutomationClient client;
-
-    protected Documents getDocuments() throws IOException {
+    protected List<JsonNode> getDocuments() throws IOException {
         // Create a simple document
-        Document root = (Document) session.newRequest(FetchDocument.ID).set("value", "/").execute();
-        Document simple = (Document) session.newRequest(CreateDocument.ID)
-                                            .setInput(root)
-                                            .set("type", "File")
-                                            .set("name", "Simple")
-                                            .set("properties",
-                                                    "dc:title=Simple\n")
-                                            .execute();
-        Documents docs = new Documents();
-        docs.add(simple);
-        docs.add(root);
-        return docs;
+        JsonNode root = session.newRequest(FetchDocument.ID) //
+                               .set("value", "/")
+                               .executeReturningDocument();
+        JsonNode simple = session.newRequest(CreateDocument.ID)
+                                 .setInput(root)
+                                 .set("type", "File")
+                                 .set("name", "Simple")
+                                 .set("properties", "dc:title=Simple\n")
+                                 .executeReturningDocument();
+        return Arrays.asList(simple, root);
     }
 
     @Test
     public void canHandleDocumentSentRemotely() throws IOException {
-        Document document = (Document) session.newRequest("javascript.RemoteScriptWithDoc")
-                                              .setInput(getDocuments().get(0))
-                                              .execute();
+        JsonNode document = session.newRequest("javascript.RemoteScriptWithDoc")
+                                   .setInput(getDocuments().get(0))
+                                   .executeReturningDocument();
         assertNotNull(document);
-        assertEquals("Simple", document.getTitle());
+        assertEquals("Simple", document.get("title").asText());
     }
 
     @Test
     public void canHandleDocumentsSentRemotely() throws IOException {
-        Documents documents = (Documents) session.newRequest("javascript.RemoteScriptWithDocs")
-                                                 .setInput(getDocuments())
-                                                 .execute();
+        List<JsonNode> documents = session.newRequest("javascript.RemoteScriptWithDocs") //
+                                          .setInput(getDocuments())
+                                          .executeReturningDocuments();
         assertNotNull(documents);
         assertEquals(2, documents.size());
-        assertEquals("Simple", documents.get(0).getTitle());
+        assertEquals("Simple", documents.get(0).get("title").asText());
     }
 
     @Test
-    public void testRemoteChainWithScriptingOp() throws Exception {
-        OperationDocumentation opd = session.getOperation("testChain2");
-        assertNotNull(opd);
-        assertNotNull(service.getOperation("testChain2").getDocumentation().getOperations());
-        Document doc = (Document) session.newRequest("testChain2").setInput(DocRef.newRef("/")).execute();
+    public void testRemoteChainWithScriptingOp() throws IOException {
+        JsonNode doc = session.newRequest("testChain2") //
+                              .setInput("doc:/")
+                              .executeReturningDocument();
         assertNotNull(doc);
-
     }
 
     @Test
     public void canCallHtmlEscapeViaJS() throws IOException {
-        String escaped = (String) session.newRequest("javascript.testHtmlEscape")
-                                         .setInput(" cou&cou ")
-                                         .execute();
+        String escaped = session.newRequest("javascript.testHtmlEscape") //
+                                .setInput(" cou&cou ")
+                                .executeReturningStringEntity();
         assertNotNull(escaped);
         assertEquals(" cou&amp;cou ", escaped);
     }
 
     @Test
     public void canCallNxqlEscapeViaJS() throws IOException {
-        String escaped = (String) session.newRequest("javascript.testNxqlEscape")
-                .setInput(" \n ")
-                .execute();
+        String escaped = session.newRequest("javascript.testNxqlEscape") //
+                                .setInput(" \n ")
+                                .executeReturningStringEntity();
         assertNotNull(escaped);
         assertEquals(" \\n ", escaped);
     }

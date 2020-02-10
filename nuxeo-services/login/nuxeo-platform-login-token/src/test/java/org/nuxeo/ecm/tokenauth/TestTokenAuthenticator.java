@@ -18,32 +18,28 @@
  */
 package org.nuxeo.ecm.tokenauth;
 
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.http.HttpStatus;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.client.RemoteException;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.model.Document;
-import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.automation.test.HttpAutomationClient;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * Tests the {@link TokenAuthenticator}.
@@ -53,71 +49,43 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TokenAuthenticationServiceFeature.class, EmbeddedAutomationServerFeature.class })
-@RepositoryConfig(init = TokenAuthenticationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestTokenAuthenticator {
 
+    protected static final String TOKEN_HEADER = "X-Authentication-Token";
+
     @Inject
-    protected CoreSession session;
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected TokenAuthenticationService tokenAuthenticationService;
 
     @Inject
     protected HttpAutomationClient automationClient;
 
+    @Inject
+    protected UserManager userManager;
+
+    @Before
+    public void setUp() {
+        DocumentModel user = userManager.getBareUserModel();
+        user.setPropertyValue(userManager.getUserIdField(), "joe");
+        userManager.createUser(user);
+    }
+
     @Test
-    public void testAuthenticator() throws Exception {
+    public void testAuthenticator() throws URISyntaxException, IOException {
+        // no token
+        HttpAutomationSession session = automationClient.getSession();
+        session.login(Map.of(), SC_UNAUTHORIZED);
 
-        // Try to get client session using a bad token, should throw a RemoteException with HTTP 401 status code
-        try {
-            automationClient.getSession("badToken");
-            fail("Getting an Automation client session with a bad token should throw a RemoteException with HTTP 401 status code");
-        } catch (RemoteException e) {
-            assertEquals(HttpStatus.SC_UNAUTHORIZED, e.getStatus());
-        }
+        // bad token
+        session.login(Map.of(TOKEN_HEADER, "badToken"), SC_UNAUTHORIZED);
 
-        // Mock token authentication callback
-        TokenAuthenticationCallback cb = new TokenAuthenticationCallback("Administrator", "myFavoriteApp",
-                "Ubuntu box 64 bits", "This is my personal Linux box", "rw");
-        assertNull(cb.getLocalToken());
+        // correct token
+        String token = tokenAuthenticationService.acquireToken("joe", "myApp", "myDevice", "My Device", "rw");
+        transactionalFeature.nextTransaction();
 
-        // Get client session using callback, should acquire a remote token,
-        // store it locally and return a session as Administrator
-        Session clientSession = automationClient.getSession(cb);
-        String token = cb.getLocalToken();
-        assertNotNull(token);
-        assertEquals("Administrator", clientSession.getLogin().getUsername());
-
-        // Check automation call
-        String testDocId = session.getDocument(new PathRef(TokenAuthenticationRepositoryInit.getTestDocPath())).getId();
-        Document testDoc = (Document) clientSession.newRequest(FetchDocument.ID).setHeader("X-NXDocumentProperties",
-                "dublincore").set("value", testDocId).execute();
-        assertNotNull(testDoc);
-        assertEquals("My test doc", testDoc.getTitle());
-        assertEquals("For test purpose.", testDoc.getString("dc:description"));
-
-        // Get client session using callback, should use local token and return
-        // a session as Administrator
-        clientSession = automationClient.getSession(cb);
-        assertEquals("Administrator", clientSession.getLogin().getUsername());
-
-        // Revoke token
-        TokenAuthenticationService tokenAuthenticationService = Framework.getService(
-                TokenAuthenticationService.class);
-        tokenAuthenticationService.revokeToken(token);
-        // commit transaction
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-
-        // Assert that an operation will fail to error 401
-        try {
-            testDoc = (Document) clientSession.newRequest(FetchDocument.ID)
-                    .setHeader("X-NXDocumentProperties", "dublincore")
-                    .set("value", testDocId)
-                    .execute();
-            fail("Performing operation with a revoked token should throw a RemoteException with HTTP 401 status code");
-        } catch (RemoteException e) {
-            assertEquals(HttpStatus.SC_UNAUTHORIZED, e.getStatus());
-        }
+        assertEquals("joe", session.login(Map.of(TOKEN_HEADER, token)));
     }
 
 }

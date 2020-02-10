@@ -124,7 +124,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
      */
     protected DocumentModel getDocument(JsonNode jn) throws IOException {
         String uid = getStringField(jn, "uid");
-        if (StringUtils.isNotBlank(uid)) {
+        if (StringUtils.isNotBlank(uid) && ctx != null) {
             try (var wrapper = ctx.getSession(null)) {
                 DocumentModel doc = wrapper.getSession().getDocument(new IdRef(uid));
                 String changeToken = getStringField(jn, "changeToken");

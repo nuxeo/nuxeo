@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2012-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 package org.nuxeo.drive.operations;
 
+import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -51,10 +52,10 @@ import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.adapter.impl.ScrollFileSystemItemListImpl;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.model.Blob;
-import org.nuxeo.ecm.automation.client.model.StringBlob;
+import org.nuxeo.ecm.automation.test.HttpAutomationClient;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -75,7 +76,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the {@link FileSystemItem} related operations.
@@ -114,6 +114,15 @@ public class TestFileSystemItemOperations {
 
     protected static final String SYNC_ROOT_FOLDER_ITEM_ID_PREFIX = "defaultSyncRootFolderItemFactory#test#";
 
+    protected static final TypeReference<List<DefaultSyncRootFolderItem>> LIST_DEFAULT_SYNC_ROOT_FOLDER_ITEM = new TypeReference<List<DefaultSyncRootFolderItem>>() {
+    };
+
+    protected static final TypeReference<List<DocumentBackedFileItem>> LIST_DOCUMENT_BACKED_FILE_ITEM = new TypeReference<List<DocumentBackedFileItem>>() {
+    };
+
+    protected static final TypeReference<DefaultTopLevelFolderItem> DEFAULT_TOP_LEVEL_FOLDER_FOLDER_ITEM = new TypeReference<DefaultTopLevelFolderItem>() {
+    };
+
     @Inject
     protected CoreFeature coreFeature;
 
@@ -136,7 +145,7 @@ public class TestFileSystemItemOperations {
     protected HttpAutomationClient automationClient;
 
     @Inject
-    protected Session clientSession;
+    protected HttpAutomationSession clientSession;
 
     protected DocumentModel syncRoot1;
 
@@ -151,8 +160,6 @@ public class TestFileSystemItemOperations {
     protected DocumentModel file4;
 
     protected DocumentModel subFolder1;
-
-    protected ObjectMapper mapper;
 
     /**
      * Initializes the test hierarchy.
@@ -182,7 +189,7 @@ public class TestFileSystemItemOperations {
 
         // Create 1 file in each sync root
         file1 = session.createDocumentModel(FOLDER_1_PATH, FILE_1, "File");
-        org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob("The content of file 1.");
+        Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob("The content of file 1.");
         blob.setFilename("First file.odt"); // NOSONAR
         file1.setPropertyValue(FILE_CONTENT, (Serializable) blob);
         file1 = session.createDocument(file1);
@@ -211,27 +218,20 @@ public class TestFileSystemItemOperations {
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-
-        mapper = new ObjectMapper();
     }
 
     @Test
     public void testGetTopLevelChildren() throws IOException {
 
-        Blob topLevelFolderJSON = (Blob) clientSession.newRequest(NuxeoDriveGetTopLevelFolder.ID).execute();
-        assertNotNull(topLevelFolderJSON);
+        FolderItem topLevelFolder = clientSession.newRequest(NuxeoDriveGetTopLevelFolder.ID)
+                                                 .executeReturning(DEFAULT_TOP_LEVEL_FOLDER_FOLDER_ITEM);
+        assertNotNull(topLevelFolder);
 
         // Check children
-        FolderItem topLevelFolder = mapper.readValue(topLevelFolderJSON.getStream(),
-                new TypeReference<DefaultTopLevelFolderItem>() {
-                });
-
-        Blob topLevelChildrenJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChildren.ID)
-                                                        .set("id", topLevelFolder.getId())
-                                                        .execute();
-        List<DefaultSyncRootFolderItem> topLevelChildren = mapper.readValue(topLevelChildrenJSON.getStream(),
-                new TypeReference<List<DefaultSyncRootFolderItem>>() {
-                });
+        List<DefaultSyncRootFolderItem> topLevelChildren;
+        topLevelChildren = clientSession.newRequest(NuxeoDriveGetChildren.ID)
+                                        .set("id", topLevelFolder.getId())
+                                        .executeReturning(LIST_DEFAULT_SYNC_ROOT_FOLDER_ITEM);
         assertNotNull(topLevelChildren);
         assertEquals(2, topLevelChildren.size());
 
@@ -259,50 +259,38 @@ public class TestFileSystemItemOperations {
 
         // Check descendants
         assertFalse(topLevelFolder.getCanScrollDescendants());
-        try {
-            clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
-                         .set("id", topLevelFolder.getId())
-                         .set(BATCH_SIZE, 10)
-                         .execute();
-            fail("Scrolling through the descendants of the default top level folder item should be unsupported.");
-        } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", e.getMessage());
-        }
+        String error = clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
+                                    .set("id", topLevelFolder.getId())
+                                    .set(BATCH_SIZE, 10)
+                                    .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation: NuxeoDrive.ScrollDescendants", error);
     }
 
     @Test
     public void testFileSystemItemExists() throws IOException {
 
         // Non existing file system item
-        Blob fileSystemItemExistsJSON = (Blob) clientSession.newRequest(NuxeoDriveFileSystemItemExists.ID)
-                                                            .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + "badId")
-                                                            .execute();
-        assertNotNull(fileSystemItemExistsJSON);
-
-        String fileSystemItemExists = mapper.readValue(fileSystemItemExistsJSON.getStream(), String.class);
-        assertEquals(String.valueOf(Boolean.FALSE), fileSystemItemExists);
+        Boolean fileSystemItemExists = clientSession.newRequest(NuxeoDriveFileSystemItemExists.ID)
+                                                    .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + "badId")
+                                                    .executeReturning(Boolean.class);
+        assertFalse(fileSystemItemExists);
 
         // Existing file system item
-        fileSystemItemExistsJSON = (Blob) clientSession.newRequest(NuxeoDriveFileSystemItemExists.ID)
-                                                       .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                                       .execute();
-        assertNotNull(fileSystemItemExistsJSON);
-
-        fileSystemItemExists = mapper.readValue(fileSystemItemExistsJSON.getStream(), String.class);
-        assertEquals(String.valueOf(Boolean.TRUE), fileSystemItemExists);
+        fileSystemItemExists = clientSession.newRequest(NuxeoDriveFileSystemItemExists.ID)
+                                            .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                            .executeReturning(Boolean.class);
+        assertTrue(fileSystemItemExists);
 
         // Deleted file system item
         trashService.trashDocument(file1);
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        fileSystemItemExistsJSON = (Blob) clientSession.newRequest(NuxeoDriveFileSystemItemExists.ID)
-                                                       .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                                       .execute();
-        assertNotNull(fileSystemItemExistsJSON);
 
-        fileSystemItemExists = mapper.readValue(fileSystemItemExistsJSON.getStream(), String.class);
-        assertEquals(String.valueOf(Boolean.FALSE), fileSystemItemExists);
+        fileSystemItemExists = clientSession.newRequest(NuxeoDriveFileSystemItemExists.ID)
+                                            .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                            .executeReturning(Boolean.class);
+        assertFalse(fileSystemItemExists);
     }
 
     @Test
@@ -312,13 +300,9 @@ public class TestFileSystemItemOperations {
         String topLevelFolderItemId = fileSystemItemAdapterService.getTopLevelFolderItemFactory()
                                                                   .getTopLevelFolderItem(session.getPrincipal())
                                                                   .getId();
-        Blob fileSystemItemJSON = (Blob) clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
-                                                      .set("id", topLevelFolderItemId)
-                                                      .execute();
-        assertNotNull(fileSystemItemJSON);
-
-        DefaultTopLevelFolderItem topLevelFolderItem = mapper.readValue(fileSystemItemJSON.getStream(),
-                DefaultTopLevelFolderItem.class);
+        DefaultTopLevelFolderItem topLevelFolderItem = clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
+                                                                    .set("id", topLevelFolderItemId)
+                                                                    .executeReturning(DefaultTopLevelFolderItem.class);
         assertNotNull(topLevelFolderItem);
         assertEquals(topLevelFolderItemId, topLevelFolderItem.getId());
         assertNull(topLevelFolderItem.getParentId());
@@ -331,13 +315,10 @@ public class TestFileSystemItemOperations {
         assertFalse(topLevelFolderItem.getCanCreateChild());
 
         // Get sync root
-        fileSystemItemJSON = (Blob) clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
-                                                 .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                                 .execute();
-        assertNotNull(fileSystemItemJSON);
-
-        DefaultSyncRootFolderItem syncRootFolderItem = mapper.readValue(fileSystemItemJSON.getStream(),
-                DefaultSyncRootFolderItem.class);
+        DefaultSyncRootFolderItem syncRootFolderItem;
+        syncRootFolderItem = clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
+                                          .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                          .executeReturning(DefaultSyncRootFolderItem.class);
         assertNotNull(syncRootFolderItem);
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(), syncRootFolderItem.getId());
         assertTrue(syncRootFolderItem.getParentId().endsWith("DefaultTopLevelFolderItemFactory#"));
@@ -350,13 +331,9 @@ public class TestFileSystemItemOperations {
         assertTrue(syncRootFolderItem.getCanCreateChild());
 
         // Get file in sync root
-        fileSystemItemJSON = (Blob) clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
-                                                 .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                                 .execute();
-        assertNotNull(fileSystemItemJSON);
-
-        DocumentBackedFileItem fileItem = mapper.readValue(fileSystemItemJSON.getStream(),
-                DocumentBackedFileItem.class);
+        DocumentBackedFileItem fileItem = clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
+                                                       .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                                       .executeReturning(DocumentBackedFileItem.class);
         assertNotNull(fileItem);
         assertEquals(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId(), fileItem.getId());
         assertEquals(SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId(), fileItem.getParentId());
@@ -369,34 +346,27 @@ public class TestFileSystemItemOperations {
         assertTrue(fileItem.getCanUpdate());
         assertEquals("nxfile/test/" + file1.getId() + "/blobholder:0/First%20file.odt", fileItem.getDownloadURL()); // NOSONAR
         assertEquals("MD5", fileItem.getDigestAlgorithm());
-        assertEquals(((org.nuxeo.ecm.core.api.Blob) file1.getPropertyValue(FILE_CONTENT)).getDigest(),
-                fileItem.getDigest());
+        assertEquals(((Blob) file1.getPropertyValue(FILE_CONTENT)).getDigest(), fileItem.getDigest());
 
         // Get deleted file
         trashService.trashDocument(file1);
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
-        fileSystemItemJSON = (Blob) clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
-                                                 .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                                 .execute();
-        assertNotNull(fileSystemItemJSON);
-
-        assertNull(mapper.readValue(fileSystemItemJSON.getStream(), Object.class));
+        fileItem = clientSession.newRequest(NuxeoDriveGetFileSystemItem.ID)
+                                .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                .executeReturning(DocumentBackedFileItem.class);
+        assertNull(fileItem);
     }
 
     @Test
     public void testGetChildren() throws IOException {
 
         // Get children of sub-folder of sync root 1
-        Blob childrenJSON = (Blob) clientSession.newRequest(NuxeoDriveGetChildren.ID)
-                                                .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
-                                                .execute();
-        assertNotNull(childrenJSON);
-
-        List<DocumentBackedFileItem> children = mapper.readValue(childrenJSON.getStream(),
-                new TypeReference<List<DocumentBackedFileItem>>() {
-                });
+        List<DocumentBackedFileItem> children;
+        children = clientSession.newRequest(NuxeoDriveGetChildren.ID)
+                                .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
+                                .executeReturning(LIST_DOCUMENT_BACKED_FILE_ITEM);
         assertNotNull(children);
         assertEquals(2, children.size());
 
@@ -409,13 +379,11 @@ public class TestFileSystemItemOperations {
 
         // Get descendants of sync root 1
         // Scroll through all descendants in one breath
-        Blob descendantsJSON = (Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
-                                                   .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                                   .set(BATCH_SIZE, 10)
-                                                   .execute();
-        assertNotNull(descendantsJSON);
-        ScrollFileSystemItemList descendants = mapper.readValue(descendantsJSON.getStream(),
-                ScrollFileSystemItemListImpl.class);
+        ScrollFileSystemItemList descendants;
+        descendants = clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
+                                   .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                   .set(BATCH_SIZE, 10)
+                                   .executeReturning(ScrollFileSystemItemListImpl.class);
         assertNotNull(descendants);
         assertNotNull(descendants.getScrollId());
         assertEquals(4, descendants.size());
@@ -429,16 +397,18 @@ public class TestFileSystemItemOperations {
 
         // Scroll through descendants in several steps
         descendantIds.clear();
-        ScrollFileSystemItemList descendantsBatch;
         int batchSize = 2;
-        String scrollId = null;
-        while (!(descendantsBatch = mapper.readValue(
-                ((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
-                                     .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                     .set(BATCH_SIZE, batchSize)
-                                     .set("scrollId", scrollId)
-                                     .execute()).getStream(),
-                ScrollFileSystemItemListImpl.class)).isEmpty()) {
+        String scrollId = "";
+        for (;;) {
+            ScrollFileSystemItemListImpl descendantsBatch;
+            descendantsBatch = clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
+                                            .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                            .set(BATCH_SIZE, batchSize)
+                                            .set("scrollId", scrollId)
+                                            .executeReturning(ScrollFileSystemItemListImpl.class);
+            if (descendantsBatch.isEmpty()) {
+                break;
+            }
             assertFalse(descendantsBatch.isEmpty());
             scrollId = descendantsBatch.getScrollId();
             descendantIds.addAll(descendantsBatch.stream().map(FileSystemItem::getId).collect(Collectors.toList()));
@@ -448,30 +418,24 @@ public class TestFileSystemItemOperations {
         assertTrue(CollectionUtils.isEqualCollection(expectedIds, descendantIds));
 
         // Check descendants of sub-folder of sync root 1
-        assertTrue(CollectionUtils.isEqualCollection(
-                Stream.of(file3, file4)
-                      .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
-                      .collect(Collectors.toList()),
-                mapper.readValue(
-                        ((Blob) clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
-                                             .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
-                                             .set(BATCH_SIZE, 10)
-                                             .execute()).getStream(),
-                        JsonNode.class)
-                      .findValuesAsText("id")));
+        JsonNode node = clientSession.newRequest(NuxeoDriveScrollDescendants.ID)
+                                     .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
+                                     .set(BATCH_SIZE, 10)
+                                     .execute();
+        assertTrue(CollectionUtils.isEqualCollection(Stream.of(file3, file4)
+                                                           .map(doc -> DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + doc.getId())
+                                                           .collect(Collectors.toList()),
+                node.findValuesAsText("id")));
     }
 
     @Test
     public void testCreateFolder() throws IOException {
 
-        Blob newFolderJSON = (Blob) clientSession.newRequest(NuxeoDriveCreateFolder.ID)
-                                                 .set("parentId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                                 .set("name", "newFolder")
-                                                 .execute();
-        assertNotNull(newFolderJSON);
-
-        DocumentBackedFolderItem newFolder = mapper.readValue(newFolderJSON.getStream(),
-                DocumentBackedFolderItem.class);
+        DocumentBackedFolderItem newFolder;
+        newFolder = clientSession.newRequest(NuxeoDriveCreateFolder.ID)
+                                 .set("parentId", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                 .set("name", "newFolder")
+                                 .executeReturning(DocumentBackedFolderItem.class);
         assertNotNull(newFolder);
 
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
@@ -495,15 +459,13 @@ public class TestFileSystemItemOperations {
     @Test
     public void testCreateFile() throws IOException {
 
-        StringBlob blob = new StringBlob("This is the content of a new file.");
-        blob.setFileName("New file.odt"); // NOSONAR
-        Blob newFileJSON = (Blob) clientSession.newRequest(NuxeoDriveCreateFile.ID)
-                                               .set("parentId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
-                                               .setInput(blob)
-                                               .execute();
-        assertNotNull(newFileJSON);
-
-        DocumentBackedFileItem newFile = mapper.readValue(newFileJSON.getStream(), DocumentBackedFileItem.class);
+        Blob blob = Blobs.createBlob("This is the content of a new file.");
+        blob.setFilename("New file.odt");
+        DocumentBackedFileItem newFile;
+        newFile = clientSession.newRequest(NuxeoDriveCreateFile.ID)
+                               .set("parentId", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
+                               .setInput(blob)
+                               .executeReturning(DocumentBackedFileItem.class);
         assertNotNull(newFile);
 
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
@@ -512,8 +474,7 @@ public class TestFileSystemItemOperations {
         DocumentModel newFileDoc = session.getDocument(new PathRef("/folder1/subFolder1/New file.odt"));
         assertEquals("File", newFileDoc.getType());
         assertEquals("New file.odt", newFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob newFileBlob = (org.nuxeo.ecm.core.api.Blob) newFileDoc.getPropertyValue(
-                FILE_CONTENT);
+        Blob newFileBlob = (Blob) newFileDoc.getPropertyValue(FILE_CONTENT);
         assertNotNull(newFileBlob);
         assertEquals("New file.odt", newFileBlob.getFilename());
         assertEquals("This is the content of a new file.", newFileBlob.getString());
@@ -535,16 +496,12 @@ public class TestFileSystemItemOperations {
     @Test
     public void testUpdateFile() throws IOException {
 
-        StringBlob blob = new StringBlob("This is the updated content of file 1.");
-        blob.setFileName("Updated file 1.odt");
-        Blob updatedFileJSON = (Blob) clientSession.newRequest(NuxeoDriveUpdateFile.ID)
-                                                   .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                                   .setInput(blob)
-                                                   .execute();
-        assertNotNull(updatedFileJSON);
-
-        DocumentBackedFileItem updatedFile = mapper.readValue(updatedFileJSON.getStream(),
-                DocumentBackedFileItem.class);
+        Blob blob = Blobs.createBlob("This is the updated content of file 1.");
+        blob.setFilename("Updated file 1.odt");
+        DocumentBackedFileItem updatedFile = clientSession.newRequest(NuxeoDriveUpdateFile.ID)
+                                                          .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                                          .setInput(blob)
+                                                          .executeReturning(DocumentBackedFileItem.class);
         assertNotNull(updatedFile);
 
         // Need to flush VCS cache to be aware of changes in the session used by the file system item
@@ -553,8 +510,7 @@ public class TestFileSystemItemOperations {
         DocumentModel updatedFileDoc = session.getDocument(new IdRef(file1.getId()));
         assertEquals("File", updatedFileDoc.getType());
         assertEquals(FILE_1, updatedFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob updatedFileBlob = (org.nuxeo.ecm.core.api.Blob) updatedFileDoc.getPropertyValue(
-                FILE_CONTENT);
+        Blob updatedFileBlob = (Blob) updatedFileDoc.getPropertyValue(FILE_CONTENT);
         assertNotNull(updatedFileBlob);
         assertEquals("Updated file 1.odt", updatedFileBlob.getFilename());
         assertEquals("This is the updated content of file 1.", updatedFileBlob.getString());
@@ -606,17 +562,13 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // Delete top level folder: should be unsupported
         // ------------------------------------------------------
-        try {
-            clientSession.newRequest(NuxeoDriveDelete.ID)
-                         .set("id",
-                                 fileSystemItemAdapterService.getTopLevelFolderItemFactory()
-                                                             .getTopLevelFolderItem(session.getPrincipal())
-                                                             .getId())
-                         .execute();
-            fail("Top level folder item deletion should be unsupported.");
-        } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.Delete", e.getMessage());
-        }
+        String error = clientSession.newRequest(NuxeoDriveDelete.ID)
+                                    .set("id",
+                                            fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                                        .getTopLevelFolderItem(session.getPrincipal())
+                                                                        .getId())
+                                    .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation: NuxeoDrive.Delete", error);
     }
 
     @Test
@@ -625,14 +577,11 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // File
         // ------------------------------------------------------
-        Blob renamedFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveRename.ID)
-                                                     .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                                     .set("name", "Renamed file 1.odt")
-                                                     .execute();
-        assertNotNull(renamedFSItemJSON);
-
-        DocumentBackedFileItem renamedFileItem = mapper.readValue(renamedFSItemJSON.getStream(),
-                DocumentBackedFileItem.class);
+        DocumentBackedFileItem renamedFileItem;
+        renamedFileItem = clientSession.newRequest(NuxeoDriveRename.ID)
+                                       .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                       .set("name", "Renamed file 1.odt")
+                                       .executeReturning(DocumentBackedFileItem.class);
         assertNotNull(renamedFileItem);
         assertEquals("Renamed file 1.odt", renamedFileItem.getName());
 
@@ -641,8 +590,7 @@ public class TestFileSystemItemOperations {
 
         DocumentModel renamedFileDoc = session.getDocument(new IdRef(file1.getId()));
         assertEquals(FILE_1, renamedFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob renamedFileBlob = (org.nuxeo.ecm.core.api.Blob) renamedFileDoc.getPropertyValue(
-                FILE_CONTENT);
+        Blob renamedFileBlob = (Blob) renamedFileDoc.getPropertyValue(FILE_CONTENT);
         assertNotNull(renamedFileBlob);
         assertEquals("Renamed file 1.odt", renamedFileBlob.getFilename());
         assertEquals("nxfile/test/" + file1.getId() + "/blobholder:0/Renamed%20file%201.odt",
@@ -653,14 +601,11 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // Folder
         // ------------------------------------------------------
-        renamedFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveRename.ID)
-                                                .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
-                                                .set("name", "Renamed sub-folder 1")
-                                                .execute();
-        assertNotNull(renamedFSItemJSON);
-
-        DocumentBackedFolderItem renamedFolderItem = mapper.readValue(renamedFSItemJSON.getStream(),
-                DocumentBackedFolderItem.class);
+        DocumentBackedFolderItem renamedFolderItem;
+        renamedFolderItem = clientSession.newRequest(NuxeoDriveRename.ID)
+                                         .set("id", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + subFolder1.getId())
+                                         .set("name", "Renamed sub-folder 1")
+                                         .executeReturning(DocumentBackedFolderItem.class);
         assertNotNull(renamedFolderItem);
         assertEquals("Renamed sub-folder 1", renamedFolderItem.getName());
 
@@ -674,14 +619,11 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // Sync root
         // ------------------------------------------------------
-        renamedFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveRename.ID)
-                                                .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                                .set("name", "New name for sync root")
-                                                .execute();
-        assertNotNull(renamedFSItemJSON);
-
-        DefaultSyncRootFolderItem renamedSyncRootItem = mapper.readValue(renamedFSItemJSON.getStream(),
-                DefaultSyncRootFolderItem.class);
+        DefaultSyncRootFolderItem renamedSyncRootItem;
+        renamedSyncRootItem = clientSession.newRequest(NuxeoDriveRename.ID)
+                                           .set("id", SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                           .set("name", "New name for sync root")
+                                           .executeReturning(DefaultSyncRootFolderItem.class);
         assertNotNull(renamedSyncRootItem);
         assertEquals("New name for sync root", renamedSyncRootItem.getName());
 
@@ -695,18 +637,14 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // Top level folder
         // ------------------------------------------------------
-        try {
-            clientSession.newRequest(NuxeoDriveRename.ID)
-                         .set("id",
-                                 fileSystemItemAdapterService.getTopLevelFolderItemFactory()
-                                                             .getTopLevelFolderItem(session.getPrincipal())
-                                                             .getId())
-                         .set("name", "New name for top level folder")
-                         .execute();
-            fail("Top level folder renaming shoud be unsupported.");
-        } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.Rename", e.getMessage());
-        }
+        String error = clientSession.newRequest(NuxeoDriveRename.ID)
+                                    .set("id",
+                                            fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                                        .getTopLevelFolderItem(session.getPrincipal())
+                                                                        .getId())
+                                    .set("name", "New name for top level folder")
+                                    .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation: NuxeoDrive.Rename", error);
     }
 
     /**
@@ -719,42 +657,32 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // File to File => false
         // ------------------------------------------------------
-        Blob canMoveFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveCanMove.ID)
-                                                     .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                                     .set(DEST_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId())
-                                                     .execute();
-        assertNotNull(canMoveFSItemJSON);
-
-        String canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(), String.class);
-        assertEquals(String.valueOf(Boolean.FALSE), canMoveFSItem);
+        Boolean canMoveFSItem = clientSession.newRequest(NuxeoDriveCanMove.ID)
+                                             .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                             .set(DEST_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId())
+                                             .executeReturning(Boolean.class);
+        assertFalse(canMoveFSItem);
 
         // ------------------------------------------------------
         // Sync root => false
         // ------------------------------------------------------
-        canMoveFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveCanMove.ID)
-                                                .set(SRC_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                                                .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                                .execute();
-        assertNotNull(canMoveFSItemJSON);
-
-        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(), String.class);
-        assertEquals(String.valueOf(Boolean.FALSE), canMoveFSItem);
+        canMoveFSItem = clientSession.newRequest(NuxeoDriveCanMove.ID)
+                                     .set(SRC_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                                     .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                     .executeReturning(Boolean.class);
+        assertFalse(canMoveFSItem);
 
         // ------------------------------------------------------
         // Top level folder => false
         // ------------------------------------------------------
-        canMoveFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveCanMove.ID)
-                                                .set(SRC_ID,
-                                                        fileSystemItemAdapterService.getTopLevelFolderItemFactory()
-                                                                                    .getTopLevelFolderItem(
-                                                                                            session.getPrincipal())
-                                                                                    .getId())
-                                                .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                                .execute();
-        assertNotNull(canMoveFSItemJSON);
-
-        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(), String.class);
-        assertEquals(String.valueOf(Boolean.FALSE), canMoveFSItem);
+        canMoveFSItem = clientSession.newRequest(NuxeoDriveCanMove.ID)
+                                     .set(SRC_ID,
+                                             fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                                         .getTopLevelFolderItem(session.getPrincipal())
+                                                                         .getId())
+                                     .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                     .executeReturning(Boolean.class);
+        assertFalse(canMoveFSItem);
 
         // --------------------------------------------------------
         // No REMOVE permission on the source backing doc => false
@@ -769,28 +697,22 @@ public class TestFileSystemItemOperations {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        Session joeSession = automationClient.getSession("joe", "joe");
-        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID)
-                                             .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                             .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                             .execute();
-        assertNotNull(canMoveFSItemJSON);
-
-        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(), String.class);
-        assertEquals("false", canMoveFSItem);
+        HttpAutomationSession joeSession = automationClient.getSession("joe", "joe");
+        canMoveFSItem = joeSession.newRequest(NuxeoDriveCanMove.ID)
+                                  .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                  .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                  .executeReturning(Boolean.class);
+        assertFalse(canMoveFSItem);
 
         // -------------------------------------------------------------------
         // No ADD_CHILDREN permission on the destination backing doc => false
         // -------------------------------------------------------------------
         setPermission(syncRoot1, "joe", SecurityConstants.WRITE, true);
-        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID)
-                                             .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                             .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                             .execute();
-        assertNotNull(canMoveFSItemJSON);
-
-        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(), String.class);
-        assertEquals("false", canMoveFSItem);
+        canMoveFSItem = joeSession.newRequest(NuxeoDriveCanMove.ID)
+                                  .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                  .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                  .executeReturning(Boolean.class);
+        assertFalse(canMoveFSItem);
 
         // ----------------------------------------------------------------------
         // REMOVE permission on the source backing doc + REMOVE_CHILDREN
@@ -804,30 +726,24 @@ public class TestFileSystemItemOperations {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID)
-                                             .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                             .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                             .execute();
-        assertNotNull(canMoveFSItemJSON);
-
-        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(), String.class);
-
+        canMoveFSItem = joeSession.newRequest(NuxeoDriveCanMove.ID)
+                                  .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                  .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                  .executeReturning(Boolean.class);
         // syncRoot2 is not registered as a sync root for joe
-        assertEquals("false", canMoveFSItem);
+        assertFalse(canMoveFSItem);
 
         nuxeoDriveManager.registerSynchronizationRoot(joe, syncRoot2, session);
 
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        canMoveFSItemJSON = (Blob) joeSession.newRequest(NuxeoDriveCanMove.ID)
-                                             .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                             .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                             .execute();
-        assertNotNull(canMoveFSItemJSON);
-        canMoveFSItem = mapper.readValue(canMoveFSItemJSON.getStream(), String.class);
+        canMoveFSItem = joeSession.newRequest(NuxeoDriveCanMove.ID)
+                                  .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                  .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                  .executeReturning(Boolean.class);
         // syncRoot2 is now a registered root for joe
-        assertEquals("true", canMoveFSItem);
+        assertTrue(canMoveFSItem);
 
         // ----------------------------------------------------------------------
         // Reset permissions
@@ -844,60 +760,45 @@ public class TestFileSystemItemOperations {
         // ------------------------------------------------------
         // File to File => fail
         // ------------------------------------------------------
-        try {
-            clientSession.newRequest(NuxeoDriveMove.ID)
-                         .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                         .set(DEST_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId())
-                         .execute();
-            fail("Move to a non folder item should fail.");
-        } catch (Exception e) {
-            String expectedMessage = String.format(
-                    "Failed to invoke operation: NuxeoDrive.Move, Failed to invoke operation NuxeoDrive.Move, "
-                            + "Cannot move a file system item to file system item with id %s because it is not a folder.",
-                    DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId());
-            assertEquals(expectedMessage, e.getMessage());
-        }
+        String error = clientSession.newRequest(NuxeoDriveMove.ID)
+                                    .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                    .set(DEST_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId())
+                                    .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        String expectedMessage = String.format(
+                "Failed to invoke operation: NuxeoDrive.Move, Failed to invoke operation NuxeoDrive.Move, "
+                        + "Cannot move a file system item to file system item with id %s because it is not a folder.",
+                DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file2.getId());
+        assertEquals(expectedMessage, error);
 
         // ------------------------------------------------------
         // Sync root => fail
         // ------------------------------------------------------
-        try {
-            clientSession.newRequest(NuxeoDriveMove.ID)
-                         .set(SRC_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
-                         .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                         .execute();
-            fail("Should not be able to move a synchronization root folder item.");
-        } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.Move", e.getMessage());
-        }
+        error = clientSession.newRequest(NuxeoDriveMove.ID)
+                             .set(SRC_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot1.getId())
+                             .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                             .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation: NuxeoDrive.Move", error);
 
         // ------------------------------------------------------
         // Top level folder => fail
         // ------------------------------------------------------
-        try {
-            clientSession.newRequest(NuxeoDriveMove.ID)
-                         .set(SRC_ID,
-                                 fileSystemItemAdapterService.getTopLevelFolderItemFactory()
-                                                             .getTopLevelFolderItem(session.getPrincipal())
-                                                             .getId())
-                         .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                         .execute();
-            fail("Should not be able to move the top level folder item.");
-        } catch (Exception e) {
-            assertEquals("Failed to invoke operation: NuxeoDrive.Move", e.getMessage());
-        }
+        error = clientSession.newRequest(NuxeoDriveMove.ID)
+                             .set(SRC_ID,
+                                     fileSystemItemAdapterService.getTopLevelFolderItemFactory()
+                                                                 .getTopLevelFolderItem(session.getPrincipal())
+                                                                 .getId())
+                             .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                             .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertEquals("Failed to invoke operation: NuxeoDrive.Move", error);
 
         // ------------------------------------------------------
         // File to Folder => succeed
         // ------------------------------------------------------
-        Blob movedFSItemJSON = (Blob) clientSession.newRequest(NuxeoDriveMove.ID)
-                                                   .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
-                                                   .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
-                                                   .execute();
-        assertNotNull(movedFSItemJSON);
-
-        DocumentBackedFileItem movedFileItem = mapper.readValue(movedFSItemJSON.getStream(),
-                DocumentBackedFileItem.class);
+        DocumentBackedFileItem movedFileItem;
+        movedFileItem = clientSession.newRequest(NuxeoDriveMove.ID)
+                                     .set(SRC_ID, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file1.getId())
+                                     .set(DEST_ID, SYNC_ROOT_FOLDER_ITEM_ID_PREFIX + syncRoot2.getId())
+                                     .executeReturning(DocumentBackedFileItem.class);
         assertNotNull(movedFileItem);
         assertEquals("First file.odt", movedFileItem.getName());
 
@@ -907,8 +808,7 @@ public class TestFileSystemItemOperations {
         DocumentModel movedFileDoc = session.getDocument(new IdRef(file1.getId()));
         assertEquals("/folder2/file1", movedFileDoc.getPathAsString());
         assertEquals(FILE_1, movedFileDoc.getTitle());
-        org.nuxeo.ecm.core.api.Blob movedFileBlob = (org.nuxeo.ecm.core.api.Blob) movedFileDoc.getPropertyValue(
-                FILE_CONTENT);
+        Blob movedFileBlob = (Blob) movedFileDoc.getPropertyValue(FILE_CONTENT);
         assertNotNull(movedFileBlob);
         assertEquals("First file.odt", movedFileBlob.getFilename());
         assertEquals("MD5", movedFileItem.getDigestAlgorithm());
@@ -922,32 +822,26 @@ public class TestFileSystemItemOperations {
     @Deprecated
     public void testConflictedNames() throws IOException {
         // Try a canonical example with the Administrator user
-        Blob jsonOut = (Blob) clientSession.newRequest(NuxeoDriveGenerateConflictedItemName.ID)
-                                           .set("name", "My file (with accents \u00e9).doc")
-                                           .execute();
-        assertNotNull(jsonOut);
-        String newName = mapper.readValue(jsonOut.getStream(), String.class);
+        String newName = clientSession.newRequest(NuxeoDriveGenerateConflictedItemName.ID)
+                                      .set("name", "My file (with accents \u00e9).doc")
+                                      .executeReturning(String.class);
         assertTrue(newName.startsWith("My file (with accents \u00e9) (Administrator - "));
         assertTrue(newName.endsWith(").doc"));
 
         // Try with a filename with filename extension
-        jsonOut = (Blob) clientSession.newRequest(NuxeoDriveGenerateConflictedItemName.ID)
-                                      .set("name", "My file")
-                                      .execute();
-        assertNotNull(jsonOut);
-        newName = mapper.readValue(jsonOut.getStream(), String.class);
+        newName = clientSession.newRequest(NuxeoDriveGenerateConflictedItemName.ID)
+                               .set("name", "My file")
+                               .executeReturning(String.class);
         assertTrue(newName.startsWith("My file (Administrator - "));
         assertTrue(newName.endsWith(")"));
 
         // Test with a user that has a firstname and a lastname
         // Joe Strummer likes conflicting files
         createUser("joe", "joe", "Joe", "Strummer");
-        Session joeSession = automationClient.getSession("joe", "joe");
-        jsonOut = (Blob) joeSession.newRequest(NuxeoDriveGenerateConflictedItemName.ID)
-                                   .set("name", "The Clashing File.xls")
-                                   .execute();
-        assertNotNull(jsonOut);
-        newName = mapper.readValue(jsonOut.getStream(), String.class);
+        HttpAutomationSession joeSession = automationClient.getSession("joe", "joe");
+        newName = joeSession.newRequest(NuxeoDriveGenerateConflictedItemName.ID)
+                            .set("name", "The Clashing File.xls")
+                            .executeReturning(String.class);
         assertTrue(newName.startsWith("The Clashing File (Joe Strummer - "));
         assertTrue(newName.endsWith(").xls"));
 
@@ -1026,8 +920,7 @@ public class TestFileSystemItemOperations {
                     assertEquals("nxfile/test/" + file3.getId() + "/blobholder:0/Third%20file.odt",
                             fsItem.getDownloadURL());
                     assertEquals("MD5", fsItem.getDigestAlgorithm());
-                    assertEquals(((org.nuxeo.ecm.core.api.Blob) file3.getPropertyValue(FILE_CONTENT)).getDigest(),
-                            fsItem.getDigest());
+                    assertEquals(((Blob) file3.getPropertyValue(FILE_CONTENT)).getDigest(), fsItem.getDigest());
                     isChild1Found = true;
                     childrenCount++;
                 }
@@ -1046,8 +939,7 @@ public class TestFileSystemItemOperations {
                     assertEquals("nxfile/test/" + file4.getId() + "/blobholder:0/Fourth%20file.odt",
                             fsItem.getDownloadURL());
                     assertEquals("MD5", fsItem.getDigestAlgorithm());
-                    assertEquals(((org.nuxeo.ecm.core.api.Blob) file4.getPropertyValue(FILE_CONTENT)).getDigest(),
-                            fsItem.getDigest());
+                    assertEquals(((Blob) file4.getPropertyValue(FILE_CONTENT)).getDigest(), fsItem.getDigest());
                 }
             } else {
                 fail(String.format("FileSystemItem %s doesn't match any expected.", fsItem.getId()));

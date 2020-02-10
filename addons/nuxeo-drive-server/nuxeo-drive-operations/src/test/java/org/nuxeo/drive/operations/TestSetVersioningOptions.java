@@ -32,7 +32,7 @@ import org.nuxeo.drive.operations.test.NuxeoDriveSetVersioningOptions;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
-import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -52,7 +52,7 @@ public class TestSetVersioningOptions {
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
-    protected Session clientSession;
+    protected HttpAutomationSession clientSession;
 
     protected VersioningFileSystemItemFactory defaultFileSystemItemFactory;
 

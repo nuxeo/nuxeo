@@ -18,6 +18,7 @@
  */
 package org.nuxeo.drive.operations;
 
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -32,7 +33,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,9 +40,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetupIntegrationTests;
 import org.nuxeo.drive.operations.test.NuxeoDriveTearDownIntegrationTests;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.test.HttpAutomationClient;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -55,8 +54,6 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the Nuxeo Drive integration tests operations.
@@ -80,23 +77,18 @@ public class TestIntegrationTestOperations {
     protected HttpAutomationClient automationClient;
 
     @Inject
-    protected Session clientSession;
+    protected HttpAutomationSession clientSession;
 
     protected String testWorkspacePath;
 
     protected String userWorkspaceParentPath;
 
-    protected ObjectMapper mapper;
-
     @Before
     public void init() {
-
         testWorkspacePath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session) + "/"
                 + TEST_WORKSPACE_PARENT_NAME + "/" + TEST_WORKSPACE_NAME;
         userWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session) + "/"
                 + USER_WORKSPACE_PARENT_NAME;
-
-        mapper = new ObjectMapper();
     }
 
     @Test
@@ -105,17 +97,15 @@ public class TestIntegrationTestOperations {
         // ---------------------------------------------------------
         // Setup the integration tests environment as Administrator
         // ---------------------------------------------------------
-        Blob testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
-                                                           .set("userNames", "joe,jack")
-                                                           .set("permission", "ReadWrite")
-                                                           .execute();
-        assertNotNull(testUserCredentialsBlob);
+        String testUserCredentials = clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
+                                                  .set("userNames", "joe,jack")
+                                                  .set("permission", "ReadWrite")
+                                                  .executeRaw();
         // Invalidate VCS cache
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
         // Check test users
-        String testUserCredentials = IOUtils.toString(testUserCredentialsBlob.getStream(), "UTF-8");
         assertNotNull(testUserCredentials);
         String[] testUserCrendentialsArray = StringUtils.split(testUserCredentials, ",");
         assertEquals(2, testUserCrendentialsArray.length);
@@ -151,12 +141,11 @@ public class TestIntegrationTestOperations {
         // Setup the integration tests environment with other user names without
         // having teared it down previously => should start by cleaning it up
         // ----------------------------------------------------------------------
-        testUserCredentialsBlob = (Blob) clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
-                                                      .set("userNames", "sarah")
-                                                      .set("useMembersGroup", true)
-                                                      .set("permission", "ReadWrite")
-                                                      .execute();
-        assertNotNull(testUserCredentialsBlob);
+        testUserCredentials = clientSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
+                                           .set("userNames", "sarah")
+                                           .set("useMembersGroup", true)
+                                           .set("permission", "ReadWrite")
+                                           .executeRaw();
 
         // Check cleanup
         assertNull(userManager.getPrincipal("drivejoe"));
@@ -178,7 +167,6 @@ public class TestIntegrationTestOperations {
         }
 
         // Check test users
-        testUserCredentials = IOUtils.toString(testUserCredentialsBlob.getStream(), "UTF-8");
         assertNotNull(testUserCredentials);
         testUserCrendentialsArray = StringUtils.split(testUserCredentials, ",");
         assertEquals(1, testUserCrendentialsArray.length);
@@ -206,27 +194,17 @@ public class TestIntegrationTestOperations {
         // ----------------------------------------------------------------------
         String sarahCredentials = testUserCrendentialsArray[0];
         String sarahPassword = sarahCredentials.substring(sarahCredentials.indexOf(':') + 1);
-        Session unauthorizedSession = automationClient.getSession("drivesarah", sarahPassword);
-        try {
-            unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
-                               .set("userNames", "john,bob")
-                               .set("permission", "ReadWrite")
-                               .execute();
-            fail("NuxeoDrive.SetupIntegrationTests operation should not be callable by a non administrator.");
-        } catch (Exception e) {
-            // Expected
-        }
-
+        HttpAutomationSession unauthorizedSession = automationClient.getSession("drivesarah", sarahPassword);
+        unauthorizedSession.newRequest(NuxeoDriveSetupIntegrationTests.ID)
+                           .set("userNames", "john,bob")
+                           .set("permission", "ReadWrite")
+                           .executeReturningExceptionEntity(SC_NOT_FOUND);
         // ----------------------------------------------------------------------
         // Try to tear down the integration tests environment as an unauthorized
         // user => should fail
         // ----------------------------------------------------------------------
-        try {
-            unauthorizedSession.newRequest(NuxeoDriveTearDownIntegrationTests.ID).execute();
-            fail("NuxeoDrive.TearDownIntegrationTests operation should not be callable by a non administrator.");
-        } catch (Exception e) {
-            // Expected
-        }
+        unauthorizedSession.newRequest(NuxeoDriveTearDownIntegrationTests.ID)
+                           .executeReturningExceptionEntity(SC_NOT_FOUND);
 
         // ----------------------------------------------------------------------
         // Tear down the integration tests environment as Administrator

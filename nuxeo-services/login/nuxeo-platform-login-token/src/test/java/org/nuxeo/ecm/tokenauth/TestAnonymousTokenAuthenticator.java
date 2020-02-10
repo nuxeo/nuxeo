@@ -18,31 +18,25 @@
  */
 package org.nuxeo.ecm.tokenauth;
 
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+
+import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.client.RemoteException;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.automation.test.HttpAutomationClient;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.HotDeployer;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
  * Tests the {@link TokenAuthenticator} in the case of an anonymous user.
@@ -53,14 +47,18 @@ import org.nuxeo.runtime.test.runner.HotDeployer;
 @RunWith(FeaturesRunner.class)
 @Features({ TokenAuthenticationServiceFeature.class, EmbeddedAutomationServerFeature.class })
 @Deploy("org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-anonymous-contrib.xml")
-@RepositoryConfig(init = TokenAuthenticationRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestAnonymousTokenAuthenticator {
+
+    protected static final String TOKEN_HEADER = "X-Authentication-Token";
 
     @Inject
     protected HotDeployer deployer;
 
     @Inject
-    protected CoreSession session;
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected TokenAuthenticationService tokenAuthenticationService;
 
     @Inject
     protected HttpAutomationClient automationClient;
@@ -68,36 +66,20 @@ public class TestAnonymousTokenAuthenticator {
     @Test
     public void testAuthenticatorAsAnonymous() throws Exception {
 
-        // Mock token authentication callback and acquire token for anonymous user directly from token authentication
-        // service
-        TokenAuthenticationCallback cb = new TokenAuthenticationCallback("Guest", "myFavoriteApp", "Ubuntu box 64 bits",
-                "This is my personal Linux box", "rw");
-        String token = cb.getRemoteToken(cb.getTokenParams());
-        assertNotNull(token);
+        // token for anonymous
+        String token = tokenAuthenticationService.acquireToken("Guest", "myApp", "myDevice", "My Device", "rw");
+        transactionalFeature.nextTransaction();
 
         // Check automation call with anonymous user not allowed
-        try {
-            automationClient.getSession(token);
-            fail("Getting an Automation client session with a token as anonymous user should throw a RemoteException with HTTP 401 status code");
-        } catch (RemoteException e) {
-            assertEquals(HttpStatus.SC_UNAUTHORIZED, e.getStatus());
-        }
+        HttpAutomationSession session = automationClient.getSession();
+        session.login(Map.of(TOKEN_HEADER, token), SC_UNAUTHORIZED);
 
         // Check automation call with anonymous user allowed
         deployer.deploy(
                 "org.nuxeo.ecm.platform.login.token.test:OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
 
-        Session clientSession = automationClient.getSession(token);
-        assertEquals("Guest", clientSession.getLogin().getUsername());
+        assertEquals("Guest", session.login(Map.of(TOKEN_HEADER, token)));
 
-    }
-
-    protected void setPermission(DocumentModel doc, ACE ace) {
-        ACP acp = session.getACP(doc.getRef());
-        ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        localACL.add(ace);
-        session.setACP(doc.getRef(), acp, true);
-        session.save();
     }
 
 }

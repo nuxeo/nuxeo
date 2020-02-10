@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.operations.test.NuxeoDriveSetActiveFactories;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.ecm.automation.client.Session;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.runtime.test.runner.ConsoleLogLevelThreshold;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -54,7 +54,7 @@ public class TestActivateFactories {
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
 
     @Inject
-    protected Session clientSession;
+    protected HttpAutomationSession clientSession;
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
@@ -68,36 +68,42 @@ public class TestActivateFactories {
         checkDefaultProfile();
 
         // Check unknown profile
-        Object result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(PROFILE, "unknown").execute();
-        assertFalse((Boolean) result);
+        boolean result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID) //
+                                      .set(PROFILE, "unknown")
+                                      .executeReturningBooleanEntity();
+        assertFalse(result);
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         assertEquals(1, caughtEvents.size());
         assertEquals("No active file system item factory contribution for profile 'unknown'.", caughtEvents.get(0));
 
         // Activate userworkspace factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(PROFILE, "userworkspace").execute();
-        assertTrue((Boolean) result);
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID) //
+                              .set(PROFILE, "userworkspace")
+                              .executeReturningBooleanEntity();
+        assertTrue(result);
         checkUserworkspaceProfile();
 
         // Deactivate userworkspace factories
         result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID)
                               .set(PROFILE, "userworkspace")
                               .set("enable", false)
-                              .execute();
-        assertTrue((Boolean) result);
+                              .executeReturningBooleanEntity();
+        assertTrue(result);
         checkDefaultProfile();
 
         // Activate permission factories
-        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID).set(PROFILE, "permission").execute();
-        assertTrue((Boolean) result);
+        result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID) //
+                              .set(PROFILE, "permission")
+                              .executeReturningBooleanEntity();
+        assertTrue(result);
         checkPermissionProfile();
 
         // Deactivate permission factories
         result = clientSession.newRequest(NuxeoDriveSetActiveFactories.ID)
                               .set(PROFILE, "permission")
                               .set("enable", false)
-                              .execute();
-        assertTrue((Boolean) result);
+                              .executeReturningBooleanEntity();
+        assertTrue(result);
         checkDefaultProfile();
 
     }

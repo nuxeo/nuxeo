@@ -18,23 +18,24 @@
  */
 package org.nuxeo.ecm.multi.tenant;
 
+import static org.apache.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertEquals;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.rest.api.RestClient;
-import org.nuxeo.ecm.automation.client.rest.api.RestResponse;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
+import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.ServletContainerFeature;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 5.8
@@ -48,22 +49,17 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml")
-public class TestRestAPIWithMultiTenant {
-
-    @Inject
-    protected ServletContainerFeature servletContainerFeature;
+public class TestRestAPIWithMultiTenant extends BaseTest {
 
     @Test
-    public void restAPICanAccessTenantSpecifyingDomainPart() throws Exception {
-        int port = servletContainerFeature.getPort();
-        HttpAutomationClient client = new HttpAutomationClient("http://localhost:" + port + "/automation/");
-        client.getSession("user1", "user1");
-        RestClient rclient = client.getRestClient();
-
-        RestResponse response = rclient.newRequest("path/domain1/").execute();
-        assertEquals(Status.OK.getStatusCode(), response.getStatus());
-        assertEquals("/domain1", response.asMap().get("path"));
-
+    public void restAPICanAccessTenantSpecifyingDomainPart() throws IOException {
+        service = getServiceFor("user1", "user1");
+        try (CloseableClientResponse response = getResponse(RequestType.GET, "path/domain1/");
+                InputStream stream = response.getEntityInputStream()) {
+            assertEquals(SC_OK, response.getStatus());
+            JsonNode node = mapper.readTree(stream);
+            assertEquals("/domain1", node.get("path").asText());
+        }
     }
 
 }
