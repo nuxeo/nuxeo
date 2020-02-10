@@ -36,12 +36,13 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.AutomationServerFeature;
 import org.nuxeo.ecm.automation.test.repository.AutomationRepositoryInit;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -51,7 +52,7 @@ import org.nuxeo.runtime.test.runner.ServletContainerFeature;
  * @since 7.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ EmbeddedAutomationServerFeature.class })
+@Features({ WebEngineFeature.class, AutomationServerFeature.class })
 @Deploy("org.nuxeo.ecm.platform.url.api")
 @Deploy("org.nuxeo.ecm.platform.url.core")
 @Deploy("org.nuxeo.ecm.platform.types.api")

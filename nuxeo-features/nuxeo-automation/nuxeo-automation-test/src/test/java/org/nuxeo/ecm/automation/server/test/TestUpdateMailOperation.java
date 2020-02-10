@@ -22,17 +22,17 @@ package org.nuxeo.ecm.automation.server.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.nuxeo.ecm.automation.server.test.operations.UpdateMailOperation.TEST_EMAIL;
-import java.util.Collections;
+
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.server.test.operations.UpdateMailOperation;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
@@ -41,7 +41,8 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 10.10
@@ -55,19 +56,14 @@ public class TestUpdateMailOperation {
     protected CoreSession coreSession;
 
     @Inject
-    protected Session session;
-
-    @Inject
-    protected HttpAutomationClient client;
+    protected HttpAutomationSession session;
 
     @Test
-    @SuppressWarnings("unchecked")
-    public void testOperation() throws Exception {
+    public void testOperation() throws IOException {
 
-        ObjectNode updatedUsers = (ObjectNode) session.newRequest(UpdateMailOperation.ID)
-                                                      .set("users", Collections.singletonList(
-                                                              coreSession.getPrincipal().getName()))
-                                                      .execute();
+        JsonNode updatedUsers = session.newRequest(UpdateMailOperation.ID)
+                                       .set("users", List.of(coreSession.getPrincipal().getName()))
+                                       .execute();
 
         assertNotNull(updatedUsers);
 

@@ -18,7 +18,8 @@
  */
 package org.nuxeo.ecm.restapi.test;
 
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.AutomationServerFeature;
+import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -26,7 +27,7 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 /**
  * @since 5.7.2
  */
-@Features(EmbeddedAutomationServerFeature.class)
+@Features({ WebEngineFeature.class, AutomationServerFeature.class })
 @Deploy("org.nuxeo.ecm.automation.test")
 @Deploy("org.nuxeo.ecm.platform.url.api")
 @Deploy("org.nuxeo.ecm.platform.url.core")

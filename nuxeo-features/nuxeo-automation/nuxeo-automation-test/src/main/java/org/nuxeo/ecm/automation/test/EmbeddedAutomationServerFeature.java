@@ -18,14 +18,13 @@
  */
 package org.nuxeo.ecm.automation.test;
 
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
+
 import java.io.IOException;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.adapters.AsyncSession;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.core.test.DetectThreadDeadlocksFeature;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -45,14 +44,12 @@ import com.google.inject.Scopes;
 @Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class, AutomationServerFeature.class })
 public class EmbeddedAutomationServerFeature implements RunnerFeature {
 
-    protected static final int HTTP_CONNECTION_TIMEOUT = 60000; // 60 seconds
-
     @Inject
     protected ServletContainerFeature servletContainerFeature;
 
     protected HttpAutomationClient client;
 
-    protected Session session;
+    protected HttpAutomationSession session;
 
     @Override
     public void afterRun(FeaturesRunner runner) {
@@ -71,41 +68,25 @@ public class EmbeddedAutomationServerFeature implements RunnerFeature {
             }
             return client;
         }).in(Scopes.SINGLETON);
-        binder.bind(Session.class).toProvider(() -> {
+        binder.bind(HttpAutomationSession.class).toProvider(() -> {
             if (client == null) {
                 client = getHttpAutomationClient();
             }
             if (session == null) {
                 try {
-                    session = client.getSession("Administrator", "Administrator");
+                    session = client.getSession(ADMINISTRATOR, ADMINISTRATOR);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
             return session;
         }).in(Scopes.SINGLETON);
-        binder.bind(AsyncSession.class).toProvider(() -> {
-            if (client == null) {
-                client = getHttpAutomationClient();
-            }
-            if (session == null) {
-                try {
-                    session = client.getSession("Administrator", "Administrator");
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return session.getAdapter(AsyncSession.class);
-        }).in(Scopes.SINGLETON);
     }
 
     protected HttpAutomationClient getHttpAutomationClient() {
         // port must be supplied dynamically because it may change after hot-reload of services
         Supplier<String> urlSupplier = () -> "http://localhost:" + servletContainerFeature.getPort() + "/automation/";
-        HttpAutomationClient client = new HttpAutomationClient(urlSupplier, HTTP_CONNECTION_TIMEOUT);
-        // Deactivate global operation registry cache to allow tests using this
-        // feature in a test suite to deploy different set of operations
-        client.setSharedRegistryExpirationDelay(0);
+        HttpAutomationClient client = new HttpAutomationClient(urlSupplier);
         return client;
     }
 

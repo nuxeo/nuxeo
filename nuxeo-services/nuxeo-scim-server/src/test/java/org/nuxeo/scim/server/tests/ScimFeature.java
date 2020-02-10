@@ -20,11 +20,11 @@
 
 package org.nuxeo.scim.server.tests;
 
-import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 @Deploy("org.nuxeo.usermapper")
 @Deploy("org.nuxeo.scim.server")
-public class ScimFeature extends EmbeddedAutomationServerFeature {
+public class ScimFeature extends WebEngineFeature {
 
 }

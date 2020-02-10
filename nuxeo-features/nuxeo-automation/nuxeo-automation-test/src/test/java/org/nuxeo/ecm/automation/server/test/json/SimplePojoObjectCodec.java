@@ -29,13 +29,15 @@ import com.fasterxml.jackson.core.JsonParser;
 
 public class SimplePojoObjectCodec extends ObjectCodec<SimplePojo> {
 
+    public static final String TYPE = "simplePojo";
+
     public SimplePojoObjectCodec() {
         super(SimplePojo.class);
     }
 
     @Override
     public String getType() {
-        return "simplePojo";
+        return TYPE;
     }
 
     @Override

@@ -19,7 +19,6 @@
 package org.nuxeo.drive.operations;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
@@ -30,13 +29,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.drive.NuxeoDriveConstants;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.model.Blob;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tests the {@link NuxeoDriveGetClientUpdateInfo} operation.
@@ -50,14 +46,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TestGetClientUpdateInfo {
 
     @Inject
-    protected Session clientSession;
-
-    protected ObjectMapper mapper;
+    protected HttpAutomationSession clientSession;
 
     @Before
     public void init() {
-        mapper = new ObjectMapper();
-
         // Set Framework properties required for the client update
         Framework.getProperties().put(Environment.DISTRIBUTION_VERSION, "5.9.3");
         Framework.getProperties()
@@ -68,11 +60,8 @@ public class TestGetClientUpdateInfo {
     @Test
     public void testGetClientUpdateInfo() throws IOException {
 
-        Blob clientUpdateInfoJSON = (Blob) clientSession.newRequest(NuxeoDriveGetClientUpdateInfo.ID).execute();
-        assertNotNull(clientUpdateInfoJSON);
-
-        NuxeoDriveClientUpdateInfo clientUpdateInfo = mapper.readValue(clientUpdateInfoJSON.getStream(),
-                NuxeoDriveClientUpdateInfo.class);
+        NuxeoDriveClientUpdateInfo clientUpdateInfo = clientSession.newRequest(NuxeoDriveGetClientUpdateInfo.ID)
+                                                                   .executeReturning(NuxeoDriveClientUpdateInfo.class);
 
         assertEquals("5.9.3", clientUpdateInfo.getServerVersion());
         assertEquals("https://community.nuxeo.com/static/drive-updates/", clientUpdateInfo.getUpdateSiteURL());

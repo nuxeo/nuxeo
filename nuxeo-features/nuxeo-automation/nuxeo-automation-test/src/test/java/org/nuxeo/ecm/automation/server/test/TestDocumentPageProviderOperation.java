@@ -22,18 +22,21 @@ package org.nuxeo.ecm.automation.server.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.automation.client.Session;
-import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
-import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
+import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @since 10.10
@@ -44,23 +47,20 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestDocumentPageProviderOperation {
 
     @Inject
-    protected Session session;
-
-    @Inject
-    protected HttpAutomationClient client;
+    protected HttpAutomationSession session;
 
     @Test
-    public void testDocumentPageProviderOperation() throws Exception {
-        Documents documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
-                                                 .set("providerName", "PageProvider")
-                                                 .execute();
+    public void testDocumentPageProviderOperation() throws IOException {
+        List<JsonNode> documents = session.newRequest(DocumentPageProviderOperation.ID)
+                                          .set("providerName", "PageProvider")
+                                          .executeReturningDocuments();
         assertNotNull(documents);
         assertEquals(2, documents.size());
 
-        documents = (Documents) session.newRequest(DocumentPageProviderOperation.ID)
-                                       .set("providerName", "PageProvider")
-                                       .set("quickFilters", "SectionRoot")
-                                       .execute();
+        documents = session.newRequest(DocumentPageProviderOperation.ID)
+                           .set("providerName", "PageProvider")
+                           .set("quickFilters", "SectionRoot")
+                           .executeReturningDocuments();
         assertNotNull(documents);
         assertEquals(1, documents.size());
     }

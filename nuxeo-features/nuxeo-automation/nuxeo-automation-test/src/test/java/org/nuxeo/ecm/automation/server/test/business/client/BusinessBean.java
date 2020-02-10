@@ -18,13 +18,10 @@
  */
 package org.nuxeo.ecm.automation.server.test.business.client;
 
-import org.nuxeo.ecm.automation.client.annotations.EntityType;
-
 /**
  * Automation client File pojo example - Annotated by EntityType setting the document model adapter simple name to map
  * server side
  */
-@EntityType("BusinessBeanAdapter")
 public class BusinessBean {
 
     protected String title;
