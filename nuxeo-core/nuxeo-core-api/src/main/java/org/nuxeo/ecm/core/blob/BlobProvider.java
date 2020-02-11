@@ -152,6 +152,16 @@ public interface BlobProvider {
     }
 
     /**
+     * Gets the status of a blob.
+     *
+     * @param blob the blob
+     * @since 11.1
+     */
+    default BlobStatus getStatus(ManagedBlob blob) throws IOException {
+        return new BlobStatus();
+    }
+
+    /**
      * Checks if user update is supported.
      * <p>
      * A user update refers to the fact that a blob from this provider may be overwritten with another blob, wherever
