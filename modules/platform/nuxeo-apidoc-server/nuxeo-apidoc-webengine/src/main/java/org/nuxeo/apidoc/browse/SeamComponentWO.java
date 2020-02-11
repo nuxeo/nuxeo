@@ -38,8 +38,8 @@ public class SeamComponentWO extends NuxeoArtifactWebObject {
     }
 
     public SeamComponentInfo getTargetComponentInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getSeamComponent(
-                nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession())
+                                   .getSeamComponent(nxArtifactId);
     }
 
     @Override

@@ -45,7 +45,8 @@ public class DocumentationWO extends DefaultObject {
     @Produces("text/html")
     public Object viewAll() {
         DocumentationService ds = Framework.getService(DocumentationService.class);
-        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null, null);
+        Map<String, List<DocumentationItem>> docs = ds.listDocumentationItems(getContext().getCoreSession(), null,
+                null);
         return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs);
     }
 
@@ -75,8 +76,9 @@ public class DocumentationWO extends DefaultObject {
                 docs.put(catLabel, itemList);
             }
         }
-        return getView("index").arg("distId", ctx.getProperty("distId")).arg("docsByCat", docs).arg("searchFilter",
-                fulltext);
+        return getView("index").arg("distId", ctx.getProperty("distId"))
+                               .arg("docsByCat", docs)
+                               .arg("searchFilter", fulltext);
     }
 
     @GET

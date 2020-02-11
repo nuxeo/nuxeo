@@ -59,27 +59,27 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         NuxeoArtifact artifact = null;
 
         switch (doc.getType()) {
-            case BundleGroup.TYPE_NAME:
-                artifact = new BundleGroupDocAdapter(doc);
-                break;
-            case BundleInfo.TYPE_NAME:
-                artifact = new BundleInfoDocAdapter(doc);
-                break;
-            case ComponentInfo.TYPE_NAME:
-                artifact = new ComponentInfoDocAdapter(doc);
-                break;
-            case ExtensionPointInfo.TYPE_NAME:
-                artifact = new ExtensionPointInfoDocAdapter(doc);
-                break;
-            case ExtensionInfo.TYPE_NAME:
-                artifact = new ExtensionInfoDocAdapter(doc);
-                break;
-            case DistributionSnapshot.TYPE_NAME:
-                artifact = new RepositoryDistributionSnapshot(doc);
-                break;
-            case ServiceInfo.TYPE_NAME:
-                artifact = new ServiceInfoDocAdapter(doc);
-                break;
+        case BundleGroup.TYPE_NAME:
+            artifact = new BundleGroupDocAdapter(doc);
+            break;
+        case BundleInfo.TYPE_NAME:
+            artifact = new BundleInfoDocAdapter(doc);
+            break;
+        case ComponentInfo.TYPE_NAME:
+            artifact = new ComponentInfoDocAdapter(doc);
+            break;
+        case ExtensionPointInfo.TYPE_NAME:
+            artifact = new ExtensionPointInfoDocAdapter(doc);
+            break;
+        case ExtensionInfo.TYPE_NAME:
+            artifact = new ExtensionInfoDocAdapter(doc);
+            break;
+        case DistributionSnapshot.TYPE_NAME:
+            artifact = new RepositoryDistributionSnapshot(doc);
+            break;
+        case ServiceInfo.TYPE_NAME:
+            artifact = new ServiceInfoDocAdapter(doc);
+            break;
         }
 
         return artifact;
@@ -206,26 +206,26 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
         String targetType = matchingDocumentationItem.getTargetType();
         NuxeoArtifact artifact;
         switch (targetType) {
-            case BundleGroup.TYPE_NAME:
-                artifact = snap.getBundleGroup(targetId);
-                break;
-            case BundleInfo.TYPE_NAME:
-                artifact = snap.getBundle(targetId);
-                break;
-            case ComponentInfo.TYPE_NAME:
-                artifact = snap.getComponent(targetId);
-                break;
-            case ExtensionPointInfo.TYPE_NAME:
-                artifact = snap.getExtensionPoint(targetId);
-                break;
-            case ExtensionInfo.TYPE_NAME:
-                artifact = snap.getContribution(targetId);
-                break;
-            case ServiceInfo.TYPE_NAME:
-                artifact = snap.getService(targetId);
-                break;
-            default:
-                return null;
+        case BundleGroup.TYPE_NAME:
+            artifact = snap.getBundleGroup(targetId);
+            break;
+        case BundleInfo.TYPE_NAME:
+            artifact = snap.getBundle(targetId);
+            break;
+        case ComponentInfo.TYPE_NAME:
+            artifact = snap.getComponent(targetId);
+            break;
+        case ExtensionPointInfo.TYPE_NAME:
+            artifact = snap.getExtensionPoint(targetId);
+            break;
+        case ExtensionInfo.TYPE_NAME:
+            artifact = snap.getContribution(targetId);
+            break;
+        case ServiceInfo.TYPE_NAME:
+            artifact = snap.getService(targetId);
+            break;
+        default:
+            return null;
         }
         return resolveInTree(session, distribId, artifact, searchedType);
     }

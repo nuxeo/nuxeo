@@ -109,7 +109,6 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public String getLocation() {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -55,7 +55,6 @@ public class TestDistributionResolver {
 
                 @Override
                 public boolean isLive() {
-                    // TODO Auto-generated method stub
                     return false;
                 }
 
@@ -71,7 +70,6 @@ public class TestDistributionResolver {
 
                 @Override
                 public Date getCreationDate() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
@@ -82,55 +80,46 @@ public class TestDistributionResolver {
 
                 @Override
                 public List<String> getXmlComponentIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<Class<?>> getSpi() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<String> getServiceIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public ServiceInfo getService(String id) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<SeamComponentInfo> getSeamComponents() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<String> getSeamComponentIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public SeamComponentInfo getSeamComponent(String id) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<OperationInfo> getOperations() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public OperationInfo getOperation(String id) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
@@ -146,13 +135,11 @@ public class TestDistributionResolver {
 
                 @Override
                 public boolean isLatestFT() {
-                    // TODO Auto-generated method stub
                     return false;
                 }
 
                 @Override
                 public boolean isLatestLTS() {
-                    // TODO Auto-generated method stub
                     return false;
                 }
 
@@ -168,92 +155,76 @@ public class TestDistributionResolver {
 
                 @Override
                 public List<String> getJavaComponentIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<String> getExtensionPointIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public ExtensionPointInfo getExtensionPoint(String id) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<ExtensionInfo> getContributions() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<String> getContributionIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public ExtensionInfo getContribution(String id) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<String> getComponentIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public ComponentInfo getComponent(String id) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<String> getBundleIds() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<BundleGroup> getBundleGroups() {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public List<String> getBundleGroupChildren(String groupId) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public BundleGroup getBundleGroup(String groupId) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public BundleInfo getBundle(String id) {
-                    // TODO Auto-generated method stub
                     return null;
                 }
 
                 @Override
                 public boolean containsSeamComponents() {
-                    // TODO Auto-generated method stub
                     return false;
                 }
 
                 @Override
                 public ServerInfo getServerInfo() {
-                    // TODO Auto-generated method stub
-                    // return null;
                     throw new UnsupportedOperationException();
                 }
             };

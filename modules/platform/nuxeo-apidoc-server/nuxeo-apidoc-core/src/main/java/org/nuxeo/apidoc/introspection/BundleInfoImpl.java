@@ -61,12 +61,14 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     protected Map<String, ResourceDocumentationItem> parentLiveDoc;
 
     @JsonCreator
-    BundleInfoImpl(@JsonProperty("bundleId") String bundleId,
-            @JsonProperty("fileName") String fileName, @JsonProperty("manifest") String manifest, @JsonProperty("requirements") String[] requirements,
+    BundleInfoImpl(@JsonProperty("bundleId") String bundleId, @JsonProperty("fileName") String fileName,
+            @JsonProperty("manifest") String manifest, @JsonProperty("requirements") String[] requirements,
             @JsonProperty("groupId") String groupId, @JsonProperty("artifactId") String artifactId,
             @JsonProperty("artifactVersion") String artifactVersion,
-            @JsonProperty("bundleGroup") BundleGroup bundleGroup, @JsonProperty("liveDoc") Map<String, ResourceDocumentationItem> liveDoc,
-            @JsonProperty("parentLiveDoc") Map<String, ResourceDocumentationItem> parentLiveDoc, @JsonProperty("location") String location) {
+            @JsonProperty("bundleGroup") BundleGroup bundleGroup,
+            @JsonProperty("liveDoc") Map<String, ResourceDocumentationItem> liveDoc,
+            @JsonProperty("parentLiveDoc") Map<String, ResourceDocumentationItem> parentLiveDoc,
+            @JsonProperty("location") String location) {
         this.bundleId = bundleId;
         this.fileName = fileName;
         this.manifest = manifest;

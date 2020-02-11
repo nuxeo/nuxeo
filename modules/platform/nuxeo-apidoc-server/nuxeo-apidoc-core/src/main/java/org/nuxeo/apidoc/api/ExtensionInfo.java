@@ -21,10 +21,10 @@ package org.nuxeo.apidoc.api;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import org.nuxeo.apidoc.documentation.ContributionItem;
 import org.nuxeo.runtime.model.ComponentName;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public interface ExtensionInfo extends NuxeoArtifact {
 

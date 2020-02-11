@@ -73,8 +73,7 @@ public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> 
     String BUILT_IN = "BuiltIn";
 
     /**
-     * Actual operation id. ({@link #getId} is prefixed with
-     * {@link #ARTIFACT_PREFIX})
+     * Actual operation id. ({@link #getId} is prefixed with {@link #ARTIFACT_PREFIX})
      */
     String getName();
 

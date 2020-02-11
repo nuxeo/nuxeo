@@ -140,7 +140,7 @@
 
     <type id="NXOperation">
       <label>Nuxeo EP Operation</label>
-     <icon>/icons/file.gif</icon>
+      <icon>/icons/file.gif</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <category>Nuxeo EP</category>

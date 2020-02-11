@@ -18,9 +18,6 @@
  */
 package org.nuxeo.apidoc.tree;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -32,6 +29,9 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
 import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
@@ -99,8 +99,11 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
     protected JSONObject item2JSON(TreeItem item, JSONArray children) {
         JSONObject json = new JSONObject();
         String[] classes = { "folder", "Folder" };
-        json.element("text", item.getLabel()).element("id", item.getPath().toString()).element("href", getUrl(item)).element(
-                "classes", classes).element("class", classes);
+        json.element("text", item.getLabel())
+            .element("id", item.getPath().toString())
+            .element("href", getUrl(item))
+            .element("classes", classes)
+            .element("class", classes);
         json.element("expanded", item.isExpanded());
         if (item.isContainer()) {
             if (item.isContainer()) {

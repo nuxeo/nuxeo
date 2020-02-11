@@ -71,9 +71,8 @@ import org.xml.sax.SAXException;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The entry point to the server runtime introspection To build a description of
- * the current running server you need to create a {@link ServerInfo} object
- * using the method {@link #build(String, String)}.
+ * The entry point to the server runtime introspection To build a description of the current running server you need to
+ * create a {@link ServerInfo} object using the method {@link #build(String, String)}.
  * <p>
  * Example
  *
@@ -81,18 +80,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * ServerInfo info = ServerInfo.build();
  * </pre>
  *
- * The server name and version will be fetched from the runtime properties:
- * {@link Environment#DISTRIBUTION_NAME} and
- * {@link Environment#DISTRIBUTION_VERSION} If you want to use another name and
- * version just call {@link #build(String, String)} instead to build your server
- * information.
+ * The server name and version will be fetched from the runtime properties: {@link Environment#DISTRIBUTION_NAME} and
+ * {@link Environment#DISTRIBUTION_VERSION} If you want to use another name and version just call
+ * {@link #build(String, String)} instead to build your server information.
  * <p>
- * After building a <code>ServerInfo</code> object you can start browsing the
- * bundles deployed on the server by calling {@link #getBundles()} or fetch a
- * specific bundle given its symbolic name {@link #getBundle(String)}.
+ * After building a <code>ServerInfo</code> object you can start browsing the bundles deployed on the server by calling
+ * {@link #getBundles()} or fetch a specific bundle given its symbolic name {@link #getBundle(String)}.
  * <p>
- * To write down the server information as XML use {@link #toXML(Writer)} and to
- * read it back use {@link #fromXML(Reader)}.
+ * To write down the server information as XML use {@link #toXML(Writer)} and to read it back use
+ * {@link #fromXML(Reader)}.
  * <p>
  * Example:
  *
@@ -148,7 +144,8 @@ public class ServerInfo {
         this.version = version;
     }
 
-    public ServerInfo(@JsonProperty("name") String name, @JsonProperty("version") String version, @JsonProperty("bundles") Set<BundleInfo> bundles) {
+    public ServerInfo(@JsonProperty("name") String name, @JsonProperty("version") String version,
+            @JsonProperty("bundles") Set<BundleInfo> bundles) {
         this(name, version);
         for (BundleInfo bundle : bundles) {
             this.bundles.put(bundle.getBundleId(), bundle);

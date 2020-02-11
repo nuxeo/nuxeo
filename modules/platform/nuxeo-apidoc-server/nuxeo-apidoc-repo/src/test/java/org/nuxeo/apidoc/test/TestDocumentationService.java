@@ -70,7 +70,8 @@ public class TestDocumentationService {
         assertNotNull(ci);
         doTestDocumentationOnArtifact(ci);
 
-        ExtensionPointInfo epi = runtimeSnapshot.getExtensionPoint("org.nuxeo.ecm.core.lifecycle.LifeCycleService--types");
+        ExtensionPointInfo epi = runtimeSnapshot.getExtensionPoint(
+                "org.nuxeo.ecm.core.lifecycle.LifeCycleService--types");
         assertNotNull(epi);
         doTestDocumentationOnArtifact(epi);
 

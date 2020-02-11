@@ -62,18 +62,13 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
 
     protected final List<Param> params;
 
-    public OperationInfoImpl(@JsonProperty("name") String name,
-            @JsonProperty("version") String version,
-            @JsonProperty("aliases") String[] aliases,
-            @JsonProperty("description") String description,
+    public OperationInfoImpl(@JsonProperty("name") String name, @JsonProperty("version") String version,
+            @JsonProperty("aliases") String[] aliases, @JsonProperty("description") String description,
             @JsonProperty("operationClass") String operationClass,
             @JsonProperty("contributingComponent") String contributingComponent,
-            @JsonProperty("signature") String[] signature,
-            @JsonProperty("category") String category,
-            @JsonProperty("url") String url,
-            @JsonProperty("label") String label,
-            @JsonProperty("requires") String requires,
-            @JsonProperty("since") String since,
+            @JsonProperty("signature") String[] signature, @JsonProperty("category") String category,
+            @JsonProperty("url") String url, @JsonProperty("label") String label,
+            @JsonProperty("requires") String requires, @JsonProperty("since") String since,
             @JsonProperty("params") List<Param> params) {
 
         this.name = name;
@@ -102,8 +97,8 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
 
     public OperationInfoImpl(OperationDocumentation op, String version, String operationClass,
             String contributingComponent) {
-        this(op.getId(), version, op.getAliases(), op.getDescription(), operationClass, contributingComponent, op.getSignature(), op.getCategory(),
-                op.getUrl(), op.getLabel(), op.getRequires(), op.getSince(),
+        this(op.getId(), version, op.getAliases(), op.getDescription(), operationClass, contributingComponent,
+                op.getSignature(), op.getCategory(), op.getUrl(), op.getLabel(), op.getRequires(), op.getSince(),
                 Arrays.asList(op.getParams()));
     }
 

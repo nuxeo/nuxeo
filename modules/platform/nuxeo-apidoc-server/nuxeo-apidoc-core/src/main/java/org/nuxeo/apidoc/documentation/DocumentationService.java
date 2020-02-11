@@ -50,7 +50,8 @@ public interface DocumentationService {
 
     String getDocumentationStats(CoreSession session);
 
-    Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category, String targetType);
+    Map<String, List<DocumentationItem>> listDocumentationItems(CoreSession session, String category,
+            String targetType);
 
     Map<String, DocumentationItem> getAvailableDescriptions(CoreSession session, String targetType);
 

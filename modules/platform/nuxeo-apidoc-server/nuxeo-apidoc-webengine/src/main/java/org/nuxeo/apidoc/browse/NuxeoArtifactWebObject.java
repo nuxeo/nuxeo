@@ -34,8 +34,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -51,8 +49,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class NuxeoArtifactWebObject extends DefaultObject {
-
-    private static final Log log = LogFactory.getLog(NuxeoArtifactWebObject.class);
 
     protected String nxArtifactId;
 
@@ -103,7 +99,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     protected String getDocUrl() {
         String path = getPath() + "/doc";
-        // //TODO encode path segments if needed
+        // TODO encode path segments if needed
         return path;
     }
 
@@ -180,8 +176,12 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         if (inline != null && inline.equals(Boolean.TRUE)) {
             targetView = "../../docItemForm";
         }
-        return getView(targetView).arg("nxItem", nxItem).arg("mode", "create").arg("docItem", docItem).arg("versions",
-                versions).arg("selectedTab", "docView").arg("preselectedType", type);
+        return getView(targetView).arg("nxItem", nxItem)
+                                  .arg("mode", "create")
+                                  .arg("docItem", docItem)
+                                  .arg("versions", versions)
+                                  .arg("selectedTab", "docView")
+                                  .arg("preselectedType", type);
     }
 
     @GET
@@ -192,8 +192,11 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         List<String> versions = getSnapshotManager().getAvailableVersions(ctx.getCoreSession(), nxItem);
         DocumentModel existingDoc = ctx.getCoreSession().getDocument(new IdRef(uuid));
         DocumentationItem docItem = existingDoc.getAdapter(DocumentationItem.class);
-        return getView("../docForm").arg("nxItem", nxItem).arg("mode", "edit").arg("docItem", docItem).arg("versions",
-                versions).arg("selectedTab", "docView");
+        return getView("../docForm").arg("nxItem", nxItem)
+                                    .arg("mode", "edit")
+                                    .arg("docItem", docItem)
+                                    .arg("versions", versions)
+                                    .arg("selectedTab", "docView");
     }
 
     @GET
@@ -229,8 +232,9 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         }
 
         List<String> applicableVersions = new ArrayList<>();
-        applicableVersions.add(getSnapshotManager().getSnapshot(getDistributionId(), getContext().getCoreSession()).getVersion()); // XXX
-                                                                                                                                   // !!!
+        applicableVersions.add(
+                getSnapshotManager().getSnapshot(getDistributionId(), getContext().getCoreSession()).getVersion()); // XXX
+                                                                                                                    // !!!
         DocumentationService ds = Framework.getService(DocumentationService.class);
         if (editId == null || editId.startsWith("placeholder_")) {
             ds.createDocumentationItem(getContext().getCoreSession(), getNxArtifact(), title, content, type,

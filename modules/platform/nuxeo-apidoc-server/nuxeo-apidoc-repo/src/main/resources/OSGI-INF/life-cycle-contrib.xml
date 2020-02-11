@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.lifecycle.contrib">
 
-  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService"
-    point="types">
+  <extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
     <types>
       <type name="NXDistribution">default</type>
       <type name="NXBundleGroup">default</type>

@@ -52,20 +52,12 @@ public class DocumentationHelper {
     }
 
     /**
-     * Transforms Nuxeo extension point {@code <documentation>} content into
-     * HTML.
+     * Transforms Nuxeo extension point {@code <documentation>} content into HTML.
      * <p>
      * <ul>
-     * <li>standalone newlines are turned into {@code
-     * <p/>
-     * }</li>
-     * <li>{@code <code>} blocks are turned into a {@code <div class="code">}
-     * with a {@code
-     *
-     *
-
-    <pre>
-     * <code>}</li>
+     * <li>standalone newlines are turned into {@code &#60;p/&#62;}</li>
+     * <li>{@code &#60;code&#62;} blocks are turned into a {@code &#60;div class="code"&#62;} with a
+     * {@code &#60;pre&#62; &#60;code&#62;}</li>
      * <li>{@code @author} blocks are removed</li>
      * </ul>
      */
