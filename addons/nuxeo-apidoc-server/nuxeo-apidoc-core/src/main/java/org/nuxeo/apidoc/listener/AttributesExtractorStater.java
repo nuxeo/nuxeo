@@ -36,8 +36,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Listener triggered on "aboutTo*" events to let the other lister
- * org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener to trigger Worker
- * when blob are ready to be extracted.
+ * org.nuxeo.apidoc.listener.AttributeExtractorWorkerListener to trigger Worker when blob are ready to be extracted.
  *
  * @author <a href="mailto:ak@nuxeo.com">Arnaud Kervern</a>
  * @since 8.3

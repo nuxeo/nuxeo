@@ -103,7 +103,6 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public ExtensionPointInfo getExtensionPoint(String name) {
-        // TODO Auto-generated method stub
         return null;
     }
 

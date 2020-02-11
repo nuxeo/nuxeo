@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.directoryContrib">
 
-  <extension target="org.nuxeo.ecm.directory.GenericDirectory" point="directories">
+  <extension target="org.nuxeo.ecm.directory.GenericDirectory"
+    point="directories">
 
-    <directory name="documentationTypes" extends="template-vocabulary">
+    <directory name="documentationTypes"
+      extends="template-vocabulary">
       <dataFile>directories/documentation-types.csv</dataFile>
     </directory>
 

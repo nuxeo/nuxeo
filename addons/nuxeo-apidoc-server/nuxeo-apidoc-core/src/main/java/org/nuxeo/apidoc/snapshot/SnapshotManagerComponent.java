@@ -18,6 +18,11 @@
  */
 package org.nuxeo.apidoc.snapshot;
 
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparing;
+import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.CTX_MAP_KEY;
+import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing.TURN_OFF;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -57,11 +62,6 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import static java.util.Collections.reverseOrder;
-import static java.util.Comparator.comparing;
-import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.CTX_MAP_KEY;
-import static org.nuxeo.ecm.core.api.validation.DocumentValidationService.Forcing.TURN_OFF;
 
 public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 

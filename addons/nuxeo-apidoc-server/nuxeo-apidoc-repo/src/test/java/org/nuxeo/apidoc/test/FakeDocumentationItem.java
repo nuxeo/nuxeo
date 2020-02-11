@@ -48,7 +48,6 @@ public class FakeDocumentationItem extends AbstractDocumentationItem implements 
 
     public boolean approved = false;
 
-
     public FakeDocumentationItem(DocumentationItem item) {
         super(item.getTypeLabel());
         applicableVersion = item.getApplicableVersion();
@@ -121,7 +120,6 @@ public class FakeDocumentationItem extends AbstractDocumentationItem implements 
 
     @Override
     public Map<String, String> getAttachments() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -132,7 +130,6 @@ public class FakeDocumentationItem extends AbstractDocumentationItem implements 
 
     @Override
     public String getEditId() {
-        // TODO Auto-generated method stub
         return null;
     }
 

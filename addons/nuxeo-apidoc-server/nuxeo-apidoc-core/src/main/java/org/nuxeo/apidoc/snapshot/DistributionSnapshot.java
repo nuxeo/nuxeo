@@ -162,36 +162,34 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     /**
      * @since 8.3
-     *
      */
     ServerInfo getServerInfo();
 
     static ObjectWriter jsonWriter() throws IOException {
         return jsonMapper().writerFor(DistributionSnapshot.class)
-                .withoutRootName()
-                .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)
-                .without(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+                           .withoutRootName()
+                           .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)
+                           .without(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
     }
 
     static ObjectReader jsonReader() throws IOException {
         return jsonMapper().readerFor(DistributionSnapshot.class)
-                .withoutRootName()
-                .without(JsonParser.Feature.AUTO_CLOSE_SOURCE)
-                .with(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+                           .withoutRootName()
+                           .without(JsonParser.Feature.AUTO_CLOSE_SOURCE)
+                           .with(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
     }
 
     static ObjectMapper jsonMapper() {
-        final ObjectMapper mapper =
-                new ObjectMapper().registerModule(new SimpleModule()
-                        .addAbstractTypeMapping(DistributionSnapshot.class, RuntimeSnapshot.class)
-                        .addAbstractTypeMapping(BundleInfo.class, BundleInfoImpl.class)
-                        .addAbstractTypeMapping(BundleGroup.class, BundleGroupImpl.class)
-                        .addAbstractTypeMapping(ComponentInfo.class, ComponentInfoImpl.class)
-                        .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
-                        .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
-                        .addAbstractTypeMapping(SeamComponentInfo.class, SeamComponentInfoImpl.class)
-                        .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
-                        .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class));
+        final ObjectMapper mapper = new ObjectMapper().registerModule(
+                new SimpleModule().addAbstractTypeMapping(DistributionSnapshot.class, RuntimeSnapshot.class)
+                                  .addAbstractTypeMapping(BundleInfo.class, BundleInfoImpl.class)
+                                  .addAbstractTypeMapping(BundleGroup.class, BundleGroupImpl.class)
+                                  .addAbstractTypeMapping(ComponentInfo.class, ComponentInfoImpl.class)
+                                  .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
+                                  .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
+                                  .addAbstractTypeMapping(SeamComponentInfo.class, SeamComponentInfoImpl.class)
+                                  .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
+                                  .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class));
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);
         return mapper;
     }

@@ -48,8 +48,10 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem impleme
 
     @JsonCreator
     public ResourceDocumentationItem(@JsonProperty("filename") String filename, @JsonProperty("content") String content,
-            @JsonProperty("type") String type, @JsonProperty("target") String target, @JsonProperty("targetType") String targetType,
-            @JsonProperty("applicableVersion") List<String> applicableVersion, @JsonProperty("typeLabel") String typeLabel) {
+            @JsonProperty("type") String type, @JsonProperty("target") String target,
+            @JsonProperty("targetType") String targetType,
+            @JsonProperty("applicableVersion") List<String> applicableVersion,
+            @JsonProperty("typeLabel") String typeLabel) {
         super(typeLabel);
         this.content = content;
         this.filename = filename;
@@ -59,9 +61,9 @@ public class ResourceDocumentationItem extends AbstractDocumentationItem impleme
         this.applicableVersion = applicableVersion;
     }
 
-
     public ResourceDocumentationItem(String filename, String content, String type, NuxeoArtifact target) {
-        this(filename, content, type, target.getId(), target.getArtifactType(), Arrays.asList(target.getVersion()), typeLabelOf(type));
+        this(filename, content, type, target.getId(), target.getArtifactType(), Arrays.asList(target.getVersion()),
+                typeLabelOf(type));
     }
 
     public ResourceDocumentationItem(ResourceDocumentationItem other, NuxeoArtifact target) {

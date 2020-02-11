@@ -48,8 +48,8 @@ public class SnapshotResolverHelper {
 
         // aliases
         Optional<DistributionSnapshot> first = snaps.stream()
-                .filter(s -> s.getAliases().contains(distributionId))
-                .findFirst();
+                                                    .filter(s -> s.getAliases().contains(distributionId))
+                                                    .findFirst();
         if (first.isPresent()) {
             return first.get().getKey();
         }
@@ -92,8 +92,8 @@ public class SnapshotResolverHelper {
 
     protected static String getName(String name) {
         Optional<String> first = Arrays.stream(capaliases)
-                .filter(s -> name.toLowerCase().startsWith(s.toLowerCase()))
-                .findFirst();
+                                       .filter(s -> name.toLowerCase().startsWith(s.toLowerCase()))
+                                       .findFirst();
         return first.isPresent() ? "cap" : name;
     }
 

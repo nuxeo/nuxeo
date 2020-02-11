@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.apidoc.documentation.DocumentationComponent">
-    <implementation
-        class="org.nuxeo.apidoc.documentation.DocumentationComponent" />
+<component
+  name="org.nuxeo.apidoc.documentation.DocumentationComponent">
+  <implementation
+    class="org.nuxeo.apidoc.documentation.DocumentationComponent" />
 
-    <service>
-        <provide
-            interface="org.nuxeo.apidoc.documentation.DocumentationService" />
-        <provide
-            interface="org.nuxeo.apidoc.search.ArtifactSearcher" />
-    </service>
+  <service>
+    <provide
+      interface="org.nuxeo.apidoc.documentation.DocumentationService" />
+    <provide
+      interface="org.nuxeo.apidoc.search.ArtifactSearcher" />
+  </service>
 
 </component>

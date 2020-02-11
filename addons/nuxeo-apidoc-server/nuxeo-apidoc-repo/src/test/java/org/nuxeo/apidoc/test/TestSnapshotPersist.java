@@ -74,11 +74,11 @@ public class TestSnapshotPersist {
                 pad += " ";
             }
             sb.append(pad)
-            .append("- ")
-            .append(info.getGroup().getName())
-            .append("(")
-            .append(info.getGroup().getId())
-            .append(")");
+              .append("- ")
+              .append(info.getGroup().getName())
+              .append("(")
+              .append(info.getGroup().getId())
+              .append(")");
             sb.append(" *** ");
             sb.append(info.getGroup().getHierarchyPath());
             sb.append("\n");

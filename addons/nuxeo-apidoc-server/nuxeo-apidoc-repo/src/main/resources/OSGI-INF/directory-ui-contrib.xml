@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.directoryUIContrib">
 
-<extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
+  <extension
+    target="org.nuxeo.ecm.directory.ui.DirectoryUIManager"
     point="directories">
-    <directory name="documentationTypes" layout="vocabulary" sortField="label" />
-</extension>
+    <directory name="documentationTypes" layout="vocabulary"
+      sortField="label" />
+  </extension>
 </component>

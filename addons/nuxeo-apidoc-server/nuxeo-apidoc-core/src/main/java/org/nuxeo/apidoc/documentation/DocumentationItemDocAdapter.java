@@ -159,7 +159,8 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public Map<String, String> getAttachments() {
         Map<String, String> attachments = new LinkedMap();
         try {
-            List<Map<String, Serializable>> atts = (List<Map<String, Serializable>>) doc.getPropertyValue("files:files");
+            List<Map<String, Serializable>> atts = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                    "files:files");
             if (atts != null) {
                 for (Map<String, Serializable> att : atts) {
                     Blob attBlob = (Blob) att.get("file");

@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent">
-    <implementation
-        class="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" />
+<component
+  name="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent">
+  <implementation
+    class="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" />
 
-    <service>
-        <provide
-            interface="org.nuxeo.apidoc.snapshot.SnapshotManager" />
-    </service>
+  <service>
+    <provide
+      interface="org.nuxeo.apidoc.snapshot.SnapshotManager" />
+  </service>
 
 </component>

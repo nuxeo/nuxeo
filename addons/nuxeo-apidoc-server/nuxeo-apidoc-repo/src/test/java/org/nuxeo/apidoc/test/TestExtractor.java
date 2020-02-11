@@ -72,7 +72,8 @@ public class TestExtractor {
     @Inject
     protected WorkManager workManager;
 
-    @Inject TransactionalFeature txFeature;
+    @Inject
+    TransactionalFeature txFeature;
 
     @Inject
     protected EventServiceAdmin eventServiceAdmin;

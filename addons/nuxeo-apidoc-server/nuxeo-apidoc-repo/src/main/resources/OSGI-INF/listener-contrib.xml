@@ -1,22 +1,27 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.listener.contrib">
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+  <extension
+    target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
-    <listener name="latestDistributionsListener" async="false" postCommit="false"
+    <listener name="latestDistributionsListener" async="false"
+      postCommit="false"
       class="org.nuxeo.apidoc.listener.LatestDistributionsListener">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="AttributesExtractorStater" async="false" postCommit="false"
+    <listener name="AttributesExtractorStater" async="false"
+      postCommit="false"
       class="org.nuxeo.apidoc.listener.AttributesExtractorStater">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="AttributesExtractorScheduler" async="false" postCommit="false"
-      class="org.nuxeo.apidoc.listener.AttributesExtractorScheduler" priority="20">
+    <listener name="AttributesExtractorScheduler" async="false"
+      postCommit="false"
+      class="org.nuxeo.apidoc.listener.AttributesExtractorScheduler"
+      priority="20">
       <event>documentCreated</event>
       <event>documentModified</event>
     </listener>
