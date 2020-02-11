@@ -4489,6 +4489,51 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
+    public void testRecordVersioning() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+
+        // create a version
+        DocumentRef verRef = session.checkIn(docRef, VersioningOption.MINOR, null);
+
+        // a version cannot be made a record
+        try {
+            session.makeRecord(verRef);
+            fail();
+        } catch (PropertyException e) {
+            assertEquals("Version cannot be made record: " + verRef, e.getMessage());
+        }
+
+        // turn the live doc into a record
+        session.makeRecord(docRef);
+
+        // a record cannot be checked in
+        try {
+            session.checkIn(docRef, VersioningOption.MAJOR, null);
+            fail();
+        } catch (PropertyException e) {
+            assertEquals("Record cannot be checked in: " + docRef, e.getMessage());
+        }
+
+        // a version cannot be restored on a record
+        try {
+            session.restoreToVersion(docRef, verRef);
+            fail();
+        } catch (PropertyException e) {
+            assertEquals("Version cannot be restored on a record: " + docRef, e.getMessage());
+        }
+
+        // a record cannot be published
+        try {
+            session.publishDocument(doc, session.getRootDocument());
+            fail();
+        } catch (PropertyException e) {
+            assertEquals("Record cannot be published: " + docRef, e.getMessage());
+        }
+    }
+
+    @Test
     public void testRetainUntil() {
         DocumentModel folder = session.createDocumentModel("/", "fold", "Folder");
         folder = session.createDocument(folder);
