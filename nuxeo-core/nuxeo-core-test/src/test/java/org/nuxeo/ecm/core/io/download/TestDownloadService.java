@@ -628,6 +628,48 @@ public class TestDownloadService {
     }
 
     @Test
+    public void testDownloadTransientWithHeadBeforeGet() throws IOException {
+        // store a blob in the transient store
+        Blob blob = Blobs.createBlob("hello");
+        String key = downloadService.storeBlobs(Collections.singletonList(blob));
+
+        // === do a HEAD first ===
+
+        // mock request
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("HEAD");
+
+        // mock response
+        HttpServletResponse response = mock(HttpServletResponse.class);
+
+        downloadService.downloadBlob(request, response, key, "download");
+
+        // === then do a GET ===
+
+        // mock request
+        request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+
+        // mock response
+        response = mock(HttpServletResponse.class);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ServletOutputStream sos = new DummyServletOutputStream() {
+            @Override
+            public void write(int b) {
+                out.write(b);
+            }
+        };
+        PrintWriter printWriter = new PrintWriter(sos);
+        when(response.getOutputStream()).thenReturn(sos);
+        when(response.getWriter()).thenReturn(printWriter);
+
+        downloadService.downloadBlob(request, response, key, "download");
+
+        // download succeeded
+        assertEquals("hello", out.toString()); // decode with system default
+    }
+
+    @Test
     public void testGetDownloadPathAndAction() {
         DownloadServiceImpl downloadServiceImpl = new DownloadServiceImpl();
         String path = "nxfile/default/3727ef6b-cf8c-4f27-ab2c-79de0171a2c8/files:files/0/file/image.png";
