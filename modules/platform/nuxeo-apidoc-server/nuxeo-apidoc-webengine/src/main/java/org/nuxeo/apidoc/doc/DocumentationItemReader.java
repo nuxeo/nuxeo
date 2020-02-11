@@ -58,7 +58,8 @@ public class DocumentationItemReader implements MessageBodyReader<DocumentationI
             MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
 
-        SimpleDocumentationItem item = new SimpleDocumentationItem(AbstractDocumentationItem.typeLabelOf(request.getParameter("type")));
+        SimpleDocumentationItem item = new SimpleDocumentationItem(
+                AbstractDocumentationItem.typeLabelOf(request.getParameter("type")));
         item.content = request.getParameter("content");
         item.id = request.getParameter("id");
         item.renderingType = request.getParameter("renderingType");

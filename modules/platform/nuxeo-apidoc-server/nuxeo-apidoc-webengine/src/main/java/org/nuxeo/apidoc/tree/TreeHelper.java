@@ -35,7 +35,8 @@ public class TreeHelper {
     protected static final Log log = LogFactory.getLog(TreeHelper.class);
 
     public static NuxeoArtifactTree getOrBuildAnonymousTree(WebContext ctx) {
-        NuxeoArtifactTree tree = (NuxeoArtifactTree) ctx.getRequest().getAttribute("tree--" + ctx.getProperty("distId"));
+        NuxeoArtifactTree tree = (NuxeoArtifactTree) ctx.getRequest()
+                                                        .getAttribute("tree--" + ctx.getProperty("distId"));
         if (tree == null) {
             tree = buildTree(ctx);
             ctx.getRequest().setAttribute("tree--" + ctx.getProperty("distId"), tree);

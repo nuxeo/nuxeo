@@ -25,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.sql.Date;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -229,30 +228,25 @@ public class Distribution extends ModuleRoot {
 
     public List<DistributionSnapshot> listPersistedDistributions() {
         SnapshotManager sm = getSnapshotManager();
-        return sm.listPersistentSnapshots(ctx.getCoreSession())
-                 .stream()
-                 .sorted((o1, o2) -> {
-                     Matcher m1 = VERSION_REGEX.matcher(o1.getVersion());
-                     Matcher m2 = VERSION_REGEX.matcher(o2.getVersion());
+        return sm.listPersistentSnapshots(ctx.getCoreSession()).stream().sorted((o1, o2) -> {
+            Matcher m1 = VERSION_REGEX.matcher(o1.getVersion());
+            Matcher m2 = VERSION_REGEX.matcher(o2.getVersion());
 
-                     if (m1.matches() && m2.matches()) {
-                         for (int i = 0; i < 3; i++) {
-                             String s1 = m1.group(i + 1);
-                             int c1 = s1 != null ? Integer.parseInt(s1) : 0;
-                             String s2 = m2.group(i + 1);
-                             int c2 = s2 != null ? Integer.parseInt(s2) : 0;
+            if (m1.matches() && m2.matches()) {
+                for (int i = 0; i < 3; i++) {
+                    String s1 = m1.group(i + 1);
+                    int c1 = s1 != null ? Integer.parseInt(s1) : 0;
+                    String s2 = m2.group(i + 1);
+                    int c2 = s2 != null ? Integer.parseInt(s2) : 0;
 
-                             if (c1 != c2 || i == 2) {
-                                 return Integer.compare(c2, c1);
-                             }
-                         }
-                     }
-                     log.info(String.format("Comparing version using String between %s - %s", o1.getVersion(),
-                             o2.getVersion()));
-                     return o2.getVersion().compareTo(o1.getVersion());
-                 })
-                 .filter(s -> !s.isHidden())
-                 .collect(Collectors.toList());
+                    if (c1 != c2 || i == 2) {
+                        return Integer.compare(c2, c1);
+                    }
+                }
+            }
+            log.info(String.format("Comparing version using String between %s - %s", o1.getVersion(), o2.getVersion()));
+            return o2.getVersion().compareTo(o1.getVersion());
+        }).filter(s -> !s.isHidden()).collect(Collectors.toList());
     }
 
     public Map<String, DistributionSnapshot> getPersistedDistributions() {
@@ -317,7 +311,7 @@ public class Distribution extends ModuleRoot {
         if (StringUtils.isNotBlank(released)) {
             LocalDate date = LocalDate.parse(released);
             Instant instant = date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
-            properties.put(PROP_RELEASED, Date.from(instant));
+            properties.put(PROP_RELEASED, java.util.Date.from(instant));
         }
 
         return properties;

@@ -75,8 +75,8 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
                         VirtualNodesConsts.ExtensionPoints_VNODE_NAME));
             }
             if (!ci.getServices().isEmpty()) {
-                result.add(new VirtualNode(ci, VirtualNodesConsts.Services_VNODE,
-                        VirtualNodesConsts.Services_VNODE_NAME));
+                result.add(
+                        new VirtualNode(ci, VirtualNodesConsts.Services_VNODE, VirtualNodesConsts.Services_VNODE_NAME));
             }
             if (!ci.getExtensions().isEmpty()) {
                 result.add(new VirtualNode(ci, VirtualNodesConsts.Contributions_VNODE,
@@ -156,8 +156,8 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
         NuxeoArtifact obj = (NuxeoArtifact) ob;
 
         return !(obj.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)
-                || obj.getArtifactType().equals(ExtensionInfo.TYPE_NAME) || obj.getArtifactType().equals(
-                ServiceInfo.TYPE_NAME));
+                || obj.getArtifactType().equals(ExtensionInfo.TYPE_NAME)
+                || obj.getArtifactType().equals(ServiceInfo.TYPE_NAME));
     }
 
 }

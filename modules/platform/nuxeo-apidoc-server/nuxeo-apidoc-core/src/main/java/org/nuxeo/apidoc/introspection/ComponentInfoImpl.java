@@ -197,7 +197,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
                 xml = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
             } else {
                 try (ZipFile jarArchive = new ZipFile(jar)) {
-                ZipEntry entry = jarArchive.getEntry(parts[1].substring(1));
+                    ZipEntry entry = jarArchive.getEntry(parts[1].substring(1));
                     xml = IOUtils.toString(jarArchive.getInputStream(entry), StandardCharsets.UTF_8);
                 }
             }

@@ -40,8 +40,8 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     @Path("introspection")
     public Object doGet() {
         BundleGroup group = getTargetBundleGroup();
-        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(getSnapshotManager().getSnapshot(getDistributionId(),
-                ctx.getCoreSession()));
+        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(
+                getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()));
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupSubTree(nxArtifactId);
         return getView("view").arg("group", group).arg("groupId", nxArtifactId).arg("tree", tree);
     }

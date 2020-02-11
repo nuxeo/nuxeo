@@ -61,7 +61,8 @@ public interface SnapshotManager {
 
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties);
 
-    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties, SnapshotFilter filter);
+    DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties,
+            SnapshotFilter filter);
 
     void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment, String title);
 

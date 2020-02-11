@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.layout.contrib">
 
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="widgettypes">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
-    point="layouts">
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="layouts">
 
     <layout name="distribution">
       <templates>

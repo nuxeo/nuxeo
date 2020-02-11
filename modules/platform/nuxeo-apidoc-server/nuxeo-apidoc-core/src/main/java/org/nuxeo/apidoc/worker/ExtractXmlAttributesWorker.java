@@ -127,7 +127,8 @@ public class ExtractXmlAttributesWorker extends AbstractWork {
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes attributes)
+                throws SAXException {
             super.startElement(uri, localName, qName, attributes);
             IntStream.range(0, attributes.getLength()).forEach(i -> attributesSet.add(attributes.getValue(i)));
         }

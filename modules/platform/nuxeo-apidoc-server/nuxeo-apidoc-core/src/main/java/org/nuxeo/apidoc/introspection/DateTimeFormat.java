@@ -41,13 +41,12 @@ public class DateTimeFormat {
     /**
      * Parse the serialized string form into a java.util.Date
      *
-     * @param value
-     *            The serialized string form of the date
+     * @param value The serialized string form of the date
      * @return The created java.util.Date
      */
     public static Date parse(String value) {
-        SimpleDateFormat formatter = new SimpleDateFormat(value.endsWith("Z") ? "yyyyMMdd'T'HHmmss'Z'"
-                : "yyyyMMdd'T'HHmmssZ");
+        SimpleDateFormat formatter = new SimpleDateFormat(
+                value.endsWith("Z") ? "yyyyMMdd'T'HHmmss'Z'" : "yyyyMMdd'T'HHmmssZ");
         try {
             return formatter.parse(value);
         } catch (ParseException e) {

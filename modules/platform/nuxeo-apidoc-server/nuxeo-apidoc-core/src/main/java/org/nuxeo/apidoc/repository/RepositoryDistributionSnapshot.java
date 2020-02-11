@@ -179,8 +179,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public List<String> getBundleIds() {
-        return getChildren(BundleInfo.class, BundleInfo.TYPE_NAME).stream().map(NuxeoArtifact::getId).collect(
-                Collectors.toList());
+        return getChildren(BundleInfo.class, BundleInfo.TYPE_NAME).stream()
+                                                                  .map(NuxeoArtifact::getId)
+                                                                  .collect(Collectors.toList());
     }
 
     @Override
@@ -190,8 +191,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public List<String> getComponentIds() {
-        return getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME).stream().map(NuxeoArtifact::getId).collect(
-                Collectors.toList());
+        return getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME).stream()
+                                                                        .map(NuxeoArtifact::getId)
+                                                                        .collect(Collectors.toList());
     }
 
     @Override
@@ -201,8 +203,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public List<String> getContributionIds() {
-        return getChildren(ExtensionInfo.class, ExtensionInfo.TYPE_NAME).stream().map(NuxeoArtifact::getId).collect(
-                Collectors.toList());
+        return getChildren(ExtensionInfo.class, ExtensionInfo.TYPE_NAME).stream()
+                                                                        .map(NuxeoArtifact::getId)
+                                                                        .collect(Collectors.toList());
     }
 
     @Override
@@ -229,8 +232,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     }
 
     public List<String> getBundleGroupIds() {
-        return getChildren(BundleGroup.class, BundleGroup.TYPE_NAME).stream().map(NuxeoArtifact::getId).collect(
-                Collectors.toList());
+        return getChildren(BundleGroup.class, BundleGroup.TYPE_NAME).stream()
+                                                                    .map(NuxeoArtifact::getId)
+                                                                    .collect(Collectors.toList());
     }
 
     @Override

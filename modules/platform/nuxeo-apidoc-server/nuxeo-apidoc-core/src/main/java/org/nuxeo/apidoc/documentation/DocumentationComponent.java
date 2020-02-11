@@ -379,7 +379,8 @@ public class DocumentationComponent extends DefaultComponent implements Document
             }
             newName = IdUtils.generateId(newName, "-", true, 100);
 
-            DocumentModel discardedDoc = session.copy(existingDoc.getRef(), existingDoc.getParentRef(), newName, new CoreSession.CopyOption[0]);
+            DocumentModel discardedDoc = session.copy(existingDoc.getRef(), existingDoc.getParentRef(), newName,
+                    new CoreSession.CopyOption[0]);
             discardedDoc.setPropertyValue(DocumentationItem.PROP_APPLICABLE_VERSIONS, (Serializable) discardedVersion);
 
             discardedDoc = session.saveDocument(discardedDoc);
@@ -394,7 +395,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
     protected List<DocumentModel> listCategories() {
         DirectoryService dm = Framework.getService(DirectoryService.class);
         try (Session session = dm.open(DIRECTORY_NAME)) {
-            return session.query(Collections.<String, Serializable>emptyMap(), null,
+            return session.query(Collections.<String, Serializable> emptyMap(), null,
                     Collections.singletonMap("ordering", "ASC"));
         }
     }

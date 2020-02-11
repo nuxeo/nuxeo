@@ -47,7 +47,8 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionInfo getTargetExtensionInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getContribution(nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession())
+                                   .getContribution(nxArtifactId);
     }
 
     @Override
@@ -62,8 +63,8 @@ public class ContributionWO extends NuxeoArtifactWebObject {
 
         ExtensionInfo ei = getTargetExtensionInfo();
         String epid = ei.getExtensionPoint();
-        ExtensionPointInfo ep = getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getExtensionPoint(
-                epid);
+        ExtensionPointInfo ep = getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession())
+                                                    .getExtensionPoint(epid);
 
         FormData formData = ctx.getForm();
         Map<String, String[]> fields = formData.getFormFields();
@@ -76,7 +77,7 @@ public class ContributionWO extends NuxeoArtifactWebObject {
         String[] split = getNxArtifactId().split("--");
         if (split.length == 2) {
             return String.format("'%s' %s", split[0], split[1]);
-        } else if (split.length> 1) {
+        } else if (split.length > 1) {
             return StringUtils.join(split, " ");
         }
         return getNxArtifactId();

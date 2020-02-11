@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.listener.contrib">
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
-    point="listener">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <listener name="latestDistributionsListener" async="false" postCommit="false"
       class="org.nuxeo.apidoc.listener.LatestDistributionsListener">
       <event>aboutToCreate</event>

@@ -1,5 +1,4 @@
-<extension target="org.nuxeo.opensocial.gadgets.service"
-  point="gadget">
+<extension target="org.nuxeo.opensocial.gadgets.service" point="gadget">
 
   <internalGadget name="articles" disabled="false">
     <mountPoint>/articles</mountPoint>
@@ -62,18 +61,20 @@
     <icon>public_social_workspaces.png</icon>
   </internalGadget>
 
-  <internalGadget name="socialworkspaceactivitystream"
-    disabled="false">
+  <internalGadget name="socialworkspaceactivitystream" disabled="false">
     <documentation>
       This gadget displays the activities of a Social Workspace.
 
-      The following user preferences can be used to configure it:
+      The following user preferences can be used to configure
+      it:
       - nuxeoTargetContextPath: the path of the Social Workspace for which
       to retrieve the activities
-      - activityLinkBuilder: activity link builder name to use to generate
+      -
+      activityLinkBuilder: activity link builder name to use to generate
       documents and user URLs
 
-      How to include the socialworkspaceactivitystream gadget in a JSF context:
+      How to include the
+      socialworkspaceactivitystream gadget in a JSF context:
       <code>
         <div class="gadget-socialworkspaceactivitystream threeQuarterWidth"></div>
         <script type="text/javascript">
@@ -81,14 +82,16 @@
           baseURL: '#{baseURL}',
           language: '#{localeSelector.language}',
           gadgetDefs: [
-          { specUrl: '#{gadgetsBaseURL}/site/gadgets/socialworkspaceactivitystream/socialworkspaceactivitystream.xml',
+          { specUrl:
+          '#{gadgetsBaseURL}/site/gadgets/socialworkspaceactivitystream/socialworkspaceactivitystream.xml',
           title: '',
           userPrefs: {
           activityLinkBuilder: {
           value: 'default'
           },
           nuxeoTargetContextPath: {
-          value: '#{currentDocument.pathAsString}'
+          value:
+          '#{currentDocument.pathAsString}'
           }
           },
           displayTitleBar: false,
@@ -109,7 +112,8 @@
         <div class="gadget-socialworkspaceactivitystream gadgets-gadget-chrome"></div>
         <script type="text/javascript">
           $('.gadget-socialworkspaceactivitystream').openSocialGadget({
-          baseURL: '${contextPath}' + '/',
+          baseURL: '${contextPath}' +
+          '/',
           language: '${Context.locale.language}',
           gadgetDefs: [{
           specUrl :
@@ -137,18 +141,20 @@
     <icon>gadget-socialworkspaceactivitystream.png</icon>
   </internalGadget>
 
-  <internalGadget name="socialworkspaceminimessages"
-    disabled="false">
+  <internalGadget name="socialworkspaceminimessages" disabled="false">
     <documentation>
       This gadget displays the mini messages of a Social Workspace.
 
-      The following user preferences can be used to configure it:
+      The following user preferences can be used to
+      configure it:
       - nuxeoTargetContextPath: the path of the Social Workspace for which
       to retrieve the mini messages
-      - activityLinkBuilder: activity link builder name to use to generate
+      -
+      activityLinkBuilder: activity link builder name to use to generate
       documents and user URLs
 
-      How to include the socialworkspaceminimessages gadget in a JSF context:
+      How to include the
+      socialworkspaceminimessages gadget in a JSF context:
       <code>
         <div class="gadget-socialworkspaceminimessages threeQuarterWidth"></div>
         <script type="text/javascript">
@@ -156,14 +162,16 @@
           baseURL: '#{baseURL}',
           language: '#{localeSelector.language}',
           gadgetDefs: [
-          { specUrl: '#{gadgetsBaseURL}/site/gadgets/socialworkspaceminimessages/socialworkspaceminimessages.xml',
+          { specUrl:
+          '#{gadgetsBaseURL}/site/gadgets/socialworkspaceminimessages/socialworkspaceminimessages.xml',
           title: '',
           userPrefs: {
           activityLinkBuilder: {
           value: 'default'
           },
           nuxeoTargetContextPath: {
-          value: '#{currentDocument.pathAsString}'
+          value:
+          '#{currentDocument.pathAsString}'
           }
           },
           displayTitleBar: false,

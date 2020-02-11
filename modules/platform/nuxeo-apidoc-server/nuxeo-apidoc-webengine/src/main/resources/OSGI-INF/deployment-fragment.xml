@@ -4,7 +4,7 @@
   <require>org.nuxeo.ecm.platform.lang</require>
 
   <install>
-    <!--  unzip the war template -->
+    <!-- unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
       <include>web/nuxeo.war/**</include>
     </unzip>
@@ -22,39 +22,39 @@
     <delete path="${bundle.fileName}.tmp" />
   </install>
 
-   <extension target="web#AUTH-FILTER">
-        <filter>
-            <display-name>APIDoc Cache and Auth</display-name>
-            <filter-name>APIDOCCache</filter-name>
-            <filter-class>
-                org.nuxeo.apidoc.filter.CacheAndAuthFilter
-            </filter-class>
-        </filter>
+  <extension target="web#AUTH-FILTER">
+    <filter>
+      <display-name>APIDoc Cache and Auth</display-name>
+      <filter-name>APIDOCCache</filter-name>
+      <filter-class>
+        org.nuxeo.apidoc.filter.CacheAndAuthFilter
+      </filter-class>
+    </filter>
 
-        <filter-mapping>
-            <filter-name>APIDOCCache
-            </filter-name>
-            <url-pattern>/*</url-pattern>
-            <dispatcher>REQUEST</dispatcher>
-        </filter-mapping>
-   </extension>
+    <filter-mapping>
+      <filter-name>APIDOCCache
+      </filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+  </extension>
 
-   <extension target="web#FILTER">
-        <filter>
-            <display-name>APIDoc Redirect</display-name>
-            <filter-name>APIDOCRedirect</filter-name>
-            <filter-class>
-                org.nuxeo.apidoc.filter.RedirectFilter
-            </filter-class>
-        </filter>
+  <extension target="web#FILTER">
+    <filter>
+      <display-name>APIDoc Redirect</display-name>
+      <filter-name>APIDOCRedirect</filter-name>
+      <filter-class>
+        org.nuxeo.apidoc.filter.RedirectFilter
+      </filter-class>
+    </filter>
 
-        <filter-mapping>
-            <filter-name>APIDOCRedirect
-            </filter-name>
-            <url-pattern>/*</url-pattern>
-            <dispatcher>REQUEST</dispatcher>
-        </filter-mapping>
-   </extension>
+    <filter-mapping>
+      <filter-name>APIDOCRedirect
+      </filter-name>
+      <url-pattern>/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+  </extension>
 
 
 </fragment>

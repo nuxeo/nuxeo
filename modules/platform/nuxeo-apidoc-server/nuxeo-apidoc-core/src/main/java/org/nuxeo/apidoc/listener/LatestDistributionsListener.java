@@ -67,9 +67,9 @@ public class LatestDistributionsListener implements EventListener {
                    .stream()
                    .filter(doc -> srcDoc.getId() == null || !doc.getId().equals(srcDoc.getId()))
                    .forEach(doc -> {
-                doc.setPropertyValue(flag, false);
-                session.saveDocument(doc);
-            });
+                       doc.setPropertyValue(flag, false);
+                       session.saveDocument(doc);
+                   });
         });
     }
 

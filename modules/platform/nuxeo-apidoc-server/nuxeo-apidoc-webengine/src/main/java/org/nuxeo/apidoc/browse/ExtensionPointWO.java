@@ -41,8 +41,8 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
     }
 
     public ExtensionPointInfo getTargetExtensionPointInfo() {
-        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getExtensionPoint(
-                nxArtifactId);
+        return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession())
+                                   .getExtensionPoint(nxArtifactId);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ExtensionPointWO extends NuxeoArtifactWebObject {
         String[] split = getNxArtifactId().split("--");
         if (split.length == 2) {
             return String.format("'%s' %s", split[0], split[1]);
-        } else if (split.length> 1) {
+        } else if (split.length > 1) {
             return StringUtils.join(split, " ");
         }
         return getNxArtifactId();

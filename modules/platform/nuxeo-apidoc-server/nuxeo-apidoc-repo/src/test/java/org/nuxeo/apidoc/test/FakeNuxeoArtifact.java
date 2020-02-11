@@ -58,7 +58,6 @@ public class FakeNuxeoArtifact implements NuxeoArtifact {
 
     @Override
     public String getHierarchyPath() {
-        // TODO Auto-generated method stub
         return null;
     }
 
