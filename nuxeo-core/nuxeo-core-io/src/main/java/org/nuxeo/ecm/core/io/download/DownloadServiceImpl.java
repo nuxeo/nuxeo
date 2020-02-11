@@ -441,7 +441,7 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
                                                      .build();
             downloadBlob(context);
         } finally {
-            if (!status) {
+            if (!status && !isHead(request)) {
                 ts.remove(key);
             }
         }
