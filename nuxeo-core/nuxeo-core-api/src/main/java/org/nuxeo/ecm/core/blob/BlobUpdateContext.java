@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.time.Duration;
 import java.util.Calendar;
 
 /**
@@ -34,6 +35,8 @@ public class BlobUpdateContext {
 
     public UpdateLegalHold updateLegalHold;
 
+    public RestoreForDuration restoreForDuration;
+
     public BlobUpdateContext(String key) {
         this.key = key;
     }
@@ -45,6 +48,9 @@ public class BlobUpdateContext {
         if (other.updateLegalHold != null) {
             updateLegalHold = other.updateLegalHold;
         }
+        if (other.restoreForDuration != null) {
+            restoreForDuration = other.restoreForDuration;
+        }
         return this;
     }
 
@@ -55,6 +61,11 @@ public class BlobUpdateContext {
 
     public BlobUpdateContext withUpdateLegalHold(boolean hold) {
         updateLegalHold = new UpdateLegalHold(hold);
+        return this;
+    }
+
+    public BlobUpdateContext withRestoreForDuration(Duration duration) {
+        restoreForDuration = new RestoreForDuration(duration);
         return this;
     }
 
@@ -74,6 +85,16 @@ public class BlobUpdateContext {
 
         public UpdateLegalHold(boolean hold) {
             this.hold = hold;
+        }
+
+    }
+
+    public static class RestoreForDuration {
+
+        public final Duration duration;
+
+        public RestoreForDuration(Duration duration) {
+            this.duration = duration;
         }
 
     }
