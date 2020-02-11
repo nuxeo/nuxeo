@@ -26,6 +26,7 @@ import java.io.Serializable;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -172,6 +173,7 @@ public class TestBlobDispatcherRecord {
      * Make the version a record, and check that when we restore it the live doc isn't a record.
      */
     @Test
+    @Ignore("NXP-28645 but keep test for when versions can be made records")
     public void testDispatchRestoreVersionWhichIsRecord() throws Exception {
         String foo = "foo";
         String foo_test_key = "test:acbd18db4cc2f85cedef654fccc4a4d8";
@@ -212,6 +214,7 @@ public class TestBlobDispatcherRecord {
      * Slightly different from above: here the live doc is a record, and we restore a non-record version on top of it.
      */
     @Test
+    @Ignore("NXP-28645 but keep test for when versions can be made records")
     public void testDispatchRestoreVersionOnTopOfRecord() throws Exception {
         String foo = "foo";
         String foo_test_key = "test:acbd18db4cc2f85cedef654fccc4a4d8";
