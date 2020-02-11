@@ -1725,6 +1725,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     protected DocumentModel restoreToVersion(Document doc, Document version, boolean skipSnapshotCreation,
             boolean skipCheckout) {
         checkPermission(doc, WRITE_VERSION);
+        if (doc.isRecord()) {
+            throw new PropertyException("Version cannot be restored on a record: " + doc.getUUID());
+        }
 
         DocumentModel docModel = readModel(doc);
 
@@ -1791,6 +1794,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_PROPERTIES);
+        if (doc.isRecord()) {
+            throw new PropertyException("Record cannot be checked in: " + doc.getUUID());
+        }
         DocumentModel docModel = readModel(doc);
 
         Map<String, Serializable> options = new HashMap<>();
@@ -2035,6 +2041,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (isRecord(docRef)) {
             // already a record, don't do anything
             return;
+        }
+        if (doc.isVersion()) {
+            throw new PropertyException("Version cannot be made record: " + doc.getUUID());
         }
         checkPermission(doc, MAKE_RECORD);
         DocumentModel docModel = readModel(doc);
@@ -2401,6 +2410,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document sec = resolveReference(section.getRef());
         checkPermission(doc, READ);
         checkPermission(sec, ADD_CHILDREN);
+        if (doc.isRecord()) {
+            throw new PropertyException("Record cannot be published: " + doc.getUUID());
+        }
 
         Map<String, Serializable> options = new HashMap<>();
         DocumentModel proxy = null;
