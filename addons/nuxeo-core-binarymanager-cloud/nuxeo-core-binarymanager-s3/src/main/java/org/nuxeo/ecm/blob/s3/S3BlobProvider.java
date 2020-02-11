@@ -18,10 +18,14 @@
  */
 package org.nuxeo.ecm.blob.s3;
 
+import static java.lang.Boolean.TRUE;
+import static org.nuxeo.ecm.blob.s3.S3BlobStore.VER_SEP;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -34,6 +38,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobStatus;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobStoreBlobProvider;
 import org.nuxeo.ecm.core.blob.CachingBlobStore;
@@ -42,10 +47,14 @@ import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.TransactionalBlobStore;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.cloudfront.CloudFrontUrlSigner;
 import com.amazonaws.services.cloudfront.util.SignerUtils.Protocol;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.StorageClass;
 
 /**
  * Blob provider that stores files in S3.
@@ -177,6 +186,49 @@ public class S3BlobProvider extends BlobStoreBlobProvider {
 
     protected String getContentDispositionHeader(Blob blob) {
         return RFC2231.encodeContentDisposition(blob.getFilename(), false, null);
+    }
+
+    @Override
+    public BlobStatus getStatus(ManagedBlob blob) throws IOException {
+        String key = stripBlobKeyPrefix(blob.getKey());
+        String objectKey;
+        String versionId;
+        int seppos = key.indexOf(VER_SEP);
+        if (seppos < 0) {
+            objectKey = key;
+            versionId = null;
+        } else {
+            objectKey = key.substring(0, seppos);
+            versionId = key.substring(seppos + 1);
+        }
+        String bucketKey = config.bucketPrefix + objectKey;
+        GetObjectMetadataRequest request = new GetObjectMetadataRequest(config.bucketName, bucketKey, versionId);
+        ObjectMetadata metadata;
+        try {
+            metadata = config.amazonS3.getObjectMetadata(request);
+        } catch (AmazonServiceException e) {
+            if (S3BlobStore.isMissingKey(e)) {
+                // don't crash for a missing blob, even though it means the storage is corrupted
+                log.error("Failed to get information on blob: {}", key, e);
+                return new BlobStatus().withDownloadable(false);
+            }
+            throw new IOException(e);
+        }
+        // storage class is null for STANDARD
+        String storageClass = metadata.getStorageClass();
+        if (StorageClass.Standard.toString().equals(storageClass)) {
+            storageClass = null;
+        }
+        // x-amz-restore absent
+        // x-amz-restore: ongoing-request="true"
+        // x-amz-restore: ongoing-request="false", expiry-date="Fri, 23 Dec 2012 00:00:00 GMT"
+        Boolean ongoingRestore = metadata.getOngoingRestore();
+        boolean downloadable = !TRUE.equals(ongoingRestore);
+        Date date = metadata.getRestoreExpirationTime();
+        Instant downloadableUntil = date == null ? null : date.toInstant();
+        return new BlobStatus().withStorageClass(storageClass)
+                               .withDownloadable(downloadable)
+                               .withDownloadableUntil(downloadableUntil);
     }
 
 }

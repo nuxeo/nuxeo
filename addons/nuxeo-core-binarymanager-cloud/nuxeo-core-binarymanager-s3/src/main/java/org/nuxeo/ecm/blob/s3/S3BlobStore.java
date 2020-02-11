@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -70,6 +71,7 @@ import com.amazonaws.services.s3.model.ObjectLockRetention;
 import com.amazonaws.services.s3.model.ObjectLockRetentionMode;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.RestoreObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.SSEAwsKeyManagementParams;
@@ -674,6 +676,14 @@ public class S3BlobStore extends AbstractBlobStore {
                 logTrace("hnote right: " + bucketKey + "v=" + versionId);
                 logTrace("rnote right: " + status.toString());
                 amazonS3.setObjectLegalHold(request);
+            }
+            if (blobUpdateContext.restoreForDuration != null) {
+                Duration duration = blobUpdateContext.restoreForDuration.duration;
+                // round up duration to days
+                int days = (int) duration.plusDays(1).minusSeconds(1).toDays();
+                RestoreObjectRequest request = new RestoreObjectRequest(bucketName, bucketKey, days).withVersionId(
+                        versionId);
+                amazonS3.restoreObjectV2(request);
             }
         } catch (AmazonServiceException e) {
             if (isMissingKey(e)) {
