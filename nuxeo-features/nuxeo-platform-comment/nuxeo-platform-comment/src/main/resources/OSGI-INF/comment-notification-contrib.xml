@@ -39,6 +39,13 @@
     <veto name="CommentNotificationVeto" class="org.nuxeo.ecm.platform.comment.notification.CommentNotificationVeto" />
   </extension>
 
+  <documentation>
+    The TreeCommentManager handles subscription to comment events on documents based on this parameter.
+    If true, document author will be subscribed to comment notifications on his document on the first comment. 
+    The comment author will also be subscribed to comment notifications if it is his first comment on the document.
+
+    @author Nour AL KOTOB (nalkotob@nuxeo.com)
+  </documentation>
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <property name="org.nuxeo.ecm.platform.comment.service.notification.autosubscribe">true</property>
   </extension>

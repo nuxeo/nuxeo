@@ -64,10 +64,10 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
         addSubscriptions("CommentAdded");
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
             Comment comment = createComment(commentedDocumentModel);
+            transactionalFeature.nextTransaction();
             DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -85,10 +85,10 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
             comment.setText("I update the comment");
             commentManager.updateComment(session, comment.getId(), comment);
+            transactionalFeature.nextTransaction();
             DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -102,10 +102,9 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
     @Override
     public void shouldNotifyEventWhenRemoveComment() {
         Comment comment = createComment(commentedDocumentModel);
-        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
         transactionalFeature.nextTransaction();
-        commentDocModel.detach(true);
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
+            DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
             commentManager.deleteComment(session, comment.getId());
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID)));
@@ -131,10 +130,10 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
         addSubscriptions("CommentAdded");
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
             Comment reply = createComment(commentDocModel);
+            transactionalFeature.nextTransaction();
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()

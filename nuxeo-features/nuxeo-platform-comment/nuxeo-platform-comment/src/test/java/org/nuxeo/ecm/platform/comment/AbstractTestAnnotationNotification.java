@@ -97,11 +97,11 @@ public abstract class AbstractTestAnnotationNotification {
     @Test
     public void shouldNotifyEventWhenCreateAnnotation() {
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
-            Annotation annotation = createAnnotationAndAddSubscription("CommentAdded");
+            Annotation annotation = createAnnotationAndAddSubscription(COMMENT_ADDED_NOTIFICATION);
+            transactionalFeature.nextTransaction();
             DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -117,10 +117,10 @@ public abstract class AbstractTestAnnotationNotification {
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
             annotation.setText("I update the annotation");
             annotationService.updateAnnotation(session, annotation.getId(), annotation);
+            transactionalFeature.nextTransaction();
             DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -133,14 +133,13 @@ public abstract class AbstractTestAnnotationNotification {
     @Test
     public void shouldNotifyEventWhenRemoveAnnotation() {
         Annotation annotation = createAnnotation(annotatedDocumentModel);
-        DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
-        annotationDocModel.detach(true);
         transactionalFeature.nextTransaction();
         // Notified by comment added
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
-            annotationService.deleteAnnotation(session, annotation.getId());
+            DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocModel.getPropertyValue(COMMENT_PARENT_ID)));
+            annotationService.deleteAnnotation(session, annotation.getId());
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -161,10 +160,10 @@ public abstract class AbstractTestAnnotationNotification {
         // Reply
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
             Comment reply = createAnnotation(annotationDocModel);
+            transactionalFeature.nextTransaction();
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
-            transactionalFeature.nextTransaction();
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
                                           .orElseThrow(() -> new AssertionError("Event wasn't fired"));

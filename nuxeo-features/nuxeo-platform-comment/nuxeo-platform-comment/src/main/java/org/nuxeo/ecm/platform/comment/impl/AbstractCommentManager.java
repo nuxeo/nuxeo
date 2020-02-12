@@ -193,7 +193,7 @@ public abstract class AbstractCommentManager implements CommentManager {
         NuxeoPrincipal principal = Framework.getService(UserManager.class).getPrincipal(author);
         // If principal doesn't exist anymore
         if (principal == null) {
-            log.debug("Principal not found: " + principal);
+            log.debug("Principal not found: " + author);
         }
         return principal;
     }
