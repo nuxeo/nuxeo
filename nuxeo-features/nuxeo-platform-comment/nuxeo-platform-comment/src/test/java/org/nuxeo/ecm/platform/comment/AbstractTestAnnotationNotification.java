@@ -98,10 +98,10 @@ public abstract class AbstractTestAnnotationNotification {
     public void shouldNotifyEventWhenCreateAnnotation() {
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
             Annotation annotation = createAnnotationAndAddSubscription("CommentAdded");
+            transactionalFeature.nextTransaction();
             DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -123,10 +123,10 @@ public abstract class AbstractTestAnnotationNotification {
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
             annotation.setText("I update the annotation");
             annotationService.updateAnnotation(session, annotation.getId(), annotation);
+            transactionalFeature.nextTransaction();
             DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -144,15 +144,15 @@ public abstract class AbstractTestAnnotationNotification {
     @Test
     public void shouldNotifyEventWhenRemoveAnnotation() {
         Annotation annotation = createAnnotation(annotatedDocumentModel);
-        DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
-        annotationDocModel.detach(true);
         transactionalFeature.nextTransaction();
         // Notified by comment added
         assertEquals(1, emailsResult.getMails().size());
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
-            annotationService.deleteAnnotation(session, annotation.getId());
+            DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
+            annotationService.deleteAnnotation(session, annotation.getId());
+
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -176,10 +176,10 @@ public abstract class AbstractTestAnnotationNotification {
         // Reply
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
             Comment reply = createAnnotation(annotationDocModel);
+            transactionalFeature.nextTransaction();
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            transactionalFeature.nextTransaction();
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
                                           .orElseThrow(() -> new AssertionError("Event wasn't fired"));
@@ -215,9 +215,13 @@ public abstract class AbstractTestAnnotationNotification {
     }
 
     protected Annotation createAnnotation(DocumentModel annotatedDocModel) {
+        return createAnnotation(annotatedDocModel, session.getPrincipal().getName(), "Any annotation message");
+    }
+
+    protected Annotation createAnnotation(DocumentModel annotatedDocModel, String author, String text) {
         Annotation annotation = new AnnotationImpl();
-        annotation.setAuthor(session.getPrincipal().getName());
-        annotation.setText("Any annotation message");
+        annotation.setAuthor(author);
+        annotation.setText(text);
         annotation.setParentId(annotatedDocModel.getId());
         annotation.setXpath("files:files/0/file");
         annotation.setCreationDate(Instant.now());

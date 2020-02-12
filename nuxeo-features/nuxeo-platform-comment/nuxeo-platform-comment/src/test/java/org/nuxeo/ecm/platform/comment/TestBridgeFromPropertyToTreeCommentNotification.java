@@ -67,10 +67,10 @@ public class TestBridgeFromPropertyToTreeCommentNotification extends AbstractTes
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
             comment.setText("I update the comment");
             commentManager.updateComment(session, comment.getId(), comment);
+            transactionalFeature.nextTransaction();
             DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            transactionalFeature.nextTransaction();
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
                                           .orElseThrow(() -> new AssertionError("Event wasn't fired"));
@@ -89,17 +89,16 @@ public class TestBridgeFromPropertyToTreeCommentNotification extends AbstractTes
     @Override
     public void shouldNotifyEventWhenRemoveComment() {
         Comment comment = createComment(commentedDocumentModel);
-        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
-        commentDocModel.detach(true);
         transactionalFeature.nextTransaction();
         // There is already 1 mail for comment added with autosubscription
         List<MailMessage> mails = emailsResult.getMails();
         assertEquals(1, mails.size());
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
+            DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
             commentManager.deleteComment(session, comment.getId());
+            transactionalFeature.nextTransaction();
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -117,11 +116,11 @@ public class TestBridgeFromPropertyToTreeCommentNotification extends AbstractTes
     public void shouldNotifyWithTheRightCommentedDocument() {
         // First comment
         Comment comment = createComment(commentedDocumentModel);
-        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
         // before subscribing, or previous event will be notified as well
         transactionalFeature.nextTransaction();
         // Reply
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
+            DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
             Comment reply = createComment(commentDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(

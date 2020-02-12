@@ -62,10 +62,10 @@ public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNo
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
             annotation.setText("I update the annotation");
             annotationService.updateAnnotation(session, annotation.getId(), annotation);
+            transactionalFeature.nextTransaction();
             DocumentModel annotationDocumentModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
                                           .findFirst()
@@ -84,15 +84,14 @@ public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNo
     @Override
     public void shouldNotifyEventWhenRemoveAnnotation() {
         Annotation annotation = createAnnotation(annotatedDocumentModel);
-        DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
-        annotationDocModel.detach(true);
         transactionalFeature.nextTransaction();
         // This CommentManager implementation doesn't autosubscription on comments.
         assertEquals(0, emailsResult.getMails().size());
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
-            annotationService.deleteAnnotation(session, annotation.getId());
+            DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
+            annotationService.deleteAnnotation(session, annotation.getId());
             transactionalFeature.nextTransaction();
 
             Event expectedEvent = listener.streamCapturedEvents()
@@ -110,12 +109,12 @@ public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNo
     public void shouldNotifyWithTheRightAnnotatedDocument() {
         // First comment
         Annotation annotation = createAnnotation(annotatedDocumentModel);
-        DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
         // before subscribing, or previous event will be notified as well
         transactionalFeature.nextTransaction();
-        // Reply
         addSubscriptions("CommentAdded");
+        // Reply
         try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
+            DocumentModel annotationDocModel = session.getDocument(new IdRef(annotation.getId()));
             Comment reply = createAnnotation(annotationDocModel);
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
