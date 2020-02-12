@@ -16,6 +16,7 @@
       <winCommand>gswin64c</winCommand>
       <parameterString>-dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dEPSFitPage -sOutputFile=#{targetFilePath}
         #{sourceFilePath}</parameterString>
+      <testParameterString>-dNODISPLAY</testParameterString>
       <installationDirective>You need to install GhostScript.</installationDirective>
     </command>
 
