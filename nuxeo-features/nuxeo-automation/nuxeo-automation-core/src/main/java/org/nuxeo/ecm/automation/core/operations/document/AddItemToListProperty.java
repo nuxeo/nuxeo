@@ -80,9 +80,8 @@ public class AddItemToListProperty {
             complexProperty.addValue(newVal);
         }
 
-        doc = session.saveDocument(doc);
         if (save) {
-            session.save();
+            doc = session.saveDocument(doc);
         }
         return doc;
     }
