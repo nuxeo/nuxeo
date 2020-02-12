@@ -2038,7 +2038,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public void makeRecord(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
-        if (isRecord(docRef)) {
+        checkPermission(doc, READ);
+        if (doc.isRecord()) {
             // already a record, don't do anything
             return;
         }
@@ -2063,7 +2064,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public void setRetainUntil(DocumentRef docRef, Calendar retainUntil, String comment) throws PropertyException {
         Document doc = resolveReference(docRef);
-        if (!isRecord(docRef)) {
+        checkPermission(doc, READ);
+        if (!doc.isRecord()) {
             throw new PropertyException("Document is not a record");
         }
         Calendar current = doc.getRetainUntil();
