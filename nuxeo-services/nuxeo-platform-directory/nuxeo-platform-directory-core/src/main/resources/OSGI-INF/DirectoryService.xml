@@ -3,6 +3,7 @@
 
   <!-- The cache service must be started before me: TODO use a start level dependency? -->
   <require>org.nuxeo.ecm.core.cache.CacheService</require>
+  <require>org.nuxeo.runtime.cluster.ClusterService</require>
 
   <implementation class="org.nuxeo.ecm.directory.DirectoryServiceImpl" />
 
