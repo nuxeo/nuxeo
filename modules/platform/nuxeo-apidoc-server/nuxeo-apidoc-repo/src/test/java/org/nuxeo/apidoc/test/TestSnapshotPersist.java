@@ -54,7 +54,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestSnapshotPersist {
 
     // helper for quicker update when running tests locally
-    // public static final boolean UPDATE_REFERENCE_FILES_ON_FAILURE = true;
     public static final boolean UPDATE_REFERENCE_FILES_ON_FAILURE = false;
 
     @Inject
@@ -118,9 +117,7 @@ public class TestSnapshotPersist {
         Collections.sort(bids);
 
         StringBuilder sb = new StringBuilder();
-        for (String bid : bids) {
-            sb.append(represent(snapshot.getBundle(bid)));
-        }
+        bids.forEach(bid -> sb.append(represent(snapshot.getBundle(bid))));
 
         checkContentEquals("apidoc_snapshot/bundles.txt", sb.toString());
     }
@@ -130,9 +127,7 @@ public class TestSnapshotPersist {
         Collections.sort(cids);
 
         StringBuilder sb = new StringBuilder();
-        for (String cid : cids) {
-            sb.append(represent(snapshot.getComponent(cid)));
-        }
+        cids.forEach(cid -> sb.append(represent(snapshot.getComponent(cid))));
 
         checkContentEquals("apidoc_snapshot/components.txt", sb.toString());
     }
@@ -142,9 +137,7 @@ public class TestSnapshotPersist {
         Collections.sort(sids);
 
         StringBuilder sb = new StringBuilder();
-        for (String sid : sids) {
-            sb.append(represent(snapshot.getService(sid)));
-        }
+        sids.forEach(sid -> sb.append(represent(snapshot.getService(sid))));
 
         checkContentEquals("apidoc_snapshot/services.txt", sb.toString());
     }
@@ -154,9 +147,7 @@ public class TestSnapshotPersist {
         Collections.sort(epids);
 
         StringBuilder sb = new StringBuilder();
-        for (String epid : epids) {
-            sb.append(represent(snapshot.getExtensionPoint(epid)));
-        }
+        epids.forEach(epid -> sb.append(represent(snapshot.getExtensionPoint(epid))));
 
         checkContentEquals("apidoc_snapshot/extensionpoints.txt", sb.toString());
     }
@@ -166,26 +157,18 @@ public class TestSnapshotPersist {
         Collections.sort(exids);
 
         StringBuilder sb = new StringBuilder();
-        for (String exid : exids) {
-            sb.append(represent(snapshot.getContribution(exid)));
-        }
+        exids.forEach(exid -> sb.append(represent(snapshot.getContribution(exid))));
 
         checkContentEquals("apidoc_snapshot/contributions.txt", sb.toString());
     }
 
     protected void checkOperations(DistributionSnapshot snapshot) throws IOException {
         List<OperationInfo> ops = snapshot.getOperations();
-        Collections.sort(ops, new Comparator<OperationInfo>() {
-            @Override
-            public int compare(OperationInfo arg0, OperationInfo arg1) {
-                return arg0.getId().compareTo(arg1.getId());
-            }
-        });
+        Collections.sort(ops, Comparator.comparing(OperationInfo::getId));
 
         StringBuilder sb = new StringBuilder();
-        for (OperationInfo op : ops) {
-            sb.append(represent(op));
-        }
+        ops.forEach(op -> sb.append(represent(op)));
+
         checkContentEquals("apidoc_snapshot/operations.txt", sb.toString());
     }
 

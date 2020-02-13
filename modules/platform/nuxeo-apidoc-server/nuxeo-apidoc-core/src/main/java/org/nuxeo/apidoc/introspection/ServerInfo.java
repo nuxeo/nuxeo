@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -353,8 +354,13 @@ public class ServerInfo {
             }
 
             if (ri.getExtensions() != null) {
+                Map<String, AtomicInteger> comps = new HashMap<>();
                 for (Extension xt : ri.getExtensions()) {
-                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component, xt.getExtensionPoint());
+                    // handle multiple contributions to the same extension point
+                    String id = xt.getExtensionPoint();
+                    comps.computeIfAbsent(id, k -> new AtomicInteger(-1)).incrementAndGet();
+                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component, xt.getExtensionPoint(),
+                            comps.get(id).get());
                     xtinfo.setTargetComponentName(xt.getTargetComponent());
                     xtinfo.setContribution(xt.getContributions());
                     xtinfo.setDocumentation(xt.getDocumentation());
