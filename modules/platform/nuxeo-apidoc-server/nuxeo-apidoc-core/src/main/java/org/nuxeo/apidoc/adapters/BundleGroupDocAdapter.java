@@ -64,7 +64,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     public List<String> getBundleIds() {
         List<String> bundles = new ArrayList<>();
         String query = QueryHelper.select(BundleInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
         for (DocumentModel child : docs) {
             BundleInfo bi = child.getAdapter(BundleInfo.class);
             if (bi != null && !bi.getId().equals(getId())) {
@@ -87,7 +87,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     public List<BundleGroup> getSubGroups() {
         List<BundleGroup> grps = new ArrayList<>();
         String query = QueryHelper.select(TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
         for (DocumentModel child : docs) {
             BundleGroup grp = child.getAdapter(BundleGroup.class);
             if (grp != null) {

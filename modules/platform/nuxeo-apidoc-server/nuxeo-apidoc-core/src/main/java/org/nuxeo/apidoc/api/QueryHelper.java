@@ -33,6 +33,11 @@ public class QueryHelper {
     public static final String NOT_DELETED = NXQL.ECM_ISTRASHED + " = 0";
 
     /**
+     * @since 11.1
+     */
+    public static final String ORDER_BY_POS = " ORDER BY ecm:pos";
+
+    /**
      * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString()
      */
     public static String select(String type, DocumentModel doc) {

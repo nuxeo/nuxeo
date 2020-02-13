@@ -39,7 +39,7 @@
     </doctype>
 
 
-    <doctype name="NXBundle" extends="Folder">
+    <doctype name="NXBundle" extends="OrderedFolder">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="file" />
@@ -55,7 +55,7 @@
       </subtypes>
     </doctype>
 
-    <doctype name="NXComponent" extends="Folder">
+    <doctype name="NXComponent" extends="OrderedFolder">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="file" />
@@ -70,7 +70,7 @@
       </subtypes>
     </doctype>
 
-    <doctype name="NXExtensionPoint" extends="Folder">
+    <doctype name="NXExtensionPoint" extends="OrderedFolder">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="file" />
