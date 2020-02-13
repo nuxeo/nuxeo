@@ -30,6 +30,7 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.TOP_LEVEL_DOCU
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
@@ -92,6 +93,8 @@ public class CommentUtils {
             DocumentModel userModel = userManager.getBareUserModel();
             userModel.setProperty("user", "username", userName);
             userModel.setProperty("user", "email", userName + "@nuxeo.com");
+            userModel.setProperty("user", "password", userName);
+            userModel.setProperty("user", "groups", Collections.singletonList("members"));
             userManager.createUser(userModel);
         } catch (UserAlreadyExistsException e) {
             // Avoid failure in tests if the user already exists

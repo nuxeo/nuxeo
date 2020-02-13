@@ -357,7 +357,7 @@ public class TestTreeAnnotationService {
             annotationService.updateExternalAnnotation(bobSession, entityId, annotation);
             fail("bob should not be able to edit annotation");
         } catch (CommentNotFoundException e) {
-            assertEquals("The external annotation foo does not exist.", e.getMessage());
+            assertEquals("The external comment foo does not exist.", e.getMessage());
         }
     }
 

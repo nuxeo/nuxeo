@@ -27,6 +27,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN;
@@ -81,6 +82,8 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @RunWith(FeaturesRunner.class)
 @Features(CommentAdapterFeature.class)
 public abstract class AbstractCommentAdapterTest extends BaseTest {
+
+    protected static final String JDOE = "jdoe";
 
     @Inject
     protected CommentManager commentManager;
@@ -392,10 +395,10 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         fetchInvalidations();
 
         String jsonComment = String.format("{\"entity-type\":\"%s\",\"%s\":\"And now I update it\"}",
-                COMMENT_ENTITY_TYPE, COMMENT_TEXT_FIELD);
+                                           COMMENT_ENTITY_TYPE, COMMENT_TEXT_FIELD);
 
         try (CloseableClientResponse response = getResponse(RequestType.PUT,
-                "id/" + file.getId() + "/@comment/" + commentId, jsonComment)) {
+                                                            "id/" + file.getId() + "/@comment/" + commentId, jsonComment)) {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
             JsonNode node = mapper.readTree(response.getEntityInputStream());
@@ -405,6 +408,47 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
             assertEquals("an-id", node.get(EXTERNAL_ENTITY_ID).textValue());
             assertEquals("some-content", node.get(EXTERNAL_ENTITY).textValue());
             assertEquals("somewhere", node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+        }
+    }
+
+    /*
+     * NXP-28483
+     */
+    @Test
+    public void testUpdateCommentWithRegularUser() throws IOException {
+        // create jdoe user as a regular user
+        createUser(JDOE);
+        // use it in rest calls
+        service = getServiceFor(JDOE, JDOE);
+
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        String commentId;
+        // use rest for creation in order to have the correct author
+        Comment comment = instantiateComment(file.getId());
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
+                jsonComment)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            commentId = node.get(COMMENT_ID_FIELD).textValue();
+        }
+
+        // now update the comment
+        comment.setText("And now I update it");
+        jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "id/" + file.getId() + "/@comment/" + commentId, jsonComment)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            // assert the response
+            assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
+            fetchInvalidations();
+            // assert DB was updated
+            Comment updatedComment = commentManager.getComment(session, commentId);
+            assertEquals("And now I update it", updatedComment.getText());
         }
     }
 
@@ -495,6 +539,48 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
             Comment updatedComment = commentManager.getExternalComment(session, entityId);
             // Author should not be modified
             assertEquals(author, updatedComment.getAuthor());
+        }
+    }
+
+    /*
+     * NXP-28483
+     */
+    @Test
+    public void testUpdateExternalCommentWithRegularUser() throws IOException {
+        // create jdoe user as a regular user
+        createUser(JDOE);
+        // use it in rest calls
+        service = getServiceFor(JDOE, JDOE);
+
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        String entityId = "foo";
+        // use rest for creation in order to have the correct author
+        CommentImpl comment = new CommentImpl();
+        comment.setEntityId(entityId);
+        comment.setParentId(file.getId());
+        comment.setText("Some text");
+        String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
+                jsonComment)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
+
+        // now update the comment
+        comment.setText("And now I update it");
+        jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "id/" + file.getId() + "/@comment/external/" + entityId, jsonComment)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            // assert the response
+            assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
+            fetchInvalidations();
+            // assert DB was updated
+            Comment updatedComment = commentManager.getExternalComment(session, entityId);
+            assertEquals("And now I update it", updatedComment.getText());
         }
     }
 
