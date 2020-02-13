@@ -110,7 +110,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public Collection<ExtensionPointInfo> getExtensionPoints() {
         List<ExtensionPointInfo> xps = new ArrayList<>();
         String query = QueryHelper.select(ExtensionPointInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
         for (DocumentModel child : docs) {
             ExtensionPointInfo xp = child.getAdapter(ExtensionPointInfo.class);
             if (xp != null) {
@@ -124,7 +124,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public Collection<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> contribs = new ArrayList<>();
         String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
         for (DocumentModel child : docs) {
             ExtensionInfo xp = child.getAdapter(ExtensionInfo.class);
             if (xp != null) {
@@ -208,7 +208,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public List<ServiceInfo> getServices() {
         List<ServiceInfo> result = new ArrayList<>();
         String query = QueryHelper.select(ServiceInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
         for (DocumentModel siDoc : docs) {
             ServiceInfo si = siDoc.getAdapter(ServiceInfo.class);
             if (si != null) {

@@ -102,7 +102,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
             dist = getCoreSession().getParentDocument(dist.getRef());
         }
         String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, dist, ExtensionInfo.PROP_EXTENSION_POINT, getId());
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
         for (DocumentModel contribDoc : docs) {
             ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
             if (contrib != null) {

@@ -101,7 +101,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
         List<DistributionSnapshot> result = new ArrayList<>();
-        String query = "SELECT * FROM " + TYPE_NAME + " where ecm:isTrashed = 0 AND ecm:isVersion = 0";
+        String query = "SELECT * FROM " + TYPE_NAME + " where " + QueryHelper.NOT_DELETED + " AND ecm:isVersion = 0";
         DocumentModelList docs = session.query(query);
         for (DocumentModel child : docs) {
             DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
@@ -119,7 +119,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     protected <T> List<T> getChildren(Class<T> adapter, String docType) {
         List<T> result = new ArrayList<>();
         String query = QueryHelper.select(docType, doc);
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
         for (DocumentModel child : docs) {
             T ob = child.getAdapter(adapter);
             if (ob != null) {
@@ -167,7 +167,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<BundleGroup> getBundleGroups() {
         List<BundleGroup> grps = new ArrayList<>();
         String query = QueryHelper.select(BundleGroup.TYPE_NAME, doc, NXQL.ECM_PARENTID, getBundleContainer().getId());
-        DocumentModelList docs = getCoreSession().query(query);
+        DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
         for (DocumentModel child : docs) {
             BundleGroup bg = child.getAdapter(BundleGroup.class);
             if (bg != null) {
