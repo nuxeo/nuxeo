@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.LogManager;
@@ -154,6 +155,8 @@ public class CommentUtils {
             DocumentModel userModel = userManager.getBareUserModel();
             userModel.setProperty("user", "username", userName);
             userModel.setProperty("user", "email", userName + "@nuxeo.com");
+            userModel.setProperty("user", "password", userName);
+            userModel.setProperty("user", "groups", List.of("members"));
             userManager.createUser(userModel);
         } catch (UserAlreadyExistsException e) {
             // Avoid failure in tests if the user already exists
