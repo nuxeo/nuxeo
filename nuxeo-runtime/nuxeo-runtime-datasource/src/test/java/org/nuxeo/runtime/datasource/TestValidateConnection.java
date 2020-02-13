@@ -62,7 +62,7 @@ public class TestValidateConnection {
             testPooled("no-valid");
             throw new AssertionError("didn't caught connection error");
         } catch (ReportException cause) {
-            Assert.assertEquals(cause.site, CaughtSite.onUse);
+            Assert.assertEquals(cause.site, CaughtSite.ON_USE);
         }
     }
 
@@ -120,7 +120,7 @@ public class TestValidateConnection {
         static final long serialVersionUID = 1L;
 
         enum CaughtSite {
-            onBorrow, onUse, onReturn
+            ON_BORROW, ON_USE, ON_RETURN
         }
 
         final CaughtSite site;
@@ -137,16 +137,16 @@ public class TestValidateConnection {
             try (Statement statement = connection.createStatement()) {
                 statement.execute("SELECT 1");
             } catch (SQLException cause) {
-                throw new ReportException(CaughtSite.onUse, cause);
+                throw new ReportException(CaughtSite.ON_USE, cause);
             } finally {
                 try {
                     connection.close();
                 } catch (SQLException cause) {
-                    throw new ReportException(CaughtSite.onReturn, cause);
+                    throw new ReportException(CaughtSite.ON_RETURN, cause);
                 }
             }
         } catch (SQLException cause) {
-            throw new ReportException(CaughtSite.onBorrow, cause);
+            throw new ReportException(CaughtSite.ON_BORROW, cause);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }

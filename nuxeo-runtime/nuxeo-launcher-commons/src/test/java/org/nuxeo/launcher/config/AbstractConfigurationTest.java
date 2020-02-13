@@ -25,19 +25,20 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.nuxeo.common.Environment;
 
 public abstract class AbstractConfigurationTest {
 
-    static final Log log = LogFactory.getLog(AbstractConfigurationTest.class);
+    protected static final Logger log = LogManager.getLogger(AbstractConfigurationTest.class);
 
     protected ConfigurationGenerator configGenerator;
 
@@ -60,7 +61,7 @@ public abstract class AbstractConfigurationTest {
     @Before
     public void setUp() throws Exception {
         nuxeoHome = new File("target/launcher");
-        nuxeoHome.delete();
+        Files.deleteIfExists(nuxeoHome.toPath());
         nuxeoHome.mkdirs();
         File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
         FileUtils.copyFileToDirectory(nuxeoConf, nuxeoHome);
@@ -75,7 +76,7 @@ public abstract class AbstractConfigurationTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         FileUtils.deleteQuietly(nuxeoHome);
 
         // Restore or clear all the system properties manipulated by the current test
