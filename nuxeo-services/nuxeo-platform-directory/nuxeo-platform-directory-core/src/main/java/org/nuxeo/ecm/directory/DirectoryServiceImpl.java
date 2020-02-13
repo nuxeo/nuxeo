@@ -26,21 +26,28 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLICY_NEVER_LOAD;
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
 
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class DirectoryServiceImpl extends DefaultComponent implements DirectoryService {
+
+    /** @since 11.1 */
+    public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.directory.cluster.start.duration";
 
     protected static final String DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX = "_";
 
@@ -92,6 +99,26 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
 
     @Override
     public void start(ComponentContext context) {
+        ClusterService clusterService = Framework.getService(ClusterService.class);
+        Duration duration;
+        try {
+            String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
+            if (isBlank(prop)) {
+                duration = Duration.ZERO;
+            } else {
+                duration = DurationUtils.parse(prop);
+            }
+        } catch (DateTimeParseException e) {
+            duration = Duration.ZERO;
+        }
+        if (duration.isZero() || duration.isNegative()) {
+            duration = Duration.ofMinutes(1);
+        }
+        Duration pollDelay = Duration.ofSeconds(1);
+        clusterService.runAtomically("start-directories", duration, pollDelay, this::start);
+    }
+
+    protected void start() {
         List<Directory> directories = getDirectories();
         directories.forEach(Directory::initialize);
         directories.forEach(Directory::initializeReferences);
