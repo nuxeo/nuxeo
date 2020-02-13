@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -170,8 +171,17 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                     extensionPoints.put(epi.getId(), epi);
                 }
 
+                Map<String, AtomicInteger> comps = new HashMap<>();
                 for (ExtensionInfo ei : cInfo.getExtensions()) {
-                    contributions.put(ei.getId(), ei);
+                    // handle multiple contributions to the same extension point
+                    String id = ei.getId();
+                    if (comps.containsKey(id)) {
+                        int num = comps.get(id).incrementAndGet();
+                        id += "-" + num;
+                    } else {
+                        comps.put(id, new AtomicInteger());
+                    }
+                    contributions.put(id, ei);
                 }
             }
         }
