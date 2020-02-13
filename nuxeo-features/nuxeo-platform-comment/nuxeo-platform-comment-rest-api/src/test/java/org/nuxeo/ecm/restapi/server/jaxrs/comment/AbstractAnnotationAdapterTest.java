@@ -23,13 +23,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_ENTITY_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_FIELD;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ID_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_FIELD;
+import static org.nuxeo.ecm.restapi.server.jaxrs.comment.AbstractCommentAdapterTest.JDOE;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -170,6 +174,50 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
             Annotation updatedAnnotation = annotationService.getAnnotation(session, annotation.getId());
             assertEquals("test", updatedAnnotation.getText());
             assertEquals(author, updatedAnnotation.getAuthor());
+        }
+    }
+
+    /*
+     * NXP-28483
+     */
+    @Test
+    public void testUpdateAnnotationWithRegularUser() throws IOException {
+        // create jdoe user as a regular user
+        createUser(JDOE);
+        // use it in rest calls
+        service = getServiceFor(JDOE, JDOE);
+
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        String annotationId;
+        // use rest for creation in order to have the correct author
+        var annotation = new AnnotationImpl();
+        annotation.setParentId(file.getId());
+        annotation.setText("Some text");
+        annotation.setXpath("file:content");
+        String jsonComment = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@annotation",
+                jsonComment)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            annotationId = node.get(COMMENT_ID_FIELD).textValue();
+        }
+
+        // now update the annotation
+        annotation.setText("And now I update it");
+        jsonComment = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "id/" + file.getId() + "/@annotation/" + annotationId, jsonComment)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            // assert the response
+            assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
+            fetchInvalidations();
+            // assert DB was updated
+            var updatedAnnotation = annotationService.getAnnotation(session, annotationId);
+            assertEquals("And now I update it", updatedAnnotation.getText());
         }
     }
 
@@ -319,6 +367,49 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
             fetchInvalidations();
             Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, entityId);
             assertEquals(author, updatedAnnotation.getAuthor());
+        }
+    }
+
+    /*
+     * NXP-28483
+     */
+    @Test
+    public void testUpdateExternalAnnotationWithRegularUser() throws IOException {
+        // create jdoe user as a regular user
+        createUser(JDOE);
+        // use it in rest calls
+        service = getServiceFor(JDOE, JDOE);
+
+        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
+
+        String entityId = "foo";
+        // use rest for creation in order to have the correct author
+        var annotation = new AnnotationImpl();
+        annotation.setEntityId(entityId);
+        annotation.setParentId(file.getId());
+        annotation.setText("Some text");
+        annotation.setXpath("file:content");
+        String jsonComment = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@annotation",
+                jsonComment)) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        }
+
+        // now update the annotation
+        annotation.setText("And now I update it");
+        jsonComment = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
+        try (CloseableClientResponse response = getResponse(RequestType.PUT,
+                "id/" + file.getId() + "/@annotation/external/" + entityId, jsonComment)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            // assert the response
+            assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
+            fetchInvalidations();
+            // assert DB was updated
+            var updatedAnnotation = annotationService.getExternalAnnotation(session, entityId);
+            assertEquals("And now I update it", updatedAnnotation.getText());
         }
     }
 
