@@ -18,7 +18,11 @@
  */
 package org.nuxeo.runtime.cluster;
 
+import java.time.Duration;
+
 import javax.validation.constraints.NotNull;
+
+import org.nuxeo.runtime.RuntimeServiceException;
 
 /**
  * Cluster Service, defining cluster node state and identity.
@@ -41,5 +45,16 @@ public interface ClusterService {
      */
     @NotNull
     String getNodeId();
+
+    /**
+     * Runs a {@link Runnable} atomically in a cluster-wide critical section, outside a transaction.
+     *
+     * @param key the key used to determine atomicity
+     * @param duration the duration during which we attempt to acquire the lock
+     * @param pollDelay the delay between two subsequent polls of the lock
+     * @param runnable the runnable
+     * @throws RuntimeServiceException if locking failed
+     */
+    void runAtomically(String key, Duration duration, Duration pollDelay, Runnable runnable);
 
 }

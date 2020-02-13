@@ -29,7 +29,9 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @since 11.1
  */
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.runtime.cluster")
+@Deploy("org.nuxeo.runtime.cluster.tests:OSGI-INF/test-cluster-feature.xml")
 public class ClusterFeature implements RunnerFeature {
 
 }
