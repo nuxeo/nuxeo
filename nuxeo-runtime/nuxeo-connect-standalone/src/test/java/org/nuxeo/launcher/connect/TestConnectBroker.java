@@ -143,7 +143,8 @@ public class TestConnectBroker {
         String addonJSON = FileUtils.readFileToString(new File(testStore, "addon_remote.json"), UTF_8);
         String hotfixJSON = FileUtils.readFileToString(new File(testStore, "hotfix_remote.json"), UTF_8);
         String studioJSON = FileUtils.readFileToString(new File(testStore, "studio_remote.json"), UTF_8);
-        String addonWithPrivateJSON = FileUtils.readFileToString(new File(testStore, "addon_with_private_remote.json"), UTF_8);
+        String addonWithPrivateJSON = FileUtils.readFileToString(new File(testStore, "addon_with_private_remote.json"),
+                UTF_8);
         NuxeoConnectClient.getConnectGatewayComponent()
                           .setTestConnector(new LocalConnectFakeConnector(addonJSON, hotfixJSON, studioJSON,
                                   addonWithPrivateJSON));
@@ -184,8 +185,8 @@ public class TestConnectBroker {
         File uninstallFile = new File(testStore, "uninstall.xml");
 
         // Copy all zip from testStore
-        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false).forEachRemaining(
-                pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
+        FileUtils.iterateFiles(testStore, new String[] { "zip" }, false)
+                 .forEachRemaining(pkgZip -> copyPackageToStore(nuxeoStore, uninstallFile, pkgZip));
         // Copy only installed packages from testStore/local-only
         copyPackageToStore(nuxeoStore, uninstallFile, new File(TEST_LOCAL_ONLY_PATH, "K-1.0.0-SNAPSHOT.zip"));
 
@@ -247,7 +248,7 @@ public class TestConnectBroker {
                 " addon     started\tJ (id: J-1.0.1) \n" + //
                 " addon     started\tK (id: K-1.0.0-SNAPSHOT) \n" + //
                 " addon  downloaded\tM (id: M-1.0.0-SNAPSHOT) \n" + //
-                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n" +//
+                " addon      remote\tM (id: M-1.0.1) [REGISTRATION REQUIRED]\n" + //
                 " addon  downloaded\tN (id: N-1.0.1-HF08-SNAPSHOT) \n" + //
                 " addon  downloaded\tNXP-24507-A (id: NXP-24507-A-1.0.0) \n" + //
                 " addon  downloaded\tNXP-24507-B (id: NXP-24507-B-1.0.0) \n";
@@ -371,10 +372,10 @@ public class TestConnectBroker {
 
         // THEN it shows all expected properties
         expectedLogs = "****************************************\n" + //
-        "Package: privA-1.0.1\n" + //
+                "Package: privA-1.0.1\n" + //
                 "State: remote [PRIVATE (Owner: customer1)]\n" + //
                 "Version: 1.0.1\n" + //
-                "Name: privA\n"+ //
+                "Name: privA\n" + //
                 "Type: addon\n" + //
                 "Target platforms: {server-8.3,server-8.4}\n" + //
                 "Supports hot-reload: false\n" + //

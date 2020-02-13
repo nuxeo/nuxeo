@@ -23,6 +23,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import org.apache.commons.io.FileUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,7 +64,7 @@ public class DatabaseDerby extends DatabaseHelper {
         try {
             Class.forName(DRIVER).getDeclaredConstructor().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         File dbdir = new File(DIRECTORY);
         File parent = dbdir.getParentFile();
@@ -93,7 +94,7 @@ public class DatabaseDerby extends DatabaseHelper {
         } finally {
             super.tearDown();
         }
-        throw new RuntimeException("Expected Derby shutdown exception instead", ex);
+        throw new NuxeoException("Expected Derby shutdown exception instead", ex);
     }
 
     @Override

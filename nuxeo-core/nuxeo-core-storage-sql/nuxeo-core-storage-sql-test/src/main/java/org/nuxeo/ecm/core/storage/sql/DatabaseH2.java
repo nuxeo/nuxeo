@@ -26,6 +26,7 @@ import java.sql.Statement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,7 +36,12 @@ public class DatabaseH2 extends DatabaseHelper {
 
     private static final Log log = LogFactory.getLog(DatabaseH2.class);
 
-    /** This directory will be deleted and recreated. */
+    /**
+     * This directory will be deleted and recreated.
+     *
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     protected static final String DIRECTORY = "target";
 
     protected static final String DEF_USER = "sa";
@@ -70,7 +76,7 @@ public class DatabaseH2 extends DatabaseHelper {
         try {
             Class.forName(DRIVER);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw new NuxeoException(e);
         }
         setProperties();
         checkDatabaseLive();
@@ -85,8 +91,12 @@ public class DatabaseH2 extends DatabaseHelper {
         }
     }
 
+    /**
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated(since = "11.1", forRemoval = true)
     protected String getId() {
-        return "nuxeo";
+        return "nuxeo"; // NOSONAR
     }
 
     @Override
@@ -124,8 +134,7 @@ public class DatabaseH2 extends DatabaseHelper {
 
     @Override
     public RepositoryDescriptor getRepositoryDescriptor() {
-        RepositoryDescriptor descriptor = new RepositoryDescriptor();
-        return descriptor;
+        return new RepositoryDescriptor();
     }
 
     @Override
