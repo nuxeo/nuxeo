@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.directory.api.DirectoryDeleteConstraint;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
@@ -37,13 +38,12 @@ import org.nuxeo.ecm.directory.api.ui.HierarchicalDirectoryUIDeleteConstraint;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @author Anahide Tchertchian
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.directory")
 @Deploy("org.nuxeo.ecm.directory.web")
