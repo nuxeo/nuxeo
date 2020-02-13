@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.cluster.ClusterService" version="1.0">
 
+  <require>org.nuxeo.runtime.kv.KeyValueService</require>
+
   <documentation>
     The Cluster service allows registration of the cluster node id and
     other cluster-related parameters.

@@ -22,13 +22,19 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.KeyValueService;
+import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Implementation for the Cluster Service.
@@ -115,6 +121,150 @@ public class ClusterServiceImpl extends DefaultComponent implements ClusterServi
             throw new UnsupportedOperationException("test mode only");
         }
         this.nodeId = nodeId;
+    }
+
+    @Override
+    public void runAtomically(String key, Duration duration, Duration pollDelay, Runnable runnable) {
+        if (!isEnabled()) {
+            runnable.run();
+            return;
+        }
+        new ClusterLockHelper(getNodeId(), duration, pollDelay).runAtomically(key, runnable);
+    }
+
+    public static class ClusterLockHelper {
+
+        private static final Logger log = LogManager.getLogger(ClusterLockHelper.class);
+
+        public static final String KV_STORE_NAME = "cluster";
+
+        // TTL set on the lock, to make it expire if the process crashes or gets stuck
+        // this is a multiplier of the duration during which we attempt to acquire the lock
+        private static final int TTL_MULTIPLIER = 10;
+
+        protected final String nodeId;
+
+        protected final Duration duration;
+
+        protected final Duration pollDelay;
+
+        protected final KeyValueStore kvStore;
+
+        public ClusterLockHelper(String nodeId, Duration duration, Duration pollDelay) {
+            this.nodeId = nodeId;
+            this.duration = duration;
+            this.pollDelay = pollDelay;
+            kvStore = Framework.getService(KeyValueService.class).getKeyValueStore(KV_STORE_NAME);
+        }
+
+        /**
+         * Runs a {@link Runnable} atomically in a cluster-wide critical section, outside a transaction.
+         */
+        public void runAtomically(String key, Runnable runnable) {
+            runInSeparateTransaction(() -> runAtomicallyInternal(key, runnable));
+        }
+
+        /**
+         * Runs a {@link Runnable} outside the current transaction (committing and finally restarting it if needed).
+         *
+         * @implSpec this is different from {@link TransactionHelper#runWithoutTransaction(Runnable)} because that one,
+         *           in some implementations, may keep the current transaction and start the runnable in a new thread.
+         *           Here we don't want a new thread or a risk of deadlock, so we just commit the original transaction.
+         */
+        protected void runInSeparateTransaction(Runnable runnable) {
+            // check if there is a current transaction, before committing it
+            boolean transaction = TransactionHelper.isTransactionActiveOrMarkedRollback();
+            if (transaction) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+            boolean completedAbruptly = true;
+            try {
+                if (transaction) {
+                    TransactionHelper.runInTransaction(runnable);
+                } else {
+                    runnable.run();
+                }
+                completedAbruptly = false;
+            } finally {
+                if (transaction) {
+                    // restart a transaction if there was one originally
+                    try {
+                        TransactionHelper.startTransaction();
+                    } finally {
+                        if (completedAbruptly) {
+                            // mark rollback-only if there was an exception
+                            TransactionHelper.setTransactionRollbackOnly();
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * Runs a {@link Runnable} atomically, in a cluster-wide critical section.
+         */
+        protected void runAtomicallyInternal(String key, Runnable runnable) {
+            String lockInfo = tryLock(key);
+            if (lockInfo != null) {
+                try {
+                    runnable.run();
+                } finally {
+                    unLock(key, lockInfo);
+                }
+            } else {
+                throw new RuntimeServiceException("Failed to acquire lock '" + key + "' after " + duration.toSeconds()
+                        + "s, owner: " + getLock(key));
+            }
+        }
+
+        // try to acquire the lock and fail if it takes too long
+        protected String tryLock(String key) {
+            log.debug("Trying to lock '{}'", key);
+            long deadline = System.nanoTime() + duration.toNanos();
+            long ttl = duration.multipliedBy(TTL_MULTIPLIER).toSeconds();
+            do {
+                // try to acquire the lock
+                String lockInfo = "node=" + nodeId + " time=" + Instant.now();
+                if (kvStore.compareAndSet(key, null, lockInfo, ttl)) {
+                    // lock acquired
+                    log.debug("Lock '{}' acquired after {}ms", () -> key,
+                            () -> (System.nanoTime() - (deadline - duration.toNanos())) / 1_000_000);
+                    return lockInfo;
+                }
+                // wait a bit before retrying
+                log.debug("  Sleeping on busy lock '{}' for {}ms", () -> key, pollDelay::toMillis);
+                try {
+                    Thread.sleep(pollDelay.toMillis());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeServiceException(e);
+                }
+            } while (System.nanoTime() < deadline);
+            log.debug("Failed to acquire lock '{}' after {}s", () -> key, duration::toSeconds);
+            return null;
+        }
+
+        protected void unLock(String key, String lockInfo) {
+            log.debug("Unlocking '{}'", key);
+            if (kvStore.compareAndSet(key, lockInfo, null)) {
+                return;
+            }
+            // couldn't remove the lock, it expired an may have been reacquired
+            String current = kvStore.getString(key);
+            if (current == null) {
+                // lock expired but was not reacquired
+                log.warn("Unlocking '{}' but the lock had already expired; "
+                        + "consider increasing the try duration for this lock", key);
+            } else {
+                // lock expired and was reacquired
+                log.error("Failed to unlock '{}', the lock expired and has a new owner: {}; "
+                        + "consider increasing the try duration for this lock", key, getLock(key));
+            }
+        }
+
+        protected String getLock(String key) {
+            return kvStore.getString(key);
+        }
     }
 
 }
