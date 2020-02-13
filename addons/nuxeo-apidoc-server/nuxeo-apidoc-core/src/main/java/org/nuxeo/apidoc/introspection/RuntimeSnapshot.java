@@ -170,8 +170,18 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                     extensionPoints.put(epi.getId(), epi);
                 }
 
+                Map<String, Integer> comps = new HashMap<String, Integer>();
                 for (ExtensionInfo ei : cInfo.getExtensions()) {
-                    contributions.put(ei.getId(), ei);
+                    // handle multiple contributions to the same extension point
+                    String id = ei.getId();
+                    if (comps.containsKey(id)) {
+                        Integer num = comps.get(id);
+                        comps.put(id, num + 1);
+                        id += "-" + String.valueOf(num + 1);
+                    } else {
+                        comps.put(id, Integer.valueOf(0));
+                    }
+                    contributions.put(id, ei);
                 }
             }
         }

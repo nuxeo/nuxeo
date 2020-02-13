@@ -1,10 +1,21 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.test.works" version="1.0">
 
-  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+  <extension target="org.nuxeo.ecm.core.work.service"
+    point="queues">
     <queue id="apidoc-xml-extractor">
       <maxThreads>1</maxThreads>
       <category>apidoc-xml-extractor</category>
+    </queue>
+  </extension>
+
+  <!-- additional contrib to the same extension point as non-regression test
+    for NXP-19849 -->
+  <extension target="org.nuxeo.ecm.core.work.service"
+    point="queues">
+    <queue id="apidoc-xml-extractor-2">
+      <maxThreads>1</maxThreads>
+      <category>apidoc-xml-extractor-2</category>
     </queue>
   </extension>
 

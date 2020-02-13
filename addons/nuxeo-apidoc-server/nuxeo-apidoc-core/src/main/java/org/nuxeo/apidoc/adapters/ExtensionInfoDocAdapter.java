@@ -41,11 +41,17 @@ import org.nuxeo.runtime.model.ComponentName;
 
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionInfo {
 
-    public static ExtensionInfoDocAdapter create(ExtensionInfo xi, CoreSession session, String containerPath) {
+    public static ExtensionInfoDocAdapter create(ExtensionInfo xi, Integer index, CoreSession session,
+            String containerPath) {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
-        String name = computeDocumentName("contrib-" + xi.getId());
+        String id = xi.getId();
+        if (index > 0) {
+            id += "-" + String.valueOf(index);
+        }
+        
+        String name = computeDocumentName("contrib-" + id);
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
@@ -53,9 +59,9 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", xi.getId());
+        doc.setPropertyValue("dc:title", id);
 
-        doc.setPropertyValue(PROP_CONTRIB_ID, xi.getId());
+        doc.setPropertyValue(PROP_CONTRIB_ID, id);
         doc.setPropertyValue(PROP_DOC, xi.getDocumentation());
         doc.setPropertyValue(PROP_EXTENSION_POINT, xi.getExtensionPoint());
         doc.setPropertyValue(PROP_TARGET_COMPONENT_NAME, xi.getTargetComponentName().getName());

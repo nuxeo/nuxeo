@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.repository;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -302,8 +303,16 @@ public class SnapshotPersister {
         for (ExtensionPointInfo epi : ci.getExtensionPoints()) {
             createExtensionPointDoc(snapshot, session, label, epi, componentDoc);
         }
+        Map<String, Integer> comps = new HashMap<String, Integer>();
         for (ExtensionInfo ei : ci.getExtensions()) {
-            createContributionDoc(snapshot, session, label, ei, componentDoc);
+            // handle multiple contributions to the same extension point
+            String id = ei.getId();
+            if (comps.containsKey(id)) {
+                comps.put(id, comps.get(id) + 1);
+            } else {
+                comps.put(id, Integer.valueOf(0));
+            }
+            createContributionDoc(snapshot, session, label, ei, comps.get(id), componentDoc);
         }
 
         for (ServiceInfo si : ci.getServices()) {
@@ -312,8 +321,8 @@ public class SnapshotPersister {
     }
 
     protected DocumentModel createContributionDoc(DistributionSnapshot snapshot, CoreSession session, String label,
-            ExtensionInfo ei, DocumentModel parent) {
-        return ExtensionInfoDocAdapter.create(ei, session, parent.getPathAsString()).getDoc();
+            ExtensionInfo ei, Integer index, DocumentModel parent) {
+        return ExtensionInfoDocAdapter.create(ei, index, session, parent.getPathAsString()).getDoc();
     }
 
     protected DocumentModel createServiceDoc(DistributionSnapshot snapshot, CoreSession session, String label,

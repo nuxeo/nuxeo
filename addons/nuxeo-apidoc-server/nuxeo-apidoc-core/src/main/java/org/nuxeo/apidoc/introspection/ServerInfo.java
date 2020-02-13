@@ -350,8 +350,17 @@ public class ServerInfo {
             }
 
             if (ri.getExtensions() != null) {
+                Map<String, Integer> comps = new HashMap<String, Integer>();
                 for (Extension xt : ri.getExtensions()) {
-                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component, xt.getExtensionPoint());
+                    // handle multiple contributions to the same extension point
+                    String id = xt.getExtensionPoint();
+                    if (comps.containsKey(id)) {
+                        Integer num = comps.get(id);
+                        comps.put(id, num + 1);
+                    } else {
+                        comps.put(id, Integer.valueOf(0));
+                    }
+                    ExtensionInfoImpl xtinfo = new ExtensionInfoImpl(component, xt.getExtensionPoint(), comps.get(id));
                     xtinfo.setTargetComponentName(xt.getTargetComponent());
                     xtinfo.setContribution(xt.getContributions());
                     xtinfo.setDocumentation(xt.getDocumentation());
