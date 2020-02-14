@@ -84,7 +84,7 @@ public class TestConnectBroker {
 
     public static final File testStore = new File(TEST_STORE_PATH);
 
-    public static final File nuxeoHome = new File("target/launcher");
+    public static final File nuxeoHome = new File(FeaturesRunner.getBuildDirectory() + "/launcher");
 
     protected ConnectBroker connectBroker;
 

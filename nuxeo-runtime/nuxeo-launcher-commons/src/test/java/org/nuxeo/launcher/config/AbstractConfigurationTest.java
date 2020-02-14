@@ -40,6 +40,12 @@ public abstract class AbstractConfigurationTest {
 
     protected static final Logger log = LogManager.getLogger(AbstractConfigurationTest.class);
 
+    /** @since 11.1 */
+    protected static final String CUSTOM_ENVIRONMENT_SYSTEM_PROPERTY = "custom.environment";
+
+    /** @since 11.1 */
+    protected static final String DEFAULT_BUILD_DIRECTORY = "target";
+
     protected ConfigurationGenerator configGenerator;
 
     protected File nuxeoHome;
@@ -60,7 +66,8 @@ public abstract class AbstractConfigurationTest {
 
     @Before
     public void setUp() throws Exception {
-        nuxeoHome = new File("target/launcher");
+        String buildDirectory = getBuildDirectory();
+        nuxeoHome = new File(buildDirectory + "/launcher");
         Files.deleteIfExists(nuxeoHome.toPath());
         nuxeoHome.mkdirs();
         File nuxeoConf = getResourceFile("configurator/nuxeo.conf");
@@ -101,6 +108,17 @@ public abstract class AbstractConfigurationTest {
      */
     protected void setSystemProperty(String key, String newValue) {
         originSystemProps.put(key, System.setProperty(key, newValue));
+    }
+
+    /**
+     * Returns the Maven build directory, depending on the {@value #CUSTOM_ENVIRONMENT_SYSTEM_PROPERTY} system property.
+     *
+     * @since 11.1
+     */
+    protected String getBuildDirectory() {
+        String customEnvironment = System.getProperty(CUSTOM_ENVIRONMENT_SYSTEM_PROPERTY);
+        return customEnvironment == null ? DEFAULT_BUILD_DIRECTORY
+                : String.format("%s-%s", DEFAULT_BUILD_DIRECTORY, customEnvironment);
     }
 
 }

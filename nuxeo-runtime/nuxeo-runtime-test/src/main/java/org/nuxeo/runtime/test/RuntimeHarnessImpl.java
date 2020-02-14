@@ -63,6 +63,7 @@ import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeContext;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.TargetExtensions;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -344,7 +345,7 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
                 log.warn("Removed System property nuxeo.home.");
             }
             workingDir = File.createTempFile("nxruntime-" + Thread.currentThread().getName() + "-", null,
-                    new File("target"));
+                    new File(FeaturesRunner.getBuildDirectory()));
             Files.delete(workingDir.toPath());
         } catch (IOException e) {
             log.error("Could not init working directory", e);

@@ -6805,6 +6805,22 @@
       </build>
     </profile>
 
+    <!--
+      Used to build for a custom environment in an alternative build directory.
+      This is required for running unit tests in parallel.
+    -->
+    <profile>
+      <id>customEnvironment</id>
+      <activation>
+        <property>
+          <name>custom.environment</name>
+        </property>
+      </activation>
+      <build>
+        <directory>target-${custom.environment}</directory>
+      </build>
+    </profile>
+
     <!-- Used to include nuxeo-distribution, packages and ftests in a single run -->
     <profile>
       <id>distrib</id>

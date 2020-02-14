@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import org.apache.commons.io.FileUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Florent Guillaume
@@ -32,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 public class DatabaseDerby extends DatabaseHelper {
 
     /** This directory will be deleted and recreated. */
-    private static final String DIRECTORY = "target/test/derby";
+    private static final String DIRECTORY = FeaturesRunner.getBuildDirectory() + "/test/derby";
 
     private static final String DEF_USER = "sa";
 
@@ -40,7 +41,7 @@ public class DatabaseDerby extends DatabaseHelper {
 
     private static final String CONTRIB_XML = "OSGI-INF/test-repo-repository-derby-contrib.xml";
 
-    private static final String LOG = "target/test/derby.log";
+    private static final String LOG = FeaturesRunner.getBuildDirectory() + "/test/derby.log";
 
     private static final String DRIVER = "org.apache.derby.jdbc.EmbeddedDriver";
 

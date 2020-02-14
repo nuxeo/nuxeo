@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author Florent Guillaume
@@ -42,7 +43,7 @@ public class DatabaseH2 extends DatabaseHelper {
      * @deprecated since 11.1, unused
      */
     @Deprecated(since = "11.1", forRemoval = true)
-    protected static final String DIRECTORY = "target";
+    protected static final String DIRECTORY = FeaturesRunner.getBuildDirectory();
 
     protected static final String DEF_USER = "sa";
 
