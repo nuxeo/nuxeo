@@ -57,6 +57,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.core.work.WorkManagerFeature;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
@@ -84,7 +85,6 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.runtime.metrics")
 @Deploy("org.nuxeo.runtime.reload")
 @Deploy("org.nuxeo.runtime.kv")
-@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.runtime.pubsub")
 @Deploy("org.nuxeo.runtime.mongodb")
 @Deploy("org.nuxeo.runtime.migration")
@@ -109,7 +109,7 @@ import com.google.inject.Binder;
 @Deploy("org.nuxeo.ecm.platform.commandline.executor")
 @Deploy("org.nuxeo.ecm.platform.el")
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Features({ RuntimeFeature.class, //
+@Features({ ClusterFeature.class, //
         TransactionalFeature.class, //
         RuntimeStreamFeature.class, //
         DummyLoginFeature.class, //
