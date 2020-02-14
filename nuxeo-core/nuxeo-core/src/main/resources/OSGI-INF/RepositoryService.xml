@@ -6,6 +6,7 @@
   </documentation>
 
   <require>org.nuxeo.ecm.core.api.repository.RepositoryManager</require>
+  <require>org.nuxeo.runtime.kv.KeyValueService</require>
 
   <implementation class="org.nuxeo.ecm.core.repository.RepositoryService" />
 

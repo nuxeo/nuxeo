@@ -19,16 +19,22 @@
  */
 package org.nuxeo.ecm.core.repository;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.ClusterLockHelper;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -42,6 +48,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class RepositoryService extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.repository.RepositoryService");
+
+    /** @since 11.1 */
+    public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.repository.cluster.start.duration";
 
     private static final Log log = LogFactory.getLog(RepositoryService.class);
 
@@ -103,9 +112,30 @@ public class RepositoryService extends DefaultComponent {
             if (factory == null) {
                 continue;
             }
+            createRepository(repositoryName, factory);
+        }
+    }
+
+    protected void createRepository(String repositoryName, RepositoryFactory factory) {
+        Duration duration;
+        try {
+            String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
+            if (isBlank(prop)) {
+                duration = Duration.ZERO;
+            } else {
+                duration = DurationUtils.parse(prop);
+            }
+        } catch (DateTimeParseException e) {
+            duration = Duration.ZERO;
+        }
+        if (duration.isZero() || duration.isNegative()) {
+            duration = Duration.ofMinutes(1);
+        }
+        Duration pollDelay = Duration.ofSeconds(1);
+        ClusterLockHelper.runAtomically("start-repository-" + repositoryName, duration, pollDelay, () -> {
             Repository repository = (Repository) factory.call();
             repositories.put(repositoryName, repository);
-        }
+        });
     }
 
     /**
