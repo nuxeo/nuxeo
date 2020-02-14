@@ -1,3 +1,5 @@
+nuxeo:
+  enable: false
 redis:
   master:
     podLabels:
@@ -5,3 +7,5 @@ redis:
       resource: pod
       team: platform
       usage: utests
+tags:
+  redis: true

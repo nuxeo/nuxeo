@@ -19,6 +19,11 @@
 
 dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo'
+testEnvironments= [
+  'dev',
+  'mongodb',
+  'postgresql',
+]
 
 properties([
   [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
@@ -100,19 +105,107 @@ void skaffoldBuildAll() {
   skaffoldBuild('docker/nuxeo/skaffold.yaml')
 }
 
+def buildUnitTestStage(env) {
+  def isDev = env == 'dev'
+  def testNamespace = "${TEST_NAMESPACE_PREFIX}-${env}"
+  def redisHost = "${TEST_REDIS_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
+  return {
+    stage("Run ${env} unit tests") {
+      container('maven') {
+        script {
+          setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'PENDING')
+          try {
+            echo """
+            ----------------------------------------
+            Run ${env} unit tests
+            ----------------------------------------"""
+
+            echo "${env} unit tests: install external services"
+            // initialize Helm without Tiller and add local repository
+            sh """
+              helm init --client-only
+              helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
+            """
+            // prepare values to disable nuxeo and activate external services in the nuxeo Helm chart
+            sh 'envsubst < ci/helm/nuxeo-test-base-values.yaml > nuxeo-test-base-values.yaml'
+            def testValues = '--set-file=nuxeo-test-base-values.yaml'
+            if (!isDev) {
+              testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml"
+            }
+            // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
+            sh """
+              jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
+                --name=${TEST_HELM_CHART_RELEASE} \
+                --namespace=${testNamespace} \
+                ${testValues}
+            """
+            // wait for external services to be ready
+            sh "kubectl rollout status statefulset ${TEST_REDIS_RESOURCE} --namespace=${testNamespace}"
+            if (!isDev) {
+              def resourceType = env == 'mongodb' ? 'deployment' : 'statefulset'
+              sh "kubectl rollout status ${resourceType} ${TEST_HELM_CHART_RELEASE}-${env} --namespace=${testNamespace}"
+            }
+
+            echo "${env} unit tests: run Maven"
+            // prepare backend-specific system properties
+            sh """
+              CHART_RELEASE=${TEST_HELM_CHART_RELEASE} SERVICE=${env} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                envsubst < ci/mvn/nuxeo-test-${env}.properties > ${HOME}/nuxeo-test-${env}.properties
+            """
+            // run unit tests:
+            // - in nuxeo-core and dependent projects only (nuxeo-common and nuxeo-runtime are run in dedicated stages)
+            // - for the given environment (see the customEnvironment profile in pom.xml):
+            //   - in an alternative build directory
+            //   - loading some backend-specific system properties
+            def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
+            sh """
+              mvn -B -nsu -rf nuxeo-core \
+                -Dcustom.environment=${env} \
+                -Dnuxeo.test.core=${testCore} \
+                -Dnuxeo.test.redis.host=${redisHost} \
+                test
+            """
+
+            setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
+          } catch(err) {
+            setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
+            throw err
+          } finally {
+            try {
+              junit testResults: "**/target-${env}/surefire-reports/*.xml"
+            } finally {
+              echo "${env} unit tests: clean up test namespace"
+              // uninstall the nuxeo Helm chart
+              sh """
+                jx step helm delete ${TEST_HELM_CHART_RELEASE} \
+                  --namespace=${testNamespace} \
+                  --purge
+              """
+              // clean up the test namespace
+              sh "kubectl delete namespace ${testNamespace} --ignore-not-found=true"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 pipeline {
   agent {
     label 'jenkins-nuxeo-platform-11'
   }
   environment {
+    // force ${HOME}=/root - for an unexplained reason, ${HOME} is resolved as /home/jenkins though sh 'env' shows HOME=/root
+    HOME = '/root'
     HELM_CHART_REPOSITORY_NAME = 'local-jenkins-x'
     HELM_CHART_REPOSITORY_URL = 'http://jenkins-x-chartmuseum:8080'
-    HELM_CHART_NUXEO_REDIS = 'nuxeo-redis'
-    HELM_RELEASE_REDIS = 'redis'
-    NAMESPACE_REDIS = "nuxeo-unit-tests-redis-$BRANCH_NAME".toLowerCase()
-    SERVICE_REDIS = 'redis-master'
-    REDIS_HOST = "${SERVICE_REDIS}.${NAMESPACE_REDIS}.svc.cluster.local"
-    SERVICE_ACCOUNT = 'jenkins'
+    HELM_CHART_NUXEO = 'nuxeo'
+    TEST_HELM_CHART_RELEASE = 'test-release'
+    TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
+    TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
+    TEST_REDIS_SERVICE = 'redis-master'
+    TEST_REDIS_RESOURCE = "${TEST_HELM_CHART_RELEASE}-${TEST_REDIS_SERVICE}"
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
     NUXEO_IMAGE_NAME = 'nuxeo'
@@ -353,50 +446,64 @@ pipeline {
         }
       }
     }
-    stage('Run "dev" unit tests') {
+    stage('Run common unit tests') {
       steps {
-        setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'PENDING')
+        setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
-          Install Redis
+          Run common unit tests
           ----------------------------------------"""
-          sh """
-            # initialize Helm without installing Tiller
-            helm init --client-only --service-account ${SERVICE_ACCOUNT}
-
-            # add local chart repository
-            helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
-
-            # install the nuxeo-redis chart into a dedicated namespace that will be cleaned up afterwards
-            # use 'jx step helm install' to avoid 'Error: incompatible versions' when running 'helm install'
-            envsubst < ci/redis-values.yaml > redis-values.yaml~gen
-            jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO_REDIS} \
-              --name ${HELM_RELEASE_REDIS} \
-              --namespace ${NAMESPACE_REDIS} \
-              --set-file=redis-values.yaml~gen
-          """
-
-          echo """
-          ----------------------------------------
-          Run "dev" unit tests
-          ----------------------------------------"""
-          sh "mvn -B -nsu -Dnuxeo.test.redis.host=${REDIS_HOST} test"
+          dir('nuxeo-common') {
+            sh "mvn -B -nsu test"
+          }
         }
       }
       post {
         always {
           junit testResults: '**/target/surefire-reports/*.xml'
-          container('maven') {
-            // clean up the redis namespace
-            sh "kubectl delete namespace ${NAMESPACE_REDIS} --ignore-not-found=true"
-          }
         }
         success {
-          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'SUCCESS')
+          setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/utests/dev', 'Unit tests - dev environment', 'FAILURE')
+          setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'FAILURE')
+        }
+      }
+    }
+    stage('Run runtime unit tests') {
+      steps {
+        setGitHubBuildStatus('platform/utests/runtime/dev', 'Unit tests - runtime', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Run runtime unit tests
+          ----------------------------------------"""
+          dir('nuxeo-runtime') {
+            sh "mvn -B -nsu test"
+          }
+        }
+      }
+      post {
+        always {
+          junit testResults: '**/target/surefire-reports/*.xml'
+        }
+        success {
+          setGitHubBuildStatus('platform/utests/runtime/dev', 'Unit tests - runtime', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/utests/runtime/dev', 'Unit tests - runtime', 'FAILURE')
+        }
+      }
+    }
+    stage('Run unit tests') {
+      steps {
+        script {
+          def stages = [:]
+          for (env in testEnvironments) {
+            stages["Run ${env} unit tests"] = buildUnitTestStage(env);
+          }
+          parallel stages
         }
       }
     }
