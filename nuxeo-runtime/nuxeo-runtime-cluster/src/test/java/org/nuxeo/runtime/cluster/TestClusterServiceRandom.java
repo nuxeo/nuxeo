@@ -28,11 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.TestClusterServiceRandom.OldClusterPropFeature;
-import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Test of the compatibility framework properties to define the cluster node id randomly when no configuration is
@@ -41,8 +39,7 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
  * @since 11.1
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, OldClusterPropFeature.class })
-@Deploy("org.nuxeo.runtime.cluster")
+@Features({ ClusterFeature.class, OldClusterPropFeature.class })
 public class TestClusterServiceRandom {
 
     public static class OldClusterPropFeature implements RunnerFeature {

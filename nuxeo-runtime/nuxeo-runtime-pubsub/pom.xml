@@ -48,6 +48,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-cluster</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>

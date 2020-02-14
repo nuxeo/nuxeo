@@ -23,18 +23,17 @@ package org.nuxeo.ecm.core.cache;
 import org.junit.Assert;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
-@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.ecm.core.cache")
-@Features(RuntimeFeature.class)
+@Features(ClusterFeature.class)
 public class CacheFeature implements RunnerFeature {
 
     public static final String DEFAULT_TEST_CACHE_NAME = "default-test-cache";

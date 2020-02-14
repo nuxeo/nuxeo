@@ -42,14 +42,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.runtime.cluster")
+@Features(ClusterFeature.class)
 public class TestDBSCachingRepository {
 
     private DBSCachingRepository repository;

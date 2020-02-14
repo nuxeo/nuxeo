@@ -20,19 +20,18 @@ package org.nuxeo.ecm.core.redis;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import redis.clients.jedis.Protocol;
 
-@Features({ RuntimeFeature.class })
+@Features(ClusterFeature.class)
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.runtime.redis")
-@Deploy("org.nuxeo.runtime.cluster")
 @Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.core.redis")
 @Deploy("org.nuxeo.ecm.core.redis.tests:redis-contribs.xml")

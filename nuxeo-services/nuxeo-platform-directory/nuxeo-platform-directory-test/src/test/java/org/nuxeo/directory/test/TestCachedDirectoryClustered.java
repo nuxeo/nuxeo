@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.cache.CacheServiceImpl.AbstractCachePubSubInvalidator;
 import org.nuxeo.ecm.core.cache.CacheServiceImpl.CacheInvalidation;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -56,8 +57,7 @@ import com.codahale.metrics.SharedMetricRegistries;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(DirectoryFeature.class)
-@Deploy("org.nuxeo.runtime.cluster")
+@Features({ ClusterFeature.class, DirectoryFeature.class })
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-schema-override.xml")
 @Deploy("org.nuxeo.ecm.directory.tests:test-directories-bundle.xml")
 @Deploy("org.nuxeo.ecm.directory.tests:test-cluster.xml")
