@@ -7,5 +7,11 @@ redis:
       resource: pod
       team: platform
       usage: utests
+    service:
+      labels:
+        branch: $BRANCH_NAME
+        resource: service
+        team: platform
+        usage: utests
 tags:
   redis: true

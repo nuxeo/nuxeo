@@ -130,7 +130,8 @@ def buildUnitTestStage(env) {
             sh 'envsubst < ci/helm/nuxeo-test-base-values.yaml > nuxeo-test-base-values.yaml'
             def testValues = '--set-file=nuxeo-test-base-values.yaml'
             if (!isDev) {
-              testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml"
+              sh "envsubst < ci/helm/nuxeo-test-${env}-values.yaml > nuxeo-test-${env}-values.yaml"
+              testValues += " --set-file=nuxeo-test-${env}-values.yaml"
             }
             // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
             sh """
