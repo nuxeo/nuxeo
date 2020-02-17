@@ -53,6 +53,10 @@ import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
@@ -828,6 +832,17 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
             mapper.readTree(response.getEntityInputStream());
         }
+
+        // Grant READ to user1 on the note and login as user1
+        ACP acp = note.getACP();
+        ACE ace = ACE.builder("user1", SecurityConstants.READ).build();
+        acp.addACE(ACL.LOCAL_ACL, ace);
+
+        note.setACP(acp, true);
+        note = session.saveDocument(note);
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        this.service = getServiceFor("user1", "user1");
 
         Map<String, String> headers = new HashMap<>();
         headers.put(MarshallingConstants.EMBED_ENRICHERS + ".document", RunningWorkflowJsonEnricher.NAME);
