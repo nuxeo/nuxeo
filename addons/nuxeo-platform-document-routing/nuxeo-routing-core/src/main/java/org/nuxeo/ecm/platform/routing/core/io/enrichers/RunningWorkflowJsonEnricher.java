@@ -54,7 +54,8 @@ public class RunningWorkflowJsonEnricher extends AbstractJsonEnricher<DocumentMo
         jg.writeStartArray();
         try (SessionWrapper wrapper = ctx.getSession(document)) {
             DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
-            List<DocumentRoute> documentRoutes = documentRoutingService.getDocumentRelatedWorkflows(document, wrapper.getSession());
+            List<DocumentRoute> documentRoutes = documentRoutingService.getDocumentRoutesForAttachedDocument(
+                    wrapper.getSession(), document.getId());
             for (DocumentRoute documentRoute : documentRoutes) {
                 writeEntity(documentRoute, jg);
             }
