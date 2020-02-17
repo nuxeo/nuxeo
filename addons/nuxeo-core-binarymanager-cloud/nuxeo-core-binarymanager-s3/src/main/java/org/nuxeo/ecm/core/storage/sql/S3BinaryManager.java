@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.DISABLE_PROXY_PROPERTY;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -220,6 +221,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         String awsSecret = getProperty(AWS_SECRET_PROPERTY);
         String awsToken = getProperty(AWS_SESSION_TOKEN_PROPERTY);
 
+        boolean proxyDisabled = Framework.isBooleanPropertyTrue(DISABLE_PROXY_PROPERTY);
         String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
         String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
         String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
@@ -264,17 +266,19 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
 
         // set up client configuration
         clientConfiguration = new ClientConfiguration();
-        if (isNotBlank(proxyHost)) {
-            clientConfiguration.setProxyHost(proxyHost);
-        }
-        if (isNotBlank(proxyPort)) {
-            clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
-        }
-        if (isNotBlank(proxyLogin)) {
-            clientConfiguration.setProxyUsername(proxyLogin);
-        }
-        if (proxyPassword != null) { // could be blank
-            clientConfiguration.setProxyPassword(proxyPassword);
+        if (!proxyDisabled) {
+            if (isNotBlank(proxyHost)) {
+                clientConfiguration.setProxyHost(proxyHost);
+            }
+            if (isNotBlank(proxyPort)) {
+                clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
+            }
+            if (isNotBlank(proxyLogin)) {
+                clientConfiguration.setProxyUsername(proxyLogin);
+            }
+            if (proxyPassword != null) { // could be blank
+                clientConfiguration.setProxyPassword(proxyPassword);
+            }
         }
         if (maxConnections > 0) {
             clientConfiguration.setMaxConnections(maxConnections);
