@@ -20,6 +20,7 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.DISABLE_PROXY_PROPERTY;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -121,6 +122,14 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      * The configuration property to define the multipart copy part size.
      */
     public static final String MULTIPART_COPY_PART_SIZE_PROPERTY = "nuxeo.s3.multipart.copy.part.size";
+
+    /**
+     * Framework property to disable usage of the proxy environment variables ({@code nuxeo.http.proxy.*}) for the
+     * connection to the S3 endpoint.
+     *
+     * @since 11.1
+     */
+    public static final String DISABLE_PROXY_PROPERTY = "nuxeo.s3.proxy.disabled";
 
     public final CloudFrontConfiguration cloudFront;
 
@@ -256,6 +265,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     }
 
     protected ClientConfiguration getClientConfiguration() {
+        boolean proxyDisabled = Framework.isBooleanPropertyTrue(DISABLE_PROXY_PROPERTY);
         String proxyHost = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_HOST);
         String proxyPort = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_PORT);
         String proxyLogin = Framework.getProperty(Environment.NUXEO_HTTP_PROXY_LOGIN);
@@ -265,17 +275,19 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         int connectionTimeout = getIntProperty(CONNECTION_TIMEOUT_PROPERTY);
         int socketTimeout = getIntProperty(SOCKET_TIMEOUT_PROPERTY);
         ClientConfiguration clientConfiguration = new ClientConfiguration();
-        if (isNotBlank(proxyHost)) {
-            clientConfiguration.setProxyHost(proxyHost);
-        }
-        if (isNotBlank(proxyPort)) {
-            clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
-        }
-        if (isNotBlank(proxyLogin)) {
-            clientConfiguration.setProxyUsername(proxyLogin);
-        }
-        if (proxyPassword != null) { // could be blank
-            clientConfiguration.setProxyPassword(proxyPassword);
+        if (!proxyDisabled) {
+            if (isNotBlank(proxyHost)) {
+                clientConfiguration.setProxyHost(proxyHost);
+            }
+            if (isNotBlank(proxyPort)) {
+                clientConfiguration.setProxyPort(Integer.parseInt(proxyPort));
+            }
+            if (isNotBlank(proxyLogin)) {
+                clientConfiguration.setProxyUsername(proxyLogin);
+            }
+            if (proxyPassword != null) { // could be blank
+                clientConfiguration.setProxyPassword(proxyPassword);
+            }
         }
         if (maxConnections > 0) {
             clientConfiguration.setMaxConnections(maxConnections);
