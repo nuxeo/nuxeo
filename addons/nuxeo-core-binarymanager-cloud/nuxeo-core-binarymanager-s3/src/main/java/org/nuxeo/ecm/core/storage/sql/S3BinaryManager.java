@@ -23,6 +23,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.DISABLE_PROXY_PROPERTY;
+import static org.nuxeo.ecm.blob.s3.S3BlobStoreConfiguration.MULTIPART_CLEANUP_DISABLED_PROPERTY;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -194,16 +195,29 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
      *
      * @since 7.2
      */
-    protected void abortOldUploads() throws IOException {
+    protected void abortOldUploads() {
+        if (getBooleanProperty(MULTIPART_CLEANUP_DISABLED_PROPERTY)) {
+            log.debug("Cleanup of old multipart uploads is disabled");
+            return;
+        }
+        // Async to avoid issues with transferManager.abortMultipartUploads taking a very long time.
+        // See NXP-28571.
+        new Thread(this::abortOldMultipartUploadsInternal, "Nuxeo-S3-abortOldMultipartUploads-" + bucketName).start();
+    }
+
+    // executed in a separate thread
+    protected void abortOldMultipartUploadsInternal() {
         int oneDay = 1000 * 60 * 60 * 24;
         try {
+            log.debug("Starting cleanup of old multipart uploads for bucket: " + bucketName);
             transferManager.abortMultipartUploads(bucketName, new Date(System.currentTimeMillis() - oneDay));
+            log.debug("Cleanup done for bucket: " + bucketName);
         } catch (AmazonS3Exception e) {
             if (e.getStatusCode() == 400 || e.getStatusCode() == 404) {
                 log.error("Your cloud provider does not support aborting old uploads");
                 return;
             }
-            throw new IOException("Failed to abort old uploads", e);
+            throw new NuxeoException("Failed to abort old uploads", e);
         }
     }
 

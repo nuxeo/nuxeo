@@ -116,6 +116,13 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public static final String METADATA_ADD_USERNAME_PROPERTY = "metadata.addusername";
 
+    /**
+     * Disable automatic abort of old multipart uploads at startup time.
+     *
+     * @since 11.1
+     */
+    public static final String MULTIPART_CLEANUP_DISABLED_PROPERTY = "multipart.cleanup.disabled";
+
     public static final String DELIMITER = "/";
 
     /**
@@ -397,17 +404,30 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     /**
      * Aborts uploads that crashed and are older than 1 day.
      */
-    protected void abortOldUploads() throws IOException {
+    protected void abortOldUploads() {
+        if (getBooleanProperty(MULTIPART_CLEANUP_DISABLED_PROPERTY)) {
+            log.debug("Cleanup of old multipart uploads is disabled");
+            return;
+        }
+        // Async to avoid issues with transferManager.abortMultipartUploads taking a very long time.
+        // See NXP-28571.
+        new Thread(this::abortOldMultipartUploadsInternal, "Nuxeo-S3-abortOldMultipartUploads-" + bucketName).start();
+    }
+
+    // executed in a separate thread
+    protected void abortOldMultipartUploadsInternal() {
         long oneDay = Duration.ofDays(1).toMillis();
         try {
+            log.debug("Starting cleanup of old multipart uploads for bucket: {}", bucketName);
             Date oneDayAgo = new Date(System.currentTimeMillis() - oneDay);
             transferManager.abortMultipartUploads(bucketName, oneDayAgo);
+            log.debug("Cleanup done for bucket: {}", bucketName);
         } catch (AmazonServiceException e) {
             if (e.getStatusCode() == 400 || e.getStatusCode() == 404) {
                 log.warn("Aborting old uploads is not supported by this provider");
                 return;
             }
-            throw new IOException("Failed to abort old uploads", e);
+            throw new NuxeoException("Failed to abort old uploads", e);
         }
     }
 
