@@ -29,6 +29,7 @@ import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_P
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_REGION_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.ENDPOINT_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE;
 
 import java.io.Serializable;
@@ -48,6 +49,8 @@ import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -99,6 +102,9 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     public static final String INFO_EXPIRATION = "expiration";
 
+    /** @since 11.1 */
+    public static final String INFO_AWS_ENDPOINT = "endpoint";
+
     public static final String INFO_AWS_REGION = "region";
 
     public static final String INFO_USE_S3_ACCELERATE = "useS3Accelerate";
@@ -106,6 +112,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     protected AWSSecurityTokenService stsClient;
 
     protected AmazonS3 amazonS3;
+
+    protected String endpoint;
 
     protected String region;
 
@@ -128,6 +136,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     @Override
     protected void initialize(Map<String, String> properties) {
         super.initialize(properties);
+        endpoint = properties.get(ENDPOINT_PROPERTY);
         region = properties.get(BUCKET_REGION_PROPERTY);
         if (isBlank(region)) {
             region = NuxeoAWSRegionProvider.getInstance().getRegion();
@@ -165,18 +174,25 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     }
 
     protected AWSSecurityTokenService initializeSTSClient(AWSCredentialsProvider credentials) {
-        return AWSSecurityTokenServiceClientBuilder.standard()
-                                                   .withRegion(region)
-                                                   .withCredentials(credentials)
-                                                   .build();
+        AWSSecurityTokenServiceClientBuilder builder = AWSSecurityTokenServiceClientBuilder.standard();
+        initializeBuilder(builder, credentials);
+        return builder.build();
     }
 
     protected AmazonS3 initializeS3Client(AWSCredentialsProvider credentials) {
-        return AmazonS3ClientBuilder.standard()
-                                    .withRegion(region)
-                                    .withCredentials(credentials)
-                                    .withAccelerateModeEnabled(accelerateModeEnabled)
-                                    .build();
+        AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
+        initializeBuilder(builder, credentials);
+        builder.setAccelerateModeEnabled(accelerateModeEnabled);
+        return builder.build();
+    }
+
+    protected void initializeBuilder(AwsClientBuilder<?, ?> builder, AWSCredentialsProvider credentials) {
+        if (isBlank(endpoint)) {
+            builder.setRegion(region);
+        } else {
+            builder.setEndpointConfiguration(new EndpointConfiguration(endpoint, region));
+        }
+        builder.setCredentials(credentials);
     }
 
     @Override
@@ -205,6 +221,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         properties.put(INFO_BUCKET, bucket);
         properties.put(INFO_BASE_KEY, bucketPrefix);
         properties.put(INFO_EXPIRATION, credentials.getExpiration().toInstant().toEpochMilli());
+        properties.put(INFO_AWS_ENDPOINT, endpoint);
         properties.put(INFO_AWS_REGION, region);
         properties.put(INFO_USE_S3_ACCELERATE, accelerateModeEnabled);
 
