@@ -87,6 +87,7 @@ limitations under the License.
       AWS.config.update({
         credentials: new AWS.Credentials(options.awsSecretKeyId, options.awsSecretAccessKey, options.awsSessionToken),
         region: options.region,
+        s3ForcePathStyle: options.usePathStyleAccess || false,
         useAccelerateEndpoint: options.useS3Accelerate || false,
         leavePartsOnError: true
       });
@@ -105,6 +106,7 @@ limitations under the License.
           params: {
             Bucket: this.extraInfo.bucket,
           },
+          endpoint: this.extraInfo.endpoint || null,
           computeChecksums: true
         });
       }.bind(this));
