@@ -41,5 +41,6 @@ nuxeo.s3storage.transient.awstoken=
 nuxeo.s3storage.transient.region=
 
 # optional
+nuxeo.s3storage.transient.endpoint=
 nuxeo.s3storage.transient.bucket_prefix=
 nuxeo.s3storage.transient.crypt.serverside=false

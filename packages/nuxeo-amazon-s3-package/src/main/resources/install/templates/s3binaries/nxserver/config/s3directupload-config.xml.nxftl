@@ -26,6 +26,7 @@
       <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
       <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
       <property name="bucket">${nuxeo.s3storage.transient.bucket}</property>
+      <property name="endpoint">${nuxeo.s3storage.transient.endpoint}</property>
       <property name="region">${nuxeo.s3storage.transient.region}</property>
       <property name="bucket_prefix">${nuxeo.s3storage.transient.bucket_prefix}</property>
       <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
@@ -74,6 +75,7 @@
       <property name="awssecret">${nuxeo.s3storage.transient.awssecret}</property>
       <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
       <property name="bucket">${nuxeo.s3storage.transient.bucket}</property>
+      <property name="endpoint">${nuxeo.s3storage.transient.endpoint}</property>
       <property name="region">${nuxeo.s3storage.transient.region}</property>
       <property name="bucket_prefix">${nuxeo.s3storage.transient.bucket_prefix}</property>
       <property name="crypt.serverside">${nuxeo.s3storage.transient.crypt.serverside}</property>
