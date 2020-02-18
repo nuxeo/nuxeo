@@ -19,14 +19,11 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -53,13 +52,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BundleInfo;
-import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
@@ -85,9 +85,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>
  * After building a <code>ServerInfo</code> object you can start browsing the bundles deployed on the server by calling
  * {@link #getBundles()} or fetch a specific bundle given its symbolic name {@link #getBundle(String)}.
- * <p>
- * To write down the server information as XML use {@link #toXML(Writer)} and to read it back use
- * {@link #fromXML(Reader)}.
  * <p>
  * Example:
  *
@@ -206,6 +203,7 @@ public class ServerInfo {
                     InputStream is = new FileInputStream(manifest);
                     String mf = IOUtils.toString(is, StandardCharsets.UTF_8);
                     binfo.setManifest(mf);
+                    binfo.setRequirements(getBundleRequires(mf));
                 }
                 // find and parse pom.xml
                 File up = new File(jarFile, "..");
@@ -243,7 +241,9 @@ public class ServerInfo {
                         try (InputStream mfStream = zFile.getInputStream(mfEntry)) {
                             String mf = IOUtils.toString(mfStream, StandardCharsets.UTF_8);
                             binfo.setManifest(mf);
+                            binfo.setRequirements(getBundleRequires(mf));
                         }
+
                     }
                     Enumeration<? extends ZipEntry> entries = zFile.entries();
                     while (entries.hasMoreElements()) {
@@ -270,6 +270,34 @@ public class ServerInfo {
             log.error(e, e);
         }
         return binfo;
+    }
+
+    protected static List<String> getBundleRequires(String mforig) throws IOException {
+        List<String> res = new ArrayList<>();
+        Manifest mf = null;
+        if (mforig != null) {
+            mf = new Manifest(new ByteArrayInputStream(mforig.getBytes()));
+        }
+        if (mf != null) {
+            Attributes attrs = mf.getMainAttributes();
+            String requires = attrs.getValue("Nuxeo-Require");
+            if (requires == null) { // if not specific requirement is met use
+                // Require-Bundle
+                requires = attrs.getValue("Require-Bundle");
+            }
+            if (requires != null) {
+                String[] ids = StringUtils.split(requires, ',', true);
+                for (int i = 0; i < ids.length; i++) {
+                    String rid = ids[i];
+                    int p = rid.indexOf(';');
+                    if (p > -1) { // remove properties part if any
+                        ids[i] = rid.substring(0, p);
+                    }
+                    res.add(ids[i]);
+                }
+            }
+        }
+        return res;
     }
 
     protected static List<Class<?>> getSPI(Class<?> klass) {
@@ -320,7 +348,6 @@ public class ServerInfo {
                 }
             }
 
-            // TODO binfo.setRequirements(requirements);
             ComponentInfoImpl component = new ComponentInfoImpl(binfo, cname);
             if (ri.getExtensionPoints() != null) {
                 for (ExtensionPoint xp : ri.getExtensionPoints()) {
@@ -375,6 +402,14 @@ public class ServerInfo {
             component.setComponentClass(ri.getImplementation());
             component.setDocumentation(ri.getDocumentation());
 
+            // component requirement
+            Set<ComponentName> reqs = ri.getRequiredComponents();
+            if (reqs != null) {
+                for (ComponentName req : reqs) {
+                    component.addRequirement(req.getName());
+                }
+            }
+
             binfo.addComponent(component);
             server.addBundle(binfo);
         }
@@ -414,40 +449,6 @@ public class ServerInfo {
         } catch (NullPointerException cause) {
             return false;
         }
-    }
-
-    public void toXML(Writer writer) throws IOException {
-        XMLWriter xw = new XMLWriter(writer, 4);
-        xw.start();
-        xw.element("server").attr("name", name).attr("version", version).start();
-        for (BundleInfo bundle : bundles.values()) {
-            xw.element("bundle").attr("id", bundle.getId()).start();
-            xw.element("fileName").content(bundle.getFileName());
-            // TODO requirements
-            for (ComponentInfo component : bundle.getComponents()) {
-                xw.element("component").attr("id", component.getId()).start();
-                // for (ExtensionPointInfo xp : component.getExtensionPoints())
-                // { }
-                // for (ExtensionInfo xt : component.getExtensions()) { }
-                xw.close();
-            }
-            xw.close();
-        }
-        xw.close();
-        xw.close();
-    }
-
-    public static ServerInfo fromXML(File file) throws IOException {
-        InputStreamReader reader = new FileReader(file);
-        try {
-            return fromXML(reader);
-        } finally {
-            reader.close();
-        }
-    }
-
-    public static ServerInfo fromXML(Reader reader) {
-        return null;
     }
 
     public List<Class<?>> getAllSpi() {

@@ -45,6 +45,7 @@
       <schema name="dublincore" />
       <schema name="file" />
       <schema name="nxbundle" />
+
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Folderish" />
@@ -61,6 +62,7 @@
       <schema name="dublincore" />
       <schema name="file" />
       <schema name="nxcomponent" />
+
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Folderish" />

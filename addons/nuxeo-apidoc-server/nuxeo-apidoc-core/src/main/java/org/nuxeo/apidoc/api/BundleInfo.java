@@ -20,6 +20,7 @@
 package org.nuxeo.apidoc.api;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
@@ -40,6 +41,11 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String PROP_JAR_NAME = "nxbundle:jarName";
 
+    /**
+     * @since 11.1
+     */
+    String PROP_REQUIREMENTS = "nxbundle:requirements";
+
     @JsonIgnore
     Collection<ComponentInfo> getComponents();
 
@@ -47,7 +53,10 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String getBundleId();
 
-    String[] getRequirements();
+    /**
+     * @since 11.1
+     */
+    List<String> getRequirements();
 
     String getManifest();
 

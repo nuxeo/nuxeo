@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,6 +35,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.assertj.core.util.Arrays;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -101,6 +104,8 @@ public class TestSnapshotPersist {
             BundleInfo bi = snap.getBundle(bid);
             sb.append(" *** ");
             sb.append(bi.getHierarchyPath());
+            sb.append(" *** ");
+            sb.append(bi.getRequirements());
             sb.append("\n");
         }
 
@@ -109,6 +114,8 @@ public class TestSnapshotPersist {
             sb.append(" *** ");
             ComponentInfo ci = snap.getComponent(cid);
             sb.append(ci.getHierarchyPath());
+            sb.append(" *** ");
+            sb.append(ci.getRequirements());
             sb.append("\n");
         }
 

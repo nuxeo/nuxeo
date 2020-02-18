@@ -183,6 +183,8 @@
       <rows>
         <row>
           <widget>artifactGroupId</widget>
+        </row>
+        <row>
           <widget>artifactId</widget>
         </row>
         <row>
@@ -190,6 +192,9 @@
         </row>
         <row>
           <widget>jarName</widget>
+        </row>
+        <row>
+          <widget>requirements</widget>
         </row>
       </rows>
       <widget name="artifactGroupId" type="text">
@@ -244,6 +249,33 @@
         </widgetModes>
       </widget>
 
+      <widget name="requirements" type="list">
+        <labels>
+          <label mode="any">Requirements</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxbundle:requirements</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+          <property name="orderable">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="listItem" type="text">
+            <fields>
+              <field></field>
+            </fields>
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
+
     </layout>
 
 
@@ -259,7 +291,12 @@
         </row>
         <row>
           <widget>componentName</widget>
+        </row>
+        <row>
           <widget>componentClass</widget>
+        </row>
+        <row>
+          <widget>requirements</widget>
         </row>
         <row>
           <widget>isXML</widget>
@@ -328,7 +365,32 @@
           <mode value="create">hidden</mode>
         </widgetModes>
       </widget>
-
+      <widget name="requirements" type="list">
+        <labels>
+          <label mode="any">Requirements</label>
+        </labels>
+        <translated>false</translated>
+        <fields>
+          <field>nxcomponent:requirements</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="hideSubLabels">true</property>
+          <property name="orderable">true</property>
+        </properties>
+        <subWidgets>
+          <widget name="listItem" type="text">
+            <fields>
+              <field></field>
+            </fields>
+            <labels>
+              <label mode="any"></label>
+            </labels>
+            <properties widgetMode="edit">
+              <property name="required">true</property>
+            </properties>
+          </widget>
+        </subWidgets>
+      </widget>
     </layout>
 
 
@@ -438,6 +500,8 @@
         </row>
         <row>
           <widget>targetComponentName</widget>
+        </row>
+        <row>
           <widget>extensionPoint</widget>
         </row>
         <row>
@@ -458,7 +522,7 @@
       </widget>
       <widget name="targetComponentName" type="text">
         <labels>
-          <label mode="any">target ComponentName</label>
+          <label mode="any">Target Component Name</label>
         </labels>
         <translated>false</translated>
         <fields>
@@ -470,7 +534,7 @@
       </widget>
       <widget name="extensionPoint" type="text">
         <labels>
-          <label mode="any">extensionPoint</label>
+          <label mode="any">Target Extension Point</label>
         </labels>
         <translated>false</translated>
         <fields>
