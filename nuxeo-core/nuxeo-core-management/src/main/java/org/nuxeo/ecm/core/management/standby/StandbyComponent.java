@@ -25,11 +25,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEventHandler;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.Meter;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.Timer;
+import io.dropwizard.metrics5.Timer.Context;
 
 /**
  * @since 9.2

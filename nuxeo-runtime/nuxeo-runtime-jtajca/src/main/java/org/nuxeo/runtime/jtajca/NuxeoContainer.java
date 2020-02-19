@@ -65,10 +65,10 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManager.ActiveMonitor;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
+import io.dropwizard.metrics5.Timer;
 
 /**
  * Internal helper for the Nuxeo-defined transaction manager and connection manager.

@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
 
-import com.codahale.metrics.MetricSet;
+import io.dropwizard.metrics5.MetricSet;
 import com.google.common.cache.Cache;
 
 /**

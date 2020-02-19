@@ -53,7 +53,7 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.dropwizard.metrics</groupId>
+      <groupId>io.dropwizard.metrics5</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>

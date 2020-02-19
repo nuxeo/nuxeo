@@ -7,11 +7,11 @@
 
   <service>
     <provide interface="org.nuxeo.runtime.metrics.MetricsService" />
-    <provide interface="com.codahale.metrics.MetricRegistry" />
+    <provide interface="io.dropwizard.metrics5.MetricRegistry" />
   </service>
 
   <require>org.nuxeo.runtime.management.ServerLocator</require>
-  
+
   <implementation class="org.nuxeo.runtime.metrics.MetricsServiceImpl" />
 
   <extension-point name="configuration">
@@ -23,7 +23,6 @@
       <metrics>
         <graphiteReporter enabled="true" periodInSecond="20"
           host="graphite.server.name" port="2003" prefix="servers.${hostname}.nuxeo."/>
-        <csvReporter enabled="true" periodInSecond="10" outputDir="${metrics.csv.dir}" />
         <log4jInstrumentation enabled="true" />
         <tomcatInstrumentation enabled="true" />
       </metrics>

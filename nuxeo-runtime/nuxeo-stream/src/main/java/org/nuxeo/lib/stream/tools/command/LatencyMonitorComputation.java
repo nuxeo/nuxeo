@@ -30,9 +30,9 @@ import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
-import com.codahale.metrics.graphite.Graphite;
-import com.codahale.metrics.graphite.GraphiteSender;
-import com.codahale.metrics.graphite.GraphiteUDP;
+import io.dropwizard.metrics5.graphite.Graphite;
+import io.dropwizard.metrics5.graphite.GraphiteSender;
+import io.dropwizard.metrics5.graphite.GraphiteUDP;
 
 /**
  * A computation that sends periodically latencies to graphite.

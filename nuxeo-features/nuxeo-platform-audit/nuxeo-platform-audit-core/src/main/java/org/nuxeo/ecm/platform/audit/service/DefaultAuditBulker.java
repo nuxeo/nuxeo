@@ -36,10 +36,10 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ResourcePublisher;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
 
 /**
  * @deprecated since 10.10, audit bulker is now handled with nuxeo-stream, no replacement

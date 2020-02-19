@@ -60,8 +60,8 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
 
 /**
  * A base implementation for a {@link Work} instance, dealing with most of the details around state change.
@@ -154,7 +154,7 @@ public abstract class AbstractWork implements Work {
     protected String callerThread;
 
     // @since 11.1
-    public static final String GLOBAL_DLQ_COUNT_REGISTRY_NAME = MetricRegistry.name("nuxeo", "works", "dlq");
+    public static final String GLOBAL_DLQ_COUNT_REGISTRY_NAME = MetricRegistry.name("nuxeo", "works", "dlq").getKey();
 
     /**
      * Constructs a {@link Work} instance with a unique id.
