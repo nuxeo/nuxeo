@@ -49,7 +49,6 @@ import com.sun.jersey.api.client.WebResource;
 @Deploy("org.nuxeo.targetplatforms.core")
 @Deploy("org.nuxeo.targetplatforms.core.test")
 @Deploy("org.nuxeo.targetplatforms.jaxrs")
-@Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml")
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TargetPlatformServiceTest extends BaseTest {
 

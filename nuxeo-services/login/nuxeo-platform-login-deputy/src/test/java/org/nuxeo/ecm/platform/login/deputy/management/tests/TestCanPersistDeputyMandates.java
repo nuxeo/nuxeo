@@ -50,7 +50,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.default.config")
 @Deploy("org.nuxeo.ecm.directory.types.contrib")
 @Deploy("org.nuxeo.ecm.platform.login.deputy.management")
-@Deploy("org.nuxeo.ecm.platform.login.deputy.management:datasource-contrib.xml")
 public class TestCanPersistDeputyMandates {
 
     @Inject

@@ -44,7 +44,6 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
 @RunWith(FeaturesRunner.class)
 @Features(DirectoryFeature.class)
 @Deploy("org.nuxeo.targetplatforms.core")
-@Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-datasource-contrib.xml")
 @Deploy("org.nuxeo.targetplatforms.core:OSGI-INF/test-targetplatforms-contrib.xml")
 public class TestTargetPlatformComponent {
 
