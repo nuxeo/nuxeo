@@ -3771,6 +3771,61 @@ public class TestSQLRepositoryAPI {
         assertFalse(doc.isProxy());
     }
 
+    @Test
+    public void testImportDuplicateIdSameSession() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        nextTransaction();
+
+        String docId = doc.getId();
+        String rootId = session.getRootDocument().getId();
+
+        // try to import another doc with the same id
+        // detected by session transient state
+        DocumentModel doc2 = new DocumentModelImpl(null, "File", docId, new Path("/doc2"), null, null, new IdRef(rootId),
+                null, null, null, null);
+        try {
+            // VCS fails in importDocuments because its cache know the id alreay exists
+            session.importDocuments(Collections.singletonList(doc2));
+            session.save();
+            fail();
+        } catch (ConcurrentUpdateException e) {
+            TransactionHelper.setTransactionRollbackOnly();
+            String message = e.getMessage();
+            if (!message.startsWith("Failed to save session")) { // DBS
+                assertEquals("Duplicate id: " + docId, message); // VCS
+            }
+        }
+    }
+
+    @Test
+    public void testImportDuplicateIdNewSession() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.save();
+        nextTransaction();
+        reopenSession();
+
+        String docId = doc.getId();
+        String rootId = session.getRootDocument().getId();
+
+        // try to import another doc with the same id
+        // this is prevented by a unique index on the id field in the database
+        DocumentModel doc2 = new DocumentModelImpl(null, "File", docId, new Path("/doc2"), null, null, new IdRef(rootId),
+                null, null, null, null);
+        session.importDocuments(Collections.singletonList(doc2));
+        try {
+            session.save();
+            fail();
+        } catch (ConcurrentUpdateException e) {
+            TransactionHelper.setTransactionRollbackOnly();
+            String message = e.getMessage();
+            assertTrue(message, message.startsWith("Failed to save session"));
+            assertTrue(message, message.endsWith("Concurrent update"));
+        }
+    }
+
     /**
      * Check that lifecycle and dc:issued can be updated on a version. (Fields defined in
      * SQLDocumentLive#VERSION_WRITABLE_PROPS).
