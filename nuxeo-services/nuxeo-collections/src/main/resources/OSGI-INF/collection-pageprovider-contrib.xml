@@ -32,7 +32,7 @@
     <coreQueryPageProvider name="default_collection_candidate">
       <property name="maxResults">PAGE_SIZE</property>
       <pattern quoteParameters="false" escapeParameters="true">
-        SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */ ILIKE '?%'
+        SELECT * FROM Document WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */ dc:title ILIKE '?%'
         AND ecm:mixinType != 'SystemDocument' AND ecm:mixinType !=
         'NotCollectionMember' AND ecm:mixinType != 'HiddenInNavigation' AND
         ecm:isTrashed = 0
