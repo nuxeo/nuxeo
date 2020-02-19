@@ -40,6 +40,7 @@ import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
@@ -896,7 +897,7 @@ public class PersistenceContext {
 
     private SimpleFragment createSimpleFragment(Row row) {
         if (pristine.containsKey(row) || modified.containsKey(row)) {
-            throw new NuxeoException("Row already registered: " + row);
+            throw new ConcurrentUpdateException("Duplicate id: " + row.id);
         }
         return new SimpleFragment(row, State.CREATED, this);
     }
