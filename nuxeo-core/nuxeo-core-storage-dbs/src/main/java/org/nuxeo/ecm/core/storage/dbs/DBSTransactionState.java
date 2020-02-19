@@ -394,6 +394,9 @@ public class DBSTransactionState {
         if (id == null) {
             id = repository.generateNewId();
         }
+        if (transientStates.containsKey(id)) {
+            throw new ConcurrentUpdateException(id);
+        }
         transientCreated.add(id);
         DBSDocumentState docState = new DBSDocumentState();
         transientStates.put(id, docState);
