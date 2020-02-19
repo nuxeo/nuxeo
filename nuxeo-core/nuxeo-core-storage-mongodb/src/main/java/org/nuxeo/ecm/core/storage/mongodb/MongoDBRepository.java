@@ -222,7 +222,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     /**
      * Initializes the MongoDB repository
-     * 
+     *
      * @param descriptor the MongoDB repository descriptor
      * @since 11.1
      */
@@ -234,7 +234,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         // create required indexes
         // code does explicit queries on those
         if (useCustomId) {
-            coll.createIndex(Indexes.ascending(idKey));
+            coll.createIndex(Indexes.ascending(idKey), new IndexOptions().unique(true));
         }
         coll.createIndex(Indexes.ascending(KEY_PARENT_ID));
         coll.createIndex(Indexes.ascending(KEY_ANCESTOR_IDS));
@@ -345,7 +345,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // Avoid hiding any others bulk errors
             if (duplicates.size() == mbwe.getWriteErrors().size()) {
                 log.trace("MongoDB:    -> DUPLICATE KEY: {}", duplicates);
-                ConcurrentUpdateException concurrentUpdateException = new ConcurrentUpdateException();
+                ConcurrentUpdateException concurrentUpdateException = new ConcurrentUpdateException("Concurrent update");
                 duplicates.forEach(concurrentUpdateException::addInfo);
                 throw concurrentUpdateException;
             }
