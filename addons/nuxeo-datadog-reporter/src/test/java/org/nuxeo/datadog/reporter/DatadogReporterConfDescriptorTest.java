@@ -37,7 +37,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import com.codahale.metrics.MetricFilter;
+import io.dropwizard.metrics5.MetricFilter;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)

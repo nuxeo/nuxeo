@@ -34,10 +34,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
+
+import javax.ws.rs.HEAD;
 
 /**
  * The DBS Cache layer used to cache some method call of real repository
@@ -113,7 +116,8 @@ public class DBSCachingRepository implements DBSRepository {
     protected void removeCacheMetrics() {
         String cacheName = MetricRegistry.name("nuxeo", "repositories", getName(), "cache");
         String childCacheName = MetricRegistry.name("nuxeo", "repositories", getName(), "childCache");
-        metricRegistry.removeMatching((name, metric) -> name.startsWith(cacheName) || name.startsWith(childCacheName));
+        metricRegistry.removeMatching(
+                (name, metric) -> name.getKey().startsWith(cacheName) || name.getKey().startsWith(childCacheName));
     }
 
     protected <T> Cache<String, T> newCache(DBSRepositoryDescriptor descriptor) {

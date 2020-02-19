@@ -51,12 +51,13 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.MetricName;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
+import io.dropwizard.metrics5.Timer;
+import io.dropwizard.metrics5.Timer.Context;
 
 /**
  * A {@link RowMapper} that use an unified ehcache.
@@ -160,10 +161,10 @@ public class UnifiedCachingRowMapper implements RowMapper {
                 "sor", "rows"));
         sorGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "unified",
                 "sor", "get"));
-        String gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "unified",
+        MetricName gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "unified",
                 "cache-size");
         @SuppressWarnings("rawtypes")
-        SortedMap<String, Gauge> gauges = registry.getGauges();
+        SortedMap<MetricName, Gauge> gauges = registry.getGauges();
         if (!gauges.containsKey(gaugeName)) {
             registry.register(gaugeName, new Gauge<Integer>() {
                 @Override

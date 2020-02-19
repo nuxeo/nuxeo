@@ -31,9 +31,9 @@ import org.nuxeo.runtime.management.api.Probe;
 import org.nuxeo.runtime.management.api.ProbeStatus;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
 
 /**
  * A probe to detect when computation has been terminated due to failure. A delay is applied before returning the

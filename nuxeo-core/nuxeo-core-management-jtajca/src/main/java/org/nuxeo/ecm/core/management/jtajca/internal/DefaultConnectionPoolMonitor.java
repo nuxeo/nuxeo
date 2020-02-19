@@ -24,9 +24,9 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManager;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.jvm.JmxAttributeGauge;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
+import io.dropwizard.metrics5.jvm.JmxAttributeGauge;
 
 /**
  * @author matic

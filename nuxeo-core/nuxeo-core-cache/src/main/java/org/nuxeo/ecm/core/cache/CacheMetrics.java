@@ -20,11 +20,12 @@ import java.io.Serializable;
 
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.RatioGauge;
-import com.codahale.metrics.SharedMetricRegistries;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.MetricName;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.RatioGauge;
+import io.dropwizard.metrics5.SharedMetricRegistries;
 
 public class CacheMetrics extends CacheWrapper {
 
@@ -44,22 +45,22 @@ public class CacheMetrics extends CacheWrapper {
 
     protected Gauge<Long> size;
 
-    protected final String READ_HIT_NAME = nameOf("read-hit-counter");
+    protected final MetricName READ_HIT_NAME = nameOf("read-hit-counter");
 
-    protected final String READ_HIT_RATIO_NAME = nameOf("read-hit-ratio");
+    protected final MetricName READ_HIT_RATIO_NAME = nameOf("read-hit-ratio");
 
-    protected final String READ_MISS_NAME = nameOf("read-miss-counter");
+    protected final MetricName READ_MISS_NAME = nameOf("read-miss-counter");
 
-    protected final String READ_NAME = nameOf("read-counter");
+    protected final MetricName READ_NAME = nameOf("read-counter");
 
-    protected final String WRITE_NAME = nameOf("write-counter");
+    protected final MetricName WRITE_NAME = nameOf("write-counter");
 
-    protected final String INVALIDATE_ALL_NAME = nameOf("invalidate-all-counter");
+    protected final MetricName INVALIDATE_ALL_NAME = nameOf("invalidate-all-counter");
 
-    protected final String SIZE_NAME = nameOf("size");
+    protected final MetricName SIZE_NAME = nameOf("size");
 
-    protected String nameOf(String name) {
-        return MetricRegistry.name("nuxeo", "cache", getName(), name);
+    protected MetricName nameOf(String name) {
+        return MetricName.build("nuxeo", "cache", getName(), name);
     }
 
     public CacheMetrics(CacheManagement cache) {

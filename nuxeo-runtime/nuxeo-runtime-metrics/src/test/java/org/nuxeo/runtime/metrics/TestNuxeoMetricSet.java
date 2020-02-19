@@ -21,12 +21,14 @@ package org.nuxeo.runtime.metrics;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Metric;
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.Metric;
+import io.dropwizard.metrics5.MetricName;
 
 /**
  * @since 8.10-HF08, 9.2
@@ -36,15 +38,15 @@ public class TestNuxeoMetricSet {
     @Test
     public void testInstantiation() {
         NuxeoMetricSet metrics = new NuxeoMetricSet();
-        assertEquals("", metrics.getPrefixName());
+        assertNull(metrics.getPrefixName());
         assertNotNull(metrics.getMetrics());
         assertTrue(metrics.getMetrics().isEmpty());
     }
 
     @Test
     public void testInstantiationWithPrefix() {
-        NuxeoMetricSet metrics = new NuxeoMetricSet("nuxeo", "prefix");
-        assertEquals("nuxeo.prefix", metrics.getPrefixName());
+        NuxeoMetricSet metrics = new NuxeoMetricSet(MetricName.build("nuxeo", "prefix"));
+        assertEquals(MetricName.build("nuxeo.prefix"), metrics.getPrefixName());
         assertNotNull(metrics.getMetrics());
         assertTrue(metrics.getMetrics().isEmpty());
     }
@@ -52,16 +54,16 @@ public class TestNuxeoMetricSet {
     @Test
     @SuppressWarnings("unchecked")
     public void testPutGauge() {
-        NuxeoMetricSet metrics = new NuxeoMetricSet("nuxeo", "prefix");
+        NuxeoMetricSet metrics = new NuxeoMetricSet(MetricName.build("nuxeo", "prefix"));
         Integer value = Integer.valueOf(10);
-        metrics.putGauge(() -> value, "special", "value");
+        metrics.putGauge(() -> value, MetricName.build("special", "value"));
         assertNotNull(metrics.getMetrics());
         assertFalse(metrics.getMetrics().isEmpty());
-        Metric gauge = metrics.getMetrics().get("nuxeo.prefix.special.value");
+        Metric gauge = metrics.getMetrics().get(MetricName.build("nuxeo.prefix.special.value"));
         // Check that name has been correctly built and we have the right gauge
         assertTrue(gauge instanceof Gauge);
         // Check also the name from getMetricNames
-        assertTrue(metrics.getMetricNames().contains("nuxeo.prefix.special.value"));
+        assertTrue(metrics.getMetricNames().contains(MetricName.build("nuxeo.prefix.special.value")));
         // Check the gauge value
         assertEquals(value, ((Gauge<Integer>) gauge).getValue());
     }

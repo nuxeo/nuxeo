@@ -20,6 +20,13 @@
 
 package org.nuxeo.runtime;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.metrics.MetricsDescriptor;
@@ -27,12 +34,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import io.dropwizard.metrics5.MetricName;
 
 /**
  * @since 9.3
@@ -107,7 +109,10 @@ public class TestGraphiteReporter {
 
         assertNotEquals(expectedMetrics.size(), metrics.size());
 
-        List<String> filteredMetrics = metrics.stream().filter(graphiteReporter::filter).collect(
+        List<MetricName> filteredMetrics = metrics.stream()
+                                                  .map(metric -> MetricName.build(metric))
+                                                  .filter(graphiteReporter::filter)
+                                                  .collect(
                 Collectors.toList());
 
         assertEquals(expectedMetrics.size(), filteredMetrics.size());

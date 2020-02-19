@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.MetricSet;
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.Metric;
+import io.dropwizard.metrics5.MetricName;
+import io.dropwizard.metrics5.MetricSet;
 
 /**
  * Just a helper to easily declare metrics inside a {@link MetricSet} with th ease of Java 8 Lambda expression.
@@ -35,9 +35,9 @@ import com.codahale.metrics.MetricSet;
  */
 public class NuxeoMetricSet implements MetricSet {
 
-    protected final Map<String, Metric> metrics;
+    protected final Map<MetricName, Metric> metrics;
 
-    protected final String prefixName;
+    protected final MetricName prefixName;
 
     public NuxeoMetricSet() {
         // we can inject null as prefix because MetricRegistry#name(String, String...) doesn't print null value
@@ -45,45 +45,45 @@ public class NuxeoMetricSet implements MetricSet {
     }
 
     public NuxeoMetricSet(String name, String... names) {
-        this(HashMap::new, name, names);
+        this(MetricName.build(name).append(MetricName.build(names)));
     }
 
-    public NuxeoMetricSet(Supplier<Map<String, Metric>> metricsSupplier, String name, String... names) {
+    public NuxeoMetricSet(MetricName name) {
+        this(HashMap::new, name);
+    }
+
+    public NuxeoMetricSet(Supplier<Map<MetricName, Metric>> metricsSupplier, MetricName name) {
         this.metrics = metricsSupplier.get();
-        this.prefixName = MetricRegistry.name(name, names);
+        this.prefixName = name;
     }
 
     /**
      * Put a gauge inside this {@link MetricSet} as name {@code prefixName.name.names[0].names[1]...};
      */
-    public <T> void putGauge(Gauge<T> gauge, String name, String... names) {
-        metrics.put(buildNameWithPrefix(name, names), gauge);
+    public <T> void putGauge(Gauge<T> gauge, MetricName name) {
+        metrics.put(prefixName.append(name), gauge);
     }
 
-    /**
-     * @return the name built from {@link MetricRegistry#name(String, String...)} prefixed with this
-     *         {@link NuxeoMetricSet}'s prefix
-     */
-    protected String buildNameWithPrefix(String name, String[] names) {
-        return MetricRegistry.name(MetricRegistry.name(prefixName, name), names);
+    public <T> void putGauge(Gauge<T> gauge, String name, String... names) {
+        metrics.put(prefixName.append(MetricName.build(name).append(MetricName.build(names))), gauge);
     }
 
     @Override
-    public Map<String, Metric> getMetrics() {
+    public Map<MetricName, Metric> getMetrics() {
         return metrics;
     }
 
     /**
      * @return the prefix name used by this {@link MetricSet} to prefix all added metrics, the value could be empty
      */
-    public String getPrefixName() {
+    public MetricName getPrefixName() {
         return prefixName;
     }
 
     /**
      * @return all metric names registered into this {@link MetricSet}
      */
-    public Set<String> getMetricNames() {
+    public Set<MetricName> getMetricNames() {
         return metrics.keySet();
     }
 

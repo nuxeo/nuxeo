@@ -76,10 +76,10 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
+import io.dropwizard.metrics5.Timer;
 
 /**
  * The implementation of a {@link WorkManager}. This delegates the queuing implementation to a {@link WorkQueuing}
@@ -266,8 +266,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     void deactivateQueueMetrics(String queueId) {
-        String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", queueId);
-        registry.removeMatching((name, metric) -> name.startsWith(queueMetricsName));
+        String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", queueId).getKey();
+        registry.removeMatching((name, metric) -> name.getKey().startsWith(queueMetricsName));
     }
 
     @Override

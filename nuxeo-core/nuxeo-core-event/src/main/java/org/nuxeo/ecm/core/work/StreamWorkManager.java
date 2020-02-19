@@ -73,7 +73,8 @@ import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.codahale.metrics.MetricRegistry;
+import io.dropwizard.metrics5.MetricName;
+import io.dropwizard.metrics5.MetricRegistry;
 
 /**
  * WorkManager impl that appends works into a Log. Works are therefore immutable (no state update) and can not be listed
@@ -442,8 +443,8 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     protected void deactivateQueueMetrics(String queueId) {
-        String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", queueId);
-        registry.removeMatching((name, metric) -> name.startsWith(queueMetricsName));
+        String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", queueId).getKey();
+        registry.removeMatching((name, metric) -> name.getKey().startsWith(queueMetricsName));
     }
 
     @Override
