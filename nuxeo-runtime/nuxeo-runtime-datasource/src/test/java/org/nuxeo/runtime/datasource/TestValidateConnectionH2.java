@@ -31,8 +31,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
-import org.nuxeo.runtime.datasource.TestValidateConnection.CaptureValidationErrors;
-import org.nuxeo.runtime.datasource.TestValidateConnection.ReportException.CaughtSite;
+import org.nuxeo.runtime.datasource.TestValidateConnectionH2.CaptureValidationErrors;
+import org.nuxeo.runtime.datasource.TestValidateConnectionH2.ReportException.CaughtSite;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.jtajca.NuxeoValidationSupport;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -51,7 +51,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features({ TransactionalFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.runtime.datasource:sql-validate-datasource-contrib.xml")
 @LogCaptureFeature.FilterWith(CaptureValidationErrors.class)
-public class TestValidateConnection {
+public class TestValidateConnectionH2 {
 
     @Inject
     PooledDataSourceRegistry registry;
