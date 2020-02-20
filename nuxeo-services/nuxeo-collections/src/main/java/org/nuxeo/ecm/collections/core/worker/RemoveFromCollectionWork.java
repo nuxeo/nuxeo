@@ -92,7 +92,7 @@ public class RemoveFromCollectionWork extends AbstractWork {
                         }
                     }
                 }
-                setProgress(new Progress(i + 1, collectionMemberIds.size()));
+                setProgress(new Progress(i + 1L, collectionMemberIds.size()));
             }
         }
         setStatus("Done");

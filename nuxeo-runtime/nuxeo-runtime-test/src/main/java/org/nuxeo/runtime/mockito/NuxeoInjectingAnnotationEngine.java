@@ -50,7 +50,7 @@ public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
         processInjectMocks(testInstance.getClass(), testInstance);
     }
 
-    private void processInjectMocks(final Class<?> clazz, final Object testInstance) {
+    private void processInjectMocks(final Class<?> clazz, final Object testInstance) { // NOSONAR
         Class<?> classContext = clazz;
         while (classContext != Object.class) {
             injectMocks(testInstance);
@@ -58,7 +58,7 @@ public class NuxeoInjectingAnnotationEngine extends InjectingAnnotationEngine {
         }
     }
 
-    private void processIndependentAnnotations(final Class<?> clazz, final Object testInstance) {
+    private void processIndependentAnnotations(final Class<?> clazz, final Object testInstance) { // NOSONAR
         Class<?> classContext = clazz;
         while (classContext != Object.class) {
             // this will create @Mocks, @Captors, etc:

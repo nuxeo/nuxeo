@@ -44,7 +44,7 @@ public abstract class BaseOfficeXMLTextConverter implements Converter {
 
     public static final String MAX_SIZE = "MAX_SIZE";
 
-    protected long maxSize4POI = 5 * 1024 * 1014;
+    protected long maxSize4POI = 5 * 1024 * 1024L;
 
     protected BlobHolder runFallBackConverter(BlobHolder blobHolder, final String prefix) throws ConversionException {
 

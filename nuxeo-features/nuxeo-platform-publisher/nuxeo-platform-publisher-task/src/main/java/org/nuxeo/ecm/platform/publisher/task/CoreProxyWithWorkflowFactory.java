@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -414,6 +415,9 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
                     if (session.getACP(dm.getRef()).getACL(ACL_NAME) != null) {
                         waitingForPublicationDoc = dm;
                     }
+                }
+                if (waitingForPublicationDoc == null) {
+                    throw new NuxeoException("No proxy with correct ACL");
                 }
                 if (!isValidator(waitingForPublicationDoc, principal)) {
                     // we're getting the old proxy acl

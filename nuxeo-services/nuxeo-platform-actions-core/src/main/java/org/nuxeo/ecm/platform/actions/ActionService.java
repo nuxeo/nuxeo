@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.platform.actions;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +57,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     private static final String LOG_MIN_DURATION_KEY = "nuxeo.actions.debug.log_min_duration_ms";
 
-    private long LOG_MIN_DURATION_NS = -1 * 1000000;
+    private long logMinDurationNanos = Duration.ofMillis(-1).toNanos();
 
     private Timer actionsTimer;
 
@@ -88,8 +89,9 @@ public class ActionService extends DefaultComponent implements ActionManager {
 
     @Override
     public void start(ComponentContext context) {
-        LOG_MIN_DURATION_NS = Framework.getService(ConfigurationService.class).getLong(LOG_MIN_DURATION_KEY, -1)
-                * 1000000;
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        long logMinDurationMillis = configurationService.getLong(LOG_MIN_DURATION_KEY, -1);
+        logMinDurationNanos = Duration.ofMillis(logMinDurationMillis).toNanos();
     }
 
     /**
@@ -176,7 +178,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             }
         } finally {
             long duration = timerContext.stop();
-            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+            if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
                 log.debug(String.format("Resolving actions for category '%s' took: %.2f ms", category,
                         duration / 1000000.0));
             }
@@ -184,7 +186,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     }
 
     protected boolean isTimeTracerLogEnabled() {
-        return log.isDebugEnabled() && LOG_MIN_DURATION_NS >= 0;
+        return log.isDebugEnabled() && logMinDurationNanos >= 0;
     }
 
     @SuppressWarnings("resource") // timerContext closed by stop() in finally
@@ -208,7 +210,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return action;
         } finally {
             long duration = timerContext.stop();
-            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+            if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
                 log.debug(String.format("Resolving action with id '%s' took: %.2f ms", actionId, duration / 1000000.0));
             }
         }
@@ -277,7 +279,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return filter != null && filter.accept(null, context);
         } finally {
             long duration = timerContext.stop();
-            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+            if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
                 log.debug(String.format("Resolving filter with id '%s' took: %.2f ms", filterId, duration / 1000000.0));
             }
         }
@@ -315,7 +317,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
             return true;
         } finally {
             long duration = timerContext.stop();
-            if (isTimeTracerLogEnabled() && (duration > LOG_MIN_DURATION_NS)) {
+            if (isTimeTracerLogEnabled() && duration > logMinDurationNanos) {
                 log.debug(String.format("Resolving filters %s took: %.2f ms", filterIds, duration / 1000000.0));
             }
         }

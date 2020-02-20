@@ -178,8 +178,8 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
             }
             for (int i = 0; i < sorts.length; i++) {
                 String sort = sorts[i];
-                boolean sortAscending = (orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase()));
-                sortInfoList.add(new SortInfo(sort, sortAscending));
+                boolean sortAscending = orders != null && orders.length > i && "asc".equalsIgnoreCase(orders[i]);
+                sortInfoList.add(new SortInfo(sort, sortAscending)); // NOSONAR
             }
         }
         return sortInfoList;

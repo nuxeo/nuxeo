@@ -89,7 +89,7 @@ public class GetCounters {
 
                     // use seconds
                     long ts = values[0];
-                    float t = (now - ts) / 1000;
+                    float t = (now - ts) / 1000; // NOSONAR (round)
                     float value = values[1];
                     Float tFloat = Float.valueOf(ts);
 

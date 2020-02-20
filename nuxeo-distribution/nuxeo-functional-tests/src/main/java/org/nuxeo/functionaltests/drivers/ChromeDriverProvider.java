@@ -76,11 +76,8 @@ public class ChromeDriverProvider implements DriverProvider {
             } else if (SystemUtils.IS_OS_WINDOWS_XP) {
                 chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINXP;
                 chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
-            } else if (SystemUtils.IS_OS_WINDOWS_VISTA) {
-                chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINVISTA;
-                chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
-            } else if (SystemUtils.IS_OS_WINDOWS) {
-                // Unknown default path on other Windows OS. To be completed.
+            } else if (SystemUtils.IS_OS_WINDOWS_VISTA || SystemUtils.IS_OS_WINDOWS) {
+                // Unknown default path on other non-Vista OS. To be completed.
                 chromeDriverDefaultPath = CHROME_DRIVER_DEFAULT_PATH_WINVISTA;
                 chromeDriverExecutableName = CHROME_DRIVER_WINDOWS_EXECUTABLE_NAME;
             }

@@ -83,7 +83,7 @@ public class DevValve extends ValveBase {
 
     private void getFile(String path, Request req, Response resp) {
         File file = getSDKFile(path);
-        if (file == null) {
+        if (!file.isFile()) {
             resp.setStatus(404);
         } else {
             resp.setContentType("text/plain");

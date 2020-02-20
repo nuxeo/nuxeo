@@ -178,7 +178,7 @@ public class PackageListingProvider extends DefaultObject {
                                        .arg("showCommunityInfo", false)
                                        .arg("source", "remote")
                                        .arg("filterOnPlatform", filterOnPlatform.toString())
-                                       .arg("type", pkgType.toString())
+                                       .arg("type", pkgType)
                                        .arg("onlyRemote", onlyRemote.toString());
     }
 

@@ -59,7 +59,7 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
         return forAnnotation(annotation).process(annotation, field);
     }
 
-    private <A extends Annotation> FieldAnnotationProcessor<A> forAnnotation(A annotation) {
+    private <A extends Annotation> FieldAnnotationProcessor<A> forAnnotation(A annotation) { // NOSONAR
         if (annotationProcessorMap.containsKey(annotation.annotationType())) {
             return (FieldAnnotationProcessor<A>) annotationProcessorMap.get(annotation.annotationType());
         }
@@ -71,12 +71,12 @@ public class NuxeoDefaultAnnotationEngine extends DefaultAnnotationEngine {
         };
     }
 
-    private <A extends Annotation> void registerAnnotationProcessor(Class<A> annotationClass,
+    private <A extends Annotation> void registerAnnotationProcessor(Class<A> annotationClass, // NOSONAR
             FieldAnnotationProcessor<A> fieldAnnotationProcessor) {
         annotationProcessorMap.put(annotationClass, fieldAnnotationProcessor);
     }
 
-    void throwIfAlreadyAssigned(Field field, boolean alreadyAssigned) {
+    void throwIfAlreadyAssigned(Field field, boolean alreadyAssigned) { // NOSONAR
         if (alreadyAssigned) {
             new Reporter().moreThanOneAnnotationNotAllowed(field.getName());
         }

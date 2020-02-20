@@ -117,7 +117,8 @@ public class Environment {
 
     public static final String BUNDLES = "nuxeo.osgi.bundles";
 
-    private static volatile Environment DEFAULT;
+    // volatile for double-checked locking
+    private static volatile Environment defaultEnvironment;
 
     protected final File home;
 
@@ -283,26 +284,29 @@ public class Environment {
         }
     }
 
-    public static synchronized void setDefault(Environment env) {
-        DEFAULT = env;
+    public static void setDefault(Environment env) {
+        synchronized (Environment.class) {
+            defaultEnvironment = env;
+        }
     }
 
     public static Environment getDefault() {
-        if (DEFAULT == null) {
-            tryInitEnvironment();
-        }
-        return DEFAULT;
-    }
-
-    private static synchronized void tryInitEnvironment() {
-        String homeDir = System.getProperty(NUXEO_HOME);
-        if (homeDir != null) {
-            File home = new File(homeDir);
-            if (home.isDirectory()) {
-                DEFAULT = new Environment(home);
-                DEFAULT.init();
+        if (defaultEnvironment == null) {
+            synchronized (Environment.class) {
+                if (defaultEnvironment == null) {
+                    String homeDir = System.getProperty(NUXEO_HOME);
+                    if (homeDir != null) {
+                        File home = new File(homeDir);
+                        if (home.isDirectory()) {
+                            Environment env = new Environment(home);
+                            env.init();
+                            defaultEnvironment = env;
+                        }
+                    }
+                }
             }
         }
+        return defaultEnvironment;
     }
 
     public File getHome() {

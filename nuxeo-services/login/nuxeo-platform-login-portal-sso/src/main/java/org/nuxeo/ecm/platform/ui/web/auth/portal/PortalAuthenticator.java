@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.auth.portal;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +64,7 @@ public class PortalAuthenticator implements NuxeoAuthenticationPlugin {
     private String secret = "secret";
 
     // one hour by default
-    private long maxAge = 60 * 60;
+    private long maxAge = Duration.ofHours(1).toSeconds();
 
     protected String digestAlgorithm = DIGEST_ALGORITHM_DEFAULT;
 

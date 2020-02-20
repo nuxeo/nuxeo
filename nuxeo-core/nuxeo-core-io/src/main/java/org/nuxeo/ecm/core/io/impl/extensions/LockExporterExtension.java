@@ -32,10 +32,10 @@ public class LockExporterExtension implements ExportExtension {
         if (docModel.isLocked()) {
             Element lockElement = result.getDocument().getRootElement().addElement("lockInfo");
             Lock lock = docModel.getLockInfo();
-            Long created = lock.getCreated().getTimeInMillis();
+            long created = lock.getCreated().getTimeInMillis();
             String owner = lock.getOwner();
-            lockElement.addElement("created").setText(created.toString());
-            lockElement.addElement("owner").setText(owner.toString());
+            lockElement.addElement("created").setText(String.valueOf(created));
+            lockElement.addElement("owner").setText(owner);
         }
     }
 

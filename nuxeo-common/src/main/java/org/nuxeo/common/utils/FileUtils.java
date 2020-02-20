@@ -135,7 +135,7 @@ public final class FileUtils {
                 int prefixIndex = path.lastIndexOf(pff);
                 if (prefixIndex > 0) {
                     path = path.substring(0, prefixIndex) + path.substring(prefixIndex + pff.length());
-                    dst = new File(path.toString());
+                    dst = new File(path);
                 }
             }
             dst.getParentFile().mkdirs();

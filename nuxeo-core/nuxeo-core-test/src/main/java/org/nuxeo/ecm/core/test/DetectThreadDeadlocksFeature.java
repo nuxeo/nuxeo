@@ -24,6 +24,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Duration;
 
 import javax.inject.Inject;
 
@@ -36,6 +37,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 public class DetectThreadDeadlocksFeature implements RunnerFeature {
+
+    protected static final long SCHEDULE_PERIOD = Duration.ofSeconds(30).toMillis();
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
@@ -71,7 +74,7 @@ public class DetectThreadDeadlocksFeature implements RunnerFeature {
         if (config.dumpOnFailure()) {
             notifier.addListener(listener);
         }
-        detector.schedule(30 * 1000, new ThreadDeadlocksDetector.KillListener());
+        detector.schedule(SCHEDULE_PERIOD, new ThreadDeadlocksDetector.KillListener());
     }
 
     @Override

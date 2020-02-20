@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.directory.ldap.dns;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
 
     protected final long maxDelay;
 
-    protected static DirContext context;
+    protected final DirContext context;
 
     public static synchronized DNSServiceResolver getInstance() {
         if (instance == null) {
@@ -76,7 +77,7 @@ public class DNSServiceResolverImpl implements DNSServiceResolver {
             log.warn("invalid value for property: " + DNS_CACHE_EXPIRY
                     + ", falling back to default value of 10 minutes");
         }
-        maxDelay = 1000 * 60 * cacheExpiry;
+        maxDelay = Duration.ofMinutes(cacheExpiry).toMillis();
 
         Properties env = new Properties();
         env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");

@@ -18,15 +18,11 @@
  */
 package org.nuxeo.launcher.process;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.IOUtils;
 
 public class SolarisProcessManager extends UnixProcessManager {
 
@@ -98,11 +94,6 @@ public class SolarisProcessManager extends UnixProcessManager {
             throw new RuntimeException("Unsupported Solaris version: " + solarisVersion);
         }
         return null;
-    }
-
-    protected List<String> execute(String... command) throws IOException {
-        Process process = new ProcessBuilder(command).start();
-        return IOUtils.readLines(process.getInputStream(), UTF_8);
     }
 
 }

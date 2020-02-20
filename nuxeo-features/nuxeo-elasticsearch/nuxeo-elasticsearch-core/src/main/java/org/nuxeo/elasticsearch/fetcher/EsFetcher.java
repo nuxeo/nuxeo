@@ -65,7 +65,7 @@ public class EsFetcher extends Fetcher {
             // TODO: this does not work on multi repo
             doc = DocumentModelReaders.fromSource(hit.getSourceAsMap()).sid(sid).getDocumentModel();
 
-            if (doc != null && consumer != null) {
+            if (consumer != null) {
                 consumer.accept(hit, doc);
             }
 

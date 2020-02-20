@@ -262,18 +262,10 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
     public Map<String, Serializable> getProperties(String layoutMode, String mode) {
         Map<String, Serializable> modeProps = getProperties(properties, layoutMode);
         Map<String, Serializable> widgetModeProps = getProperties(widgetModeProperties, mode);
-        if (modeProps == null && widgetModeProps == null) {
-            return null;
-        } else if (widgetModeProps == null) {
-            return modeProps;
-        } else if (modeProps == null) {
-            return widgetModeProps;
-        } else {
-            // take mode values, and override with widget mode values
-            Map<String, Serializable> res = new HashMap<>(modeProps);
-            res.putAll(widgetModeProps);
-            return res;
-        }
+        // take mode values, and override with widget mode values
+        Map<String, Serializable> res = new HashMap<>(modeProps);
+        res.putAll(widgetModeProps);
+        return res;
     }
 
     @Override
