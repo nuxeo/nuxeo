@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -109,7 +108,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     @Override
-    public Collection<ExtensionPointInfo> getExtensionPoints() {
+    public List<ExtensionPointInfo> getExtensionPoints() {
         List<ExtensionPointInfo> xps = new ArrayList<>();
         String query = QueryHelper.select(ExtensionPointInfo.TYPE_NAME, doc);
         DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
@@ -123,7 +122,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     @Override
-    public Collection<ExtensionInfo> getExtensions() {
+    public List<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> contribs = new ArrayList<>();
         String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, doc);
         DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);

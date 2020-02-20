@@ -21,19 +21,20 @@ package org.nuxeo.apidoc.adapters;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
 public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleInfo {
@@ -87,10 +88,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     @Override
-    public Collection<ComponentInfo> getComponents() {
+    public List<ComponentInfo> getComponents() {
         List<ComponentInfo> components = new ArrayList<>();
-        List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
-        for (DocumentModel child : children) {
+        String query = QueryHelper.select(ComponentInfo.TYPE_NAME, doc);
+        DocumentModelList docs = getCoreSession().query(query + " " + QueryHelper.ORDER_BY_POS);
+        for (DocumentModel child : docs) {
             ComponentInfo comp = child.getAdapter(ComponentInfo.class);
             if (comp != null) {
                 components.add(comp);

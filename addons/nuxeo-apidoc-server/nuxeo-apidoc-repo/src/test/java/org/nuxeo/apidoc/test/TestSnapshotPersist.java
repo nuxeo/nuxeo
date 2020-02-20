@@ -24,21 +24,16 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,8 +59,6 @@ import com.google.common.base.Charsets;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeSnaphotFeature.class })
 public class TestSnapshotPersist {
-
-    private static final Log log = LogFactory.getLog(TestSnapshotPersist.class);
 
     @Inject
     protected CoreSession session;
@@ -102,14 +95,8 @@ public class TestSnapshotPersist {
 
         List<Graph> graphs = snap.getGraphs();
 
-        Collections.sort(bids);
-        Collections.sort(cids);
-        Collections.sort(sids);
-        Collections.sort(epids);
-        Collections.sort(exids);
-
         for (String bid : bids) {
-            sb.append("bundle : ").append(bid);
+            sb.append("bundle: ").append(bid);
             BundleInfo bi = snap.getBundle(bid);
             sb.append(" *** ");
             sb.append(bi.getHierarchyPath());
@@ -119,7 +106,7 @@ public class TestSnapshotPersist {
         }
 
         for (String cid : cids) {
-            sb.append("component : ").append(cid);
+            sb.append("component: ").append(cid);
             sb.append(" *** ");
             ComponentInfo ci = snap.getComponent(cid);
             sb.append(ci.getHierarchyPath());
@@ -129,7 +116,7 @@ public class TestSnapshotPersist {
         }
 
         for (String sid : sids) {
-            sb.append("service : ").append(sid);
+            sb.append("service: ").append(sid);
             sb.append(" *** ");
             ServiceInfo si = snap.getService(sid);
             sb.append(si.getHierarchyPath());
@@ -137,7 +124,7 @@ public class TestSnapshotPersist {
         }
 
         for (String epid : epids) {
-            sb.append("extensionPoint : ").append(epid);
+            sb.append("extensionPoint: ").append(epid);
             sb.append(" *** ");
             ExtensionPointInfo epi = snap.getExtensionPoint(epid);
             sb.append(epi.getHierarchyPath());
@@ -145,20 +132,20 @@ public class TestSnapshotPersist {
         }
 
         for (String exid : exids) {
-            sb.append("contribution : ").append(exid);
+            sb.append("contribution: ").append(exid);
             sb.append(" *** ");
             ExtensionInfo exi = snap.getContribution(exid);
             sb.append(exi.getHierarchyPath());
             sb.append("\n");
         }
 
-        for (Graph graph : graphs) {
-            sb.append("graph : ").append(graph.getId());
-            sb.append(" *** ");
-            sb.append("\n");
-        }
+        // for (Graph graph : graphs) {
+        // sb.append("graph: ").append(graph.getId());
+        // sb.append(" *** ");
+        // sb.append("\n");
+        // }
 
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     @Test
@@ -168,24 +155,15 @@ public class TestSnapshotPersist {
 
         DistributionSnapshot persistent = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(persistent);
-
         persistent = snapshotManager.getSnapshot(runtimeSnapshot.getKey(), session);
         assertNotNull(persistent);
 
-        // DocumentModelList docs = session.query("select * from NXBundle");
-        // for (DocumentModel doc : docs) {
-        // log.info("Bundle : " + doc.getTitle() + " --- " +
-        // doc.getPathAsString());
-        // }
         String pDump = dumpSnapshot(persistent);
 
-        // String[] rtDumpLines = rtDump.trim().split("\n");
-        // String[] pDumpLines = pDump.trim().split("\n");
-        // assertEquals(rtDumpLines.length, pDumpLines.length);
-        // for (int i = 0; i < rtDumpLines.length; i++) {
-        // assertEquals(rtDumpLines[i], pDumpLines[i]);
-        // }
-        // assertEquals(rtDump, pDump);
+        // String ref = "ref_dump.txt";
+        // checkContentEquals(getReferenceFileContent(ref), rtDump, String.format("File '%s' content differs: ", ref));
+        // checkContentEquals(getReferenceFileContent(ref), pDump, String.format("File '%s' content differs: ", ref));
+        assertEquals(rtDump, pDump);
 
         // check runtime graph export equals to persistent *and* to reference graph
         List<Graph> runtimeGraphs = runtimeSnapshot.getGraphs();
@@ -197,7 +175,7 @@ public class TestSnapshotPersist {
         assertEquals(runtimeGraphs.size(), refs.size());
         int i = 0;
         for (Graph graph : runtimeGraphs) {
-            checkContentEquals(graph.getContent(), getReferenceFileContent(refs.get(i)),
+            checkContentEquals(getReferenceFileContent(refs.get(i)), graph.getContent(),
                     String.format("File '%s' content differs: ", refs.get(i)));
             // checkContentEquals(persistentGraphs.get(i).getContent(), graph.getContent(), null);
             i++;

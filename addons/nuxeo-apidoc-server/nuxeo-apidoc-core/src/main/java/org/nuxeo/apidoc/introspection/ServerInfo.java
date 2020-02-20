@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
@@ -131,7 +132,7 @@ public class ServerInfo {
 
     protected final String version;
 
-    protected final Map<String, BundleInfo> bundles = new HashMap<>();
+    protected final Map<String, BundleInfo> bundles = new LinkedHashMap<>();
 
     protected final List<Class<?>> allSpi = new ArrayList<>();
 
@@ -156,8 +157,8 @@ public class ServerInfo {
         return version;
     }
 
-    public Collection<BundleInfo> getBundles() {
-        return bundles.values();
+    public List<BundleInfo> getBundles() {
+        return new ArrayList<>(bundles.values());
     }
 
     public void addBundle(BundleInfo bundle) {
@@ -326,7 +327,6 @@ public class ServerInfo {
         List<ExtensionInfoImpl> contribRegistry = new ArrayList<>();
 
         Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
-
         for (RegistrationInfo ri : registrations) {
             String cname = ri.getName().getName();
             Bundle bundle = ri.getContext().getBundle();

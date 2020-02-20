@@ -26,8 +26,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -54,7 +53,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected final Map<String, ExtensionPointInfo> extensionPoints;
 
-    protected final Collection<ExtensionInfo> extensions;
+    protected final List<ExtensionInfo> extensions;
 
     protected final List<String> serviceNames = new ArrayList<>();
 
@@ -76,7 +75,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     public ComponentInfoImpl(BundleInfo bundleInfo, String name) {
         bundle = bundleInfo;
         this.name = name;
-        extensionPoints = new HashMap<>();
+        extensionPoints = new LinkedHashMap<>();
         extensions = new ArrayList<>();
     }
 
@@ -91,12 +90,12 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     @Override
-    public Collection<ExtensionPointInfo> getExtensionPoints() {
-        return extensionPoints.values();
+    public List<ExtensionPointInfo> getExtensionPoints() {
+        return new ArrayList<ExtensionPointInfo>(extensionPoints.values());
     }
 
     @Override
-    public Collection<ExtensionInfo> getExtensions() {
+    public List<ExtensionInfo> getExtensions() {
         return extensions;
     }
 

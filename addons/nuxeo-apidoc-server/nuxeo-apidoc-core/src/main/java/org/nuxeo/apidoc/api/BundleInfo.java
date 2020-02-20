@@ -19,7 +19,6 @@
  */
 package org.nuxeo.apidoc.api;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +58,7 @@ public interface BundleInfo extends NuxeoArtifact {
     String RUNTIME_STARTED_PSEUDO_BUNDLE = "org.nuxeo.runtime.started";
 
     @JsonIgnore
-    Collection<ComponentInfo> getComponents();
+    List<ComponentInfo> getComponents();
 
     String getFileName();
 

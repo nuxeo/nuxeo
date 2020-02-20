@@ -374,7 +374,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     public List<ExtensionInfo> getContributions() {
         List<ExtensionInfo> contribs = new ArrayList<>();
         contribs.addAll(contributions.values());
-        // TODO sort
         return contribs;
     }
 

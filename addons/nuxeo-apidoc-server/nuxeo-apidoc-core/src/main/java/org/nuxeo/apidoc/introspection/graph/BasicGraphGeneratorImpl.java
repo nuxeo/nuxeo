@@ -74,7 +74,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
             NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundle);
             graph.addNode(new NodeImpl(bid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor()));
             // compute sub components
-            Collection<ComponentInfo> components = bundle.getComponents();
+            List<ComponentInfo> components = bundle.getComponents();
             for (ComponentInfo component : components) {
                 String compid = component.getId();
                 graph.addNode(new NodeImpl(compid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),

@@ -20,9 +20,7 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +40,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected final String bundleId;
 
-    protected final Collection<ComponentInfo> components = new HashSet<>();
+    protected final List<ComponentInfo> components = new ArrayList<>();
 
     protected String fileName;
 
@@ -101,7 +99,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     }
 
     @Override
-    public Collection<ComponentInfo> getComponents() {
+    public List<ComponentInfo> getComponents() {
         return components;
     }
 

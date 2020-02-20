@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.repository;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -182,6 +183,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<String> getBundleIds() {
         return getChildren(BundleInfo.class, BundleInfo.TYPE_NAME).stream()
                                                                   .map(NuxeoArtifact::getId)
+                                                                  .sorted()
                                                                   .collect(Collectors.toList());
     }
 
@@ -194,6 +196,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<String> getComponentIds() {
         return getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME).stream()
                                                                         .map(NuxeoArtifact::getId)
+                                                                        .sorted()
                                                                         .collect(Collectors.toList());
     }
 
@@ -206,6 +209,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<String> getContributionIds() {
         return getChildren(ExtensionInfo.class, ExtensionInfo.TYPE_NAME).stream()
                                                                         .map(NuxeoArtifact::getId)
+                                                                        .sorted()
                                                                         .collect(Collectors.toList());
     }
 
@@ -223,6 +227,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<String> getExtensionPointIds() {
         return getChildren(ExtensionPointInfo.class, ExtensionPointInfo.TYPE_NAME).stream()
                                                                                   .map(NuxeoArtifact::getId)
+                                                                                  .sorted()
                                                                                   .collect(Collectors.toList());
     }
 
@@ -235,6 +240,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<String> getBundleGroupIds() {
         return getChildren(BundleGroup.class, BundleGroup.TYPE_NAME).stream()
                                                                     .map(NuxeoArtifact::getId)
+                                                                    .sorted()
                                                                     .collect(Collectors.toList());
     }
 
@@ -249,7 +255,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                 ids.addAll(ci.getServiceNames());
             }
         }
-        return new ArrayList<>(ids);
+        List<String> res = new ArrayList<>(ids);
+        Collections.sort(res);
+        return res;
     }
 
     @Override
@@ -315,6 +323,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME).stream()
                                                                         .filter(ci -> !ci.isXmlPureComponent())
                                                                         .map(NuxeoArtifact::getId)
+                                                                        .sorted()
                                                                         .collect(Collectors.toList());
     }
 
@@ -323,6 +332,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         return getChildren(ComponentInfo.class, ComponentInfo.TYPE_NAME).stream()
                                                                         .filter(ComponentInfo::isXmlPureComponent)
                                                                         .map(NuxeoArtifact::getId)
+                                                                        .sorted()
                                                                         .collect(Collectors.toList());
     }
 
@@ -406,7 +416,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         for (DocumentModel doc : docs) {
             result.add(doc.getAdapter(OperationInfo.class));
         }
-        // TODO sort
         return result;
     }
 
