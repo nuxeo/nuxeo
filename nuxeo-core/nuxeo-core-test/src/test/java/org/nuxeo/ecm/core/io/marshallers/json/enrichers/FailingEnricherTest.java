@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
+import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -60,13 +61,18 @@ public class FailingEnricherTest extends AbstractJsonWriterTest.External<Documen
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "INFO")
     public void test() throws IOException {
-        DocumentModel root = session.getRootDocument();
         // shouldn't throw
-        jsonAssert(root, CtxBuilder.enrichDoc(FailingEnricher.NAME).get());
+        DocumentModel root = session.getRootDocument();
+        // we have 2 working enrichers to assert valid entity splitting as we write enrichers
+        JsonAssert jsonExpected = jsonAssert(root, CtxBuilder.enrichDoc(DummyEnricher.NAME, AnotherDummyEnricher.NAME).get());
+        // Same request with a failing enricher in the middle should give the same result
+        JsonAssert jsonResult = jsonAssert(root,
+                CtxBuilder.enrichDoc(DummyEnricher.NAME, FailingEnricher.NAME, AnotherDummyEnricher.NAME).get());
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         // should log the exception
         assertEquals(1, caughtEvents.size());
-        assertEquals("enrichment failed", caughtEvents.get(0));
+        assertEquals(String.format("Enricher: %s failed", FailingEnricher.NAME), caughtEvents.get(0));
+        assertEquals(jsonExpected.toString(), jsonResult.toString());
     }
 
 }
