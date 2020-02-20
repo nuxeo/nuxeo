@@ -66,10 +66,14 @@ import org.nuxeo.elasticsearch.io.JsonESDocumentWriter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 import io.dropwizard.metrics5.Timer.Context;
+
+import javax.resource.spi.IllegalStateException;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -102,9 +106,9 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     public ElasticSearchIndexingImpl(ElasticSearchAdminImpl esa) {
         this.esa = esa;
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-        indexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "index"));
-        deleteTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "delete"));
-        bulkIndexTimer = registry.timer(MetricRegistry.name("nuxeo", "elasticsearch", "service", "bulkIndex"));
+        indexTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "index"));
+        deleteTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "delete"));
+        bulkIndexTimer = registry.timer(MetricName.build("nuxeo.elasticsearch.service.timer").tagged("service", "bulkIndex"));
         this.jsonESDocumentWriter = new JsonESDocumentWriter();// default writer
         this.useExternalVersion = esa.useExternalVersion();
     }

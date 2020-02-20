@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -116,12 +117,11 @@ public class CacheComplianceFixture {
 
     @Test
     public void hasMetrics() {
-        List<MetricName> expected = Arrays.asList("nuxeo.cache.default-test-cache.read-counter",
-                "nuxeo.cache.default-test-cache.read-hit-counter", "nuxeo.cache.default-test-cache.read-hit-ratio",
-                "nuxeo.cache.default-test-cache.read-miss-counter", "nuxeo.cache.default-test-cache.write-counter",
-                "nuxeo.cache.default-test-cache.invalidate-all-counter", "nuxeo.cache.default-test-cache.size")
+        List<MetricName> expected = Arrays.asList("nuxeo.cache.read-counter", "nuxeo.cache.read-hit-counter",
+                "nuxeo.cache.read-hit-ratio", "nuxeo.cache.read-miss-counter", "nuxeo.cache.write-counter",
+                "nuxeo.cache.invalidate-all-counter", "nuxeo.cache.size")
                                           .stream()
-                                          .map(MetricName::build)
+                                          .map(name -> MetricName.build(name).tagged("cache", "default-test-cache"))
                                           .collect(Collectors.toList());
         Assert.assertTrue(
                 SharedMetricRegistries.getOrCreate(MetricsService.class.getName()).getNames().containsAll(expected));

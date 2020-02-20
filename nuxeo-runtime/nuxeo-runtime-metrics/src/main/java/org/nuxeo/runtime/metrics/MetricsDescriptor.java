@@ -167,7 +167,7 @@ public class MetricsDescriptor implements Serializable {
                     enabled ? "enabled" : "disabled", prefix, host, port, period);
         }
 
-        protected GraphiteReporter reporter;
+        protected NuxeoGraphiteReporter reporter;
 
         public void enable(MetricRegistry registry) {
             if (!enabled) {
@@ -177,12 +177,13 @@ public class MetricsDescriptor implements Serializable {
             InetSocketAddress address = new InetSocketAddress(host, port);
             @SuppressWarnings("resource") // closed by reporter.stop()
             Graphite graphite = new Graphite(address);
-            reporter = GraphiteReporter.forRegistry(registry)
+            reporter = new NuxeoGraphiteReporter(registry, (name, metric) -> filter(name),
+                    GraphiteReporter.forRegistry(registry)
                                        .convertRatesTo(TimeUnit.SECONDS)
                                        .convertDurationsTo(TimeUnit.MICROSECONDS)
                                        .prefixedWith(getPrefix())
                                        .filter((name, metric) -> filter(name))
-                                       .build(graphite);
+                                    .build(graphite));
             reporter.start(period, TimeUnit.SECONDS);
         }
 

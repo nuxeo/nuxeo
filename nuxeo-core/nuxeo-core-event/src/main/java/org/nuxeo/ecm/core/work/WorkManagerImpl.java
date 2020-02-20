@@ -77,6 +77,7 @@ import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
@@ -130,6 +131,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     // @since 11.1
     public static final Codec<Record> DEAD_LETTER_QUEUE_CODEC = new AvroMessageCodec<>(Record.class);
 
+    // @since 11.1
+    protected static final String GLOBAL_METRIC_PREFIX = "nuxeo.works.global.queue";
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -257,7 +260,8 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     void activateQueueMetrics(String queueId) {
-        NuxeoMetricSet queueMetrics = new NuxeoMetricSet("nuxeo", "works", "total", queueId);
+        NuxeoMetricSet queueMetrics = new NuxeoMetricSet(
+                MetricName.build(GLOBAL_METRIC_PREFIX).tagged("queue", queueId));
         queueMetrics.putGauge(() -> getMetrics(queueId).scheduled, "scheduled");
         queueMetrics.putGauge(() -> getMetrics(queueId).running, "running");
         queueMetrics.putGauge(() -> getMetrics(queueId).completed, "completed");
@@ -266,7 +270,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     void deactivateQueueMetrics(String queueId) {
-        String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", queueId).getKey();
+        String queueMetricsName = MetricName.build(GLOBAL_METRIC_PREFIX).tagged("queue", queueId).getKey();
         registry.removeMatching((name, metric) -> name.getKey().startsWith(queueMetricsName));
     }
 
@@ -646,10 +650,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             queueId = queue.queueId;
             running = new ConcurrentLinkedQueue<>();
             // init metrics
-            scheduledCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "scheduled", "count"));
-            runningCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "running"));
-            completedCount = registry.counter(MetricRegistry.name("nuxeo", "works", queueId, "completed"));
-            workTimer = registry.timer(MetricRegistry.name("nuxeo", "works", queueId, "total"));
+            scheduledCount = registry.counter(
+                    MetricName.build("nuxeo.works.queue.scheduled").tagged("queue", queueId));
+            runningCount = registry.counter(
+                    MetricName.build("nuxeo.works.queue.running").tagged("queue", queueId));
+            completedCount = registry.counter(
+                    MetricName.build("nuxeo.works.queue.completed").tagged("queue", queueId));
+            workTimer = registry.timer(MetricName.build("nuxeo.works.queue.timer").tagged("queue", queueId));
         }
 
         public int getScheduledOrRunningSize() {

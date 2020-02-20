@@ -43,6 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
@@ -68,7 +69,7 @@ public class WorkComputation extends AbstractComputation {
     public WorkComputation(String name) {
         super(name, 1, 0);
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-        workTimer = registry.timer(MetricRegistry.name("nuxeo", "works", name, "total"));
+        workTimer = registry.timer(MetricName.build("nuxeo.works.local.queue.timer").tagged("queue", name));
         stateTTL = Framework.getService(ConfigurationService.class).getLong(STATETTL_KEY, STATETTL_DEFAULT_VALUE);
     }
 

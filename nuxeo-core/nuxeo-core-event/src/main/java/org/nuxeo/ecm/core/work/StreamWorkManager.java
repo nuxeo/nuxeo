@@ -433,7 +433,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     protected void activateQueueMetrics(String queueId) {
-        NuxeoMetricSet queueMetrics = new NuxeoMetricSet("nuxeo", "works", "total", queueId);
+        NuxeoMetricSet queueMetrics = new NuxeoMetricSet(MetricName.build("nuxeo.works.global.queue").tagged("queue", queueId));
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).scheduled, "scheduled");
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).running, "running");
         queueMetrics.putGauge(() -> getMetricsWithNuxeoClassLoader(queueId).completed, "completed");
@@ -443,7 +443,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     protected void deactivateQueueMetrics(String queueId) {
-        String queueMetricsName = MetricRegistry.name("nuxeo", "works", "total", queueId).getKey();
+        String queueMetricsName = MetricName.build("nuxeo.works.global.queue").tagged("queue", queueId).getKey();
         registry.removeMatching((name, metric) -> name.getKey().startsWith(queueMetricsName));
     }
 
