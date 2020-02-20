@@ -6,7 +6,7 @@
   <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-             point="operations">
+    point="operations">
 
     <operation class="org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery">
       <widgets>
@@ -57,20 +57,20 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.DeleteRelation" />
     <operation
-      class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation">
+      class="org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation" >
       <widgets>
         <widget name="query" type="codearea">
-          <labels>
-            <label mode="any">NXQL query</label>
-          </labels>
-          <properties mode="any">
-            <property name="language">nxql</property>
-            <property name="width">100%</property>
-            <property name="height">100%</property>
-          </properties>
-          <fields>
-            <field>query</field>
-          </fields>
+            <labels>
+              <label mode="any">NXQL query</label>
+            </labels>
+            <properties mode="any">
+              <property name="language">nxql</property>
+              <property name="width">100%</property>
+              <property name="height">100%</property>
+            </properties>
+             <fields>
+              <field>query</field>
+            </fields>
         </widget>
       </widgets>
     </operation>
@@ -93,7 +93,7 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImport" />
 
-    <operation class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImportWithProperties" />
+    <operation  class="org.nuxeo.ecm.automation.core.operations.services.FileManagerImportWithProperties" />
 
     <operation
       class="org.nuxeo.ecm.automation.core.operations.services.BlobHolderAttach" />
@@ -140,7 +140,7 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.users.GetNuxeoPrincipal" />
 
-    <operation
+  	<operation
       class="org.nuxeo.ecm.automation.core.operations.users.SuggestUserEntries" />
 
     <operation
@@ -171,11 +171,11 @@
   </extension>
 
   <extension point="chains"
-             target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
     <chain id="VersionAndAttachFile">
       <operation id="Context.PushBlobList">
       </operation>
-      <operation id="Repository.GetDocument">
+      <operation id ="Repository.GetDocument">
         <param type="string" name="value">expr:Context.get("currentDocument")</param>
       </operation>
       <operation id="Document.CheckIn">
@@ -203,7 +203,7 @@
     <chain id="VersionAndAttachFiles">
       <operation id="Context.PushBlobList">
       </operation>
-      <operation id="Repository.GetDocument">
+      <operation id ="Repository.GetDocument">
         <param type="string" name="value">expr:Context.get("currentDocument")</param>
       </operation>
       <operation id="Document.CheckIn">
