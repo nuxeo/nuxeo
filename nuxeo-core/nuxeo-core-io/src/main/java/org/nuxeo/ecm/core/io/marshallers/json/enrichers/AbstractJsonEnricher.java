@@ -30,6 +30,10 @@ import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 
 /**
  * Base class to write {@link ExtensibleEntityJsonWriter}'s enricher.
@@ -45,6 +49,8 @@ public abstract class AbstractJsonEnricher<EntityType> extends AbstractJsonWrite
 
     private final String name;
 
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
+
     public AbstractJsonEnricher(String name) {
         this.name = name;
     }
@@ -56,15 +62,28 @@ public abstract class AbstractJsonEnricher<EntityType> extends AbstractJsonWrite
 
     @Override
     public void write(Enriched<EntityType> enrichable, JsonGenerator jg) {
-        try {
-            write(jg, enrichable.getEntity());
+        try (TokenBuffer tb = new TokenBuffer(MAPPER, false)) {
+            // Write to a temporary output in case of exception during write()
+            tb.writeStartObject();
+            write(tb, enrichable.getEntity());
+            tb.flush();
+            // Add the complete, well-formed content to the real output
+            try (JsonParser parser = tb.asParser()) {
+                parser.nextToken(); // ignoring START_OBJECT
+                while (parser.nextToken() == JsonToken.FIELD_NAME) {
+                    jg.copyCurrentStructure(parser);
+                }
+                if (parser.currentToken() != null) {
+                    log.error("Enricher {} returned invalid output {}", name, tb.toString());
+                }
+            }
         } catch (Exception e) {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("interrupted", e); // NOSONAR
             } else {
                 // TODO collect exception and return it to the caller
-                log.info("enrichment failed", e);
+                log.info("Enricher {} failed", name, e);
             }
         }
     }

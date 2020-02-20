@@ -33,21 +33,16 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * @since 11.1
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
-public class FailingEnricher extends AbstractJsonEnricher<DocumentModel> {
+public class AnotherDummyEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-    public static final String NAME = "failingEnricher";
+    public static final String NAME = "anotherDummyEnricher";
 
-    public FailingEnricher() {
+    public AnotherDummyEnricher() {
         super(NAME);
     }
 
     @Override
     public void write(JsonGenerator jg, DocumentModel enriched) throws IOException {
-        // write something incomplete
-        jg.writeFieldName("justAFieldName");
-        // make sure it is sent
-        jg.flush();
-        // then fail
-        throw new IOException("Simulated exception for test purpose");
+        jg.writeStringField("foofoo", "babar");
     }
 }
