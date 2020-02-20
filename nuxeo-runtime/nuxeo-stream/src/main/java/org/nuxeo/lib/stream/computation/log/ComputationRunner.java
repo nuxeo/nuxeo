@@ -226,15 +226,15 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected void registerMetrics() {
         globalFailureCount = registry.counter(GLOBAL_FAILURE_COUNT_REGISTRY_NAME);
         runningCount = registry.counter(
-                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "running"));
+                MetricName.build("nuxeo.stream.computation.running").tagged("computation", metadata.name()));
         failureCount = registry.counter(
-                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "failure"));
+                MetricName.build("nuxeo.stream.computation.failure").tagged("computation", metadata.name()));
         recordSkippedCount = registry.counter(
-                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "skippedRecord"));
+                MetricName.build("nuxeo.stream.computation.skippedRecord").tagged("computation", metadata.name()));
         processRecordTimer = registry.timer(
-                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processRecord"));
+                MetricName.build("nuxeo.stream.computation.processRecord").tagged("computation", metadata.name()));
         processTimerTimer = registry.timer(
-                MetricRegistry.name("nuxeo", "stream", "computation", metadata.name(), "processTimer"));
+                MetricName.build("nuxeo.stream.computation.processTimer").tagged("computation", metadata.name()));
     }
 
     protected void closeTailer() {

@@ -60,7 +60,7 @@ public class CacheMetrics extends CacheWrapper {
     protected final MetricName SIZE_NAME = nameOf("size");
 
     protected MetricName nameOf(String name) {
-        return MetricName.build("nuxeo", "cache", getName(), name);
+        return MetricName.build("nuxeo", "cache", name).tagged("cache", getName());
     }
 
     public CacheMetrics(CacheManagement cache) {
