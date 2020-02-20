@@ -108,7 +108,7 @@ public class EsIterableQueryResultImpl implements IterableQueryResult, Iterator<
 
     @Override
     public Iterator<Map<String, Serializable>> iterator() {
-        return this;
+        return this; // NOSONAR this iterable does not support multiple traversals
     }
 
     @Override

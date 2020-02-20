@@ -189,7 +189,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
     @Override
     public Iterator<Map<String, Serializable>> iterator() {
         checkNotClosed();
-        return this;
+        return this; // NOSONAR this iterable does not support multiple traversals
     }
 
     protected Map<String, Serializable> fetchNext() throws SQLException {

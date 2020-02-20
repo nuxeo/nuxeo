@@ -19,6 +19,8 @@
  */
 package org.nuxeo.ecm.core.event;
 
+import java.time.Duration;
+
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.event.pipe.EventPipeDescriptor;
@@ -42,7 +44,7 @@ public class EventServiceComponent extends DefaultComponent {
 
     public static final String EVENT_DISPATCHER_XP = "dispatcher";
 
-    public static final long DEFAULT_SHUTDOWN_TIMEOUT = 5 * 1000; // 5 seconds
+    public static final long DEFAULT_SHUTDOWN_TIMEOUT = Duration.ofSeconds(5).toMillis();
 
     protected EventServiceImpl service;
 

@@ -94,10 +94,10 @@ public class NuxeoWroModelFactory implements WroModelFactory {
         if (StringUtils.isBlank(type)) {
             return null;
         }
-        if (ResourceType.js.name().equals(type.toLowerCase())) {
+        if (ResourceType.js.equals(type)) {
             return ro.isdc.wro.model.resource.ResourceType.JS;
         }
-        if (ResourceType.css.name().equals(type.toLowerCase())) {
+        if (ResourceType.css.equals(type)) {
             return ro.isdc.wro.model.resource.ResourceType.CSS;
         }
         return null;

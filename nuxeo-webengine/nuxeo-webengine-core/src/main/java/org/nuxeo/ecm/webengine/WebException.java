@@ -186,8 +186,7 @@ public class WebException extends WebApplicationException {
             log.warn("Possible infinite loop! Check the exception wrapping.");
             return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         }
-        if ((cause instanceof DocumentSecurityException) || (cause instanceof SecurityException)
-                || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
+        if ((cause instanceof DocumentSecurityException) || (cause instanceof SecurityException)) {
             return HttpServletResponse.SC_FORBIDDEN;
         } else if (cause instanceof DocumentNotFoundException || cause instanceof WebResourceNotFoundException) {
             return HttpServletResponse.SC_NOT_FOUND;

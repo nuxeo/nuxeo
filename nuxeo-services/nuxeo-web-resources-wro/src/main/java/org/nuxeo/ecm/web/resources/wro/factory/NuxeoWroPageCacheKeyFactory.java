@@ -75,7 +75,7 @@ public class NuxeoWroPageCacheKeyFactory extends DefaultCacheKeyFactory {
                 return StringUtils.isEmpty(groupName) ? null : groupName;
             }
 
-            private String stripSessionID(final String uri) {
+            private String stripSessionID(final String uri) { // NOSONAR
                 if (uri == null) {
                     return null;
                 }
@@ -121,7 +121,7 @@ public class NuxeoWroPageCacheKeyFactory extends DefaultCacheKeyFactory {
     /**
      * Uses isMinimizeEnabled configuration to compute minimize value.
      */
-    private boolean isMinimized(final HttpServletRequest request) {
+    private boolean isMinimized(final HttpServletRequest request) { // NOSONAR
         return context.getConfig().isMinimizeEnabled() ? groupExtractor.isMinimized(request) : false;
     }
 

@@ -27,7 +27,7 @@ public class DeputyManagementService extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.getName().equals(DeputyManager.class.getName())) {
+        if (adapter == DeputyManager.class) {
             return adapter.cast(new DeputyManagementStorageService());
         }
         return adapter.cast(this);

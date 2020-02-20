@@ -41,15 +41,7 @@ public class EsIdentifierList extends ArrayList<String> implements Operand {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        if (isEmpty()) {
-            return "";
-        }
-        sb.append(get(0).toString());
-        for (int i = 1, size = size(); i < size; i++) {
-            sb.append(",").append(get(i).toString());
-        }
-        return sb.toString();
+        return String.join(",", this);
     }
 
 }

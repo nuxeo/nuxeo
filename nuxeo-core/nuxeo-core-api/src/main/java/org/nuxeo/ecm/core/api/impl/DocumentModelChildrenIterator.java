@@ -118,7 +118,7 @@ public class DocumentModelChildrenIterator implements DocumentModelIterator {
 
     @Override
     public Iterator<DocumentModel> iterator() {
-        return this;
+        return this; // NOSONAR this iterable does not support multiple traversals
     }
 
     @Override

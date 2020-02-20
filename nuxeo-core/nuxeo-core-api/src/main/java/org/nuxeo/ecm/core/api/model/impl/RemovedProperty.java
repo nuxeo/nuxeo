@@ -209,7 +209,7 @@ public class RemovedProperty extends AbstractProperty {
             return false;
         }
         RemovedProperty rp = (RemovedProperty) property;
-        return Objects.equals(getSchema(), rp.getSchema()) && Objects.equals(getName(), getName())
+        return Objects.equals(getSchema(), rp.getSchema()) && Objects.equals(getName(), rp.getName())
                 && Objects.equals(getRemovedParent().getName(), rp.getRemovedParent().getName());
     }
 

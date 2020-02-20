@@ -35,46 +35,37 @@ public enum ResourceType {
      * @since 7.4
      */
     public final boolean equals(String type) {
-        if (name().equalsIgnoreCase(type)) {
-            return true;
-        }
-        return false;
+        return name().equalsIgnoreCase(type);
     }
 
     public final boolean matches(Resource r) {
-        if (ResourceType.any == this) {
+        if (any == this) {
             return true;
         }
         if (r == null || r.getType() == null) {
             return true;
         }
-        if (this.name().toLowerCase().equals(r.getType().toLowerCase())) {
-            return true;
-        }
-        return false;
+        return equals(r.getType());
     }
 
     public static final ResourceType parse(String type) {
         for (ResourceType item : values()) {
-            if (item.name().equals(type)) {
+            if (item.equals(type)) {
                 return item;
             }
         }
-        return ResourceType.unknown;
+        return unknown;
     }
 
     public static final boolean matches(String type, Resource r) {
-        if (StringUtils.isBlank(type) || ResourceType.any.name().equals(type.toLowerCase())) {
+        if (StringUtils.isBlank(type) || any.equals(type)) {
             return true;
         }
         String rt = r.getType();
         if (StringUtils.isBlank(rt)) {
             return true;
         }
-        if (type.toLowerCase().equals(rt.toLowerCase())) {
-            return true;
-        }
-        return false;
+        return type.equalsIgnoreCase(rt);
     }
 
 }

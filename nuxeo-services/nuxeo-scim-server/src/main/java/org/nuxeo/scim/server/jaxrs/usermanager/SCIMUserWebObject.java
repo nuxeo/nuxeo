@@ -133,13 +133,9 @@ public class SCIMUserWebObject extends BaseUMObject {
 
             DirectoryService ds = Framework.getService(DirectoryService.class);
 
-            Session dSession = null;
             DocumentModelList userModels = null;
-            try {
-                dSession = ds.open(directoryName);
+            try (Session dSession = ds.open(directoryName)) {
                 userModels = dSession.query(filter, null, orderBy, true, count, startIndex - 1);
-            } finally {
-                dSession.close();
             }
 
             List<UserResource> userResources = new ArrayList<>();

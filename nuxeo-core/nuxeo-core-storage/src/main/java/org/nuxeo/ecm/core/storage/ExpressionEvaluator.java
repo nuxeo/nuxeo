@@ -229,7 +229,7 @@ public abstract class ExpressionEvaluator {
         }
         String ancestorId = ((StringLiteral) rvalue).value;
         Object[] ancestorIds = (Object[]) walkReference(new Reference(NXQL_ECM_ANCESTOR_IDS));
-        boolean eq = op == Operator.EQ ? true : false;
+        boolean eq = op == Operator.EQ;
         if (ancestorIds == null) {
             // placeless
             return eq ? FALSE : TRUE;
@@ -568,7 +568,7 @@ public abstract class ExpressionEvaluator {
 
     protected Boolean bool(Object value) {
         if (value == null) {
-            return null;
+            return null; // NOSONAR
         }
         if (!(value instanceof Boolean)) {
             throw new QueryParseException("Not a boolean: " + value);
@@ -579,7 +579,7 @@ public abstract class ExpressionEvaluator {
     // ternary logic
     protected Boolean not(Boolean value) {
         if (value == null) {
-            return null;
+            return null; // NOSONAR
         }
         return !value;
     }
@@ -605,7 +605,7 @@ public abstract class ExpressionEvaluator {
     // ternary logic
     protected Boolean eq(Object left, Object right) {
         if (left == null || right == null) {
-            return null;
+            return null; // NOSONAR
         }
         if (left instanceof Calendar && right instanceof Calendar) {
             // avoid timezone issues (NXP-20260)
@@ -617,7 +617,7 @@ public abstract class ExpressionEvaluator {
     // ternary logic
     protected Boolean in(Object left, List<Object> right) {
         if (left == null) {
-            return null;
+            return null; // NOSONAR
         }
         boolean hasNull = false;
         for (Object r : right) {
@@ -650,7 +650,7 @@ public abstract class ExpressionEvaluator {
     // ternary logic
     protected Boolean like(Object left, String right, boolean caseInsensitive) {
         if (left == null || right == null) {
-            return null;
+            return null; // NOSONAR
         }
         if (!(left instanceof String)) {
             throw new QueryParseException("Invalid LIKE lhs: " + left);
@@ -661,8 +661,7 @@ public abstract class ExpressionEvaluator {
             right = right.toLowerCase();
         }
         String regex = likeToRegex(right);
-        boolean match = Pattern.matches(regex.toString(), value);
-        return match;
+        return Pattern.matches(regex, value);
     }
 
     /**
@@ -799,7 +798,7 @@ public abstract class ExpressionEvaluator {
      */
     protected static Boolean fulltext(String string1, String string2, String queryString) {
         if (queryString == null || (string1 == null && string2 == null)) {
-            return null;
+            return null; // NOSONAR
         }
         // query
         List<String> query = new ArrayList<>();

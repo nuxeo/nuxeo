@@ -72,11 +72,11 @@ public class RandomTextGenerator {
     }
 
     protected int getTargetPageMaxSizeB() {
-        return (int) (1.2 * (BLOC_SIZE / NB_PAGE_PER_BLOC));
+        return (int) (1.2 * (BLOC_SIZE / NB_PAGE_PER_BLOC)); // NOSONAR (round)
     }
 
     protected int getTargetParagraphMaxSizeB() {
-        return (int) (1.2 * (getTargetPageMaxSizeB() / NB_PARAGRAPH_PER_PAGE));
+        return (int) (1.2 * (getTargetPageMaxSizeB() / NB_PARAGRAPH_PER_PAGE)); // NOSONAR (round)
     }
 
     public String getRandomTitle(int nbWord) {

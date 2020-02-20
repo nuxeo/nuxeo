@@ -58,13 +58,13 @@ public class AdvancedScannedFileFactory extends ScanedFileFactory implements Imp
         FileSourceNode fileNode = (FileSourceNode) node;
         List<DocumentModel> docCreated = importer.importDocuments(parent, fileNode.getFile());
 
-        if (docCreated == null || docCreated.size() < 1) {
+        if (docCreated == null || docCreated.isEmpty()) {
             return null;
         }
 
         ScannedFileImporter.addProcessedDescriptor(fileNode.getSourcePath());
 
-        GenericMultiThreadedImporter.addCreatedDoc("_XMLimporter", docCreated.size() - 1);
+        GenericMultiThreadedImporter.addCreatedDoc("_XMLimporter", docCreated.size() - 1L);
         return docCreated.get(0);
     }
 }

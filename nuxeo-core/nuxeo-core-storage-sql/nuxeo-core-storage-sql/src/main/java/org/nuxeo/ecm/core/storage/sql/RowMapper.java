@@ -116,13 +116,9 @@ public interface RowMapper {
         @Override
         public boolean equals(Object other) {
             if (other instanceof RowUpdate) {
-                return equal((RowUpdate) other);
+                return ((RowUpdate) other).row.equals(row);
             }
             return false;
-        }
-
-        private boolean equal(RowUpdate other) {
-            return other.row.equals(row);
         }
 
         @Override

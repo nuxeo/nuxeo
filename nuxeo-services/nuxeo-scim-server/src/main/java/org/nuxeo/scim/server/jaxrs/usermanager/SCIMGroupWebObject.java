@@ -134,13 +134,9 @@ public class SCIMGroupWebObject extends BaseUMObject {
 
             DirectoryService ds = Framework.getService(DirectoryService.class);
 
-            Session dSession = null;
             DocumentModelList groupModels = null;
-            try {
-                dSession = ds.open(directoryName);
+            try (Session dSession = ds.open(directoryName)) {
                 groupModels = dSession.query(filter, null, orderBy, true, count, startIndex - 1);
-            } finally {
-                dSession.close();
             }
 
             List<GroupResource> groupResources = new ArrayList<>();

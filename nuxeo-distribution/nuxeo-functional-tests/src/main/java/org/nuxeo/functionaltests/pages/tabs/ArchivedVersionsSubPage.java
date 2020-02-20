@@ -156,7 +156,7 @@ public class ArchivedVersionsSubPage extends DocumentBasePage {
         // into account, ie. the "Delete" button is not displayed any more nor
         // enabled.
         Clock clock = new SystemClock();
-        long end = clock.laterBy(AbstractTest.LOAD_TIMEOUT_SECONDS * 1000);
+        long end = clock.laterBy(AbstractTest.LOAD_TIMEOUT_SECONDS * 1000L);
         while (clock.isNowBefore(end)) {
             try {
                 archivedVersionsPage = executeActionOnSelectedVersions(DELETE_ACTION_ID, true,

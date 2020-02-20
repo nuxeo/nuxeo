@@ -20,14 +20,11 @@
 package org.nuxeo.ecm.core.convert.plugins.text.extractors;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -48,12 +45,9 @@ import net.htmlparser.jericho.Source;
  */
 public class Html2TextConverter implements Converter {
 
-    private static final Log log = LogFactory.getLog(Html2TextConverter.class);
-
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        InputStream stream = null;
         try {
             Blob blob = blobHolder.getBlob();
             // if the underlying source is unambiguously decoded, access the
@@ -79,14 +73,6 @@ public class Html2TextConverter implements Converter {
             return new SimpleCachableBlobHolder(Blobs.createBlob(text));
         } catch (IOException e) {
             throw new ConversionException("Error during Html2Text conversion", blobHolder, e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    log.error("Error while closing Blob stream", e);
-                }
-            }
         }
     }
 

@@ -279,9 +279,6 @@ public abstract class Fragment implements Serializable {
             break;
         case ABSENT:
         case INVALIDATED_DELETED:
-            context = null;
-            state = State.DETACHED;
-            break;
         case CREATED:
             context = null;
             state = State.DETACHED;

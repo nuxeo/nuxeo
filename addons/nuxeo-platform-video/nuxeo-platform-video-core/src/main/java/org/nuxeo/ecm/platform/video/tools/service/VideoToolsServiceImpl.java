@@ -116,7 +116,7 @@ public class VideoToolsServiceImpl extends DefaultComponent implements VideoTool
         BlobHolder result = null;
 
         if (!isToolAvailable(toolName)) {
-            return result;
+            throw new NuxeoException("The video tool '" + toolName + "' is not available");
         }
         try {
             // initialize the tool and set up the parameters

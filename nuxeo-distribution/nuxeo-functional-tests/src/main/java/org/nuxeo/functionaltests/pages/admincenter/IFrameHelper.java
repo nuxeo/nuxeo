@@ -38,7 +38,7 @@ public class IFrameHelper {
         return focusOnWEIFrame(driver, NBTRY);
     }
 
-    protected static void wait(int nbSeconds) {
+    protected static void sleep(long nbSeconds) {
         try {
             Thread.sleep(nbSeconds * 1000);
         } catch (InterruptedException e) {
@@ -57,12 +57,12 @@ public class IFrameHelper {
                         driver.switchTo().frame(iFrame);
                         return true;
                     } else {
-                        wait(2);
+                        sleep(2);
                         return focusOnWEIFrame(driver, nbTry - 1);
                     }
                 } catch (Throwable e) {
                     System.out.println("Retry to find IFrame on page " + driver.getCurrentUrl());
-                    wait(2);
+                    sleep(2);
                     return focusOnWEIFrame(driver, nbTry - 1);
                 }
             } else {

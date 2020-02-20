@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.redis.contribs;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +50,7 @@ public class RedisBlockingQueue extends NuxeoBlockingQueue {
     private static final Log log = LogFactory.getLog(RedisBlockingQueue.class);
 
     // this is so that we don't spam the logs with too many errors
-    private static final long LOG_INTERVAL = 1000 * 10; // 10s
+    private static final long LOG_INTERVAL = Duration.ofSeconds(10).toMillis();
 
     private static AtomicLong LAST_IO_EXCEPTION = new AtomicLong(0);
 

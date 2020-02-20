@@ -43,10 +43,10 @@ public class TemplateAdapterFactory implements DocumentAdapterFactory {
      * Checks if the document can be adapted. Also works on a ShallowDocumentModel.
      */
     public static boolean isAdaptable(DocumentModel doc, Class<?> adapterClass) {
-        if (adapterClass.equals(TemplateBasedDocument.class)) {
+        if (adapterClass == TemplateBasedDocument.class) {
             return doc.hasFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
         }
-        if (adapterClass.equals(TemplateSourceDocument.class)) {
+        if (adapterClass == TemplateSourceDocument.class) {
             return doc.hasFacet(TemplateSourceDocumentAdapterImpl.TEMPLATE_FACET);
         }
         return false;
@@ -56,7 +56,7 @@ public class TemplateAdapterFactory implements DocumentAdapterFactory {
     @SuppressWarnings("rawtypes")
     public Object getAdapter(DocumentModel doc, Class adapterClass) {
 
-        if (adapterClass.getSimpleName().equals(TemplateBasedDocument.class.getSimpleName())) {
+        if (adapterClass == TemplateBasedDocument.class) {
             if (doc.hasFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET)) {
                 return new TemplateBasedDocumentAdapterImpl(doc);
             } else {
@@ -64,7 +64,7 @@ public class TemplateAdapterFactory implements DocumentAdapterFactory {
             }
         }
 
-        if (adapterClass.getSimpleName().equals(TemplateSourceDocument.class.getSimpleName())) {
+        if (adapterClass == TemplateSourceDocument.class) {
             if (doc.hasFacet(TemplateSourceDocumentAdapterImpl.TEMPLATE_FACET)) {
                 return new TemplateSourceDocumentAdapterImpl(doc);
             } else {

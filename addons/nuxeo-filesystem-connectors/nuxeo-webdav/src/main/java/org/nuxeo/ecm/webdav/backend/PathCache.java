@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,9 +34,9 @@ import org.nuxeo.ecm.core.api.IdRef;
 @Deprecated
 public class PathCache {
 
-    private static final long FOLDER_LIFE_TIME = 30 * 60 * 1000;
+    private static final long FOLDER_LIFE_TIME = Duration.ofMinutes(30).toMillis();
 
-    private static final long FILE_LIFE_TIME = 1 * 60 * 1000;
+    private static final long FILE_LIFE_TIME = Duration.ofMinutes(1).toMillis();
 
     private int maxSize;
 

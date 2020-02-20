@@ -153,7 +153,7 @@ public class SimpleImageInfo {
         return c;
     }
 
-    protected void skip(long n) throws IOException {
+    protected void skip(int n) throws IOException {
         long done = 0;
         while (done < n) {
             long num = in.skip(n - done);

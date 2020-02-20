@@ -53,7 +53,7 @@ public class DefaultTransactionStatistics implements TransactionStatistics {
 
     @Override
     public String getId() {
-        return id.toString();
+        return id;
     }
 
     @Override

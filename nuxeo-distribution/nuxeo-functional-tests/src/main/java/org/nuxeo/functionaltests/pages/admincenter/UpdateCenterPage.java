@@ -39,7 +39,7 @@ public class UpdateCenterPage extends AdminCenterBasePage {
         super(driver);
     }
 
-    protected static void wait(int nbSeconds) {
+    protected static void sleep(long nbSeconds) {
         try {
             Thread.sleep(nbSeconds * 1000);
         } catch (InterruptedException e) {
@@ -62,13 +62,13 @@ public class UpdateCenterPage extends AdminCenterBasePage {
     public UpdateCenterPage getPackagesFromNuxeoMarketPlace() {
 
         packagesFromNuxeoMarketPlaceLink.click();
-        wait(1);
+        sleep(1);
         return asPage(UpdateCenterPage.class);
     }
 
     public UpdateCenterPage getPackagesFromNuxeoStudio() {
         packagesFromNuxeoStudioLink.click();
-        wait(1);
+        sleep(1);
         return asPage(UpdateCenterPage.class);
     }
 
@@ -79,7 +79,7 @@ public class UpdateCenterPage extends AdminCenterBasePage {
         }
         if ("true".equals(chk.getAttribute("checked"))) {
             chk.click();
-            wait(2);
+            sleep(2);
         }
         return true;
     }

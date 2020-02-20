@@ -35,7 +35,7 @@ public class AdminStatusHelper {
 
     static String adminMessage;
 
-    static Calendar adminMessageModificationDate;
+    static Calendar adminMessageModificationDate; // NOSONAR
 
     static boolean instanceInMaintenanceMode;
 
