@@ -32,6 +32,7 @@ import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionPointInfoDocAdapter;
+import org.nuxeo.apidoc.adapters.GraphDocAdapter;
 import org.nuxeo.apidoc.adapters.OperationInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.SeamComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
@@ -45,12 +46,14 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
+import org.nuxeo.apidoc.introspection.graph.GraphImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.ecm.core.api.Blob;
@@ -78,6 +81,11 @@ public class SnapshotPersister {
     public static final String Operation_Root_NAME = "Automation";
 
     public static final String Bundle_Root_NAME = "Bundles";
+
+    /**
+     * @since 11.1
+     */
+    public static final String Graph_Root_NAME = "Graphs";
 
     public static final String Read_Grp = "Everyone";
 
@@ -187,6 +195,9 @@ public class SnapshotPersister {
 
         DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
         persistOperations(snapshot, snapshot.getOperations(), session, label, opContainer, filter);
+
+        DocumentModel graphContainer = getSubRoot(session, distribContainer.getDoc(), Graph_Root_NAME);
+        persistGraphs(snapshot, session, label, graphContainer, filter);
 
         return distribContainer;
     }
@@ -318,6 +329,29 @@ public class SnapshotPersister {
         for (ServiceInfo si : ci.getServices()) {
             createServiceDoc(snapshot, session, label, si, componentDoc);
         }
+    }
+
+    /**
+     * @since 11.1
+     */
+    public void persistGraphs(DistributionSnapshot snapshot, CoreSession session, String label, DocumentModel parent,
+            SnapshotFilter filter) {
+        // TODO: filter?
+        List<Graph> graphs = snapshot.getGraphs();
+        for (Graph graph : graphs) {
+            // TODO: filter?
+            if (graph instanceof GraphImpl) {
+                persistGraph(snapshot, graph, session, label, parent);
+            }
+        }
+    }
+
+    /**
+     * @since 11.1
+     */
+    public DocumentModel persistGraph(DistributionSnapshot snapshot, Graph graph, CoreSession session, String label,
+            DocumentModel parent) {
+        return GraphDocAdapter.create(graph, session, parent.getPathAsString()).getDoc();
     }
 
     protected DocumentModel createContributionDoc(DistributionSnapshot snapshot, CoreSession session, String label,

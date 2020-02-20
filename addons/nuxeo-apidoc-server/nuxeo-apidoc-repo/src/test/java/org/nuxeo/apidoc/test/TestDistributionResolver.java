@@ -35,6 +35,7 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.introspection.ServerInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
@@ -227,6 +228,12 @@ public class TestDistributionResolver {
                 public ServerInfo getServerInfo() {
                     throw new UnsupportedOperationException();
                 }
+
+                @Override
+                public List<Graph> getGraphs() {
+                    throw new UnsupportedOperationException();
+                }
+
             };
             snaps.add(snap);
         }

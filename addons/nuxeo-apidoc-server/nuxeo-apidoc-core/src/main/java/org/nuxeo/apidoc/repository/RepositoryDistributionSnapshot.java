@@ -39,6 +39,7 @@ import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.introspection.ServerInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -468,4 +469,10 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public ServerInfo getServerInfo() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public List<Graph> getGraphs() {
+        return getChildren(Graph.class, Graph.TYPE_NAME);
+    }
+
 }

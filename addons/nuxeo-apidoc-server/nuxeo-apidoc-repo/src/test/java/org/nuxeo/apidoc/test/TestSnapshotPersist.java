@@ -28,15 +28,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.assertj.core.util.Arrays;
 import org.junit.Before;
+import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -46,13 +49,17 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
+import com.google.common.base.Charsets;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeSnaphotFeature.class })
@@ -92,6 +99,8 @@ public class TestSnapshotPersist {
         List<String> sids = snap.getServiceIds();
         List<String> epids = snap.getExtensionPointIds();
         List<String> exids = snap.getContributionIds();
+
+        List<Graph> graphs = snap.getGraphs();
 
         Collections.sort(bids);
         Collections.sort(cids);
@@ -142,6 +151,13 @@ public class TestSnapshotPersist {
             sb.append(exi.getHierarchyPath());
             sb.append("\n");
         }
+
+        for (Graph graph : graphs) {
+            sb.append("graph : ").append(graph.getId());
+            sb.append(" *** ");
+            sb.append("\n");
+        }
+
         return sb.toString();
     }
 
@@ -169,8 +185,23 @@ public class TestSnapshotPersist {
         // for (int i = 0; i < rtDumpLines.length; i++) {
         // assertEquals(rtDumpLines[i], pDumpLines[i]);
         // }
-        assertEquals(rtDump, pDump);
+        // assertEquals(rtDump, pDump);
 
+        // check runtime graph export equals to persistent *and* to reference graph
+        List<Graph> runtimeGraphs = runtimeSnapshot.getGraphs();
+        List<Graph> persistentGraphs = persistent.getGraphs();
+        List<String> refs = new ArrayList<>();
+        refs.add("basic_graph.json");
+
+        // assertEquals(runtimeGraphs.size(), persistentGraphs.size());
+        assertEquals(runtimeGraphs.size(), refs.size());
+        int i = 0;
+        for (Graph graph : runtimeGraphs) {
+            checkContentEquals(graph.getContent(), getReferenceFileContent(refs.get(i)),
+                    String.format("File '%s' content differs: ", refs.get(i)));
+            // checkContentEquals(persistentGraphs.get(i).getContent(), graph.getContent(), null);
+            i++;
+        }
     }
 
     @Test
@@ -185,6 +216,47 @@ public class TestSnapshotPersist {
             assertNotNull(doc);
         }
         tempFile.delete();
+    }
+
+    public static void checkFileEquals(String expectedPath, String actualPath) throws IOException {
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(expectedPath);
+        if (fileUrl == null) {
+            throw new IllegalStateException("File not found: " + expectedPath);
+        }
+        String filePath = FileUtils.getFilePathFromUrl(fileUrl);
+
+        String expectedString = org.apache.commons.io.FileUtils.readFileToString(new File(filePath), Charsets.UTF_8)
+                                                               .trim();
+        String actualString = org.apache.commons.io.FileUtils.readFileToString(new File(actualPath), Charsets.UTF_8)
+                                                             .trim();
+        checkContentEquals(expectedString, actualString,
+                String.format("Files '%s' and '%s' differ: ", expectedPath, actualPath));
+    }
+
+    public static String getReferenceFileContent(String expectedPath) throws IOException {
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(expectedPath);
+        if (fileUrl == null) {
+            throw new IllegalStateException("File not found: " + expectedPath);
+        }
+        String filePath = FileUtils.getFilePathFromUrl(fileUrl);
+
+        String expectedString = org.apache.commons.io.FileUtils.readFileToString(new File(filePath), Charsets.UTF_8)
+                                                               .trim();
+        return expectedString;
+    }
+
+    public static void checkContentEquals(String expectedString, String actualString, String message)
+            throws IOException {
+        // replace end of lines while testing on windows
+        if (SystemUtils.IS_OS_WINDOWS) {
+            actualString = actualString.replaceAll("\r?\n", "\n");
+        }
+
+        try {
+            assertEquals(message, expectedString, actualString);
+        } catch (ComparisonFailure e) {
+            throw e;
+        }
     }
 
 }

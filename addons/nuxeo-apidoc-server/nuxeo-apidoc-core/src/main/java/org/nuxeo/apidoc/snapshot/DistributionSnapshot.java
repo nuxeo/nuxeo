@@ -30,6 +30,7 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
@@ -165,6 +166,11 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     ServerInfo getServerInfo();
 
+    /**
+     * @since 11.1
+     */
+    List<Graph> getGraphs();
+
     static ObjectWriter jsonWriter() throws IOException {
         return jsonMapper().writerFor(DistributionSnapshot.class)
                            .withoutRootName()
@@ -192,6 +198,10 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
                                   .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class));
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);
         return mapper;
+    }
+
+    static ObjectMapper jsonFormattedMapper() {
+        return jsonMapper();
     }
 
     static abstract class OperationDocParamMixin {

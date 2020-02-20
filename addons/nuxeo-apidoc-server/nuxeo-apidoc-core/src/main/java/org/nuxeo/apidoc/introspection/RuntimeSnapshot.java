@@ -42,7 +42,10 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
+import org.nuxeo.apidoc.introspection.graph.BasicGraphGeneratorImpl;
+import org.nuxeo.apidoc.introspection.graph.JGraphGeneratorImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -92,6 +95,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected JavaDocHelper jdocHelper;
 
     protected final List<Class<?>> spi = new ArrayList<>();
+
+    protected final List<String> aliases = new LinkedList<>(Collections.singletonList("current"));
+
+    protected final List<Graph> graphs = new ArrayList<>();
 
     public static RuntimeSnapshot build() {
         return new RuntimeSnapshot();
@@ -233,6 +240,9 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             bundleGroups.add(bGroup);
         }
 
+        graphs.add(BasicGraphGeneratorImpl.getGraph("basic", this));
+        // TODO:
+        // graphs.add(JGraphGeneratorImpl.getGraph("jgraph", this));
     }
 
     protected BundleGroupImpl buildBundleGroup(String id, String version) {
@@ -598,8 +608,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         return false;
     }
 
-    final List<String> aliases = new LinkedList<>(Collections.singletonList("current"));
-
     @Override
     @JsonIgnore
     public List<String> getAliases() {
@@ -611,4 +619,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     public boolean isHidden() {
         return false;
     }
+
+    @Override
+    public List<Graph> getGraphs() {
+        return graphs;
+    }
+
 }
