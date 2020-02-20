@@ -16,7 +16,7 @@
  * Contributors:
  *     Miguel Nixo
  */
-package org.nuxeo.ecm.automation.core.operations.notification;
+package org.nuxeo.ecm.platform.ec.notification.operations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -57,7 +57,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy("org.nuxeo.ecm.automation.core")
-@Deploy("org.nuxeo.ecm.automation.features")
 @Deploy("org.nuxeo.ecm.platform.notification.core")
 public class SubscribeAndUnsubscribeTest {
 

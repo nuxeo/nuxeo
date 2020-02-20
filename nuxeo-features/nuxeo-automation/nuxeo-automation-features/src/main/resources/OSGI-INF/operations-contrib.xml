@@ -165,8 +165,6 @@
     <operation class="org.nuxeo.ecm.automation.core.operations.collections.MoveCollectionMemberOperation" />
 
     <operation class="org.nuxeo.ecm.automation.core.operations.services.workmanager.WorkManagerRunWorkInFailure" />
-    <operation class="org.nuxeo.ecm.platform.ec.notification.automation.SubscribeOperation" />
-    <operation class="org.nuxeo.ecm.platform.ec.notification.automation.UnsubscribeOperation" />
 
   </extension>
 
