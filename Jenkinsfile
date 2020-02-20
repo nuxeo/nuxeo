@@ -58,7 +58,7 @@ void dockerPull(String image) {
 
 void dockerRun(String image, String command, String user = null) {
   String userOption = user ? "--user=${user}" : ''
-  sh "docker run --rm ${userOption} ${image} ${command}"
+  sh "docker run -h test --rm ${userOption} ${image} ${command}"
 }
 
 void dockerTag(String image, String tag) {
