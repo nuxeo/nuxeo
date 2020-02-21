@@ -163,5 +163,23 @@
       </layouts>
     </type>
 
+    <type id="NXGraph">
+      <label>NXGraph</label>
+      <icon>/icons/file.gif</icon>
+      <bigIcon>/icons/file_100.png</bigIcon>
+      <category>SimpleDocument</category>
+      <description>NXGraph.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>file</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>file</layout>
+        <layout>dublincore</layout>
+      </layouts>
+    </type>
+
   </extension>
 </component>

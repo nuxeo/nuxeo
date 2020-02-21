@@ -136,6 +136,14 @@
       <facet name="Versionable" />
     </doctype>
 
+    <doctype name="NXGraph" extends="File">
+      <facet name="Downloadable" />
+      <facet name="Versionable" />
+      <facet name="Publishable" />
+      <facet name="Commentable" />
+      <facet name="HasRelatedText" />
+    </doctype>
+
   </extension>
 
 </component>

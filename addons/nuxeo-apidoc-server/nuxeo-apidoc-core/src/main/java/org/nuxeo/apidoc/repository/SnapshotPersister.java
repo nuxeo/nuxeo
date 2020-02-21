@@ -341,7 +341,6 @@ public class SnapshotPersister {
      */
     public void persistGraphs(DistributionSnapshot snapshot, CoreSession session, String label, DocumentModel parent,
             SnapshotFilter filter) {
-        // TODO: filter?
         List<Graph> graphs = snapshot.getGraphs();
         for (Graph graph : graphs) {
             // TODO: filter?

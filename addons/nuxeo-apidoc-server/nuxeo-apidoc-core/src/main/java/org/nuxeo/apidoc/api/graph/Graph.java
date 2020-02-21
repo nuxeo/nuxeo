@@ -31,10 +31,7 @@ public interface Graph extends NuxeoArtifact {
 
     String ARTIFACT_TYPE = "graph";
 
-    /**
-     * TODO: use specific type (?)
-     */
-    String TYPE_NAME = "File";
+    String TYPE_NAME = "NXGraph";
 
     String getName();
 
