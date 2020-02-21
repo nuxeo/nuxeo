@@ -568,7 +568,9 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     public Document checkIn(String label, String checkinComment) {
-        if (isProxy()) {
+        if (isRecord()) {
+            throw new PropertyException("Record cannot be checked in: " + getUUID());
+        } else if (isProxy()) {
             return getTargetDocument().checkIn(label, checkinComment);
         } else if (isVersion()) {
             throw new VersionNotModifiableException();
