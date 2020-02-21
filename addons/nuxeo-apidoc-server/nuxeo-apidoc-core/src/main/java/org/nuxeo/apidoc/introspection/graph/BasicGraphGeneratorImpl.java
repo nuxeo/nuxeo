@@ -84,7 +84,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                 String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
                 graph.addNode(new NodeImpl(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),
                         cat.name(), cat.getColor()));
-                addEdge(graph, hits, new EdgeImpl(pbid, pcompid, EDGE_TYPE.REFERENCES.name()));
+                addEdge(graph, hits, new EdgeImpl(pbid, pcompid, EDGE_TYPE.CONTAINS.name()));
                 for (ServiceInfo service : component.getServices()) {
                     if (service.isOverriden()) {
                         continue;
@@ -93,7 +93,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                     String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
                     graph.addNode(new NodeImpl(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
                             cat.name(), cat.getColor()));
-                    addEdge(graph, hits, new EdgeImpl(pcompid, psid, EDGE_TYPE.REFERENCES.name()));
+                    addEdge(graph, hits, new EdgeImpl(pcompid, psid, EDGE_TYPE.CONTAINS.name()));
                 }
 
                 for (ExtensionPointInfo xp : component.getExtensionPoints()) {
@@ -101,7 +101,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                     String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
                     graph.addNode(new NodeImpl(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
                             cat.name(), cat.getColor()));
-                    addEdge(graph, hits, new EdgeImpl(pcompid, pxpid, EDGE_TYPE.REFERENCES.name()));
+                    addEdge(graph, hits, new EdgeImpl(pcompid, pxpid, EDGE_TYPE.CONTAINS.name()));
                 }
 
                 Map<String, Integer> comps = new HashMap<String, Integer>();
@@ -120,7 +120,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                     // add link to corresponding component
                     graph.addNode(new NodeImpl(pcid, cid, 0, contribution.getHierarchyPath(),
                             NODE_TYPE.CONTRIBUTION.name(), cat.name(), cat.getColor()));
-                    addEdge(graph, hits, new EdgeImpl(pcompid, pcid, EDGE_TYPE.REFERENCES.name()));
+                    addEdge(graph, hits, new EdgeImpl(pcompid, pcid, EDGE_TYPE.CONTAINS.name()));
 
                     // also add link to target extension point, "guessing" the extension point id
                     String targetId = prefixId(ComponentInfo.TYPE_NAME,

@@ -5756,11 +5756,11 @@
   "edges" : [ {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.listener.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.listener.contrib",
     "target" : "NXContribution-org.nuxeo.apidoc.listener.contrib--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.apidoc.listener.contrib--listener",
@@ -5768,11 +5768,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.adapterContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.adapterContrib",
     "target" : "NXContribution-org.nuxeo.apidoc.adapterContrib--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "target" : "NXContribution-org.nuxeo.apidoc.adapterContrib--adapters",
@@ -5780,19 +5780,19 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
     "target" : "NXService-org.nuxeo.apidoc.snapshot.SnapshotManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.layout.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.layout.contrib",
     "target" : "NXContribution-org.nuxeo.apidoc.layout.contrib--widgettypes",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--widgettypes",
     "target" : "NXContribution-org.nuxeo.apidoc.layout.contrib--widgettypes",
@@ -5800,7 +5800,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.layout.contrib",
     "target" : "NXContribution-org.nuxeo.apidoc.layout.contrib--layouts",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--layouts",
     "target" : "NXContribution-org.nuxeo.apidoc.layout.contrib--layouts",
@@ -5808,11 +5808,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.doctypeContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.doctypeContrib",
     "target" : "NXContribution-org.nuxeo.apidoc.doctypeContrib--doctype",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "target" : "NXContribution-org.nuxeo.apidoc.doctypeContrib--doctype",
@@ -5820,11 +5820,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.uiContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.uiContrib",
     "target" : "NXContribution-org.nuxeo.apidoc.uiContrib--types",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.types.TypeService--org.nuxeo.ecm.platform.types.TypeService--types",
     "target" : "NXContribution-org.nuxeo.apidoc.uiContrib--types",
@@ -5832,11 +5832,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.lifecycle.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.lifecycle.contrib",
     "target" : "NXContribution-org.nuxeo.apidoc.lifecycle.contrib--types",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
     "target" : "NXContribution-org.nuxeo.apidoc.lifecycle.contrib--types",
@@ -5844,11 +5844,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.directoryContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.directoryContrib",
     "target" : "NXContribution-org.nuxeo.apidoc.directoryContrib--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
     "target" : "NXContribution-org.nuxeo.apidoc.directoryContrib--directories",
@@ -5856,11 +5856,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.schemaContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.schemaContrib",
     "target" : "NXContribution-org.nuxeo.apidoc.schemaContrib--schema",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "target" : "NXContribution-org.nuxeo.apidoc.schemaContrib--schema",
@@ -5868,23 +5868,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.documentation.DocumentationComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.documentation.DocumentationComponent",
     "target" : "NXService-org.nuxeo.apidoc.documentation.DocumentationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.documentation.DocumentationComponent",
     "target" : "NXService-org.nuxeo.apidoc.search.ArtifactSearcher",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.test.works",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.test.works",
     "target" : "NXContribution-org.nuxeo.apidoc.test.works--queues",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "target" : "NXContribution-org.nuxeo.apidoc.test.works--queues",
@@ -5892,7 +5892,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.test.works",
     "target" : "NXContribution-org.nuxeo.apidoc.test.works--queues1",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "target" : "NXContribution-org.nuxeo.apidoc.test.works--queues1",
@@ -5900,11 +5900,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.apidoc.repo",
     "target" : "NXComponent-org.nuxeo.apidoc.directoryUIContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.apidoc.directoryUIContrib",
     "target" : "NXContribution-org.nuxeo.apidoc.directoryUIContrib--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.directory.ui.DirectoryUIManager--org.nuxeo.ecm.directory.ui.DirectoryUIManager--directories",
     "target" : "NXContribution-org.nuxeo.apidoc.directoryUIContrib--directories",
@@ -5912,39 +5912,39 @@
   }, {
     "source" : "NXBundle-org.nuxeo.directory.mongodb",
     "target" : "NXComponent-org.nuxeo.directory.mongodb.MongoDBDirectoryFactory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.directory.mongodb.MongoDBDirectoryFactory",
     "target" : "NXExtensionPoint-org.nuxeo.directory.mongodb.MongoDBDirectoryFactory--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.actions",
     "target" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService",
     "target" : "NXService-org.nuxeo.ecm.platform.actions.ejb.ActionManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.actions.ActionService--filters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.actions.ActionService--actions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.actions.ActionService--typeCompatibility",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.actions",
     "target" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService.properties",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService.properties",
     "target" : "NXContribution-org.nuxeo.ecm.platform.actions.ActionService.properties--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.platform.actions.ActionService.properties--configuration",
@@ -5952,11 +5952,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.actions",
     "target" : "NXComponent-org.nuxeo.ecm.platform.filters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.filters",
     "target" : "NXContribution-org.nuxeo.ecm.platform.filters--filters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
     "target" : "NXContribution-org.nuxeo.ecm.platform.filters--filters",
@@ -5964,11 +5964,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.core",
     "target" : "NXComponent-org.nuxeo.ecm.automation.core.impl.ReloadListener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.core.impl.ReloadListener",
     "target" : "NXContribution-org.nuxeo.ecm.automation.core.impl.ReloadListener--listeners",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
     "target" : "NXContribution-org.nuxeo.ecm.automation.core.impl.ReloadListener--listeners",
@@ -5976,11 +5976,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.coreContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.coreContrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.coreContrib--operations",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.coreContrib--operations",
@@ -5988,11 +5988,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.marshallers--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.marshallers--marshallers",
@@ -6000,59 +6000,59 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.automation.AutomationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.automation.AutomationAdmin",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.automation.core.events.EventHandlerRegistry",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.automation.core.trace.TracerFactory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.automation.context.ContextService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.operation.OperationServiceComponent--chainException",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.operation.OperationServiceComponent--automationFilter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.operation.OperationServiceComponent--event-handlers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXContribution-org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
     "target" : "NXContribution-org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
@@ -6060,7 +6060,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent",
     "target" : "NXContribution-org.nuxeo.ecm.core.operation.OperationServiceComponent--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.operation.OperationServiceComponent--listener",
@@ -6068,11 +6068,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.core",
     "target" : "NXComponent-org.nuxeo.ecm.automation.core.impl.workmanager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.core.impl.workmanager",
     "target" : "NXContribution-org.nuxeo.ecm.automation.core.impl.workmanager--queues",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "target" : "NXContribution-org.nuxeo.ecm.automation.core.impl.workmanager--queues",
@@ -6080,11 +6080,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.core.properties",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.core.properties",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.core.properties--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.core.properties--configuration",
@@ -6092,11 +6092,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.features",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.features.bulk",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.features.bulk",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.bulk--actions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.bulk--actions",
@@ -6104,7 +6104,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.features.bulk",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.bulk--streamProcessor",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.bulk--streamProcessor",
@@ -6112,11 +6112,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.features",
     "target" : "NXComponent-org.nuxeo.ecm.directory.actions.core",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.actions.core",
     "target" : "NXContribution-org.nuxeo.ecm.directory.actions.core--filters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
     "target" : "NXContribution-org.nuxeo.ecm.directory.actions.core--filters",
@@ -6124,11 +6124,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.features",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.features.bindings",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.features.bindings",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.bindings--bindings",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.bindings--bindings",
@@ -6136,11 +6136,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.features",
     "target" : "NXComponent-org.nuxeo.ecm.platform.audit.PageProviderservice.automation.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.audit.PageProviderservice.automation.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.audit.PageProviderservice.automation.contrib--providers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.audit.PageProviderservice.automation.contrib--providers",
@@ -6148,11 +6148,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.features",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.features.operations",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.features.operations",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.operations--operations",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.operations--operations",
@@ -6160,7 +6160,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.features.operations",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.operations--chains",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.features.operations--chains",
@@ -6168,11 +6168,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.features",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.contextContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.contextContrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.contextContrib--contextHelpers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.contextContrib--contextHelpers",
@@ -6180,7 +6180,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.contextContrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.contextContrib--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.contextContrib--configuration",
@@ -6188,11 +6188,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.io",
     "target" : "NXComponent-org.nuxeo.ecm.automation.io.services.IOComponent.codec.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.io.services.IOComponent.codec.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.automation.io.services.IOComponent.codec.contrib--codecs",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.automation.io.services.IOComponent--org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
     "target" : "NXContribution-org.nuxeo.ecm.automation.io.services.IOComponent.codec.contrib--codecs",
@@ -6200,23 +6200,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.io",
     "target" : "NXComponent-org.nuxeo.ecm.automation.io.services.IOComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.io.services.IOComponent",
     "target" : "NXService-org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.io.services.IOComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.io",
     "target" : "NXComponent-org.nuxeo.ecm.automation.server.marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.marshallers--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.marshallers--marshallers",
@@ -6224,23 +6224,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.scripting",
     "target" : "NXComponent-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent",
     "target" : "NXService-org.nuxeo.automation.scripting.api.AutomationScriptingService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent",
     "target" : "NXExtensionPoint-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--operation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent",
     "target" : "NXExtensionPoint-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent",
     "target" : "NXContribution-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--configuration",
@@ -6248,11 +6248,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.scripting",
     "target" : "NXComponent-org.nuxeo.automation.scripting.classfilter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.automation.scripting.classfilter",
     "target" : "NXContribution-org.nuxeo.automation.scripting.classfilter--classFilter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
     "target" : "NXContribution-org.nuxeo.automation.scripting.classfilter--classFilter",
@@ -6260,11 +6260,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.scripting",
     "target" : "NXComponent-org.nuxeo.ecm.core.automation.scripting.contextContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.automation.scripting.contextContrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.scripting.contextContrib--contextHelpers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
     "target" : "NXContribution-org.nuxeo.ecm.core.automation.scripting.contextContrib--contextHelpers",
@@ -6272,11 +6272,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.server",
     "target" : "NXComponent-org.nuxeo.ecm.automation.server.bindings",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.bindings",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.bindings--bindings",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.bindings--bindings",
@@ -6284,27 +6284,27 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.server",
     "target" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer",
     "target" : "NXService-org.nuxeo.ecm.automation.server.AutomationServer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.automation.server.AutomationServer--bindings",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.server",
     "target" : "NXComponent-org.nuxeo.ecm.automation.server.batch.handler.DefaultBatchHandler",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.batch.handler.DefaultBatchHandler",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.batch.handler.DefaultBatchHandler--handlers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.automation.server.BatchManager--org.nuxeo.ecm.automation.server.BatchManager--handlers",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.batch.handler.DefaultBatchHandler--handlers",
@@ -6312,23 +6312,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.server",
     "target" : "NXComponent-org.nuxeo.ecm.automation.server.BatchManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.BatchManager",
     "target" : "NXService-org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.BatchManager",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.automation.server.BatchManager--handlers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.server",
     "target" : "NXComponent-org.nuxeo.ecm.automation.rest.pageprovider.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.rest.pageprovider.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.automation.rest.pageprovider.contrib--providers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "target" : "NXContribution-org.nuxeo.ecm.automation.rest.pageprovider.contrib--providers",
@@ -6336,11 +6336,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.automation.server",
     "target" : "NXComponent-org.nuxeo.ecm.automation.server.auth.config",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.auth.config",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.auth.config--authenticators",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.auth.config--authenticators",
@@ -6348,7 +6348,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.automation.server.auth.config",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.auth.config--specificChains",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
     "target" : "NXContribution-org.nuxeo.ecm.automation.server.auth.config--specificChains",
@@ -6356,27 +6356,27 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.uidgen.UIDGeneratorService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.uidgen.UIDGeneratorService",
     "target" : "NXService-org.nuxeo.ecm.core.uidgen.UIDSequencer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.uidgen.UIDGeneratorService",
     "target" : "NXService-org.nuxeo.ecm.core.uidgen.UIDGeneratorService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.uidgen.UIDGeneratorService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.uidgen.UIDGeneratorService--sequencers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.uidgen.UIDGeneratorService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.uidgen.UIDGeneratorService--generators",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.uidgen.UIDGeneratorService",
     "target" : "NXContribution-org.nuxeo.ecm.core.uidgen.UIDGeneratorService--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.uidgen.UIDGeneratorService--listener",
@@ -6384,11 +6384,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.event.lifecycle.listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.lifecycle.listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.event.lifecycle.listener--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.event.lifecycle.listener--listener",
@@ -6396,7 +6396,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.lifecycle.listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.event.lifecycle.listener--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.event.lifecycle.listener--configuration",
@@ -6404,11 +6404,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.versioning.VersioningDocumentAdapter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.versioning.VersioningDocumentAdapter",
     "target" : "NXContribution-org.nuxeo.ecm.core.versioning.VersioningDocumentAdapter--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "target" : "NXContribution-org.nuxeo.ecm.core.versioning.VersioningDocumentAdapter--adapters",
@@ -6416,11 +6416,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.document.characterFiltering.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.document.characterFiltering.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.document.characterFiltering.contrib--filtering",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.filter.CharacterFilteringService--org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
     "target" : "NXContribution-org.nuxeo.ecm.core.document.characterFiltering.contrib--filtering",
@@ -6428,11 +6428,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.event.orphanVersionRemoval.listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.orphanVersionRemoval.listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.event.orphanVersionRemoval.listener--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.event.orphanVersionRemoval.listener--listener",
@@ -6440,43 +6440,43 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
     "target" : "NXService-org.nuxeo.ecm.core.api.versioning.VersioningService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
     "target" : "NXService-org.nuxeo.ecm.core.versioning.VersioningService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.versioning.VersioningService--versioningService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.versioning.VersioningService--versioningRules",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.versioning.VersioningService--restrictions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.trash.service.migrator",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.trash.service.migrator",
     "target" : "NXContribution-org.nuxeo.ecm.core.trash.service.migrator--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.migration.MigrationService--org.nuxeo.runtime.migration.MigrationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.trash.service.migrator--configuration",
@@ -6484,11 +6484,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.retention.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.retention.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--policies",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--policies",
@@ -6496,7 +6496,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.retention.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--schedule",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--schedule",
@@ -6504,7 +6504,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.retention.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--listener",
@@ -6512,7 +6512,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.retention.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--actions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--actions",
@@ -6520,7 +6520,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.retention.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--streamProcessor",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "target" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--streamProcessor",
@@ -6528,27 +6528,27 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.CoreService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.CoreService",
     "target" : "NXService-org.nuxeo.ecm.core.CoreService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.CoreService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.CoreService--versionRemovalPolicy",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.CoreService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.CoreService--orphanVersionRemovalFilter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.security.defaultPermissions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.defaultPermissions",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.defaultPermissions--permissions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissions",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.defaultPermissions--permissions",
@@ -6556,7 +6556,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.defaultPermissions",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.defaultPermissions--permissionsVisibility",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.defaultPermissions--permissionsVisibility",
@@ -6564,11 +6564,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.CoreExtensions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.CoreExtensions",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--schema",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--schema",
@@ -6576,7 +6576,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.CoreExtensions",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--configuration",
@@ -6584,7 +6584,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.CoreExtensions",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--doctype",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--doctype",
@@ -6592,7 +6592,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.CoreExtensions",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--listener",
@@ -6600,11 +6600,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.schedulers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schedulers",
     "target" : "NXContribution-org.nuxeo.ecm.core.schedulers--schedule",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
     "target" : "NXContribution-org.nuxeo.ecm.core.schedulers--schedule",
@@ -6612,7 +6612,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schedulers",
     "target" : "NXContribution-org.nuxeo.ecm.core.schedulers--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.schedulers--listener",
@@ -6620,7 +6620,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schedulers",
     "target" : "NXContribution-org.nuxeo.ecm.core.schedulers--queues",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "target" : "NXContribution-org.nuxeo.ecm.core.schedulers--queues",
@@ -6628,11 +6628,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.versioning.default-policies",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.versioning.default-policies",
     "target" : "NXContribution-org.nuxeo.ecm.core.versioning.default-policies--policies",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
     "target" : "NXContribution-org.nuxeo.ecm.core.versioning.default-policies--policies",
@@ -6640,7 +6640,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.versioning.default-policies",
     "target" : "NXContribution-org.nuxeo.ecm.core.versioning.default-policies--filters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
     "target" : "NXContribution-org.nuxeo.ecm.core.versioning.default-policies--filters",
@@ -6648,11 +6648,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.deletion.config",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.deletion.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.deletion.config--actions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "target" : "NXContribution-org.nuxeo.ecm.core.deletion.config--actions",
@@ -6660,7 +6660,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.deletion.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.deletion.config--streamProcessor",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "target" : "NXContribution-org.nuxeo.ecm.core.deletion.config--streamProcessor",
@@ -6668,11 +6668,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.orphanVersionsCleanup",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.orphanVersionsCleanup",
     "target" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--schedule",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
     "target" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--schedule",
@@ -6680,7 +6680,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.orphanVersionsCleanup",
     "target" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--listener",
@@ -6688,7 +6688,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.orphanVersionsCleanup",
     "target" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--configuration",
@@ -6696,19 +6696,19 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.CoreSessionServiceImpl",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.CoreSessionServiceImpl",
     "target" : "NXService-org.nuxeo.ecm.core.api.CoreSessionService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.security.defaultPolicies",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.defaultPolicies",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.defaultPolicies--policies",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.defaultPolicies--policies",
@@ -6716,11 +6716,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.uidseq.keyvaluestore",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.uidseq.keyvaluestore",
     "target" : "NXContribution-org.nuxeo.ecm.core.uidseq.keyvaluestore--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.uidseq.keyvaluestore--configuration",
@@ -6728,63 +6728,63 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService",
     "target" : "NXService-org.nuxeo.ecm.core.security.SecurityService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService",
     "target" : "NXService-org.nuxeo.ecm.core.api.security.PermissionProvider",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService",
     "target" : "NXService-org.nuxeo.ecm.core.security.SecurityPolicyService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.security.SecurityService--permissions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.security.SecurityService--policies",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService",
     "target" : "NXService-org.nuxeo.ecm.core.lifecycle.LifeCycleService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.repository.RepositoryServiceComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.repository.RepositoryServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.core.repository.RepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.DocumentModel.resolver",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.DocumentModel.resolver",
     "target" : "NXContribution-org.nuxeo.ecm.core.DocumentModel.resolver--resolvers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
     "target" : "NXContribution-org.nuxeo.ecm.core.DocumentModel.resolver--resolvers",
@@ -6792,11 +6792,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.LifecycleCoreExtensions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.LifecycleCoreExtensions",
     "target" : "NXContribution-org.nuxeo.ecm.core.LifecycleCoreExtensions--lifecycle",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
     "target" : "NXContribution-org.nuxeo.ecm.core.LifecycleCoreExtensions--lifecycle",
@@ -6804,7 +6804,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.LifecycleCoreExtensions",
     "target" : "NXContribution-org.nuxeo.ecm.core.LifecycleCoreExtensions--types",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
     "target" : "NXContribution-org.nuxeo.ecm.core.LifecycleCoreExtensions--types",
@@ -6812,47 +6812,47 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.blob.DocumentBlobManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.blob.DocumentBlobManager",
     "target" : "NXService-org.nuxeo.ecm.core.blob.DocumentBlobManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.blob.DocumentBlobManager",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.blob.DocumentBlobManager--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.filter.CharacterFilteringService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.filter.CharacterFilteringService",
     "target" : "NXService-org.nuxeo.ecm.core.filter.CharacterFilteringService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.filter.CharacterFilteringService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core",
     "target" : "NXComponent-org.nuxeo.ecm.core.trash.TrashService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.trash.TrashService",
     "target" : "NXService-org.nuxeo.ecm.core.api.trash.TrashService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.trash.TrashService",
     "target" : "NXService-org.nuxeo.ecm.core.trash.TrashService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.trash.TrashService",
     "target" : "NXService-org.nuxeo.ecm.core.trash.TrashServiceImpl",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.trash.TrashService",
     "target" : "NXContribution-org.nuxeo.ecm.core.trash.TrashService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.trash.TrashService--configuration",
@@ -6860,35 +6860,35 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.thumbnail.ThumbnailService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.thumbnail.ThumbnailService",
     "target" : "NXService-org.nuxeo.ecm.core.api.thumbnail.ThumbnailService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.thumbnail.ThumbnailService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.thumbnail.ThumbnailService--thumbnailFactory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingComponent",
     "target" : "NXService-org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingComponent--mapping",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.blohodlers.adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.blohodlers.adapters",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.blohodlers.adapters--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.blohodlers.adapters--adapters",
@@ -6896,35 +6896,35 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.repository.RepositoryManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.repository.RepositoryManager",
     "target" : "NXService-org.nuxeo.ecm.core.api.repository.RepositoryManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.repository.RepositoryManager",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.repository.RepositoryManager--repositories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.blob.BlobManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.blob.BlobManager",
     "target" : "NXService-org.nuxeo.ecm.core.blob.BlobManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.blob.BlobManager",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.blob.BlobManager--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.thumbnail.adapter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.thumbnail.adapter",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.thumbnail.adapter--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.thumbnail.adapter--adapters",
@@ -6932,23 +6932,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.DocumentValidationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.DocumentValidationService",
     "target" : "NXService-org.nuxeo.ecm.core.api.validation.DocumentValidationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.DocumentValidationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.DocumentValidationService--activations",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.properties",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.properties",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.properties--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.properties--configuration",
@@ -6956,47 +6956,47 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.pathsegment.PathSegmentService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.pathsegment.PathSegmentService",
     "target" : "NXService-org.nuxeo.ecm.core.api.pathsegment.PathSegmentService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.pathsegment.PathSegmentService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.pathsegment.PathSegmentService--pathSegmentService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent",
     "target" : "NXService-org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent--BlobHolderFactory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent--ExternalBlobAdapter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.core.LocalConfigurationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.core.LocalConfigurationService",
     "target" : "NXService-org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.security.acl.properties",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.security.acl.properties",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.acl.properties--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.security.acl.properties--configuration",
@@ -7004,23 +7004,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService",
     "target" : "NXService-org.nuxeo.ecm.core.api.adapter.DocumentAdapterService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.api",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.DocumentValidationService.activations",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.DocumentValidationService.activations",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.DocumentValidationService.activations--activations",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentValidationService--org.nuxeo.ecm.core.api.DocumentValidationService--activations",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.DocumentValidationService.activations--activations",
@@ -7028,27 +7028,27 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.bulk",
     "target" : "NXComponent-org.nuxeo.ecm.core.bulk",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk",
     "target" : "NXService-org.nuxeo.ecm.core.bulk.BulkService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk",
     "target" : "NXService-org.nuxeo.ecm.core.bulk.BulkAdminService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.bulk--actions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.bulk",
     "target" : "NXComponent-org.nuxeo.ecm.core.bulk.io",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.io",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.io--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.io--marshallers",
@@ -7056,11 +7056,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.bulk",
     "target" : "NXComponent-org.nuxeo.ecm.core.scroll.contrib.default",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.scroll.contrib.default",
     "target" : "NXContribution-org.nuxeo.ecm.core.scroll.contrib.default--scroll",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
     "target" : "NXContribution-org.nuxeo.ecm.core.scroll.contrib.default--scroll",
@@ -7068,11 +7068,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.bulk",
     "target" : "NXComponent-org.nuxeo.ecm.core.bulk.config",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--logConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--logConfig",
@@ -7080,7 +7080,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--configuration",
@@ -7088,7 +7088,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--streamProcessor",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--streamProcessor",
@@ -7096,7 +7096,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--actions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--actions",
@@ -7104,7 +7104,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--streamProcessor1",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.config--streamProcessor1",
@@ -7112,23 +7112,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.bulk",
     "target" : "NXComponent-org.nuxeo.ecm.core.scroll.service",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.scroll.service",
     "target" : "NXService-org.nuxeo.ecm.core.api.scroll.ScrollService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.scroll.service",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.scroll.service--scroll",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.bulk.test",
     "target" : "NXComponent-org.nuxeo.ecm.core.bulk.tests",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.tests",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.tests--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.tests--configuration",
@@ -7136,7 +7136,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.bulk.tests",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.tests--logConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
     "target" : "NXContribution-org.nuxeo.ecm.core.bulk.tests--logConfig",
@@ -7144,19 +7144,19 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.cache",
     "target" : "NXComponent-org.nuxeo.ecm.core.transientstore.TransientStorageComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.transientstore.TransientStorageComponent",
     "target" : "NXService-org.nuxeo.ecm.core.transientstore.api.TransientStoreService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.transientstore.TransientStorageComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.transientstore.TransientStorageComponent--store",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.transientstore.TransientStorageComponent",
     "target" : "NXContribution-org.nuxeo.ecm.core.transientstore.TransientStorageComponent--schedule",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
     "target" : "NXContribution-org.nuxeo.ecm.core.transientstore.TransientStorageComponent--schedule",
@@ -7164,7 +7164,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.transientstore.TransientStorageComponent",
     "target" : "NXContribution-org.nuxeo.ecm.core.transientstore.TransientStorageComponent--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.transientstore.TransientStorageComponent--listener",
@@ -7172,23 +7172,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.cache",
     "target" : "NXComponent-org.nuxeo.ecm.core.cache.CacheService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.cache.CacheService",
     "target" : "NXService-org.nuxeo.ecm.core.cache.CacheService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.cache.CacheService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.cache.CacheService--caches",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.convert",
     "target" : "NXComponent-org.nuxeo.ecm.core.convert.configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.convert.configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.convert.configuration--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.convert.configuration--configuration",
@@ -7196,31 +7196,31 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.convert",
     "target" : "NXComponent-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl",
     "target" : "NXService-org.nuxeo.ecm.core.convert.api.ConversionService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl",
     "target" : "NXService-org.nuxeo.ecm.core.convert.service.MimeTypeTranslationHelper",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.convert.plugins",
     "target" : "NXComponent-org.nuxeo.ecm.platform.convert.commandline.pdf2text",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.convert.commandline.pdf2text",
     "target" : "NXContribution-org.nuxeo.ecm.platform.convert.commandline.pdf2text--command",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
     "target" : "NXContribution-org.nuxeo.ecm.platform.convert.commandline.pdf2text--command",
@@ -7228,11 +7228,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.convert.plugins",
     "target" : "NXComponent-org.nuxeo.ecm.core.convert.plugins",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.convert.plugins",
     "target" : "NXContribution-org.nuxeo.ecm.core.convert.plugins--converter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
     "target" : "NXContribution-org.nuxeo.ecm.core.convert.plugins--converter",
@@ -7240,11 +7240,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.event",
     "target" : "NXComponent-org.nuxeo.ecm.core.work.config",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.work.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.work.config--implementation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
     "target" : "NXContribution-org.nuxeo.ecm.core.work.config--implementation",
@@ -7252,7 +7252,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.work.config",
     "target" : "NXContribution-org.nuxeo.ecm.core.work.config--queues",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "target" : "NXContribution-org.nuxeo.ecm.core.work.config--queues",
@@ -7260,67 +7260,67 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.event",
     "target" : "NXComponent-org.nuxeo.ecm.core.work.service",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.work.service",
     "target" : "NXService-org.nuxeo.ecm.core.work.api.WorkManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.work.service",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.work.service--queues",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.work.service",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.work.service--implementation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.event",
     "target" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.core.event.EventService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.core.event.EventProducer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent",
     "target" : "NXService-org.nuxeo.ecm.core.event.EventServiceAdmin",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.event.EventServiceComponent--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.event.EventServiceComponent--pipe",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.event.EventServiceComponent--dispatcher",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.event",
     "target" : "NXComponent-org.nuxeo.ecm.core.scheduler.SchedulerService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.scheduler.SchedulerService",
     "target" : "NXService-org.nuxeo.ecm.core.scheduler.SchedulerService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.scheduler.SchedulerService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.event.test",
     "target" : "NXComponent-org.nuxeo.ecm.core.work.test.default.queuing",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.work.test.default.queuing",
     "target" : "NXContribution-org.nuxeo.ecm.core.work.test.default.queuing--implementation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
     "target" : "NXContribution-org.nuxeo.ecm.core.work.test.default.queuing--implementation",
@@ -7328,11 +7328,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.io",
     "target" : "NXComponent-org.nuxeo.ecm.core.io.avro.factories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.avro.factories",
     "target" : "NXContribution-org.nuxeo.ecm.core.io.avro.factories--factory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--factory",
     "target" : "NXContribution-org.nuxeo.ecm.core.io.avro.factories--factory",
@@ -7340,7 +7340,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.avro.factories",
     "target" : "NXContribution-org.nuxeo.ecm.core.io.avro.factories--mapper",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--mapper",
     "target" : "NXContribution-org.nuxeo.ecm.core.io.avro.factories--mapper",
@@ -7348,19 +7348,19 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.io",
     "target" : "NXComponent-org.nuxeo.ecm.core.io.DocumentXMLExporter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.DocumentXMLExporter",
     "target" : "NXService-org.nuxeo.ecm.core.io.DocumentXMLExporter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.io",
     "target" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry.marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry.marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.core.io.MarshallerRegistry.marshallers--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.core.io.MarshallerRegistry.marshallers--marshallers",
@@ -7368,39 +7368,39 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.io",
     "target" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry",
     "target" : "NXService-org.nuxeo.ecm.core.io.registry.MarshallerRegistry",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.io",
     "target" : "NXComponent-org.nuxeo.ecm.core.io.download.DownloadService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.download.DownloadService",
     "target" : "NXService-org.nuxeo.ecm.core.io.download.DownloadService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.download.DownloadService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.io.download.DownloadService--permissions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.io.download.DownloadService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.io.download.DownloadService--redirectResolver",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.management",
     "target" : "NXComponent-org.nuxeo.ecm.core.management.typesContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.typesContrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.typesContrib--schema",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.typesContrib--schema",
@@ -7408,7 +7408,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.typesContrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.typesContrib--doctype",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.typesContrib--doctype",
@@ -7416,51 +7416,51 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.management",
     "target" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXService-org.nuxeo.ecm.core.management.api.ProbeManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXService-org.nuxeo.ecm.core.management.api.GlobalAdministrativeStatusManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXService-org.nuxeo.ecm.core.management.api.AdministrativeStatusManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXService-org.nuxeo.ecm.core.event.EventStats",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.management.CoreManagementComponent--storageHandlers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.management",
     "target" : "NXComponent-org.nuxeo.ecm.core.management.runtime.management.contribs",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.runtime.management.contribs",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.runtime.management.contribs--factories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--factories",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.runtime.management.contribs--factories",
@@ -7468,15 +7468,15 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.management",
     "target" : "NXComponent-org.nuxeo.ecm.core.managemment.standby",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.management",
     "target" : "NXComponent-org.nuxeo.ecm.core.management.contribs",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.contribs",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.contribs--serviceDefinition",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.contribs--serviceDefinition",
@@ -7484,7 +7484,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.contribs",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.contribs--probes",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.contribs--probes",
@@ -7492,7 +7492,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.contribs",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.contribs--healthCheck",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.contribs--healthCheck",
@@ -7500,11 +7500,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.management",
     "target" : "NXComponent-org.nuxeo.ecm.core.management.listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.listener--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.listener--listener",
@@ -7512,23 +7512,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.mimetype",
     "target" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService",
     "target" : "NXService-org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService",
     "target" : "NXContribution-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
     "target" : "NXContribution-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
@@ -7536,7 +7536,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService",
     "target" : "NXContribution-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
     "target" : "NXContribution-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
@@ -7544,11 +7544,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.query",
     "target" : "NXComponent-org.nuxeo.ecm.core.query.properties",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.query.properties",
     "target" : "NXContribution-org.nuxeo.ecm.core.query.properties--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.query.properties--configuration",
@@ -7556,99 +7556,99 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.schema",
     "target" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
     "target" : "NXService-org.nuxeo.ecm.core.schema.SchemaManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
     "target" : "NXService-org.nuxeo.ecm.core.schema.TypeProvider",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
     "target" : "NXService-org.nuxeo.ecm.core.schema.PropertyCharacteristicHandler",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.schema.TypeService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.schema.TypeService--doctype",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.schema.TypeService--schema",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.schema.TypeService--deprecation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.schema",
     "target" : "NXComponent-org.nuxeo.ecm.core.schema.ObjectResolverService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.ObjectResolverService",
     "target" : "NXService-org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.schema.ObjectResolverService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.lock.LockManagerService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.lock.LockManagerService",
     "target" : "NXService-org.nuxeo.ecm.core.storage.lock.LockManagerService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.lock.LockManagerService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.storage.lock.LockManagerService--lockmanager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.dbs",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService",
     "target" : "NXService-org.nuxeo.ecm.core.storage.dbs.DBSRepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.mem",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.mem.MemRepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.mem.MemRepositoryService",
     "target" : "NXService-org.nuxeo.ecm.core.storage.mem.MemRepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.mem.MemRepositoryService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.storage.mem.MemRepositoryService--repository",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.mongodb",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService",
     "target" : "NXService-org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.storage.mongodb.MongoDBRepositoryService--repository",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.mongodb",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.mongodb.configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.mongodb.configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.mongodb.configuration--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.mongodb.configuration--configuration",
@@ -7656,11 +7656,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.sql",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib--queryMaker",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib--queryMaker",
@@ -7668,31 +7668,31 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.sql",
     "target" : "NXComponent-org.nuxeo.ecm.core.repository.RepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.repository.RepositoryService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.repository.RepositoryService--repository",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.sql",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.sql.RepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.RepositoryService",
     "target" : "NXService-org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.RepositoryService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.sql",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.sql.softdelete",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.softdelete",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.softdelete--schedule",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.softdelete--schedule",
@@ -7700,7 +7700,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.softdelete",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.softdelete--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.softdelete--listener",
@@ -7708,31 +7708,31 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.core.storage.sql",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService",
     "target" : "NXService-org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory",
     "target" : "NXComponent-org.nuxeo.ecm.directory.DirectoryServiceImpl",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.DirectoryServiceImpl",
     "target" : "NXService-org.nuxeo.ecm.directory.api.DirectoryService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.DirectoryServiceImpl",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.directory.DirectoryServiceImpl--factoryDescriptor",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.DirectoryServiceImpl",
     "target" : "NXContribution-org.nuxeo.ecm.directory.DirectoryServiceImpl--listeners",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
     "target" : "NXContribution-org.nuxeo.ecm.directory.DirectoryServiceImpl--listeners",
@@ -7740,11 +7740,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory",
     "target" : "NXComponent-org.nuxeo.ecm.directory.resolver",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.resolver",
     "target" : "NXContribution-org.nuxeo.ecm.directory.resolver--resolvers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
     "target" : "NXContribution-org.nuxeo.ecm.directory.resolver--resolvers",
@@ -7752,11 +7752,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory",
     "target" : "NXComponent-org.nuxeo.ecm.directory.local.configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.local.configuration",
     "target" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--schema",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "target" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--schema",
@@ -7764,7 +7764,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.local.configuration",
     "target" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--doctype",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "target" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--doctype",
@@ -7772,7 +7772,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.local.configuration",
     "target" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "target" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--adapters",
@@ -7780,27 +7780,27 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory",
     "target" : "NXComponent-org.nuxeo.ecm.directory.core.CoreDirectoryFactory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.core.CoreDirectoryFactory",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.directory.core.CoreDirectoryFactory--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory",
     "target" : "NXComponent-org.nuxeo.ecm.directory.GenericDirectory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.GenericDirectory",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.directory.GenericDirectory--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory",
     "target" : "NXComponent-org.nuxeo.ecm.directory.marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.directory.marshallers--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.directory.marshallers--marshallers",
@@ -7808,11 +7808,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory.api",
     "target" : "NXComponent-org.nuxeo.ecm.platform.directory.pageproviders",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.directory.pageproviders",
     "target" : "NXContribution-org.nuxeo.ecm.platform.directory.pageproviders--providers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.directory.pageproviders--providers",
@@ -7820,19 +7820,19 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory.sql",
     "target" : "NXComponent-org.nuxeo.ecm.directory.sql.SQLDirectoryFactory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.sql.SQLDirectoryFactory",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.directory.types.contrib",
     "target" : "NXComponent-org.nuxeo.ecm.directory.types",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.directory.types",
     "target" : "NXContribution-org.nuxeo.ecm.directory.types--schema",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "target" : "NXContribution-org.nuxeo.ecm.directory.types--schema",
@@ -7840,31 +7840,31 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.commandline.executor",
     "target" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent",
     "target" : "NXService-org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.commandline.executor",
     "target" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib--environment",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
     "target" : "NXContribution-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib--environment",
@@ -7872,7 +7872,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib--commandTester",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
     "target" : "NXContribution-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib--commandTester",
@@ -7880,11 +7880,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.content.template",
     "target" : "NXComponent-org.nuxeo.ecm.platform.content.template.listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.content.template.listener",
     "target" : "NXContribution-org.nuxeo.ecm.platform.content.template.listener--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.ecm.platform.content.template.listener--listener",
@@ -7892,31 +7892,31 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.content.template",
     "target" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService",
     "target" : "NXService-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--postContentCreationHandlers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.content.template",
     "target" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib--factory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
     "target" : "NXContribution-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib--factory",
@@ -7924,7 +7924,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib--factoryBinding",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
     "target" : "NXContribution-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib--factoryBinding",
@@ -7932,15 +7932,15 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.dublincore",
     "target" : "NXComponent-DublinCoreStorageService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-DublinCoreStorageService",
     "target" : "NXService-org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-DublinCoreStorageService",
     "target" : "NXContribution-DublinCoreStorageService--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-DublinCoreStorageService--listener",
@@ -7948,7 +7948,7 @@
   }, {
     "source" : "NXComponent-DublinCoreStorageService",
     "target" : "NXContribution-DublinCoreStorageService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-DublinCoreStorageService--configuration",
@@ -7956,23 +7956,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.el",
     "target" : "NXComponent-org.nuxeo.ecm.platform.el.service",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.el.service",
     "target" : "NXService-org.nuxeo.ecm.platform.el.ELService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.el.service",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.el.service--elContextFactory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.export",
     "target" : "NXComponent-org.nuxeo.ecm.platform.contentview.json.marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.contentview.json.marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.contentview.json.marshallers--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.contentview.json.marshallers--marshallers",
@@ -7980,23 +7980,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.query.api",
     "target" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService",
     "target" : "NXService-org.nuxeo.ecm.platform.query.api.PageProviderService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.query.api.PageProviderService--replacers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService",
     "target" : "NXContribution-org.nuxeo.ecm.platform.query.api.PageProviderService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.platform.query.api.PageProviderService--configuration",
@@ -8004,11 +8004,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.UserManager.companyComputerContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.UserManager.companyComputerContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.computedgroups.UserManager.companyComputerContrib--computer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
     "target" : "NXContribution-org.nuxeo.ecm.platform.computedgroups.UserManager.companyComputerContrib--computer",
@@ -8016,11 +8016,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.usermanager.adapter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.adapter",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.adapter--adapters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.adapter--adapters",
@@ -8028,27 +8028,27 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl",
     "target" : "NXService-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computerChain",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.usermanager.properties",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.properties",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.properties--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.properties--configuration",
@@ -8056,7 +8056,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.properties",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.properties--configuration1",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.properties--configuration1",
@@ -8064,11 +8064,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.usermanager.marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.marshallers--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.marshallers--marshallers",
@@ -8076,35 +8076,35 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService",
     "target" : "NXService-org.nuxeo.ecm.platform.usermanager.MultiTenantUserManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService",
     "target" : "NXService-org.nuxeo.ecm.platform.usermanager.UserManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService",
     "target" : "NXService-org.nuxeo.runtime.api.login.Authenticator",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService",
     "target" : "NXService-org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.usermanager.UserService--userManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserManagerImpl",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserManagerImpl",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.UserManagerImpl--userManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.usermanager.UserService--org.nuxeo.ecm.platform.usermanager.UserService--userManager",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.UserManagerImpl--userManager",
@@ -8112,11 +8112,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
     "target" : "NXComponent-org.nuxeo.ecm.platform.usermanager.resolver",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.resolver",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.resolver--resolvers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.resolver--resolvers",
@@ -8124,11 +8124,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager.api",
     "target" : "NXComponent-org.nuxeo.ecm.platform.usermanager.pageproviders",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.usermanager.pageproviders",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.pageproviders--providers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.usermanager.pageproviders--providers",
@@ -8136,11 +8136,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--errorhandlers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--errorhandlers",
@@ -8148,7 +8148,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--requestdump",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--requestdump",
@@ -8156,7 +8156,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--listener",
@@ -8164,7 +8164,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--exceptionhandler",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--exceptionhandler",
@@ -8172,11 +8172,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.ui.web.login",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.login",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.login--loginScreen",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.login--loginScreen",
@@ -8184,31 +8184,31 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService",
     "target" : "NXService-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--corsConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.locale.default.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.locale.default.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.locale.default.contrib--providers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.locale--org.nuxeo.ecm.platform.web.common.locale--providers",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.locale.default.contrib--providers",
@@ -8216,43 +8216,43 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXService-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--openUrl",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--implementation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--implementation",
@@ -8260,35 +8260,35 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService",
     "target" : "NXService-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--authenticators",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--authenticators",
@@ -8296,7 +8296,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--chain",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--chain",
@@ -8304,7 +8304,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--startURL",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--startURL",
@@ -8312,23 +8312,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.locale",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.locale",
     "target" : "NXService-org.nuxeo.ecm.platform.web.common.locale.LocaleProvider",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.locale",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.platform.web.common.locale--providers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib--filterConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib--filterConfig",
@@ -8336,7 +8336,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib--responseHeaders",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib--responseHeaders",
@@ -8344,11 +8344,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.adminStatusListener.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.adminStatusListener.contrib",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.adminStatusListener.contrib--listeners",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.adminStatusListener.contrib--listeners",
@@ -8356,11 +8356,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.platform.web.common",
     "target" : "NXComponent-org.nuxeo.ecm.platform.ui.web.cors",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.cors",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.cors--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.cors--configuration",
@@ -8368,11 +8368,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.webengine.core",
     "target" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--sessionManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--sessionManager",
@@ -8380,7 +8380,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--startURL",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--startURL",
@@ -8388,7 +8388,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--authenticators",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--authenticators",
@@ -8396,7 +8396,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--chain",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
     "target" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--chain",
@@ -8404,31 +8404,31 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.webengine.core",
     "target" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
     "target" : "NXService-org.nuxeo.ecm.webengine.WebEngine",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.WebEngineComponent--guard",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.WebEngineComponent--resource",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.WebEngineComponent--request-configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
     "target" : "NXContribution-org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.webengine.WebEngineComponent--org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
     "target" : "NXContribution-org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
@@ -8436,7 +8436,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent",
     "target" : "NXContribution-org.nuxeo.ecm.webengine.WebEngineComponent--filterConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
     "target" : "NXContribution-org.nuxeo.ecm.webengine.WebEngineComponent--filterConfig",
@@ -8444,75 +8444,75 @@
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.webengine.core",
     "target" : "NXComponent-org.nuxeo.ecm.webengine.core.service.json",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.core.service.json",
     "target" : "NXService-org.nuxeo.ecm.webengine.JsonFactoryManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.ecm.webengine.jaxrs",
     "target" : "NXComponent-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent--servlets",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent--filters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent--resources",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent",
     "target" : "NXExtensionPoint-org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent--subresources",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXService-org.nuxeo.elasticsearch.api.ElasticSearchService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXService-org.nuxeo.elasticsearch.api.ElasticSearchIndexing",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXService-org.nuxeo.elasticsearch.api.ElasticSearchAdmin",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXExtensionPoint-org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXExtensionPoint-org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXExtensionPoint-org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXExtensionPoint-org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent",
     "target" : "NXExtensionPoint-org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.marshallers",
     "target" : "NXContribution-org.nuxeo.elasticsearch.marshallers--marshallers",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "target" : "NXContribution-org.nuxeo.elasticsearch.marshallers--marshallers",
@@ -8520,11 +8520,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.work.config",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.work.config",
     "target" : "NXContribution-org.nuxeo.elasticsearch.work.config--queues",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "target" : "NXContribution-org.nuxeo.elasticsearch.work.config--queues",
@@ -8532,11 +8532,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.core.listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.core.listener",
     "target" : "NXContribution-org.nuxeo.elasticsearch.core.listener--listener",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "target" : "NXContribution-org.nuxeo.elasticsearch.core.listener--listener",
@@ -8544,11 +8544,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.ElasticSearchComponent.contrib--elasticSearchDocWriter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
     "target" : "NXContribution-org.nuxeo.elasticsearch.ElasticSearchComponent.contrib--elasticSearchDocWriter",
@@ -8556,11 +8556,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.test.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.test.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchEmbeddedServer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
     "target" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchEmbeddedServer",
@@ -8568,7 +8568,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.test.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchClient",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
     "target" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchClient",
@@ -8576,7 +8576,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.test.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchIndex",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
     "target" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchIndex",
@@ -8584,11 +8584,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.managment.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.managment.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.managment.contrib--probes",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
     "target" : "NXContribution-org.nuxeo.elasticsearch.managment.contrib--probes",
@@ -8596,7 +8596,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.managment.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.managment.contrib--healthCheck",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
     "target" : "NXContribution-org.nuxeo.elasticsearch.managment.contrib--healthCheck",
@@ -8604,11 +8604,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.core.bulk.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.core.bulk.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.core.bulk.contrib--actions",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "target" : "NXContribution-org.nuxeo.elasticsearch.core.bulk.contrib--actions",
@@ -8616,7 +8616,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.core.bulk.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.core.bulk.contrib--streamProcessor",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "target" : "NXContribution-org.nuxeo.elasticsearch.core.bulk.contrib--streamProcessor",
@@ -8624,11 +8624,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.hint.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.hint.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.hint.contrib--elasticSearchHints",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
     "target" : "NXContribution-org.nuxeo.elasticsearch.hint.contrib--elasticSearchHints",
@@ -8636,11 +8636,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.elasticsearch.core",
     "target" : "NXComponent-org.nuxeo.elasticsearch.scroll.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.elasticsearch.scroll.contrib",
     "target" : "NXContribution-org.nuxeo.elasticsearch.scroll.contrib--scroll",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
     "target" : "NXContribution-org.nuxeo.elasticsearch.scroll.contrib--scroll",
@@ -8648,23 +8648,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.LoginAsComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.LoginAsComponent",
     "target" : "NXService-org.nuxeo.runtime.api.login.LoginAs",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.LoginAsComponent",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.LoginAsComponent--implementation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.ecm.core.test.blobmanager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.test.blobmanager",
     "target" : "NXContribution-org.nuxeo.ecm.core.test.blobmanager--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.blob.BlobManager--org.nuxeo.ecm.core.blob.BlobManager--configuration",
     "target" : "NXContribution-org.nuxeo.ecm.core.test.blobmanager--configuration",
@@ -8672,47 +8672,47 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.model.persistence",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.model.persistence",
     "target" : "NXService-org.nuxeo.runtime.model.persistence.ContributionPersistenceManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.model.persistence",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.model.persistence--listeners",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.services.resource.ResourceService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.services.resource.ResourceService",
     "target" : "NXService-org.nuxeo.runtime.services.resource.ResourceService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.services.resource.ResourceService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.services.resource.ResourceService--resources",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.trackers.files",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.trackers.files",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.trackers.files--configs",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.started",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.ecm.core.storage.sql.test.repo.repository",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.test.repo.repository",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.test.repo.repository--datasources",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.test.repo.repository--datasources",
@@ -8720,7 +8720,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.storage.sql.test.repo.repository",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.test.repo.repository--repository",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.RepositoryService--org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
     "target" : "NXContribution-org.nuxeo.ecm.core.storage.sql.test.repo.repository--repository",
@@ -8728,11 +8728,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.ecm.platform.web.common.test.login.as",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.web.common.test.login.as",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.test.login.as--implementation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
     "target" : "NXContribution-org.nuxeo.ecm.platform.web.common.test.login.as--implementation",
@@ -8740,11 +8740,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.trackers.files.threadstracking.config",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.trackers.files.threadstracking.config",
     "target" : "NXContribution-org.nuxeo.runtime.trackers.files.threadstracking.config--configs",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.trackers.files--org.nuxeo.runtime.trackers.files--configs",
     "target" : "NXContribution-org.nuxeo.runtime.trackers.files.threadstracking.config--configs",
@@ -8752,19 +8752,19 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.LoginComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.LoginComponent",
     "target" : "NXService-org.nuxeo.runtime.api.login.LoginService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.directory.test.sql",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.directory.test.sql",
     "target" : "NXContribution-org.nuxeo.directory.test.sql--datasources",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
     "target" : "NXContribution-org.nuxeo.directory.test.sql--datasources",
@@ -8772,7 +8772,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.directory.test.sql",
     "target" : "NXContribution-org.nuxeo.directory.test.sql--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
     "target" : "NXContribution-org.nuxeo.directory.test.sql--directories",
@@ -8780,11 +8780,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.ecm.core.api.local.dummy.login",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.api.local.dummy.login",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.local.dummy.login--implementation",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
     "target" : "NXContribution-org.nuxeo.ecm.core.api.local.dummy.login--implementation",
@@ -8792,11 +8792,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.ecm.platform.test.directory.sql.storage",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.platform.test.directory.sql.storage",
     "target" : "NXContribution-org.nuxeo.ecm.platform.test.directory.sql.storage--directories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
     "target" : "NXContribution-org.nuxeo.ecm.platform.test.directory.sql.storage--directories",
@@ -8804,11 +8804,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.ecm.core.management.es.tests",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.ecm.core.management.es.tests",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.es.tests--storageConfiguration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
     "target" : "NXContribution-org.nuxeo.ecm.core.management.es.tests--storageConfiguration",
@@ -8816,63 +8816,63 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.ConfigurationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.ConfigurationService",
     "target" : "NXService-org.nuxeo.runtime.services.config.ConfigurationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.ConfigurationService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.ConfigurationService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.RuntimeComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime",
     "target" : "NXComponent-org.nuxeo.runtime.EventService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.EventService",
     "target" : "NXService-org.nuxeo.runtime.services.event.EventService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.EventService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.EventService--listeners",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.cluster",
     "target" : "NXComponent-org.nuxeo.runtime.cluster.ClusterService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.cluster.ClusterService",
     "target" : "NXService-org.nuxeo.runtime.cluster.ClusterService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.cluster.ClusterService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.cluster.ClusterService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.datasource",
     "target" : "NXComponent-org.nuxeo.runtime.datasource",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.datasource",
     "target" : "NXService-org.nuxeo.runtime.datasource.PooledDataSourceRegistry",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.datasource",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.datasource--datasources",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.datasource",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.datasource--sorter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.datasource",
     "target" : "NXContribution-org.nuxeo.runtime.datasource--sorter",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--sorter",
     "target" : "NXContribution-org.nuxeo.runtime.datasource--sorter",
@@ -8880,23 +8880,23 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.jtajca",
     "target" : "NXComponent-org.nuxeo.runtime.jtajca.JtaActivator",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.kv",
     "target" : "NXComponent-org.nuxeo.runtime.kv.KeyValueService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.kv.KeyValueService",
     "target" : "NXService-org.nuxeo.runtime.kv.KeyValueService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.kv.KeyValueService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.kv.KeyValueService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.kv.KeyValueService",
     "target" : "NXContribution-org.nuxeo.runtime.kv.KeyValueService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
     "target" : "NXContribution-org.nuxeo.runtime.kv.KeyValueService--configuration",
@@ -8904,27 +8904,27 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.management",
     "target" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher",
     "target" : "NXService-org.nuxeo.runtime.management.ResourcePublisher",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.management.ResourcePublisher--services",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.management.ResourcePublisher--factories",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.management.ResourcePublisher--shortcuts",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher",
     "target" : "NXContribution-org.nuxeo.runtime.management.ResourcePublisher--services",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--services",
     "target" : "NXContribution-org.nuxeo.runtime.management.ResourcePublisher--services",
@@ -8932,139 +8932,139 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.management",
     "target" : "NXComponent-org.nuxeo.runtime.management.metrics",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.metrics",
     "target" : "NXService-org.nuxeo.runtime.management.metrics.MetricEnabler",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.metrics",
     "target" : "NXService-org.nuxeo.runtime.management.metrics.MetricSerializer",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.management",
     "target" : "NXComponent-org.nuxeo.runtime.management.counters",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.counters",
     "target" : "NXService-org.nuxeo.runtime.management.counters.CounterManager",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.management",
     "target" : "NXComponent-org.nuxeo.runtime.management.ServerLocator",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.ServerLocator",
     "target" : "NXService-org.nuxeo.runtime.management.ServerLocator",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.management.ServerLocator",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.management.ServerLocator--locators",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.metrics",
     "target" : "NXComponent-org.nuxeo.runtime.metrics.MetricsService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.metrics.MetricsService",
     "target" : "NXService-org.nuxeo.runtime.metrics.MetricsService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.metrics.MetricsService",
     "target" : "NXService-com.codahale.metrics.MetricRegistry",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.metrics.MetricsService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.metrics.MetricsService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.migration",
     "target" : "NXComponent-org.nuxeo.runtime.migration.MigrationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.migration.MigrationService",
     "target" : "NXService-org.nuxeo.runtime.migration.MigrationService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.migration.MigrationService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.migration.MigrationService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.mongodb",
     "target" : "NXComponent-org.nuxeo.runtime.mongodb.MongoDBComponent",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.mongodb.MongoDBComponent",
     "target" : "NXService-org.nuxeo.runtime.mongodb.MongoDBConnectionService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.mongodb.MongoDBComponent",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.mongodb.MongoDBComponent--connection",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.pubsub",
     "target" : "NXComponent-org.nuxeo.runtime.pubsub.PubSubService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.pubsub.PubSubService",
     "target" : "NXService-org.nuxeo.runtime.pubsub.PubSubService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.pubsub.PubSubService",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.pubsub.PubSubService--configuration",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.reload",
     "target" : "NXComponent-org.nuxeo.runtime.reload",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.reload",
     "target" : "NXService-org.nuxeo.runtime.reload.ReloadService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.stream",
     "target" : "NXComponent-org.nuxeo.runtime.stream.kafka.service",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.stream.kafka.service",
     "target" : "NXService-org.nuxeo.runtime.kafka.KafkaConfigService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.stream.kafka.service",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.stream.kafka.service--kafkaConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.stream",
     "target" : "NXComponent-org.nuxeo.runtime.stream.service",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.stream.service",
     "target" : "NXService-org.nuxeo.runtime.stream.StreamService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.stream.service",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.stream.service--logConfig",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.stream.service",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.stream.service--streamProcessor",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.stream",
     "target" : "NXComponent-org.nuxeo.runtime.codec.service",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.codec.service",
     "target" : "NXService-org.nuxeo.runtime.codec.CodecService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.codec.service",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.codec.service--codec",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.codec.service",
     "target" : "NXContribution-org.nuxeo.runtime.codec.service--codec",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.codec.service--org.nuxeo.runtime.codec.service--codec",
     "target" : "NXContribution-org.nuxeo.runtime.codec.service--codec",
@@ -9072,11 +9072,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.stream",
     "target" : "NXComponent-org.nuxeo.runtime.stream.service.managment.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.stream.service.managment.contrib",
     "target" : "NXContribution-org.nuxeo.runtime.stream.service.managment.contrib--probes",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
     "target" : "NXContribution-org.nuxeo.runtime.stream.service.managment.contrib--probes",
@@ -9084,7 +9084,7 @@
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.stream.service.managment.contrib",
     "target" : "NXContribution-org.nuxeo.runtime.stream.service.managment.contrib--healthCheck",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
     "target" : "NXContribution-org.nuxeo.runtime.stream.service.managment.contrib--healthCheck",
@@ -9092,11 +9092,11 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.stream",
     "target" : "NXComponent-org.nuxeo.runtime.avro.contrib",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.avro.contrib",
     "target" : "NXContribution-org.nuxeo.runtime.avro.contrib--replacement",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--replacement",
     "target" : "NXContribution-org.nuxeo.runtime.avro.contrib--replacement",
@@ -9104,30 +9104,30 @@
   }, {
     "source" : "NXBundle-org.nuxeo.runtime.stream",
     "target" : "NXComponent-org.nuxeo.runtime.avro",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.avro",
     "target" : "NXService-org.apache.avro.message.SchemaStore",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.avro",
     "target" : "NXService-org.nuxeo.runtime.avro.AvroService",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.avro",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.avro--schema",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.avro",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.avro--factory",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.avro",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.avro--replacement",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   }, {
     "source" : "NXComponent-org.nuxeo.runtime.avro",
     "target" : "NXExtensionPoint-org.nuxeo.runtime.avro--mapper",
-    "value" : "REFERENCES"
+    "value" : "CONTAINS"
   } ]
 }
