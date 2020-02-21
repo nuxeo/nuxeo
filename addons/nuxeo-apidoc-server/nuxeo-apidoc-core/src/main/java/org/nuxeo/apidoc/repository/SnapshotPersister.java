@@ -199,6 +199,9 @@ public class SnapshotPersister {
         DocumentModel graphContainer = getSubRoot(session, distribContainer.getDoc(), Graph_Root_NAME);
         persistGraphs(snapshot, session, label, graphContainer, filter);
 
+        // XXX figure out why this is needed only now for graphs persistence in tests
+        session.save();
+
         return distribContainer;
     }
 

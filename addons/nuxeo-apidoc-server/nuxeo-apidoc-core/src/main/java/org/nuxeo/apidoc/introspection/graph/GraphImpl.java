@@ -26,6 +26,7 @@ import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -60,6 +61,7 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     }
 
     @Override
+    @JsonIgnore
     public String getArtifactType() {
         return ARTIFACT_TYPE;
     }
@@ -104,7 +106,11 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     @Override
     @JsonIgnore
     public Blob getBlob() {
-        return new StringBlob(getContent());
+        Blob blob = Blobs.createBlob(getContent());
+        blob.setFilename("graph.json");
+        blob.setMimeType("application/json");
+        blob.setEncoding("UTF-8");
+        return blob;
     }
 
     public void addNode(NodeImpl node) {

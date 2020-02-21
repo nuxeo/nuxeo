@@ -28,6 +28,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -108,6 +109,12 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
         }
 
+        if (adapterClassName.equals(Graph.class.getSimpleName())) {
+            if (doc.getType().equals(Graph.TYPE_NAME)) {
+                return new GraphDocAdapter(doc);
+            }
+        }
+
         if (adapterClassName.equals(NuxeoArtifact.class.getSimpleName())) {
             if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
                 return new ServiceInfoDocAdapter(doc);
@@ -132,6 +139,9 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
             if (doc.getType().equals(OperationInfo.TYPE_NAME)) {
                 return new OperationInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(Graph.TYPE_NAME)) {
+                return new GraphDocAdapter(doc);
             }
         }
 

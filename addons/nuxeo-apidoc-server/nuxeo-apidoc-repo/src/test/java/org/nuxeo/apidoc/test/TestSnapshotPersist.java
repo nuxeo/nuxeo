@@ -139,11 +139,11 @@ public class TestSnapshotPersist {
             sb.append("\n");
         }
 
-        // for (Graph graph : graphs) {
-        // sb.append("graph: ").append(graph.getId());
-        // sb.append(" *** ");
-        // sb.append("\n");
-        // }
+        for (Graph graph : graphs) {
+            sb.append("graph: ").append(graph.getName());
+            sb.append(" *** ");
+            sb.append("\n");
+        }
 
         return sb.toString().trim();
     }
@@ -171,13 +171,13 @@ public class TestSnapshotPersist {
         List<String> refs = new ArrayList<>();
         refs.add("basic_graph.json");
 
-        // assertEquals(runtimeGraphs.size(), persistentGraphs.size());
+        assertEquals(runtimeGraphs.size(), persistentGraphs.size());
         assertEquals(runtimeGraphs.size(), refs.size());
         int i = 0;
         for (Graph graph : runtimeGraphs) {
             checkContentEquals(getReferenceFileContent(refs.get(i)), graph.getContent(),
                     String.format("File '%s' content differs: ", refs.get(i)));
-            // checkContentEquals(persistentGraphs.get(i).getContent(), graph.getContent(), null);
+            checkContentEquals(persistentGraphs.get(i).getContent(), graph.getContent(), null);
             i++;
         }
     }

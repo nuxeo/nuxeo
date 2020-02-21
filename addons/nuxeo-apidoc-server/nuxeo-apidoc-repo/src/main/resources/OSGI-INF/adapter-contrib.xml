@@ -35,6 +35,9 @@
     <adapter type="NXOperation"
       class="org.nuxeo.apidoc.api.OperationInfo"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="File"
+      class="org.nuxeo.apidoc.api.graph.Graph"
+      factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
 
     <adapter type="NXBundleGroup"
       class="org.nuxeo.apidoc.api.NuxeoArtifact"
@@ -58,6 +61,9 @@
       class="org.nuxeo.apidoc.api.NuxeoArtifact"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXOperation"
+      class="org.nuxeo.apidoc.api.NuxeoArtifact"
+      factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="File"
       class="org.nuxeo.apidoc.api.NuxeoArtifact"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
 

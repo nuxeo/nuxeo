@@ -48,7 +48,7 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
 
     @Override
     public String getName() {
-        return getDoc().getId();
+        return getDoc().getName();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 
-        String name = computeDocumentName("graph-" + graph.getId());
+        String name = computeDocumentName(graph.getName());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exist = false;
         if (session.exists(new PathRef(targetPath))) {
