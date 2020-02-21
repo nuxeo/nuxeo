@@ -4516,6 +4516,17 @@ public class TestSQLRepositoryAPI {
             assertEquals("Record cannot be checked in: " + docRef, e.getMessage());
         }
 
+        // a record cannot be checked in through auto-versioning
+        doc.setPropertyValue("dc:title", "change");
+        doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MAJOR);
+        try {
+            session.saveDocument(doc);
+            fail();
+        } catch (PropertyException e) {
+            assertEquals("Record cannot be checked in: " + docRef, e.getMessage());
+        }
+        doc.putContextData(VersioningService.VERSIONING_OPTION, null);
+
         // a version cannot be restored on a record
         try {
             session.restoreToVersion(docRef, verRef);
