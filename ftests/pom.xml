@@ -62,6 +62,12 @@
       <artifactId>nuxeo-functional-tests</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo</groupId>
+      <artifactId>nuxeo-ftest</artifactId>
+      <scope>test</scope>
+      <type>zip</type>
+    </dependency>
   </dependencies>
 
   <build>
