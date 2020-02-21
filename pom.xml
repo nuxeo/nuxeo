@@ -5016,9 +5016,41 @@
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
+            <id>enforce-dependencies</id>
             <goals>
               <goal>enforce</goal>
             </goals>
+            <configuration>
+              <rules>
+                <requireReleaseDeps>
+                  <message>No Snapshots Allowed!</message>
+                  <onlyWhenRelease>false</onlyWhenRelease>
+                  <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                  <excludes>
+                    <exclude>org.nuxeo*</exclude>
+                  </excludes>
+                </requireReleaseDeps>
+              </rules>
+            </configuration>
+          </execution>
+          <execution>
+            <id>enforce-nuxeo-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireReleaseDeps>
+                  <message>No Snapshots Allowed!</message>
+                  <onlyWhenRelease>false</onlyWhenRelease>
+                  <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
+                  <includes>
+                    <include>org.nuxeo:nuxeo-ftest</include>
+                    <include>org.nuxeo.connect:nuxeo-connect-client</include>
+                  </includes>
+                </requireReleaseDeps>
+              </rules>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -5531,11 +5563,6 @@
                 <message>nuxeo-distribution-tools is deprecated and not compliant with Maven 3. Use
                   ant-assembly-maven-plugin instead.</message>
               </bannedPlugins>
-              <requireReleaseDeps>
-                <message>No Snapshots Allowed!</message>
-                <onlyWhenRelease>true</onlyWhenRelease>
-                <!-- Don't set exclusions here. See the nightly profile if needed. -->
-              </requireReleaseDeps>
               <requireMavenVersion>
                 <version>[3.1.1,)</version>
               </requireMavenVersion>
@@ -6235,26 +6262,6 @@
     <profile>
       <id>nightly</id>
       <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-enforcer-plugin</artifactId>
-              <configuration>
-                <rules>
-                  <requireReleaseDeps>
-                    <!-- Exclusions are tolerated for nightly "date-based" releases only -->
-                    <excludes>
-                      <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude>
-                      <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
-                      <!-- <exclude>org.jboss.seam:*</exclude> -->
-                    </excludes>
-                  </requireReleaseDeps>
-                </rules>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
