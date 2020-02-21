@@ -25,29 +25,50 @@ import org.nuxeo.apidoc.api.BundleInfo;
  */
 public enum NODE_CATEGORY {
 
-    RUNTIME(0), CORE(1), PLATFORM(2), STUDIO(3);
+    RUNTIME("#000000"), CORE("#0000FF"), PLATFORM("#FF0000"), STUDIO("#008000");
 
-    private NODE_CATEGORY(int index) {
-        this.index = index;
+    private NODE_CATEGORY(String color) {
+        this.color = color;
     }
 
-    private int index;
+    private String color;
 
     public String toString() {
         return name();
     }
 
-    public int getIndex() {
-        return index;
-    }
-
     public String getColor() {
-        return "TODO";
+        return color;
     }
 
     public static NODE_CATEGORY getCategory(BundleInfo bundle) {
-        // TODO: introspect bundle
-        return RUNTIME;
+        NODE_CATEGORY cat = introspect(bundle.getGroupId());
+        if (cat == null) {
+            cat = introspect(bundle.getArtifactId());
+        }
+        if (cat == null) {
+            cat = introspect(bundle.getId());
+        }
+        if (cat == null) {
+            cat = PLATFORM;
+        }
+        return cat;
+    }
+
+    protected static NODE_CATEGORY introspect(String source) {
+        for (NODE_CATEGORY item : NODE_CATEGORY.values()) {
+            if (contains(source, item.name())) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    protected static boolean contains(String source, String content) {
+        if (source == null) {
+            return false;
+        }
+        return source.toLowerCase().contains(content.toLowerCase());
     }
 
 }
