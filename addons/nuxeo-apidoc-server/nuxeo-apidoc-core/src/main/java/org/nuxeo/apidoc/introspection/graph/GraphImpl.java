@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.introspection.graph;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -27,7 +28,6 @@ import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -89,11 +89,12 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
         final ObjectMapper mapper = new ObjectMapper().registerModule(
                 new SimpleModule().addAbstractTypeMapping(Node.class, NodeImpl.class)
                                   .addAbstractTypeMapping(Edge.class, EdgeImpl.class));
-        List<Object> values = new ArrayList<>();
-        values.addAll(nodes);
-        values.addAll(edges);
+        LinkedHashMap<String, Object> values = new LinkedHashMap<>();
+        values.put("id", getId());
+        values.put("nodes", nodes);
+        values.put("edges", edges);
         try {
-            return mapper.writerFor(ArrayList.class)
+            return mapper.writerFor(LinkedHashMap.class)
                          .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)
                          .without(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
                          .withDefaultPrettyPrinter()
