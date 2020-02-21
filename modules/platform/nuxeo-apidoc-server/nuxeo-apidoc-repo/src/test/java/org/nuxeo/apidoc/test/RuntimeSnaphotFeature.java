@@ -33,7 +33,6 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.apidoc.core")
 @Deploy("org.nuxeo.apidoc.repo")
 @Deploy("org.nuxeo.apidoc.repo:apidoc-works-test-contrib.xml")
-@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
 public class RuntimeSnaphotFeature implements RunnerFeature {
 
 }
