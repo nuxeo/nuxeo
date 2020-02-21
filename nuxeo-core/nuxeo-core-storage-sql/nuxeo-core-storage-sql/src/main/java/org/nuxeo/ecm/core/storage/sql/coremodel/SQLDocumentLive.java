@@ -499,6 +499,9 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     public Document checkIn(String label, String checkinComment) {
+        if (isRecord()) {
+            throw new PropertyException("Record cannot be checked in: " + getUUID());
+        }
         Document version = session.checkIn(getNode(), label, checkinComment);
         getDocumentBlobManager().freezeVersion(version);
         return version;
