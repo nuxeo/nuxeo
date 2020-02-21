@@ -18,6 +18,7 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import org.gephi.project.io.GephiReader;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -27,14 +28,14 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  *
  * @since 11.1
  */
-public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
+public class GephiGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
-    public JGraphGeneratorImpl(String graphId, DistributionSnapshot distribution) {
+    public GephiGraphGeneratorImpl(String graphId, DistributionSnapshot distribution) {
         super(graphId, distribution);
     }
 
     public static Graph getGraph(String graphId, DistributionSnapshot distribution) {
-        JGraphGeneratorImpl gen = new JGraphGeneratorImpl(graphId, distribution);
+        GephiGraphGeneratorImpl gen = new GephiGraphGeneratorImpl(graphId, distribution);
         return gen.getGraph();
     }
 
@@ -42,6 +43,7 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
     public Graph getGraph() {
         Graph graph = super.getGraph();
         // setup positioning of nodes (?)
+        
 
         return graph;
     }

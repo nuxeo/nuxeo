@@ -46,11 +46,11 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
 
     protected final String id;
 
-    protected final List<NodeImpl> nodes = new ArrayList<>();
+    protected final List<Node> nodes = new ArrayList<>();
 
-    protected final List<EdgeImpl> edges = new ArrayList<>();
+    protected final List<Edge> edges = new ArrayList<>();
 
-    protected final Map<String, NodeImpl> nodeMap = new HashMap<>();
+    protected final Map<String, Node> nodeMap = new HashMap<>();
 
     @JsonCreator
     public GraphImpl(@JsonProperty("id") String id) {
@@ -118,16 +118,16 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
         return blob;
     }
 
-    public void addNode(NodeImpl node) {
+    public void addNode(Node node) {
         this.nodes.add(node);
         this.nodeMap.put(node.getId(), node);
     }
 
-    public void addEdge(EdgeImpl edge) {
+    public void addEdge(Edge edge) {
         this.edges.add(edge);
     }
 
-    public NodeImpl getNode(String id) {
+    public Node getNode(String id) {
         return nodeMap.get(id);
     }
 

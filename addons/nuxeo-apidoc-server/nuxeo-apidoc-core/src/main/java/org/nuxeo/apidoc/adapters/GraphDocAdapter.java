@@ -22,7 +22,9 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.Graph;
+import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -100,6 +102,16 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
             doc = session.createDocument(doc);
         }
         return new GraphDocAdapter(doc);
+    }
+
+    @Override
+    public void addEdge(Edge edge) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Node getNode(String nodeId) {
+        throw new UnsupportedOperationException();
     }
 
 }

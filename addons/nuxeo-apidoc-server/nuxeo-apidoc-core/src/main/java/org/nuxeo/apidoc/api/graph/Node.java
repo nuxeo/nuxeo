@@ -27,8 +27,10 @@ public interface Node {
 
     String getLabel();
 
+    String getPath();
+
     int getWeight();
 
-    String getPath();
+    void setWeight(int weigth);
 
 }

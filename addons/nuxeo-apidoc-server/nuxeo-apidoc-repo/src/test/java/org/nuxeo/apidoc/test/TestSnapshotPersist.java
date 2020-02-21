@@ -170,6 +170,8 @@ public class TestSnapshotPersist {
         List<Graph> persistentGraphs = persistent.getGraphs();
         List<String> refs = new ArrayList<>();
         refs.add("basic_graph.json");
+        refs.add("jgrapht.json");
+        refs.add("gephi.json");
 
         assertEquals(runtimeGraphs.size(), persistentGraphs.size());
         assertEquals(runtimeGraphs.size(), refs.size());

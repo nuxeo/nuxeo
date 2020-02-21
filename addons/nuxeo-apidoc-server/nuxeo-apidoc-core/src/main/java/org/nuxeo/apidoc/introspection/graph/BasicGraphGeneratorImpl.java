@@ -28,10 +28,12 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
+import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.NODE_TYPE;
 import org.nuxeo.apidoc.api.graph.NetworkGraphGenerator;
+import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 
 /**
@@ -69,39 +71,37 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
         Map<String, Integer> hits = new HashMap<>();
 
         List<String> bids = distribution.getBundleIds();
-        NodeImpl node;
         for (String bid : bids) {
             BundleInfo bundle = distribution.getBundle(bid);
             // add node for bundle
             NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundle);
             String pbid = prefixId(BundleInfo.TYPE_NAME, bid);
-            node = new NodeImpl(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor());
-            graph.addNode(node);
+            graph.addNode(createNode(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor()));
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
             for (ComponentInfo component : components) {
                 String compid = component.getId();
                 String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
-                graph.addNode(new NodeImpl(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),
+                graph.addNode(createNode(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),
                         cat.name(), cat.getColor()));
-                addEdge(graph, hits, new EdgeImpl(pbid, pcompid, EDGE_TYPE.CONTAINS.name()));
+                addEdge(graph, hits, createEdge(pbid, pcompid, EDGE_TYPE.CONTAINS.name()));
                 for (ServiceInfo service : component.getServices()) {
                     if (service.isOverriden()) {
                         continue;
                     }
                     String sid = service.getId();
                     String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
-                    graph.addNode(new NodeImpl(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
+                    graph.addNode(createNode(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
                             cat.name(), cat.getColor()));
-                    addEdge(graph, hits, new EdgeImpl(pcompid, psid, EDGE_TYPE.CONTAINS.name()));
+                    addEdge(graph, hits, createEdge(pcompid, psid, EDGE_TYPE.CONTAINS.name()));
                 }
 
                 for (ExtensionPointInfo xp : component.getExtensionPoints()) {
                     String xpid = xp.getId();
                     String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
-                    graph.addNode(new NodeImpl(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
+                    graph.addNode(createNode(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
                             cat.name(), cat.getColor()));
-                    addEdge(graph, hits, new EdgeImpl(pcompid, pxpid, EDGE_TYPE.CONTAINS.name()));
+                    addEdge(graph, hits, createEdge(pcompid, pxpid, EDGE_TYPE.CONTAINS.name()));
                 }
 
                 Map<String, Integer> comps = new HashMap<String, Integer>();
@@ -118,14 +118,14 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
 
                     String pcid = prefixId(ExtensionInfo.TYPE_NAME, cid);
                     // add link to corresponding component
-                    graph.addNode(new NodeImpl(pcid, cid, 0, contribution.getHierarchyPath(),
+                    graph.addNode(createNode(pcid, cid, 0, contribution.getHierarchyPath(),
                             NODE_TYPE.CONTRIBUTION.name(), cat.name(), cat.getColor()));
-                    addEdge(graph, hits, new EdgeImpl(pcompid, pcid, EDGE_TYPE.CONTAINS.name()));
+                    addEdge(graph, hits, createEdge(pcompid, pcid, EDGE_TYPE.CONTAINS.name()));
 
                     // also add link to target extension point, "guessing" the extension point id
                     String targetId = prefixId(ComponentInfo.TYPE_NAME,
                             contribution.getTargetComponentName() + "--" + contribution.getExtensionPoint());
-                    graph.addEdge(new EdgeImpl(targetId, pcid, EDGE_TYPE.REFERENCES.name()));
+                    graph.addEdge(createEdge(targetId, pcid, EDGE_TYPE.REFERENCES.name()));
                 }
             }
         }
@@ -137,7 +137,16 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
         return graph;
     }
 
-    protected void addEdge(GraphImpl graph, Map<String, Integer> hits, EdgeImpl edge) {
+    protected Node createNode(String id, String label, int weight, String path, String type, String category,
+            String color) {
+        return new NodeImpl(id, label, weight, path, type, category, color);
+    }
+
+    protected Edge createEdge(String source, String target, String value) {
+        return new EdgeImpl(source, target, value);
+    }
+
+    protected void addEdge(Graph graph, Map<String, Integer> hits, Edge edge) {
         graph.addEdge(edge);
         hit(hits, edge.getSource());
         hit(hits, edge.getTarget());
@@ -151,8 +160,8 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
         }
     }
 
-    protected void setWeight(GraphImpl graph, String nodeId, int hit) {
-        NodeImpl node = graph.getNode(nodeId);
+    protected void setWeight(Graph graph, String nodeId, int hit) {
+        Node node = graph.getNode(nodeId);
         if (node != null) {
             node.setWeight(hit);
         }

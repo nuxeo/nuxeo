@@ -39,4 +39,8 @@ public interface Graph extends NuxeoArtifact {
 
     Blob getBlob();
 
+    void addEdge(Edge edge);
+
+    Node getNode(String nodeId);
+
 }
