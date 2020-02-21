@@ -1804,9 +1804,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_PROPERTIES);
-        if (doc.isRecord()) {
-            throw new PropertyException("Record cannot be checked in: " + doc.getUUID());
-        }
         DocumentModel docModel = readModel(doc);
 
         Map<String, Serializable> options = new HashMap<>();
