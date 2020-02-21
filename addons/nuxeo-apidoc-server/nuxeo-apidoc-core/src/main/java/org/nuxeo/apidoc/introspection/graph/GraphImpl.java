@@ -19,8 +19,10 @@
 package org.nuxeo.apidoc.introspection.graph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.graph.Edge;
@@ -47,6 +49,8 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     protected final List<NodeImpl> nodes = new ArrayList<>();
 
     protected final List<EdgeImpl> edges = new ArrayList<>();
+
+    protected final Map<String, NodeImpl> nodeMap = new HashMap<>();
 
     @JsonCreator
     public GraphImpl(@JsonProperty("id") String id) {
@@ -116,10 +120,15 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
 
     public void addNode(NodeImpl node) {
         this.nodes.add(node);
+        this.nodeMap.put(node.getId(), node);
     }
 
     public void addEdge(EdgeImpl edge) {
         this.edges.add(edge);
+    }
+
+    public NodeImpl getNode(String id) {
+        return nodeMap.get(id);
     }
 
 }

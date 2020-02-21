@@ -66,13 +66,17 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
         // - extension points declarations
         // - services
         // - contributions
+        Map<String, Integer> hits = new HashMap<>();
+
         List<String> bids = distribution.getBundleIds();
+        NodeImpl node;
         for (String bid : bids) {
             BundleInfo bundle = distribution.getBundle(bid);
             // add node for bundle
             NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundle);
             String pbid = prefixId(BundleInfo.TYPE_NAME, bid);
-            graph.addNode(new NodeImpl(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor()));
+            node = new NodeImpl(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor());
+            graph.addNode(node);
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
             for (ComponentInfo component : components) {
@@ -80,7 +84,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                 String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
                 graph.addNode(new NodeImpl(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),
                         cat.name(), cat.getColor()));
-                graph.addEdge(new EdgeImpl(pbid, pcompid, EDGE_TYPE.REFERENCES.name()));
+                addEdge(graph, hits, new EdgeImpl(pbid, pcompid, EDGE_TYPE.REFERENCES.name()));
                 for (ServiceInfo service : component.getServices()) {
                     if (service.isOverriden()) {
                         continue;
@@ -89,7 +93,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                     String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
                     graph.addNode(new NodeImpl(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
                             cat.name(), cat.getColor()));
-                    graph.addEdge(new EdgeImpl(pcompid, psid, EDGE_TYPE.REFERENCES.name()));
+                    addEdge(graph, hits, new EdgeImpl(pcompid, psid, EDGE_TYPE.REFERENCES.name()));
                 }
 
                 for (ExtensionPointInfo xp : component.getExtensionPoints()) {
@@ -97,7 +101,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                     String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
                     graph.addNode(new NodeImpl(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
                             cat.name(), cat.getColor()));
-                    graph.addEdge(new EdgeImpl(pcompid, pxpid, EDGE_TYPE.REFERENCES.name()));
+                    addEdge(graph, hits, new EdgeImpl(pcompid, pxpid, EDGE_TYPE.REFERENCES.name()));
                 }
 
                 Map<String, Integer> comps = new HashMap<String, Integer>();
@@ -116,7 +120,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                     // add link to corresponding component
                     graph.addNode(new NodeImpl(pcid, cid, 0, contribution.getHierarchyPath(),
                             NODE_TYPE.CONTRIBUTION.name(), cat.name(), cat.getColor()));
-                    graph.addEdge(new EdgeImpl(pcompid, pcid, EDGE_TYPE.REFERENCES.name()));
+                    addEdge(graph, hits, new EdgeImpl(pcompid, pcid, EDGE_TYPE.REFERENCES.name()));
 
                     // also add link to target extension point, "guessing" the extension point id
                     String targetId = prefixId(ComponentInfo.TYPE_NAME,
@@ -126,7 +130,32 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
             }
         }
 
+        for (Map.Entry<String, Integer> hit : hits.entrySet()) {
+            setWeight(graph, hit.getKey(), hit.getValue());
+        }
+
         return graph;
+    }
+
+    protected void addEdge(GraphImpl graph, Map<String, Integer> hits, EdgeImpl edge) {
+        graph.addEdge(edge);
+        hit(hits, edge.getSource());
+        hit(hits, edge.getTarget());
+    }
+
+    protected void hit(Map<String, Integer> hits, String source) {
+        if (hits.containsKey(source)) {
+            hits.put(source, hits.get(source) + 1);
+        } else {
+            hits.put(source, Integer.valueOf(1));
+        }
+    }
+
+    protected void setWeight(GraphImpl graph, String nodeId, int hit) {
+        NodeImpl node = graph.getNode(nodeId);
+        if (node != null) {
+            node.setWeight(hit);
+        }
     }
 
     /**

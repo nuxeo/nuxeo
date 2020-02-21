@@ -34,7 +34,7 @@ public class NodeImpl implements Node {
 
     protected final String label;
 
-    protected final int weight;
+    protected int weight = 0;
 
     protected final String path;
 
@@ -71,6 +71,10 @@ public class NodeImpl implements Node {
     @Override
     public int getWeight() {
         return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
     @Override
