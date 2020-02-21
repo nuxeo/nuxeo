@@ -71,29 +71,33 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
             BundleInfo bundle = distribution.getBundle(bid);
             // add node for bundle
             NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundle);
-            graph.addNode(new NodeImpl(bid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor()));
+            String pbid = prefixId(BundleInfo.TYPE_NAME, bid);
+            graph.addNode(new NodeImpl(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor()));
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
             for (ComponentInfo component : components) {
                 String compid = component.getId();
-                graph.addNode(new NodeImpl(compid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),
+                String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
+                graph.addNode(new NodeImpl(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),
                         cat.name(), cat.getColor()));
-                graph.addEdge(new EdgeImpl(bid, compid, EDGE_TYPE.REFERENCES.name()));
+                graph.addEdge(new EdgeImpl(pbid, pcompid, EDGE_TYPE.REFERENCES.name()));
                 for (ServiceInfo service : component.getServices()) {
                     if (service.isOverriden()) {
                         continue;
                     }
                     String sid = service.getId();
-                    graph.addNode(new NodeImpl(sid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
+                    String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
+                    graph.addNode(new NodeImpl(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
                             cat.name(), cat.getColor()));
-                    graph.addEdge(new EdgeImpl(compid, sid, EDGE_TYPE.REFERENCES.name()));
+                    graph.addEdge(new EdgeImpl(pcompid, psid, EDGE_TYPE.REFERENCES.name()));
                 }
 
                 for (ExtensionPointInfo xp : component.getExtensionPoints()) {
                     String xpid = xp.getId();
-                    graph.addNode(new NodeImpl(xpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
+                    String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
+                    graph.addNode(new NodeImpl(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
                             cat.name(), cat.getColor()));
-                    graph.addEdge(new EdgeImpl(compid, xpid, EDGE_TYPE.REFERENCES.name()));
+                    graph.addEdge(new EdgeImpl(pcompid, pxpid, EDGE_TYPE.REFERENCES.name()));
                 }
 
                 Map<String, Integer> comps = new HashMap<String, Integer>();
@@ -108,19 +112,28 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                         comps.put(cid, Integer.valueOf(0));
                     }
 
+                    String pcid = prefixId(ExtensionInfo.TYPE_NAME, cid);
                     // add link to corresponding component
-                    graph.addNode(new NodeImpl(cid, cid, 0, contribution.getHierarchyPath(),
+                    graph.addNode(new NodeImpl(pcid, cid, 0, contribution.getHierarchyPath(),
                             NODE_TYPE.CONTRIBUTION.name(), cat.name(), cat.getColor()));
-                    graph.addEdge(new EdgeImpl(compid, cid, EDGE_TYPE.REFERENCES.name()));
+                    graph.addEdge(new EdgeImpl(pcompid, pcid, EDGE_TYPE.REFERENCES.name()));
 
                     // also add link to target extension point, "guessing" the extension point id
-                    String targetId = contribution.getTargetComponentName() + "--" + contribution.getExtensionPoint();
-                    graph.addEdge(new EdgeImpl(targetId, cid, EDGE_TYPE.REFERENCES.name()));
+                    String targetId = prefixId(ComponentInfo.TYPE_NAME,
+                            contribution.getTargetComponentName() + "--" + contribution.getExtensionPoint());
+                    graph.addEdge(new EdgeImpl(targetId, pcid, EDGE_TYPE.REFERENCES.name()));
                 }
             }
         }
 
         return graph;
+    }
+
+    /**
+     * Prefix all ids assuming each id is unique within a given type, to avoid potential collisions.
+     */
+    protected String prefixId(String prefix, String id) {
+        return prefix + "-" + id;
     }
 
 }
