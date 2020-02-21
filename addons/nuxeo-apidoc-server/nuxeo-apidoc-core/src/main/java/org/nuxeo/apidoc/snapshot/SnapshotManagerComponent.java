@@ -275,7 +275,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             snapDoc.setPropertyValue("nxdistribution:name", name);
             snapDoc.setPropertyValue("nxdistribution:version", version);
             snapDoc.setPropertyValue("nxdistribution:key", name + "-" + version);
-            snapDoc.setPropertyValue("dc:title", title);
+            snapDoc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, title);
             snapDoc = session.saveDocument(snapDoc);
 
             DocumentModel targetContainer = session.getParentDocument(tmp.getRef());
@@ -297,7 +297,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             session.removeChildren(tmp.getRef());
         } else {
             tmp = session.createDocumentModel(container.getPathAsString(), IMPORT_TMP, "Workspace");
-            tmp.setPropertyValue("dc:title", "tmpImport");
+            tmp.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, "tmpImport");
             tmp = session.createDocument(tmp);
             session.save();
         }

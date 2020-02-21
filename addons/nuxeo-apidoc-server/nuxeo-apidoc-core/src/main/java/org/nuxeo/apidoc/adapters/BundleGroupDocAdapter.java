@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
@@ -45,7 +46,7 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", bundleGroup.getName());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, bundleGroup.getName());
         doc.setPropertyValue(PROP_GROUP_NAME, bundleGroup.getName());
         doc.setPropertyValue(PROP_KEY, bundleGroup.getId());
         if (exist) {

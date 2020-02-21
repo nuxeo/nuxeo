@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.adapters;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -75,7 +76,7 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
 
     @Override
     public Blob getBlob() {
-        return (Blob) getDoc().getPropertyValue(CONTENT_PROPERTY_PATH);
+        return (Blob) getDoc().getPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH);
     }
 
     public static GraphDocAdapter create(Graph graph, CoreSession session, String containerPath) {
@@ -90,8 +91,8 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue(TITLE_PROPERTY_PATH, graph.getName());
-        doc.setPropertyValue(CONTENT_PROPERTY_PATH, (Serializable) graph.getBlob());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, graph.getName());
+        doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) graph.getBlob());
 
         if (exist) {
             doc = session.saveDocument(doc);

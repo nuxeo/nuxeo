@@ -99,7 +99,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
         @Override
         public void run() {
             DocumentModel root = session.createDocumentModel(Root_PATH, Root_NAME, "Folder");
-            root.setProperty("dublincore", "title", Root_NAME);
+            root.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, Root_NAME);
             root = session.createDocument(root);
 
             ACL acl = new ACLImpl();
@@ -287,10 +287,10 @@ public class DocumentationComponent extends DefaultComponent implements Document
         UUID docUUID = UUID.nameUUIDFromBytes(name.getBytes());
 
         doc.setPathInfo(getDocumentationRoot(session).getPathAsString(), name);
-        doc.setPropertyValue("dc:title", title);
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, title);
         Blob blob = Blobs.createBlob(content);
         blob.setFilename(type);
-        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) blob);
         doc.setPropertyValue(DocumentationItem.PROP_TARGET, item.getId());
         doc.setPropertyValue(DocumentationItem.PROP_TARGET_TYPE, item.getArtifactType());
         doc.setPropertyValue(DocumentationItem.PROP_DOCUMENTATION_ID, docUUID.toString());
@@ -324,10 +324,10 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     protected DocumentModel updateDocumentModel(DocumentModel doc, DocumentationItem item) {
 
-        doc.setPropertyValue("dc:title", item.getTitle());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, item.getTitle());
         Blob content = Blobs.createBlob(item.getContent());
         content.setFilename(item.getTypeLabel());
-        doc.setPropertyValue("file:content", (Serializable) content);
+        doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) content);
         doc.setPropertyValue(DocumentationItem.PROP_DOCUMENTATION_ID, item.getId());
         doc.setPropertyValue(DocumentationItem.PROP_NUXEO_APPROVED, Boolean.valueOf(item.isApproved()));
         doc.setPropertyValue(DocumentationItem.PROP_RENDERING_TYPE, item.getRenderingType());

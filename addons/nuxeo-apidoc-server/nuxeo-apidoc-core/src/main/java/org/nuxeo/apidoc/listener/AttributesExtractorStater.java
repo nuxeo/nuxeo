@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -59,7 +60,7 @@ public class AttributesExtractorStater implements EventListener {
             return;
         }
 
-        Property fileProperty = doc.getProperty("file:content");
+        Property fileProperty = doc.getProperty(NuxeoArtifact.CONTENT_PROPERTY_PATH);
         // Handling "migration case", when a blob is present but without any
         // attributes.
         boolean force = fileProperty.getValue() != null && doc.getPropertyValue(ATTRIBUTES_PROPERTY) == null;

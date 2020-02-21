@@ -79,11 +79,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
         doc.setPathInfo(containerPath, name);
         if (label == null) {
-            doc.setPropertyValue("dc:title", distrib.getKey());
+            doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, distrib.getKey());
             doc.setPropertyValue(PROP_KEY, distrib.getKey());
             doc.setPropertyValue(PROP_NAME, distrib.getName());
         } else {
-            doc.setPropertyValue("dc:title", label);
+            doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, label);
             doc.setPropertyValue(PROP_KEY, label + "-" + distrib.getVersion());
             doc.setPropertyValue(PROP_NAME, label);
         }

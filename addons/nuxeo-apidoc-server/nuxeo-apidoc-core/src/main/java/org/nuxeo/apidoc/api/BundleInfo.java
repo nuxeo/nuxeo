@@ -46,6 +46,18 @@ public interface BundleInfo extends NuxeoArtifact {
      */
     String PROP_REQUIREMENTS = "nxbundle:requirements";
 
+    /**
+     * @since 11.1
+     */
+    String RUNTIME_CONFIG_BUNDLE = "org.nuxeo.ecm.config";
+
+    /**
+     * Pseudo bundle, which Studio bundles require, to make sure they're deployed "at the end".
+     *
+     * @since 11.1
+     */
+    String RUNTIME_STARTED_PSEUDO_BUNDLE = "org.nuxeo.runtime.started";
+
     @JsonIgnore
     Collection<ComponentInfo> getComponents();
 

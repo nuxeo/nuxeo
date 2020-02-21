@@ -36,10 +36,6 @@ public interface Graph extends NuxeoArtifact {
      */
     String TYPE_NAME = "File";
 
-    String TITLE_PROPERTY_PATH = "dublincore:title";
-
-    String CONTENT_PROPERTY_PATH = "file:content";
-
     String getName();
 
     String getContent();

@@ -118,7 +118,7 @@ public class SnapshotPersister {
         public void run() {
 
             DocumentModel root = session.createDocumentModel(parentPath, name, "Workspace");
-            root.setProperty("dublincore", "title", name);
+            root.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, name);
             root = session.createDocument(root);
 
             if (setAcl) {
@@ -276,9 +276,11 @@ public class SnapshotPersister {
                 if (previousDocItem instanceof DocumentationItemDocAdapter) {
                     DocumentationItemDocAdapter existingDoc = (DocumentationItemDocAdapter) previousDocItem;
                     Blob blob = Blobs.createBlob(docItem.getContent());
-                    Blob oldBlob = (Blob) existingDoc.getDocumentModel().getPropertyValue("file:content");
+                    Blob oldBlob = (Blob) existingDoc.getDocumentModel()
+                                                     .getPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH);
                     blob.setFilename(oldBlob.getFilename());
-                    existingDoc.getDocumentModel().setPropertyValue("file:content", (Serializable) blob);
+                    existingDoc.getDocumentModel()
+                               .setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) blob);
                     ds.updateDocumentationItem(session, existingDoc);
                 }
 

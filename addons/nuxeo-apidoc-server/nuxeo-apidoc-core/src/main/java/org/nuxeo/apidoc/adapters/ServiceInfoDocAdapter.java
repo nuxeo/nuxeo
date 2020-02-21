@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.adapters;
 
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.common.utils.Path;
@@ -44,7 +45,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", si.getId());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, si.getId());
 
         doc.setPropertyValue(PROP_CLASS_NAME, si.getId());
         doc.setPropertyValue(PROP_COMPONENT_ID, si.getComponentId());
