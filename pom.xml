@@ -69,7 +69,7 @@
     <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.1.3</ant.assembly.version>
-    <nuxeo.ftest.version>1.8.8-SNAPSHOT</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.8.8</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.2.0</nuxeo.java.client.version>
 
     <servlet-api.version>4.0.1</servlet-api.version>
