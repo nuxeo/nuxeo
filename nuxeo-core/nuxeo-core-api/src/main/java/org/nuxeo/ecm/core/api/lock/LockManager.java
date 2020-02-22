@@ -81,11 +81,15 @@ public interface LockManager {
     /**
      * Closes the lock manager and releases resources.
      */
-    void closeLockManager();
+    default void closeLockManager() {
+        // nothing
+    }
 
     /**
      * Clears any cache held by the lock manager.
      */
-    void clearLockManagerCaches();
+    default void clearLockManagerCaches() {
+        // nothing
+    }
 
 }
