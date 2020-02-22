@@ -56,9 +56,11 @@ public class TestMongoDBSequenceGeneration {
     @Inject
     protected MongoDBConnectionService connectionService;
 
-    protected MongoDBRepository repo1;
+    protected MongoDBRepository repo;
 
-    protected MongoDBRepository repo2;
+    protected MongoDBConnection conn1;
+
+    protected MongoDBConnection conn2;
 
     public void setUp(IdType idType) {
         ConnectionManagerWrapper cm = mock(ConnectionManagerWrapper.class);
@@ -74,22 +76,25 @@ public class TestMongoDBSequenceGeneration {
         MongoCollection<Document> countersColl = database.getCollection(desc.name + ".counters");
         countersColl.deleteMany(new Document());
 
-        repo1 = new MongoDBRepository(cm, desc);
-        repo2 = new MongoDBRepository(cm, desc);
+        repo = new MongoDBRepository(cm, desc);
+        conn1 = repo.getConnection();
+        conn2 = repo.getConnection();
     }
 
-    protected void assertNext(String expected, MongoDBRepository repo) {
-        assertEquals(expected, repo.generateNewId());
+    protected void assertNext(String expected, MongoDBConnection conn) {
+        assertEquals(expected, conn.generateNewId());
     }
 
-    protected void setCounter(MongoDBRepository repo, long value) {
-        repo.countersColl.updateOne(Filters.eq(MONGODB_ID, COUNTER_NAME_UUID),
+    protected void setCounter(MongoDBConnection conn, long value) {
+        MongoCollection<Document> countersColl = repo.getCountersCollection();
+        countersColl.updateOne(Filters.eq(MONGODB_ID, COUNTER_NAME_UUID),
                 Updates.set(COUNTER_FIELD, Long.valueOf(value)));
     }
 
-    protected long getCounter(MongoDBRepository repo) {
+    protected long getCounter(MongoDBConnection conn) {
         Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
-        return repo.countersColl.find(filter).first().getLong(COUNTER_FIELD);
+        MongoCollection<Document> countersColl = repo.getCountersCollection();
+        return countersColl.find(filter).first().getLong(COUNTER_FIELD);
     }
 
     @Test
@@ -97,25 +102,25 @@ public class TestMongoDBSequenceGeneration {
         setUp(IdType.sequence);
 
         // fake a previous non-0 counter
-        setCounter(repo1, 100);
+        setCounter(conn1, 100);
 
-        assertNext("101", repo1);
-        assertNext("102", repo1);
+        assertNext("101", conn1);
+        assertNext("102", conn1);
         // switch to repo 2
-        assertNext("106", repo2);
-        assertNext("107", repo2);
+        assertNext("106", conn2);
+        assertNext("107", conn2);
         // back to repo 1
-        assertNext("103", repo1);
-        assertNext("104", repo1);
-        assertNext("105", repo1);
+        assertNext("103", conn1);
+        assertNext("104", conn1);
+        assertNext("105", conn1);
         // repo1 starting next block
-        assertNext("111", repo1);
+        assertNext("111", conn1);
         // switch to repo 2
-        assertNext("108", repo2);
-        assertNext("109", repo2);
-        assertNext("110", repo2);
+        assertNext("108", conn2);
+        assertNext("109", conn2);
+        assertNext("110", conn2);
         // repo2 starting next block
-        assertNext("116", repo2);
+        assertNext("116", conn2);
     }
 
     @Test
@@ -158,28 +163,28 @@ public class TestMongoDBSequenceGeneration {
         assertEquals(0x175083c01a809285L, v15);
         assertEquals(0xa40480120d0192e0L, v16);
 
-        setCounter(repo1, v0);
+        setCounter(conn1, v0);
 
-        assertNext("fc00d76d31ac01b4", repo1);
-        assertEquals(v5, getCounter(repo1));
-        assertNext("b054aa496997b4b7", repo1);
+        assertNext("fc00d76d31ac01b4", conn1);
+        assertEquals(v5, getCounter(conn1));
+        assertNext("b054aa496997b4b7", conn1);
         // switch to repo 2
-        assertNext("1ed241e350e8144f", repo2);
-        assertNext("b910aa23c18b37a7", repo2);
+        assertNext("1ed241e350e8144f", conn2);
+        assertNext("b910aa23c18b37a7", conn2);
         // back to repo 1
-        assertNext("5dbd6c0bc403561e", repo1);
-        assertNext("28991f9897f91732", repo1);
-        assertNext("b9862d97a94d699c", repo1);
-        assertEquals(v10, getCounter(repo1));
+        assertNext("5dbd6c0bc403561e", conn1);
+        assertNext("28991f9897f91732", conn1);
+        assertNext("b9862d97a94d699c", conn1);
+        assertEquals(v10, getCounter(conn1));
         // repo1 starting next block
-        assertNext("a95e2f283fe7c78d", repo1);
+        assertNext("a95e2f283fe7c78d", conn1);
         // switch to repo 2
-        assertNext("5a617fd4d2212808", repo2);
-        assertNext("d1c77fc7067e6858", repo2);
-        assertNext("fe2e55f1dff38288", repo2);
+        assertNext("5a617fd4d2212808", conn2);
+        assertNext("d1c77fc7067e6858", conn2);
+        assertNext("fe2e55f1dff38288", conn2);
         // repo2 starting next block
-        assertEquals(v15, getCounter(repo1));
-        assertNext("a40480120d0192e0", repo2);
+        assertEquals(v15, getCounter(conn1));
+        assertNext("a40480120d0192e0", conn2);
     }
 
     protected static long xorshift(long n) {

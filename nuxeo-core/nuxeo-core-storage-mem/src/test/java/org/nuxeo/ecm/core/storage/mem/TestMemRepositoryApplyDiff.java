@@ -68,7 +68,7 @@ public class TestMemRepositoryApplyDiff {
     }
 
     private static void assertApplyDiff(State expected, State state, StateDiff diff) {
-        MemRepository.applyDiff(state, diff);
+        MemConnection.applyDiff(state, diff);
         assertEqualsStrict(state.toString(), expected, state);
     }
 
@@ -99,7 +99,7 @@ public class TestMemRepositoryApplyDiff {
         ArrayList<Object> list1 = list("L1");
         State state = state("A", list1);
         ArrayList<Object> list2 = list("L2");
-        MemRepository.applyDiff(state, (StateDiff) state("A", list2));
+        MemConnection.applyDiff(state, (StateDiff) state("A", list2));
         // make sure we don't end up with the actual list2 in the new state, but with a copy
         Serializable list3 = state.get("A");
         assertEqualsStrict("Should be equal", list2, list3);
@@ -110,7 +110,7 @@ public class TestMemRepositoryApplyDiff {
     public void testCopiesListDiffDiff() {
         ArrayList<Object> list = list(list("L1"));
         ArrayList<Object> list1 = list("L2");
-        MemRepository.applyDiff(list, listDiff(list(list1), null)); // diff
+        MemConnection.applyDiff(list, listDiff(list(list1), null)); // diff
         // make sure we don't end up with the actual list1 in the new list, but with a copy
         Serializable list2 = (Serializable) list.get(0);
         assertEqualsStrict("Should be equal", list1, list2);
@@ -121,7 +121,7 @@ public class TestMemRepositoryApplyDiff {
     public void testCopiesListDiffRpush() {
         ArrayList<Object> list = list();
         ArrayList<Object> list1 = list("L1");
-        MemRepository.applyDiff(list, listDiff(null, list(list1))); // rpush
+        MemConnection.applyDiff(list, listDiff(null, list(list1))); // rpush
         // make sure we don't end up with the actual list1 in the new list, but with a copy
         Serializable list2 = (Serializable) list.get(0);
         assertEqualsStrict("Should be equal", list1, list2);

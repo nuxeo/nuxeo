@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,152 +25,138 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.cluster.ClusterService;
-import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
 import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
 
 /**
  * The DBS Cache layer used to cache some method call of real repository
  *
- * @since 8.10
+ * @since 11.1 (introduced in 8.10 as DBSCachingRepository)
  */
-public class DBSCachingRepository implements DBSRepository {
+public class DBSCachingConnection implements DBSConnection {
 
-    private static final Log log = LogFactory.getLog(DBSCachingRepository.class);
-
-    private final DBSRepository repository;
+    protected final DBSConnection connection;
 
     private final Cache<String, State> cache;
 
     private final Cache<String, String> childCache;
 
-    private DBSClusterInvalidator clusterInvalidator;
-
+    /**
+     * The local invalidations, due to writes to this connection, that should be propagated to other connections (and
+     * other cluster nodes) at post-commit time.
+     * <p>
+     * {@code null} if the repository is not transactional and there is no cluster.
+     */
     private final DBSInvalidations invalidations;
 
-    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    /**
+     * The cluster invalidator, sending invalidations to other cluster nodes.
+     * <p>
+     * {@code null} if there is no cluster.
+     */
+    private final DBSClusterInvalidator clusterInvalidator;
 
-    public DBSCachingRepository(DBSRepository repository, DBSRepositoryDescriptor descriptor) {
-        this.repository = repository;
+    /**
+     * The queue of invalidations received from other connections, to be processed at pre-transaction time.
+     * <p>
+     * {@code null} if the repository is not transactional.
+     */
+    private final DBSInvalidationsQueue invalidationsQueue;
+
+    /**
+     * The propagator of invalidations to other connections.
+     * <p>
+     * {@code null} if the repository is not transactional.
+     */
+    private final DBSInvalidationsPropagator invalidationsPropagator;
+
+    public DBSCachingConnection(DBSConnection connection, DBSCachingRepository repository) {
+        this.connection = connection;
         // Init caches
-        cache = newCache(descriptor);
-        registry.registerAll(GuavaCacheMetric.of(cache, "nuxeo", "repositories", repository.getName(), "cache"));
-        childCache = newCache(descriptor);
-        registry.registerAll(
-                GuavaCacheMetric.of(childCache, "nuxeo", "repositories", repository.getName(), "childCache"));
-        if (log.isInfoEnabled()) {
-            log.info(String.format("DBS cache activated on '%s' repository", repository.getName()));
+        if (repository.supportsTransactions()) {
+            // connection-local cache
+            cache = repository.newCache();
+            childCache = repository.newChildCache();
+        } else {
+            // no transaction, use a repository-wide cache
+            cache = repository.getCache();
+            childCache = repository.getChildCache();
         }
-        invalidations = new DBSInvalidations();
-        initClusterInvalidator(descriptor);
-    }
-
-    protected <T> Cache<String, T> newCache(DBSRepositoryDescriptor descriptor) {
-        CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-        builder = builder.expireAfterWrite(descriptor.cacheTTL.longValue(), TimeUnit.MINUTES).recordStats();
-        if (descriptor.cacheConcurrencyLevel != null) {
-            builder = builder.concurrencyLevel(descriptor.cacheConcurrencyLevel.intValue());
+        // local invalidations
+        invalidationsPropagator = repository.getInvalidationsPropagator();
+        if (invalidationsPropagator == null) {
+            invalidationsQueue = null;
+        } else {
+            invalidationsQueue = new DBSInvalidationsQueue("dbs-" + this);
+            invalidationsPropagator.addQueue(invalidationsQueue);
         }
-        if (descriptor.cacheMaxSize != null) {
-            builder = builder.maximumSize(descriptor.cacheMaxSize.longValue());
+        // cluster invalidations
+        clusterInvalidator = repository.getClusterInvalidator();
+        // collected invalidations
+        if (invalidationsPropagator == null && clusterInvalidator == null) {
+            // no transactional backend and no cluster
+            invalidations = null;
+        } else {
+            invalidations = new DBSInvalidations();
         }
-        return builder.build();
-    }
-
-    protected void initClusterInvalidator(DBSRepositoryDescriptor descriptor) {
-        ClusterService clusterService = Framework.getService(ClusterService.class);
-        if (clusterService.isEnabled()) {
-            clusterInvalidator = createClusterInvalidator(descriptor);
-            clusterInvalidator.initialize(clusterService.getNodeId(), getName());
-        }
-    }
-
-    protected DBSClusterInvalidator createClusterInvalidator(DBSRepositoryDescriptor descriptor) {
-        Class<? extends DBSClusterInvalidator> klass = descriptor.clusterInvalidatorClass;
-        if (klass == null) {
-            throw new NuxeoException(
-                    "Unable to get cluster invalidator class from descriptor whereas clustering is enabled");
-        }
-        try {
-            return klass.getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new NuxeoException(e);
-        }
-
     }
 
     @Override
-    public void begin() {
-        repository.begin();
-        processReceivedInvalidations();
-    }
-
-    @Override
-    public void commit() {
-        repository.commit();
-        sendInvalidationsToOther();
-        processReceivedInvalidations();
-    }
-
-    @Override
-    public void rollback() {
-        repository.rollback();
-    }
-
-    @Override
-    public void shutdown() {
-        repository.shutdown();
-        // Clear caches
-        cache.invalidateAll();
-        childCache.invalidateAll();
-        // Remove metrics
-        String cacheName = MetricRegistry.name("nuxeo", "repositories", repository.getName(), "cache");
-        String childCacheName = MetricRegistry.name("nuxeo", "repositories", repository.getName(), "childCache");
-        registry.removeMatching((name, metric) -> name.startsWith(cacheName) || name.startsWith(childCacheName));
-        if (log.isInfoEnabled()) {
-            log.info(String.format("DBS cache deactivated on '%s' repository", repository.getName()));
+    public void close() {
+        connection.close();
+        if (invalidationsPropagator != null) {
+            invalidationsPropagator.removeQueue(invalidationsQueue);
+        }
+        if (cache != null) {
+            // Clear caches
+            cache.invalidateAll();
+            childCache.invalidateAll();
         }
         // Send invalidations
         if (clusterInvalidator != null) {
             clusterInvalidator.sendInvalidations(new DBSInvalidations(true));
         }
+    }
 
+    @Override
+    public void begin() {
+        connection.begin();
+        processReceivedInvalidations();
+    }
+
+    @Override
+    public void commit() {
+        connection.commit();
+        sendInvalidationsToOthers();
+        processReceivedInvalidations();
+    }
+
+    @Override
+    public void rollback() {
+        connection.rollback();
     }
 
     @Override
     public State readState(String id) {
         State state = cache.getIfPresent(id);
         if (state == null) {
-            state = repository.readState(id);
+            state = connection.readState(id);
             if (state != null) {
                 putInCache(state);
             }
@@ -181,7 +167,7 @@ public class DBSCachingRepository implements DBSRepository {
     @Override
     public State readPartialState(String id, Collection<String> keys) {
         // bypass caches, as the goal of this method is to not trash caches for one-shot reads
-        return repository.readPartialState(id, keys);
+        return connection.readPartialState(id, keys);
     }
 
     @Override
@@ -190,7 +176,7 @@ public class DBSCachingRepository implements DBSRepository {
         List<String> idsToRetrieve = new ArrayList<>(ids);
         idsToRetrieve.removeAll(statesMap.keySet());
         // Read missing states from repository
-        List<State> states = repository.readStates(idsToRetrieve);
+        List<State> states = connection.readStates(idsToRetrieve);
         // Cache them
         states.forEach(this::putInCache);
         // Add previous cached one
@@ -202,26 +188,26 @@ public class DBSCachingRepository implements DBSRepository {
 
     @Override
     public void createState(State state) {
-        repository.createState(state);
+        connection.createState(state);
         // don't cache new state, it is inefficient on mass import
     }
 
     @Override
     public void createStates(List<State> states) {
-        repository.createStates(states);
+        connection.createStates(states);
         // don't cache new states, it is inefficient on mass import
     }
 
     @Override
     public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
-        repository.updateState(id, diff, changeTokenUpdater);
+        connection.updateState(id, diff, changeTokenUpdater);
         invalidate(id);
     }
 
     @Override
     public void deleteStates(Set<String> ids) {
-        repository.deleteStates(ids);
-        invalidateAll(ids);
+        connection.deleteStates(ids);
+        invalidate(ids);
     }
 
     @Override
@@ -243,7 +229,7 @@ public class DBSCachingRepository implements DBSRepository {
                 }
             }
         }
-        State state = repository.readChildState(parentId, name, ignored);
+        State state = connection.readChildState(parentId, name, ignored);
         putInCache(state);
         return state;
     }
@@ -264,179 +250,137 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     private void invalidate(String id) {
-        invalidateAll(Collections.singleton(id));
+        invalidate(List.of(id));
     }
 
-    private void invalidateAll(Collection<String> ids) {
+    private void invalidate(Collection<String> ids) {
         cache.invalidateAll(ids);
-        if (clusterInvalidator != null) {
-            synchronized (invalidations) {
-                invalidations.addAll(ids);
-            }
+        if (invalidations != null) {
+            invalidations.addAll(ids);
         }
     }
 
-    protected void sendInvalidationsToOther() {
-        synchronized (invalidations) {
-            if (!invalidations.isEmpty()) {
-                if (clusterInvalidator != null) {
-                    clusterInvalidator.sendInvalidations(invalidations);
-                }
-                invalidations.clear();
+    protected void sendInvalidationsToOthers() {
+        if (invalidations != null && !invalidations.isEmpty()) {
+            if (clusterInvalidator != null) {
+                // send to other cluster nodes
+                clusterInvalidator.sendInvalidations(invalidations);
             }
+            if (invalidationsPropagator != null) {
+                // send to other connections
+                invalidationsPropagator.propagateInvalidations(invalidations, invalidationsQueue);
+            }
+            invalidations.clear();
         }
     }
 
     protected void processReceivedInvalidations() {
+        DBSInvalidations invals;
+        // invalidations from other cluster nodes
         if (clusterInvalidator != null) {
-            DBSInvalidations invalidations = clusterInvalidator.receiveInvalidations();
-            if (invalidations.all) {
+            invals = clusterInvalidator.receiveInvalidations();
+            // send cluster invalidations to all other connections
+            if (invals != null && !invals.isEmpty() && invalidationsPropagator != null) {
+                invalidationsPropagator.propagateInvalidations(invals, invalidationsQueue);
+            }
+        } else {
+            invals = null;
+        }
+        // invalidations from other connections
+        if (invalidationsQueue != null) {
+            DBSInvalidations inv = invalidationsQueue.getInvalidations();
+            if (invals == null) {
+                invals = inv;
+            } else {
+                invals.add(inv);
+            }
+        }
+        // apply invalidations to the cache (connection-local or repository-wide)
+        if (invals != null && !invals.isEmpty()) {
+            if (invals.all) {
                 cache.invalidateAll();
                 childCache.invalidateAll();
-            } else if (invalidations.ids != null) {
-                cache.invalidateAll(invalidations.ids);
+            } else if (invals.ids != null) {
+                cache.invalidateAll(invals.ids);
             }
         }
     }
 
     @Override
-    public BlobManager getBlobManager() {
-        return repository.getBlobManager();
-    }
-
-    @Override
-    public FulltextConfiguration getFulltextConfiguration() {
-        return repository.getFulltextConfiguration();
-    }
-
-    @Override
-    public boolean isFulltextDisabled() {
-        return repository.isFulltextDisabled();
-    }
-
-    @Override
-    public boolean isFulltextSearchDisabled() {
-        return repository.isFulltextSearchDisabled();
-    }
-
-    @Override
-    public boolean isChangeTokenEnabled() {
-        return repository.isChangeTokenEnabled();
-    }
-
-    @Override
     public String getRootId() {
-        return repository.getRootId();
+        return connection.getRootId();
     }
 
     @Override
     public String generateNewId() {
-        return repository.generateNewId();
+        return connection.generateNewId();
     }
 
     @Override
     public boolean hasChild(String parentId, String name, Set<String> ignored) {
-        return repository.hasChild(parentId, name, ignored);
+        return connection.hasChild(parentId, name, ignored);
     }
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        return repository.queryKeyValue(key, value, ignored);
+        return connection.queryKeyValue(key, value, ignored);
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        return repository.queryKeyValue(key1, value1, key2, value2, ignored);
+        return connection.queryKeyValue(key1, value1, key2, value2, ignored);
     }
 
     @Override
     public Stream<State> getDescendants(String id, Set<String> keys) {
-        return repository.getDescendants(id, keys);
+        return connection.getDescendants(id, keys);
     }
 
     @Override
     public Stream<State> getDescendants(String id, Set<String> keys, int limit) {
-        return repository.getDescendants(id, keys, limit);
+        return connection.getDescendants(id, keys, limit);
     }
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        return repository.queryKeyValuePresence(key, value, ignored);
+        return connection.queryKeyValuePresence(key, value, ignored);
     }
 
     @Override
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
-        return repository.queryAndFetch(evaluator, orderByClause, distinctDocuments, limit, offset, countUpTo);
-    }
-
-    @Override
-    public LockManager getLockManager() {
-        return repository.getLockManager();
+        return connection.queryAndFetch(evaluator, orderByClause, distinctDocuments, limit, offset, countUpTo);
     }
 
     @Override
     public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
-        return repository.scroll(evaluator, batchSize, keepAliveSeconds);
+        return connection.scroll(evaluator, batchSize, keepAliveSeconds);
     }
 
     @Override
     public ScrollResult<String> scroll(String scrollId) {
-        return repository.scroll(scrollId);
+        return connection.scroll(scrollId);
     }
 
     @Override
     public Lock getLock(String id) {
-        return repository.getLock(id);
+        return connection.getLock(id);
     }
 
     @Override
     public Lock setLock(String id, Lock lock) {
-        return repository.setLock(id, lock);
+        return connection.setLock(id, lock);
     }
 
     @Override
     public Lock removeLock(String id, String owner) {
-        return repository.removeLock(id, owner);
-    }
-
-    @Override
-    public void closeLockManager() {
-        repository.closeLockManager();
-    }
-
-    @Override
-    public void clearLockManagerCaches() {
-        repository.clearLockManagerCaches();
-    }
-
-    @Override
-    public String getName() {
-        return repository.getName();
-    }
-
-    @Override
-    public Session getSession() {
-        if (repository instanceof DBSRepositoryBase) {
-            return ((DBSRepositoryBase) repository).getSession(this);
-        }
-        return repository.getSession();
-    }
-
-    @Override
-    public int getActiveSessionsCount() {
-        return repository.getActiveSessionsCount();
-    }
-
-    @Override
-    public void markReferencedBinaries() {
-        repository.markReferencedBinaries();
+        return connection.removeLock(id, owner);
     }
 
     @Override
     public List<State> queryKeyValueWithOperator(String key1, Object value1, String key2, DBSQueryOperator operator,
             Object value2, Set<String> ignored) {
-        return repository.queryKeyValueWithOperator(key1, value1, key2, operator, value2, ignored);
+        return connection.queryKeyValueWithOperator(key1, value1, key2, operator, value2, ignored);
     }
 
 }
