@@ -80,26 +80,33 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
         return ComponentStartOrders.REPOSITORY - 10;
     }
 
-    /**
-     * @param id the connection id to retrieve.
-     * @return the database configured by {@link MongoDBConnectionConfig} for the input id, or the default one if it
-     *         doesn't exist
-     */
     @SuppressWarnings("resource") // client closed by stop()
     @Override
-    public MongoDatabase getDatabase(String id) {
-        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
+    public MongoClient getClient(String id) {
         MongoClient client = clients.get(id);
         if (client == null) {
-            config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
             client = clients.get(DEFAULT_CONNECTION_ID);
         }
-        return MongoDBConnectionHelper.getDatabase(client, config.dbname);
+        return client;
     }
 
-    /**
-     * @return all configured databases
-     */
+    @Override
+    public String getDatabaseName(String id) {
+        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
+        if (config == null) {
+            config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
+        }
+        return config.dbname;
+    }
+
+    @SuppressWarnings("resource") // client is closed only at stop() time
+    @Override
+    public MongoDatabase getDatabase(String id) {
+        MongoClient client = getClient(id);
+        String dbname = getDatabaseName(id);
+        return MongoDBConnectionHelper.getDatabase(client, dbname);
+    }
+
     @Override
     public Iterable<MongoDatabase> getDatabases() {
         return () -> clients.entrySet().stream().map(e -> {

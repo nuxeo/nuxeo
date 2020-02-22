@@ -52,20 +52,22 @@ public class TestDBSCachingRepository {
 
     private DBSCachingRepository repository;
 
-    private DBSRepository subRepository;
+    private DBSCachingConnection connection;
+
+    private DBSConnection subConnection;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
-        subRepository = mock(DBSRepository.class);
-        when(subRepository.readState(any())).then(invocation -> newState(invocation.getArguments()[0].toString()));
-        when(subRepository.readStates(anyListOf(String.class))).then(
+        subConnection = mock(DBSConnection.class);
+        when(subConnection.readState(any())).then(invocation -> newState(invocation.getArguments()[0].toString()));
+        when(subConnection.readStates(anyListOf(String.class))).then(
                 invocation -> ((List<String>) invocation.getArguments()[0]).stream().map(id -> {
                     State state = new State();
                     state.setSingle(KEY_ID, id);
                     return state;
                 }).collect(Collectors.toList()));
-        when(subRepository.readChildState(any(), any(), any())).then(invocation -> {
+        when(subConnection.readChildState(any(), any(), any())).then(invocation -> {
             Object parentId = invocation.getArguments()[0];
             Object name = invocation.getArguments()[1];
             State state = newState(parentId.toString() + "_" + name);
@@ -73,7 +75,10 @@ public class TestDBSCachingRepository {
             state.setSingle(KEY_NAME, name);
             return state;
         });
-        repository = new DBSCachingRepository(subRepository, newDBSRepositoryDescriptor());
+        DBSRepositoryDescriptor descriptor = newDBSRepositoryDescriptor();
+        DBSRepository subRepository = mock(DBSRepository.class);
+        repository = new DBSCachingRepository(subRepository, descriptor);
+        connection = new DBSCachingConnection(subConnection, repository);
     }
 
     @After
@@ -87,12 +92,12 @@ public class TestDBSCachingRepository {
         String id = "ID";
 
         // First read - call sub repository
-        State dbState = repository.readState(id);
-        verify(subRepository, times(1)).readState(eq(id));
+        State dbState = connection.readState(id);
+        verify(subConnection, times(1)).readState(eq(id));
 
         // Second read - call cache
-        State cachedState = repository.readState(id);
-        verify(subRepository, times(1)).readState(eq(id));
+        State cachedState = connection.readState(id);
+        verify(subConnection, times(1)).readState(eq(id));
 
         assertEquals(dbState, cachedState);
     }
@@ -103,12 +108,12 @@ public class TestDBSCachingRepository {
         String id2 = "ID2";
 
         // First read - call sub repository
-        List<State> dbStates = repository.readStates(Collections.singletonList(id1));
-        verify(subRepository, times(1)).readStates(eq(Collections.singletonList(id1)));
+        List<State> dbStates = connection.readStates(Collections.singletonList(id1));
+        verify(subConnection, times(1)).readStates(eq(Collections.singletonList(id1)));
 
         // Second read - call cache for id1 and repository for id2
-        List<State> cachedStates = repository.readStates(Arrays.asList(id1, id2));
-        verify(subRepository, times(1)).readStates(eq(Collections.singletonList(id2)));
+        List<State> cachedStates = connection.readStates(Arrays.asList(id1, id2));
+        verify(subConnection, times(1)).readStates(eq(Collections.singletonList(id2)));
 
         assertEquals(1, dbStates.size());
         assertEquals(2, cachedStates.size());
@@ -123,17 +128,17 @@ public class TestDBSCachingRepository {
         String id = "ID";
 
         // First add a state in cache
-        repository.readState(id);
-        repository.readState(id);
-        verify(subRepository, times(1)).readState(eq(id));
+        connection.readState(id);
+        connection.readState(id);
+        verify(subConnection, times(1)).readState(eq(id));
 
         // Second update this state
-        repository.updateState(id, mock(StateDiff.class), null);
-        verify(subRepository, times(1)).updateState(eq(id), any(), any());
+        connection.updateState(id, mock(StateDiff.class), null);
+        verify(subConnection, times(1)).updateState(eq(id), any(), any());
 
         // Check state is no longer in cache
-        repository.readState(id);
-        verify(subRepository, times(2)).readState(eq(id));
+        connection.readState(id);
+        verify(subConnection, times(2)).readState(eq(id));
     }
 
     @Test
@@ -141,17 +146,17 @@ public class TestDBSCachingRepository {
         String id = "ID";
 
         // First add a state in cache
-        repository.readState(id);
-        repository.readState(id);
-        verify(subRepository, times(1)).readState(eq(id));
+        connection.readState(id);
+        connection.readState(id);
+        verify(subConnection, times(1)).readState(eq(id));
 
         // Second delete this state
-        repository.deleteStates(Collections.singleton(id));
-        verify(subRepository, times(1)).deleteStates(eq(Collections.singleton(id)));
+        connection.deleteStates(Collections.singleton(id));
+        verify(subConnection, times(1)).deleteStates(eq(Collections.singleton(id)));
 
         // Check state is no longer in cache
-        repository.readState(id);
-        verify(subRepository, times(2)).readState(eq(id));
+        connection.readState(id);
+        verify(subConnection, times(2)).readState(eq(id));
     }
 
     @Test
@@ -161,17 +166,17 @@ public class TestDBSCachingRepository {
         String id = parentId + "_" + name;
 
         // First read - call sub repository
-        State dbState = repository.readChildState(parentId, name, Collections.emptySet());
-        verify(subRepository, times(1)).readChildState(eq(parentId), eq(name), any());
+        State dbState = connection.readChildState(parentId, name, Collections.emptySet());
+        verify(subConnection, times(1)).readChildState(eq(parentId), eq(name), any());
 
         // Second read - call cache
-        State cachedState = repository.readChildState(parentId, name, Collections.emptySet());
-        verify(subRepository, times(1)).readChildState(eq(parentId), eq(name), any());
+        State cachedState = connection.readChildState(parentId, name, Collections.emptySet());
+        verify(subConnection, times(1)).readChildState(eq(parentId), eq(name), any());
 
         assertEquals(dbState, cachedState);
 
         // Third read cached state from cache with readState
-        cachedState = repository.readState(id);
+        cachedState = connection.readState(id);
         assertEquals(dbState, cachedState);
     }
 

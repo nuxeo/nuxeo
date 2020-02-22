@@ -120,9 +120,9 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
 
     public MongoDBRepositoryQueryBuilder(MongoDBRepository repository, Expression expression, SelectClause selectClause,
             OrderByClause orderByClause, PathResolver pathResolver, boolean fulltextSearchDisabled) {
-        super(repository.converter, expression);
+        super(repository.getConverter(), expression);
         schemaManager = Framework.getService(SchemaManager.class);
-        idKey = repository.idKey;
+        idKey = repository.getIdKey();
         this.selectClause = selectClause;
         this.orderByClause = orderByClause;
         this.pathResolver = pathResolver;

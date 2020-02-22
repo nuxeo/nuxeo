@@ -26,7 +26,6 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,14 +44,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -84,11 +79,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     public static final String TYPE_ROOT = "Root";
 
     // change to have deterministic pseudo-UUID generation for debugging
-    protected final boolean DEBUG_UUIDS = false;
+    public static final boolean DEBUG_UUIDS = false;
 
-    private static final String UUID_ZERO = "00000000-0000-0000-0000-000000000000";
+    public static final String UUID_ZERO = "00000000-0000-0000-0000-000000000000";
 
-    private static final String UUID_ZERO_DEBUG = "UUID_0";
+    public static final String UUID_ZERO_DEBUG = "UUID_0";
 
     /**
      * Type of id to used for documents.
@@ -111,7 +106,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     /** @since 8.3 */
-    protected IdType idType;
+    protected final IdType idType;
 
     protected final String repositoryName;
 
@@ -160,6 +155,11 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     /** Gets the allowed id types for this DBS repository. The first one is the default. */
     public abstract List<IdType> getAllowedIdTypes();
+
+    /** @since 11.1 */
+    public IdType getIdType() {
+        return idType;
+    }
 
     @Override
     public void shutdown() {
@@ -211,6 +211,27 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public LockManager getLockManager() {
         return lockManager;
+    }
+
+    @Override
+    public Lock getLock(String id) {
+        try (DBSConnection connection = getConnection()) {
+            return connection.getLock(id);
+        }
+    }
+
+    @Override
+    public Lock setLock(String id, Lock lock) {
+        try (DBSConnection connection = getConnection()) {
+            return connection.setLock(id, lock);
+        }
+    }
+
+    @Override
+    public Lock removeLock(String id, String owner) {
+        try (DBSConnection connection = getConnection()) {
+            return connection.removeLock(id, owner);
+        }
     }
 
     protected abstract void initBlobsPaths();
@@ -280,45 +301,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
                     path.removeLast();
                 }
             }
-        }
-    }
-
-    /**
-     * Initializes the root and its ACP.
-     */
-    public void initRoot() {
-        Session session = getSession();
-        Document root = session.importDocument(getRootId(), null, "", TYPE_ROOT, new HashMap<>());
-        ACLImpl acl = new ACLImpl();
-        acl.add(new ACE(SecurityConstants.ADMINISTRATORS, SecurityConstants.EVERYTHING, true));
-        acl.add(new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING, true));
-        acl.add(new ACE(SecurityConstants.MEMBERS, SecurityConstants.READ, true));
-        ACPImpl acp = new ACPImpl();
-        acp.addACL(acl);
-        session.setACP(root, acp, true);
-        session.save();
-        session.close();
-        if (TransactionHelper.isTransactionActive()) {
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-        }
-    }
-
-    @Override
-    public String getRootId() {
-        if (DEBUG_UUIDS) {
-            return UUID_ZERO_DEBUG;
-        }
-        switch (idType) {
-        case varchar:
-        case uuid:
-            return UUID_ZERO;
-        case sequence:
-            return "0";
-        case sequenceHexRandomized:
-            return "0000000000000000";
-        default:
-            throw new UnsupportedOperationException();
         }
     }
 

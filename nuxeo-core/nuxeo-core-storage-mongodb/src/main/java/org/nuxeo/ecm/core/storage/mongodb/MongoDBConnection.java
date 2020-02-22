@@ -25,7 +25,6 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_JOBID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
@@ -42,6 +41,14 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIE
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_READ_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_RETAIN_UNTIL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.COUNTER_FIELD;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.COUNTER_NAME_UUID;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.FULLTEXT_INDEX_NAME;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.LANGUAGE_FIELD;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_SET;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.ONE;
+import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.ZERO;
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -60,45 +67,38 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import javax.resource.spi.ConnectionManager;
-
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.CursorService;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.lock.LockManager;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+import org.nuxeo.ecm.core.storage.dbs.DBSConnection;
+import org.nuxeo.ecm.core.storage.dbs.DBSConnectionBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
-import org.nuxeo.ecm.core.storage.dbs.DBSSession;
+import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 
-import com.mongodb.Block;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.QueryOperators;
 import com.mongodb.bulk.BulkWriteError;
+import com.mongodb.client.ClientSession;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 import com.mongodb.client.model.CountOptions;
 import com.mongodb.client.model.Filters;
@@ -112,64 +112,25 @@ import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
 /**
- * MongoDB implementation of a {@link Repository}.
+ * MongoDB implementation of a {@link DBSConnection}.
  *
- * @since 5.9.4
+ * @since 11.1 (introduce in 5.9.4 as MongoDBRepository)
  */
-public class MongoDBRepository extends DBSRepositoryBase {
+public class MongoDBConnection extends DBSConnectionBase {
 
-    private static final Logger log = LogManager.getLogger(MongoDBRepository.class);
+    private static final Logger log = LogManager.getLogger(MongoDBConnection.class);
 
     protected static final Random RANDOM = new SecureRandom();
 
-    /**
-     * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
-     * <p />
-     * The connection id will be {@code repository/[REPOSITORY_NAME]}.
-     */
-    public static final String REPOSITORY_CONNECTION_PREFIX = "repository/";
-
-    public static final Long LONG_ZERO = Long.valueOf(0);
-
-    public static final Double ZERO = Double.valueOf(0);
-
-    public static final Double ONE = Double.valueOf(1);
-
-    public static final String MONGODB_ID = "_id";
-
-    public static final String MONGODB_INC = "$inc";
-
-    public static final String MONGODB_SET = "$set";
-
-    public static final String MONGODB_UNSET = "$unset";
-
-    public static final String MONGODB_PUSH = "$push";
-
-    public static final String MONGODB_EACH = "$each";
-
-    public static final String MONGODB_META = "$meta";
-
-    public static final String MONGODB_TEXT_SCORE = "textScore";
-
-    private static final String FULLTEXT_INDEX_NAME = "fulltext";
-
-    private static final String LANGUAGE_FIELD = "__language";
-
-    protected static final String COUNTER_NAME_UUID = "ecm:id";
-
-    protected static final String COUNTER_FIELD = "seq";
-
-    protected static final int SEQUENCE_RANDOMIZED_BLOCKSIZE_DEFAULT = 1000;
+    protected final MongoDBRepository mongoDBRepository;
 
     protected final MongoCollection<Document> coll;
 
-    protected final MongoCollection<Document> countersColl;
-
     /** The key to use to store the id in the database. */
-    protected String idKey;
+    protected final String idKey;
 
     /** True if we don't use MongoDB's native "_id" key to store the id. */
-    protected boolean useCustomId;
+    protected final boolean useCustomId;
 
     /** Number of values still available in the in-memory sequence. */
     protected long sequenceLeft;
@@ -182,64 +143,63 @@ public class MongoDBRepository extends DBSRepositoryBase {
      */
     protected long sequenceLastValue;
 
-    /** Sequence allocation block size. */
-    protected long sequenceBlockSize;
-
     protected final MongoDBConverter converter;
 
-    protected final CursorService<MongoCursor<Document>, Document, String> cursorService;
+    protected ClientSession clientSession;
 
-    public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
-        super(cm, descriptor.name, descriptor);
-        MongoDBConnectionService mongoService = Framework.getService(MongoDBConnectionService.class);
-        // prefix with repository/ to group repository connection
-        MongoDatabase database = mongoService.getDatabase(REPOSITORY_CONNECTION_PREFIX + descriptor.name);
-        coll = database.getCollection(descriptor.name);
-        countersColl = database.getCollection(descriptor.name + ".counters");
-        if (Boolean.TRUE.equals(descriptor.nativeId)) {
-            idKey = MONGODB_ID;
-        } else {
-            idKey = KEY_ID;
-        }
+    protected boolean transactionStarted;
+
+    public MongoDBConnection(MongoDBRepository repository) {
+        super(repository);
+        mongoDBRepository = repository;
+        coll = repository.getCollection();
+        idKey = repository.getIdKey();
         useCustomId = KEY_ID.equals(idKey);
-        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DEBUG_UUIDS) {
-            Integer sbs = descriptor.sequenceBlockSize;
-            if (sbs == null) {
-                sequenceBlockSize = idType == IdType.sequenceHexRandomized ? SEQUENCE_RANDOMIZED_BLOCKSIZE_DEFAULT : 1;
-            } else {
-                sequenceBlockSize = sbs.longValue();
-            }
-            sequenceLeft = 0;
-        }
-        Set<String> idValuesKeys;
-        if (idType == IdType.sequenceHexRandomized) {
-            // store these ids as longs
-            idValuesKeys = DBSSession.ID_VALUES_KEYS;
+        converter = repository.getConverter();
+        if (repository.supportsSessions()) {
+            clientSession = repository.getClient().startSession();
         } else {
-            idValuesKeys = Set.of();
+            clientSession = null;
         }
-        converter = new MongoDBConverter(useCustomId ? null : KEY_ID, DBSSession.TRUE_OR_NULL_BOOLEAN_KEYS, idValuesKeys);
-        cursorService = new CursorService<>(ob -> (String) converter.getFromBson(ob, idKey, KEY_ID));
-        initRepository(descriptor);
+        initRepository(repository.descriptor);
     }
 
     @Override
-    public List<IdType> getAllowedIdTypes() {
-        return Arrays.asList(IdType.varchar, IdType.sequence, IdType.sequenceHexRandomized);
+    public void close() {
+        if (clientSession != null) {
+            clientSession.close();
+            clientSession = null;
+        }
     }
 
     @Override
-    public void shutdown() {
-        super.shutdown();
-        cursorService.clear();
+    public void begin() {
+        if (clientSession != null) {
+            clientSession.startTransaction();
+            transactionStarted = true;
+        }
     }
 
-    /**
-     * @deprecated since 11.1. use {@link #initRepository(MongoDBRepositoryDescriptor)} instead.
-     */
-    @Deprecated(since = "11.1", forRemoval = true)
-    protected void initRepository() {
-        initRepository(null);
+    @Override
+    public void commit() {
+        if (clientSession != null) {
+            try {
+                clientSession.commitTransaction();
+            } finally {
+                transactionStarted = false;
+            }
+        }
+    }
+
+    @Override
+    public void rollback() {
+        if (clientSession != null) {
+            try {
+                clientSession.abortTransaction();
+            } finally {
+                transactionStarted = false;
+            }
+        }
     }
 
     /**
@@ -274,7 +234,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending(KEY_LIFECYCLE_STATE));
         coll.createIndex(Indexes.ascending(KEY_IS_TRASHED));
         coll.createIndex(Indexes.ascending(KEY_RETAIN_UNTIL));
-        if (!isFulltextDisabled()) {
+        if (!repository.isFulltextDisabled()) {
             coll.createIndex(Indexes.ascending(KEY_FULLTEXT_JOBID));
         }
         coll.createIndex(Indexes.ascending(KEY_ACP + "." + KEY_ACL + "." + KEY_ACE_USER));
@@ -288,7 +248,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
         coll.createIndex(Indexes.ascending("coldstorage:beingRetrieved"));
-        if (!isFulltextSearchDisabled()) {
+        if (!repository.isFulltextSearchDisabled()) {
             Bson indexKeys = Indexes.compoundIndex( //
                     Indexes.text(KEY_FULLTEXT_SIMPLE), //
                     Indexes.text(KEY_FULLTEXT_BINARY) //
@@ -297,7 +257,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
             coll.createIndex(indexKeys, indexOptions);
         }
         // create basic repository structure needed
-        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DEBUG_UUIDS) {
+        IdType idType = repository.getIdType();
+        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DBSRepositoryBase.DEBUG_UUIDS) {
             // create the id counter
             long counter;
             if (idType == IdType.sequenceHexRandomized) {
@@ -305,6 +266,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else {
                 counter = 0;
             }
+            MongoCollection<Document> countersColl = mongoDBRepository.getCountersCollection();
             Document idCounter = new Document();
             idCounter.put(MONGODB_ID, COUNTER_NAME_UUID);
             idCounter.put(COUNTER_FIELD, Long.valueOf(counter));
@@ -314,7 +276,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected synchronized long getNextSequenceId() {
-        if (idType == IdType.sequence) {
+        long sequenceBlockSize = mongoDBRepository.sequenceBlockSize;
+        if (repository.getIdType() == IdType.sequence) {
             if (sequenceLeft == 0) {
                 sequenceLeft = sequenceBlockSize;
                 sequenceLastValue = updateSequence();
@@ -335,6 +298,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
      * Allocates a new sequence block. The database contains the last value from the last block.
      */
     protected long updateSequence() {
+        long sequenceBlockSize = mongoDBRepository.sequenceBlockSize;
+        MongoCollection<Document> countersColl = mongoDBRepository.getCountersCollection();
         Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
         Bson update = Updates.inc(COUNTER_FIELD, Long.valueOf(sequenceBlockSize));
         Document idCounter = countersColl.findOneAndUpdate(filter, update,
@@ -349,6 +314,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
      * Updates the randomized sequence, using xorshift.
      */
     protected Long tryUpdateRandomizedSequence() {
+        long sequenceBlockSize = mongoDBRepository.sequenceBlockSize;
+        MongoCollection<Document> countersColl = mongoDBRepository.getCountersCollection();
         // find the current value
         Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
         Document res = countersColl.find(filter).first();
@@ -427,9 +394,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public String generateNewId() {
-        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DEBUG_UUIDS) {
+        IdType idType = repository.getIdType();
+        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DBSRepositoryBase.DEBUG_UUIDS) {
             long id = getNextSequenceId();
-            if (DEBUG_UUIDS) {
+            if (DBSRepositoryBase.DEBUG_UUIDS) {
                 return "UUID_" + id;
             } else if (idType == IdType.sequence) {
                 return String.valueOf(id);
@@ -452,7 +420,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         Document doc = converter.stateToBson(state);
         log.trace("MongoDB: CREATE {}: {}", doc.get(idKey), doc);
         try {
-            coll.insertOne(doc);
+            insertOne(doc);
         } catch (DuplicateKeyException dke) {
             log.trace("MongoDB:    -> DUPLICATE KEY: {}", doc.get(idKey));
             throw new ConcurrentUpdateException(dke);
@@ -466,7 +434,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 () -> docs.stream().map(doc -> doc.get(idKey).toString()).collect(Collectors.joining(", ")),
                 () -> docs);
         try {
-            coll.insertMany(docs);
+            insertMany(docs);
         } catch (MongoBulkWriteException mbwe) {
             List<String> duplicates = mbwe.getWriteErrors()
                                           .stream()
@@ -526,7 +494,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 filter.putAll(conditions);
             }
             try {
-                UpdateResult w = coll.updateMany(filter, update);
+                UpdateResult w = updateMany(filter, update);
                 if (w.getModifiedCount() != 1) {
                     log.trace("MongoDB:    -> CONCURRENT UPDATE: {}", id);
                     throw new ConcurrentUpdateException(id);
@@ -545,7 +513,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public void deleteStates(Set<String> ids) {
         Bson filter = converter.filterIn(KEY_ID, ids);
         log.trace("MongoDB: REMOVE {}", ids);
-        DeleteResult w = coll.deleteMany(filter);
+        DeleteResult w = deleteMany(filter);
         if (w.getDeletedCount() != ids.size()) {
             log.debug("Removed {} docs for {} ids: {}", w::getDeletedCount, ids::size, () -> ids);
         }
@@ -668,7 +636,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected boolean exists(Bson filter, Bson projection) {
         logQuery(filter, projection);
-        return coll.find(filter).projection(projection).first() != null;
+        return find(filter).projection(projection).first() != null;
     }
 
     protected State findOne(Bson filter) {
@@ -714,7 +682,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         logQuery(filter, projection);
 
         boolean completedAbruptly = true;
-        MongoCursor<Document> cursor = coll.find(filter).limit(limit).projection(projection).iterator();
+        MongoCursor<Document> cursor = find(filter).limit(limit).projection(projection).iterator();
         try {
             Set<Object> seen = new HashSet<>();
             Stream<State> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(cursor, 0), false) //
@@ -741,10 +709,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
     public PartialList<Map<String, Serializable>> queryAndFetch(DBSExpressionEvaluator evaluator,
             OrderByClause orderByClause, boolean distinctDocuments, int limit, int offset, int countUpTo) {
         // orderByClause may be null and different from evaluator.getOrderByClause() in case we want to post-filter
-        MongoDBRepositoryQueryBuilder builder = new MongoDBRepositoryQueryBuilder(this, evaluator.getExpression(),
-                evaluator.getSelectClause(), orderByClause, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
+        MongoDBRepositoryQueryBuilder builder = new MongoDBRepositoryQueryBuilder((MongoDBRepository) repository,
+                evaluator.getExpression(), evaluator.getSelectClause(), orderByClause, evaluator.pathResolver,
+                evaluator.fulltextSearchDisabled);
         builder.walk();
-        if (builder.hasFulltext && isFulltextSearchDisabled()) {
+        if (builder.hasFulltext && repository.isFulltextSearchDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         Document filter = builder.getQuery();
@@ -765,12 +734,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
         List<Map<String, Serializable>> projections;
         long totalSize;
-        try (MongoCursor<Document> cursor = coll.find(filter)
-                                                .projection(keys)
-                                                .skip(offset)
-                                                .limit(limit)
-                                                .sort(orderBy)
-                                                .iterator()) {
+        try (MongoCursor<Document> cursor = find(filter).projection(keys)
+                                                        .skip(offset)
+                                                        .limit(limit)
+                                                        .sort(orderBy)
+                                                        .iterator()) {
             projections = new ArrayList<>();
             DBSStateFlattener flattener = new DBSStateFlattener(builder.propertyKeys);
             Iterable<Document> docs = () -> cursor;
@@ -790,7 +758,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else if (manualProjection) {
                 totalSize = -1; // unknown due to manual projection
             } else {
-                totalSize = coll.countDocuments(filter);
+                totalSize = countDocuments(filter);
             }
         } else if (countUpTo == 0) {
             // no count
@@ -802,7 +770,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             } else if (manualProjection) {
                 totalSize = -1; // unknown due to manual projection
             } else {
-                totalSize = coll.countDocuments(filter, new CountOptions().limit(countUpTo + 1));
+                totalSize = countDocuments(filter, new CountOptions().limit(countUpTo + 1));
             }
             if (totalSize > countUpTo) {
                 totalSize = -2; // truncated
@@ -817,11 +785,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @SuppressWarnings("resource") // cursor is being registered, must not be closed
     @Override
     public ScrollResult<String> scroll(DBSExpressionEvaluator evaluator, int batchSize, int keepAliveSeconds) {
+        MongoDBCursorService cursorService = mongoDBRepository.getCursorService();
         cursorService.checkForTimedOutScroll();
-        MongoDBRepositoryQueryBuilder builder = new MongoDBRepositoryQueryBuilder(this, evaluator.getExpression(),
-                evaluator.getSelectClause(), null, evaluator.pathResolver, evaluator.fulltextSearchDisabled);
+        MongoDBRepositoryQueryBuilder builder = new MongoDBRepositoryQueryBuilder((MongoDBRepository) repository,
+                evaluator.getExpression(), evaluator.getSelectClause(), null, evaluator.pathResolver,
+                evaluator.fulltextSearchDisabled);
         builder.walk();
-        if (builder.hasFulltext && isFulltextSearchDisabled()) {
+        if (builder.hasFulltext && repository.isFulltextSearchDisabled()) {
             throw new QueryParseException("Fulltext search disabled by configuration");
         }
         Document filter = builder.getQuery();
@@ -829,13 +799,14 @@ public class MongoDBRepository extends DBSRepositoryBase {
         Bson keys = builder.getProjection();
         logQuery(filter, keys, null, 0, 0);
 
-        MongoCursor<Document> cursor = coll.find(filter).projection(keys).batchSize(batchSize).iterator();
+        MongoCursor<Document> cursor = find(filter).projection(keys).batchSize(batchSize).iterator();
         String scrollId = cursorService.registerCursor(cursor, batchSize, keepAliveSeconds);
         return scroll(scrollId);
     }
 
     @Override
     public ScrollResult<String> scroll(String scrollId) {
+        MongoDBCursorService cursorService = mongoDBRepository.getCursorService();
         return cursorService.scroll(scrollId);
     }
 
@@ -846,68 +817,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
     }
 
-    /** Keys used for document projection when marking all binaries for GC. */
-    protected Bson binaryKeys;
-
-    @Override
-    protected void initBlobsPaths() {
-        MongoDBBlobFinder finder = new MongoDBBlobFinder();
-        finder.visit();
-        binaryKeys = Projections.fields(finder.binaryKeys);
-    }
-
-    protected static class MongoDBBlobFinder extends BlobFinder {
-        protected List<Bson> binaryKeys = new ArrayList<>(Set.of(Projections.excludeId()));
-
-        @Override
-        protected void recordBlobPath() {
-            path.addLast(KEY_BLOB_DATA);
-            binaryKeys.add(Projections.include(StringUtils.join(path, ".")));
-            path.removeLast();
-        }
-    }
-
-    @Override
-    public void markReferencedBinaries() {
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        // TODO add a query to not scan all documents
-        logQuery(new Document(), binaryKeys);
-        Block<Document> block = doc -> markReferencedBinaries(doc, blobManager);
-        coll.find().projection(binaryKeys).forEach(block);
-    }
-
-    protected void markReferencedBinaries(Document ob, DocumentBlobManager blobManager) {
-        for (var value : ob.values()) {
-            if (value instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<Object> list = (List<Object>) value;
-                for (Object v : list) {
-                    if (v instanceof Document) {
-                        markReferencedBinaries((Document) v, blobManager);
-                    } else {
-                        markReferencedBinary(v, blobManager);
-                    }
-                }
-            } else if (value instanceof Object[]) {
-                for (Object v : (Object[]) value) {
-                    markReferencedBinary(v, blobManager);
-                }
-            } else if (value instanceof Document) {
-                markReferencedBinaries((Document) value, blobManager);
-            } else {
-                markReferencedBinary(value, blobManager);
-            }
-        }
-    }
-
-    protected void markReferencedBinary(Object value, DocumentBlobManager blobManager) {
-        if (!(value instanceof String)) {
-            return;
-        }
-        String key = (String) value;
-        blobManager.markReferencedBinary(key, repositoryName);
-    }
-
     protected static final Bson LOCK_FIELDS = Projections.include(KEY_LOCK_OWNER, KEY_LOCK_CREATED);
 
     protected static final Bson UNSET_LOCK_UPDATE = Updates.combine(Updates.unset(KEY_LOCK_OWNER),
@@ -916,6 +825,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     @Override
     public Lock getLock(String id) {
         logQuery(id, LOCK_FIELDS);
+        // we do NOT want to use clientSession here because locks must be non-transactional
         Document res = coll.find(converter.filterEq(KEY_ID, id)).projection(LOCK_FIELDS).first();
         if (res == null) {
             // document not found
@@ -941,6 +851,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 Updates.set(KEY_LOCK_CREATED, converter.serializableToBson(KEY_LOCK_CREATED, lock.getCreated())) //
         );
         log.trace("MongoDB: FINDANDMODIFY {} UPDATE {}", filter, setLock);
+        // we do NOT want to use clientSession here because locks must be non-transactional
         Document res = coll.findOneAndUpdate(filter, setLock);
         if (res != null) {
             // found a doc to lock
@@ -949,6 +860,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // doc not found, or lock owner already set
             // get the old lock
             logQuery(id, LOCK_FIELDS);
+            // we do NOT want to use clientSession here because locks must be non-transactional
             Document old = coll.find(converter.filterEq(KEY_ID, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
@@ -978,6 +890,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         // else unconditional remove
         // remove the lock
         log.trace("MongoDB: FINDANDMODIFY {} UPDATE {}", filter, UNSET_LOCK_UPDATE);
+        // we do NOT want to use clientSession here because locks must be non-transactional
         Document old = coll.findOneAndUpdate(filter, UNSET_LOCK_UPDATE);
         if (old != null) {
             // found a doc and removed the lock, return previous lock
@@ -994,6 +907,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // doc not found, or lock owner didn't match
             // get the old lock
             logQuery(id, LOCK_FIELDS);
+            // we do NOT want to use clientSession here because locks must be non-transactional
             old = coll.find(converter.filterEq(KEY_ID, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
@@ -1013,6 +927,62 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // old owner null, should have matched -- there was a race condition
             // TODO do better
             throw new ConcurrentUpdateException("Unlock " + id);
+        }
+    }
+
+    protected void insertOne(Document document) {
+        if (transactionStarted) {
+            coll.insertOne(clientSession, document);
+        } else {
+            coll.insertOne(document);
+        }
+    }
+
+    protected void insertMany(List<Document> documents) {
+        if (transactionStarted) {
+            coll.insertMany(clientSession, documents);
+        } else {
+            coll.insertMany(documents);
+        }
+    }
+
+    protected UpdateResult updateMany(Bson filter, Bson update) {
+        if (transactionStarted) {
+            return coll.updateMany(clientSession, filter, update);
+        } else {
+            return coll.updateMany(filter, update);
+        }
+    }
+
+    protected DeleteResult deleteMany(Bson filter) {
+        if (transactionStarted) {
+            return coll.deleteMany(clientSession, filter);
+        } else {
+            return coll.deleteMany(filter);
+        }
+    }
+
+    protected FindIterable<Document> find(Bson filter) {
+        if (transactionStarted) {
+            return coll.find(clientSession, filter);
+        } else {
+            return coll.find(filter);
+        }
+    }
+
+    protected long countDocuments(Bson filter) {
+        if (transactionStarted) {
+            return coll.countDocuments(clientSession, filter);
+        } else {
+            return coll.countDocuments(filter);
+        }
+    }
+
+    protected long countDocuments(Bson filter, CountOptions options) {
+        if (transactionStarted) {
+            return coll.countDocuments(clientSession, filter, options);
+        } else {
+            return coll.countDocuments(filter, options);
         }
     }
 

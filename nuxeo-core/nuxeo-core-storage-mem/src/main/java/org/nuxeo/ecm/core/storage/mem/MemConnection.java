@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.storage.mem;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
@@ -40,13 +39,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
-
-import javax.resource.spi.ConnectionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,73 +52,63 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
-import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
+import org.nuxeo.ecm.core.storage.dbs.DBSConnectionBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
-import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession.OrderByComparator;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
-import org.nuxeo.runtime.api.Framework;
 
 /**
- * In-memory implementation of a {@link Repository}.
- * <p>
- * Internally, the repository is a map from id to document object.
- * <p>
- * A document object is a JSON-like document stored as a Map recursively containing the data, see {@link DBSDocument}
- * for the description of the document.
+ * In-memory implementation of a {@link DBSConnection}.
  *
- * @since 5.9.4
+ * @since 11.1 (introduced in 5.9.4 as MemRepository)
  */
-public class MemRepository extends DBSRepositoryBase {
+public class MemConnection extends DBSConnectionBase {
 
     private static final Log log = LogFactory.getLog(MemRepository.class);
 
     protected static final String NOSCROLL_ID = "noscroll";
 
-    // for debug
-    private final AtomicLong temporaryIdCounter = new AtomicLong(0);
-
-    /**
-     * The content of the repository, a map of document id -> object.
-     */
+    // the global state, from the repository (thread-safe map)
     protected Map<String, State> states;
 
-    public MemRepository(ConnectionManager cm, MemRepositoryDescriptor descriptor) {
-        super(cm, descriptor.name, descriptor);
-        initRepository();
+    public MemConnection(MemRepository repository) {
+        super(repository);
+        states = repository.states;
     }
 
     @Override
-    public List<IdType> getAllowedIdTypes() {
-        return Collections.singletonList(IdType.varchar);
+    public void begin() {
+        // nothing
     }
 
     @Override
-    public void shutdown() {
-        super.shutdown();
-        states = null;
+    public void commit() {
+        // nothing
+    }
+
+    @Override
+    public void rollback() {
+        // nothing
     }
 
     protected void initRepository() {
-        states = new ConcurrentHashMap<>();
         initRoot();
     }
 
     @Override
+    public void close() {
+        // nothing
+    }
+
+    @Override
     public String generateNewId() {
-        if (DEBUG_UUIDS) {
-            return "UUID_" + temporaryIdCounter.incrementAndGet();
-        } else {
-            return UUID.randomUUID().toString();
-        }
+        return ((MemRepository) repository).generateNewId();
     }
 
     @Override
@@ -567,70 +551,6 @@ public class MemRepository extends DBSRepositoryBase {
         state.put(KEY_LOCK_CREATED, null);
         // return old lock
         return new Lock(oldOwner, oldCreated);
-    }
-
-    protected List<List<String>> binaryPaths;
-
-    @Override
-    protected void initBlobsPaths() {
-        MemBlobFinder finder = new MemBlobFinder();
-        finder.visit();
-        binaryPaths = finder.binaryPaths;
-    }
-
-    protected static class MemBlobFinder extends BlobFinder {
-        protected List<List<String>> binaryPaths = new ArrayList<>();
-
-        @Override
-        protected void recordBlobPath() {
-            binaryPaths.add(new ArrayList<>(path));
-        }
-    }
-
-    @Override
-    public void markReferencedBinaries() {
-        DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-        for (State state : states.values()) {
-            for (List<String> path : binaryPaths) {
-                markReferencedBinaries(state, path, 0, blobManager);
-            }
-        }
-    }
-
-    protected void markReferencedBinaries(State state, List<String> path, int start, DocumentBlobManager blobManager) {
-        for (int i = start; i < path.size(); i++) {
-            String name = path.get(i);
-            Serializable value = state.get(name);
-            if (value instanceof State) {
-                state = (State) value;
-            } else {
-                if (value instanceof List) {
-                    @SuppressWarnings("unchecked")
-                    List<Object> list = (List<Object>) value;
-                    for (Object v : list) {
-                        if (v instanceof State) {
-                            markReferencedBinaries((State) v, path, i + 1, blobManager);
-                        } else {
-                            markReferencedBinary(v, blobManager);
-                        }
-                    }
-                }
-                state = null;
-                break;
-            }
-        }
-        if (state != null) {
-            Serializable data = state.get(KEY_BLOB_DATA);
-            markReferencedBinary(data, blobManager);
-        }
-    }
-
-    protected void markReferencedBinary(Object value, DocumentBlobManager blobManager) {
-        if (!(value instanceof String)) {
-            return;
-        }
-        String key = (String) value;
-        blobManager.markReferencedBinary(key, repositoryName);
     }
 
     @Override

@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.mongodb;
 
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
 /**
@@ -28,7 +29,27 @@ import com.mongodb.client.MongoDatabase;
 public interface MongoDBConnectionService {
 
     /**
-     * @param id the connection id to retrieve.
+     * Gets the MongoDB client for the given id.
+     *
+     * @param id the connection id
+     * @return the client configured by {@link MongoDBConnectionConfig} for the input id, or the default one if it
+     *         doesn't exist
+     * @since 11.1
+     */
+    MongoClient getClient(String id);
+
+    /**
+     * Gets the MongoDB database name for the given id.
+     *
+     * @param id the connection id
+     * @return the database name configured by {@link MongoDBConnectionConfig} for the input id, or the default one if
+     *         it doesn't exist
+     * @since 11.1
+     */
+    String getDatabaseName(String id);
+
+    /**
+     * @param id the connection id
      * @return the database configured by {@link MongoDBConnectionConfig} for the input id, or the default one if it
      *         doesn't exist
      */
@@ -36,7 +57,9 @@ public interface MongoDBConnectionService {
 
     /**
      * @return all configured databases
+     * @deprecated since 11.1, unused
      */
+    @Deprecated
     Iterable<MongoDatabase> getDatabases();
 
 }

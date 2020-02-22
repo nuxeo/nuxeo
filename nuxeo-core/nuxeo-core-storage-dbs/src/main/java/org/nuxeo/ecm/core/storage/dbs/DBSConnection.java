@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,52 +27,24 @@ import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
-import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 
 /**
- * Interface for a {@link Repository} for Document-Based Storage.
+ * Interface for a connection to a {@link DBSRepository}. The connection maintains state when it is transactional.
  *
- * @since 5.9.4
+ * @since 11.1 (introduced in 5.9.4 as DBSRepository)
  */
-public interface DBSRepository extends Repository, LockManager {
+public interface DBSConnection extends AutoCloseable, LockManager {
 
     /**
-     * Gets the blob manager.
-     *
-     * @return the blob manager.
+     * Closes this connection.
      */
-    BlobManager getBlobManager();
-
-    /**
-     * Checks if fulltext indexing (and search) is disabled.
-     *
-     * @return {@code true} if fulltext indexing is disabled, {@code false} if it is enabled
-     * @since 7.1, 6.0-HF02
-     */
-    boolean isFulltextDisabled();
-
-    /**
-     * Checks if fulltext search is disabled.
-     *
-     * @return {@code true} if fulltext search is disabled, {@code false} if it is enabled
-     * @since 10.2
-     */
-    boolean isFulltextSearchDisabled();
-
-
-    /**
-     * Checks if database-managed document change tokens are enabled.
-     *
-     * @return {@code true} if the database maintains document change tokens
-     * @since 9.1
-     */
-    boolean isChangeTokenEnabled();
+    @Override
+    void close();
 
     /**
      * Gets the root id.
@@ -267,14 +239,6 @@ public interface DBSRepository extends Repository, LockManager {
             boolean distinctDocuments, int limit, int offset, int countUpTo);
 
     /**
-     * Gets the lock manager for this repository.
-     *
-     * @return the lock manager
-     * @since 7.4
-     */
-    LockManager getLockManager();
-
-    /**
      * Executes the given query and returns the first batch of results containing id of documents, next batch must be
      * requested within the {@code keepAliveSeconds} delay.
      *
@@ -291,31 +255,28 @@ public interface DBSRepository extends Repository, LockManager {
     ScrollResult<String> scroll(String scrollId);
 
     /**
-     * Called when created a transaction.
+     * Starts a new transaction.
      *
      * @since 8.10
+     * @see DBSRepository#supportsTransactions
      */
-    default void begin() {
-
-    }
+    void begin();
 
     /**
-     * Saves and flushes to database.
+     * Commits the current transaction.
      *
      * @since 8.10
+     * @see DBSRepository#supportsTransactions
      */
-    default void commit() {
-
-    }
+    void commit();
 
     /**
-     * Rolls back the save state by applying the undo log.
+     * Rolls back the current transaction.
      *
      * @since 8.10
+     * @see DBSRepository#supportsTransactions
      */
-    default void rollback() {
-
-    }
+    void rollback();
 
     /**
      * Abstracts queries with operators.
