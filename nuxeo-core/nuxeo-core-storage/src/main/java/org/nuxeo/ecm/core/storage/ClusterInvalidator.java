@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,17 @@
  * Contributors:
  *     Florent Guillaume
  */
-
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage;
 
 /**
- * Encapsulates cluster node VCS invalidations management.
+ * Encapsulates cluster node invalidations management.
  * <p>
  * There is one cluster invalidator per cluster node (repository).
  *
- * @since 7.4
+ * @param <T> the type of the invalidations
+ * @since 11.1
  */
-public interface ClusterInvalidator {
-
-    /**
-     * Initializes the cluster invalidator.
-     *
-     * @param nodeId the cluster node id
-     * @param repository the repository
-     */
-    void initialize(String nodeId, RepositoryImpl repository);
+public interface ClusterInvalidator<T> {
 
     /**
      * Closes this cluster invalidator and releases resources.
@@ -44,20 +36,11 @@ public interface ClusterInvalidator {
     /**
      * Receives invalidations from other cluster nodes.
      */
-    Invalidations receiveInvalidations();
+    T receiveInvalidations();
 
     /**
      * Sends invalidations to other cluster nodes.
      */
-    void sendInvalidations(Invalidations invalidations);
-
-    /**
-     * Checks if this invalidator requires specific database-level structures.
-     *
-     * @since 11.1
-     */
-    default boolean requiresClusterSQL() {
-        return false;
-    }
+    void sendInvalidations(T invalidations);
 
 }

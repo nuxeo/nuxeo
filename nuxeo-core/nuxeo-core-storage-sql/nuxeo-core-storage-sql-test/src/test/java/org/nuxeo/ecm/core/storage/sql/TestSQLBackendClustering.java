@@ -205,7 +205,7 @@ public class TestSQLBackendClustering extends SQLBackendTestCase {
 
     @Test
     public void testClusterInvalidationsPropagatorLeak() throws Exception {
-        List<InvalidationsQueue> queues = repository.invalidationsPropagator.queues;
+        List<?> queues = repository.invalidationsPropagator.queues;
         assertEquals(0, queues.size());
         Session session = repository.getConnection();
         assertEquals(1, queues.size());

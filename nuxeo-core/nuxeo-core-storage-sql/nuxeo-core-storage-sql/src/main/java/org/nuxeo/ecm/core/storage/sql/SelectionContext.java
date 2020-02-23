@@ -303,7 +303,7 @@ public class SelectionContext {
      * <p>
      * Called post-transaction to gathers invalidations to be sent to others.
      */
-    public void gatherInvalidations(Invalidations invalidations) {
+    public void gatherInvalidations(VCSInvalidations invalidations) {
         for (Serializable id : modifiedInTransaction) {
             invalidations.addModified(new RowId(selType.invalidationTableName, id));
         }

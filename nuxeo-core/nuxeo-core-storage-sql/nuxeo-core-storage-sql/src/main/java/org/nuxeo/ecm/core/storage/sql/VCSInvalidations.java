@@ -34,7 +34,7 @@ import org.nuxeo.runtime.pubsub.SerializableAccumulableInvalidations;
  * <p>
  * Records both modified and deleted fragments, as well as "parents modified" fragments.
  */
-public class Invalidations implements SerializableAccumulableInvalidations {
+public class VCSInvalidations implements SerializableAccumulableInvalidations {
 
     private static final long serialVersionUID = 1L;
 
@@ -68,10 +68,10 @@ public class Invalidations implements SerializableAccumulableInvalidations {
     /** null when empty */
     public Set<RowId> deleted;
 
-    public Invalidations() {
+    public VCSInvalidations() {
     }
 
-    public Invalidations(boolean all) {
+    public VCSInvalidations(boolean all) {
         this.all = all;
     }
 
@@ -118,7 +118,7 @@ public class Invalidations implements SerializableAccumulableInvalidations {
 
     @Override
     public void add(SerializableAccumulableInvalidations o) {
-        Invalidations other = (Invalidations) o;
+        VCSInvalidations other = (VCSInvalidations) o;
         if (other == null) {
             return;
         }
@@ -186,9 +186,9 @@ public class Invalidations implements SerializableAccumulableInvalidations {
         }
     }
 
-    public static Invalidations deserialize(InputStream in) throws IOException {
+    public static VCSInvalidations deserialize(InputStream in) throws IOException {
         try (ObjectInputStream oin = new ObjectInputStream(in)) {
-            return (Invalidations) oin.readObject();
+            return (VCSInvalidations) oin.readObject();
         } catch (ClassNotFoundException | ClassCastException e) {
             throw new IOException(e);
         }

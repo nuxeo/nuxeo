@@ -48,7 +48,7 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
 
     @Override
     public void initialize(String repositoryName, Model model, Mapper mapper,
-            InvalidationsPropagator invalidationsPropagator, Map<String, String> properties) {
+            VCSInvalidationsPropagator invalidationsPropagator, Map<String, String> properties) {
         super.initialize(repositoryName, model, mapper, invalidationsPropagator, properties);
         this.mapper = mapper;
     }
@@ -153,12 +153,12 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
-    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) {
+    public void insertClusterInvalidations(Serializable nodeId, VCSInvalidations invalidations) {
         mapper.insertClusterInvalidations(nodeId, invalidations);
     }
 
     @Override
-    public Invalidations getClusterInvalidations(Serializable nodeId) {
+    public VCSInvalidations getClusterInvalidations(Serializable nodeId) {
         return mapper.getClusterInvalidations(nodeId);
     }
 

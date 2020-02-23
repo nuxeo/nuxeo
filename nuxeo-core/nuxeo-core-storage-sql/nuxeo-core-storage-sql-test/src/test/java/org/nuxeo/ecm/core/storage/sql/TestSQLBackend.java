@@ -3307,7 +3307,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertSessionInvalidations(s2, false, -1, -1);
 
         // now create many docs, accumulating invalidations
-        int ndocs = Invalidations.MAX_SIZE + 1;
+        int ndocs = VCSInvalidations.MAX_SIZE + 1;
         for (int i = 0; i < ndocs; i++) {
             session.addChildNode(root, "doc" + i, null, "Relation", false);
         }
@@ -3321,7 +3321,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected static void assertSessionInvalidations(Session session, boolean all, int modified, int deleted) {
         SoftRefCachingMapper mapper = (SoftRefCachingMapper) ((SessionImpl) session).getMapper();
-        Invalidations invalidations = mapper.cacheQueue.queue;
+        VCSInvalidations invalidations = mapper.cacheQueue.queue;
         assertTrue(all == invalidations.all);
         if (modified == -1) {
             if (invalidations.modified != null) {
@@ -3342,7 +3342,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testCacheInvalidationsPropagatorLeak() throws Exception {
-        List<InvalidationsQueue> queues = repository.invalidationsPropagator.queues;
+        List<?> queues = repository.invalidationsPropagator.queues;
         assertEquals(0, queues.size());
         Session session = repository.getConnection();
         assertEquals(1, queues.size());

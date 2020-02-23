@@ -69,10 +69,10 @@ import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
+import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
-import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -134,7 +134,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param clusterInvalidator the cluster invalidator
      * @param repository the repository
      */
-    public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, ClusterInvalidator clusterInvalidator,
+    public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, VCSClusterInvalidator clusterInvalidator,
             RepositoryImpl repository) {
         super(model, sqlInfo, clusterInvalidator, repository.getInvalidationsPropagator());
         this.pathResolver = pathResolver;
@@ -485,11 +485,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) {
+    public void insertClusterInvalidations(Serializable nodeId, VCSInvalidations invalidations) {
         String sql = dialect.getClusterInsertInvalidations();
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            int kind = Invalidations.MODIFIED;
+            int kind = VCSInvalidations.MODIFIED;
             while (true) {
                 Set<RowId> rowIds = invalidations.getKindSet(kind);
 
@@ -523,8 +523,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     ps.execute();
                     countExecute();
                 }
-                if (kind == Invalidations.MODIFIED) {
-                    kind = Invalidations.DELETED;
+                if (kind == VCSInvalidations.MODIFIED) {
+                    kind = VCSInvalidations.DELETED;
                 } else {
                     break;
                 }
@@ -556,8 +556,8 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Invalidations getClusterInvalidations(Serializable nodeId) {
-        Invalidations invalidations = new Invalidations();
+    public VCSInvalidations getClusterInvalidations(Serializable nodeId) {
+        VCSInvalidations invalidations = new VCSInvalidations();
         String sql = dialect.getClusterGetInvalidations();
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         if (logger.isLogEnabled()) {

@@ -80,9 +80,9 @@ public class RepositoryImpl implements Repository {
 
     /** Propagator of invalidations to all mappers' caches. */
     // public for tests
-    public final InvalidationsPropagator invalidationsPropagator;
+    public final VCSInvalidationsPropagator invalidationsPropagator;
 
-    protected ClusterInvalidator clusterInvalidator;
+    protected VCSClusterInvalidator clusterInvalidator;
 
     public boolean requiresClusterSQL;
 
@@ -96,7 +96,7 @@ public class RepositoryImpl implements Repository {
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<>();
-        invalidationsPropagator = new InvalidationsPropagator();
+        invalidationsPropagator = new VCSInvalidationsPropagator();
 
         repositoryUp = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
                 "instance-up"));
@@ -194,7 +194,7 @@ public class RepositoryImpl implements Repository {
         return model;
     }
 
-    public InvalidationsPropagator getInvalidationsPropagator() {
+    public VCSInvalidationsPropagator getInvalidationsPropagator() {
         return invalidationsPropagator;
     }
 
@@ -305,8 +305,8 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    protected ClusterInvalidator createClusterInvalidator() {
-        Class<? extends ClusterInvalidator> klass = repositoryDescriptor.clusterInvalidatorClass;
+    protected VCSClusterInvalidator createClusterInvalidator() {
+        Class<? extends VCSClusterInvalidator> klass = repositoryDescriptor.clusterInvalidatorClass;
         if (klass == null) {
             klass = JDBCClusterInvalidator.class;
         }

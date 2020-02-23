@@ -20,7 +20,7 @@ package org.nuxeo.ecm.core.redis;
 
 import org.junit.Test;
 import org.nuxeo.ecm.core.redis.contribs.RedisInvalidations;
-import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 
 import static org.junit.Assert.*;
@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 public class TestRedisInvalidations {
     @Test
     public void testRedisInvalidations() throws Exception {
-        Invalidations invals = new Invalidations();
+        VCSInvalidations invals = new VCSInvalidations();
         invals.addModified(new RowId("dublincore", "docid1"));
 
         RedisInvalidations srcInvals = new RedisInvalidations("node1", invals);

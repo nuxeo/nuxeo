@@ -24,15 +24,15 @@ import java.io.InputStream;
 import org.nuxeo.runtime.pubsub.AbstractPubSubInvalidationsAccumulator;
 
 /**
- * PubSub implementation of the VCS {@link ClusterInvalidator}.
+ * PubSub implementation of the VCS {@link VCSClusterInvalidator}.
  *
  * @since 9.1
  */
-public class VCSPubSubInvalidator extends AbstractPubSubInvalidationsAccumulator<Invalidations> implements ClusterInvalidator {
+public class VCSPubSubInvalidator extends AbstractPubSubInvalidationsAccumulator<VCSInvalidations> implements VCSClusterInvalidator {
 
     @Override
-    public Invalidations newInvalidations() {
-        return new Invalidations();
+    public VCSInvalidations newInvalidations() {
+        return new VCSInvalidations();
     }
 
     @Override
@@ -41,8 +41,8 @@ public class VCSPubSubInvalidator extends AbstractPubSubInvalidationsAccumulator
     }
 
     @Override
-    public Invalidations deserialize(InputStream in) throws IOException {
-        return Invalidations.deserialize(in);
+    public VCSInvalidations deserialize(InputStream in) throws IOException {
+        return VCSInvalidations.deserialize(in);
     }
 
 }
