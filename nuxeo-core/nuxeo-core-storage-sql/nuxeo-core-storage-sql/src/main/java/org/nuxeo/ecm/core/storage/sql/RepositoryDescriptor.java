@@ -178,7 +178,7 @@ public class RepositoryDescriptor {
     public Class<? extends RepositoryBackend> backendClass;
 
     @XNode("clusterInvalidatorClass")
-    public Class<? extends ClusterInvalidator> clusterInvalidatorClass;
+    public Class<? extends VCSClusterInvalidator> clusterInvalidatorClass;
 
     @XNode("cachingMapper@class")
     public Class<? extends CachingMapper> cachingMapperClass;

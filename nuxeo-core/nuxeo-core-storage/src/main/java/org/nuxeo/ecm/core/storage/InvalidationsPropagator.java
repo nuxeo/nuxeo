@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,44 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.core.storage;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
+
+import org.nuxeo.runtime.pubsub.SerializableAccumulableInvalidations;
 
 /**
  * Propagator of invalidations to a set of {@link InvalidationsQueue}s.
+ *
+ * @param <T> the type of invalidations
+ * @since 11.1
  */
-public class InvalidationsPropagator {
+public class InvalidationsPropagator<T extends SerializableAccumulableInvalidations> {
 
-    public final ArrayList<InvalidationsQueue> queues; // used synchronized
+    public final List<InvalidationsQueue<T>> queues; // used synchronized
 
     public InvalidationsPropagator() {
         queues = new ArrayList<>();
     }
 
-    public synchronized void addQueue(InvalidationsQueue queue) {
+    public synchronized void addQueue(InvalidationsQueue<T> queue) {
         if (!queues.contains(queue)) {
             queues.add(queue);
         }
     }
 
-    public synchronized void removeQueue(InvalidationsQueue queue) {
+    public synchronized void removeQueue(InvalidationsQueue<T> queue) {
         queues.remove(queue);
     }
 
     @SuppressWarnings("unchecked")
-    public void propagateInvalidations(Invalidations invalidations, InvalidationsQueue skipQueue) {
-        Collection<InvalidationsQueue> qq;
+    public void propagateInvalidations(T invalidations, InvalidationsQueue<T> skipQueue) {
+        List<InvalidationsQueue<T>> qq;
         synchronized (this) {
-            qq = (Collection<InvalidationsQueue>) queues.clone();
+            qq = (List<InvalidationsQueue<T>>) ((ArrayList<InvalidationsQueue<T>>) queues).clone();
         }
-        for (InvalidationsQueue q : qq) {
+        for (InvalidationsQueue<T> q : qq) {
             if (q != skipQueue) {
                 q.addInvalidations(invalidations);
             }

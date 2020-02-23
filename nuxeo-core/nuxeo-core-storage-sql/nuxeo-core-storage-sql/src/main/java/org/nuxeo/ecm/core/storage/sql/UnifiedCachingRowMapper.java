@@ -86,18 +86,18 @@ public class UnifiedCachingRowMapper implements RowMapper {
      * The local invalidations due to writes through this mapper that should be propagated to other sessions at
      * post-commit time.
      */
-    private final Invalidations localInvalidations;
+    private final VCSInvalidations localInvalidations;
 
     /**
      * The queue of invalidations received from other session or from the cluster invalidator, to process at
      * pre-transaction time.
      */
-    private final InvalidationsQueue invalidationsQueue;
+    private final VCSInvalidationsQueue invalidationsQueue;
 
     /**
      * The propagator of invalidations to other mappers.
      */
-    private InvalidationsPropagator invalidationsPropagator;
+    private VCSInvalidationsPropagator invalidationsPropagator;
 
     private static final String CACHE_NAME = "unifiedVCSCache";
 
@@ -122,12 +122,12 @@ public class UnifiedCachingRowMapper implements RowMapper {
     protected Timer sorGetTimer;
 
     public UnifiedCachingRowMapper() {
-        localInvalidations = new Invalidations();
-        invalidationsQueue = new InvalidationsQueue("mapper-" + this);
+        localInvalidations = new VCSInvalidations();
+        invalidationsQueue = new VCSInvalidationsQueue("mapper-" + this);
     }
 
     synchronized public void initialize(String repositoryName, Model model, RowMapper rowMapper,
-            InvalidationsPropagator invalidationsPropagator, Map<String, String> properties) {
+            VCSInvalidationsPropagator invalidationsPropagator, Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
         this.invalidationsPropagator = invalidationsPropagator;
@@ -324,12 +324,12 @@ public class UnifiedCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public Invalidations receiveInvalidations() {
+    public VCSInvalidations receiveInvalidations() {
         // invalidations from the underlying mapper (cluster)
         // already propagated to our invalidations queue
-        Invalidations remoteInvals = rowMapper.receiveInvalidations();
+        VCSInvalidations remoteInvals = rowMapper.receiveInvalidations();
 
-        Invalidations ret = invalidationsQueue.getInvalidations();
+        VCSInvalidations ret = invalidationsQueue.getInvalidations();
 
         if (remoteInvals != null) {
             if (!ret.all) {
@@ -357,11 +357,11 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
     // propagate invalidations
     @Override
-    public void sendInvalidations(Invalidations invalidations) {
+    public void sendInvalidations(VCSInvalidations invalidations) {
         // add local invalidations
         if (!localInvalidations.isEmpty()) {
             if (invalidations == null) {
-                invalidations = new Invalidations();
+                invalidations = new VCSInvalidations();
             }
             invalidations.add(localInvalidations);
             localInvalidations.clear();
@@ -544,7 +544,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
     @Override
     public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow, boolean excludeSpecialChildren) {
         CopyResult result = rowMapper.copy(source, destParentId, destName, overwriteRow, excludeSpecialChildren);
-        Invalidations invalidations = result.invalidations;
+        VCSInvalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 cacheRemove(rowId);

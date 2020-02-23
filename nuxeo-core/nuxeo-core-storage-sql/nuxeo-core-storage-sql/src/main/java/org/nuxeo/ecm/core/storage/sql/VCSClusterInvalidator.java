@@ -17,25 +17,34 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage.dbs;
+package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.storage.ClusterInvalidator;
 
 /**
- * Encapsulates cluster node DBS invalidations management.
+ * Encapsulates cluster node VCS invalidations management.
  * <p>
  * There is one cluster invalidator per cluster node (repository).
  *
- * @since 8.10
+ * @since 7.4
  */
-public interface DBSClusterInvalidator extends ClusterInvalidator<DBSInvalidations> {
+public interface VCSClusterInvalidator extends ClusterInvalidator<VCSInvalidations> {
 
     /**
      * Initializes the cluster invalidator.
      *
      * @param nodeId the cluster node id
-     * @param repositoryName the repository name
+     * @param repository the repository
      */
-    void initialize(String nodeId, String repositoryName);
+    void initialize(String nodeId, RepositoryImpl repository);
+
+    /**
+     * Checks if this invalidator requires specific database-level structures.
+     *
+     * @since 11.1
+     */
+    default boolean requiresClusterSQL() {
+        return false;
+    }
 
 }

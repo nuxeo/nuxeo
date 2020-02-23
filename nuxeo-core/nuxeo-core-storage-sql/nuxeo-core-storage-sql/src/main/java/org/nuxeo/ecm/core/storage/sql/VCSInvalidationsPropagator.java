@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,15 @@
  * limitations under the License.
  *
  * Contributors:
- *     Benoit Delbosc
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.core.storage.sql;
 
-import java.util.Map;
+import org.nuxeo.ecm.core.storage.InvalidationsPropagator;
 
 /**
- * A {@link Mapper} that cache rows.
+ * Propagator of invalidations to a set of {@link VCSInvalidationsQueue}s.
  */
-public interface CachingMapper extends Mapper {
-
-    /**
-     * Initialize the caching mapper instance
-     */
-    void initialize(String repositoryName, Model model, Mapper mapper, VCSInvalidationsPropagator cachePropagator,
-            Map<String, String> properties);
+public class VCSInvalidationsPropagator extends InvalidationsPropagator<VCSInvalidations> {
 
 }

@@ -46,7 +46,7 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     public Mapper mapper;
 
     @Override
-    public void initialize(String repositoryName, Model model, Mapper mapper, InvalidationsPropagator cachePropagator,
+    public void initialize(String repositoryName, Model model, Mapper mapper, VCSInvalidationsPropagator cachePropagator,
             Map<String, String> properties) {
         super.initialize(repositoryName, model, mapper, cachePropagator, properties);
         this.mapper = mapper;
@@ -152,12 +152,12 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) {
+    public void insertClusterInvalidations(Serializable nodeId, VCSInvalidations invalidations) {
         mapper.insertClusterInvalidations(nodeId, invalidations);
     }
 
     @Override
-    public Invalidations getClusterInvalidations(Serializable nodeId) {
+    public VCSInvalidations getClusterInvalidations(Serializable nodeId) {
         return mapper.getClusterInvalidations(nodeId);
     }
 

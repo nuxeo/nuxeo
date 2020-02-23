@@ -51,9 +51,9 @@ import org.nuxeo.common.utils.BatchUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
-import org.nuxeo.ecm.core.storage.sql.Invalidations;
-import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
+import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.PropertyType;
 import org.nuxeo.ecm.core.storage.sql.Row;
@@ -85,9 +85,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * Cluster invalidator, or {@code null} if this mapper does not participate in invalidation propagation (cluster
      * invalidator, lock manager).
      */
-    private final ClusterInvalidator clusterInvalidator;
+    private final VCSClusterInvalidator clusterInvalidator;
 
-    private final InvalidationsPropagator invalidationsPropagator;
+    private final VCSInvalidationsPropagator invalidationsPropagator;
 
     private final boolean collectionDeleteBeforeAppend;
 
@@ -95,8 +95,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
 
     private final CollectionIO scalarCollectionIO;
 
-    public JDBCRowMapper(Model model, SQLInfo sqlInfo, ClusterInvalidator clusterInvalidator,
-            InvalidationsPropagator invalidationsPropagator) {
+    public JDBCRowMapper(Model model, SQLInfo sqlInfo, VCSClusterInvalidator clusterInvalidator,
+            VCSInvalidationsPropagator invalidationsPropagator) {
         super(model, sqlInfo);
         this.clusterInvalidator = clusterInvalidator;
         this.invalidationsPropagator = invalidationsPropagator;
@@ -107,9 +107,9 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public Invalidations receiveInvalidations() {
+    public VCSInvalidations receiveInvalidations() {
         if (clusterInvalidator != null) {
-            Invalidations invalidations = clusterInvalidator.receiveInvalidations();
+            VCSInvalidations invalidations = clusterInvalidator.receiveInvalidations();
             // send received invalidations to all mappers
             if (invalidations != null && !invalidations.isEmpty()) {
                 invalidationsPropagator.propagateInvalidations(invalidations, null);
@@ -121,7 +121,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public void sendInvalidations(Invalidations invalidations) {
+    public void sendInvalidations(VCSInvalidations invalidations) {
         if (clusterInvalidator != null) {
             clusterInvalidator.sendInvalidations(invalidations);
         }
@@ -960,7 +960,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     @Override
     public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow, boolean excludeSpecialChildren) {
         // assert !model.separateMainTable; // other case not implemented
-        Invalidations invalidations = new Invalidations();
+        VCSInvalidations invalidations = new VCSInvalidations();
         try {
             Map<Serializable, Serializable> idMap = new LinkedHashMap<>();
             Map<Serializable, IdWithTypes> idToTypes = new HashMap<>();
@@ -982,7 +982,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             // invalidate children
             Serializable invalParentId = overwriteId == null ? destParentId : overwriteId;
             if (invalParentId != null) { // null for a new version
-                invalidations.addModified(new RowId(Invalidations.PARENT, invalParentId));
+                invalidations.addModified(new RowId(VCSInvalidations.PARENT, invalParentId));
             }
             // copy all collected fragments
             Set<Serializable> proxyIds = new HashSet<>();

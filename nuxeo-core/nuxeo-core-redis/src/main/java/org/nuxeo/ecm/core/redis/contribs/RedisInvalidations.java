@@ -19,7 +19,7 @@
 package org.nuxeo.ecm.core.redis.contribs;
 
 import org.apache.commons.codec.binary.Base64;
-import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,9 +35,9 @@ import java.io.ObjectOutputStream;
  */
 public class RedisInvalidations {
     private String nodeId;
-    private Invalidations invalidations;
+    private VCSInvalidations invalidations;
 
-    public RedisInvalidations(String nodeId, Invalidations invals) {
+    public RedisInvalidations(String nodeId, VCSInvalidations invals) {
         assert nodeId != null : "nodeId required";
         assert invals != null : "invals required";
         this.nodeId = nodeId;
@@ -57,16 +57,16 @@ public class RedisInvalidations {
         }
     }
 
-    private Invalidations deserializeInvalidations(String invalsStr) {
+    private VCSInvalidations deserializeInvalidations(String invalsStr) {
         InputStream bain = new ByteArrayInputStream(Base64.decodeBase64(invalsStr));
         try (ObjectInputStream in = new ObjectInputStream(bain)) {
-            return (Invalidations) in.readObject();
+            return (VCSInvalidations) in.readObject();
         } catch (IOException | ClassNotFoundException cause) {
             throw new IllegalArgumentException("Cannot deserialize invalidations", cause);
         }
     }
 
-    public Invalidations getInvalidations() {
+    public VCSInvalidations getInvalidations() {
         return invalidations;
     }
 
@@ -74,7 +74,7 @@ public class RedisInvalidations {
         return nodeId + ":" + serializeInvalidations(invalidations);
     }
 
-    private String serializeInvalidations(Invalidations invals) throws IOException {
+    private String serializeInvalidations(VCSInvalidations invals) throws IOException {
         ByteArrayOutputStream baout = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(baout);
         out.writeObject(invals);

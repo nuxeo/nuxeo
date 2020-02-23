@@ -26,16 +26,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
-import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
+import org.nuxeo.ecm.core.storage.sql.VCSInvalidations;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 
 /**
- * Implementation of {@link ClusterInvalidator} that uses the JDBC Mapper to read/write invalidations.
+ * Implementation of {@link VCSClusterInvalidator} that uses the JDBC Mapper to read/write invalidations.
  */
-public class JDBCClusterInvalidator implements ClusterInvalidator {
+public class JDBCClusterInvalidator implements VCSClusterInvalidator {
 
     private static final Log log = LogFactory.getLog(JDBCClusterInvalidator.class);
 
@@ -98,7 +98,7 @@ public class JDBCClusterInvalidator implements ClusterInvalidator {
     }
 
     @Override
-    public Invalidations receiveInvalidations() {
+    public VCSInvalidations receiveInvalidations() {
         synchronized (mapper) {
             long remaining = clusterNodeLastInvalidationTimeMillis + clusteringDelay - System.currentTimeMillis();
             if (remaining > 0) {
@@ -106,14 +106,14 @@ public class JDBCClusterInvalidator implements ClusterInvalidator {
                 log.trace("Not fetching invalidations, remaining time: " + remaining + "ms");
                 return null;
             }
-            Invalidations invalidations = mapper.getClusterInvalidations(nodeId);
+            VCSInvalidations invalidations = mapper.getClusterInvalidations(nodeId);
             clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis();
             return invalidations;
         }
     }
 
     @Override
-    public void sendInvalidations(Invalidations invalidations) {
+    public void sendInvalidations(VCSInvalidations invalidations) {
         if (invalidations == null || invalidations.isEmpty()) {
             return;
         }

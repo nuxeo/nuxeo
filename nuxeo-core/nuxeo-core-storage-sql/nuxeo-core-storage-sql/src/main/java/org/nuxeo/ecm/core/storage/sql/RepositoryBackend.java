@@ -37,7 +37,7 @@ public interface RepositoryBackend {
      *
      * @since 7.4
      */
-    void setClusterInvalidator(ClusterInvalidator clusterInvalidator);
+    void setClusterInvalidator(VCSClusterInvalidator clusterInvalidator);
 
     /**
      * Creates a new instance a {@link Mapper}. Called once for every new session.

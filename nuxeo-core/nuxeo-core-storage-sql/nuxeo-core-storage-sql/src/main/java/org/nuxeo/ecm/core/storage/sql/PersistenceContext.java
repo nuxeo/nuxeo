@@ -517,7 +517,7 @@ public class PersistenceContext {
     /**
      * Marks locally all the invalidations gathered by a {@link Mapper} operation (like a version restore).
      */
-    protected void markInvalidated(Invalidations invalidations) {
+    protected void markInvalidated(VCSInvalidations invalidations) {
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 Fragment fragment = getIfPresent(rowId);
@@ -562,7 +562,7 @@ public class PersistenceContext {
      * Called post-transaction by session commit/rollback or transactionless save.
      */
     public void sendInvalidationsToOthers() {
-        Invalidations invalidations = new Invalidations();
+        VCSInvalidations invalidations = new VCSInvalidations();
         for (SelectionContext sel : selections) {
             sel.gatherInvalidations(invalidations);
         }
@@ -575,7 +575,7 @@ public class PersistenceContext {
      * Called pre-transaction by start or transactionless save;
      */
     public void processReceivedInvalidations() {
-        Invalidations invals = mapper.receiveInvalidations();
+        VCSInvalidations invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;
         }
@@ -583,7 +583,7 @@ public class PersistenceContext {
         processCacheInvalidations(invals);
     }
 
-    private void processCacheInvalidations(Invalidations invalidations) {
+    private void processCacheInvalidations(VCSInvalidations invalidations) {
         if (invalidations == null) {
             return;
         }

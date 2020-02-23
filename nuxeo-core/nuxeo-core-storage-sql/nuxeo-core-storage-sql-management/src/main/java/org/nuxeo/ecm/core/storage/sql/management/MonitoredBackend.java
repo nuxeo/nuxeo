@@ -19,7 +19,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
-import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
+import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend;
@@ -46,7 +46,7 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public void setClusterInvalidator(ClusterInvalidator clusterInvalidator) {
+    public void setClusterInvalidator(VCSClusterInvalidator clusterInvalidator) {
         wrapped.setClusterInvalidator(clusterInvalidator);
     }
 

@@ -27,7 +27,7 @@ public enum SelectionType {
      * Selection for the children of a given parent id.
      */
     CHILDREN(Model.HIER_TABLE_NAME, Model.HIER_PARENT_KEY, Model.HIER_CHILD_NAME_KEY, Model.HIER_CHILD_ISPROPERTY_KEY,
-            Invalidations.PARENT),
+            VCSInvalidations.PARENT),
 
     /**
      * Selection for the versions of a given version series.
@@ -37,12 +37,12 @@ public enum SelectionType {
     /**
      * Selection for the proxies of a given version series.
      */
-    SERIES_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_VERSIONABLE_KEY, null, null, Invalidations.SERIES_PROXIES),
+    SERIES_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_VERSIONABLE_KEY, null, null, VCSInvalidations.SERIES_PROXIES),
 
     /**
      * Selection for the proxies of a given target.
      */
-    TARGET_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_TARGET_KEY, null, null, Invalidations.TARGET_PROXIES);
+    TARGET_PROXIES(Model.PROXY_TABLE_NAME, Model.PROXY_TARGET_KEY, null, null, VCSInvalidations.TARGET_PROXIES);
 
     /**
      * The table name for this selection.

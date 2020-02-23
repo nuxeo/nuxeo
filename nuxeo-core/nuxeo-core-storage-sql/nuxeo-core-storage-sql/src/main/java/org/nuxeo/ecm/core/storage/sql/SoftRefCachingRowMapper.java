@@ -75,18 +75,18 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * The local invalidations due to writes through this mapper that should be propagated to other sessions at
      * post-commit time.
      */
-    private final Invalidations localInvalidations;
+    private final VCSInvalidations localInvalidations;
 
     /**
      * The queue of cache invalidations received from other session, to process at pre-transaction time.
      */
     // public for unit tests
-    public final InvalidationsQueue cacheQueue;
+    public final VCSInvalidationsQueue cacheQueue;
 
     /**
      * The propagator of invalidations to other mappers.
      */
-    private InvalidationsPropagator cachePropagator;
+    private VCSInvalidationsPropagator cachePropagator;
 
     /**
      * Cache statistics
@@ -107,12 +107,12 @@ public class SoftRefCachingRowMapper implements RowMapper {
     @SuppressWarnings("unchecked")
     public SoftRefCachingRowMapper() {
         cache = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
-        localInvalidations = new Invalidations();
-        cacheQueue = new InvalidationsQueue("mapper-" + this);
+        localInvalidations = new VCSInvalidations();
+        cacheQueue = new VCSInvalidationsQueue("mapper-" + this);
     }
 
     public void initialize(String repositoryName, Model model, RowMapper rowMapper,
-            InvalidationsPropagator cachePropagator, Map<String, String> properties) {
+            VCSInvalidationsPropagator cachePropagator, Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
         this.cachePropagator = cachePropagator;
@@ -213,12 +213,12 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public Invalidations receiveInvalidations() {
+    public VCSInvalidations receiveInvalidations() {
         // invalidations from the underlying mapper (cluster)
         // already propagated to our invalidations queue
         rowMapper.receiveInvalidations();
 
-        Invalidations invalidations = cacheQueue.getInvalidations();
+        VCSInvalidations invalidations = cacheQueue.getInvalidations();
 
         // invalidate our cache
         if (invalidations.all) {
@@ -240,11 +240,11 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     // propagate invalidations
     @Override
-    public void sendInvalidations(Invalidations invalidations) {
+    public void sendInvalidations(VCSInvalidations invalidations) {
         // add local invalidations
         if (!localInvalidations.isEmpty()) {
             if (invalidations == null) {
-                invalidations = new Invalidations();
+                invalidations = new VCSInvalidations();
             }
             invalidations.add(localInvalidations);
             localInvalidations.clear();
@@ -423,7 +423,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     @Override
     public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow, boolean excludeSpecialChildren) {
         CopyResult result = rowMapper.copy(source, destParentId, destName, overwriteRow, excludeSpecialChildren);
-        Invalidations invalidations = result.invalidations;
+        VCSInvalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
             for (RowId rowId : invalidations.modified) {
                 cacheRemove(rowId);

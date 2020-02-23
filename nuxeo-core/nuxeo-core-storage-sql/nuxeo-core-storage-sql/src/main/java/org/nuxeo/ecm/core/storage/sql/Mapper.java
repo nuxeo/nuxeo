@@ -233,12 +233,12 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * Inserts the invalidation rows for the other cluster nodes.
      */
-    void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations);
+    void insertClusterInvalidations(Serializable nodeId, VCSInvalidations invalidations);
 
     /**
      * Gets the invalidations from other cluster nodes.
      */
-    Invalidations getClusterInvalidations(Serializable nodeId);
+    VCSInvalidations getClusterInvalidations(Serializable nodeId);
 
     /*
      * ----- Locking -----

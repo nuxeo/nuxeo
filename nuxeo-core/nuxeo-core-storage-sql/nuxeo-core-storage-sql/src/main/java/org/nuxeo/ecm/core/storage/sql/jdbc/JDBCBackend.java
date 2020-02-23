@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
-import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
+import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Model.IdType;
@@ -56,7 +56,7 @@ public class JDBCBackend implements RepositoryBackend {
 
     private SQLInfo sqlInfo;
 
-    private ClusterInvalidator clusterInvalidator;
+    private VCSClusterInvalidator clusterInvalidator;
 
     private boolean isPooledDataSource;
 
@@ -134,14 +134,14 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     @Override
-    public void setClusterInvalidator(ClusterInvalidator clusterInvalidator) {
+    public void setClusterInvalidator(VCSClusterInvalidator clusterInvalidator) {
         this.clusterInvalidator = clusterInvalidator;
     }
 
     @Override
     public Mapper newMapper(PathResolver pathResolver, boolean useInvalidations) {
         boolean noSharing = !useInvalidations;
-        ClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
+        VCSClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, repository);
         if (isPooledDataSource) {
             mapper = JDBCMapperConnector.newConnector(mapper, noSharing);

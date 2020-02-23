@@ -18,44 +18,22 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import org.nuxeo.ecm.core.storage.InvalidationsQueue;
+
 /**
  * Queue of invalidations.
  * <p>
  * All invalidations added are accumulated (from multiple threads), then returned when asked for.
  */
-public class InvalidationsQueue {
+public class VCSInvalidationsQueue extends InvalidationsQueue<VCSInvalidations> {
 
-    public Invalidations queue; // used under synchronization
-
-    /** used for debugging */
-    public final String name;
-
-    public InvalidationsQueue(String name) {
-        queue = new Invalidations();
-        this.name = name;
-    }
-
-    /**
-     * Adds invalidations.
-     * <p>
-     * May be called asynchronously from multiple threads.
-     */
-    public synchronized void addInvalidations(Invalidations invalidations) {
-        queue.add(invalidations);
-    }
-
-    /**
-     * Gets the queued invalidations and resets the queue.
-     */
-    public synchronized Invalidations getInvalidations() {
-        Invalidations invalidations = queue;
-        queue = new Invalidations();
-        return invalidations;
+    public VCSInvalidationsQueue(String name) {
+        super(name);
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + '(' + name + ')';
+    public VCSInvalidations newInvalidations() {
+        return new VCSInvalidations();
     }
 
 }
