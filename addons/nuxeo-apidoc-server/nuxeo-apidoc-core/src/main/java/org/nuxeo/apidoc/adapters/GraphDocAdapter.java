@@ -20,6 +20,7 @@ package org.nuxeo.apidoc.adapters;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.graph.Edge;
@@ -111,6 +112,16 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
 
     @Override
     public Node getNode(String nodeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Node> getNodes() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Edge> getEdges() {
         throw new UnsupportedOperationException();
     }
 

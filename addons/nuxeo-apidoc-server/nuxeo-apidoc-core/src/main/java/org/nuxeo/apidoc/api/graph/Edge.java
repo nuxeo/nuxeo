@@ -29,4 +29,7 @@ public interface Edge {
 
     String getValue();
 
+    String getId();
+
+    void setId(String id);
 }

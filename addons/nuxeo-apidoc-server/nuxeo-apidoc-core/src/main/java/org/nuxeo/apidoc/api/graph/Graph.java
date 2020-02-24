@@ -18,6 +18,8 @@
  */
 package org.nuxeo.apidoc.api.graph;
 
+import java.util.List;
+
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -42,5 +44,9 @@ public interface Graph extends NuxeoArtifact {
     void addEdge(Edge edge);
 
     Node getNode(String nodeId);
+
+    List<Node> getNodes();
+
+    List<Edge> getEdges();
 
 }

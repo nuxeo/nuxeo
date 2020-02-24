@@ -75,33 +75,27 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
             BundleInfo bundle = distribution.getBundle(bid);
             // add node for bundle
             NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundle);
-            String pbid = prefixId(BundleInfo.TYPE_NAME, bid);
-            graph.addNode(createNode(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor()));
+            Node bundleNode = createBundleNode(bundle, cat);
+            graph.addNode(bundleNode);
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
             for (ComponentInfo component : components) {
-                String compid = component.getId();
-                String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
-                graph.addNode(createNode(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(),
-                        cat.name(), cat.getColor()));
-                addEdge(graph, hits, createEdge(pbid, pcompid, EDGE_TYPE.CONTAINS.name()));
+                Node compNode = createComponentNode(component, cat);
+                graph.addNode(compNode);
+                addEdge(graph, hits, createEdge(bundleNode, compNode, EDGE_TYPE.CONTAINS.name()));
                 for (ServiceInfo service : component.getServices()) {
                     if (service.isOverriden()) {
                         continue;
                     }
-                    String sid = service.getId();
-                    String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
-                    graph.addNode(createNode(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
-                            cat.name(), cat.getColor()));
-                    addEdge(graph, hits, createEdge(pcompid, psid, EDGE_TYPE.CONTAINS.name()));
+                    Node serviceNode = createServiceNode(service, cat);
+                    graph.addNode(serviceNode);
+                    addEdge(graph, hits, createEdge(compNode, serviceNode, EDGE_TYPE.CONTAINS.name()));
                 }
 
                 for (ExtensionPointInfo xp : component.getExtensionPoints()) {
-                    String xpid = xp.getId();
-                    String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
-                    graph.addNode(createNode(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
-                            cat.name(), cat.getColor()));
-                    addEdge(graph, hits, createEdge(pcompid, pxpid, EDGE_TYPE.CONTAINS.name()));
+                    Node xpNode = createXPNode(xp, cat);
+                    graph.addNode(xpNode);
+                    addEdge(graph, hits, createEdge(compNode, xpNode, EDGE_TYPE.CONTAINS.name()));
                 }
 
                 Map<String, Integer> comps = new HashMap<String, Integer>();
@@ -116,19 +110,21 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                         comps.put(cid, Integer.valueOf(0));
                     }
 
-                    String pcid = prefixId(ExtensionInfo.TYPE_NAME, cid);
+                    Node contNode = createContributionNode(contribution, cat);
+                    graph.addNode(contNode);
                     // add link to corresponding component
-                    graph.addNode(createNode(pcid, cid, 0, contribution.getHierarchyPath(),
-                            NODE_TYPE.CONTRIBUTION.name(), cat.name(), cat.getColor()));
-                    addEdge(graph, hits, createEdge(pcompid, pcid, EDGE_TYPE.CONTAINS.name()));
+                    addEdge(graph, hits, createEdge(compNode, contNode, EDGE_TYPE.CONTAINS.name()));
 
-                    // also add link to target extension point, "guessing" the extension point id
+                    // also add link to target extension point, "guessing" the extension point id, not counting for
+                    // hits
                     String targetId = prefixId(ComponentInfo.TYPE_NAME,
                             contribution.getTargetComponentName() + "--" + contribution.getExtensionPoint());
-                    graph.addEdge(createEdge(targetId, pcid, EDGE_TYPE.REFERENCES.name()));
+                    addEdge(graph, null, createEdge(createNode(targetId), contNode, EDGE_TYPE.REFERENCES.name()));
                 }
             }
         }
+
+        addMissingNodes(graph);
 
         for (Map.Entry<String, Integer> hit : hits.entrySet()) {
             setWeight(graph, hit.getKey(), hit.getValue());
@@ -137,19 +133,84 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
         return graph;
     }
 
+    /**
+     * Adds potentially missing nodes references in all edges + set integer id as required by some rendering frameworks.
+     */
+    protected void addMissingNodes(GraphImpl graph) {
+        int index = 0;
+        for (Edge edge : graph.getEdges()) {
+            edge.setId(String.valueOf(index));
+            index++;
+            Node source = graph.getNode(edge.getSource());
+            if (source == null) {
+                addMissingNode(graph, edge.getSource());
+            }
+            Node target = graph.getNode(edge.getTarget());
+            if (target == null) {
+                addMissingNode(graph, edge.getTarget());
+            }
+        }
+    }
+
+    protected Node addMissingNode(GraphImpl graph, String id) {
+        Node node = createNode(id);
+        graph.addNode(node);
+        return node;
+    }
+
     protected Node createNode(String id, String label, int weight, String path, String type, String category,
             String color) {
         return new NodeImpl(id, label, weight, path, type, category, color);
     }
 
-    protected Edge createEdge(String source, String target, String value) {
-        return new EdgeImpl(source, target, value);
+    protected Node createNode(String id) {
+        return createNode(id, id, 0, null, null, null, null);
+    }
+
+    protected Node createBundleNode(BundleInfo bundle, NODE_CATEGORY cat) {
+        String bid = bundle.getId();
+        String pbid = prefixId(BundleInfo.TYPE_NAME, bid);
+        return createNode(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor());
+    }
+
+    protected Node createComponentNode(ComponentInfo component, NODE_CATEGORY cat) {
+        String compid = component.getId();
+        String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
+        return createNode(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(), cat.name(),
+                cat.getColor());
+    }
+
+    protected Node createServiceNode(ServiceInfo service, NODE_CATEGORY cat) {
+        String sid = service.getId();
+        String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
+        return createNode(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(), cat.name(),
+                cat.getColor());
+    }
+
+    protected Node createXPNode(ExtensionPointInfo xp, NODE_CATEGORY cat) {
+        String xpid = xp.getId();
+        String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
+        return createNode(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(), cat.name(),
+                cat.getColor());
+    }
+
+    protected Node createContributionNode(ExtensionInfo contribution, NODE_CATEGORY cat) {
+        String cid = contribution.getId();
+        String pcid = prefixId(ExtensionInfo.TYPE_NAME, cid);
+        return createNode(pcid, cid, 0, contribution.getHierarchyPath(), NODE_TYPE.CONTRIBUTION.name(), cat.name(),
+                cat.getColor());
+    }
+
+    protected Edge createEdge(Node source, Node target, String value) {
+        return new EdgeImpl(null, source.getId(), target.getId(), value);
     }
 
     protected void addEdge(Graph graph, Map<String, Integer> hits, Edge edge) {
         graph.addEdge(edge);
-        hit(hits, edge.getSource());
-        hit(hits, edge.getTarget());
+        if (hits != null) {
+            hit(hits, edge.getSource());
+            hit(hits, edge.getTarget());
+        }
     }
 
     protected void hit(Map<String, Integer> hits, String source) {

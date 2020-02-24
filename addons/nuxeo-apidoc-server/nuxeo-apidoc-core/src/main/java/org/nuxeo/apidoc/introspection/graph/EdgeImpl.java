@@ -30,6 +30,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreType
 public class EdgeImpl implements Edge {
 
+    protected String id;
+
     protected final String source;
 
     protected final String target;
@@ -37,8 +39,8 @@ public class EdgeImpl implements Edge {
     protected final String value;
 
     @JsonCreator
-    public EdgeImpl(@JsonProperty("source") String source, @JsonProperty("target") String target,
-            @JsonProperty("value") String value) {
+    public EdgeImpl(@JsonProperty("id") String id, @JsonProperty("source") String source,
+            @JsonProperty("target") String target, @JsonProperty("value") String value) {
         super();
         this.source = source;
         this.target = target;
@@ -58,6 +60,14 @@ public class EdgeImpl implements Edge {
     @Override
     public String getValue() {
         return value;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

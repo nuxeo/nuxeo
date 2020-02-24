@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.introspection.graph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -129,6 +130,18 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
 
     public Node getNode(String id) {
         return nodeMap.get(id);
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Node> getNodes() {
+        return Collections.unmodifiableList(nodes);
+    }
+
+    @Override
+    @JsonIgnore
+    public List<Edge> getEdges() {
+        return Collections.unmodifiableList(edges);
     }
 
 }
