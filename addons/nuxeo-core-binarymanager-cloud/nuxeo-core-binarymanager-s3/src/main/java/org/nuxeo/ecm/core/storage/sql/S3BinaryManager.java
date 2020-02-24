@@ -158,6 +158,9 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
      */
     public static final String PATHSTYLEACCESS_PROPERTY = "pathstyleaccess";
 
+    /** @since 11.1 */
+    public static final String ACCELERATE_MODE_PROPERTY = "accelerateMode";
+
     public static final String DIRECTDOWNLOAD_PROPERTY_COMPAT = "downloadfroms3";
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
@@ -242,6 +245,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         String privkeyAlias = getProperty(PRIVKEY_ALIAS_PROPERTY);
         String privkeyPass = getProperty(PRIVKEY_PASS_PROPERTY);
         String endpoint = getProperty(ENDPOINT_PROPERTY);
+        boolean accelerateModeEnabled = getBooleanProperty(ACCELERATE_MODE_PROPERTY);
         boolean pathStyleAccessEnabled = getBooleanProperty(PATHSTYLEACCESS_PROPERTY);
         String sseprop = getProperty(SERVERSIDE_ENCRYPTION_PROPERTY);
         if (isNotBlank(sseprop)) {
@@ -356,6 +360,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         } else {
             s3Builder = s3Builder.withRegion(bucketRegion);
         }
+        s3Builder.setAccelerateModeEnabled(accelerateModeEnabled);
 
         amazonS3 = s3Builder.build();
 
