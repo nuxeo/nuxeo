@@ -110,6 +110,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
     public static final String PATHSTYLEACCESS_PROPERTY = "pathstyleaccess";
 
+    public static final String ACCELERATE_MODE_PROPERTY = "accelerateMode";
+
     public static final String DIRECTDOWNLOAD_PROPERTY_COMPAT = "downloadfroms3";
 
     public static final String DIRECTDOWNLOAD_EXPIRE_PROPERTY_COMPAT = "downloadfroms3.expire";
@@ -194,6 +196,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
 
         configurePathStyleAccess(s3Builder);
         configureRegionOrEndpoint(s3Builder);
+        configureAccelerateMode(s3Builder);
 
         amazonS3 = getAmazonS3(s3Builder);
 
@@ -375,6 +378,14 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
             s3Builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, bucketRegion));
         } else {
             s3Builder.withRegion(bucketRegion);
+        }
+    }
+
+    protected void configureAccelerateMode(AmazonS3Builder<?, ?> s3Builder) {
+        boolean accelerateModeEnabled = getBooleanProperty(ACCELERATE_MODE_PROPERTY);
+        if (accelerateModeEnabled) {
+            log.debug("Accelerate mode enabled");
+            s3Builder.enableAccelerateMode();
         }
     }
 
