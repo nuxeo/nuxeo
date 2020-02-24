@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -30,6 +31,7 @@ import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_NAME_PROPERT
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_REGION_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.ENDPOINT_PROPERTY;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.PATHSTYLEACCESS_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE;
 
 import java.io.Serializable;
@@ -105,6 +107,9 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     /** @since 11.1 */
     public static final String INFO_AWS_ENDPOINT = "endpoint";
 
+    /** @since 11.1 */
+    public static final String INFO_AWS_PATH_STYLE_ACCESS = "usePathStyleAccess";
+
     public static final String INFO_AWS_REGION = "region";
 
     public static final String INFO_USE_S3_ACCELERATE = "useS3Accelerate";
@@ -114,6 +119,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     protected AmazonS3 amazonS3;
 
     protected String endpoint;
+
+    protected boolean pathStyleAccessEnabled;
 
     protected String region;
 
@@ -137,6 +144,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     protected void initialize(Map<String, String> properties) {
         super.initialize(properties);
         endpoint = properties.get(ENDPOINT_PROPERTY);
+        pathStyleAccessEnabled = Boolean.parseBoolean(properties.get(PATHSTYLEACCESS_PROPERTY));
         region = properties.get(BUCKET_REGION_PROPERTY);
         if (isBlank(region)) {
             region = NuxeoAWSRegionProvider.getInstance().getRegion();
@@ -182,6 +190,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     protected AmazonS3 initializeS3Client(AWSCredentialsProvider credentials) {
         AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard();
         initializeBuilder(builder, credentials);
+        builder.setPathStyleAccessEnabled(pathStyleAccessEnabled);
         builder.setAccelerateModeEnabled(accelerateModeEnabled);
         return builder.build();
     }
@@ -221,7 +230,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         properties.put(INFO_BUCKET, bucket);
         properties.put(INFO_BASE_KEY, bucketPrefix);
         properties.put(INFO_EXPIRATION, credentials.getExpiration().toInstant().toEpochMilli());
-        properties.put(INFO_AWS_ENDPOINT, endpoint);
+        properties.put(INFO_AWS_ENDPOINT, defaultIfBlank(endpoint, null));
+        properties.put(INFO_AWS_PATH_STYLE_ACCESS, pathStyleAccessEnabled);
         properties.put(INFO_AWS_REGION, region);
         properties.put(INFO_USE_S3_ACCELERATE, accelerateModeEnabled);
 
