@@ -24,8 +24,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.coursera.metrics.datadog.DatadogReporter;
-import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.coursera.metrics.datadog.DefaultMetricNameFormatter;
 import org.coursera.metrics.datadog.transport.HttpTransport;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -49,7 +47,7 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
 
     protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    private DatadogReporter reporter;
+    private NuxeoDatadogReporter reporter;
 
     private DatadogReporterConfDescriptor configuration;
 
@@ -78,7 +76,7 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
 
     private void buildReporter() {
         HttpTransport httpTransport = new HttpTransport.Builder().withApiKey(configuration.getApiKey()).build();
-        reporter = DatadogReporter.forRegistry(metrics)//
+        reporter = NuxeoDatadogReporter.forRegistry(metrics)//
                                   .withHost(configuration.getHost())//
                                   .withTags(configuration.getTags())
                                   .withTransport(httpTransport)//
@@ -88,7 +86,7 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
                                   .build();
     }
 
-    private EnumSet<Expansion> getExpansions() {
+    private EnumSet<NuxeoDatadogReporter.Expansion> getExpansions() {
         return configuration.filter.getExpansions();
     }
 
@@ -105,9 +103,9 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
         return (name, metric) ->
         // Include the metric if its name is not excluded and its name is included
         // Where, by default, with no includes setting, all names are included.
-        !stringMatchingStrategy.containsMatch(configuration.filter.getExcludes(), name)
+        !stringMatchingStrategy.containsMatch(configuration.filter.getExcludes(), name.getKey())
                 && (configuration.filter.getIncludes().isEmpty()
-                        || stringMatchingStrategy.containsMatch(configuration.filter.getIncludes(), name));
+                        || stringMatchingStrategy.containsMatch(configuration.filter.getIncludes(), name.getKey()));
     }
 
     @Override
@@ -124,7 +122,7 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
         reporter.stop();
     }
 
-    DatadogReporter getReporter() {
+    NuxeoDatadogReporter getReporter() {
         return reporter;
     }
 

@@ -23,7 +23,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -64,12 +63,14 @@ public class FilterDescriptor {
         return ImmutableSet.<String> builder().addAll(excludes).build();
     }
 
-    public EnumSet<Expansion> getExpansions() {
+    public EnumSet<NuxeoDatadogReporter.Expansion> getExpansions() {
         if (expansions.isEmpty()) {
-            return Expansion.ALL;
+            return NuxeoDatadogReporter.Expansion.ALL;
         } else {
-            return Expansion.ALL.stream().filter(e -> expansions.contains(e.toString())).collect(
-                    Collectors.toCollection(() -> EnumSet.noneOf(Expansion.class)));
+            return NuxeoDatadogReporter.Expansion.ALL.stream()
+                                                     .filter(e -> expansions.contains(e.toString()))
+                                                     .collect(Collectors.toCollection(() -> EnumSet.noneOf(
+                                                             NuxeoDatadogReporter.Expansion.class)));
         }
     }
 }

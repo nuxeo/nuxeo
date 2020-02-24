@@ -1,26 +1,75 @@
-package org.coursera.metrics.datadog;
+/*
+ * Simplified BSD License
+ *
+ *  Copyright (c) 2014, Vistar Media
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *
+ *      * Redistributions of source code must retain the above copyright notice,
+ *        this list of conditions and the following disclaimer.
+ *      * Redistributions in binary form must reproduce the above copyright notice,
+ *        this list of conditions and the following disclaimer in the documentation
+ *        and/or other materials provided with the distribution.
+ *      * Neither the name of Vistar Media nor the names of its contributors
+ *        may be used to endorse or promote products derived from this software
+ *        without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ *  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ *  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *  DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ *  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ *  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Contributors:
+ *     coursera https://raw.githubusercontent.com/coursera/metrics-datadog/master/metrics-datadog
+ *     bdelbosc
+ */
+
+package org.nuxeo.datadog.reporter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.coursera.metrics.datadog.AwsHelper;
+import org.coursera.metrics.datadog.DefaultMetricNameFormatter;
+import org.coursera.metrics.datadog.MetricNameFormatter;
 import org.coursera.metrics.datadog.model.DatadogGauge;
 import org.coursera.metrics.datadog.transport.Transport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.dropwizard.metrics5.Clock;
+import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.Histogram;
+import io.dropwizard.metrics5.Meter;
 import io.dropwizard.metrics5.Metered;
 import io.dropwizard.metrics5.MetricFilter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.ScheduledReporter;
+import io.dropwizard.metrics5.Snapshot;
+import io.dropwizard.metrics5.Timer;
 
+/**
+ * A copy of Coursera DatadogReporter with minor adaptation to handle metric with tags.
+ *
+ * @since 11.1
+ */
 public class NuxeoDatadogReporter extends ScheduledReporter {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NuxeoDatadogReporter.class);
+    protected static final Log log = LogFactory.getLog(NuxeoDatadogReporter.class);
 
     private static final Expansion[] STATS_EXPANSIONS = { Expansion.MAX, Expansion.MEAN, Expansion.MIN,
             Expansion.STD_DEV, Expansion.MEDIAN, Expansion.P75, Expansion.P95, Expansion.P98, Expansion.P99,
@@ -43,65 +92,64 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
 
     private final String prefix;
 
-    private final DynamicTagsCallback tagsCallback;
-
     private Transport.Request request;
 
     private NuxeoDatadogReporter(MetricRegistry metricRegistry, Transport transport, MetricFilter filter, Clock clock,
             String host, EnumSet<Expansion> expansions, TimeUnit rateUnit, TimeUnit durationUnit,
-            MetricNameFormatter metricNameFormatter, List<String> tags, String prefix,
-            DynamicTagsCallback tagsCallback) {
+            MetricNameFormatter metricNameFormatter, List<String> tags, String prefix) {
         super(metricRegistry, "datadog-reporter", filter, rateUnit, durationUnit);
         this.clock = clock;
         this.host = host;
         this.expansions = expansions;
         this.metricNameFormatter = metricNameFormatter;
-        this.tags = (tags == null) ? new ArrayList<String>() : tags;
+        this.tags = (tags == null) ? new ArrayList<>() : tags;
         this.transport = transport;
         this.prefix = prefix;
-        this.tagsCallback = tagsCallback;
     }
 
     @Override
-    public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters,
-            SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
+    public void report(SortedMap<MetricName, Gauge> gauges, SortedMap<MetricName, Counter> counters,
+            SortedMap<MetricName, Histogram> histograms, SortedMap<MetricName, Meter> meters,
+            SortedMap<MetricName, Timer> timers) {
         final long timestamp = clock.getTime() / 1000;
-
-        List<String> newTags = tags;
-        if (tagsCallback != null) {
-            List<String> dynamicTags = tagsCallback.getTags();
-            if (dynamicTags != null && !dynamicTags.isEmpty()) {
-                newTags = TagUtils.mergeTags(tags, dynamicTags);
-            }
-        }
 
         try {
             request = transport.prepare();
 
-            for (Map.Entry<String, Gauge> entry : gauges.entrySet()) {
-                reportGauge(prefix(entry.getKey()), entry.getValue(), timestamp, newTags);
+            for (Map.Entry<MetricName, Gauge> entry : gauges.entrySet()) {
+                reportGauge(prefix(entry.getKey().getKey()), entry.getValue(), timestamp,
+                        getTags(entry.getKey().getTags()));
             }
 
-            for (Map.Entry<String, Counter> entry : counters.entrySet()) {
-                reportCounter(prefix(entry.getKey()), entry.getValue(), timestamp, newTags);
+            for (Map.Entry<MetricName, Counter> entry : counters.entrySet()) {
+                reportCounter(prefix(entry.getKey().getKey()), entry.getValue(), timestamp,
+                        getTags(entry.getKey().getTags()));
             }
 
-            for (Map.Entry<String, Histogram> entry : histograms.entrySet()) {
-                reportHistogram(prefix(entry.getKey()), entry.getValue(), timestamp, newTags);
+            for (Map.Entry<MetricName, Histogram> entry : histograms.entrySet()) {
+                reportHistogram(prefix(entry.getKey().getKey()), entry.getValue(), timestamp,
+                        getTags(entry.getKey().getTags()));
             }
 
-            for (Map.Entry<String, Meter> entry : meters.entrySet()) {
-                reportMetered(prefix(entry.getKey()), entry.getValue(), timestamp, newTags);
+            for (Map.Entry<MetricName, Meter> entry : meters.entrySet()) {
+                reportMetered(prefix(entry.getKey().getKey()), entry.getValue(), timestamp,
+                        getTags(entry.getKey().getTags()));
             }
 
-            for (Map.Entry<String, Timer> entry : timers.entrySet()) {
-                reportTimer(prefix(entry.getKey()), entry.getValue(), timestamp, newTags);
+            for (Map.Entry<MetricName, Timer> entry : timers.entrySet()) {
+                reportTimer(prefix(entry.getKey().getKey()), entry.getValue(), timestamp,
+                        getTags(entry.getKey().getTags()));
             }
-
             request.send();
         } catch (Throwable e) {
-            LOG.error("Error reporting metrics to Datadog", e);
+            log.error("Error reporting metrics to Datadog", e);
         }
+    }
+
+    protected List<String> getTags(Map<String, String> metricTags) {
+        List<String> ret = new ArrayList<>(tags);
+        metricTags.forEach((k, v) -> ret.add(k + ":" + v));
+        return ret;
     }
 
     private void reportTimer(String name, Timer timer, long timestamp, List<String> tags) throws IOException {
@@ -182,7 +230,7 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
         } catch (Exception e) {
             String errorMessage = String.format("Error reporting gauge metric (name: %s, tags: %s) to Datadog, "
                     + "continuing reporting other metrics.", name, tags);
-            LOG.error(errorMessage, e);
+            log.error(errorMessage, e);
         }
     }
 
@@ -251,8 +299,6 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
 
         private String prefix;
 
-        private DynamicTagsCallback tagsCallback;
-
         public Builder(MetricRegistry registry) {
             this.registry = registry;
             this.expansions = Expansion.ALL;
@@ -276,11 +322,6 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
 
         public Builder withExpansions(EnumSet<Expansion> expansions) {
             this.expansions = expansions;
-            return this;
-        }
-
-        public Builder withDynamicTagCallback(DynamicTagsCallback tagsCallback) {
-            this.tagsCallback = tagsCallback;
             return this;
         }
 
@@ -348,8 +389,8 @@ public class NuxeoDatadogReporter extends ScheduledReporter {
                         "Transport for datadog reporter is null. " + "Please set a valid transport");
             }
             return new NuxeoDatadogReporter(this.registry, this.transport, this.filter, this.clock, this.host,
-                    this.expansions, this.rateUnit, this.durationUnit, this.metricNameFormatter, this.tags, this.prefix,
-                    this.tagsCallback);
+                    this.expansions, this.rateUnit, this.durationUnit, this.metricNameFormatter, this.tags,
+                    this.prefix);
         }
     }
 }

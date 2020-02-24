@@ -27,7 +27,6 @@ import java.util.EnumSet;
 
 import javax.inject.Inject;
 
-import org.coursera.metrics.datadog.DatadogReporter.Expansion;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.api.Framework;
@@ -38,6 +37,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import io.dropwizard.metrics5.MetricFilter;
+import io.dropwizard.metrics5.MetricName;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
@@ -84,9 +84,9 @@ public class DatadogReporterConfDescriptorTest {
 
         MetricFilter filter = service.getFilter();
 
-        assertTrue(filter.matches("jvm.useful", null));
-        assertFalse(filter.matches("jvm.useless", null));
-        assertTrue(filter.matches("nuxeo.all", null));
+        assertTrue(filter.matches(MetricName.build("jvm.useful"), null));
+        assertFalse(filter.matches(MetricName.build("jvm.useless"), null));
+        assertTrue(filter.matches(MetricName.build("nuxeo.all"), null));
     }
 
     @Test
@@ -94,7 +94,8 @@ public class DatadogReporterConfDescriptorTest {
         DatadogReporterServiceImpl service = (DatadogReporterServiceImpl) reporter;
         DatadogReporterConfDescriptor config = service.getConfig();
 
-        assertEquals(EnumSet.of(Expansion.P99, Expansion.COUNT), config.filter.getExpansions());
+        assertEquals(EnumSet.of(NuxeoDatadogReporter.Expansion.P99, NuxeoDatadogReporter.Expansion.COUNT),
+                config.filter.getExpansions());
     }
 
 }
