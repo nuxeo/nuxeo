@@ -12,6 +12,8 @@
       <property name="awstoken">${nuxeo.s3storage.awstoken}</property>
       <property name="bucket">${nuxeo.s3storage.bucket}</property>
       <property name="region">${nuxeo.s3storage.region}</property>
+      <property name="endpoint">${nuxeo.s3storage.endpoint}</property>
+      <property name="pathstyleaccess">${nuxeo.s3storage.pathstyleaccess}</property>
       <property name="bucket_prefix">${nuxeo.s3storage.bucket_prefix}</property>
       <!-- min file age, in second, to be removed from cache if the size max size is reached, default is 3600 -->
       <property name="cacheminage">${nuxeo.s3storage.cacheminage}</property>
