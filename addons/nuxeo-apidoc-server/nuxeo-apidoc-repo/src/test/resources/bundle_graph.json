@@ -1,0 +1,659 @@
+{
+  "id" : "bundles",
+  "nodes" : [ {
+    "id" : "NXBundle-org.nuxeo.apidoc.core",
+    "label" : "org.nuxeo.apidoc.core",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.apidoc.repo",
+    "label" : "org.nuxeo.apidoc.repo",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.directory.mongodb",
+    "label" : "org.nuxeo.directory.mongodb",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.actions",
+    "label" : "org.nuxeo.ecm.actions",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.automation.core",
+    "label" : "org.nuxeo.ecm.automation.core",
+    "weight" : 2,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.automation.features",
+    "label" : "org.nuxeo.ecm.automation.features",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.automation.io",
+    "label" : "org.nuxeo.ecm.automation.io",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.automation.scripting",
+    "label" : "org.nuxeo.ecm.automation.scripting",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.automation.server",
+    "label" : "org.nuxeo.ecm.automation.server",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.config",
+    "label" : "org.nuxeo.ecm.config",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core",
+    "label" : "org.nuxeo.ecm.core",
+    "weight" : 7,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.api",
+    "label" : "org.nuxeo.ecm.core.api",
+    "weight" : 2,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.bulk",
+    "label" : "org.nuxeo.ecm.core.bulk",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.bulk.test",
+    "label" : "org.nuxeo.ecm.core.bulk.test",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.cache",
+    "label" : "org.nuxeo.ecm.core.cache",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.convert",
+    "label" : "org.nuxeo.ecm.core.convert",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.convert.plugins",
+    "label" : "org.nuxeo.ecm.core.convert.plugins",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.event",
+    "label" : "org.nuxeo.ecm.core.event",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.event.test",
+    "label" : "org.nuxeo.ecm.core.event.test",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.io",
+    "label" : "org.nuxeo.ecm.core.io",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.management",
+    "label" : "org.nuxeo.ecm.core.management",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.mimetype",
+    "label" : "org.nuxeo.ecm.core.mimetype",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.query",
+    "label" : "org.nuxeo.ecm.core.query",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.schema",
+    "label" : "org.nuxeo.ecm.core.schema",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.storage",
+    "label" : "org.nuxeo.ecm.core.storage",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.storage.dbs",
+    "label" : "org.nuxeo.ecm.core.storage.dbs",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.storage.mem",
+    "label" : "org.nuxeo.ecm.core.storage.mem",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.storage.mongodb",
+    "label" : "org.nuxeo.ecm.core.storage.mongodb",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.storage.sql",
+    "label" : "org.nuxeo.ecm.core.storage.sql",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.storage.sql.test",
+    "label" : "org.nuxeo.ecm.core.storage.sql.test",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.core.test",
+    "label" : "org.nuxeo.ecm.core.test",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.directory",
+    "label" : "org.nuxeo.ecm.directory",
+    "weight" : 2,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.directory.api",
+    "label" : "org.nuxeo.ecm.directory.api",
+    "weight" : 3,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.directory.sql",
+    "label" : "org.nuxeo.ecm.directory.sql",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.directory.types.contrib",
+    "label" : "org.nuxeo.ecm.directory.types.contrib",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.api",
+    "label" : "org.nuxeo.ecm.platform.api",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.commandline.executor",
+    "label" : "org.nuxeo.ecm.platform.commandline.executor",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.content.template",
+    "label" : "org.nuxeo.ecm.platform.content.template",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.dublincore",
+    "label" : "org.nuxeo.ecm.platform.dublincore",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.el",
+    "label" : "org.nuxeo.ecm.platform.el",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.export",
+    "label" : "org.nuxeo.ecm.platform.forms.layout.export",
+    "weight" : 2,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.login",
+    "label" : "org.nuxeo.ecm.platform.login",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.query.api",
+    "label" : "org.nuxeo.ecm.platform.query.api",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
+    "label" : "org.nuxeo.ecm.platform.usermanager",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.usermanager.api",
+    "label" : "org.nuxeo.ecm.platform.usermanager.api",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.web.common",
+    "label" : "org.nuxeo.ecm.platform.web.common",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.webengine.core",
+    "label" : "org.nuxeo.ecm.webengine.core",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.webengine.jaxrs",
+    "label" : "org.nuxeo.ecm.webengine.jaxrs",
+    "weight" : 5,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.elasticsearch.core",
+    "label" : "org.nuxeo.elasticsearch.core",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF"
+  }, {
+    "id" : "NXBundle-org.nuxeo.osgi.app",
+    "label" : "org.nuxeo.osgi.app",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime",
+    "label" : "org.nuxeo.runtime",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.cluster",
+    "label" : "org.nuxeo.runtime.cluster",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.datasource",
+    "label" : "org.nuxeo.runtime.datasource",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.jtajca",
+    "label" : "org.nuxeo.runtime.jtajca",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.kv",
+    "label" : "org.nuxeo.runtime.kv",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.management",
+    "label" : "org.nuxeo.runtime.management",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.metrics",
+    "label" : "org.nuxeo.runtime.metrics",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.migration",
+    "label" : "org.nuxeo.runtime.migration",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.mongodb",
+    "label" : "org.nuxeo.runtime.mongodb",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.pubsub",
+    "label" : "org.nuxeo.runtime.pubsub",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.reload",
+    "label" : "org.nuxeo.runtime.reload",
+    "weight" : 1,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.stream",
+    "label" : "org.nuxeo.runtime.stream",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-org.nuxeo.runtime.stream.test",
+    "label" : "org.nuxeo.runtime.stream.test",
+    "weight" : 0,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "RUNTIME",
+    "color" : "#000000"
+  }, {
+    "id" : "NXBundle-javax.servlet",
+    "label" : "NXBundle-javax.servlet",
+    "weight" : 2,
+    "path" : null,
+    "type" : null,
+    "category" : null,
+    "color" : null
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.api",
+    "label" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.api",
+    "weight" : 1,
+    "path" : null,
+    "type" : null,
+    "category" : null,
+    "color" : null
+  }, {
+    "id" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.client",
+    "label" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.client",
+    "weight" : 1,
+    "path" : null,
+    "type" : null,
+    "category" : null,
+    "color" : null
+  }, {
+    "id" : "NXBundle-com.sun.jersey.server",
+    "label" : "NXBundle-com.sun.jersey.server",
+    "weight" : 1,
+    "path" : null,
+    "type" : null,
+    "category" : null,
+    "color" : null
+  }, {
+    "id" : "NXBundle-com.sun.jersey.core",
+    "label" : "NXBundle-com.sun.jersey.core",
+    "weight" : 1,
+    "path" : null,
+    "type" : null,
+    "category" : null,
+    "color" : null
+  } ],
+  "edges" : [ {
+    "id" : "0",
+    "source" : "NXBundle-org.nuxeo.ecm.automation.features",
+    "target" : "NXBundle-org.nuxeo.ecm.automation.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "1",
+    "source" : "NXBundle-org.nuxeo.ecm.automation.server",
+    "target" : "NXBundle-org.nuxeo.ecm.automation.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "2",
+    "source" : "NXBundle-org.nuxeo.ecm.core",
+    "target" : "NXBundle-org.nuxeo.ecm.core.api",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "3",
+    "source" : "NXBundle-org.nuxeo.ecm.core",
+    "target" : "NXBundle-org.nuxeo.ecm.core.event",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "4",
+    "source" : "NXBundle-org.nuxeo.ecm.core.management",
+    "target" : "NXBundle-org.nuxeo.ecm.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "5",
+    "source" : "NXBundle-org.nuxeo.ecm.core.storage.sql",
+    "target" : "NXBundle-javax.servlet",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "6",
+    "source" : "NXBundle-org.nuxeo.ecm.core.storage.sql.test",
+    "target" : "NXBundle-org.nuxeo.ecm.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "7",
+    "source" : "NXBundle-org.nuxeo.ecm.core.test",
+    "target" : "NXBundle-org.nuxeo.ecm.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "8",
+    "source" : "NXBundle-org.nuxeo.ecm.directory",
+    "target" : "NXBundle-org.nuxeo.ecm.directory.api",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "9",
+    "source" : "NXBundle-org.nuxeo.ecm.directory",
+    "target" : "NXBundle-org.nuxeo.ecm.core.schema",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "10",
+    "source" : "NXBundle-org.nuxeo.ecm.directory.api",
+    "target" : "NXBundle-org.nuxeo.ecm.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "11",
+    "source" : "NXBundle-org.nuxeo.ecm.directory.sql",
+    "target" : "NXBundle-org.nuxeo.ecm.directory.api",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "12",
+    "source" : "NXBundle-org.nuxeo.ecm.platform.content.template",
+    "target" : "NXBundle-org.nuxeo.ecm.core.api",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "13",
+    "source" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.export",
+    "target" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.api",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "14",
+    "source" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.export",
+    "target" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.client",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "15",
+    "source" : "NXBundle-org.nuxeo.ecm.platform.usermanager",
+    "target" : "NXBundle-org.nuxeo.ecm.platform.usermanager.api",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "16",
+    "source" : "NXBundle-org.nuxeo.ecm.webengine.jaxrs",
+    "target" : "NXBundle-org.nuxeo.ecm.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "17",
+    "source" : "NXBundle-org.nuxeo.ecm.webengine.jaxrs",
+    "target" : "NXBundle-org.nuxeo.ecm.core.io",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "18",
+    "source" : "NXBundle-org.nuxeo.ecm.webengine.jaxrs",
+    "target" : "NXBundle-javax.servlet",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "19",
+    "source" : "NXBundle-org.nuxeo.ecm.webengine.jaxrs",
+    "target" : "NXBundle-com.sun.jersey.server",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "20",
+    "source" : "NXBundle-org.nuxeo.ecm.webengine.jaxrs",
+    "target" : "NXBundle-com.sun.jersey.core",
+    "value" : "REQUIRES"
+  }, {
+    "id" : "21",
+    "source" : "NXBundle-org.nuxeo.runtime.reload",
+    "target" : "NXBundle-org.nuxeo.runtime",
+    "value" : "REQUIRES"
+  } ]
+}

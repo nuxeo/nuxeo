@@ -70,13 +70,17 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
         // - contributions
         Map<String, Integer> hits = new HashMap<>();
 
-        List<String> bids = distribution.getBundleIds();
-        for (String bid : bids) {
+        for (String bid : distribution.getBundleIds()) {
             BundleInfo bundle = distribution.getBundle(bid);
             // add node for bundle
             NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundle);
             Node bundleNode = createBundleNode(bundle, cat);
             graph.addNode(bundleNode);
+            // compute requirements
+            for (String requirement : bundle.getRequirements()) {
+                addEdge(graph, hits, createEdge(bundleNode, createNode(prefixId(BundleInfo.TYPE_NAME, requirement)),
+                        EDGE_TYPE.REQUIRES.name()));
+            }
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
             for (ComponentInfo component : components) {
@@ -120,6 +124,12 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
                     String targetId = prefixId(ComponentInfo.TYPE_NAME,
                             contribution.getTargetComponentName() + "--" + contribution.getExtensionPoint());
                     addEdge(graph, null, createEdge(createNode(targetId), contNode, EDGE_TYPE.REFERENCES.name()));
+
+                    // compute requirements
+                    for (String requirement : component.getRequirements()) {
+                        addEdge(graph, hits, createEdge(compNode,
+                                createNode(prefixId(ComponentInfo.TYPE_NAME, requirement)), EDGE_TYPE.REQUIRES.name()));
+                    }
                 }
             }
         }

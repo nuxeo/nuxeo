@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
  * @since 11.1
  */
 public enum EDGE_TYPE {
-    CONTAINS(0), REFERENCES(1);
+    CONTAINS(0), REFERENCES(1), REQUIRES(2);
 
     private EDGE_TYPE(int index) {
         this.index = index;

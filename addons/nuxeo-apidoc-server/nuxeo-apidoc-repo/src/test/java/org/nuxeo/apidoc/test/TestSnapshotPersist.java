@@ -172,6 +172,7 @@ public class TestSnapshotPersist {
         refs.add("basic_graph.json");
         refs.add("jgrapht.json");
         refs.add("gephi.json");
+        refs.add("bundle_graph.json");
 
         assertEquals(runtimeGraphs.size(), persistentGraphs.size());
         assertEquals(runtimeGraphs.size(), refs.size());

@@ -18,6 +18,13 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import java.io.File;
+
+import org.jgrapht.ext.ExportException;
+import org.jgrapht.ext.GmlExporter;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.SimpleDirectedGraph;
+import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -41,14 +48,34 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
     @Override
     public Graph getGraph() {
         Graph graph = super.getGraph();
-        // setup positioning of nodes (?)
+
+        // transform to get corresponding graph
+        SimpleDirectedGraph<PositionedNodeImpl, DefaultEdge> g = new SimpleDirectedGraph<PositionedNodeImpl, DefaultEdge>(
+                DefaultEdge.class);
+
+        for (Node node : graph.getNodes()) {
+            g.addVertex((PositionedNodeImpl) node);
+        }
+
+        for (Edge edge : graph.getEdges()) {
+            Node source = graph.getNode(edge.getSource());
+            Node target = graph.getNode(edge.getTarget());
+            g.addEdge((PositionedNodeImpl) source, (PositionedNodeImpl) target);
+        }
+
+        try {
+            GmlExporter<PositionedNodeImpl, DefaultEdge> exporter = new GmlExporter<PositionedNodeImpl, DefaultEdge>();
+            exporter.exportGraph(g, new File("test.graphml"));
+        } catch (ExportException e) {
+            throw new RuntimeException(e);
+        }
 
         return graph;
     }
 
     @Override
-    protected Node createNode(String id, String label, int weight, String path, String type, String category,
-            String color) {
+    protected PositionedNodeImpl createNode(String id, String label, int weight, String path, String type,
+            String category, String color) {
         return new PositionedNodeImpl(id, label, weight, path, type, category, color);
     }
 

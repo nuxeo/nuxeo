@@ -45,6 +45,7 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.introspection.graph.BasicGraphGeneratorImpl;
+import org.nuxeo.apidoc.introspection.graph.BundleGraphGeneratorImpl;
 import org.nuxeo.apidoc.introspection.graph.GephiGraphGeneratorImpl;
 import org.nuxeo.apidoc.introspection.graph.JGraphGeneratorImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -244,6 +245,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         graphs.add(BasicGraphGeneratorImpl.getGraph("basic", this));
         graphs.add(JGraphGeneratorImpl.getGraph("jgrapht", this));
         graphs.add(GephiGraphGeneratorImpl.getGraph("gephi", this));
+        graphs.add(BundleGraphGeneratorImpl.getGraph("bundles", this));
     }
 
     protected BundleGroupImpl buildBundleGroup(String id, String version) {
