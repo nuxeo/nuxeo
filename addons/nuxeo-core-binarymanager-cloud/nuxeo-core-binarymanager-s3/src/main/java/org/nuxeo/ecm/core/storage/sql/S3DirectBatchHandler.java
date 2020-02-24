@@ -24,6 +24,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.ACCELERATE_MODE_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_ID_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SECRET_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.AWS_SESSION_TOKEN_PROPERTY;
@@ -76,6 +77,8 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     // properties passed at initialization time from extension point
 
+    /** @deprecated since 11.1, use {@link S3BinaryManager#ACCELERATE_MODE_PROPERTY} */
+    @Deprecated
     public static final String ACCELERATE_MODE_ENABLED_PROPERTY = "accelerateMode";
 
     public static final String POLICY_TEMPLATE_PROPERTY = "policyTemplate";
@@ -158,7 +161,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
             throw new NuxeoException("Missing configuration property: " + ROLE_ARN_PROPERTY);
         }
         bucketPrefix = defaultString(properties.get(BUCKET_PREFIX_PROPERTY));
-        accelerateModeEnabled = Boolean.parseBoolean(properties.get(ACCELERATE_MODE_ENABLED_PROPERTY));
+        accelerateModeEnabled = Boolean.parseBoolean(properties.get(ACCELERATE_MODE_PROPERTY));
         String awsSecretKeyId = properties.get(AWS_ID_PROPERTY);
         String awsSecretAccessKey = properties.get(AWS_SECRET_PROPERTY);
         String awsSessionToken = properties.get(AWS_SESSION_TOKEN_PROPERTY);
