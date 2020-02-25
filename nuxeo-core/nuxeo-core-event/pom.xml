@@ -123,11 +123,11 @@
             </goals>
             <configuration>
               <archive>
-		<manifestFile>src/test/resources/META-INF/MANIFEST.MF</manifestFile>
-		<manifestEntries>
-		  <Bundle-Version>${project.version}-t${buildNumber}</Bundle-Version>
-		  <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-		</manifestEntries>
+                <manifestFile>src/test/resources/META-INF/MANIFEST.MF</manifestFile>
+                <manifestEntries>
+                  <Bundle-Version>${project.version}-t${buildNumber}</Bundle-Version>
+                  <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                </manifestEntries>
               </archive>
             </configuration>
           </execution>
