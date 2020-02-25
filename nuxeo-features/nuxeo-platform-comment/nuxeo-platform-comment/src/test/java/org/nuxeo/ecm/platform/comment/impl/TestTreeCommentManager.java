@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.comment.impl;
 
 import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.util.Collections.singletonMap;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -36,11 +37,14 @@ import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_RESOURCES;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.COMMENT_RELATED_TEXT_ID;
+import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.GET_COMMENT_PAGE_PROVIDER_NAME;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
+import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -63,6 +67,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -78,6 +83,8 @@ import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -564,6 +571,38 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(2, children.totalSize());
     }
 
+    /*
+     * NXP-28700
+     */
+    @Test
+    public void testGetExternalCommentPageProviderReturnsRightCommentAndNotVersionOnes() {
+        DocumentModel docToComment = createDocumentModel("fileToComment");
+        var comment = new CommentImpl();
+        comment.setParentId(docToComment.getId());
+        comment.setText(COMMENT_TEXT);
+        comment.setEntityId("foo");
+        
+        commentManager.createComment(session, comment);
+        
+        docToComment.checkIn(VersioningOption.MINOR, "checkin comment");
+        // we now have two external entities with id foo in repository
+        PartialList<Map<String, Serializable>> projection = session.queryProjection(
+                "SELECT * FROM Comment where externalEntity:entityId='foo'", 10, 0);
+        assertEquals(2, projection.size());
+        
+        // test external entity retrieval with comment manager
+        var externalComment = commentManager.getExternalComment(session, "foo");
+        assertEquals(docToComment.getId(), externalComment.getParentId());
+        assertEquals(COMMENT_TEXT, externalComment.getText());
+        
+        // now test page provider used internally by comment manager
+        PageProviderService ppService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
+        var pageProvider = ppService.getPageProvider(GET_COMMENT_PAGE_PROVIDER_NAME, Collections.emptyList(), 10L, 0L,
+                props, "foo");
+        assertEquals(1, pageProvider.getCurrentPageSize());
+    }
+
     /**
      * Creates a new comment and check his data {@link #verifyCommonsInfo(DocumentModel, Comment, Comment, int)}
      *
@@ -758,7 +797,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(expectedRelatedText,
                 resources.stream().map(m -> m.get(RELATED_TEXT)).sorted().collect(Collectors.toList()));
     }
-
+    
     @Override
     public Class<? extends CommentManager> getType() {
         return TreeCommentManager.class;
