@@ -35,7 +35,13 @@ public interface Graph extends NuxeoArtifact {
 
     String TYPE_NAME = "NXGraph";
 
+    String PROP_GRAPH_TYPE = "nxgraph:type";
+
     String getName();
+
+    String getType();
+
+    void setType(String type);
 
     String getContent();
 

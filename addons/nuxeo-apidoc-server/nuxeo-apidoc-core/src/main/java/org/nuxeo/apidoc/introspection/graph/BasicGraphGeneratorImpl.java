@@ -29,6 +29,7 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
 import org.nuxeo.apidoc.api.graph.Edge;
+import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.NODE_TYPE;
@@ -60,7 +61,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
 
     @Override
     public Graph getGraph() {
-        GraphImpl graph = new GraphImpl(graphId);
+        GraphImpl graph = (GraphImpl) createGraph();
 
         // introspect the graph, ignore bundle groups but select:
         // - bundles
@@ -183,6 +184,10 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
         node.setWeight(weight);
         graph.addNode(node);
         return node;
+    }
+
+    protected Graph createGraph() {
+        return new GraphImpl(graphId, GRAPH_TYPE.BASIC.name());
     }
 
     protected Node createNode(String id, String label, int weight, String path, String type, String category,

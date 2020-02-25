@@ -11,6 +11,7 @@
     <schema name="nxservice" src="schemas/nxservice.xsd" prefix="nxservice"/>
     <schema name="nxseam" src="schemas/nxseam.xsd" prefix="nxseam"/>
     <schema name="nxoperation" src="schemas/nxoperation.xsd" prefix="nxop"/>
+    <schema name="nxgraph" src="schemas/nxgraph.xsd" prefix="nxgraph"/>
 
     <schema name="nxdocumentation" src="schemas/nxdocumentation.xsd" prefix="nxdoc"/>
     <schema name="apidoccommon" src="schemas/apidoccommon.xsd" prefix="adc"/>

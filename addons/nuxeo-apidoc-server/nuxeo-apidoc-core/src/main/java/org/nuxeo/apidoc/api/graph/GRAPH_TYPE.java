@@ -21,25 +21,8 @@ package org.nuxeo.apidoc.api.graph;
 /**
  * @since 11.1
  */
-public interface Node {
+public enum GRAPH_TYPE {
 
-    String getOriginalId();
+    BASIC, BASIC_LAYOUT, CYTOSCAPE, DOT
 
-    String getLabel();
-
-    String getPath();
-
-    String getType();
-
-    String getCategory();
-
-    String getColor();
-
-    int getWeight();
-
-    void setWeight(int weigth);
-
-    int getId();
-
-    void setId(int id);
 }

@@ -18,13 +18,17 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.jgrapht.ext.ComponentAttributeProvider;
+import org.jgrapht.ext.ComponentNameProvider;
+import org.jgrapht.ext.DOTExporter;
 import org.jgrapht.ext.ExportException;
-import org.jgrapht.ext.GmlExporter;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.nuxeo.apidoc.api.graph.Edge;
+import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -47,25 +51,58 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
     @Override
     public Graph getGraph() {
-        Graph graph = super.getGraph();
+        ContentGraphImpl graph = (ContentGraphImpl) super.getGraph();
 
         // transform to get corresponding graph
-        SimpleDirectedGraph<PositionedNodeImpl, DefaultEdge> g = new SimpleDirectedGraph<PositionedNodeImpl, DefaultEdge>(
-                DefaultEdge.class);
+        SimpleDirectedGraph<Node, Edge> g = new SimpleDirectedGraph<Node, Edge>(Edge.class);
 
         for (Node node : graph.getNodes()) {
-            g.addVertex((PositionedNodeImpl) node);
+            g.addVertex(node);
         }
 
         for (Edge edge : graph.getEdges()) {
             Node source = graph.getNode(edge.getOriginalSourceId());
             Node target = graph.getNode(edge.getOriginalTargetId());
-            g.addEdge((PositionedNodeImpl) source, (PositionedNodeImpl) target);
+            g.addEdge(source, target, edge);
         }
 
         try {
-            GmlExporter<PositionedNodeImpl, DefaultEdge> exporter = new GmlExporter<PositionedNodeImpl, DefaultEdge>();
-            exporter.exportGraph(g, new File("test.graphml"));
+            ComponentNameProvider<Node> vertexIDProvider = new ComponentNameProvider<>() {
+                @Override
+                public String getName(Node component) {
+                    return String.valueOf(component.getId());
+                }
+            };
+            ComponentNameProvider<Node> vertexLabelProvider = new ComponentNameProvider<Node>() {
+                @Override
+                public String getName(Node component) {
+                    return component.getLabel();
+                }
+            };
+            ComponentNameProvider<Edge> edgeLabelProvider = new ComponentNameProvider<Edge>() {
+                @Override
+                public String getName(Edge component) {
+                    return component.getValue();
+                }
+            };
+            ComponentAttributeProvider<Node> vertexAttributeProvider = new ComponentAttributeProvider<Node>() {
+                public Map<String, String> getComponentAttributes(Node node) {
+                    Map<String, String> map = new LinkedHashMap<String, String>();
+                    map.put("weight", String.valueOf(node.getWeight()));
+                    map.put("path", String.valueOf(node.getPath()));
+                    map.put("color", String.valueOf(node.getColor()));
+                    map.put("category", String.valueOf(node.getCategory()));
+                    map.put("type", String.valueOf(node.getType()));
+                    return map;
+                }
+            };
+            DOTExporter<Node, Edge> exporter = new DOTExporter<>(vertexIDProvider, vertexLabelProvider,
+                    edgeLabelProvider, vertexAttributeProvider, null);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            exporter.exportGraph(g, out);
+            graph.setContent(out.toString());
+            graph.setContentName("graph.dot");
+            graph.setContentType("application/xml");
         } catch (ExportException e) {
             throw new RuntimeException(e);
         }
@@ -74,9 +111,8 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
     }
 
     @Override
-    protected PositionedNodeImpl createNode(String id, String label, int weight, String path, String type,
-            String category, String color) {
-        return new PositionedNodeImpl(id, label, weight, path, type, category, color);
+    protected Graph createGraph() {
+        return new ContentGraphImpl(graphId, GRAPH_TYPE.BASIC.name());
     }
 
 }

@@ -50,6 +50,16 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
     }
 
     @Override
+    public String getType() {
+        return (String) getDoc().getPropertyValue(PROP_GRAPH_TYPE);
+    }
+
+    @Override
+    public void setType(String type) {
+        getDoc().setPropertyValue(PROP_GRAPH_TYPE, type);
+    }
+
+    @Override
     public String getName() {
         return getDoc().getName();
     }

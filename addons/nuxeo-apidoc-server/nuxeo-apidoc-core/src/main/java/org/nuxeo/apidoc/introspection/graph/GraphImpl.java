@@ -47,6 +47,8 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
 
     protected final String id;
 
+    protected String type;
+
     protected final List<Node> nodes = new ArrayList<>();
 
     protected final List<Edge> edges = new ArrayList<>();
@@ -54,9 +56,10 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     protected final Map<String, Node> nodeMap = new HashMap<>();
 
     @JsonCreator
-    public GraphImpl(@JsonProperty("id") String id) {
+    public GraphImpl(@JsonProperty("id") String id, @JsonProperty("type") String type) {
         super();
         this.id = id;
+        this.type = type;
     }
 
     @Override
@@ -89,13 +92,28 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     }
 
     @Override
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
     @JsonIgnore
     public String getContent() {
+        return getJsonContent();
+    }
+
+    protected String getJsonContent() {
         final ObjectMapper mapper = new ObjectMapper().registerModule(
                 new SimpleModule().addAbstractTypeMapping(Node.class, NodeImpl.class)
                                   .addAbstractTypeMapping(Edge.class, EdgeImpl.class));
         LinkedHashMap<String, Object> values = new LinkedHashMap<>();
         values.put("id", getId());
+        values.put("type", getType());
         values.put("nodes", nodes);
         values.put("edges", edges);
         try {
@@ -112,7 +130,7 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     @Override
     @JsonIgnore
     public Blob getBlob() {
-        Blob blob = Blobs.createBlob(getContent());
+        Blob blob = Blobs.createBlob(getJsonContent());
         blob.setFilename("graph.json");
         blob.setMimeType("application/json");
         blob.setEncoding("UTF-8");

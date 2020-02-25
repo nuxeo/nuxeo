@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -168,18 +168,23 @@ public class TestSnapshotPersist {
         // check runtime graph export equals to persistent *and* to reference graph
         List<Graph> runtimeGraphs = runtimeSnapshot.getGraphs();
         List<Graph> persistentGraphs = persistent.getGraphs();
-        List<String> refs = new ArrayList<>();
-        refs.add("basic_graph.json");
-        refs.add("jgrapht.json");
-        refs.add("gephi.json");
-        refs.add("bundle_graph.json");
+        LinkedHashMap<String, Boolean> refs = new LinkedHashMap<>();
+        // boolean indicates if exact math can be done (not possible when layouting)
+        refs.put("basic_graph.json", Boolean.TRUE);
+        refs.put("jgrapht.dot", Boolean.TRUE);
+        refs.put("gephi.json", Boolean.FALSE);
+        refs.put("bundle_graph.json", Boolean.FALSE);
 
         assertEquals(runtimeGraphs.size(), persistentGraphs.size());
         assertEquals(runtimeGraphs.size(), refs.size());
         int i = 0;
         for (Graph graph : runtimeGraphs) {
-            checkContentEquals(getReferenceFileContent(refs.get(i)), graph.getContent(),
-                    String.format("File '%s' content differs: ", refs.get(i)));
+            String fileId = (String) refs.keySet().toArray()[i];
+            Boolean checkContent = (Boolean) refs.values().toArray()[i];
+            if (checkContent) {
+                checkContentEquals(getReferenceFileContent(fileId), graph.getContent(),
+                        String.format("File '%s' content differs: ", fileId));
+            }
             checkContentEquals(persistentGraphs.get(i).getContent(), graph.getContent(), null);
             i++;
         }
@@ -234,7 +239,7 @@ public class TestSnapshotPersist {
         }
 
         try {
-            assertEquals(message, expectedString, actualString);
+            assertEquals(message, expectedString.trim(), actualString.trim());
         } catch (ComparisonFailure e) {
             throw e;
         }

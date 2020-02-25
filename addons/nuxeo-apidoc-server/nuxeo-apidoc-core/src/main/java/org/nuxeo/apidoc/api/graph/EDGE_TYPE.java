@@ -24,13 +24,16 @@ import org.apache.commons.lang3.StringUtils;
  * @since 11.1
  */
 public enum EDGE_TYPE {
-    CONTAINS(0), REFERENCES(1), REQUIRES(2);
 
-    private EDGE_TYPE(int index) {
-        this.index = index;
-    }
+    DEFAULT(0, false), CONTAINS(1, true), REFERENCES(2, true), REQUIRES(3, true);
 
     private int index;
+
+    private boolean directed;
+
+    private EDGE_TYPE(int index, boolean directed) {
+        this.index = index;
+    }
 
     public String toString() {
         return name();
@@ -40,8 +43,21 @@ public enum EDGE_TYPE {
         return index;
     }
 
+    public boolean isDirected() {
+        return directed;
+    }
+
     public String getLabel() {
         return StringUtils.capitalize(name().toLowerCase());
+    }
+
+    public static EDGE_TYPE getType(String type) {
+        for (EDGE_TYPE etype : EDGE_TYPE.values()) {
+            if (etype.name().equalsIgnoreCase(type)) {
+                return etype;
+            }
+        }
+        return null;
     }
 
 }

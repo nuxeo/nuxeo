@@ -29,11 +29,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreType
 public class PositionedNodeImpl extends NodeImpl {
 
-    protected int x = 0;
+    protected float x = 0;
 
-    protected int y = 0;
+    protected float y = 0;
 
-    protected int z = 0;
+    protected float z = 0;
 
     public PositionedNodeImpl(@JsonProperty("originalId") String originalId, @JsonProperty("label") String label,
             @JsonProperty("weight") int weight, @JsonProperty("path") String path, @JsonProperty("type") String type,
@@ -41,27 +41,27 @@ public class PositionedNodeImpl extends NodeImpl {
         super(originalId, label, weight, path, type, category, color);
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
-    public int getZ() {
+    public float getZ() {
         return z;
     }
 
-    public void setZ(int z) {
+    public void setZ(float z) {
         this.z = z;
     }
 

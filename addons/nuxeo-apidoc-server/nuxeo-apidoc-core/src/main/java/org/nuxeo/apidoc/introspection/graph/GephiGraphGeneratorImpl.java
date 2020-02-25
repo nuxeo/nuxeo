@@ -18,7 +18,7 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
-import org.gephi.project.io.GephiReader;
+import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -42,10 +42,8 @@ public class GephiGraphGeneratorImpl extends BasicGraphGeneratorImpl {
     @Override
     public Graph getGraph() {
         Graph graph = super.getGraph();
-        // setup positioning of nodes (?)
-        
-
-        return graph;
+        graph.setType(GRAPH_TYPE.BASIC_LAYOUT.name());
+        return GephiLayout.getLayout(graph);
     }
 
     @Override

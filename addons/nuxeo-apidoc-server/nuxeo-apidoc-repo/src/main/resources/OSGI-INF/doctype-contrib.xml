@@ -137,6 +137,8 @@
     </doctype>
 
     <doctype name="NXGraph" extends="File">
+      <schema name="nxgraph" />
+
       <facet name="Downloadable" />
       <facet name="Versionable" />
       <facet name="Publishable" />

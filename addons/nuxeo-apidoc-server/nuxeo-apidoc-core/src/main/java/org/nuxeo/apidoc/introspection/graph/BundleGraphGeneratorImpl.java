@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
+import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.Node;
@@ -46,7 +47,7 @@ public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
     @Override
     public Graph getGraph() {
-        GraphImpl graph = new GraphImpl(graphId);
+        GraphImpl graph = (GraphImpl) createGraph();
 
         Map<String, Integer> hits = new HashMap<>();
 
@@ -64,7 +65,16 @@ public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
         refine(graph, hits);
 
-        return graph;
+        return GephiLayout.getLayout(graph);
     }
 
+    protected Graph createGraph() {
+        return new GraphImpl(graphId, GRAPH_TYPE.BASIC_LAYOUT.name());
+    }
+
+    @Override
+    protected PositionedNodeImpl createNode(String id, String label, int weight, String path, String type,
+            String category, String color) {
+        return new PositionedNodeImpl(id, label, weight, path, type, category, color);
+    }
 }
