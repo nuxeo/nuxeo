@@ -58,8 +58,8 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
         }
 
         for (Edge edge : graph.getEdges()) {
-            Node source = graph.getNode(edge.getSource());
-            Node target = graph.getNode(edge.getTarget());
+            Node source = graph.getNode(edge.getOriginalSourceId());
+            Node target = graph.getNode(edge.getOriginalTargetId());
             g.addEdge((PositionedNodeImpl) source, (PositionedNodeImpl) target);
         }
 

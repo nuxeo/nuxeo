@@ -30,7 +30,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreType
 public class NodeImpl implements Node {
 
-    protected final String id;
+    protected int id = 0;
+
+    protected final String originalId;
 
     protected final String label;
 
@@ -45,11 +47,12 @@ public class NodeImpl implements Node {
     protected final String color;
 
     @JsonCreator
-    public NodeImpl(@JsonProperty("id") String id, @JsonProperty("label") String label,
-            @JsonProperty("weight") int weight, @JsonProperty("path") String path, @JsonProperty("type") String type,
-            @JsonProperty("category") String category, @JsonProperty("color") String color) {
+    public NodeImpl(@JsonProperty("originalId") String originalId,
+            @JsonProperty("label") String label, @JsonProperty("weight") int weight, @JsonProperty("path") String path,
+            @JsonProperty("type") String type, @JsonProperty("category") String category,
+            @JsonProperty("color") String color) {
         super();
-        this.id = id;
+        this.originalId = originalId;
         this.label = label;
         this.weight = weight;
         this.path = path;
@@ -59,8 +62,8 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public String getId() {
-        return id;
+    public String getOriginalId() {
+        return originalId;
     }
 
     @Override
@@ -92,6 +95,14 @@ public class NodeImpl implements Node {
 
     public String getColor() {
         return color;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
 }

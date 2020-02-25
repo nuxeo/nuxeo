@@ -35,20 +35,10 @@ public class PositionedNodeImpl extends NodeImpl {
 
     protected int z = 0;
 
-    public PositionedNodeImpl(@JsonProperty("id") String id, @JsonProperty("label") String label,
+    public PositionedNodeImpl(@JsonProperty("originalId") String originalId, @JsonProperty("label") String label,
             @JsonProperty("weight") int weight, @JsonProperty("path") String path, @JsonProperty("type") String type,
             @JsonProperty("category") String category, @JsonProperty("color") String color) {
-        super(id, label, weight, path, type, category, color);
-    }
-
-    public PositionedNodeImpl(@JsonProperty("id") String id, @JsonProperty("label") String label,
-            @JsonProperty("weight") int weight, @JsonProperty("path") String path, @JsonProperty("type") String type,
-            @JsonProperty("category") String category, @JsonProperty("color") String color, @JsonProperty("x") int x,
-            @JsonProperty("y") int y, @JsonProperty("z") int z) {
-        super(id, label, weight, path, type, category, color);
-        this.x = x;
-        this.y = y;
-        this.z = z;
+        super(originalId, label, weight, path, type, category, color);
     }
 
     public int getX() {

@@ -30,31 +30,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreType
 public class EdgeImpl implements Edge {
 
-    protected String id;
+    protected int id = 0;
 
-    protected final String source;
+    protected int source = 0;
 
-    protected final String target;
+    protected final String originalSourceId;
+
+    protected int target = 0;
+
+    protected final String originalTargetId;
 
     protected final String value;
 
     @JsonCreator
-    public EdgeImpl(@JsonProperty("id") String id, @JsonProperty("source") String source,
-            @JsonProperty("target") String target, @JsonProperty("value") String value) {
+    public EdgeImpl(@JsonProperty("originalSourceId") String originalSourceId,
+            @JsonProperty("originalTargetId") String originalTargetId, @JsonProperty("value") String value) {
         super();
-        this.source = source;
-        this.target = target;
+        this.originalSourceId = originalSourceId;
+        this.originalTargetId = originalTargetId;
         this.value = value;
     }
 
     @Override
-    public String getSource() {
-        return source;
+    public String getOriginalSourceId() {
+        return originalSourceId;
     }
 
     @Override
-    public String getTarget() {
-        return target;
+    public String getOriginalTargetId() {
+        return originalTargetId;
     }
 
     @Override
@@ -62,12 +66,28 @@ public class EdgeImpl implements Edge {
         return value;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public int getSource() {
+        return source;
+    }
+
+    public void setSource(int source) {
+        this.source = source;
+    }
+
+    public int getTarget() {
+        return target;
+    }
+
+    public void setTarget(int target) {
+        this.target = target;
     }
 
 }

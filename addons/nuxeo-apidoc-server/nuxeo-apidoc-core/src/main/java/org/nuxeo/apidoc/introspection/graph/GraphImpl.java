@@ -121,7 +121,7 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
 
     public void addNode(Node node) {
         this.nodes.add(node);
-        this.nodeMap.put(node.getId(), node);
+        this.nodeMap.put(node.getOriginalId(), node);
     }
 
     public void addEdge(Edge edge) {

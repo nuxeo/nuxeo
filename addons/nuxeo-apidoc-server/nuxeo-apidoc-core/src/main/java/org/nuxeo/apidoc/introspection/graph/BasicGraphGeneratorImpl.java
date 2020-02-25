@@ -134,36 +134,53 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
             }
         }
 
-        addMissingNodes(graph);
-
-        for (Map.Entry<String, Integer> hit : hits.entrySet()) {
-            setWeight(graph, hit.getKey(), hit.getValue());
-        }
+        refine(graph, hits);
 
         return graph;
     }
 
     /**
-     * Adds potentially missing nodes references in all edges + set integer id as required by some rendering frameworks.
+     * Refines graphs for display.
+     * <ul>
+     * <li>Adds potentially missing nodes references in all edges
+     * <li>set integer id on nodes and edges, as required by some rendering frameworks
+     * <li>sets weights computed from hits map
      */
-    protected void addMissingNodes(GraphImpl graph) {
-        int index = 0;
-        for (Edge edge : graph.getEdges()) {
-            edge.setId(String.valueOf(index));
-            index++;
-            Node source = graph.getNode(edge.getSource());
-            if (source == null) {
-                addMissingNode(graph, edge.getSource());
-            }
-            Node target = graph.getNode(edge.getTarget());
-            if (target == null) {
-                addMissingNode(graph, edge.getTarget());
-            }
+    protected void refine(GraphImpl graph, Map<String, Integer> hits) {
+        // handle ids
+        int itemIndex = 1;
+        for (Node node : graph.getNodes()) {
+            node.setId(itemIndex);
+            itemIndex++;
         }
+        for (Edge edge : graph.getEdges()) {
+            edge.setId(itemIndex);
+            itemIndex++;
+            Node source = graph.getNode(edge.getOriginalSourceId());
+            if (source == null) {
+                source = addMissingNode(graph, edge.getOriginalSourceId(), itemIndex++, 1);
+            }
+            edge.setSource(source.getId());
+            Node target = graph.getNode(edge.getOriginalTargetId());
+            if (target == null) {
+                target = addMissingNode(graph, edge.getOriginalTargetId(), itemIndex++, 1);
+            }
+            edge.setTarget(target.getId());
+        }
+        // handle weights
+        if (hits == null) {
+            return;
+        }
+        for (Map.Entry<String, Integer> hit : hits.entrySet()) {
+            setWeight(graph, hit.getKey(), hit.getValue());
+        }
+
     }
 
-    protected Node addMissingNode(GraphImpl graph, String id) {
-        Node node = createNode(id);
+    protected Node addMissingNode(GraphImpl graph, String originalId, int id, int weight) {
+        Node node = createNode(originalId);
+        node.setId(id);
+        node.setWeight(weight);
         graph.addNode(node);
         return node;
     }
@@ -212,14 +229,14 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
     }
 
     protected Edge createEdge(Node source, Node target, String value) {
-        return new EdgeImpl(null, source.getId(), target.getId(), value);
+        return new EdgeImpl(source.getOriginalId(), target.getOriginalId(), value);
     }
 
     protected void addEdge(Graph graph, Map<String, Integer> hits, Edge edge) {
         graph.addEdge(edge);
         if (hits != null) {
-            hit(hits, edge.getSource());
-            hit(hits, edge.getTarget());
+            hit(hits, edge.getOriginalSourceId());
+            hit(hits, edge.getOriginalTargetId());
         }
     }
 

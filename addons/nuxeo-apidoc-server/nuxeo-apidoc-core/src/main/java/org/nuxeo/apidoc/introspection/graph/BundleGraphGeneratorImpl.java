@@ -62,11 +62,7 @@ public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
             }
         }
 
-        addMissingNodes(graph);
-
-        for (Map.Entry<String, Integer> hit : hits.entrySet()) {
-            setWeight(graph, hit.getKey(), hit.getValue());
-        }
+        refine(graph, hits);
 
         return graph;
     }
