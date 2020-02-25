@@ -19,11 +19,15 @@
  */
 package org.nuxeo.ecm.core.scheduler;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +37,10 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.kv.ClusterLockHelper;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
@@ -61,6 +68,9 @@ import org.quartz.impl.matchers.GroupMatcher;
 public class SchedulerServiceImpl extends DefaultComponent implements SchedulerService {
 
     private static final Log log = LogFactory.getLog(SchedulerServiceImpl.class);
+
+    /** @since 11.1 */
+    public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.scheduler.cluster.start.duration";
 
     protected RuntimeContext context;
 
@@ -142,11 +152,32 @@ public class SchedulerServiceImpl extends DefaultComponent implements SchedulerS
 
     @Override
     public void start(ComponentContext context) {
+        startScheduler();
+    }
+
+    protected void startScheduler() {
+        Duration duration;
         try {
-            setupScheduler();
-        } catch (IOException | SchedulerException e) {
-            throw new NuxeoException(e);
+            String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
+            if (isBlank(prop)) {
+                duration = Duration.ZERO;
+            } else {
+                duration = DurationUtils.parse(prop);
+            }
+        } catch (DateTimeParseException e) {
+            duration = Duration.ZERO;
         }
+        if (duration.isZero() || duration.isNegative()) {
+            duration = Duration.ofMinutes(1);
+        }
+        Duration pollDelay = Duration.ofSeconds(1);
+        ClusterLockHelper.runAtomically("start-scheduler", duration, pollDelay, () -> {
+            try {
+                setupScheduler();
+            } catch (IOException | SchedulerException e) {
+                throw new NuxeoException(e);
+            }
+        });
     }
 
     @Override
