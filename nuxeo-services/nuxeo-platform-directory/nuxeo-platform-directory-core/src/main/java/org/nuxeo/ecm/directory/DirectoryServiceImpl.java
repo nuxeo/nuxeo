@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.directory.BaseDirectoryDescriptor.DATA_LOADING_POLIC
 import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationConstants.DIRECTORY_CONFIGURATION_FACET;
 
 import java.time.Duration;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -48,6 +47,9 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
 
     /** @since 11.1 */
     public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.directory.cluster.start.duration";
+
+    /** @since 11.1 */
+    public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
 
     protected static final String DELIMITER_BETWEEN_DIRECTORY_NAME_AND_SUFFIX = "_";
 
@@ -100,20 +102,8 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
     @Override
     public void start(ComponentContext context) {
         ClusterService clusterService = Framework.getService(ClusterService.class);
-        Duration duration;
-        try {
-            String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
-            if (isBlank(prop)) {
-                duration = Duration.ZERO;
-            } else {
-                duration = DurationUtils.parse(prop);
-            }
-        } catch (DateTimeParseException e) {
-            duration = Duration.ZERO;
-        }
-        if (duration.isZero() || duration.isNegative()) {
-            duration = Duration.ofMinutes(1);
-        }
+        String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
+        Duration duration = DurationUtils.parsePositive(prop, CLUSTER_START_DURATION_DEFAULT);
         Duration pollDelay = Duration.ofSeconds(1);
         clusterService.runAtomically("start-directories", duration, pollDelay, this::start);
     }
