@@ -19,8 +19,14 @@
 
 package org.nuxeo.directory.test;
 
+import static java.util.Comparator.naturalOrder;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.directory.test.DirectoryConfiguration.DIRECTORY_MONGODB;
+import static org.nuxeo.directory.test.DirectoryConfiguration.DIRECTORY_SQL;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -47,27 +53,40 @@ public class TestInitLoadDirectoryWithAutoIncrementId {
     protected DirectoryService directoryService;
 
     @Inject
+    protected DirectoryFeature directoryFeature;
+
+    @Inject
     protected HotDeployer hotDeployer;
 
     @Test
     @Deploy("org.nuxeo.ecm.directory.tests:csv-on-missing-columns-autoincrement-directory-never-load-contrib.xml")
     public void testInitDirectoryWithOnMissingColumnsAndAutoIncrementId() throws Exception {
-        // autoincrement directory could be loaded only on table creation
+        // autoincrement directory could be loaded only on table creation / collection is empty
         // as we're having a never_load dataLoadingPolicy, initialization won't fed the directory
         assertDirectoryEntries();
         hotDeployer.deploy(
                 "org.nuxeo.ecm.directory.tests:csv-on-missing-columns-autoincrement-directory-update-duplicate-contrib.xml");
-        // we now have an update_duplicate dataLoadingPolicy but table already exists, directory won't be touched
-        assertDirectoryEntries();
+        // two different cases depending on underlying implementation
+        String directoryType = directoryFeature.directoryConfiguration.directoryType;
+        switch (directoryType) {
+        case DIRECTORY_SQL:
+            // we now have an update_duplicate dataLoadingPolicy, table already exists, directory won't be touched
+            assertDirectoryEntries();
+            break;
+        case DIRECTORY_MONGODB:
+            // we now have an update_duplicate dataLoadingPolicy, collection is empty, directory will be loaded
+            assertDirectoryEntries("America", "Europe");
+            break;
+        default:
+            throw new AssertionError("Implementation: " + directoryType + " is not handled");
+        }
     }
 
-    protected void assertDirectoryEntries() {
+    protected void assertDirectoryEntries(String... expectedLabels) {
         try (Session session = directoryService.open(CSV_LOAD_DIRECTORY)) {
-            long entryCount = session.query(Map.of())
-                                     .stream()
-                                     .map(d -> (String) d.getPropertyValue("label"))
-                                     .count();
-            assertEquals(0, entryCount);
+            String[] labels = session.query(Map.of()).stream().map(d -> (String) d.getPropertyValue("label")).sorted().toArray(String[]::new);
+            Arrays.sort(expectedLabels, naturalOrder());
+            assertArrayEquals(expectedLabels, labels);
         }
     }
 }
