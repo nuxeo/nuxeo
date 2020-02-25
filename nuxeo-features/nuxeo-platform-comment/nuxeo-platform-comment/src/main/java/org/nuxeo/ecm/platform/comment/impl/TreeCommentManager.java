@@ -27,7 +27,9 @@ import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
+import static org.nuxeo.ecm.core.api.versioning.VersioningService.VERSIONING_OPTION;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_ANCESTORID;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
@@ -497,6 +499,7 @@ public class TreeCommentManager extends AbstractCommentManager {
 
         topLevelDoc.setPropertyValue(RELATED_TEXT_RESOURCES, (Serializable) resources);
         topLevelDoc.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
+        topLevelDoc.putContextData(VERSIONING_OPTION, NONE);
         session.saveDocument(topLevelDoc);
     }
 
