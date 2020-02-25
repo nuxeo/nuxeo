@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test:test-jobfactory.xml") // jobs
 public class EventJobFactoryTest {
