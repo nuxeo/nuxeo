@@ -375,7 +375,6 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
      * NXP-28483
      */
     @Test
-    @Ignore("Due to its random nature - two external entities are found")
     public void testUpdateExternalAnnotationWithRegularUser() throws IOException {
         // create jdoe user as a regular user
         createUser(JDOE);
