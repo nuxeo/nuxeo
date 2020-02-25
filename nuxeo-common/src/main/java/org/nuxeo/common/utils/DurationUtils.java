@@ -18,6 +18,8 @@
  */
 package org.nuxeo.common.utils;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
@@ -79,4 +81,30 @@ public final class DurationUtils {
         }
         throw new DateTimeParseException("Text cannot be parsed to a Duration", value, 0);
     }
+
+    /**
+     * Obtains a {@code Duration} from a text string according to {@link #parse(String)}, but in case of invalid, zero
+     * or negative duration returns a default.
+     *
+     * @param value the value to parse
+     * @param defaultDuration the default duration to return for invalid, zero or negative duration
+     * @return the parsed duration (positive), or the default
+     * @since 11.1
+     */
+    public static Duration parsePositive(String value, Duration defaultDuration) {
+        if (isBlank(value)) {
+            return defaultDuration;
+        }
+        try {
+            Duration duration = parse(value);
+            if (duration.isZero() || duration.isNegative()) {
+                return defaultDuration;
+            } else {
+                return duration;
+            }
+        } catch (DateTimeParseException e) {
+            return defaultDuration;
+        }
+    }
+
 }
