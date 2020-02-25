@@ -19,10 +19,7 @@
  */
 package org.nuxeo.ecm.core.repository;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
 import java.time.Duration;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,6 +48,9 @@ public class RepositoryService extends DefaultComponent {
 
     /** @since 11.1 */
     public static final String CLUSTER_START_DURATION_PROP = "org.nuxeo.repository.cluster.start.duration";
+
+    /** @since 11.1 */
+    public static final Duration CLUSTER_START_DURATION_DEFAULT = Duration.ofMinutes(1);
 
     private static final Log log = LogFactory.getLog(RepositoryService.class);
 
@@ -118,20 +118,8 @@ public class RepositoryService extends DefaultComponent {
 
     protected void createRepository(String repositoryName, RepositoryFactory factory) {
         ClusterService clusterService = Framework.getService(ClusterService.class);
-        Duration duration;
-        try {
-            String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
-            if (isBlank(prop)) {
-                duration = Duration.ZERO;
-            } else {
-                duration = DurationUtils.parse(prop);
-            }
-        } catch (DateTimeParseException e) {
-            duration = Duration.ZERO;
-        }
-        if (duration.isZero() || duration.isNegative()) {
-            duration = Duration.ofMinutes(1);
-        }
+        String prop = Framework.getProperty(CLUSTER_START_DURATION_PROP);
+        Duration duration = DurationUtils.parsePositive(prop, CLUSTER_START_DURATION_DEFAULT);
         Duration pollDelay = Duration.ofSeconds(1);
         clusterService.runAtomically("start-repository-" + repositoryName, duration, pollDelay, () -> {
             Repository repository = (Repository) factory.call();
