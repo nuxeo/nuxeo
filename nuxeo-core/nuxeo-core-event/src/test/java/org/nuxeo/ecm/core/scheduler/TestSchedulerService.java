@@ -48,6 +48,7 @@ public class TestSchedulerService extends NXRuntimeTestCase {
 
     @Override
     protected void setUp() throws Exception {
+        deployBundle("org.nuxeo.runtime.kv");
         deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.core.event.test", "OSGI-INF/test-scheduler-eventlistener.xml");
         DummyEventListener.setCount(0);

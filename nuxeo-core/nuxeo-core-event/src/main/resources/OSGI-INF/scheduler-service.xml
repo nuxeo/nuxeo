@@ -2,6 +2,8 @@
 <component name="org.nuxeo.ecm.core.scheduler.SchedulerService">
   <alias>org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService</alias>
 
+  <require>org.nuxeo.runtime.kv.KeyValueService</require>
+
   <documentation>
      Core scheduler registry service.
   </documentation>
