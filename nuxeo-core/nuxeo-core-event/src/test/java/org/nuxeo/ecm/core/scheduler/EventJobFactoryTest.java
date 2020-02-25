@@ -23,10 +23,10 @@ import java.lang.reflect.Field;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.runtime.cluster.ClusterFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @since 10.2
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(ClusterFeature.class)
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test:test-jobfactory.xml") // jobs
 public class EventJobFactoryTest {
