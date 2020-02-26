@@ -45,9 +45,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class GraphImpl extends BaseNuxeoArtifact implements Graph {
 
-    protected final String id;
+    protected String id;
 
     protected String type;
+
+    protected final Map<String, String> properties = new HashMap<>();
 
     protected final List<Node> nodes = new ArrayList<>();
 
@@ -56,10 +58,12 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     protected final Map<String, Node> nodeMap = new HashMap<>();
 
     @JsonCreator
-    public GraphImpl(@JsonProperty("id") String id, @JsonProperty("type") String type) {
+    public GraphImpl(@JsonProperty("id") String id, @JsonProperty("type") String type,
+            @JsonProperty("properties") Map<String, String> properties) {
         super();
         this.id = id;
         this.type = type;
+        setProperties(properties);
     }
 
     @Override
@@ -87,6 +91,11 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     }
 
     @Override
+    public void setName(String name) {
+        this.id = name;
+    }
+
+    @Override
     public String getId() {
         return id;
     }
@@ -102,9 +111,22 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     }
 
     @Override
-    @JsonIgnore
-    public String getContent() {
-        return getJsonContent();
+    public Map<String, String> getProperties() {
+        return Collections.unmodifiableMap(properties);
+    }
+
+    @Override
+    public String getProperty(String name, String defaultValue) {
+        if (properties.containsKey(name)) {
+            return properties.get(name);
+        }
+        return defaultValue;
+    }
+
+    @Override
+    public void setProperties(Map<String, String> properties) {
+        this.properties.clear();
+        this.properties.putAll(properties);
     }
 
     protected String getJsonContent() {

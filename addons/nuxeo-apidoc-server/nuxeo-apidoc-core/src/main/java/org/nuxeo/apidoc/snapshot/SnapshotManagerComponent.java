@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,11 +62,12 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
+import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 
-    protected volatile DistributionSnapshot runtimeSnapshot;
+    protected static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
 
     public static final String RUNTIME = "current";
 
@@ -73,9 +75,16 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     protected static final String IMPORT_TMP = "tmpImport";
 
-    protected static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
+    /**
+     * @since 11.1
+     */
+    public static final String GRAPHS_EP_NAME = "graphs";
+
+    protected volatile DistributionSnapshot runtimeSnapshot;
 
     protected final SnapshotPersister persister = new SnapshotPersister();
+
+    protected final Map<String, GraphDescriptor> graphRegistry = new LinkedHashMap<>();
 
     @Override
     public DistributionSnapshot getRuntimeSnapshot() {
@@ -337,6 +346,27 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         protected void beforeCreateDocument(DocumentModel doc) {
             doc.putContextData(CTX_MAP_KEY, TURN_OFF);
         }
+    }
+
+    @Override
+    public void registerContribution(Object contribution, String xp, ComponentInstance component) {
+        if (xp.equals(GRAPHS_EP_NAME)) {
+            GraphDescriptor desc = (GraphDescriptor) contribution;
+            graphRegistry.put(desc.getName(), desc);
+        }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
+        if (xp.equals(GRAPHS_EP_NAME)) {
+            GraphDescriptor desc = (GraphDescriptor) contribution;
+            graphRegistry.remove(desc.getName());
+        }
+    }
+
+    @Override
+    public List<GraphDescriptor> getGraphs() {
+        return Collections.unmodifiableList(new ArrayList<GraphDescriptor>(graphRegistry.values()));
     }
 
 }

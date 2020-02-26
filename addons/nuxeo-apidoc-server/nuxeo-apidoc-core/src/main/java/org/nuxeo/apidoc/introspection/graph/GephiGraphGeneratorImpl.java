@@ -30,18 +30,13 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  */
 public class GephiGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
-    public GephiGraphGeneratorImpl(String graphId, DistributionSnapshot distribution) {
-        super(graphId, distribution);
-    }
-
-    public static Graph getGraph(String graphId, DistributionSnapshot distribution) {
-        GephiGraphGeneratorImpl gen = new GephiGraphGeneratorImpl(graphId, distribution);
-        return gen.getGraph();
+    public GephiGraphGeneratorImpl() {
+        super();
     }
 
     @Override
-    public Graph getGraph() {
-        Graph graph = super.getGraph();
+    public Graph getGraph(DistributionSnapshot distribution) {
+        Graph graph = super.getGraph(distribution);
         graph.setType(GRAPH_TYPE.BASIC_LAYOUT.name());
         return GephiLayout.getLayout(graph);
     }

@@ -43,6 +43,8 @@ import org.openide.util.Lookup;
  */
 public class GephiLayout {
 
+    protected static String TIMEOUT_PROP = "forceLayout.timeout";
+
     public static Graph getLayout(Graph graph) {
 
         // create gephi project and associated workspace
@@ -63,8 +65,9 @@ public class GephiLayout {
             ggraph.addEdge(createGephiEdge(factory, edge, gnodes));
         }
 
-        // Layout for 1 minute
-        AutoLayout autoLayout = new AutoLayout(1, TimeUnit.MINUTES);
+        // Layout for 1 minute by default
+        String timeout = graph.getProperty(TIMEOUT_PROP, "60");
+        AutoLayout autoLayout = new AutoLayout(Integer.valueOf(timeout), TimeUnit.SECONDS);
         autoLayout.setGraphModel(ggraphModel);
         YifanHuLayout firstLayout = new YifanHuLayout(null, new StepDisplacement(1f));
         ForceAtlasLayout secondLayout = new ForceAtlasLayout(null);

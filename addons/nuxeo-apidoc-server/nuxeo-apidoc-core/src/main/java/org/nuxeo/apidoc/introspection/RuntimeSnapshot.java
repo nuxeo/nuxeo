@@ -44,11 +44,9 @@ import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
-import org.nuxeo.apidoc.introspection.graph.BasicGraphGeneratorImpl;
-import org.nuxeo.apidoc.introspection.graph.BundleGraphGeneratorImpl;
-import org.nuxeo.apidoc.introspection.graph.GephiGraphGeneratorImpl;
-import org.nuxeo.apidoc.introspection.graph.JGraphGeneratorImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.GraphDescriptor;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationException;
@@ -242,10 +240,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             bundleGroups.add(bGroup);
         }
 
-        graphs.add(BasicGraphGeneratorImpl.getGraph("basic", this));
-        graphs.add(JGraphGeneratorImpl.getGraph("jgrapht", this));
-        graphs.add(GephiGraphGeneratorImpl.getGraph("gephi", this));
-        graphs.add(BundleGraphGeneratorImpl.getGraph("bundles", this));
+        SnapshotManager sm = Framework.getService(SnapshotManager.class);
+        for (GraphDescriptor desc : sm.getGraphs()) {
+            graphs.add(desc.getInstance().getGraph(this));
+        }
     }
 
     protected BundleGroupImpl buildBundleGroup(String id, String version) {

@@ -182,10 +182,10 @@ public class TestSnapshotPersist {
             String fileId = (String) refs.keySet().toArray()[i];
             Boolean checkContent = (Boolean) refs.values().toArray()[i];
             if (checkContent) {
-                checkContentEquals(getReferenceFileContent(fileId), graph.getContent(),
+                checkContentEquals(getReferenceFileContent(fileId), graph.getBlob().getString(),
                         String.format("File '%s' content differs: ", fileId));
             }
-            checkContentEquals(persistentGraphs.get(i).getContent(), graph.getContent(), null);
+            checkContentEquals(persistentGraphs.get(i).getBlob().getString(), graph.getBlob().getString(), null);
             i++;
         }
     }

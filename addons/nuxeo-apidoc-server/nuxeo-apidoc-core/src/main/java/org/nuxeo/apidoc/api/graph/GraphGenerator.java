@@ -18,11 +18,23 @@
  */
 package org.nuxeo.apidoc.api.graph;
 
+import java.util.Map;
+
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+
 /**
  * @since 11.1
  */
-public interface NetworkGraphGenerator {
+public interface GraphGenerator {
 
-    Graph getGraph();
+    Graph getGraph(DistributionSnapshot distribution);
+
+    String getGraphName();
+
+    void setGraphName(String name);
+
+    Map<String, String> getProperties();
+
+    void setProperties(Map<String, String> properties);
 
 }

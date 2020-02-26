@@ -68,4 +68,9 @@ public interface SnapshotManager {
 
     DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws IOException;
 
+    /**
+     * @since 11.1
+     */
+    List<GraphDescriptor> getGraphs();
+
 }

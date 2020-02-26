@@ -40,18 +40,13 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  */
 public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
-    public JGraphGeneratorImpl(String graphId, DistributionSnapshot distribution) {
-        super(graphId, distribution);
-    }
-
-    public static Graph getGraph(String graphId, DistributionSnapshot distribution) {
-        JGraphGeneratorImpl gen = new JGraphGeneratorImpl(graphId, distribution);
-        return gen.getGraph();
+    public JGraphGeneratorImpl() {
+        super();
     }
 
     @Override
-    public Graph getGraph() {
-        ContentGraphImpl graph = (ContentGraphImpl) super.getGraph();
+    public Graph getGraph(DistributionSnapshot distribution) {
+        ContentGraphImpl graph = (ContentGraphImpl) super.getGraph(distribution);
 
         // transform to get corresponding graph
         SimpleDirectedGraph<Node, Edge> g = new SimpleDirectedGraph<Node, Edge>(Edge.class);
@@ -112,7 +107,7 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
     @Override
     protected Graph createGraph() {
-        return new ContentGraphImpl(graphId, GRAPH_TYPE.BASIC.name());
+        return new ContentGraphImpl(graphName, GRAPH_TYPE.BASIC.name(), getProperties());
     }
 
 }

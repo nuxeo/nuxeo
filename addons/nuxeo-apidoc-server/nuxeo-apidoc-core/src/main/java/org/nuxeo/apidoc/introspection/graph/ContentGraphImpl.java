@@ -18,9 +18,14 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import java.util.Map;
+
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Graph implementation holding exported content instead of generating it.
@@ -35,8 +40,10 @@ public class ContentGraphImpl extends GraphImpl implements Graph {
 
     protected String contentName;
 
-    public ContentGraphImpl(String id, String type) {
-        super(id, type);
+    @JsonCreator
+    public ContentGraphImpl(@JsonProperty("id") String id, @JsonProperty("type") String type,
+            @JsonProperty("properties") Map<String, String> properties) {
+        super(id, type, properties);
     }
 
     public String getContent() {

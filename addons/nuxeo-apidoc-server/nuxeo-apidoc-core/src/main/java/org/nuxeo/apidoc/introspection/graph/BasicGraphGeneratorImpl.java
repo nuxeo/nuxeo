@@ -18,6 +18,7 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,9 @@ import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
 import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
+import org.nuxeo.apidoc.api.graph.GraphGenerator;
 import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.NODE_TYPE;
-import org.nuxeo.apidoc.api.graph.NetworkGraphGenerator;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 
@@ -42,25 +43,39 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  * 
  * @since 11.1
  */
-public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
+public class BasicGraphGeneratorImpl implements GraphGenerator {
 
-    protected final String graphId;
+    protected String graphName;
 
-    protected final DistributionSnapshot distribution;
+    protected Map<String, String> properties = new HashMap<>();
 
-    public BasicGraphGeneratorImpl(String graphId, DistributionSnapshot distribution) {
+    public BasicGraphGeneratorImpl() {
         super();
-        this.graphId = graphId;
-        this.distribution = distribution;
-    }
-
-    public static Graph getGraph(String graphId, DistributionSnapshot distribution) {
-        BasicGraphGeneratorImpl gen = new BasicGraphGeneratorImpl(graphId, distribution);
-        return gen.getGraph();
     }
 
     @Override
-    public Graph getGraph() {
+    public String getGraphName() {
+        return graphName;
+    }
+
+    @Override
+    public void setGraphName(String name) {
+        this.graphName = name;
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        return Collections.unmodifiableMap(properties);
+    }
+
+    @Override
+    public void setProperties(Map<String, String> properties) {
+        this.properties.clear();
+        this.properties.putAll(properties);
+    }
+
+    @Override
+    public Graph getGraph(DistributionSnapshot distribution) {
         GraphImpl graph = (GraphImpl) createGraph();
 
         // introspect the graph, ignore bundle groups but select:
@@ -187,7 +202,7 @@ public class BasicGraphGeneratorImpl implements NetworkGraphGenerator {
     }
 
     protected Graph createGraph() {
-        return new GraphImpl(graphId, GRAPH_TYPE.BASIC.name());
+        return new GraphImpl(graphName, GRAPH_TYPE.BASIC.name(), getProperties());
     }
 
     protected Node createNode(String id, String label, int weight, String path, String type, String category,

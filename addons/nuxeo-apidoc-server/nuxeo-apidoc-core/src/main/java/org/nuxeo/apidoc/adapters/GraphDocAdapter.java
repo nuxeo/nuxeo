@@ -18,9 +18,9 @@
  */
 package org.nuxeo.apidoc.adapters;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.graph.Edge;
@@ -75,19 +75,6 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
     }
 
     @Override
-    public String getContent() {
-        Blob blob = getBlob();
-        if (blob == null) {
-            return null;
-        }
-        try {
-            return blob.getString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public Blob getBlob() {
         return (Blob) getDoc().getPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH);
     }
@@ -132,6 +119,26 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
 
     @Override
     public List<Edge> getEdges() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setName(String name) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<String, String> getProperties() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getProperty(String name, String defaultValue) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setProperties(Map<String, String> properties) {
         throw new UnsupportedOperationException();
     }
 

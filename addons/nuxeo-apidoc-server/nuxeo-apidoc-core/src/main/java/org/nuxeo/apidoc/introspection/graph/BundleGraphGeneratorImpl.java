@@ -36,17 +36,12 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  */
 public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
-    public BundleGraphGeneratorImpl(String graphId, DistributionSnapshot distribution) {
-        super(graphId, distribution);
-    }
-
-    public static Graph getGraph(String graphId, DistributionSnapshot distribution) {
-        BundleGraphGeneratorImpl gen = new BundleGraphGeneratorImpl(graphId, distribution);
-        return gen.getGraph();
+    public BundleGraphGeneratorImpl() {
+        super();
     }
 
     @Override
-    public Graph getGraph() {
+    public Graph getGraph(DistributionSnapshot distribution) {
         GraphImpl graph = (GraphImpl) createGraph();
 
         Map<String, Integer> hits = new HashMap<>();
@@ -69,7 +64,7 @@ public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
     }
 
     protected Graph createGraph() {
-        return new GraphImpl(graphId, GRAPH_TYPE.BASIC_LAYOUT.name());
+        return new GraphImpl(graphName, GRAPH_TYPE.BASIC_LAYOUT.name(), getProperties());
     }
 
     @Override
