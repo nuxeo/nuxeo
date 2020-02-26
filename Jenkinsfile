@@ -141,10 +141,18 @@ def buildUnitTestStage(env) {
                 ${testValues}
             """
             // wait for external services to be ready
-            sh "kubectl rollout status statefulset ${TEST_REDIS_RESOURCE} --namespace=${testNamespace}"
+            sh """
+              kubectl rollout status statefulset ${TEST_REDIS_RESOURCE} \
+                --namespace=${testNamespace} \
+                --timeout=${TEST_ROLLOUT_STATUS_TIMEOUT}
+            """
             if (!isDev) {
               def resourceType = env == 'mongodb' ? 'deployment' : 'statefulset'
-              sh "kubectl rollout status ${resourceType} ${TEST_HELM_CHART_RELEASE}-${env} --namespace=${testNamespace}"
+              sh """
+                kubectl rollout status ${resourceType} ${TEST_HELM_CHART_RELEASE}-${env} \
+                  --namespace=${testNamespace} \
+                  --timeout=${TEST_ROLLOUT_STATUS_TIMEOUT}
+              """
             }
 
             echo "${env} unit tests: run Maven"
@@ -207,6 +215,7 @@ pipeline {
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
     TEST_REDIS_SERVICE = 'redis-master'
     TEST_REDIS_RESOURCE = "${TEST_HELM_CHART_RELEASE}-${TEST_REDIS_SERVICE}"
+    TEST_ROLLOUT_STATUS_TIMEOUT = '1m'
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
     NUXEO_IMAGE_NAME = 'nuxeo'
