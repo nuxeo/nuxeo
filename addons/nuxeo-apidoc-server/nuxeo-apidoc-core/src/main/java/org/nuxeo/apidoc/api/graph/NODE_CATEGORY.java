@@ -71,4 +71,13 @@ public enum NODE_CATEGORY {
         return source.toLowerCase().contains(content.toLowerCase());
     }
 
+    public static NODE_CATEGORY getCategory(String cat) {
+        for (NODE_CATEGORY ecat : NODE_CATEGORY.values()) {
+            if (ecat.name().equalsIgnoreCase(cat)) {
+                return ecat;
+            }
+        }
+        return null;
+    }
+
 }

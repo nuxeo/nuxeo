@@ -57,6 +57,13 @@ public interface BundleInfo extends NuxeoArtifact {
      */
     String RUNTIME_STARTED_PSEUDO_BUNDLE = "org.nuxeo.runtime.started";
 
+    /**
+     * Pseudo bundle, added as a root of all bundles.
+     *
+     * @since 11.1
+     */
+    String RUNTIME_ROOT_PSEUDO_BUNDLE = "org.nuxeo.runtime.root";
+
     @JsonIgnore
     List<ComponentInfo> getComponents();
 

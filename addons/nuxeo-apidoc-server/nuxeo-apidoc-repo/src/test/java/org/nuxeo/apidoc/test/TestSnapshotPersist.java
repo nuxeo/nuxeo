@@ -173,7 +173,7 @@ public class TestSnapshotPersist {
         refs.put("basic_graph.json", Boolean.TRUE);
         refs.put("jgrapht.dot", Boolean.TRUE);
         refs.put("gephi.json", Boolean.FALSE);
-        refs.put("bundle_graph.json", Boolean.FALSE);
+        refs.put("bundle_graph.json", Boolean.TRUE);
 
         assertEquals(runtimeGraphs.size(), persistentGraphs.size());
         assertEquals(runtimeGraphs.size(), refs.size());

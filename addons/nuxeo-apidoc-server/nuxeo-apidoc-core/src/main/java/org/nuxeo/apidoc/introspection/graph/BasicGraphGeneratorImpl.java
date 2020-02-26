@@ -18,6 +18,7 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +86,7 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
         // - services
         // - contributions
         Map<String, Integer> hits = new HashMap<>();
+        List<String> children = new ArrayList<>();
 
         for (String bid : distribution.getBundleIds()) {
             BundleInfo bundle = distribution.getBundle(bid);
@@ -96,6 +98,9 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
             for (String requirement : bundle.getRequirements()) {
                 addEdge(graph, hits, createEdge(bundleNode, createNode(prefixId(BundleInfo.TYPE_NAME, requirement)),
                         EDGE_TYPE.REQUIRES.name()));
+            }
+            if (bundle.getRequirements().isEmpty()) {
+                children.add(bid);
             }
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
@@ -150,6 +155,24 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
             }
         }
 
+        // add common root for all roots in the bundle graph, as it is supposed to be a directed tree without cycles
+        List<Node> roots = new ArrayList<>();
+        for (Node node : graph.getNodes()) {
+            if (!children.contains(node.getOriginalId())) {
+                roots.add(node);
+            }
+        }
+        if (roots.size() > 1) {
+            // add a common root for all roots
+            String pbid = prefixId(BundleInfo.TYPE_NAME, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE);
+            Node bundleNode = createNode(pbid, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE, 0, "", NODE_TYPE.BUNDLE.name(),
+                    NODE_CATEGORY.RUNTIME.name(), NODE_CATEGORY.RUNTIME.getColor());
+            graph.addNode(bundleNode);
+            for (Node root : roots) {
+                addEdge(graph, hits, createEdge(root, bundleNode, EDGE_TYPE.REQUIRES.name()));
+            }
+        }
+
         refine(graph, hits);
 
         return graph;
@@ -158,7 +181,7 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
     /**
      * Refines graphs for display.
      * <ul>
-     * <li>Adds potentially missing nodes references in all edges
+     * <li>Adds potentially missing nodes referenced in edges
      * <li>set integer id on nodes and edges, as required by some rendering frameworks
      * <li>sets weights computed from hits map
      */

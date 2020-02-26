@@ -33,6 +33,7 @@ import org.gephi.project.api.ProjectController;
 import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
 import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.Graph;
+import org.nuxeo.apidoc.api.graph.NODE_TYPE;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.openide.util.Lookup;
 
@@ -56,13 +57,21 @@ public class GephiLayout {
         GraphFactory factory = ggraphModel.factory();
         org.gephi.graph.api.Graph ggraph = ggraphModel.getDirectedGraph();
         Map<String, org.gephi.graph.api.Node> gnodes = new HashMap<>();
+
+        // apply layouting to bundles only: other dependencies will set their x/y according to it and their z according
+        // to the depenency tree deps
         for (Node node : graph.getNodes()) {
-            org.gephi.graph.api.Node gnode = createGephiNode(factory, node);
-            ggraph.addNode(gnode);
-            gnodes.put(node.getOriginalId(), gnode);
+            if (isBundle(node)) {
+                org.gephi.graph.api.Node gnode = createGephiNode(factory, node);
+                ggraph.addNode(gnode);
+                gnodes.put(node.getOriginalId(), gnode);
+            }
         }
         for (Edge edge : graph.getEdges()) {
-            ggraph.addEdge(createGephiEdge(factory, edge, gnodes));
+            if (isBundle(graph.getNode(edge.getOriginalSourceId()))
+                    && isBundle(graph.getNode(edge.getOriginalTargetId()))) {
+                ggraph.addEdge(createGephiEdge(factory, edge, gnodes));
+            }
         }
 
         // Layout for 1 minute by default
@@ -92,6 +101,10 @@ public class GephiLayout {
         }
 
         return graph;
+    }
+
+    protected static boolean isBundle(Node node) {
+        return NODE_TYPE.BUNDLE.name().equals(node.getType());
     }
 
     protected static org.gephi.graph.api.Node createGephiNode(GraphFactory factory, Node node) {
