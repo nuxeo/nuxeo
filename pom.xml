@@ -4188,6 +4188,12 @@
         <groupId>org.owasp.esapi</groupId>
         <artifactId>esapi</artifactId>
         <version>2.2.0.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <!-- SCIM -->
       <dependency>
@@ -5593,6 +5599,12 @@
                   <exclude>javax.xml.stream:stax-api</exclude> <!-- defined in the J2SE -->
                 </excludes>
                 <message>javax.xml.stream:stax-api must not be used, it's already defined in J2SE</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>xml-apis:xml-apis</exclude> <!-- part of the JDK -->
+                </excludes>
+                <message>xml-apis:xml-apis must not be used, it's already part of the JDK</message>
               </bannedDependencies>
               <bannedDependencies>
                 <excludes>
