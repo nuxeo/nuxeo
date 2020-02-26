@@ -47,7 +47,7 @@ String getVersion() {
 
 void runFunctionalTests(String baseDir) {
   try {
-    sh "mvn -B -nsu -f ${baseDir}/pom.xml verify"
+    sh "mvn ${MAVEN_ARGS} -f ${baseDir}/pom.xml verify"
   } finally {
     try {
       archiveArtifacts allowEmptyArchive: true, artifacts: "${baseDir}/**/target/failsafe-reports/*, ${baseDir}/**/target/**/*.log, ${baseDir}/**/target/*.png, ${baseDir}/**/target/**/distribution.properties, ${baseDir}/**/target/**/configuration.properties"
@@ -175,7 +175,7 @@ def buildUnitTestStage(env) {
             //   - loading some test framework system properties
             def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
             sh """
-              mvn -B -nsu -rf nuxeo-core \
+              mvn ${MAVEN_ARGS} -rf nuxeo-core \
                 -Dcustom.environment=${env} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
@@ -231,7 +231,8 @@ pipeline {
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
     PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
-    MAVEN_OPTS= "$MAVEN_OPTS -Xms512m -Xmx3072m"
+    MAVEN_OPTS = "$MAVEN_OPTS -Xms512m -Xmx3072m"
+    MAVEN_ARGS = '-B -nsu'
     VERSION = getVersion()
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
@@ -265,7 +266,7 @@ pipeline {
           New version: ${VERSION}
           """
           sh """
-            mvn -nsu -Pdocker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
+            mvn ${MAVEN_ARGS} -Pdocker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
             perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
           """
         }
@@ -280,7 +281,7 @@ pipeline {
           Compile
           ----------------------------------------"""
           echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh 'mvn -V -B -nsu -T0.8C -DskipTests install'
+          sh "mvn ${MAVEN_ARGS} -V -T0.8C -DskipTests install"
         }
       }
       post {
@@ -300,8 +301,8 @@ pipeline {
           ----------------------------------------
           Package
           ----------------------------------------"""
-          sh 'mvn -B -nsu -f nuxeo-distribution/pom.xml -DskipTests install'
-          sh 'mvn -B -nsu -f packages/pom.xml -DskipTests install'
+          sh "mvn ${MAVEN_ARGS} -f nuxeo-distribution/pom.xml -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} -f packages/pom.xml -DskipTests install"
         }
       }
       post {
@@ -321,7 +322,7 @@ pipeline {
           ----------------------------------------
           Deploy Maven artifacts
           ----------------------------------------"""
-          sh 'mvn -B -nsu -Pdistrib -DskipTests deploy'
+          sh "mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy"
         }
       }
       post {
@@ -372,7 +373,7 @@ pipeline {
           """
           echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
           // Fetch Nuxeo distribution and Nuxeo Content Platform packages with Maven
-          sh "mvn -B -nsu -f docker/pom.xml process-resources"
+          sh "mvn ${MAVEN_ARGS} -f docker/pom.xml process-resources"
           skaffoldBuildAll()
         }
       }
@@ -474,7 +475,7 @@ pipeline {
           Run common unit tests
           ----------------------------------------"""
           dir('nuxeo-common') {
-            sh "mvn -B -nsu test"
+            sh "mvn ${MAVEN_ARGS} test"
           }
         }
       }
@@ -499,7 +500,7 @@ pipeline {
           Run runtime unit tests
           ----------------------------------------"""
           dir('nuxeo-runtime') {
-            sh "mvn -B -nsu test"
+            sh "mvn ${MAVEN_ARGS} test"
           }
         }
       }
