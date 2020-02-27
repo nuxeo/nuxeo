@@ -135,6 +135,8 @@
     <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
     <jgiven.version>0.18.2</jgiven.version>
 
+    <nuxeo.skip.enforcer>true</nuxeo.skip.enforcer>
+
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
     <!-- (related profiles: customdb, default, pgsql, oracle10g, oracle11g, oracle12c, oracle18c, mysql, mongodb) -->
@@ -5027,6 +5029,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>${nuxeo.skip.enforcer}</skip>
               <rules>
                 <requireReleaseDeps>
                   <message>No Snapshots Allowed!</message>
@@ -5045,6 +5048,7 @@
               <goal>enforce</goal>
             </goals>
             <configuration>
+              <skip>${nuxeo.skip.enforcer}</skip>
               <rules>
                 <requireReleaseDeps>
                   <message>No Snapshots Allowed!</message>
@@ -6216,6 +6220,9 @@
           <value>true</value>
         </property>
       </activation>
+      <properties>
+        <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
+      </properties>
       <build>
         <pluginManagement>
           <plugins>
