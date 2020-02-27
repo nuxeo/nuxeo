@@ -140,23 +140,30 @@ def buildUnitTestStage(env) {
                 --namespace=${testNamespace} \
                 ${testValues}
             """
-            // wait for external services to be ready
+            // wait for Redis to be ready
             sh """
               kubectl rollout status statefulset ${TEST_REDIS_RESOURCE} \
                 --namespace=${testNamespace} \
-                --timeout=${TEST_ROLLOUT_STATUS_TIMEOUT}
+                --timeout=${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}
             """
             if (!isDev) {
+              // wait for Elasticsearch to be ready
+              sh """
+                kubectl rollout status deployment ${TEST_ELASTICSEARCH_RESOURCE} \
+                  --namespace=${testNamespace} \
+                  --timeout=${TEST_ELASTICSEARCH_ROLLOUT_STATUS_TIMEOUT}
+              """
+              // wait for MongoDB or PostgreSQL to be ready
               def resourceType = env == 'mongodb' ? 'deployment' : 'statefulset'
               sh """
                 kubectl rollout status ${resourceType} ${TEST_HELM_CHART_RELEASE}-${env} \
                   --namespace=${testNamespace} \
-                  --timeout=${TEST_ROLLOUT_STATUS_TIMEOUT}
+                  --timeout=${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}
               """
             }
 
             echo "${env} unit tests: run Maven"
-            // prepare backend-specific system properties
+            // prepare test framework system properties
             sh """
               CHART_RELEASE=${TEST_HELM_CHART_RELEASE} SERVICE=${env} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
                 envsubst < ci/mvn/nuxeo-test-${env}.properties > ${HOME}/nuxeo-test-${env}.properties
@@ -165,7 +172,7 @@ def buildUnitTestStage(env) {
             // - in nuxeo-core and dependent projects only (nuxeo-common and nuxeo-runtime are run in dedicated stages)
             // - for the given environment (see the customEnvironment profile in pom.xml):
             //   - in an alternative build directory
-            //   - loading some backend-specific system properties
+            //   - loading some test framework system properties
             def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
             sh """
               mvn -B -nsu -rf nuxeo-core \
@@ -214,7 +221,10 @@ pipeline {
     TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
     TEST_REDIS_RESOURCE = "${TEST_HELM_CHART_RELEASE}-redis-master"
-    TEST_ROLLOUT_STATUS_TIMEOUT = '1m'
+    TEST_ELASTICSEARCH_RESOURCE = "${TEST_HELM_CHART_RELEASE}-elasticsearch-client"
+    TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT = '1m'
+     // Elasticsearch might take longer
+    TEST_ELASTICSEARCH_ROLLOUT_STATUS_TIMEOUT = '3m'
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
     NUXEO_IMAGE_NAME = 'nuxeo'
