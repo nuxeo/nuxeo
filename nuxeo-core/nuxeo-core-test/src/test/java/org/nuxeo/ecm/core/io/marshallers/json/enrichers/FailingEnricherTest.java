@@ -70,7 +70,7 @@ public class FailingEnricherTest extends AbstractJsonWriterTest.External<Documen
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
         // should log the exception
         assertEquals(1, caughtEvents.size());
-        assertEquals(String.format("Enricher %s failed", FailingEnricher.NAME), caughtEvents.get(0));
+        assertEquals(String.format("Enricher: %s failed", FailingEnricher.NAME), caughtEvents.get(0));
         assertEquals(jsonExpected.toString(), jsonResult.toString());
     }
 
