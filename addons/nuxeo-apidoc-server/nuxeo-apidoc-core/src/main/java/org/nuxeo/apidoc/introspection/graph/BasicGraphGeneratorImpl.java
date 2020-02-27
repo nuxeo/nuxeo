@@ -208,6 +208,11 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
         }
         // handle weights
         if (hits == null) {
+            for (Node node : graph.getNodes()) {
+                if (node.getWeight() == 0) {
+                    node.setWeight(1);
+                }
+            }
             return;
         }
         for (Map.Entry<String, Integer> hit : hits.entrySet()) {
