@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.enrichers;
 
+import static com.fasterxml.jackson.core.JsonToken.END_OBJECT;
+import static com.fasterxml.jackson.core.JsonToken.FIELD_NAME;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 
@@ -31,7 +34,6 @@ import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
 
@@ -66,25 +68,35 @@ public abstract class AbstractJsonEnricher<EntityType> extends AbstractJsonWrite
             // Write to a temporary output in case of exception during write()
             tb.writeStartObject();
             write(tb, enrichable.getEntity());
+            tb.writeEndObject();
             tb.flush();
             // Add the complete, well-formed content to the real output
             try (JsonParser parser = tb.asParser()) {
                 parser.nextToken(); // ignoring START_OBJECT
-                while (parser.nextToken() == JsonToken.FIELD_NAME) {
+                while (parser.nextToken() == FIELD_NAME) {
                     jg.copyCurrentStructure(parser);
                 }
-                if (parser.currentToken() != null) {
-                    log.error("Enricher {} returned invalid output {}", name, tb.toString());
+                if (parser.currentToken() != END_OBJECT) {
+                    log.error("Enricher: {} failed on current token: {}, output to write: {}", name::toString,
+                            parser::currentToken, () -> safeReadBuffer(tb));
                 }
             }
         } catch (Exception e) {
-            if (e instanceof InterruptedException) {
+            if (e instanceof InterruptedException) { // NOSONAR
                 Thread.currentThread().interrupt();
                 throw new RuntimeException("interrupted", e); // NOSONAR
             } else {
                 // TODO collect exception and return it to the caller
-                log.info("Enricher {} failed", name, e);
+                log.info("Enricher: {} failed", name, e);
             }
+        }
+    }
+
+    protected String safeReadBuffer(TokenBuffer tb) {
+        try {
+            return MAPPER.readTree(tb.asParser());
+        } catch (IOException e) {
+            return "malformed content could not be retrieved";
         }
     }
 
