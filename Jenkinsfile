@@ -213,8 +213,7 @@ pipeline {
     TEST_HELM_CHART_RELEASE = 'test-release'
     TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
-    TEST_REDIS_SERVICE = 'redis-master'
-    TEST_REDIS_RESOURCE = "${TEST_HELM_CHART_RELEASE}-${TEST_REDIS_SERVICE}"
+    TEST_REDIS_RESOURCE = "${TEST_HELM_CHART_RELEASE}-redis-master"
     TEST_ROLLOUT_STATUS_TIMEOUT = '1m'
     BUILDER_IMAGE_NAME = 'builder'
     BASE_IMAGE_NAME = 'base'
