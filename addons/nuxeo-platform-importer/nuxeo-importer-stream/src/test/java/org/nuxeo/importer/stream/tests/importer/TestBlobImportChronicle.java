@@ -24,12 +24,14 @@ import static org.nuxeo.importer.stream.tests.importer.TestAutomationChronicle.I
 import java.nio.file.Path;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 
 /**
  * @since 9.2
  */
+@Ignore(value = "NXP-27559")
 public class TestBlobImportChronicle extends TestBlobImport {
     protected Path basePath;
 
