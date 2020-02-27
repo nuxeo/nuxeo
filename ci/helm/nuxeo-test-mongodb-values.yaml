@@ -10,4 +10,5 @@ mongodb:
     team: platform
     usage: utests
 tags:
+  elasticsearch: true
   mongodb: true

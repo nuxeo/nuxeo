@@ -11,4 +11,5 @@ postgresql:
       team: platform
       usage: utests
 tags:
+  elasticsearch: true
   postgresql: true
