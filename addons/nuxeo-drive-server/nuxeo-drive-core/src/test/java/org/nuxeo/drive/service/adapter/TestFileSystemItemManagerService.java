@@ -245,6 +245,7 @@ public class TestFileSystemItemManagerService {
         assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/Joe.odt", fileFsItem.getDownloadURL()); // NOSONAR
         assertEquals("MD5", fileFsItem.getDigestAlgorithm());
         assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(), fileFsItem.getDigest());
+        assertEquals(file.getAdapter(BlobHolder.class).getBlob().getLength(), fileFsItem.getSize());
         Blob fileItemBlob = fileFsItem.getBlob();
         assertEquals("Joe.odt", fileItemBlob.getFilename());
         assertEquals("Content of Joe's file.", fileItemBlob.getString());
@@ -478,6 +479,7 @@ public class TestFileSystemItemManagerService {
         assertEquals("nxfile/test/" + newFile.getId() + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
+        assertEquals(newFileBlob.getLength(), fileItem.getSize());
 
         // NXP-21854: Check overwrite parameter
         // Test overwrite=false
@@ -527,6 +529,7 @@ public class TestFileSystemItemManagerService {
         assertEquals("nxfile/test/" + updatedFile.getId() + "/blobholder:0/New%20file.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(updatedFileBlob.getDigest(), fileItem.getDigest());
+        assertEquals(updatedFileBlob.getLength(), fileItem.getSize());
 
         // ------------------------------------------------------
         // Check #delete
@@ -570,6 +573,7 @@ public class TestFileSystemItemManagerService {
         assertEquals("nxfile/test/" + file.getId() + "/blobholder:0/File%20new%20name.odt", fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(fileBlob.getDigest(), fileItem.getDigest());
+        assertEquals(fileBlob.getLength(), fileItem.getSize());
 
         // File rename with title == filename
         // => should rename filename and title
@@ -592,6 +596,7 @@ public class TestFileSystemItemManagerService {
                 fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(newFileBlob.getDigest(), fileItem.getDigest());
+        assertEquals(newFileBlob.getLength(), fileItem.getSize());
 
         // ------------------------------------------------------
         // Check #move

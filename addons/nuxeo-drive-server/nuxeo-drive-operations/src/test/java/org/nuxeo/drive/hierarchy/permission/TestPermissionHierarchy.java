@@ -756,6 +756,8 @@ public class TestPermissionHierarchy {
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(((org.nuxeo.ecm.core.api.Blob) doc.getPropertyValue("file:content")).getDigest(),
                 fileItem.getDigest());
+        assertEquals(((org.nuxeo.ecm.core.api.Blob) doc.getPropertyValue("file:content")).getLength(),
+                fileItem.getSize());
     }
 
     protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc, String parentId,

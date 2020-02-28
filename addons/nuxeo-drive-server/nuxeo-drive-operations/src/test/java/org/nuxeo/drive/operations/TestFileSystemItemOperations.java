@@ -347,6 +347,7 @@ public class TestFileSystemItemOperations {
         assertEquals("nxfile/test/" + file1.getId() + "/blobholder:0/First%20file.odt", fileItem.getDownloadURL()); // NOSONAR
         assertEquals("MD5", fileItem.getDigestAlgorithm());
         assertEquals(((Blob) file1.getPropertyValue(FILE_CONTENT)).getDigest(), fileItem.getDigest());
+        assertEquals(((Blob) file1.getPropertyValue(FILE_CONTENT)).getLength(), fileItem.getSize());
 
         // Get deleted file
         trashService.trashDocument(file1);
@@ -491,6 +492,7 @@ public class TestFileSystemItemOperations {
         assertEquals("nxfile/test/" + newFileDoc.getId() + "/blobholder:0/New%20file.odt", newFile.getDownloadURL());
         assertEquals("MD5", newFile.getDigestAlgorithm());
         assertEquals(newFileBlob.getDigest(), newFile.getDigest());
+        assertEquals(newFileBlob.getLength(), newFile.getSize());
     }
 
     @Test
@@ -528,6 +530,7 @@ public class TestFileSystemItemOperations {
                 updatedFile.getDownloadURL());
         assertEquals("MD5", updatedFile.getDigestAlgorithm());
         assertEquals(updatedFileBlob.getDigest(), updatedFile.getDigest());
+        assertEquals(updatedFileBlob.getLength(), updatedFile.getSize());
     }
 
     @Test
@@ -597,6 +600,7 @@ public class TestFileSystemItemOperations {
                 renamedFileItem.getDownloadURL());
         assertEquals("MD5", renamedFileItem.getDigestAlgorithm());
         assertEquals(renamedFileBlob.getDigest(), renamedFileItem.getDigest());
+        assertEquals(renamedFileBlob.getLength(), renamedFileItem.getSize());
 
         // ------------------------------------------------------
         // Folder
@@ -813,6 +817,7 @@ public class TestFileSystemItemOperations {
         assertEquals("First file.odt", movedFileBlob.getFilename());
         assertEquals("MD5", movedFileItem.getDigestAlgorithm());
         assertEquals(movedFileBlob.getDigest(), movedFileItem.getDigest());
+        assertEquals(movedFileBlob.getLength(), movedFileItem.getSize());
     }
 
     /**
@@ -921,6 +926,7 @@ public class TestFileSystemItemOperations {
                             fsItem.getDownloadURL());
                     assertEquals("MD5", fsItem.getDigestAlgorithm());
                     assertEquals(((Blob) file3.getPropertyValue(FILE_CONTENT)).getDigest(), fsItem.getDigest());
+                    assertEquals(((Blob) file3.getPropertyValue(FILE_CONTENT)).getLength(), fsItem.getSize());
                     isChild1Found = true;
                     childrenCount++;
                 }
@@ -940,6 +946,7 @@ public class TestFileSystemItemOperations {
                             fsItem.getDownloadURL());
                     assertEquals("MD5", fsItem.getDigestAlgorithm());
                     assertEquals(((Blob) file4.getPropertyValue(FILE_CONTENT)).getDigest(), fsItem.getDigest());
+                    assertEquals(((Blob) file4.getPropertyValue(FILE_CONTENT)).getLength(), fsItem.getSize());
                 }
             } else {
                 fail(String.format("FileSystemItem %s doesn't match any expected.", fsItem.getId()));

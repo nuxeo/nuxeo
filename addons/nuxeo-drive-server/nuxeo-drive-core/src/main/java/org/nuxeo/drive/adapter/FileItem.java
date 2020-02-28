@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Mickaël Schoentgen <mschoentgen@nuxeo.com>
  */
 package org.nuxeo.drive.adapter;
 
@@ -43,6 +44,9 @@ public interface FileItem extends FileSystemItem {
     String getDigestAlgorithm();
 
     String getDigest();
+
+    /** @since 11.1 */
+    long getSize();
 
     boolean getCanUpdate();
 
