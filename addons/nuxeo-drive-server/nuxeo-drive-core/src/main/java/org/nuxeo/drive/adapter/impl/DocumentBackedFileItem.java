@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Mickaël Schoentgen <mschoentgen@nuxeo.com>
  */
 package org.nuxeo.drive.adapter.impl;
 
@@ -46,6 +47,9 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     protected String digestAlgorithm;
 
     protected String digest;
+
+    /** @since 11.1 */
+    protected long size;
 
     protected boolean canUpdate;
 
@@ -194,6 +198,12 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         return canUpdate;
     }
 
+    /** @since 11.1 */
+    @Override
+    public long getSize() {
+        return size;
+    }
+
     @Override
     public void setBlob(Blob blob) {
         try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
@@ -216,6 +226,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
             /* Update FileSystemItem attributes */
             updateLastModificationDate(doc);
             updateDigest(getBlob(doc));
+            updateSize(blob);
         }
     }
 
@@ -249,6 +260,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         folder = false;
         updateDownloadURL();
         updateDigest(blob);
+        updateSize(blob);
         if (digest == null) {
             digestAlgorithm = null;
         }
@@ -313,6 +325,12 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         }
     }
 
+    /** @since 11.1 */
+    protected void updateSize(Blob blob) {
+        long length = blob.getLength();
+        size = length > 0 ? length : 0;
+    }
+
     protected NuxeoDriveManager getNuxeoDriveManager() {
         return Framework.getService(NuxeoDriveManager.class);
     }
@@ -332,6 +350,11 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     protected void setCanUpdate(boolean canUpdate) {
         this.canUpdate = canUpdate;
+    }
+
+    /** @since 11.1 */
+    protected void setSize(long size) {
+        this.size = size;
     }
 
 }

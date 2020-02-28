@@ -587,6 +587,12 @@ public class DefaultFileSystemItemFactoryFixture {
                 ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(custom)).getDigest());
 
         // ------------------------------------------------------------
+        // FileItem#size
+        // ------------------------------------------------------------
+        assertEquals("Content of Joe's file.".length(), fileItem.getSize());
+        assertEquals("Content of Bob's note.".length(), noteItem.getSize());
+
+        // ------------------------------------------------------------
         // FileItem#getCanUpdate
         // ------------------------------------------------------------
         // As Administrator
