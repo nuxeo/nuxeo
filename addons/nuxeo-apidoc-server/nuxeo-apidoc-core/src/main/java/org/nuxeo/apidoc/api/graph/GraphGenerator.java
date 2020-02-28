@@ -33,6 +33,14 @@ public interface GraphGenerator {
 
     void setGraphName(String name);
 
+    String getGraphTitle();
+
+    void setGraphTitle(String title);
+
+    String getGraphDescription();
+
+    void setGraphDescription(String description);
+
     Map<String, String> getProperties();
 
     void setProperties(Map<String, String> properties);

@@ -37,6 +37,12 @@ public class GraphDescriptor {
     @XNode("@name")
     String name;
 
+    @XNode("description")
+    String description;
+
+    @XNode("title")
+    String title;
+
     @XNode("@class")
     Class<? extends GraphGenerator> clazz;
 
@@ -45,6 +51,14 @@ public class GraphDescriptor {
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public Class<? extends GraphGenerator> getClazz() {

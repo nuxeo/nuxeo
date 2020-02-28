@@ -34,6 +34,11 @@ public interface NuxeoArtifact {
     /**
      * @since 11.1
      */
+    public static String DESCRIPTION_PROPERTY_PATH = DublinCoreConstants.DUBLINCORE_DESCRIPTION_PROPERTY;
+
+    /**
+     * @since 11.1
+     */
     public static String CONTENT_PROPERTY_PATH = "file:content";
 
     String getId();

@@ -88,7 +88,10 @@ public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
     }
 
     protected Graph createGraph() {
-        return new GraphImpl(graphName, GRAPH_TYPE.BASIC_LAYOUT.name(), getProperties());
+        Graph graph = new GraphImpl(getGraphName());
+        graph.setType(GRAPH_TYPE.BASIC_LAYOUT.name());
+        syncGraphAttributes(graph);
+        return graph;
     }
 
     @Override

@@ -49,6 +49,10 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
 
     protected String type;
 
+    protected String title;
+
+    protected String description;
+
     protected final Map<String, String> properties = new HashMap<>();
 
     protected final List<Node> nodes = new ArrayList<>();
@@ -58,12 +62,9 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     protected final Map<String, Node> nodeMap = new HashMap<>();
 
     @JsonCreator
-    public GraphImpl(@JsonProperty("id") String id, @JsonProperty("type") String type,
-            @JsonProperty("properties") Map<String, String> properties) {
+    public GraphImpl(@JsonProperty("id") String id) {
         super();
         this.id = id;
-        this.type = type;
-        setProperties(properties);
     }
 
     @Override
@@ -110,6 +111,22 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
         this.type = type;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public Map<String, String> getProperties() {
         return Collections.unmodifiableMap(properties);
@@ -134,7 +151,9 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
                 new SimpleModule().addAbstractTypeMapping(Node.class, NodeImpl.class)
                                   .addAbstractTypeMapping(Edge.class, EdgeImpl.class));
         LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-        values.put("id", getId());
+        values.put("name", getName());
+        values.put("title", getTitle());
+        values.put("description", getId());
         values.put("type", getType());
         values.put("nodes", nodes);
         values.put("edges", edges);

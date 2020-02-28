@@ -18,8 +18,6 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
-import java.util.Map;
-
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -41,9 +39,8 @@ public class ContentGraphImpl extends GraphImpl implements Graph {
     protected String contentName;
 
     @JsonCreator
-    public ContentGraphImpl(@JsonProperty("id") String id, @JsonProperty("type") String type,
-            @JsonProperty("properties") Map<String, String> properties) {
-        super(id, type, properties);
+    public ContentGraphImpl(@JsonProperty("id") String id) {
+        super(id);
     }
 
     public String getContent() {

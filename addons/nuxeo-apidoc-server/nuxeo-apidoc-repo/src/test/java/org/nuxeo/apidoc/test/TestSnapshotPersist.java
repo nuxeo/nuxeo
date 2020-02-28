@@ -142,7 +142,10 @@ public class TestSnapshotPersist {
         for (Graph graph : graphs) {
             sb.append("graph: ").append(graph.getName());
             sb.append(" *** ");
-            sb.append("\n");
+            sb.append("type: '" + graph.getType() + "'");
+            sb.append("title: '" + graph.getTitle() + "'");
+            sb.append("desc: '" + graph.getDescription() + "'");
+            sb.append("'\n");
         }
 
         return sb.toString().trim();
@@ -173,7 +176,7 @@ public class TestSnapshotPersist {
         refs.put("basic_graph.json", Boolean.TRUE);
         refs.put("jgrapht.dot", Boolean.TRUE);
         refs.put("gephi.json", Boolean.FALSE);
-        refs.put("bundle_graph.json", Boolean.TRUE);
+        refs.put("bundle_graph.json", Boolean.FALSE);
 
         assertEquals(runtimeGraphs.size(), persistentGraphs.size());
         assertEquals(runtimeGraphs.size(), refs.size());

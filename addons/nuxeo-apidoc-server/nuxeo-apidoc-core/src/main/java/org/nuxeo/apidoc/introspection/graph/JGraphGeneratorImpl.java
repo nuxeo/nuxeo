@@ -107,7 +107,10 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
     @Override
     protected Graph createGraph() {
-        return new ContentGraphImpl(graphName, GRAPH_TYPE.BASIC.name(), getProperties());
+        Graph graph = new ContentGraphImpl(getGraphName());
+        graph.setType(GRAPH_TYPE.BASIC.name());
+        syncGraphAttributes(graph);
+        return graph;
     }
 
 }

@@ -48,6 +48,10 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
 
     protected String graphName;
 
+    protected String graphTitle;
+
+    protected String graphDescription;
+
     protected Map<String, String> properties = new HashMap<>();
 
     public BasicGraphGeneratorImpl() {
@@ -62,6 +66,22 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
     @Override
     public void setGraphName(String name) {
         this.graphName = name;
+    }
+
+    public String getGraphTitle() {
+        return graphTitle;
+    }
+
+    public void setGraphTitle(String graphTitle) {
+        this.graphTitle = graphTitle;
+    }
+
+    public String getGraphDescription() {
+        return graphDescription;
+    }
+
+    public void setGraphDescription(String graphDescription) {
+        this.graphDescription = graphDescription;
     }
 
     @Override
@@ -230,7 +250,16 @@ public class BasicGraphGeneratorImpl implements GraphGenerator {
     }
 
     protected Graph createGraph() {
-        return new GraphImpl(graphName, GRAPH_TYPE.BASIC.name(), getProperties());
+        Graph graph = new GraphImpl(getGraphName());
+        graph.setType(GRAPH_TYPE.BASIC.name());
+        syncGraphAttributes(graph);
+        return graph;
+    }
+
+    protected void syncGraphAttributes(Graph graph) {
+        graph.setTitle(getGraphTitle());
+        graph.setDescription(getGraphDescription());
+        graph.setProperties(getProperties());
     }
 
     protected Node createNode(String id, String label, int weight, String path, String type, String category,

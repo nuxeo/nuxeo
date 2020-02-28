@@ -42,6 +42,14 @@ public interface Graph extends NuxeoArtifact {
 
     void setName(String name);
 
+    String getTitle();
+
+    void setTitle(String title);
+
+    String getDescription();
+
+    void setDescription(String description);
+
     Map<String, String> getProperties();
 
     String getProperty(String name, String defaultValue);
