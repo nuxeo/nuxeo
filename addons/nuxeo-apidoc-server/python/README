@@ -1,3 +1,20 @@
+## Usage
+
+```bash
+python3 ./graph.py
+```
+
+## Install
+
+```bash
+python3 -m venv ~/venv3
+. ~/venv3/bin/activate
+python3 -m pip install -U pip
+python3 -m pip install -r requirements.txt
+```
+
+## Raw notes
+
 (venv3)
 
 $ pip3 install python-igraph
@@ -20,4 +37,3 @@ $ pip3 install python-igraph
 $ pip3 install chart-studio (was already ok for me)
 
 
-$ python3 ./graph.py 
