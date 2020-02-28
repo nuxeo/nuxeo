@@ -1,0 +1,23 @@
+(venv3)
+
+$ pip3 install python-igraph
+$ sudo apt-get install libtool
+$ sudo apt-get install automake
+$ sudo apt-get install yacc
+$ sudo apt-get install bison flex
+
+/usr/bin/ld: cannot find -lxml2
+/usr/bin/ld: cannot find -lz
+
+https://stackoverflow.com/questions/16710047/usr-bin-ld-cannot-find-lnameofthelibrary/34256630
+
+$ sudo apt-get install libz-dev
+$ sudo apt-get install libxml2-dev
+
+\o/
+
+$ pip3 install python-igraph
+$ pip3 install chart-studio (was already ok for me)
+
+
+$ python3 ./graph.py 
