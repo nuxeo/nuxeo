@@ -98,11 +98,12 @@ class Spreadsheet {
             widget: {field: c.field}
           };
 
-          // get field from schemas map
+          // get field definition from schemas map
           let field = undefined; // <- explicitly set field as undefined in each iteration
           if (c.field.indexOf(':') > -1) {
             let [s, f] = c.field.split(':');
             field = schemas[s].fields[f] || undefined;
+            field = (typeof field === 'string') ? {type: field} : field;
           }
 
           // set column widget type and properties based on field constraints
