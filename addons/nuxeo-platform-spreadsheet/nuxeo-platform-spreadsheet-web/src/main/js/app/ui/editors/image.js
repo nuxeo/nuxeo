@@ -17,7 +17,7 @@
  */
 
 const ImageRenderer = (instance, td, row, col, prop, value, cellProperties) => {
-	if (value.data) {
+	if (value && value.data) {
 		var img = document.createElement('img');
 		img.src = value.data;
     if (cellProperties.width) { img.setAttribute('width', cellProperties.height); }
