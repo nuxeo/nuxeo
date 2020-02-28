@@ -126,7 +126,7 @@ def generate_graph(parent_path, fname):
     fig=go.Figure(data=data, layout=layout)
     
     now = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
-    fig.write_html("%s_%s.html" % (fname, now))
+    fig.write_html("%s_%s.html" % (fname, now), include_plotlyjs='cdn')
   
 for fname in fnames:
     generate_graph(parent_path, fname)
