@@ -77,4 +77,12 @@
 
   </extension-point>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enables returning blob URLs with redirections already taken into account.
+      Only applies to code calling the DownloadService.getFullDownloadUrl API.
+    </documentation>
+    <property name="org.nuxeo.download.url.follow.redirect">false</property>
+  </extension>
+
 </component>

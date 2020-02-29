@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.download.DownloadService.DownloadContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -97,4 +98,28 @@ public class TestCustomRedirectResolver {
         // Verify there is no output
         assertEquals("", out.toString());
     }
+    @Test
+    public void testFullDownloadUrlWithoutRedirect() throws IOException {
+        doTestFullDownloadUrl("http://example.com/nuxeo/nxfile/myrepo/myid/my:xpath?changeToken=mytoken");
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-download-service-url-redirect.xml")
+    public void testFullDownloadUrlWithRedirect() throws IOException {
+        doTestFullDownloadUrl("http://www.nuxeo.org");
+    }
+
+    protected void doTestFullDownloadUrl(String expectedUrl) throws IOException {
+        DocumentModel doc = mock(DocumentModel.class);
+        when(doc.getRepositoryName()).thenReturn("myrepo");
+        when(doc.getId()).thenReturn("myid");
+        when(doc.getChangeToken()).thenReturn("mytoken");
+        String xpath = "my:xpath";
+        Blob blob = Blobs.createBlob("foo");
+        String baseUrl = "http://example.com/nuxeo/";
+        // prepare mocks
+        String url = downloadService.getFullDownloadUrl(doc, xpath, blob, baseUrl);
+        assertEquals(expectedUrl, url);
+    }
+
 }
