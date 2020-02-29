@@ -161,10 +161,14 @@
     </Connector>
     -->
 
+<#if "${nuxeo.server.ajp.enabled}" == "true">
     <!-- Define an AJP 1.3 Connector on port 8009 -->
     <Connector port="${nuxeo.server.ajp.port}" protocol="AJP/1.3"
                address="${nuxeo.bind.address}"
+               secretRequired="${nuxeo.server.ajp.secretRequired}"
+               secret="${nuxeo.server.ajp.secret}"
                redirectPort="${nuxeo.server.https.port}" />
+</#if>
 
 
     <!-- An Engine represents the entry point (within Catalina) that processes
