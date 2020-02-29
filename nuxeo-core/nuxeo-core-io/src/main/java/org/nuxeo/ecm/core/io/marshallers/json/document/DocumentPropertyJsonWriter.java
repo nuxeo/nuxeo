@@ -307,8 +307,8 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
             xpath = prop.getSchema().getName() + ":" + xpath;
         }
 
-        String filename = ((Blob) prop.getValue()).getFilename();
-        return ctx.getBaseUrl() + downloadService.getDownloadUrl(doc, xpath, filename);
+        Blob blob = (Blob) prop.getValue();
+        return downloadService.getFullDownloadUrl(doc, xpath, blob, ctx.getBaseUrl());
     }
 
     protected static boolean skipProperty(RenderingContext ctx, Property property) {
