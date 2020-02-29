@@ -360,6 +360,20 @@ public interface DownloadService {
     String storeBlobs(List<Blob> blobs);
 
     /**
+     * Gets the full download URL (after redirects if configured so) for the given blob.
+     *
+     * @implSpec Configuration to follow redirects is done through the {@code org.nuxeo.download.url.follow.redirect}
+     *           configuration property.
+     * @param doc the document
+     * @param xpath the blob's xpath or blobholder index, or {@code null} for default
+     * @param blob the blob
+     * @param baseUrl the base URL to use for Nuxeo downloads (if there is no redirect)
+     * @return the full URL (which may be to a redirected server)
+     * @since 11.1
+     */
+    String getFullDownloadUrl(DocumentModel doc, String xpath, Blob blob, String baseUrl);
+
+    /**
      * Gets the URL to use to download the blob at the given xpath in the given document.
      * <p>
      * The URL is relative to the Nuxeo Web Application context.

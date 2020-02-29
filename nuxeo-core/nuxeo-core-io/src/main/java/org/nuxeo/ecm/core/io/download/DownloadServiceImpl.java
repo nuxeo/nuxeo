@@ -90,6 +90,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -112,6 +113,9 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String VH_PARAM = "nuxeo.virtual.host";
 
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
+
+    /** @since 11.1 */
+    public static final String DOWNLOAD_URL_FOLLOW_REDIRECT = "org.nuxeo.download.url.follow.redirect";
 
     private static final String RUN_FUNCTION = "run";
 
@@ -165,6 +169,22 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         ts.putBlobs(storeKey, blobs);
         ts.setCompleted(storeKey, true);
         return storeKey;
+    }
+
+    @Override
+    public String getFullDownloadUrl(DocumentModel doc, String xpath, Blob blob, String baseUrl) {
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        if (configurationService.isBooleanTrue(DOWNLOAD_URL_FOLLOW_REDIRECT)) {
+            try {
+                URI uri = redirectResolver.getURI(blob, UsageHint.DOWNLOAD, null);
+                if (uri != null) {
+                    return uri.toString();
+                }
+            } catch (IOException e) {
+                log.error(e, e);
+            }
+        }
+        return baseUrl + getDownloadUrl(doc, xpath, blob.getFilename());
     }
 
     @Override
