@@ -167,6 +167,7 @@
     <operation class="org.nuxeo.ecm.automation.core.operations.services.workmanager.WorkManagerRunWorkInFailure" />
 
     <operation class="org.nuxeo.ecm.automation.core.operations.coldstorage.MoveToColdStorage" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.coldstorage.RequestRetrievalFromColdStorage" />
 
   </extension>
 

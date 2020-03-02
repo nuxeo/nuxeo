@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core;
 
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -29,6 +30,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Duration;
 
 import javax.inject.Inject;
 
@@ -55,6 +57,8 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 public class TestColdStorage {
 
     protected static final String FILE_CONTENT = "foo";
+
+    protected static final Duration RESTORE_DURATION = Duration.ofDays(5);
 
     @Inject
     protected CoreSession session;
@@ -111,6 +115,63 @@ public class TestColdStorage {
         } catch (NuxeoException e) {
             assertEquals(SC_NOT_FOUND, e.getStatusCode());
             assertEquals(String.format("There is no main content for document: %s.", documentModel), e.getMessage());
+        }
+    }
+
+    @Test
+    public void shouldRequestRetrieval() {
+        DocumentModel documentModel = createDocument(true);
+
+        // move the blob to cold storage
+        documentModel = ColdStorageHelper.moveContentToColdStorage(session, documentModel.getRef());
+        session.saveDocument(documentModel);
+
+        // request a retrieval from the cold storage
+        documentModel = ColdStorageHelper.requestRetrievalFromColdStorage(session, documentModel.getRef(),
+                RESTORE_DURATION);
+        session.saveDocument(documentModel);
+        transactionalFeature.nextTransaction();
+        documentModel.refresh();
+
+        assertEquals(Boolean.TRUE,
+                documentModel.getPropertyValue(ColdStorageHelper.COLD_STORAGE_BEING_RETRIEVED_PROPERTY));
+    }
+
+    @Test
+    public void shouldFailRequestRetrievalBeingRetrieved() {
+        DocumentModel documentModel = createDocument(true);
+
+        // move the blob to cold storage
+        documentModel = ColdStorageHelper.moveContentToColdStorage(session, documentModel.getRef());
+        session.saveDocument(documentModel);
+
+        // request a retrieval from the cold storage
+        documentModel = ColdStorageHelper.requestRetrievalFromColdStorage(session, documentModel.getRef(),
+                RESTORE_DURATION);
+        session.saveDocument(documentModel);
+
+        // try to request a retrieval for a second time
+        try {
+            ColdStorageHelper.requestRetrievalFromColdStorage(session, documentModel.getRef(), RESTORE_DURATION);
+            fail("Should fail because the cold storage content is being retrieved.");
+        } catch (NuxeoException e) {
+            assertEquals(SC_FORBIDDEN, e.getStatusCode());
+            assertEquals(String.format("The cold storage content associated with the document: %s is being retrieved.",
+                    documentModel), e.getMessage());
+        }
+    }
+
+    @Test
+    public void shouldFailRequestRetrievalNoContent() {
+        DocumentModel documentModel = createDocument(true);
+        try {
+            // try a request retrieval from the cold storage where the blob is not stored in it
+            ColdStorageHelper.requestRetrievalFromColdStorage(session, documentModel.getRef(), RESTORE_DURATION);
+            fail("Should fail because there no cold storage content associated to this document.");
+        } catch (NuxeoException e) {
+            assertEquals(SC_NOT_FOUND, e.getStatusCode());
+            assertEquals(String.format("No cold storage content defined for document: %s.", documentModel),
+                    e.getMessage());
         }
     }
 
