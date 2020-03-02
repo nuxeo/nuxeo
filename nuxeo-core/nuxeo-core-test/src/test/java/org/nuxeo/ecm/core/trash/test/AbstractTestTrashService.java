@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
@@ -140,6 +141,7 @@ public abstract class AbstractTestTrashService {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-28711: randomly failing in dev mode", onFailure = 10, onSuccess = 30)
     public void testTrashPurgeUndelete() {
         createDocuments();
         // file with name from collision
