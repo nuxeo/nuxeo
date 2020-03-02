@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @since 8.3
  */
 @Operation(id = ResetSchema.ID, category = Constants.CAT_DOCUMENT, label = "Reset Schema",
-    description = "Reset all properties for a given schema or xpath. If saveDocument is true, the document is saved. If save is true, the session is saved (setting save to true and saveDocument to false has no effect, the session will not be saved)")
+    description = "Reset all properties for a given schema or xpath. If saveDocument is true, the document is saved. If save is true, the session is saved (setting save to true and saveDocument to false has no effect, the session will not be saved).<p>WARNING: Default values are true for both saveDocument and save, which means the document is saved by default. saveDocument must be set to false when the operation is used in the context of an event that will fail if the document is saved (empty document created, about to create, before modification, ...).</p>")
 public class ResetSchema {
 
     public static final String ID = "Document.ResetSchema";
