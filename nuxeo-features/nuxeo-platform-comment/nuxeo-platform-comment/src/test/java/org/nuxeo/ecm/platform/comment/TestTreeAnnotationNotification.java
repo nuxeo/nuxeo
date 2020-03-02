@@ -52,15 +52,14 @@ public class TestTreeAnnotationNotification extends AbstractTestAnnotationNotifi
         transactionalFeature.nextTransaction();
         annotatedDocumentModel = session.getDocument(annotatedDocumentModel.getRef());
         subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, annotatedDocumentModel);
-        List<String> expectedSubscriptions = List.of("CommentAdded", "CommentUpdated");
-        assertEquals(expectedSubscriptions.size(), subscriptions.size());
-        assertTrue(subscriptions.containsAll(expectedSubscriptions));
+        assertTrue(subscriptions.contains("CommentAdded"));
+        assertTrue(subscriptions.contains("CommentUpdated"));
         for (String subscription : subscriptions) {
             notificationService.removeSubscription(johnSubscription, subscription, annotatedDocumentModel);
         }
         createAnnotation(annotatedDocumentModel, john, "Test message again");
         transactionalFeature.nextTransaction();
-            subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, annotatedDocumentModel);
+        subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, annotatedDocumentModel);
         assertTrue(subscriptions.isEmpty());
     }
 

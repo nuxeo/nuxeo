@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -63,6 +64,10 @@ public class ColdStorageHelper {
     public static final String COLD_STORAGE_CONTENT_AVAILABLE_EVENT_NAME = "coldStorageContentAvailable";
 
     public static final String COLD_STORAGE_CONTENT_AVAILABLE_UNTIL_MAIL_TEMPLATE_KEY = "coldStorageAvailableUntil";
+
+    public static final String COLD_STORAGE_CONTENT_AVAILABLE_NOTIFICATION_NAME = "ColdStorageContentAvailable";
+
+    public static final String COLD_STORAGE_CONTENT_ARCHIVE_LOCATION_MAIL_TEMPLATE_KEY = "archiveLocation";
 
     /**
      * Moves the main content associated with the document of the given {@link DocumentRef} to a cold storage.
@@ -158,6 +163,7 @@ public class ColdStorageHelper {
         int beingRetrieved = documents.size();
         int available = 0;
         EventService eventService = Framework.getService(EventService.class);
+        DownloadService downloadService = Framework.getService(DownloadService.class);
         for (DocumentModel doc : documents) {
             Blob coldContent = (Blob) doc.getPropertyValue(COLD_STORAGE_CONTENT_PROPERTY);
             BlobStatus blobStatus;
@@ -184,6 +190,8 @@ public class ColdStorageHelper {
                     ctx.getProperties()
                        .put(COLD_STORAGE_CONTENT_AVAILABLE_UNTIL_MAIL_TEMPLATE_KEY, downloadableUntil.toString());
                 }
+                String downloadUrl = downloadService.getDownloadUrl(doc, COLD_STORAGE_CONTENT_PROPERTY, null);
+                ctx.getProperties().put(COLD_STORAGE_CONTENT_ARCHIVE_LOCATION_MAIL_TEMPLATE_KEY, downloadUrl);
                 eventService.fireEvent(ctx.newEvent(COLD_STORAGE_CONTENT_AVAILABLE_EVENT_NAME));
             }
         }

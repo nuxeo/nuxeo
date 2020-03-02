@@ -30,7 +30,11 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.blob.ColdStorageHelper;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Requests a retrieval from cold storage of the content associated with the input {@link DocumentModel}. This operation
@@ -57,6 +61,14 @@ public class RequestRetrievalFromColdStorage {
     public DocumentModel run(DocumentModel doc) {
         DocumentModel documentModel = ColdStorageHelper.requestRetrievalFromColdStorage(session, doc.getRef(),
                 Duration.ofDays(numberOfDaysOfAvailability));
+
+        // auto-subscribe the user, this way they will receive the mail notification when the content is available
+        NuxeoPrincipal principal = session.getPrincipal();
+        String username = NotificationConstants.USER_PREFIX + principal.getName();
+        NotificationManager notificationManager = Framework.getService(NotificationManager.class);
+        notificationManager.addSubscription(username,
+                ColdStorageHelper.COLD_STORAGE_CONTENT_AVAILABLE_NOTIFICATION_NAME, documentModel, false, principal,
+                ColdStorageHelper.COLD_STORAGE_CONTENT_AVAILABLE_NOTIFICATION_NAME);
 
         if (save) {
             documentModel = session.saveDocument(documentModel);
