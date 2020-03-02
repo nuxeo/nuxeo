@@ -70,19 +70,15 @@ public class TestCSVZipImporter {
 
     protected DocumentModel wsRoot;
 
-    private static File getArchiveFile(String file) {
-        return new File(FileUtils.getResourcePathFromContext(file));
-    }
-
     @Before
     public void createTestDocuments() throws Exception {
         wsRoot = coreSession.getDocument(new PathRef("/default-domain/workspaces"));
 
-        workspace1= coreSession.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
+        workspace1 = coreSession.createDocumentModel(wsRoot.getPathAsString(), "ws1", "Workspace");
         workspace1.setProperty("dublincore", "title", "test WS1");
         workspace1 = coreSession.createDocument(workspace1);
 
-        workspace2= coreSession.createDocumentModel(wsRoot.getPathAsString(), "ws2", "Workspace");
+        workspace2 = coreSession.createDocumentModel(wsRoot.getPathAsString(), "ws2", "Workspace");
         workspace2.setProperty("dublincore", "title", "test WS2");
         workspace2 = coreSession.createDocument(workspace2);
     }
@@ -138,8 +134,8 @@ public class TestCSVZipImporter {
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = Blobs.createBlob(archive);
         FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace2.getPathAsString())
-                .overwrite(true)
-                .build();
+                                                         .overwrite(true)
+                                                         .build();
         fm.createOrUpdateDocument(context);
         DocumentModelList children = coreSession.getChildren(workspace2.getRef());
         assertEquals(1, children.size());
@@ -155,8 +151,8 @@ public class TestCSVZipImporter {
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = Blobs.createBlob(archive);
         FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace2.getPathAsString())
-                .overwrite(true)
-                .build();
+                                                         .overwrite(true)
+                                                         .build();
         fm.createOrUpdateDocument(context);
         DocumentModelList children = coreSession.getChildren(workspace2.getRef());
         assertEquals(2, children.size());
@@ -176,8 +172,8 @@ public class TestCSVZipImporter {
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = Blobs.createBlob(archiveNoTags);
         FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace2.getPathAsString())
-                .overwrite(true)
-                .build();
+                                                         .overwrite(true)
+                                                         .build();
         fm.createOrUpdateDocument(context);
         DocumentModelList children = coreSession.getChildren(workspace2.getRef());
         assertEquals(2, children.size());
@@ -190,6 +186,10 @@ public class TestCSVZipImporter {
             } else if (doc.getTitle().equals("My File1")) {
                 assertEquals(2, ((List<String>) doc.getPropertyValue("nxtag:tags")).size());
             }
-         }
+        }
+    }
+
+    protected static File getArchiveFile(String file) {
+        return new File(FileUtils.getResourcePathFromContext(file));
     }
 }

@@ -118,7 +118,7 @@ public class CSVZipImporter extends AbstractFileImporter {
 
             ZipEntry index = zip.getEntry(MARKER);
             try (Reader reader = new InputStreamReader(zip.getInputStream(index));
-                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
+                    CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withHeader());) {
 
                 Map<String, Integer> header = csvParser.getHeaderMap();
                 for (CSVRecord csvRecord : csvParser) {
@@ -173,9 +173,9 @@ public class CSVZipImporter extends AbstractFileImporter {
                         // create doc with lifecycle state rather than it being created with default initial state
                         if (fname.equals(ECM_LIFECYCLESTATE)) {
                             targetDoc.putContextData(INITIAL_LIFECYCLE_STATE_OPTION_NAME, stringValue);
-                        // add tags, delimitted with |
+                            // add tags, delimitted with |
                         } else if (fname.equalsIgnoreCase("nxtag:tags")) {
-                           targetDoc = addTags(session, targetDoc, stringValue);
+                            targetDoc = addTags(session, targetDoc, stringValue);
                         } else if (fname.contains(":")) {
                             if (targetDocType.hasField(fname)) {
                                 field = targetDocType.getField(fname);
@@ -291,7 +291,8 @@ public class CSVZipImporter extends AbstractFileImporter {
     protected DocumentModel addTags(CoreSession session, DocumentModel targetDoc, String tagString) {
         String[] tagList = tagString.split("\\|");
         String userName = session.getPrincipal().getName();
-        var tags = Arrays.stream(tagList).map(s -> Map.of("label", s, "username", userName))
+        var tags = Arrays.stream(tagList)
+                         .map(s -> Map.of("label", s, "username", userName))
                          .collect(Collectors.toList());
         targetDoc.setPropertyValue("nxtag:tags", (Serializable) tags);
         return targetDoc;
