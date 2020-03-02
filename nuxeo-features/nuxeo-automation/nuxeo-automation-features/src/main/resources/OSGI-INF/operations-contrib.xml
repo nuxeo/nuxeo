@@ -166,6 +166,8 @@
 
     <operation class="org.nuxeo.ecm.automation.core.operations.services.workmanager.WorkManagerRunWorkInFailure" />
 
+    <operation class="org.nuxeo.ecm.automation.core.operations.coldstorage.MoveToColdStorage" />
+
   </extension>
 
   <extension point="chains"
