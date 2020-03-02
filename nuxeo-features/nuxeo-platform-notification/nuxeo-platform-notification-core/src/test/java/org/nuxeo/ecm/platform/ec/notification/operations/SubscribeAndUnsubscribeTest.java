@@ -112,7 +112,7 @@ public class SubscribeAndUnsubscribeTest {
 
         for (DocumentModel doc : listDocModel) {
             List<?> docSubscriptions = doc.getAdapter(SubscriptionAdapter.class).getUserSubscriptions(username);
-            assertEquals(4, docSubscriptions.size());
+            assertEquals(5, docSubscriptions.size());
             assertTrue(docSubscriptions.contains("Creation"));
             assertTrue(docSubscriptions.contains("Modification"));
             assertTrue(docSubscriptions.contains("Workflow Change"));

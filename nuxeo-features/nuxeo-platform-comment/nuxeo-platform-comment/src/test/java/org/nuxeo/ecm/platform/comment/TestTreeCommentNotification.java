@@ -55,9 +55,8 @@ public class TestTreeCommentNotification extends AbstractTestCommentNotification
         transactionalFeature.nextTransaction();
         commentedDocumentModel.refresh();
         subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, commentedDocumentModel);
-        List<String> expectedSubscriptions = List.of("CommentAdded", "CommentUpdated");
-        assertEquals(expectedSubscriptions.size(), subscriptions.size());
-        assertTrue(subscriptions.containsAll(expectedSubscriptions));
+        assertTrue(subscriptions.contains("CommentAdded"));
+        assertTrue(subscriptions.contains("CommentUpdated"));
         for (String subscription : subscriptions) {
             notificationService.removeSubscription(johnSubscription, subscription, commentedDocumentModel);
         }

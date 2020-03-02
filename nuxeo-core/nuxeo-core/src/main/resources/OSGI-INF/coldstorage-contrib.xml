@@ -16,4 +16,17 @@
     </listener>
   </extension>
 
+  <extension
+    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="notifications">
+    <notification name="ColdStorageContentAvailable" channel="email" availableIn="*"
+                  subject="Archive content available on '${docTitle}'" template="coldStorageContentAvailable"
+                  label="label.document.download">
+      <event name="coldStorageContentAvailable" />
+    </notification>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="templates">
+    <template name="coldStorageContentAvailable" src="templates/coldStorageContentAvailable.ftl" />
+  </extension>
+
 </component>

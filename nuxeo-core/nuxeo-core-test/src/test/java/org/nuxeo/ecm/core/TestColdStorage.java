@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.blob.ColdStorageHelper;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.test.ColdStorageFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -83,6 +84,9 @@ public class TestColdStorage {
 
     @Inject
     protected BlobManager blobManager;
+
+    @Inject
+    protected DownloadService downloadService;
 
     @Test
     public void shouldMoveToColdStorage() throws IOException {
@@ -274,6 +278,12 @@ public class TestColdStorage {
                 assertEquals(String.format("An unexpected deadline for cold storage of document: %s", documentModel), //
                         downloadableUntil.toString(),
                         properties.get(ColdStorageHelper.COLD_STORAGE_CONTENT_AVAILABLE_UNTIL_MAIL_TEMPLATE_KEY));
+
+                String expectedDownloadUrl = downloadService.getDownloadUrl(documentModel,
+                        ColdStorageHelper.COLD_STORAGE_CONTENT_PROPERTY, null);
+                assertEquals(String.format("An unexpected downloadable url for document: %s", documentModel), //
+                        expectedDownloadUrl,
+                        properties.get(ColdStorageHelper.COLD_STORAGE_CONTENT_ARCHIVE_LOCATION_MAIL_TEMPLATE_KEY));
             });
         }
 
