@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.Writer;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
+import org.nuxeo.runtime.test.runner.RandomBug;
 
 public class TestInstanciationMode {
 
@@ -112,6 +113,7 @@ public class TestInstanciationMode {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-28713: randomly failing in postgresql mode", onFailure = 10, onSuccess = 30)
     public void perThreadInstance() throws Exception {
         final MarshallerInspector inspector = new MarshallerInspector(PerThreadMarshaller.class);
         PerThreadMarshaller instance1 = inspector.getInstance(ctx);
