@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.coldstorage.contrib">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
+    <schedule id="checkAvailabilityOfBlobsBeingRetrieved">
+      <!-- every hour at the 7th minute -->
+      <cronExpression>0 7 * ? * * *</cronExpression>
+      <event>checkColdStorageContentAvailability</event>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="checkColdStorageContentAvailability"
+              class="org.nuxeo.ecm.core.coldstorage.CheckColdStorageContentAvailabilityListener">
+      <event>checkColdStorageContentAvailability</event>
+    </listener>
+  </extension>
+
+</component>

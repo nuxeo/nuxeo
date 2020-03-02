@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
 import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobStatus;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
@@ -42,12 +43,16 @@ public class DummyBlobProvider extends AbstractBlobProvider {
 
     protected Map<String, byte[]> blobs;
 
+    /** @since 11.1 **/
+    protected Map<String, BlobStatus> blobsStatus;
+
     protected AtomicLong counter;
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
         blobs = new HashMap<>();
+        blobsStatus = new HashMap<>();
         counter = new AtomicLong();
     }
 
@@ -89,6 +94,23 @@ public class DummyBlobProvider extends AbstractBlobProvider {
         link.setIcon("dummyIcon");
         link.setLink("dummyLink");
         return Arrays.asList(link);
+    }
+
+    /** @since 11.1 **/
+    @Override
+    public BlobStatus getStatus(ManagedBlob blob) throws IOException {
+        return blobsStatus.getOrDefault(getBlobKey(blob), super.getStatus(blob));
+    }
+
+    /** @since 11.1 **/
+    public void addStatus(ManagedBlob blob, BlobStatus status) {
+        blobsStatus.put(getBlobKey(blob), status);
+    }
+
+    /** @since 11.1 **/
+    protected String getBlobKey(ManagedBlob blob) {
+        int colon = blob.getKey().indexOf(':');
+        return colon < 0 ? blob.getKey() : blob.getKey().substring(colon + 1);
     }
 
 }

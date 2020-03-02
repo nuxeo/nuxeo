@@ -265,6 +265,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         coll.createIndex(Indexes.ascending("drv:subscriptions.enabled"));
         coll.createIndex(Indexes.ascending("collectionMember:collectionIds"));
         coll.createIndex(Indexes.ascending("nxtag:tags"));
+        coll.createIndex(Indexes.ascending("coldstorage:beingRetrieved"));
         if (!isFulltextSearchDisabled()) {
             Bson indexKeys = Indexes.compoundIndex( //
                     Indexes.text(KEY_FULLTEXT_SIMPLE), //
