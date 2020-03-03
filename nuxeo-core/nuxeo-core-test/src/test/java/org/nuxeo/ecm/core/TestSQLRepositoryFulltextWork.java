@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -88,6 +89,7 @@ public class TestSQLRepositoryFulltextWork {
     }
 
     @Test
+    @RandomBug.Repeat(issue = "NXP-28711: randomly failing in postgresql mode", onFailure = 10, onSuccess = 30)
     public void testFulltextWithConcurrentDelete() throws Exception {
         createFolder();
         for (int i = 0; i < 50; i++) {
