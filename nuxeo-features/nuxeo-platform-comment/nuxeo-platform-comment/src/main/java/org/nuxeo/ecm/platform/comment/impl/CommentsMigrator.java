@@ -262,6 +262,12 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         }
 
         DocumentModel parentDoc = session.getDocument(parentDocRef);
+        if (parentDoc.getParentRef() == null) {
+            log.warn(
+                    "The comment document model with IdRef: {} cannot be migrated, because its parent: {} is a placeless document",
+                    commentIdRef, parentId);
+            return;
+        }
 
         DocumentRef destination = new PathRef(commentManager.getLocationOfCommentCreation(session, parentDoc));
 
@@ -319,8 +325,10 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
                                                     .collect(Collectors.toList());
 
         // According to the case:
-        // Comments created using PropertyCommentManager are stored directly under `Comments` hidden folder (one per domain)
-        // Comments created using CommentManagerImpl are stored under subfolder (named with a timestamp) of the `Comments` folder
+        // Comments created using PropertyCommentManager are stored directly under `Comments` hidden folder (one per
+        // domain)
+        // Comments created using CommentManagerImpl are stored under subfolder (named with a timestamp) of the
+        // `Comments` folder
         if (!rootCommentsFolderIds.isEmpty()) {
             // Get all `Comments` hidden folders
             String query = String.format("SELECT %s FROM Document WHERE %s IN (%s) AND %s = '%s'", ECM_UUID,

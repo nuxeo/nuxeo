@@ -146,6 +146,8 @@ public class TestCommentsMigrator {
     // This file will be commented and then removed to simulate comments with removed parent
     protected DocumentModel fileToCommentAndRemove;
 
+    protected DocumentModel placeLessFileToComment;
+
     protected DocumentModel proxyFileToComment;
 
     protected static void sleep(long millis) {
@@ -178,6 +180,9 @@ public class TestCommentsMigrator {
         fileToCommentAndRemove = session.createDocumentModel(domain.getPathAsString(), "file4", "File");
         fileToCommentAndRemove = session.createDocument(fileToCommentAndRemove);
 
+        placeLessFileToComment = session.createDocumentModel(null, "file5", "File");
+        placeLessFileToComment = session.createDocument(placeLessFileToComment);
+
         // Create a proxy file
         proxyFileToComment = session.createProxy(secondFileToComment.getRef(), anotherDomain.getRef());
     }
@@ -199,10 +204,10 @@ public class TestCommentsMigrator {
         // Create comments as property on these files and add some reply
         // Total of comments:
         // NB_COMMENTS_BY_FILE*3 (files) + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
-        createCommentsAsProperty(false, false);
+        createCommentsAsProperty(false, false, false);
 
         // Second step of migrate: from 'Property' to 'Secured'
-        migrateFromPropertyToSecured(new CommentsMigrator(), false, false);
+        migrateFromPropertyToSecured(new CommentsMigrator(), false, false, false);
     }
 
     /**
@@ -215,10 +220,10 @@ public class TestCommentsMigrator {
 
         try {
             // NB_COMMENTS_BY_FILE*4 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
-            createCommentsAsProperty(true, false);
+            createCommentsAsProperty(true, false, false);
 
             // Second step of migrate: from 'Property' to 'Secured'
-            migrateFromPropertyToSecured(new CommentsMigrator(), true, false);
+            migrateFromPropertyToSecured(new CommentsMigrator(), true, false, false);
 
             transactionalFeature.nextTransaction();
 
@@ -235,7 +240,7 @@ public class TestCommentsMigrator {
             assertEquals(NB_COMMENTS_BY_FILE, unMigratedComments.size());
             List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
 
-            // Some comments have not been migrated (how: parentId is null), we make sure that we have the warning
+            // Some comments have not been migrated (comment: parentId is null), we make sure that we have the warning
             // messages
             assertTrue(caughtEventMessages.contains(String.format(
                     "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
@@ -264,10 +269,10 @@ public class TestCommentsMigrator {
 
         try {
             // NB_COMMENTS_BY_FILE*4 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
-            createCommentsAsProperty(false, true);
+            createCommentsAsProperty(false, true, false);
 
             // Second step of migrate: from 'Property' to 'Secured'
-            migrateFromPropertyToSecured(new CommentsMigrator(), false, true);
+            migrateFromPropertyToSecured(new CommentsMigrator(), false, true, false);
             transactionalFeature.nextTransaction();
 
             List<LogEvent> events = logCaptureResult.getCaughtEvents();
@@ -293,6 +298,55 @@ public class TestCommentsMigrator {
                         "The comment document model with IdRef: %s cannot be migrated, because his parent: %s cannot be found",
                         docId, fileToCommentAndRemove.getId());
                 assertTrue(caughtEventMessages.contains(message));
+            }
+        } finally {
+            logFeature.restoreConsoleLog();
+        }
+    }
+
+    /**
+     * Test the migration in the case where the {@code comment:parentId} is a placeless document
+     */
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testMigrationFromPropertyToSecuredWithPlacelessParent() {
+        logFeature.hideWarningFromConsoleLog();
+
+        try {
+            // NB_COMMENTS_BY_FILE*4 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
+            createCommentsAsProperty(false, false, true);
+
+            // Second step of migrate: from 'Property' to 'Secured'
+            migrateFromPropertyToSecured(new CommentsMigrator(), false, false, true);
+
+            transactionalFeature.nextTransaction();
+
+            List<LogEvent> events = logCaptureResult.getCaughtEvents();
+            assertEquals(NB_COMMENTS_BY_FILE + 1, events.size());
+
+            String query = String.format("SELECT %s FROM Comment WHERE %s = '%s'", ECM_UUID, COMMENT_PARENT_ID,
+                    placeLessFileToComment.getId());
+            List<String> unMigratedComments = session.queryProjection(query, 0, 0)
+                                                     .stream()
+                                                     .map(m -> (String) m.get(ECM_UUID))
+                                                     .collect(Collectors.toList());
+
+            // The comments not migrated should be there but, not under 'placeLessFileToComment'
+            assertEquals(NB_COMMENTS_BY_FILE, unMigratedComments.size());
+            List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
+
+            // Some comments have not been migrated (comment: parentId is a placeless document), we make sure that we
+            // have the warning messages
+            assertTrue(caughtEventMessages.contains(String.format(
+                    "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
+                    UNMIGRATED_COMMENTS_FOLDER_NAME)));
+
+            for (String docId : unMigratedComments) {
+                String message = String.format(
+                        "The comment document model with IdRef: %s cannot be migrated, because its parent: %s is a placeless document",
+                        docId, placeLessFileToComment.getId());
+                assertTrue(caughtEventMessages.contains(message));
+                assertTrue(session.exists(new IdRef(docId)));
             }
         } finally {
             logFeature.restoreConsoleLog();
@@ -465,6 +519,47 @@ public class TestCommentsMigrator {
         }
     }
 
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN")
+    public void testProbeWithCommentParentPlaceless() {
+        logFeature.hideWarningFromConsoleLog();
+        try {
+            CommentManager propertyCommentManager = new PropertyCommentManager();
+
+            // add a comment where the parent is placeless
+            DocumentModel commentWithPlacelessParent = session.createDocumentModel(
+                    placeLessFileToComment.getPathAsString(), "comment", COMMENT_DOC_TYPE);
+            commentWithPlacelessParent.setPropertyValue(COMMENT_PARENT_ID, placeLessFileToComment.getId());
+            commentWithPlacelessParent = propertyCommentManager.createComment(placeLessFileToComment,
+                    commentWithPlacelessParent);
+
+            transactionalFeature.nextTransaction();
+
+            Migrator migrator = new CommentsMigrator();
+
+            // At this point we are in property step
+            assertEquals(MIGRATION_STATE_PROPERTY, migrator.probeState());
+
+            // Migrate the created property based comment to secured
+            runMigration(() -> migrator.run(MIGRATION_STEP_PROPERTY_TO_SECURED, new ProgressMigrationContext()));
+
+            // Check even with the prob, we should have the expected behaviour: logs + `secured` step
+            List<String> caughtEventMessages = logCaptureResult.getCaughtEventMessages();
+            assertTrue(caughtEventMessages.contains(String.format(
+                    "Some comments have not been migrated, see logs for more information. The folder containing these comments will be renamed to %s",
+                    UNMIGRATED_COMMENTS_FOLDER_NAME)));
+            assertTrue(caughtEventMessages.contains(String.format(
+                    "The comment document model with IdRef: %s cannot be migrated, because its parent: %s is a placeless document",
+                    commentWithPlacelessParent.getId(), placeLessFileToComment.getId())));
+
+            // No more unsecured property comments
+            assertEquals(MIGRATION_STATE_SECURED, migrator.probeState());
+
+        } finally {
+            logFeature.restoreConsoleLog();
+        }
+    }
+
     protected void migrateFromRelationToProperty(Migrator migrator) {
         ProgressMigrationContext migrationContext = new ProgressMigrationContext();
         runMigration(() -> migrator.run(MIGRATION_STEP_RELATION_TO_PROPERTY, migrationContext));
@@ -500,14 +595,14 @@ public class TestCommentsMigrator {
     }
 
     protected void migrateFromPropertyToSecured(Migrator migrator, boolean commentsWithEmptyParent,
-            boolean commentsWithRemovedParent) {
+            boolean commentsWithRemovedParent, boolean commentsWithPlacelessParent) {
         ProgressMigrationContext migrationContext = new ProgressMigrationContext();
 
         runMigration(() -> migrator.run(MIGRATION_STEP_PROPERTY_TO_SECURED, migrationContext));
 
         List<String> expectedLines = new ArrayList<>();
 
-        if (commentsWithEmptyParent || commentsWithRemovedParent) {
+        if (commentsWithEmptyParent || commentsWithRemovedParent || commentsWithPlacelessParent) {
             expectedLines.addAll(Arrays.asList( //
                     "Initializing: 0/-1", //
                     "Migrating comments from Property to Secured: 1/250", //
@@ -550,10 +645,20 @@ public class TestCommentsMigrator {
         DocumentModelList rootCommentFolder = session.query(CommentsMigrator.GET_COMMENTS_FOLDERS_QUERY);
         assertEquals(0, rootCommentFolder.size());
 
-        // Ensure that the Comments folder is correctly renamed if it's required
+        // Ensure that the Comments folder is correctly renamed if it's required (at least once comment is not migrated)
         String query = String.format("SELECT %s FROM Document WHERE %s = '%s' AND %s ='%s'", ECM_UUID, ECM_NAME,
                 UNMIGRATED_COMMENTS_FOLDER_NAME, ECM_PRIMARYTYPE, "HiddenFolder");
-        assertEquals((commentsWithEmptyParent || commentsWithRemovedParent) ? 2 : 0, session.query(query).size());
+
+        int expectedHiddenFolderSize = 0;
+        if (commentsWithEmptyParent || commentsWithRemovedParent) {
+            // one per domain (test-domain and another-domain)
+            expectedHiddenFolderSize = 2;
+        } else if (commentsWithPlacelessParent) {
+            // one per domain (test-domain and another-domain) + one at the root (comments of the placeless document)
+            expectedHiddenFolderSize = 3;
+        }
+
+        assertEquals(expectedHiddenFolderSize, session.query(query).size());
 
         CommentManager treeCommentManager = new TreeCommentManager();
         assertEquals(NB_COMMENTS_BY_FILE, treeCommentManager.getComments(session, secondFileToComment).size());
@@ -580,7 +685,8 @@ public class TestCommentsMigrator {
         createComments(new CommentManagerImpl(CommentServiceHelper.getCommentService().getConfig()));
     }
 
-    protected void createCommentsAsProperty(boolean commentsWithEmptyParent, boolean commentsWithRemovedParent) {
+    protected void createCommentsAsProperty(boolean commentsWithEmptyParent, boolean commentsWithRemovedParent,
+            boolean commentsWithPlacelessParent) {
         PropertyCommentManager propertyCommentManager = new PropertyCommentManager();
 
         // Add comments without comment:parentId
@@ -612,6 +718,16 @@ public class TestCommentsMigrator {
             }
             // Remove the `fileToCommentAndRemove` which result on comments without a parent.
             session.removeDocument(fileToCommentAndRemove.getRef());
+        }
+
+        if (commentsWithPlacelessParent) {
+            for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
+                DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
+                comment.setPropertyValue(COMMENT_PARENT_ID, placeLessFileToComment.getId());
+                DocumentModel createdComment = propertyCommentManager.createComment(placeLessFileToComment, comment);
+                notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
+                        principal, "notification" + i);
+            }
         }
 
         // Create comments under the others files
