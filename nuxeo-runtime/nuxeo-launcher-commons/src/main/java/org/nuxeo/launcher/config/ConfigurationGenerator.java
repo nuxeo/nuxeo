@@ -173,8 +173,16 @@ public class ConfigurationGenerator {
 
     public static final List<String> DB_EXCLUDE_CHECK_LIST = asList("default", "none", "mongodb");
 
+    /**
+     * @deprecated since 11.1, Nuxeo Wizard has been removed.
+     */
+    @Deprecated(since = "11.1")
     public static final String PARAM_WIZARD_DONE = "nuxeo.wizard.done";
 
+    /**
+     * @deprecated since 11.1, Nuxeo Wizard has been removed.
+     */
+    @Deprecated(since = "11.1")
     public static final String PARAM_WIZARD_RESTART_PARAMS = "wizard.restart.params";
 
     public static final String PARAM_FAKE_WINDOWS = "org.nuxeo.fake.vindoz";
@@ -199,8 +207,16 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
 
+    /**
+     * @deprecated since 11.1, Nuxeo Wizard has been removed.
+     */
+    @Deprecated(since = "11.1")
     public static final String PARAM_MP_DIR = "nuxeo.distribution.marketplace.dir";
 
+    /**
+     * @deprecated since 11.1, Nuxeo Wizard has been removed.
+     */
+    @Deprecated(since = "11.1")
     public static final String DISTRIBUTION_MP_DIR = "setupWizardDownloads";
 
     public static final String INSTALL_AFTER_RESTART = "installAfterRestart.log";
@@ -959,7 +975,7 @@ public class ConfigurationGenerator {
     /**
      * Save changed parameters in {@code nuxeo.conf} calculating templates if changedParameters contains a value for
      * {@link #PARAM_TEMPLATE_DBNAME}. If a parameter value is empty ("" or null), then the property is unset.
-     * {@link #PARAM_WIZARD_DONE}, {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset,
+     * {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset,
      * but their value can be changed.<br/>
      * This method does not check values in map: use {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
@@ -1064,8 +1080,7 @@ public class ConfigurationGenerator {
         for (Object o : new TreeSet<>(userConfig.keySet())) {
             String key = (String) o;
             // Ignore parameters already stored in newContent
-            if (PARAM_FORCE_GENERATION.equals(key) || PARAM_WIZARD_DONE.equals(key)
-                    || PARAM_TEMPLATES_NAME.equals(key)) {
+            if (PARAM_FORCE_GENERATION.equals(key) || PARAM_TEMPLATES_NAME.equals(key)) {
                 continue;
             }
             String oldValue = storedConfig.getProperty(key, "");
@@ -1088,12 +1103,9 @@ public class ConfigurationGenerator {
     }
 
     private StringBuilder readConfiguration() throws ConfigurationException {
-        // Will change wizardParam value instead of appending it
-        String wizardParam = userConfig.getProperty(PARAM_WIZARD_DONE);
-
         // Will change templatesParam value instead of appending it
         String templatesParam = userConfig.getProperty(PARAM_TEMPLATES_NAME);
-        Integer generationIndex = null, wizardIndex = null, templatesIndex = null;
+        Integer generationIndex = null, templatesIndex = null;
         List<String> newLines = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(nuxeoConf))) {
             String line;
@@ -1115,16 +1127,6 @@ public class ConfigurationGenerator {
                                 generationIndex = newLines.size() - 1;
                             } else {
                                 newLines.set(generationIndex, line);
-                            }
-                        } else if (line.startsWith(PARAM_WIZARD_DONE)) {
-                            if (wizardParam != null) {
-                                line = PARAM_WIZARD_DONE + "=" + wizardParam;
-                            }
-                            if (wizardIndex == null) {
-                                newLines.add(line);
-                                wizardIndex = newLines.size() - 1;
-                            } else {
-                                newLines.set(wizardIndex, line);
                             }
                         } else if (line.startsWith(PARAM_TEMPLATES_NAME)) {
                             if (templatesParam != null) {
@@ -1154,10 +1156,6 @@ public class ConfigurationGenerator {
                         if (templatesIndex == null && templatesParam != null) {
                             newLines.add(PARAM_TEMPLATES_NAME + "=" + templatesParam);
                             templatesIndex = newLines.size() - 1;
-                        }
-                        if (wizardIndex == null && wizardParam != null) {
-                            newLines.add(PARAM_WIZARD_DONE + "=" + wizardParam);
-                            wizardIndex = newLines.size() - 1;
                         }
                         onConfiguratorContent = true;
                     }
@@ -1568,17 +1566,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Check if wizard must and can be ran
-     *
-     * @return true if configuration wizard is required before starting Nuxeo
-     * @since 5.4.2
-     */
-    public boolean isWizardRequired() {
-        return !"true".equalsIgnoreCase(getUserConfig().getProperty(PARAM_WIZARD_DONE, "true"))
-                && serverConfigurator.isWizardAvailable();
-    }
-
-    /**
      * Rebuild a templates string for use in nuxeo.conf
      *
      * @param dbTemplate database template to use instead of current one
@@ -1631,24 +1618,6 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Ensure the server will start only wizard application, not Nuxeo
-     *
-     * @since 5.4.2
-     */
-    public void prepareWizardStart() {
-        serverConfigurator.prepareWizardStart();
-    }
-
-    /**
-     * Ensure the wizard won't be started and nuxeo is ready for use
-     *
-     * @since 5.4.2
-     */
-    public void cleanupPostWizard() {
-        serverConfigurator.cleanupPostWizard();
-    }
-
-    /**
      * @return Nuxeo runtime home
      */
     public File getRuntimeHome() {
@@ -1666,7 +1635,9 @@ public class ConfigurationGenerator {
     /**
      * @return File pointing to the directory containing the marketplace packages included in the distribution
      * @since 5.6
+     * @deprecated since 11.1, Nuxeo Wizard has been removed.
      */
+    @Deprecated(since = "11.1")
     public File getDistributionMPDir() {
         String mpDir = userConfig.getProperty(PARAM_MP_DIR, DISTRIBUTION_MP_DIR);
         return new File(getNuxeoHome(), mpDir);
@@ -1927,7 +1898,6 @@ public class ConfigurationGenerator {
             env.setData(userConfig.getProperty(Environment.NUXEO_DATA_DIR, "data"));
             env.setLog(userConfig.getProperty(Environment.NUXEO_LOG_DIR, "logs"));
             env.setTemp(userConfig.getProperty(Environment.NUXEO_TMP_DIR, "tmp"));
-            env.setPath(PARAM_MP_DIR, getDistributionMPDir(), env.getServerHome());
             env.setPath(Environment.NUXEO_MP_DIR, getPackagesDir(), env.getServerHome());
         }
         return env;

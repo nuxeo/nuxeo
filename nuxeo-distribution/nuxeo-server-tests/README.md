@@ -1,4 +1,4 @@
-This project holds the functional tests to be run on a Nuxeo Server distribution without the wizard, nor any Marketplace package installed.
+This project holds the functional tests to be run on a Nuxeo Server distribution without any Marketplace package installed.
 
 # Running tests
 

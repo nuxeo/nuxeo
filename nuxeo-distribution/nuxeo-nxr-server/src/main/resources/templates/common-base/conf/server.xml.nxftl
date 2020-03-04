@@ -1,5 +1,4 @@
 <#escape x as x?xml>
-<#assign isWizard = (nuxeo.wizard?? && nuxeo.wizard.done?? && nuxeo.wizard.done == "false")>
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
@@ -201,12 +200,10 @@
        -->
       <Host name="localhost"  appBase="webapps"
             unpackWARs="true"
-            autoDeploy="${isWizard?string('true', 'false')}" >
+            autoDeploy="false" >
 
-<#if !isWizard>
-            <!-- Comment to avoid nuxeo deployment preprocessing at each startup -->
-            <Listener className="org.nuxeo.runtime.tomcat.NuxeoDeployer" home="nxserver" />
-</#if>
+        <!-- Comment to avoid nuxeo deployment preprocessing at each startup -->
+        <Listener className="org.nuxeo.runtime.tomcat.NuxeoDeployer" home="nxserver" />
 
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->

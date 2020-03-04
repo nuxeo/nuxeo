@@ -7,8 +7,6 @@
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <property name="out.dir" value="${maven.project.build.directory}" />
-  <property name="wizard.preset" value="none" />
-  <property name="nuxeo.wizard.done" value="true" />
   <property name="mail.transport.port" value="2525" />
   <property name="mail.transport.host" value="127.0.0.1" />
 

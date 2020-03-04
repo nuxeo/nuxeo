@@ -1965,12 +1965,6 @@
         <classifier>sdk</classifier>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-startup-wizard</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>war</type>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-launcher</artifactId>
         <version>${nuxeo.platform.version}</version>

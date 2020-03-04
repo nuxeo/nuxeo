@@ -554,7 +554,6 @@ class Release(object):
         """Repackage a ZIP following the rules:
             - have a parent directory with the same name as the archive name
             - set executable bit on scripts in bin/
-            - activate the setup wizard
 
         If 'failonerror', raise an ExitException in case of missing filef."""
         if not os.path.isfile(old_archive):
@@ -582,8 +581,6 @@ class Release(object):
                          fnmatch.filter(files, "*.sh") +
                          fnmatch.filter(files, "*.command")):
             os.chmod(os.path.join(new_name, "bin", filename), 0744)
-        with open(os.path.join(new_name, "bin", "nuxeo.conf"), "a") as f:
-            f.write("nuxeo.wizard.done=false\n")
         make_zip(os.path.join(
                  self.archive_dir, new_name + ".zip"), os.getcwd(), new_name)
         os.chdir(cwd)

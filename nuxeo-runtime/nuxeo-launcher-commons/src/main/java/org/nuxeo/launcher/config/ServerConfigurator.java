@@ -450,32 +450,6 @@ public abstract class ServerConfigurator {
     public abstract File getConfigDir();
 
     /**
-     * @since 5.4.2
-     */
-    public void prepareWizardStart() {
-        // Nothing to do by default
-    }
-
-    /**
-     * @since 5.4.2
-     */
-    public void cleanupPostWizard() {
-        // Nothing to do by default
-    }
-
-    /**
-     * Override it to make the wizard available for a given server.
-     *
-     * @return true if configuration wizard is required before starting Nuxeo
-     * @since 5.4.2
-     * @see #prepareWizardStart()
-     * @see #cleanupPostWizard()
-     */
-    public boolean isWizardAvailable() {
-        return false;
-    }
-
-    /**
      * @param userConfig Properties to dump into config directory
      * @since 5.4.2
      */

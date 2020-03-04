@@ -15,7 +15,6 @@
 
   <modules>
     <module>nuxeo-functional-tests</module>
-    <module>nuxeo-startup-wizard</module>
     <module>nuxeo-launcher</module>
     <module>nuxeo-nxr-server</module>
     <module>nuxeo-server-tomcat</module>
@@ -27,12 +26,6 @@
   </modules>
 
   <profiles>
-    <profile>
-      <id>wizard</id>
-      <modules>
-        <module>nuxeo-wizard-tests</module>
-      </modules>
-    </profile>
     <profile>
       <!-- Build SDK distributions for use in Nuxeo IDE -->
       <id>sdk</id>

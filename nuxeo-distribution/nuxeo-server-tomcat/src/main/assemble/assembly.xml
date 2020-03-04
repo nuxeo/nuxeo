@@ -83,19 +83,9 @@
     <copy todir="${tomcat}">
       <fileset dir="src/main/resources/tomcat" />
     </copy>
-    <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
-      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${maven.project.version}:war" />
-    </copy>
-  </target>
-
-  <target name="copy-packages-xml">
-    <!-- Copy default packages.xml file -->
-    <copy file="src/main/resources/packages.xml" tofile="${tomcat}/setupWizardDownloads/packages.xml">
-    </copy>
   </target>
 
   <target name="build-nuxeo-server"
-          depends="copy-packages-xml"
           description="Build Tomcat distribution with Nuxeo Server">
     <echo level="info">Building Nuxeo Server...</echo>
     <delete dir="${distribution.dir}" failonerror="false" />
@@ -119,9 +109,6 @@
     <antcall target="set-distribution-properties">
       <param name="org.nuxeo.distribution.name" value="server" />
     </antcall>
-
-    <echo file="${distribution.dir}/setupWizardDownloads/packages-default-selection.properties"
-          message="preset=nuxeo-server-preset" />
 
     <antcall target="reorganize-libs" />
     <antcall target="build-server" />

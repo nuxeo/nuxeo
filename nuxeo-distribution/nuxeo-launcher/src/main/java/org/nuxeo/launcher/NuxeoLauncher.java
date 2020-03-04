@@ -390,12 +390,12 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
 
-    private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init", "mp-purge", "mp-add", "mp-install",
-            "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
-            "mp-update", "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP,
-            "register", "register-trial" };
+    private static final String[] COMMANDS_NO_GUI = { "configure", "mp-purge", "mp-add", "mp-install", "mp-uninstall",
+            "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall", "mp-update",
+            "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP, "register",
+            "register-trial" };
 
-    private static final String[] COMMANDS_NO_RUNNING_SERVER = { "pack", "mp-init", "mp-purge", "mp-add", "mp-install",
+    private static final String[] COMMANDS_NO_RUNNING_SERVER = { "pack", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
 
     /**
@@ -526,7 +526,6 @@ public abstract class NuxeoLauncher {
             + "        encrypt\t\t\tOutput encrypted value for a given parameter.\n" //
             + "        decrypt\t\t\tOutput decrypted value for a given parameter.\n" //
             + "        configure\t\tConfigure Nuxeo server with parameters from {{nuxeo.conf}}.\n" //
-            + "        wizard\t\t\tStart the wizard.\n" //
             + "        console\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.\n" //
             + "        status\t\t\tPrint server running status.\n" //
             + "        startbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.\n" //
@@ -535,7 +534,6 @@ public abstract class NuxeoLauncher {
             + "        showconf\t\tDisplay the instance configuration.\n" //
             + "        mp-list\t\t\tList local Nuxeo Packages.\n" //
             + "        mp-listall\t\tList all Nuxeo Packages.\n" //
-            + "        mp-init\t\t\tPre-cache Nuxeo Packages locally available in the distribution.\n" //
             + "        mp-update\t\tUpdate cache of Nuxeo Packages list.\n" //
             + "        mp-add\t\t\tAdd Nuxeo Package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n" //
             + "        mp-install\t\tRun Nuxeo Package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n" //
@@ -551,10 +549,10 @@ public abstract class NuxeoLauncher {
             + "        register\t\tRegister your instance with an existing Connect account. You must provide the credentials, the project name or ID, its type and a description.\n" //
             + "        register-trial\t\tThis command is deprecated. To register for a free 30 day trial on Nuxeo Online Services, please visit https://connect.nuxeo.com/register\n" //
             + "\nThe following commands are always executed in console/headless mode (no GUI): " //
-            + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", " //
+            + "\"configure\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", " //
             + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", " //
             + "\"status\", \"showconf\", \"mp-show\", \"mp-set\", \"config\", \"encrypt\", \"decrypt\", \"help\".\n" //
-            + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", " //
+            + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-purge\", " //
             + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", " //
             + "\"mp-reset\".\n" //
             + "\nCommand parameters may need to be prefixed with '--' to separate them from option arguments when confusion arises.";
@@ -576,11 +574,10 @@ public abstract class NuxeoLauncher {
             + "                Get value for the keys matching the given regular expression(s).\n\n"
             + "        nuxeoctl help|status|showconf [-d [<categories>]|-q]\n\n"
             + "        nuxeoctl configure [-d [<categories>]|-q|-hdw]\n\n"
-            + "        nuxeoctl wizard [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>]\n\n"
             + "        nuxeoctl stop [-d [<categories>]|-q|--gui <true|false|yes|no>]\n\n"
             + "        nuxeoctl start|restart|console|startbg|restartbg [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>|--lenient|-hdw]\n\n"
             + "        nuxeoctl mp-show [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
-            + "        nuxeoctl mp-list|mp-listall|mp-init|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--relax <true|false|yes|no>|--xml|--json]\n\n"
+            + "        nuxeoctl mp-list|mp-listall|mp-update [command parameters] [-d [<categories>]|-q|--clid <arg>|--relax <true|false|yes|no>|--xml|--json]\n\n"
             + "        nuxeoctl mp-reset|mp-purge|mp-hotfix|mp-upgrade [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
             + "        nuxeoctl mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
             + "        nuxeoctl register [<username> [<project> [<type> <description>] [<token>]]]\n"
@@ -1200,8 +1197,6 @@ public abstract class NuxeoLauncher {
         } else if (launcher.commandIs("restart")) {
             launcher.stop();
             commandSucceeded = launcher.doStartAndWait();
-        } else if (launcher.commandIs("wizard")) {
-            commandSucceeded = launcher.startWizard();
         } else if (launcher.commandIs("configure")) {
             launcher.configure();
         } else if (launcher.commandIs("pack")) {
@@ -1210,8 +1205,6 @@ public abstract class NuxeoLauncher {
             launcher.pkgList();
         } else if (launcher.commandIs("mp-listall")) {
             launcher.pkgListAll();
-        } else if (launcher.commandIs("mp-init")) {
-            commandSucceeded = launcher.pkgInit();
         } else if (launcher.commandIs("mp-purge")) {
             commandSucceeded = launcher.pkgPurge();
         } else if (launcher.commandIs("mp-add")) {
@@ -1871,25 +1864,6 @@ public abstract class NuxeoLauncher {
         return errorValue == EXIT_CODE_OK;
     }
 
-    protected boolean startWizard() throws PackageException {
-        if (!configurationGenerator.getServerConfigurator().isWizardAvailable()) {
-            log.error("Sorry, the wizard is not available within that server.");
-            return false;
-        }
-        if (isRunning()) {
-            log.error("Server already running. Please stop it before calling \"wizard\" command "
-                    + "or use the Admin Center instead of the wizard.");
-            return false;
-        }
-        if (reloadConfiguration) {
-            configurationGenerator = new ConfigurationGenerator(quiet, debug);
-            configurationGenerator.init();
-            reloadConfiguration = false;
-        }
-        configurationGenerator.getUserConfig().setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "false");
-        return doStart();
-    }
-
     /**
      * @see #doStartAndWait(boolean)
      */
@@ -1934,7 +1908,7 @@ public abstract class NuxeoLauncher {
         if (doStart(logProcessOutput)) {
             addShutdownHook();
             try {
-                if (configurationGenerator.isWizardRequired() || waitForEffectiveStart()) {
+                if (waitForEffectiveStart()) {
                     commandSucceeded = true;
                 }
                 removeShutdownHook();
@@ -2059,24 +2033,6 @@ public abstract class NuxeoLauncher {
             configure();
             configurationGenerator.verifyInstallation();
 
-            if (configurationGenerator.isWizardRequired()) {
-                if (!configurationGenerator.isForceGeneration()) {
-                    log.error(
-                            "Cannot start setup wizard with {}=false. Either set it to true or once, either set {}=true to skip the wizard.",
-                            ConfigurationGenerator.PARAM_FORCE_GENERATION, ConfigurationGenerator.PARAM_WIZARD_DONE);
-                    errorValue = EXIT_CODE_NOT_CONFIGURED;
-                    return false;
-                }
-                StringBuilder paramsStr = new StringBuilder();
-                for (String param : params) {
-                    paramsStr.append(' ').append(param);
-                }
-                System.setProperty(ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS, paramsStr.toString());
-                configurationGenerator.prepareWizardStart();
-            } else {
-                configurationGenerator.cleanupPostWizard();
-            }
-
             log.debug("Check if install in progress...");
             if (configurationGenerator.isInstallInProgress()) {
                 if (!getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
@@ -2089,10 +2045,6 @@ public abstract class NuxeoLauncher {
                     return false;
                 }
 
-                // configuration will be reloaded, keep wizard value
-                System.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE,
-                        configurationGenerator.getUserConfig()
-                                              .getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "true"));
                 return doStart(logProcessOutput);
             }
 
@@ -2594,14 +2546,10 @@ public abstract class NuxeoLauncher {
      */
     public boolean isStarted() {
         boolean isStarted;
-        if (configurationGenerator.isWizardRequired()) {
-            isStarted = isRunning();
-        } else {
-            try {
-                isStarted = isRunning() && statusServletClient.isStarted();
-            } catch (SocketTimeoutException e) {
-                isStarted = false;
-            }
+        try {
+            isStarted = isRunning() && statusServletClient.isStarted();
+        } catch (SocketTimeoutException e) {
+            isStarted = false;
         }
         return isStarted;
     }
@@ -2759,8 +2707,7 @@ public abstract class NuxeoLauncher {
         // packages
         log.info("** Packages:");
         for (PackageInfo pkg : info.packages) {
-            log.info("- {} (version: {} - id: {}} - state: {})", pkg.name, pkg.version, pkg.id,
-                    pkg.state.getLabel());
+            log.info("- {} (version: {} - id: {}} - state: {})", pkg.name, pkg.version, pkg.id, pkg.state.getLabel());
         }
         // nuxeo.conf
         log.info("** Templates:");
@@ -2812,15 +2759,6 @@ public abstract class NuxeoLauncher {
     protected boolean pkgRefreshCache() {
         getConnectBroker().refreshCache();
         return true;
-    }
-
-    /**
-     * Add packages from the distribution to the local cache
-     *
-     * @since 5.6
-     */
-    protected boolean pkgInit() {
-        return getConnectBroker().addDistributionPackages();
     }
 
     /**
