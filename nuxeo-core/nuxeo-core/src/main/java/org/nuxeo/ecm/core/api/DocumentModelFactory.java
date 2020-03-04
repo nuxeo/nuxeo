@@ -166,8 +166,23 @@ public class DocumentModelFactory {
      * @return the document model
      */
     public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType) {
-        DocumentModelImpl docModel = new DocumentModelImpl(sessionId, docType.getName(), null, null, null, null, null,
-                null, null, null, null);
+        return createDocumentModel(sessionId, docType, null);
+    }
+
+    /**
+     * Creates a document model for a new document.
+     * <p>
+     * Initializes the proper data models according to the type info.
+     *
+     * @param sessionId the CoreSession id
+     * @param docType the document type
+     * @param parentRef the parent ref
+     * @return the document model
+     * @since 10.10-HF23
+     */
+    public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType, DocumentRef parentRef) {
+        DocumentModelImpl docModel = new DocumentModelImpl(sessionId, docType.getName(), null, null, null, null,
+                parentRef, null, null, null, null);
         for (Schema schema : docType.getSchemas()) {
             docModel.addDataModel(createDataModel(null, schema));
         }
