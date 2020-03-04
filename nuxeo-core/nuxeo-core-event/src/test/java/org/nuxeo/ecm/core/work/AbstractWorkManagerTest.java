@@ -524,7 +524,7 @@ public abstract class AbstractWorkManagerTest {
         FileEventsTrackingFeature feature = runner.getFeature(FileEventsTrackingFeature.class);
         final File file = feature.resolveAndCreate(new File("pfouh"));
         service.schedule(new CreateFile(file));
-        service.awaitCompletion(5, TimeUnit.SECONDS);
+        assertTrue(service.awaitCompletion(5, TimeUnit.SECONDS));
     }
 
     @Test
