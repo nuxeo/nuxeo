@@ -158,12 +158,11 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     /**
      * According to {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}: <br>
-     * <q>{@link ConfigurationGenerator#PARAM_WIZARD_DONE}, {@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
+     * <q>{@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
      * {@link ConfigurationGenerator#PARAM_FORCE_GENERATION} cannot be unset</q>
      *
      * <pre>
      * nuxeo.templates=default,common,testinclude
-     * nuxeo.wizard.done=false
      * nuxeo.force.generation=true
      * </pre>
      */
@@ -191,16 +190,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator.setProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION, "false");
         assertEquals(ConfigurationGenerator.PARAM_FORCE_GENERATION + " should not be modifiable like this", oldValue,
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION));
-
-        oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, null);
-        assertEquals("Property should not be unset", oldValue,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "" + !Boolean.parseBoolean(oldValue));
-        assertNotEquals(ConfigurationGenerator.PARAM_WIZARD_DONE + " should be modifiable", oldValue,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
-        configGenerator.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "" + oldValue);
-        assertEquals(ConfigurationGenerator.PARAM_WIZARD_DONE + " should be modifiable", oldValue,
-                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
     }
 
     /**
@@ -270,16 +259,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME));
         assertEquals("newTemplate not removed", originalTemplates,
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
-    }
-
-    @Test
-    public void testSetWizardDone() throws ConfigurationException {
-        Map<String, String> changedParameters = new HashMap<>();
-        changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
-        configGenerator.saveFilteredConfiguration(changedParameters);
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
-        assertEquals("true", configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
     }
 
     @Test

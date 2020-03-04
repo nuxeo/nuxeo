@@ -17,7 +17,6 @@ nuxeo.tmp.dir=/tmp
 nuxeo.pid.dir=/var/pid/nuxeo
 # Set java.io.tmpdir = \${nuxeo.tmp.dir}
 launcher.override.java.tmpdir=true
-nuxeo.wizard.done=true
 EOF
 }
 
@@ -25,9 +24,9 @@ if ! command -v nuxeoctl > /dev/null; then # nuxeoctl command not found
 
   # If the container is run with nuxeoctl, exit with an error message
   if [ "$1" = 'nuxeoctl' ]; then
-    cat << EOF 
+    cat << EOF
 The nuxeoctl executable cannot be found. A Nuxeo distribution is probably missing from this image.
-Please make sure that you are using this image as a base image for an image copying the Nuxeo distribution 
+Please make sure that you are using this image as a base image for an image copying the Nuxeo distribution
 from the nuxeo/builder image, using a multi-stage build as in the following Dockerfile sample:
 
 FROM nuxeo/builder:VERSION as builder
@@ -47,7 +46,7 @@ else # nuxeoctl command found
 
     echo "ENTRYPOINT: Move $NUXEO_HOME/bin/nuxeo.conf to $NUXEO_CONF"
     mv $NUXEO_HOME/bin/nuxeo.conf $NUXEO_CONF
-    
+
     echo "ENTRYPOINT: Append required properties to $NUXEO_CONF:"
     echo -e "\n## ENTRYPOINT: Append required properties" >> $NUXEO_CONF
     configure | tee -a $NUXEO_CONF

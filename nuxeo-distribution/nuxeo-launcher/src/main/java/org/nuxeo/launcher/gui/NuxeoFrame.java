@@ -439,7 +439,7 @@ public class NuxeoFrame extends JFrame {
     public void updateSummary() {
         String errorMessageLabelStr = "";
         Color summaryStatusFgColor = Color.WHITE;
-        if (!controller.getConfigurationGenerator().isWizardRequired() && controller.launcher.isStarted()) {
+        if (controller.launcher.isStarted()) {
             String startupSummary = controller.launcher.getStartupSummary();
             if (!controller.launcher.wasStartupFine()) {
                 String[] lines = startupSummary.split("\n");

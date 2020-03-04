@@ -14,19 +14,13 @@ This plugin is available for Nuxeo Platform 5.8 and above.
 
 - Install _nuxeo-duoweb-authentication_ Marketplace Package from command line
   - Linux/Mac:
-    - `$NUXEO_HOME/bin/nuxeoctl mp-init`
     - `$NUXEO_HOME/bin/nuxeoctl mp-install nuxeo-duoweb-authentication`
     - `$NUXEO_HOME/bin/nuxeoctl start`
   - Windows:
-    - `NUXEO_HOME\bin\nuxeoctl.bat mp-init`
     - `NUXEO_HOME\bin\nuxeoctl.bat mp-install nuxeo-duoweb-authentication`
     - `NUXEO_HOME\bin\nuxeoctl.bat start`
 
-- From your browser, go to `http://localhost:8080/nuxeo`
-
-- Follow Nuxeo Wizard by clicking 'Next' buttons, re-start once completed
-
-- Follow Login Plugin Configuration part before restarting Nuxeo.
+- Follow Login Plugin Configuration part before starting Nuxeo.
 
 - Check Nuxeo correctly re-started `http://localhost:8080/nuxeo`
   - username: Administrator
@@ -34,7 +28,7 @@ This plugin is available for Nuxeo Platform 5.8 and above.
 
 - You will be able to enroll at Duo and control login access through [applications or by sms/call](https://duosecurity.com/product#effective).
 
-Note: Your machine needs internet access. If you have a proxy setting, skip the mp-init and mp-install steps at first, just do nuxeoctl start and run the wizard where you will be asked your proxy settings.
+Note: Your machine needs internet access. If you have a proxy setting, configure it before starting Nuxeo, see the `nuxeo.http.proxy.*` [configuration parameters](https://doc.nuxeo.com/n/DyM).
 
 ### Login Plugin Configuration:
 
