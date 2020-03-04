@@ -45,6 +45,7 @@ nuxeo.s3storage.transient.region=
 
 # optional
 nuxeo.s3storage.transient.endpoint=
+nuxeo.s3storage.transient.expiration=
 nuxeo.s3storage.transient.pathstyleaccess=false
 nuxeo.s3storage.transient.accelerateMode=false
 nuxeo.s3storage.transient.bucket_prefix=

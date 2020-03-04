@@ -76,6 +76,7 @@
       <property name="awstoken">${nuxeo.s3storage.transient.awstoken}</property>
       <property name="bucket">${nuxeo.s3storage.transient.bucket}</property>
       <property name="endpoint">${nuxeo.s3storage.transient.endpoint}</property>
+      <property name="expiration">${nuxeo.s3storage.transient.expiration}</property>
       <property name="pathstyleaccess">${nuxeo.s3storage.transient.pathstyleaccess}</property>
       <property name="accelerateMode">${nuxeo.s3storage.transient.accelerateMode}</property>
       <property name="region">${nuxeo.s3storage.transient.region}</property>
