@@ -57,9 +57,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.CallbackHolder;
 import org.nuxeo.connect.NuxeoConnectClient;
@@ -95,7 +95,7 @@ import org.w3c.dom.NodeList;
  */
 public class ConnectBroker {
 
-    private static final Log log = LogFactory.getLog(ConnectBroker.class);
+    private static final Logger log = LogManager.getLogger(ConnectBroker.class);
 
     public static final String PARAM_MP_DIR = "nuxeo.distribution.marketplace.dir";
 
@@ -209,7 +209,7 @@ public class ConnectBroker {
         try {
             return service.getPersistence().getActivePackageId(pkgName) != null;
         } catch (PackageException e) {
-            log.error("Error checking installation of package " + pkgName, e);
+            log.error("Error checking installation of package {}", pkgName, e);
             return false;
         }
     }
@@ -218,7 +218,7 @@ public class ConnectBroker {
         try {
             return service.getPackage(pkgId) != null;
         } catch (PackageException e) {
-            log.error("Error looking for local package " + pkgId, e);
+            log.error("Error looking for local package {}", pkgId, e);
             return false;
         }
     }
@@ -351,7 +351,7 @@ public class ConnectBroker {
                 throw new PackageException("Unknown file type (not a file and not a directory) for " + pkgFile);
             }
         } catch (PackageException e) {
-            log.error("Error trying to load package id from " + pkgFile, e);
+            log.error("Error trying to load package id from {}", pkgFile, e);
             return null;
         }
         return packageDefinition == null ? null : packageDefinition.getId();
@@ -382,7 +382,7 @@ public class ConnectBroker {
             }
         } catch (Exception e) {
             // Parsing failed - return empty list
-            log.error("Failed parsing " + distributionMPFile, e);
+            log.error("Failed parsing {}", distributionMPFile, e);
             return new ArrayList<>();
         }
         return md5Filenames;
@@ -407,11 +407,9 @@ public class ConnectBroker {
                 }
                 allDefinitions.put(md5Filename, pd);
             } catch (IOException e) {
-                log.warn("Could not read file " + md5File, e);
-                continue;
+                log.warn("Could not read file {}", md5File, e);
             } catch (PackageException e) {
                 log.error("Could not read package description", e);
-                continue;
             }
         }
         return allDefinitions;
@@ -424,7 +422,7 @@ public class ConnectBroker {
             try {
                 ret = pkgAdd(distributionFile.getCanonicalPath(), false) != null;
             } catch (IOException e) {
-                log.warn("Could not add distribution file " + md5);
+                log.warn("Could not add distribution file {}", md5);
                 ret = false;
             }
         }
@@ -444,8 +442,9 @@ public class ConnectBroker {
             }
         }
         boolean ret = true;
-        for (String md5 : distributionPackages.keySet()) {
-            PackageDefinition md5Pkg = distributionPackages.get(md5);
+        for (Map.Entry<String, PackageDefinition> e : distributionPackages.entrySet()) {
+            String md5 = e.getKey();
+            PackageDefinition md5Pkg = e.getValue();
             if (localPackagesById.containsKey(md5Pkg.getId())) {
                 // We have the same package Id in the local cache
                 LocalPackage localPackage = localPackagesById.get(md5Pkg.getId());
@@ -520,7 +519,7 @@ public class ConnectBroker {
                             getPrivateOrSubscriptionTag(pkg));
                     sb.append(packageDescription);
                 }
-                log.info(sb.toString());
+                log.info(sb::toString);
             }
         } catch (Exception e) {
             log.error(e);
@@ -535,8 +534,8 @@ public class ConnectBroker {
                     "Failed to validate package " + task.getPackage().getId() + " -> " + validationStatus.getErrors());
         }
         if (validationStatus.hasWarnings()) {
-            log.warn("Got warnings on package validation " + task.getPackage().getId() + " -> "
-                    + validationStatus.getWarnings());
+            log.warn("Got warnings on package validation {} -> {}", () -> task.getPackage().getId(),
+                    validationStatus::getWarnings);
         }
         task.run(null);
     }
@@ -594,12 +593,12 @@ public class ConnectBroker {
      * @see #pkgUninstall(String)
      */
     public boolean pkgUninstall(List<String> packageIdsToRemove) {
-        log.debug("Uninstalling: " + packageIdsToRemove);
+        log.debug("Uninstalling: {}", packageIdsToRemove);
         Queue<String> remaining = new LinkedList<>(packageIdsToRemove);
         while (!remaining.isEmpty()) {
             String pkgId = remaining.poll();
             if (pkgUninstall(pkgId) == null) {
-                log.error("Unable to uninstall " + pkgId);
+                log.error("Unable to uninstall {}", pkgId);
                 return false;
             }
             if (isRestartRequired()) {
@@ -632,7 +631,7 @@ public class ConnectBroker {
             if (pkg == null) {
                 throw new PackageException("Package not found: " + pkgId);
             }
-            log.info("Uninstalling " + pkgId);
+            log.info("Uninstalling {}", pkgId);
             Task uninstallTask = pkg.getUninstallTask();
             try {
                 performTask(uninstallTask);
@@ -645,7 +644,7 @@ public class ConnectBroker {
             newPackageInfo(cmdInfo, pkg);
             return pkg;
         } catch (Exception e) {
-            log.error("Failed to uninstall package: " + pkgId, e);
+            log.error("Failed to uninstall package: {}", pkgId, e);
             cmdInfo.exitCode = 1;
             return null;
         }
@@ -661,7 +660,7 @@ public class ConnectBroker {
     public boolean pkgRemove(List<String> pkgsToRemove) {
         boolean cmdOk = true;
         if (pkgsToRemove != null) {
-            log.debug("Removing: " + pkgsToRemove);
+            log.debug("Removing: {}", pkgsToRemove);
             for (String pkgNameOrId : pkgsToRemove) {
                 List<String> allIds;
                 if (isLocalPackageId(pkgNameOrId)) {
@@ -673,7 +672,7 @@ public class ConnectBroker {
                 }
                 for (String pkgId : allIds) {
                     if (pkgRemove(pkgId) == null) {
-                        log.warn("Unable to remove " + pkgId);
+                        log.warn("Unable to remove {}", pkgId);
                         // Don't error out on failed (cache) removal
                         cmdOk = false;
                     }
@@ -714,27 +713,14 @@ public class ConnectBroker {
                 throw new PackageException("Can only remove packages in DOWNLOADED, INSTALLED or STARTED state");
             }
             service.removePackage(pkgId);
-            log.info("Removed " + pkgId);
+            log.info("Removed {}", pkgId);
             newPackageInfo(cmdInfo, pkg).state = PackageState.REMOTE;
             return pkg;
         } catch (Exception e) {
-            log.error("Failed to remove package: " + pkgId, e);
+            log.error("Failed to remove package: {}", pkgId, e);
             cmdInfo.exitCode = 1;
             return null;
         }
-    }
-
-    /**
-     * Add a list of packages into the cache, downloading them if needed and possible.
-     *
-     * @return true if command succeeded
-     * @see #pkgAdd(List, boolean)
-     * @see #pkgAdd(String, boolean)
-     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
-     */
-    @Deprecated
-    public boolean pkgAdd(List<String> pkgsToAdd) {
-        return pkgAdd(pkgsToAdd, false);
     }
 
     /**
@@ -759,7 +745,7 @@ public class ConnectBroker {
                     String pkgId = getRemotePackageId(pkgToAdd);
                     if (pkgId == null) {
                         if (ignoreMissing) {
-                            log.warn("Could not add package: " + pkgToAdd);
+                            log.warn("Could not add package: {}", pkgToAdd);
                             cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Could not add package.");
                         } else {
                             throw new PackageException("Could not find a remote or local (relative to "
@@ -771,7 +757,7 @@ public class ConnectBroker {
                     }
                 } else {
                     LocalPackage pkg = service.addPackage(fileToAdd);
-                    log.info("Added " + pkg);
+                    log.info("Added {}", pkg);
                     newPackageInfo(cmdInfo, pkg);
                 }
             } catch (PackageException e) {
@@ -782,19 +768,6 @@ public class ConnectBroker {
         }
         cmdOk = downloadPackages(pkgIdsToDownload) && cmdOk;
         return cmdOk;
-    }
-
-    /**
-     * Add a package file into the cache
-     *
-     * @return The added LocalPackage or null if failed
-     * @see #pkgAdd(List, boolean)
-     * @see #pkgAdd(String, boolean)
-     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
-     */
-    @Deprecated
-    public LocalPackage pkgAdd(String packageFileName) {
-        return pkgAdd(packageFileName, false);
     }
 
     /**
@@ -814,7 +787,7 @@ public class ConnectBroker {
                 String pkgId = getRemotePackageId(packageFileName);
                 if (pkgId == null) {
                     if (ignoreMissing) {
-                        log.warn("Could not add package: " + packageFileName);
+                        log.warn("Could not add package: {}", packageFileName);
                         cmdInfo.newMessage(SimpleLog.LOG_LEVEL_INFO, "Could not add package.");
                         return null;
                     } else {
@@ -831,7 +804,7 @@ public class ConnectBroker {
                 }
             } else {
                 pkg = service.addPackage(fileToAdd);
-                log.info("Added " + packageFileName);
+                log.info("Added {}", packageFileName);
             }
             newPackageInfo(cmdInfo, pkg);
         } catch (PackageException e) {
@@ -845,27 +818,13 @@ public class ConnectBroker {
      * Install a list of local packages. If the list contains a package name (versus an ID), only the considered as best
      * matching package is installed.
      *
-     * @param packageIdsToInstall The list can contain package IDs and names
-     * @see #pkgInstall(List, boolean)
-     * @see #pkgInstall(String, boolean)
-     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
-     */
-    @Deprecated
-    public boolean pkgInstall(List<String> packageIdsToInstall) {
-        return pkgInstall(packageIdsToInstall, false);
-    }
-
-    /**
-     * Install a list of local packages. If the list contains a package name (versus an ID), only the considered as best
-     * matching package is installed.
-     *
      * @since 6.0
      * @param packageIdsToInstall The list can contain package IDs and names
      * @param ignoreMissing If true, doesn't throw an exception on unknown packages
      * @see #pkgInstall(String, boolean)
      */
     public boolean pkgInstall(List<String> packageIdsToInstall, boolean ignoreMissing) {
-        log.debug("Installing: " + packageIdsToInstall);
+        log.debug("Installing: {}", packageIdsToInstall);
         Queue<String> remaining = new LinkedList<>(packageIdsToInstall);
         while (!remaining.isEmpty()) {
             String pkgId = remaining.poll();
@@ -905,20 +864,6 @@ public class ConnectBroker {
     }
 
     /**
-     * Install a local package.
-     *
-     * @param pkgId Package ID or Name
-     * @return The installed LocalPackage or null if failed
-     * @see #pkgInstall(List, boolean)
-     * @see #pkgInstall(String, boolean)
-     * @deprecated Since 7.10. Use a method with an explicit value for {@code ignoreMissing}.
-     */
-    @Deprecated
-    public LocalPackage pkgInstall(String pkgId) {
-        return pkgInstall(pkgId, false);
-    }
-
-    /**
      * @since 10.2
      */
     protected boolean isRestartRequired() {
@@ -941,12 +886,12 @@ public class ConnectBroker {
             LocalPackage pkg = getLocalPackage(pkgId);
             if (pkg != null && pkg.getPackageState().isInstalled()) {
                 if (pkg.getVersion().isSnapshot()) {
-                    log.info(String.format("Updating package %s...", pkg));
+                    log.info("Updating package {}...", pkg);
                     // First remove it to allow SNAPSHOT upgrade
                     pkgRemove(pkgId);
                     pkg = null;
                 } else {
-                    log.info(String.format("Package %s is already installed.", pkg));
+                    log.info("Package {} is already installed.", pkg);
                     return pkg;
                 }
             }
@@ -957,7 +902,7 @@ public class ConnectBroker {
             if (pkg == null) {
                 // Nothing worked - can't find the package anywhere
                 if (ignoreMissing) {
-                    log.warn("Unable to install package: " + pkgId);
+                    log.warn("Unable to install package: {}", pkgId);
                     return null;
                 } else {
                     throw new PackageException("Package not found: " + pkgId);
@@ -965,7 +910,7 @@ public class ConnectBroker {
             }
             pkgId = pkg.getId();
             cmdInfo.param = pkgId;
-            log.info("Installing " + pkgId);
+            log.info("Installing {}", pkgId);
             Task installTask = pkg.getInstallTask();
             try {
                 performTask(installTask);
@@ -978,7 +923,7 @@ public class ConnectBroker {
             newPackageInfo(cmdInfo, pkg);
             return pkg;
         } catch (PackageException e) {
-            log.error(String.format("Failed to install package: %s (%s)", pkgId, e.getMessage()));
+            log.error("Failed to install package: {} ({})", pkgId, e.getMessage());
             log.debug(e, e);
             cmdInfo.exitCode = 1;
             cmdInfo.newMessage(e);
@@ -1097,7 +1042,7 @@ public class ConnectBroker {
                     }
                 }
                 if (errorValue != 0) {
-                    log.error("Error processing pending package/command: " + line);
+                    log.error("Error processing pending package/command: {}", line);
                 }
                 if (doExecute && !useResolver && isRestartRequired()) {
                     remainingCmds.forEach(this::persistCommand);
@@ -1122,13 +1067,13 @@ public class ConnectBroker {
                     }
                 }
                 if (errorValue != 0) {
-                    log.error("Pending actions execution failed. The commands file has been moved to: " + backup);
+                    log.error("Pending actions execution failed. The commands file has been moved to: {}", backup);
                 }
             } else {
                 cset.log(true);
             }
         } catch (IOException e) {
-            log.error(e.getMessage(), e.getCause());
+            log.error(e, e);
         }
         return errorValue == 0;
     }
@@ -1142,32 +1087,26 @@ public class ConnectBroker {
             try {
                 localPackage = getLocalPackage(pkg);
             } catch (PackageException e) {
-                log.error(String.format("Looking for package '%s' in local cache raised an error. Aborting.", pkg), e);
+                log.error("Looking for package '{}' in local cache raised an error. Aborting.", pkg, e);
                 return false;
             }
             if (localPackage == null) {
                 continue;
             }
             if (localPackage.getPackageState().isInstalled()) {
-                log.error(String.format("Package '%s' is installed. Download skipped.", pkg));
+                log.error("Package '{}' is installed. Download skipped.", pkg);
                 packagesAlreadyDownloaded.add(pkg);
             } else if (localPackage.getVersion().isSnapshot()) {
                 // Check if registration is required
                 DownloadablePackage downloadablePkg = getPackageManager().findRemotePackageById(pkg);
                 if (downloadablePkg != null && downloadablePkg.hasSubscriptionRequired() && !isRegistered) {
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Registration is required for package '%s'. Download skipped.", pkg));
-                    }
+                    log.info("Registration is required for package '{}'. Download skipped.", pkg);
                     packagesAlreadyDownloaded.add(pkg);
                     continue;
                 }
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Download of '%s' will replace the one already in local cache.", pkg));
-                }
+                log.info("Download of '{}' will replace the one already in local cache.", pkg);
             } else {
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Package '%s' is already in local cache.", pkg));
-                }
+                log.info("Package '{}' is already in local cache.", pkg);
                 packagesAlreadyDownloaded.add(pkg);
             }
         }
@@ -1177,9 +1116,7 @@ public class ConnectBroker {
             return true;
         }
         // Queue downloads
-        if (log.isInfoEnabled()) {
-            log.info("Downloading " + packagesToDownload + "...");
-        }
+        log.info("Downloading {}...", packagesToDownload);
         boolean downloadOk = true;
         List<DownloadingPackage> pkgs = new ArrayList<>();
         for (String pkg : packagesToDownload) {
@@ -1208,9 +1145,7 @@ public class ConnectBroker {
                     cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed (not found).");
                 }
             } catch (ConnectServerError e) {
-                if (log.isDebugEnabled()) {
-                    log.debug(e, e);
-                }
+                log.debug(e, e);
                 downloadOk = false;
                 cmdInfo.exitCode = 1;
                 cmdInfo.newMessage(SimpleLog.LOG_LEVEL_ERROR, "Download failed: " + e.getMessage());
@@ -1252,8 +1187,8 @@ public class ConnectBroker {
                 }
             }
             pkgs.removeAll(pkgsCompleted);
-        } while (!stopDownload && pkgs.size() > 0);
-        if (pkgs.size() > 0) {
+        } while (!stopDownload && !pkgs.isEmpty());
+        if (!pkgs.isEmpty()) {
             downloadOk = false;
             log.error("Packages download was interrupted");
             for (DownloadingPackage pkg : pkgs) {
@@ -1264,26 +1199,6 @@ public class ConnectBroker {
             }
         }
         return downloadOk;
-    }
-
-    /**
-     * @deprecated Since 7.10. Use {@link #pkgRequest(List, List, List, List, boolean, boolean)} instead.
-     */
-    @Deprecated
-    public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
-            List<String> pkgsToRemove) {
-        return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true, false);
-    }
-
-    /**
-     * @param keepExisting If false, the request will remove existing packages that are not part of the resolution
-     * @since 5.9.2
-     * @deprecated Since 7.10. Use {@link #pkgRequest(List, List, List, List, boolean, boolean)} instead.
-     */
-    @Deprecated
-    public boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
-            List<String> pkgsToRemove, boolean keepExisting) {
-        return pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, keepExisting, false);
     }
 
     /**
@@ -1330,9 +1245,8 @@ public class ConnectBroker {
 
                 // Replace snapshots to install but already in cache (requested by id or filename)
                 if (CollectionUtils.isNotEmpty(localSnapshotsToReplace)) {
-                    log.info(String.format(
-                            "The following SNAPSHOT package(s) will be replaced in local cache (if available): %s",
-                            localSnapshotsToReplace));
+                    log.info("The following SNAPSHOT package(s) will be replaced in local cache (if available): {}",
+                            localSnapshotsToReplace);
                     String initialAccept = accept;
                     if ("ask".equalsIgnoreCase(accept)) {
                         accept = readConsole("Do you want to continue (yes/no)? [yes] ", "yes");
@@ -1355,9 +1269,8 @@ public class ConnectBroker {
                                 cmdOk = false;
                             }
                         } else {
-                            log.info(String.format(
-                                    "The SNAPSHOT package %s is not available remotely, local cache will be used.",
-                                    pkgIdOrFileName));
+                            log.info("The SNAPSHOT package {} is not available remotely, local cache will be used.",
+                                    pkgIdOrFileName);
                         }
                     }
                 }
@@ -1375,7 +1288,7 @@ public class ConnectBroker {
                 // Add packages to remove to uninstall list
                 solverRemove.addAll(pkgsToRemove);
             }
-            if ((solverInstall.size() != 0) || (solverRemove.size() != 0) || (solverUpgrade.size() != 0)) {
+            if (!solverInstall.isEmpty() || !solverRemove.isEmpty() || !solverUpgrade.isEmpty()) {
                 // Check whether we need to relax restriction to targetPlatform
                 String requestPlatform = actualTargetPlatform;
                 List<String> requestPackages = new ArrayList<>();
@@ -1388,14 +1301,15 @@ public class ConnectBroker {
                     List<String> solverInstallCopy = new ArrayList<>(solverInstall);
                     for (String pkgToInstall : solverInstallCopy) {
                         if (!knownNames.containsKey(pkgToInstall)) {
-                            log.warn("Unable to install unknown package: " + pkgToInstall);
+                            log.warn("Unable to install unknown package: {}", pkgToInstall);
                             solverInstall.remove(pkgToInstall);
                             requestPackages.remove(pkgToInstall);
                         }
                     }
                 }
-                List<String> nonCompliantPkg = getPackageManager().getNonCompliantList(requestPackages, actualTargetPlatform);
-                if (nonCompliantPkg.size() > 0) {
+                List<String> nonCompliantPkg = getPackageManager().getNonCompliantList(requestPackages,
+                        actualTargetPlatform);
+                if (!nonCompliantPkg.isEmpty()) {
                     requestPlatform = null;
                     if ("ask".equalsIgnoreCase(relax)) {
                         relax = readConsole(
@@ -1405,12 +1319,12 @@ public class ConnectBroker {
                     }
 
                     if (Boolean.parseBoolean(relax)) {
-                        log.warn(String.format("Relax restriction to target platform %s because of package(s) %s",
-                                actualTargetPlatform, StringUtils.join(nonCompliantPkg, ", ")));
+                        log.warn("Relax restriction to target platform {} because of package(s) {}",
+                                () -> actualTargetPlatform, () -> String.join(", ", nonCompliantPkg));
                     } else {
                         if (ignoreMissing) {
                             for (String pkgToInstall : nonCompliantPkg) {
-                                log.warn("Unable to install package: " + pkgToInstall);
+                                log.warn("Unable to install package: {}", pkgToInstall);
                                 solverInstall.remove(pkgToInstall);
                             }
                         } else {
@@ -1421,9 +1335,9 @@ public class ConnectBroker {
                     }
                 }
 
-                log.debug("solverInstall: " + solverInstall);
-                log.debug("solverRemove: " + solverRemove);
-                log.debug("solverUpgrade: " + solverUpgrade);
+                log.debug("solverInstall: {}", () -> solverInstall);
+                log.debug("solverRemove: {}", () -> solverRemove);
+                log.debug("solverUpgrade: {}", () -> solverUpgrade);
                 DependencyResolution resolution = getPackageManager().resolveDependencies(solverInstall, solverRemove,
                         solverUpgrade, requestPlatform, allowSNAPSHOT, keepExisting);
                 log.info(resolution);
@@ -1472,7 +1386,7 @@ public class ConnectBroker {
                     packageIdsToRemove.addAll(resolution.getLocalPackagesToUpgrade().keySet());
                     DependencyResolution uninstallResolution = getPackageManager().resolveDependencies(null,
                             packageIdsToRemove, null, requestPlatform, allowSNAPSHOT, keepExisting, true);
-                    log.debug("Sub-resolution (uninstall) " + uninstallResolution);
+                    log.debug("Sub-resolution (uninstall) {}", uninstallResolution);
                     if (uninstallResolution.isFailed()) {
                         return false;
                     }
@@ -1483,11 +1397,11 @@ public class ConnectBroker {
                     packagesIdsToReInstall.removeAll(packageIdsToUpgrade);
                     packageIdsToRemove = newPackageIdsToRemove;
                 }
-                log.debug("Uninstalling: " + packageIdsToRemove);
+                log.debug("Uninstalling: {}", packageIdsToRemove);
                 while (!packageIdsToRemove.isEmpty()) {
                     String pkgId = packageIdsToRemove.poll();
                     if (pkgUninstall(pkgId) == null) {
-                        log.error("Unable to uninstall " + pkgId);
+                        log.error("Unable to uninstall {}", pkgId);
                         return false;
                     }
                     if (isRestartRequired()) {
@@ -1503,7 +1417,7 @@ public class ConnectBroker {
                     packageIdsToInstall.addAll(packagesIdsToReInstall);
                     DependencyResolution installResolution = getPackageManager().resolveDependencies(
                             packageIdsToInstall, null, null, requestPlatform, allowSNAPSHOT, keepExisting, true);
-                    log.debug("Sub-resolution (install) " + installResolution);
+                    log.debug("Sub-resolution (install) {}", installResolution);
                     if (installResolution.isFailed()) {
                         return false;
                     }
@@ -1584,22 +1498,10 @@ public class ConnectBroker {
     /**
      * Installs a list of packages and uninstalls the rest (no dependency check)
      *
-     * @since 5.9.2
-     * @deprecated Since 7.10. Use #pkgSet(List, boolean) instead.
-     */
-    @Deprecated
-    public boolean pkgSet(List<String> pkgList) {
-        return pkgSet(pkgList, false);
-    }
-
-    /**
-     * Installs a list of packages and uninstalls the rest (no dependency check)
-     *
      * @since 6.0
      */
     public boolean pkgSet(List<String> pkgList, boolean ignoreMissing) {
-        boolean cmdOK = true;
-        cmdOK = cmdOK && pkgInstall(pkgList, ignoreMissing);
+        boolean cmdOK = pkgInstall(pkgList, ignoreMissing);
         List<DownloadablePackage> installedPkgs = getPackageManager().listInstalledPackages();
         List<String> pkgsToUninstall = new ArrayList<>();
         for (DownloadablePackage pkg : installedPkgs) {
@@ -1607,7 +1509,7 @@ public class ConnectBroker {
                 pkgsToUninstall.add(pkg.getId());
             }
         }
-        if (pkgsToUninstall.size() != 0) {
+        if (!pkgsToUninstall.isEmpty()) {
             cmdOK = cmdOK && pkgUninstall(pkgsToUninstall);
         }
         return cmdOK;
@@ -1738,7 +1640,7 @@ public class ConnectBroker {
                 cmdInfo.newMessage(e);
             }
         }
-        log.info(sb.toString());
+        log.info(sb::toString);
         return cmdOk;
     }
 

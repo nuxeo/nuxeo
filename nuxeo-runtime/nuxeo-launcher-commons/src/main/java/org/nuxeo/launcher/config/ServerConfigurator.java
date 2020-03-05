@@ -18,6 +18,8 @@
  */
 package org.nuxeo.launcher.config;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -39,8 +41,8 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.nuxeo.common.Environment;
@@ -62,7 +64,7 @@ import freemarker.template.TemplateException;
  */
 public abstract class ServerConfigurator {
 
-    protected static final Log log = LogFactory.getLog(ServerConfigurator.class);
+    private static final Logger log = LogManager.getLogger(ServerConfigurator.class);
 
     protected final ConfigurationGenerator generator;
 
@@ -87,26 +89,6 @@ public abstract class ServerConfigurator {
     public static final String JAVA_OPTS = "JAVA_OPTS";
 
     private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES + File.separator + "files.list";
-
-    /**
-     * @since 5.4.2
-     * @deprecated Since 5.9.4. Use {@link org.nuxeo.common.Environment#DEFAULT_LOG_DIR} instead.
-     */
-    @Deprecated
-    public static final String DEFAULT_LOG_DIR = org.nuxeo.common.Environment.DEFAULT_LOG_DIR;
-
-    /**
-     * @deprecated Since 5.9.4. Use {@link org.nuxeo.common.Environment#DEFAULT_DATA_DIR} instead.
-     */
-    @Deprecated
-    public static final String DEFAULT_DATA_DIR = org.nuxeo.common.Environment.DEFAULT_DATA_DIR;
-
-    /**
-     * @since 5.4.2
-     * @deprecated Since 5.9.4. Use {@link org.nuxeo.common.Environment#DEFAULT_TMP_DIR} instead.
-     */
-    @Deprecated
-    public static final String DEFAULT_TMP_DIR = org.nuxeo.common.Environment.DEFAULT_TMP_DIR;
 
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
@@ -140,11 +122,11 @@ public abstract class ServerConfigurator {
             File[] listFiles = includedTemplate.listFiles(filter);
             if (listFiles != null) {
                 String templateName = includedTemplate.getName();
-                log.debug(String.format("Parsing %s... %s", templateName, Arrays.toString(listFiles)));
+                log.debug("Parsing {}... {}", () -> templateName, () -> Arrays.toString(listFiles));
                 // Check for deprecation
                 boolean isDeprecated = Boolean.parseBoolean(config.getProperty(templateName + ".deprecated"));
                 if (isDeprecated) {
-                    log.warn("WARNING: Template " + templateName + " is deprecated.");
+                    log.warn("WARNING: Template {} is deprecated.", templateName);
                     String deprecationMessage = config.getProperty(templateName + ".deprecation");
                     if (deprecationMessage != null) {
                         log.warn(deprecationMessage);
@@ -177,7 +159,7 @@ public abstract class ServerConfigurator {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.endsWith(".bak")) {
-                    log.debug("Restore " + line);
+                    log.debug("Restore {}", line);
                     try {
                         File backup = new File(generator.getNuxeoHome(), line);
                         File original = new File(generator.getNuxeoHome(), line.substring(0, line.length() - 4));
@@ -189,7 +171,7 @@ public abstract class ServerConfigurator {
                                 line.substring(0, line.length() - 4), line, newFiles), e);
                     }
                 } else {
-                    log.debug("Remove " + line);
+                    log.debug("Remove {}", line);
                     new File(generator.getNuxeoHome(), line).delete();
                 }
             }
@@ -204,7 +186,7 @@ public abstract class ServerConfigurator {
     private void storeNewFilesList(List<String> newFilesList) throws IOException {
         File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
         try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(newFiles, false), "UTF-8"))) {
+                new OutputStreamWriter(new FileOutputStream(newFiles, false), UTF_8))) {
             // Store new files listing
             int index = generator.getNuxeoHome().getCanonicalPath().length() + 1;
             for (String filepath : newFilesList) {
@@ -326,7 +308,7 @@ public abstract class ServerConfigurator {
         File badInstanceClid = new File(generator.getNuxeoHome(),
                 getDefaultDataDir() + File.separator + "instance.clid");
         if (badInstanceClid.exists() && !getDataDir().equals(badInstanceClid.getParentFile())) {
-            log.warn(String.format("Moving %s to %s.", badInstanceClid, getDataDir()));
+            log.warn("Moving {} to {}.", () -> badInstanceClid, this::getDataDir);
             try {
                 FileUtils.moveFileToDirectory(badInstanceClid, getDataDir(), true);
             } catch (IOException e) {
@@ -336,9 +318,8 @@ public abstract class ServerConfigurator {
 
         File oldPackagesPath = new File(getDataDir(), getDefaultPackagesDir());
         if (oldPackagesPath.exists() && !oldPackagesPath.equals(getPackagesDir())) {
-            log.warn(String.format(
-                    "NXP-8014 Packages cache location changed. You can safely delete %s or move its content to %s",
-                    oldPackagesPath, getPackagesDir()));
+            log.warn("NXP-8014 Packages cache location changed. You can safely delete {} or move its content to {}",
+                    () -> oldPackagesPath, this::getPackagesDir);
         }
 
     }
@@ -390,7 +371,7 @@ public abstract class ServerConfigurator {
         } else if (org.nuxeo.common.Environment.NUXEO_MP_DIR.equals(key)) {
             setPackagesDir(absoluteDirectory);
         } else {
-            log.error("Unknown directory key: " + key);
+            log.error("Unknown directory key: {}", key);
         }
     }
 
@@ -437,7 +418,7 @@ public abstract class ServerConfigurator {
         } else if (org.nuxeo.common.Environment.NUXEO_MP_DIR.equals(key)) {
             return getPackagesDir();
         } else {
-            log.error("Unknown directory key: " + key);
+            log.error("Unknown directory key: {}", key);
             return null;
         }
     }
@@ -501,12 +482,12 @@ public abstract class ServerConfigurator {
     public void dumpProperties(CryptoProperties userConfig) {
         Properties dumpedProperties = filterSystemProperties(userConfig);
         File dumpedFile = generator.getDumpedConfig();
-        try (OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(dumpedFile, false), "UTF-8")) {
+        try (OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(dumpedFile, false), UTF_8)) {
             dumpedProperties.store(os, "Generated by " + getClass());
         } catch (FileNotFoundException e) {
             log.error(e);
         } catch (IOException e) {
-            log.error("Could not dump properties to " + dumpedFile, e);
+            log.error("Could not dump properties to {}", dumpedFile, e);
         }
     }
 

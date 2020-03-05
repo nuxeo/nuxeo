@@ -22,12 +22,16 @@ package org.nuxeo.launcher.config;
 
 import java.io.File;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 
 /**
  * @author jcarsique
  */
 public class JettyConfigurator extends ServerConfigurator {
+
+    private static final Logger log = LogManager.getLogger(JettyConfigurator.class);
 
     public static final String JETTY_CONFIG = "config/sql.properties";
 
