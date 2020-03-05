@@ -73,11 +73,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -351,7 +351,7 @@ public abstract class NuxeoLauncher {
      */
     private static final String DEFAULT_NUXEO_CONTEXT_PATH = "/nuxeo";
 
-    static final Log log = LogFactory.getLog(NuxeoLauncher.class);
+    private static final Logger log = LogManager.getLogger(NuxeoLauncher.class);
 
     private static Options options = initParserOptions();
 
@@ -763,13 +763,13 @@ public abstract class NuxeoLauncher {
         startCommand.addAll(Arrays.asList(params));
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
         pb.directory(configurationGenerator.getNuxeoHome());
-        log.debug("Server command: " + pb.command());
+        log.debug("Server command: {}", pb::command);
         nuxeoProcess = pb.start();
         Thread.sleep(1000);
         boolean processExited = false;
         // Check if process exited early
         if (nuxeoProcess == null) {
-            log.error(String.format("Server start failed with command: %s", pb.command()));
+            log.error("Server start failed with command: {}", pb::command);
             if (SystemUtils.IS_OS_WINDOWS && configurationGenerator.getNuxeoHome().getPath().contains(" ")) {
                 // NXP-17679
                 log.error("The server path must not contain spaces under Windows.");
@@ -779,7 +779,7 @@ public abstract class NuxeoLauncher {
         try {
             int exitValue = nuxeoProcess.exitValue();
             if (exitValue != 0) {
-                log.error(String.format("Server start failed (%d).", exitValue));
+                log.error("Server start failed ({}).", exitValue);
             }
             processExited = true;
         } catch (IllegalThreadStateException e) {
@@ -788,7 +788,7 @@ public abstract class NuxeoLauncher {
         logProcessStreams(nuxeoProcess, processExited || logProcessOutput);
         if (!processExited) {
             if (getPid() != null) {
-                log.warn("Server started with process ID " + pid + ".");
+                log.warn("Server started with process ID {}.", pid);
             } else {
                 log.warn("Sent server start command but could not get process ID.");
             }
@@ -819,7 +819,7 @@ public abstract class NuxeoLauncher {
                 throw new IllegalStateException("A server is running with process ID " + existingPid);
             }
         } catch (IOException e) {
-            log.warn("Could not check existing process: " + e.getMessage());
+            log.warn("Could not check existing process: {}", e::getMessage);
         }
     }
 
@@ -1123,7 +1123,7 @@ public abstract class NuxeoLauncher {
             log.info("Restarting launcher...");
             System.exit(EXIT_CODE_LAUNCHER_CHANGED);
         } catch (ParseException e) {
-            log.error("Invalid command line. " + e.getMessage());
+            log.error("Invalid command line. {}", e::getMessage);
             log.debug(e, e);
             printShortHelp();
             System.exit(
@@ -1134,7 +1134,7 @@ public abstract class NuxeoLauncher {
             System.exit(
                     launcher == null || launcher.errorValue == EXIT_CODE_OK ? EXIT_CODE_INVALID : launcher.errorValue);
         } catch (Exception e) {
-            log.error("Cannot execute command. " + e.getMessage(), e);
+            log.error("Cannot execute command. {}", e.getMessage(), e);
             log.debug(e, e);
             System.exit(EXIT_CODE_ERROR);
         }
@@ -1160,7 +1160,7 @@ public abstract class NuxeoLauncher {
             if (!quiet) {
                 log.warn(statusMsg);
                 if (launcher.isStarted()) {
-                    log.info("Go to " + launcher.getURL());
+                    log.info("Go to {}", launcher::getURL);
                     log.info(launcher.getStartupSummary());
                 }
             }
@@ -1180,7 +1180,7 @@ public abstract class NuxeoLauncher {
                         launcher.removeShutdownHook();
                         System.exit(1);
                     } else if (!quiet) {
-                        log.info("Go to " + launcher.getURL());
+                        log.info("Go to {}", launcher::getURL);
                     }
                 } catch (PackageException e) {
                     log.error("Could not initialize the packaging subsystem", e);
@@ -1270,7 +1270,7 @@ public abstract class NuxeoLauncher {
         } else if (launcher.commandIs("register-trial")) {
             commandSucceeded = launcher.registerTrial();
         } else {
-            log.error("Unknown command " + launcher.command);
+            log.error("Unknown command {}", launcher.command);
             printLongHelp();
             launcher.errorValue = EXIT_CODE_INVALID;
         }
@@ -1545,10 +1545,10 @@ public abstract class NuxeoLauncher {
 
     protected boolean registerOffline() throws IOException, ConfigurationException {
         log.info("\nTo register your instance:");
-        log.info(String.format("1. Visit %s/connect/registerInstance", ConnectUrlConfig.getBaseUrl()));
-        log.info(String.format(
-                "2. Select the project on which you want the instance to be registered and copy the technical identifier found below (CTID):\n\n%s\n",
-                TechnicalInstanceIdentifier.instance().getCTID()));
+        log.info("1. Visit {}/connect/registerInstance", ConnectUrlConfig::getBaseUrl);
+        log.info(
+                "2. Select the project on which you want the instance to be registered and copy the technical identifier found below (CTID):\n\n{}\n",
+                () -> TechnicalInstanceIdentifier.instance().getCTID());
         Date expirationDate = new Date();
         prompt("3. Enter the given identifier to register your instance (CLID): ", strCLID -> {
             try {
@@ -1562,7 +1562,7 @@ public abstract class NuxeoLauncher {
         }, "This identifier is invalid or cannot be read properly or cannot be saved.");
 
         log.info("Server registration saved");
-        log.info("Your Nuxeo Online Services is valid until " + expirationDate);
+        log.info("Your Nuxeo Online Services is valid until {}", expirationDate);
         return true;
     }
 
@@ -1615,7 +1615,7 @@ public abstract class NuxeoLauncher {
     protected boolean registerRemoteInstance(String username, char[] token, ConnectProject project,
             NuxeoClientInstanceType type, String description) throws IOException, ConfigurationException {
         getConnectRegistrationBroker().registerRemote(username, token, project.getUuid(), type, description);
-        log.info(String.format("Server registered to %s for project %s\nType: %s\nDescription: %s", username, project,
+        log.info(String.format("Server registered to {} for project {}\nType: {}\nDescription: {}", username, project,
                 type, description));
         return true;
     }
@@ -1822,7 +1822,7 @@ public abstract class NuxeoLauncher {
         } else {
             oldValues = configurationGenerator.setProperties(template, changedParameters);
         }
-        log.debug("Old values: " + oldValues);
+        log.debug("Old values: {}", oldValues);
     }
 
     /**
@@ -1852,7 +1852,7 @@ public abstract class NuxeoLauncher {
             startCommand.addAll(Arrays.asList(params));
             ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
             pb.directory(configurationGenerator.getNuxeoHome());
-            log.debug("Pack command: " + pb.command());
+            log.debug("Pack command: {}", pb::command);
             Process process = pb.start();
             ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(process, true);
             Thread.sleep(100);
@@ -1877,7 +1877,7 @@ public abstract class NuxeoLauncher {
             return false;
         }
         if (isRunning()) {
-            log.error("Server already running. " + "Please stop it before calling \"wizard\" command "
+            log.error("Server already running. Please stop it before calling \"wizard\" command "
                     + "or use the Admin Center instead of the wizard.");
             return false;
         }
@@ -1896,7 +1896,7 @@ public abstract class NuxeoLauncher {
     public boolean doStartAndWait() throws PackageException {
         boolean started = doStartAndWait(false);
         if (started && !quiet) {
-            log.info("Go to " + getURL());
+            log.info("Go to {}", this::getURL);
         }
         return started;
     }
@@ -1917,7 +1917,7 @@ public abstract class NuxeoLauncher {
     public boolean doStart() throws PackageException {
         boolean started = doStart(false);
         if (started && !quiet) {
-            log.info("Go to " + getURL());
+            log.info("Go to {}", this::getURL);
         }
         return started;
     }
@@ -1962,7 +1962,7 @@ public abstract class NuxeoLauncher {
         long startTime = new Date().getTime();
         int startMaxWait = Integer.parseInt(
                 configurationGenerator.getUserConfig().getProperty(START_MAX_WAIT_PARAM, getDefaultMaxWait()));
-        log.debug("Will wait for effective start during " + startMaxWait + " seconds.");
+        log.debug("Will wait for effective start during {} seconds.", startMaxWait);
         final StringBuilder startSummary = new StringBuilder();
         final String newLine = System.getProperty("line.separator");
         boolean isReady = false;
@@ -2061,9 +2061,9 @@ public abstract class NuxeoLauncher {
 
             if (configurationGenerator.isWizardRequired()) {
                 if (!configurationGenerator.isForceGeneration()) {
-                    log.error("Cannot start setup wizard with " + ConfigurationGenerator.PARAM_FORCE_GENERATION
-                            + "=false. Either set it to true or once, either set "
-                            + ConfigurationGenerator.PARAM_WIZARD_DONE + "=true to skip the wizard.");
+                    log.error(
+                            "Cannot start setup wizard with {}=false. Either set it to true or once, either set {}=true to skip the wizard.",
+                            ConfigurationGenerator.PARAM_FORCE_GENERATION, ConfigurationGenerator.PARAM_WIZARD_DONE);
                     errorValue = EXIT_CODE_NOT_CONFIGURED;
                     return false;
                 }
@@ -2082,10 +2082,10 @@ public abstract class NuxeoLauncher {
                 if (!getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
                         ignoreMissing)) {
                     errorValue = EXIT_CODE_ERROR;
-                    log.error(String.format(
+                    log.error(
                             "Start interrupted due to failure on pending actions. You can resume with a new start;"
-                                    + " or you can restore the file '%s', optionally using the '--%s' option.",
-                            configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING));
+                                    + " or you can restore the file '{}', optionally using the '--{}' option.",
+                            configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING);
                     return false;
                 }
 
@@ -2106,11 +2106,11 @@ public abstract class NuxeoLauncher {
             }
         } catch (ConfigurationException e) {
             errorValue = EXIT_CODE_NOT_CONFIGURED;
-            log.error("Could not run configuration: " + e.getMessage());
+            log.error("Could not run configuration: {}", e::getMessage);
             log.debug(e, e);
         } catch (IOException e) {
             errorValue = EXIT_CODE_ERROR;
-            log.error("Could not start process: " + e.getMessage());
+            log.error("Could not start process: {}", e::getMessage);
             log.debug(e, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -2135,7 +2135,7 @@ public abstract class NuxeoLauncher {
                     PackageInfo.class, MessageInfo.class);
             printXMLOutput(jaxbContext, cset);
         } catch (JAXBException e) {
-            log.error("Output serialization failed: " + e.getMessage(), e);
+            log.error("Output serialization failed: {}", e.getMessage(), e);
             errorValue = EXIT_CODE_NOT_RUNNING;
         }
     }
@@ -2147,7 +2147,7 @@ public abstract class NuxeoLauncher {
         try {
             printXMLOutput(jaxbContext, objectToOutput, System.out);
         } catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
-            log.error("Output serialization failed: " + e.getMessage(), e);
+            log.error("Output serialization failed: {}", e.getMessage(), e);
             errorValue = EXIT_CODE_NOT_RUNNING;
         }
     }
@@ -2271,7 +2271,7 @@ public abstract class NuxeoLauncher {
                 stopCommand.addAll(Arrays.asList(params));
                 ProcessBuilder pb = new ProcessBuilder(getOSCommand(stopCommand));
                 pb.directory(configurationGenerator.getNuxeoHome());
-                log.debug("Server command: " + pb.command());
+                log.debug("Server command: {}", pb::command);
                 try {
                     Process stopProcess = pb.start();
                     ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(stopProcess, logProcessOutput);
@@ -2322,7 +2322,7 @@ public abstract class NuxeoLauncher {
             if (getPid() == null) {
                 log.warn("Server stopped.");
             } else {
-                log.info("No answer from server, try to kill process " + pid + "...");
+                log.info("No answer from server, try to kill process {}...", pid);
                 processManager.kill(nuxeoProcess, pid);
                 if (getPid() == null) {
                     log.warn("Server forcibly stopped.");
@@ -2337,7 +2337,7 @@ public abstract class NuxeoLauncher {
 
     private String getPid() throws IOException {
         pid = processManager.findPid(processRegex);
-        log.debug("regexp: " + processRegex + " pid:" + pid);
+        log.debug("regexp: {} pid: {}", processRegex, pid);
         return pid;
     }
 
@@ -2443,7 +2443,7 @@ public abstract class NuxeoLauncher {
         // Use GUI?
         if (cmdLine.hasOption(OPTION_GUI)) {
             useGui = Boolean.parseBoolean(ConnectBroker.parseAnswer(cmdLine.getOptionValue(OPTION_GUI)));
-            log.debug("GUI: " + cmdLine.getOptionValue(OPTION_GUI) + " -> " + useGui);
+            log.debug("GUI: {} -> {}", () -> cmdLine.getOptionValue(OPTION_GUI), () -> useGui);
         } else if (OPTION_GUI.equalsIgnoreCase(command)) {
             useGui = true;
             // Shift params and extract command if there is one
@@ -2479,13 +2479,11 @@ public abstract class NuxeoLauncher {
     private void extractCommandAndParams(String[] args) {
         if (args.length > 0) {
             command = args[0];
-            log.debug("Launcher command: " + command);
+            log.debug("Launcher command: {}", command);
             // Command parameters
             if (args.length > 1) {
                 params = Arrays.copyOfRange(args, 1, args.length);
-                if (log.isDebugEnabled()) {
-                    log.debug("Command parameters: " + ArrayUtils.toString(params));
-                }
+                log.debug("Command parameters: {}", () -> ArrayUtils.toString(params));
             } else {
                 params = new String[0];
             }
@@ -2728,7 +2726,7 @@ public abstract class NuxeoLauncher {
         try {
             printInstanceXMLOutput(instance, System.out);
         } catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
-            log.error("Output serialization failed: " + e.getMessage());
+            log.error("Output serialization failed: {}", e::getMessage);
             log.debug(e, e);
             errorValue = EXIT_CODE_NOT_RUNNING;
         }
@@ -2746,39 +2744,39 @@ public abstract class NuxeoLauncher {
      */
     protected void showConfig() {
         log.info("***** Nuxeo instance configuration *****");
-        log.info("NUXEO_CONF: " + info.NUXEO_CONF);
-        log.info("NUXEO_HOME: " + info.NUXEO_HOME);
+        log.info("NUXEO_CONF: {}", info.NUXEO_CONF);
+        log.info("NUXEO_HOME: {}", info.NUXEO_HOME);
         if (info.clid != null) {
-            log.info("Instance CLID: " + info.clid);
+            log.info("Instance CLID: {}", info.clid);
         }
         // distribution.properties
         log.info("** Distribution");
-        log.info("- name: " + info.distribution.name);
-        log.info("- server: " + info.distribution.server);
-        log.info("- version: " + info.distribution.version);
-        log.info("- date: " + info.distribution.date);
-        log.info("- packaging: " + info.distribution.packaging);
+        log.info("- name: {}", info.distribution.name);
+        log.info("- server: {}", info.distribution.server);
+        log.info("- version: {}", info.distribution.version);
+        log.info("- date: {}", info.distribution.date);
+        log.info("- packaging: {}", info.distribution.packaging);
         // packages
         log.info("** Packages:");
         for (PackageInfo pkg : info.packages) {
-            log.info(String.format("- %s (version: %s - id: %s - state: %s)", pkg.name, pkg.version, pkg.id,
-                    pkg.state.getLabel()));
+            log.info("- {} (version: {} - id: {}} - state: {})", pkg.name, pkg.version, pkg.id,
+                    pkg.state.getLabel());
         }
         // nuxeo.conf
         log.info("** Templates:");
-        log.info("Database template: " + info.config.dbtemplate);
+        log.info("Database template: {}", info.config.dbtemplate);
         for (String template : info.config.pkgtemplates) {
-            log.info("Package template: " + template);
+            log.info("Package template: {}", template);
         }
         for (String template : info.config.usertemplates) {
-            log.info("User template: " + template);
+            log.info("User template: {}", template);
         }
         for (String template : info.config.basetemplates) {
-            log.info("Base template: " + template);
+            log.info("Base template: {}", template);
         }
         log.info("** Settings from nuxeo.conf:");
         for (KeyValueInfo keyval : info.config.keyvals) {
-            log.info(String.format("%s=%s", keyval.key, keyval.value));
+            log.info("{}={}", keyval.key, keyval.value);
         }
         log.info("****************************************");
         if (xmlOutput) {

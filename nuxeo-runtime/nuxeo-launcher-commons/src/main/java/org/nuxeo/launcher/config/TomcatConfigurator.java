@@ -25,12 +25,16 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
 
 /**
  * @author jcarsique
  */
 public class TomcatConfigurator extends ServerConfigurator {
+
+    private static final Logger log = LogManager.getLogger(TomcatConfigurator.class);
 
     /**
      * @since 5.4.2
@@ -145,17 +149,17 @@ public class TomcatConfigurator extends ServerConfigurator {
             try {
                 FileUtils.deleteDirectory(nuxeoWAR);
             } catch (IOException e) {
-                log.error("Could not delete " + nuxeoWAR, e);
+                log.error("Could not delete {}", nuxeoWAR, e);
             }
         }
         nuxeoWAR = new File(nuxeoWAR.getPath() + ".war");
         if (nuxeoWAR.exists()) {
             if (!FileUtils.deleteQuietly(nuxeoWAR)) {
-                log.warn("Could not delete " + nuxeoWAR);
+                log.warn("Could not delete {}", nuxeoWAR);
                 try {
                     nuxeoWAR.deleteOnExit();
                 } catch (SecurityException e) {
-                    log.warn("Cannot delete " + nuxeoWAR);
+                    log.warn("Cannot delete {}", nuxeoWAR);
                 }
             }
         }
