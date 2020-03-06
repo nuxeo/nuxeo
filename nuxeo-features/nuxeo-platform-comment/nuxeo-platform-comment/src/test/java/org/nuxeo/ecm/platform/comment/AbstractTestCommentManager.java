@@ -309,6 +309,34 @@ public abstract class AbstractTestCommentManager {
         assertTrue(comments.isEmpty());
     }
 
+    /*
+     * NXP-28719
+     */
+    @Test
+    public void testCreateCommentsUnderPlacelessDocument() {
+        DocumentModel anyFile = session.createDocumentModel(null, "anyFile", "File");
+        anyFile = session.createDocument(anyFile);
+        transactionalFeature.nextTransaction();
+
+        // first comment
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(anyFile.getId());
+
+        comment = commentManager.createComment(session, comment);
+        assertEquals(author, comment.getAuthor());
+        assertEquals(text, comment.getText());
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
+        assertNotNull(commentDocModel.getParentRef());
+        DocumentModel commentParent = session.getDocument(commentDocModel.getParentRef());
+        assertNotNull(commentParent.getParentRef());
+        assertTrue(commentParent.hasFacet("Folderish"));
+        assertTrue(commentParent.hasFacet("HiddenInNavigation"));
+    }
+
     @Test
     public void testCommentManagerType() {
         assertEquals(getType(), commentManager.getClass());
