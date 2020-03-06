@@ -22,7 +22,6 @@
       <create-view>create_domain</create-view>
       <views>
         <view id="user_dashboard" value="user_dashboard" />
-        <view id="opensocial_dashboard" value="opensocial_dashboard" />
       </views>
     </type>
 

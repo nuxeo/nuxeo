@@ -43,17 +43,6 @@ mail.transport.password=password
 # The address mail will be from
 mail.from=noreply@nuxeo.com
 
-opensocial.gadgets.embeddedServer=true
-opensocial.gadgets.host=localhost
-opensocial.gadgets.port=8080
-opensocial.gadgets.path=/site/gadgets
-opensocial.proxy.proxySet=false
-opensocial.proxy.proxyHost=
-opensocial.proxy.proxyPort=
-opensocial.proxy.user=
-opensocial.proxy.password=
-opensocial.trusted.hosts=
-
 # Clustering
 repository.clustering.enabled=false
 repository.clustering.delay=1000
