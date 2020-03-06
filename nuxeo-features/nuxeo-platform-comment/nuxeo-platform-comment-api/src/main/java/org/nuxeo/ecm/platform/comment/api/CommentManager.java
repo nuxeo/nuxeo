@@ -350,17 +350,4 @@ public interface CommentManager {
      */
      DocumentRef getTopLevelDocumentRef(CoreSession session, DocumentRef commentRef);
 
-    /**
-     * Returns the comments location in repository for the given commented document model.
-     *
-     * @param session the session needs to be privileged
-     * @return the comments location in repository for the given commented document model.
-     * @apiNote This is dedicated to an internal usage (comment service/migration)
-     * @since 11.1
-     */
-    default String getLocationOfCommentCreation(CoreSession session, DocumentModel commentedDocModel) {
-        throw new UnsupportedOperationException();
-    }
-
-
 }

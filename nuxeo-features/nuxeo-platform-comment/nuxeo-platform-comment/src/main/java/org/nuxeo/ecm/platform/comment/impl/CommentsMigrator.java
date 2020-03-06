@@ -52,11 +52,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.migrator.AbstractRepositoryMigrator;
 import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.service.CommentService;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceHelper;
@@ -201,9 +199,9 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
         // For migration purpose and to avoid any duplication, we should rely mainly on `TreeCommentManager`
         // For 10.10 (backward compatibility) Framework.getService(CommentManager.class) will return
         // `PropertyCommentManager` the new location should be computed by the `TreeCommentManager`
-        CommentManager commentManager = new TreeCommentManager();
+        TreeCommentManager treeCommentManager = new TreeCommentManager();
         processBatched(migrationContext, BATCH_SIZE, comments,
-                comment -> migrateCommentsFromPropertyToSecured(session, commentManager, new IdRef(comment)),
+                comment -> migrateCommentsFromPropertyToSecured(session, treeCommentManager, new IdRef(comment)),
                 "Migrating comments from Property to Secured");
 
         // All comments were migrated, now we can delete the empty folders
@@ -242,7 +240,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
     /**
      * @since 11.1
      */
-    protected void migrateCommentsFromPropertyToSecured(CoreSession session, CommentManager commentManager,
+    protected void migrateCommentsFromPropertyToSecured(CoreSession session, TreeCommentManager treeCommentManager,
             IdRef commentIdRef) {
         DocumentModel commentDoc = session.getDocument(commentIdRef);
         String parentId = (String) commentDoc.getPropertyValue(COMMENT_PARENT_ID);
@@ -263,7 +261,7 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
 
         DocumentModel parentDoc = session.getDocument(parentDocRef);
 
-        DocumentRef destination = new PathRef(commentManager.getLocationOfCommentCreation(session, parentDoc));
+        DocumentRef destination = treeCommentManager.getLocationRefOfCommentCreation(session, parentDoc);
 
         // Move the commentIdRef under the new destination (under the `Comments` folder in the case of the first comment
         // or under the comment itself in the case of reply)
@@ -274,8 +272,11 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
 
         // Strip ACLs
         ACP acp = session.getACP(commentIdRef);
-        acp.removeACL(LOCAL_ACL);
-        session.setACP(commentIdRef, acp, true);
+        // Case where a comment is on a placeless document which has no acp
+        if (acp != null) {
+            acp.removeACL(LOCAL_ACL);
+            session.setACP(commentIdRef, acp, true);
+        }
 
         session.saveDocument(commentDoc);
         session.save();
