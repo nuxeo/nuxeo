@@ -41,12 +41,6 @@ nuxeo.mongodb.server=
 nuxeo.notification.eMailSubjectPrefix=[Nuxeo]
 nuxeo.notification.eMailSigner=The Nuxeo team
 
-opensocial.gadgets.embeddedServer=true
-opensocial.gadgets.host=localhost
-opensocial.gadgets.port=8080
-opensocial.gadgets.path=/site/gadgets
-opensocial.trusted.hosts=
-
 # Clustering
 # use an empty value instead of just false to allow for backward compatibility when repository.clustering.enabled is defined
 nuxeo.cluster.enabled=

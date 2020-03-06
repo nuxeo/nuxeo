@@ -1,6 +1,5 @@
 <component name="MyAPP.Cas2SSO">
   <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
-  <require>org.nuxeo.opensocial.OAuthFilter</require>
   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
   <require>org.nuxeo.ecm.platform.login.Cas2SSO</require>
   <require>org.nuxeo.ecm.platform.login.Portal</require>
