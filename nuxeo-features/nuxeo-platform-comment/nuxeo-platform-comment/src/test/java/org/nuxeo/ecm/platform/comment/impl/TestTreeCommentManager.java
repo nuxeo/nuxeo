@@ -32,6 +32,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.GET_COMMENT_PAGE_PROVIDER_NAME;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_PARENT_ID;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
@@ -595,6 +596,64 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         PageProvider<?> pageProvider = ppService.getPageProvider(GET_COMMENT_PAGE_PROVIDER_NAME,
                 Collections.emptyList(), 10L, 0L, props, "foo");
         assertEquals(1, pageProvider.getCurrentPageSize());
+    }
+
+    /*
+     * NXP-28719
+     */
+    @Test
+    public void testCreateCommentsAndRepliesUnderPlacelessDocument() {
+        DocumentModel anyFile = session.createDocumentModel(null, "anyFile", "File");
+        anyFile = session.createDocument(anyFile);
+        transactionalFeature.nextTransaction();
+
+        // first comment
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(anyFile.getId());
+
+        comment = commentManager.createComment(session, comment);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
+        DocumentModel ecmCommentParent = session.getDocument(commentDocModel.getParentRef());
+
+        assertNotNull(commentDocModel.getParentRef());
+        assertEquals(anyFile.getId(), commentDocModel.getPropertyValue(COMMENT_PARENT_ID));
+        assertTrue(ecmCommentParent.hasFacet("Folderish"));
+        assertTrue(ecmCommentParent.hasFacet("HiddenInNavigation"));
+        assertEquals(ecmCommentParent.getRef(), commentDocModel.getParentRef());
+        assertEquals("anyFile/Comments", ecmCommentParent.getPathAsString());
+
+        // a reply
+        text = "I am a reply !";
+        Comment reply = new CommentImpl();
+        reply.setAuthor(author);
+        reply.setText(text);
+        reply.setParentId(comment.getId());
+
+        reply = commentManager.createComment(session, reply);
+        DocumentModel replyDocModel = session.getDocument(new IdRef(reply.getId()));
+        assertEquals(comment.getId(), commentDocModel.getId());
+        assertEquals(comment.getId(), replyDocModel.getPropertyValue(COMMENT_PARENT_ID));
+        assertEquals(COMMENT_DOC_TYPE, session.getDocument(replyDocModel.getParentRef()).getType());
+        assertEquals( //
+                String.format("anyFile/Comments/%s/%s", commentDocModel.getTitle(), replyDocModel.getTitle()),
+                replyDocModel.getPathAsString());
+
+        // another reply
+        text = "I am a reply !";
+        Comment reply2 = new CommentImpl();
+        reply2.setAuthor(author);
+        reply2.setText(text);
+        reply2.setParentId(reply.getId());
+        reply2 = commentManager.createComment(session, reply2);
+        DocumentModel reply2DocModel = session.getDocument(new IdRef(reply2.getId()));
+        assertEquals(COMMENT_DOC_TYPE, session.getDocument(reply2DocModel.getParentRef()).getType());
+        String replyDocPath = String.format("anyFile/Comments/%s/%s/%s", //
+                commentDocModel.getTitle(), replyDocModel.getTitle(), reply2DocModel.getTitle());
+        assertEquals(replyDocPath, reply2DocModel.getPathAsString());
     }
 
     /**
