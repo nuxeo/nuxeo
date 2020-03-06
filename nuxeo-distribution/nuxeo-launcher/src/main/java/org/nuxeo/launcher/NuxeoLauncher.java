@@ -386,17 +386,13 @@ public abstract class NuxeoLauncher {
 
     private static final long STREAM_MAX_WAIT = 3000;
 
-    private static final String PACK_TOMCAT_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackWar";
-
-    private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
-
     private static final String[] COMMANDS_NO_GUI = { "configure", "mp-purge", "mp-add", "mp-install", "mp-uninstall",
             "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall", "mp-update",
             "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP, "register",
             "register-trial" };
 
-    private static final String[] COMMANDS_NO_RUNNING_SERVER = { "pack", "mp-purge", "mp-add", "mp-install",
-            "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
+    private static final String[] COMMANDS_NO_RUNNING_SERVER = { "mp-purge", "mp-add", "mp-install", "mp-uninstall",
+            "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
 
     /**
      * @since 7.4
@@ -585,8 +581,7 @@ public abstract class NuxeoLauncher {
             + "        nuxeoctl register --clid <arg>\n"
             + "                Register an instance according to the given CLID file.\n\n"
             + "        nuxeoctl register --renew [--clid <arg>]\n"
-            + "                Renew an instance registration with Nuxeo Online Services.\n\n"
-            + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" //
+            + "                Renew an instance registration with Nuxeo Online Services.\n\n" //
             + "OPTIONS";
 
     private static final String OPTION_HELP_FOOTER = "\nSee online documentation \"ADMINDOC/nuxeoctl and Control Panel Usage\": https://doc.nuxeo.com/x/FwNc";
@@ -1199,8 +1194,6 @@ public abstract class NuxeoLauncher {
             commandSucceeded = launcher.doStartAndWait();
         } else if (launcher.commandIs("configure")) {
             launcher.configure();
-        } else if (launcher.commandIs("pack")) {
-            launcher.pack();
         } else if (launcher.commandIs("mp-list")) {
             launcher.pkgList();
         } else if (launcher.commandIs("mp-listall")) {
@@ -1816,52 +1809,6 @@ public abstract class NuxeoLauncher {
             oldValues = configurationGenerator.setProperties(template, changedParameters);
         }
         log.debug("Old values: {}", oldValues);
-    }
-
-    /**
-     * Since 5.5
-     */
-    protected boolean pack() {
-        try {
-            configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED, "true");
-            List<String> startCommand = new ArrayList<>();
-            startCommand.add(getJavaExecutable().getPath());
-            startCommand.addAll(getJavaOptsProperty(Function.identity()));
-            startCommand.add("-cp");
-            String classpath = getClassPath();
-            classpath = addToClassPath(classpath, "bin" + File.separator + "nuxeo-launcher.jar");
-            classpath = getClassPath(classpath, configurationGenerator.getServerConfigurator().getServerLibDir());
-            classpath = getClassPath(classpath, configurationGenerator.getServerConfigurator().getNuxeoLibDir());
-            classpath = getClassPath(classpath, new File(configurationGenerator.getRuntimeHome(), "bundles"));
-            startCommand.add(classpath);
-            startCommand.addAll(getNuxeoProperties());
-            if (configurationGenerator.isTomcat) {
-                startCommand.add(PACK_TOMCAT_CLASS);
-            } else {
-                errorValue = EXIT_CODE_ERROR;
-                return false;
-            }
-            startCommand.add(configurationGenerator.getRuntimeHome().getPath());
-            startCommand.addAll(Arrays.asList(params));
-            ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
-            pb.directory(configurationGenerator.getNuxeoHome());
-            log.debug("Pack command: {}", pb::command);
-            Process process = pb.start();
-            ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(process, true);
-            Thread.sleep(100);
-            process.waitFor();
-            waitForProcessStreams(sgArray);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            errorValue = EXIT_CODE_ERROR;
-            log.error("Could not start process", e);
-        } catch (ConfigurationException e) {
-            errorValue = EXIT_CODE_ERROR;
-            log.error(e);
-        }
-        return errorValue == EXIT_CODE_OK;
     }
 
     /**

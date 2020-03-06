@@ -64,7 +64,6 @@ Ant usage: `ant package`
  * nuxeo-server-tests: Functional tests on Nuxeo Server
  * nuxeo-server-tomcat: Nuxeo Server packaged with Tomcat
  * nuxeo-test-dependencies: Convenient helper POM listing the Nuxeo test dependencies
- * nuxeo-war-tests: Functional tests on Nuxeo (static) WAR
 
 ## Produced packages
 
