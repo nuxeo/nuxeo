@@ -22,7 +22,6 @@
     <module>nuxeo-server-tests</module>
     <module>nuxeo-server-hotreload-tests</module>
     <module>nuxeo-server-gatling-tests</module>
-    <module>nuxeo-war-tests</module>
   </modules>
 
   <profiles>
