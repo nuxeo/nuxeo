@@ -829,6 +829,53 @@ public class TestPropertyCommentManager extends AbstractTestCommentManager {
         assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
     }
 
+    /*
+     * NXP-28719
+     */
+    @Test
+    public void testCreateCommentsAndRepliesUnderPlacelessDocument() {
+        DocumentModel anyFile = session.createDocumentModel(null, "anyFile", "File");
+        anyFile = session.createDocument(anyFile);
+        transactionalFeature.nextTransaction();
+
+        // first comment
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(anyFile.getId());
+
+        comment = commentManager.createComment(session, comment);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
+        DocumentModel ecmCommentParent = session.getDocument(commentDocModel.getParentRef());
+
+        assertNotNull(commentDocModel.getParentRef());
+        assertEquals(anyFile.getId(), commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY));
+        assertTrue(ecmCommentParent.hasFacet("Folderish"));
+        assertTrue(ecmCommentParent.hasFacet("HiddenInNavigation"));
+        assertEquals(ecmCommentParent.getRef(), commentDocModel.getParentRef());
+        assertEquals("/Comments", ecmCommentParent.getPathAsString());
+
+        // a reply
+        text = "I am a reply !";
+        Comment reply = new CommentImpl();
+        reply.setAuthor(author);
+        reply.setText(text);
+        reply.setParentId(comment.getId());
+
+        reply = commentManager.createComment(session, reply);
+        DocumentModel replyDocModel = session.getDocument(new IdRef(reply.getId()));
+        assertEquals(comment.getId(), commentDocModel.getId());
+        assertEquals(comment.getId(), replyDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY));
+        ecmCommentParent = session.getDocument(replyDocModel.getParentRef());
+        assertTrue(ecmCommentParent.hasFacet("Folderish"));
+        assertTrue(ecmCommentParent.hasFacet("HiddenInNavigation"));
+        // PropertyCommentManager in the case of placeless will create this hierarchy
+        assertEquals("/Comments/Comments", ecmCommentParent.getPathAsString());
+    }
+
+
     protected DocumentModel createTestFileAndUser(String user) {
         DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
         domain = session.createDocument(domain);

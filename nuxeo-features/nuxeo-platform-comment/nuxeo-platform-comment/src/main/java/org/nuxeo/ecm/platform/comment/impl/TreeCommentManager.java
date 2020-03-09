@@ -167,9 +167,9 @@ public class TreeCommentManager extends AbstractCommentManager {
         return CoreInstance.doPrivileged(session, s -> {
             DocumentModel commentedDoc = s.getDocument(parentRef);
             // Get the location where comment will be stored
-            String path = getLocationOfCommentCreation(s, commentedDoc);
+            DocumentRef locationDocRef = getLocationRefOfCommentCreation(s, commentedDoc);
 
-            DocumentModel commentDoc = s.createDocumentModel(path, COMMENT_NAME, comment.getDocument().getType());
+            DocumentModel commentDoc = s.newDocumentModel(locationDocRef, COMMENT_NAME, comment.getDocument().getType());
             if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
                 commentDoc.addFacet(EXTERNAL_ENTITY_FACET);
             }
@@ -200,9 +200,9 @@ public class TreeCommentManager extends AbstractCommentManager {
 
         return CoreInstance.doPrivileged(commentDoc.getCoreSession(), session -> {
             // Get the location to store the comment
-            String path = getLocationOfCommentCreation(session, commentedDoc);
+            DocumentRef locationDocRef = getLocationRefOfCommentCreation(session, commentedDoc);
 
-            DocumentModel commentModelToCreate = session.createDocumentModel(path, COMMENT_NAME, commentDoc.getType());
+            DocumentModel commentModelToCreate = session.newDocumentModel(locationDocRef, COMMENT_NAME, commentDoc.getType());
             commentModelToCreate.copyContent(commentDoc);
 
             // Should compute ancestors and set comment:parentId for backward compatibility
@@ -308,21 +308,26 @@ public class TreeCommentManager extends AbstractCommentManager {
         throw new UnsupportedOperationException(SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE);
     }
 
-    @Override
-    public String getLocationOfCommentCreation(CoreSession session, DocumentModel commentedDoc) {
+    /**
+     * Returns the {@link DocumentRef} of the comments location in repository for the given commented document model.
+     *
+     * @param session the session needs to be privileged
+     * @return the document model container of the comments of the given {@code commentedDoc}
+     * @since 11.1
+     */
+    protected DocumentRef getLocationRefOfCommentCreation(CoreSession session, DocumentModel commentedDoc) {
         if (commentedDoc.hasSchema(COMMENT_SCHEMA)) {
             // reply case, store the reply under the comment
-            return commentedDoc.getPathAsString();
-        } else {
-            // regular document case, store the comment under a CommentRoot folder under the regular document
-            DocumentModel commentsFolder = session.createDocumentModel(commentedDoc.getPathAsString(),
-                    COMMENTS_DIRECTORY_NAME, COMMENT_ROOT_DOC_TYPE);
-            // no need to notify the creation of the Comments folder
-            commentsFolder.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
-            commentsFolder = session.getOrCreateDocument(commentsFolder);
-            session.save();
-            return commentsFolder.getPathAsString();
+            return commentedDoc.getRef();
         }
+        // regular document case, store the comment under a CommentRoot folder under the regular document
+        DocumentModel commentsFolder = session.newDocumentModel(commentedDoc.getRef(), COMMENTS_DIRECTORY_NAME,
+                COMMENT_ROOT_DOC_TYPE);
+        // no need to notify the creation of the Comments folder
+        commentsFolder.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
+        commentsFolder = session.getOrCreateDocument(commentsFolder);
+        session.save();
+        return commentsFolder.getRef();
     }
 
     @Override
@@ -336,11 +341,12 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     @Override
     protected DocumentModel getTopLevelDocument(CoreSession session, DocumentModel commentDoc) {
-        DocumentModel documentModel = commentDoc;
-        while (documentModel.hasSchema(COMMENT_SCHEMA) || COMMENT_ROOT_DOC_TYPE.equals(documentModel.getType())) {
-            documentModel = session.getDocument(documentModel.getParentRef());
+        DocumentModel docModel = commentDoc;
+        while (docModel.getParentRef() != null
+                && (docModel.hasSchema(COMMENT_SCHEMA) || COMMENT_ROOT_DOC_TYPE.equals(docModel.getType()))) {
+            docModel = session.getDocument(docModel.getParentRef());
         }
-        return documentModel;
+        return docModel;
     }
 
     /**
