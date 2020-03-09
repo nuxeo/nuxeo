@@ -259,8 +259,11 @@ public class CommentsMigrator extends AbstractRepositoryMigrator {
 
         // Strip ACLs
         ACP acp = session.getACP(commentIdRef);
-        acp.removeACL(LOCAL_ACL);
-        session.setACP(commentIdRef, acp, true);
+        // Case where a comment is on a placeless document which has no acp
+        if (acp != null) {
+            acp.removeACL(LOCAL_ACL);
+            session.setACP(commentIdRef, acp, true);
+        }
 
         session.saveDocument(commentDoc);
         session.save();
