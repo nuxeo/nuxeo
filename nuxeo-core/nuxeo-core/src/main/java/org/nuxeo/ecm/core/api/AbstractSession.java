@@ -616,12 +616,16 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     private DocumentModel createDocumentModelFromTypeName(String typeName, Map<String, Serializable> options) {
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        DocumentType docType = schemaManager.getDocumentType(typeName);
+        return createDocumentModelFromParentAndType(null, typeName, options);
+    }
+
+    private DocumentModel createDocumentModelFromParentAndType(DocumentRef parentRef, String typeName,
+            Map<String, Serializable> options) {
+        DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(typeName);
         if (docType == null) {
             throw new IllegalArgumentException(typeName + " is not a registered core type");
         }
-        DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType);
+        DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType, parentRef);
         if (options == null) {
             options = new HashMap<>();
         } else if (options.containsKey(CoreEventConstants.PARENT_PATH)
@@ -2671,6 +2675,20 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
             return postCreate.apply(createDocument(docModel));
         });
+    }
+
+    @Override
+    public DocumentModel newDocumentModel(DocumentRef parentRef, String name, String typeName) {
+        if (parentRef == null && name == null) {
+            return createDocumentModel(typeName);
+        }
+
+        String parentPath = parentRef == null ? null : resolveReference(parentRef).getPath();
+        Map<String, Serializable> options = new HashMap<>();
+        options.put(CoreEventConstants.PARENT_PATH, parentPath);
+        options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
+        options.put(CoreEventConstants.DESTINATION_NAME, name);
+        return createDocumentModelFromParentAndType(parentRef, typeName, options);
     }
 
     protected String computeKeyForAtomicCreation(DocumentModel docModel) {

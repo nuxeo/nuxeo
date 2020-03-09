@@ -478,6 +478,22 @@ public interface CoreSession {
     DocumentModel createDocumentModel(String parentPath, String name, String typeName);
 
     /**
+     * Creates a new document model using required information.
+     * <p>
+     * Used to fetch initial datamodels from the type definition.
+     * <p>
+     * DocumentModel creation notifies a {@link DocumentEventTypes#EMPTY_DOCUMENTMODEL_CREATED} so that core event
+     * listener can initialize its content with computed properties.
+     *
+     * @param parentRef the parent document ref {@link DocumentRef}
+     * @param name The destination name
+     * @param typeName the type name
+     * @return the initial document model
+     * @since 11.1
+     */
+    DocumentModel newDocumentModel(DocumentRef parentRef, String name, String typeName);
+
+    /**
      * Creates a document model using required information.
      * <p>
      * Used to fetch initial datamodels from the type definition.
