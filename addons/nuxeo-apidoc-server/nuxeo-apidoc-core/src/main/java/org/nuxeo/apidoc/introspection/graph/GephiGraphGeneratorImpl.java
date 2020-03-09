@@ -47,11 +47,9 @@ public class GephiGraphGeneratorImpl extends BundleGraphGeneratorImpl {
 
     @Override
     public Graph getGraph(DistributionSnapshot distribution) {
-        GraphImpl graph = (GraphImpl) super.getGraph(distribution);
-        graph = (GraphImpl) GephiLayout.getLayout(graph);
+        Graph graph = super.getGraph(distribution);
 
         // build the rest of the tree on top of that, adjusting positions
-
         Map<String, Integer> hits = new HashMap<>();
 
         for (String bid : distribution.getBundleIds()) {

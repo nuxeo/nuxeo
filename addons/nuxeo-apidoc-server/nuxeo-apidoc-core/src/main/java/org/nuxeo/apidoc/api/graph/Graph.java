@@ -64,6 +64,8 @@ public interface Graph extends NuxeoArtifact {
 
     void addEdge(Edge edge);
 
+    void addNode(Node node);
+
     Node getNode(String nodeId);
 
     List<Node> getNodes();

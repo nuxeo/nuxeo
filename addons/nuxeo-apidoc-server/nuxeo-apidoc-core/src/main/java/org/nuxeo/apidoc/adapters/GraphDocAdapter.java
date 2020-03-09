@@ -130,6 +130,11 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
     }
 
     @Override
+    public void addNode(Node node) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void addEdge(Edge edge) {
         throw new UnsupportedOperationException();
     }
