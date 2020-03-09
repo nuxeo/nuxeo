@@ -1,5 +1,7 @@
 {
-  "id" : "basic",
+  "name" : "basic",
+  "title" : null,
+  "description" : "basic",
   "type" : "BASIC",
   "nodes" : [ {
     "originalId" : "NXBundle-org.nuxeo.apidoc.core",
