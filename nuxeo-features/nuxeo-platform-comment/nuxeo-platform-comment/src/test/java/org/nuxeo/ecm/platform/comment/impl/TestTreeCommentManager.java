@@ -35,6 +35,7 @@ import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_RESOURCES;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.COMMENT_RELATED_TEXT_ID;
 import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.GET_COMMENT_PAGE_PROVIDER_NAME;
@@ -603,6 +604,64 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(1, pageProvider.getCurrentPageSize());
     }
 
+    /*
+     * NXP-28719
+     */
+    @Test
+    public void testCreateCommentsAndRepliesUnderPlacelessDocument() {
+        DocumentModel anyFile = session.createDocumentModel(null, "anyFile", "File");
+        anyFile = session.createDocument(anyFile);
+        transactionalFeature.nextTransaction();
+
+        // first comment
+        String author = "toto";
+        String text = "I am a comment !";
+        Comment comment = new CommentImpl();
+        comment.setAuthor(author);
+        comment.setText(text);
+        comment.setParentId(anyFile.getId());
+
+        comment = commentManager.createComment(session, comment);
+        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
+        DocumentModel ecmCommentParent = session.getDocument(commentDocModel.getParentRef());
+
+        assertNotNull(commentDocModel.getParentRef());
+        assertEquals(anyFile.getId(), commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY));
+        assertTrue(ecmCommentParent.hasFacet("Folderish"));
+        assertTrue(ecmCommentParent.hasFacet("HiddenInNavigation"));
+        assertEquals(ecmCommentParent.getRef(), commentDocModel.getParentRef());
+        assertEquals("anyFile/Comments", ecmCommentParent.getPathAsString());
+
+        // a reply
+        text = "I am a reply !";
+        Comment reply = new CommentImpl();
+        reply.setAuthor(author);
+        reply.setText(text);
+        reply.setParentId(comment.getId());
+
+        reply = commentManager.createComment(session, reply);
+        DocumentModel replyDocModel = session.getDocument(new IdRef(reply.getId()));
+        assertEquals(comment.getId(), commentDocModel.getId());
+        assertEquals(comment.getId(), replyDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY));
+        assertEquals(COMMENT_DOC_TYPE, session.getDocument(replyDocModel.getParentRef()).getType());
+        assertEquals( //
+                String.format("anyFile/Comments/%s/%s", commentDocModel.getTitle(), replyDocModel.getTitle()),
+                replyDocModel.getPathAsString());
+
+        // another reply
+        text = "I am a reply !";
+        Comment reply2 = new CommentImpl();
+        reply2.setAuthor(author);
+        reply2.setText(text);
+        reply2.setParentId(reply.getId());
+        reply2 = commentManager.createComment(session, reply2);
+        DocumentModel reply2DocModel = session.getDocument(new IdRef(reply2.getId()));
+        assertEquals(COMMENT_DOC_TYPE, session.getDocument(reply2DocModel.getParentRef()).getType());
+        String replyDocPath = String.format("anyFile/Comments/%s/%s/%s", //
+                commentDocModel.getTitle(), replyDocModel.getTitle(), reply2DocModel.getTitle());
+        assertEquals(replyDocPath, reply2DocModel.getPathAsString());
+    }
+
     /**
      * Creates a new comment and check his data {@link #verifyCommonsInfo(DocumentModel, Comment, Comment, int)}
      *
@@ -797,7 +856,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         assertEquals(expectedRelatedText,
                 resources.stream().map(m -> m.get(RELATED_TEXT)).sorted().collect(Collectors.toList()));
     }
-    
+
     @Override
     public Class<? extends CommentManager> getType() {
         return TreeCommentManager.class;

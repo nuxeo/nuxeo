@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -142,6 +143,14 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
 
         assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
+    }
+
+    /*
+     * NXP-28719
+     */
+    @Test
+    @Ignore("Ignore this test since the comment implementation behind it is deprecated")
+    public void testCreateCommentsUnderPlacelessDocument() {
     }
 
     @Override

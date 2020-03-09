@@ -229,11 +229,6 @@ public class BridgeCommentManager extends AbstractCommentManager {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public String getLocationOfCommentCreation(CoreSession session, DocumentModel documentModel) {
-        return second.getLocationOfCommentCreation(session, documentModel);
-    }
-
     /**
      * Executes the given function for a comment document ref, depending on the types of comment managers.
      * <p>
