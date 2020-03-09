@@ -145,6 +145,9 @@ public class TestCommentsMigrator {
     // This file will be commented and then removed to simulate comments with removed parent
     protected DocumentModel fileToCommentAndRemove;
 
+    // A placeless commented document
+    protected DocumentModel placelessFileToComment;
+
     protected DocumentModel proxyFileToComment;
 
     @Before
@@ -168,6 +171,9 @@ public class TestCommentsMigrator {
         fileToCommentAndRemove = session.createDocumentModel(domain.getPathAsString(), "file4", "File");
         fileToCommentAndRemove = session.createDocument(fileToCommentAndRemove);
 
+        placelessFileToComment = session.createDocumentModel(null, "placelessFile", "File");
+        placelessFileToComment = session.createDocument(placelessFileToComment);
+
         // Create a proxy file
         proxyFileToComment = session.createProxy(secondFileToComment.getRef(), anotherDomain.getRef());
     }
@@ -189,10 +195,10 @@ public class TestCommentsMigrator {
         // Create comments as property on these files and add some reply
         // Total of comments:
         // NB_COMMENTS_BY_FILE*3 (files) + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 150 + 50
-        createCommentsAsProperty(false, false);
+        createCommentsAsProperty(false, false, false);
 
         // Second step of migrate: from 'Property' to 'Secured'
-        migrateFromPropertyToSecured(new CommentsMigrator(), false, false);
+        migrateFromPropertyToSecured(new CommentsMigrator(), false, false, false);
     }
 
     /**
@@ -202,10 +208,10 @@ public class TestCommentsMigrator {
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
     public void testMigrationFromPropertyToSecuredWithCommentParentEmpty() {
         // NB_COMMENTS_BY_FILE*4 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
-        createCommentsAsProperty(true, false);
+        createCommentsAsProperty(true, false, false);
 
         // Second step of migrate: from 'Property' to 'Secured'
-        migrateFromPropertyToSecured(new CommentsMigrator(), true, false);
+        migrateFromPropertyToSecured(new CommentsMigrator(), true, false, false);
 
         transactionalFeature.nextTransaction();
 
@@ -246,10 +252,10 @@ public class TestCommentsMigrator {
     @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/disable-removing-comment-children-listener.xml")
     public void testMigrationFromPropertyToSecuredWithRemovedParentComment() {
         // NB_COMMENTS_BY_FILE*4 + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
-        createCommentsAsProperty(false, true);
+        createCommentsAsProperty(false, true, false);
 
         // Second step of migrate: from 'Property' to 'Secured'
-        migrateFromPropertyToSecured(new CommentsMigrator(), false, true);
+        migrateFromPropertyToSecured(new CommentsMigrator(), false, true, false);
         transactionalFeature.nextTransaction();
 
         List<LogEvent> events = logCaptureResult.getCaughtEvents();
@@ -439,6 +445,39 @@ public class TestCommentsMigrator {
 
     }
 
+    @Test
+    public void testMigrationFromPropertyToSecuredWithPlacelessParent() {
+        // NB_COMMENTS_BY_FILE*4 (files) + NB_COMMENT_TO_REPLY_ON_IT*NB_REPLY_BY_COMMENT (5 levels of reply) = 200 + 50
+        createCommentsAsProperty(false, false, true);
+
+        // Second step of migrate: from 'Property' to 'Secured'
+        migrateFromPropertyToSecured(new CommentsMigrator(), false, false, true);
+    }
+
+    @Test
+    public void testProbeWithCommentParentPlaceless() {
+        CommentManager propertyCommentManager = new PropertyCommentManager();
+
+        // add a comment where the parent is placeless
+        DocumentModel commentWithPlacelessParent = session.createDocumentModel(placelessFileToComment.getPathAsString(),
+                "comment", COMMENT_DOC_TYPE);
+        commentWithPlacelessParent.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, placelessFileToComment.getId());
+        propertyCommentManager.createComment(placelessFileToComment, commentWithPlacelessParent);
+
+        transactionalFeature.nextTransaction();
+
+        Migrator migrator = new CommentsMigrator();
+
+        // At this point we are in property step
+        assertEquals(MIGRATION_STATE_PROPERTY, migrator.probeState());
+
+        // Migrate the created property based comment to secured
+        runMigration(() -> migrator.run(MIGRATION_STEP_PROPERTY_TO_SECURED, new ProgressMigrationContext()));
+
+        // No more unsecured property comments
+        assertEquals(MIGRATION_STATE_SECURED, migrator.probeState());
+    }
+
     protected void migrateFromRelationToProperty(Migrator migrator) {
         ProgressMigrationContext migrationContext = new ProgressMigrationContext();
         runMigration(() -> migrator.run(MIGRATION_STEP_RELATION_TO_PROPERTY, migrationContext));
@@ -474,7 +513,7 @@ public class TestCommentsMigrator {
     }
 
     protected void migrateFromPropertyToSecured(Migrator migrator, boolean commentsWithEmptyParent,
-            boolean commentsWithRemovedParent) {
+            boolean commentsWithRemovedParent, boolean commentsWithPlacelessParent) {
         ProgressMigrationContext migrationContext = new ProgressMigrationContext();
 
         runMigration(() -> migrator.run(MIGRATION_STEP_PROPERTY_TO_SECURED, migrationContext));
@@ -491,6 +530,16 @@ public class TestCommentsMigrator {
                     "Migrating comments from Property to Secured: 201/250", //
                     "Migrating comments from Property to Secured: 250/250", //
                     "Done Migrating from Property to Secured: 200/250"));
+        } else if (commentsWithPlacelessParent) {
+            expectedLines.addAll(Arrays.asList( //
+                    "Initializing: 0/-1", //
+                    "Migrating comments from Property to Secured: 1/250", //
+                    "Migrating comments from Property to Secured: 51/250", //
+                    "Migrating comments from Property to Secured: 101/250", //
+                    "Migrating comments from Property to Secured: 151/250", //
+                    "Migrating comments from Property to Secured: 201/250", //
+                    "Migrating comments from Property to Secured: 250/250", //
+                    "Done Migrating from Property to Secured: 250/250"));
         } else {
             expectedLines.addAll(Arrays.asList( //
                     "Initializing: 0/-1", //
@@ -554,7 +603,8 @@ public class TestCommentsMigrator {
         createComments(new CommentManagerImpl(CommentServiceHelper.getCommentService().getConfig()));
     }
 
-    protected void createCommentsAsProperty(boolean commentsWithEmptyParent, boolean commentsWithRemovedParent) {
+    protected void createCommentsAsProperty(boolean commentsWithEmptyParent, boolean commentsWithRemovedParent,
+            boolean commentsWithPlacelessParent) {
         PropertyCommentManager propertyCommentManager = new PropertyCommentManager();
 
         // Add comments without comment:parentId
@@ -586,6 +636,16 @@ public class TestCommentsMigrator {
             }
             // Remove the `fileToCommentAndRemove` which result on comments without a parent.
             session.removeDocument(fileToCommentAndRemove.getRef());
+        }
+
+        if (commentsWithPlacelessParent) {
+            for (int i = 0; i < NB_COMMENTS_BY_FILE; i++) {
+                DocumentModel comment = session.createDocumentModel(null, "comment_" + i, COMMENT_DOC_TYPE);
+                comment.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, placelessFileToComment.getId());
+                DocumentModel createdComment = propertyCommentManager.createComment(placelessFileToComment, comment);
+                notificationManager.addSubscription(principal.getName(), "notification" + i, createdComment, FALSE,
+                        principal, "notification" + i);
+            }
         }
 
         // Create comments under the others files
