@@ -21,6 +21,9 @@ package org.nuxeo.ecm.platform.tag;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Duration.ONE_MINUTE;
+import static org.awaitility.Duration.ONE_SECOND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +40,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -85,15 +87,6 @@ public class TestTagsMigrator {
 
     @Inject
     protected NotificationManager notificationManager;
-
-    protected static void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
     public void testMigrationImpl() throws Exception {
@@ -157,16 +150,10 @@ public class TestTagsMigrator {
             migrationService.runStep(MIGRATION_ID, MIGRATION_STEP_RELATIONS_TO_FACETS);
 
             // wait a bit for the migration to start
-            sleep(1000);
+            await().atLeast(ONE_SECOND);
 
             // poll until migration done
-            long deadline = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(1);
-            while (System.currentTimeMillis() < deadline) {
-                if (!migrationService.getStatus(MIGRATION_ID).isRunning()) {
-                    break;
-                }
-                sleep(100);
-            }
+            await().atMost(ONE_MINUTE).until(() -> !migrationService.getStatus(MIGRATION_ID).isRunning());
         });
 
         tagService = Framework.getService(TagService.class);
