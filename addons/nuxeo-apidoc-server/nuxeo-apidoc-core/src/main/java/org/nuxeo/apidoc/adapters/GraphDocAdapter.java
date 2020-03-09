@@ -120,7 +120,6 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
         doc.setPropertyValue(Graph.CONTENT_PROPERTY_PATH, (Serializable) graph.getBlob());
         doc.setPropertyValue(Graph.DESCRIPTION_PROPERTY_PATH, graph.getDescription());
         doc.setPropertyValue(Graph.PROP_GRAPH_TYPE, graph.getType());
-        doc.setPropertyValue(Graph.PROP_GRAPH_TYPE, graph.getType());
 
         if (exist) {
             doc = session.saveDocument(doc);

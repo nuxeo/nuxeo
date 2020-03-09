@@ -5,16 +5,16 @@
   <require>org.nuxeo.apidoc.snapshot.SnapshotManagerComponent</require>
 
   <extension target="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" point="graphs">
-    <graph name="gephi" class="org.nuxeo.apidoc.introspection.graph.GephiGraphGeneratorImpl">
+    <graphGenerator name="gephi" class="org.nuxeo.apidoc.introspection.graph.GephiGraphGeneratorImpl">
       <properties>
         <property name="forceLayout.timeout">10</property>
       </properties>
-    </graph>
-    <graph name="bundles" class="org.nuxeo.apidoc.introspection.graph.BundleGraphGeneratorImpl">
+    </graphGenerator>
+    <graphGenerator name="bundles" class="org.nuxeo.apidoc.introspection.graph.BundleGraphGeneratorImpl">
       <properties>
         <property name="forceLayout.timeout">10</property>
       </properties>
-    </graph>
+    </graphGenerator>
   </extension>
 
 </component>

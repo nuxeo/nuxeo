@@ -38,7 +38,7 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  *
  * @since 11.1
  */
-public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
+public class JGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
 
     public JGraphGeneratorImpl() {
         super();
@@ -107,9 +107,9 @@ public class JGraphGeneratorImpl extends BasicGraphGeneratorImpl {
 
     @Override
     protected Graph createGraph() {
-        Graph graph = new ContentGraphImpl(getGraphName());
+        Graph graph = new ContentGraphImpl(getName());
         graph.setType(GRAPH_TYPE.BASIC.name());
-        syncGraphAttributes(graph);
+        graph.setProperties(getProperties());
         return graph;
     }
 

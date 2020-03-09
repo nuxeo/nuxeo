@@ -35,7 +35,7 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  *
  * @since 11.1
  */
-public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
+public class BundleGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
 
     public BundleGraphGeneratorImpl() {
         super();
@@ -88,9 +88,8 @@ public class BundleGraphGeneratorImpl extends BasicGraphGeneratorImpl {
     }
 
     protected Graph createGraph() {
-        Graph graph = new GraphImpl(getGraphName());
+        Graph graph = super.createGraph();
         graph.setType(GRAPH_TYPE.BASIC_LAYOUT.name());
-        syncGraphAttributes(graph);
         return graph;
     }
 

@@ -18,13 +18,10 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.gephi.io.exporter.api.ExportController;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -36,7 +33,6 @@ import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
-import org.openide.util.Lookup;
 
 /**
  * Basic implementation relying on introspection of distribution using jgrapht library.
@@ -124,14 +120,6 @@ public class GephiGraphGeneratorImpl extends BundleGraphGeneratorImpl {
         }
 
         refine(graph, hits);
-
-        // Export
-        ExportController ec = Lookup.getDefault().lookup(ExportController.class);
-        try {
-            ec.exportFile(new File("autolayout3.pdf"));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
 
         return graph;
     }

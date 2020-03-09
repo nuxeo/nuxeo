@@ -18,6 +18,7 @@
  */
 package org.nuxeo.apidoc.api.graph;
 
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -27,19 +28,11 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  */
 public interface GraphGenerator {
 
-    Graph getGraph(DistributionSnapshot distribution);
+    List<Graph> getGraphs(DistributionSnapshot distribution);
 
-    String getGraphName();
+    String getName();
 
-    void setGraphName(String name);
-
-    String getGraphTitle();
-
-    void setGraphTitle(String title);
-
-    String getGraphDescription();
-
-    void setGraphDescription(String description);
+    void setName(String name);
 
     Map<String, String> getProperties();
 

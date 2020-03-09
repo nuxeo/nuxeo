@@ -31,17 +31,11 @@ import org.nuxeo.common.xmap.annotation.XObject;
  *
  * @since 11.1
  */
-@XObject("graph")
-public class GraphDescriptor {
+@XObject("graphGenerator")
+public class GraphGeneratorDescriptor {
 
     @XNode("@name")
     String name;
-
-    @XNode("description")
-    String description;
-
-    @XNode("title")
-    String title;
 
     @XNode("@class")
     Class<? extends GraphGenerator> clazz;
@@ -53,14 +47,6 @@ public class GraphDescriptor {
         return name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
     public Class<? extends GraphGenerator> getClazz() {
         return clazz;
     }
@@ -68,7 +54,7 @@ public class GraphDescriptor {
     public GraphGenerator getInstance() {
         try {
             GraphGenerator gg = getClazz().getDeclaredConstructor().newInstance();
-            gg.setGraphName(getName());
+            gg.setName(getName());
             gg.setProperties(getProperties());
             return gg;
         } catch (ReflectiveOperationException e) {

@@ -45,7 +45,7 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
-import org.nuxeo.apidoc.snapshot.GraphDescriptor;
+import org.nuxeo.apidoc.snapshot.GraphGeneratorDescriptor;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -241,8 +241,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         }
 
         SnapshotManager sm = Framework.getService(SnapshotManager.class);
-        for (GraphDescriptor desc : sm.getGraphs()) {
-            graphs.add(desc.getInstance().getGraph(this));
+        for (GraphGeneratorDescriptor desc : sm.getGraphs()) {
+            graphs.addAll(desc.getInstance().getGraphs(this));
         }
     }
 

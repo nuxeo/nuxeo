@@ -71,6 +71,6 @@ public interface SnapshotManager {
     /**
      * @since 11.1
      */
-    List<GraphDescriptor> getGraphs();
+    List<GraphGeneratorDescriptor> getGraphs();
 
 }

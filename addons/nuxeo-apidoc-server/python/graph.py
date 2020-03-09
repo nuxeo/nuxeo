@@ -108,7 +108,7 @@ def generate_graph(parent_path, fname):
         annotations=[
                dict(
                showarrow=False,
-                text="Blah",
+                text="",
                 xref='paper',
                 yref='paper',
                 x=0,

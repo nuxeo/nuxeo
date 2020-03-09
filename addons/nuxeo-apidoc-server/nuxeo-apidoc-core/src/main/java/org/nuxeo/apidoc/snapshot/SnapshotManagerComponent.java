@@ -84,7 +84,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     protected final SnapshotPersister persister = new SnapshotPersister();
 
-    protected final Map<String, GraphDescriptor> graphRegistry = new LinkedHashMap<>();
+    protected final Map<String, GraphGeneratorDescriptor> graphRegistry = new LinkedHashMap<>();
 
     @Override
     public DistributionSnapshot getRuntimeSnapshot() {
@@ -351,7 +351,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     @Override
     public void registerContribution(Object contribution, String xp, ComponentInstance component) {
         if (xp.equals(GRAPHS_EP_NAME)) {
-            GraphDescriptor desc = (GraphDescriptor) contribution;
+            GraphGeneratorDescriptor desc = (GraphGeneratorDescriptor) contribution;
             graphRegistry.put(desc.getName(), desc);
         }
     }
@@ -359,14 +359,14 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     @Override
     public void unregisterContribution(Object contribution, String xp, ComponentInstance component) {
         if (xp.equals(GRAPHS_EP_NAME)) {
-            GraphDescriptor desc = (GraphDescriptor) contribution;
+            GraphGeneratorDescriptor desc = (GraphGeneratorDescriptor) contribution;
             graphRegistry.remove(desc.getName());
         }
     }
 
     @Override
-    public List<GraphDescriptor> getGraphs() {
-        return Collections.unmodifiableList(new ArrayList<GraphDescriptor>(graphRegistry.values()));
+    public List<GraphGeneratorDescriptor> getGraphs() {
+        return Collections.unmodifiableList(new ArrayList<GraphGeneratorDescriptor>(graphRegistry.values()));
     }
 
 }
