@@ -18,11 +18,14 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -30,7 +33,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @since 11.1
  */
-public class ContentGraphImpl extends GraphImpl implements Graph {
+public class ContentGraphImpl implements Graph {
+
+    protected String name;
+
+    protected String type;
+
+    protected String title;
+
+    protected String description;
 
     protected String content;
 
@@ -39,8 +50,66 @@ public class ContentGraphImpl extends GraphImpl implements Graph {
     protected String contentName;
 
     @JsonCreator
-    public ContentGraphImpl(@JsonProperty("id") String id) {
-        super(id);
+    public ContentGraphImpl(@JsonProperty("name") String name) {
+        this.name = name;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getVersion() {
+        return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getArtifactType() {
+        return ARTIFACT_TYPE;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getHierarchyPath() {
+        return null;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getId() {
+        return ARTIFACT_PREFIX + getName();
+    }
+
+    @Override
+    @JsonIgnore
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getContent() {
@@ -68,12 +137,18 @@ public class ContentGraphImpl extends GraphImpl implements Graph {
     }
 
     @Override
+    @JsonIgnore
     public Blob getBlob() {
         Blob blob = Blobs.createBlob(getContent());
         blob.setFilename(getContentName());
         blob.setMimeType(getContentType());
         blob.setEncoding("UTF-8");
         return blob;
+    }
+
+    @Override
+    public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -16,33 +16,18 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.apidoc.api.graph;
+package org.nuxeo.apidoc.introspection.graph.export;
+
+import org.nuxeo.apidoc.api.graph.EditableGraph;
+import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
 
 /**
+ * Separates logics from graph data to graph final export content.
+ * 
  * @since 11.1
  */
-public interface Node {
+public interface GraphExporter {
 
-    String getOriginalId();
-
-    String getLabel();
-
-    String getPath();
-
-    String getType();
-
-    String getCategory();
-
-    String getColor();
-
-    int getWeight();
-
-    void setWeight(int weigth);
-
-    int getId();
-
-    void setId(int id);
-
-    Node copy();
+    ContentGraphImpl export(EditableGraph graph);
 
 }

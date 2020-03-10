@@ -90,4 +90,13 @@ public class EdgeImpl implements Edge {
         this.target = target;
     }
 
+    @Override
+    public Edge copy() {
+        Edge copy = new EdgeImpl(originalSourceId, originalTargetId, value);
+        copy.setId(id);
+        copy.setSource(source);
+        copy.setTarget(target);
+        return copy;
+    }
+
 }

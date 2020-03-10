@@ -32,7 +32,7 @@ import org.gephi.layout.plugin.forceAtlas.ForceAtlasLayout;
 import org.gephi.project.api.ProjectController;
 import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
 import org.nuxeo.apidoc.api.graph.Edge;
-import org.nuxeo.apidoc.api.graph.Graph;
+import org.nuxeo.apidoc.api.graph.EditableGraph;
 import org.nuxeo.apidoc.api.graph.NODE_TYPE;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.openide.util.Lookup;
@@ -46,7 +46,7 @@ public class GephiLayout {
 
     protected static String TIMEOUT_PROP = "forceLayout.timeout";
 
-    public static Graph getLayout(Graph graph) {
+    public static EditableGraph getLayout(EditableGraph graph) {
 
         // create gephi project and associated workspace
         ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
@@ -59,7 +59,7 @@ public class GephiLayout {
         Map<String, org.gephi.graph.api.Node> gnodes = new HashMap<>();
 
         // apply layouting to bundles only: other dependencies will set their x/y according to it and their z according
-        // to the depenency tree deps
+        // to the dependency tree deps
         for (Node node : graph.getNodes()) {
             if (isBundle(node)) {
                 org.gephi.graph.api.Node gnode = createGephiNode(factory, node);

@@ -41,16 +41,25 @@ public enum NODE_CATEGORY {
         return color;
     }
 
-    public static NODE_CATEGORY getCategory(BundleInfo bundle) {
-        NODE_CATEGORY cat = introspect(bundle.getGroupId());
+    public static NODE_CATEGORY guessCategory(BundleInfo bundle) {
+        NODE_CATEGORY cat = guessCategory(bundle.getGroupId(), null);
         if (cat == null) {
-            cat = introspect(bundle.getArtifactId());
+            cat = guessCategory(bundle.getArtifactId(), null);
         }
         if (cat == null) {
-            cat = introspect(bundle.getId());
+            cat = guessCategory(bundle.getId(), PLATFORM);
         }
+        return cat;
+    }
+
+    public static NODE_CATEGORY guessCategory(String id) {
+        return guessCategory(id, PLATFORM);
+    }
+
+    protected static NODE_CATEGORY guessCategory(String id, NODE_CATEGORY defaultValue) {
+        NODE_CATEGORY cat = introspect(id);
         if (cat == null) {
-            cat = PLATFORM;
+            cat = defaultValue;
         }
         return cat;
     }

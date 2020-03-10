@@ -18,32 +18,45 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.apidoc.api.graph.EditableGraph;
-import org.nuxeo.apidoc.api.graph.Graph;
-import org.nuxeo.apidoc.introspection.graph.export.JsonGraphExporter;
-import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.api.graph.Node;
 
 /**
+ * Node filter based on node type(s).
+ * 
  * @since 11.1
  */
-public class BasicGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
+public class NodeTypeFilter implements NodeFilter {
 
-    public BasicGraphGeneratorImpl() {
+    protected final List<String> types;
+
+    public NodeTypeFilter(List<String> types) {
         super();
+        if (types == null) {
+            this.types = Collections.emptyList();
+        } else {
+            this.types = new ArrayList<>(types);
+        }
+    }
+
+    public NodeTypeFilter(String... types) {
+        super();
+        this.types = Arrays.asList(types);
     }
 
     @Override
-    public List<Graph> getGraphs(DistributionSnapshot distribution) {
-        EditableGraph graph = getDefaultGraph(distribution);
-
-        graph.setTitle("Basic Graph");
-        graph.setDescription("Complete graph, with dependencies, without a layout");
-        ContentGraphImpl cgraph = new JsonGraphExporter().export(graph);
-
-        return Arrays.asList(cgraph);
+    public boolean accept(Node node) {
+        if (node == null) {
+            return false;
+        }
+        if (types.contains(node.getType())) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -32,6 +32,7 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
 import org.nuxeo.apidoc.api.graph.Edge;
+import org.nuxeo.apidoc.api.graph.EditableGraph;
 import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
 import org.nuxeo.apidoc.api.graph.GraphGenerator;
@@ -78,18 +79,18 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
     @Override
     public List<Graph> getGraphs(DistributionSnapshot distribution) {
-        Graph g = getDefaultGraph(distribution);
+        EditableGraph g = getDefaultGraph(distribution);
         return Arrays.asList(g);
     }
 
-    protected Graph createDefaultGraph() {
-        Graph graph = new GraphImpl(getName());
+    protected EditableGraph createDefaultGraph() {
+        EditableGraph graph = new GraphImpl(getName());
         graph.setType(GRAPH_TYPE.BASIC.name());
         graph.setProperties(getProperties());
         return graph;
     }
 
-    protected Graph getDefaultGraph(DistributionSnapshot distribution) {
+    protected EditableGraph getDefaultGraph(DistributionSnapshot distribution) {
         GraphImpl graph = (GraphImpl) createDefaultGraph();
 
         // introspect the graph, ignore bundle groups but select:
@@ -103,7 +104,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
         for (String bid : distribution.getBundleIds()) {
             BundleInfo bundle = distribution.getBundle(bid);
-            NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundle);
+            NODE_CATEGORY cat = NODE_CATEGORY.guessCategory(bundle);
             Node bundleNode = processBundle(distribution, graph, hits, children, bundle, cat);
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
@@ -119,7 +120,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         return graph;
     }
 
-    protected Node processBundle(DistributionSnapshot distribution, Graph graph, Map<String, Integer> hits,
+    protected Node processBundle(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
             List<String> children, BundleInfo bundle, NODE_CATEGORY cat) {
         Node bundleNode = createBundleNode(bundle, cat);
         graph.addNode(bundleNode);
@@ -134,7 +135,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         return bundleNode;
     }
 
-    protected Node processComponent(DistributionSnapshot distribution, Graph graph, Map<String, Integer> hits,
+    protected Node processComponent(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
             List<String> children, Node bundleNode, NODE_CATEGORY category, ComponentInfo component,
             boolean processServices, boolean processExtensionPoints, boolean processExtensions) {
         Node compNode = createComponentNode(component, category);
@@ -180,7 +181,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
                 // also add link to target extension point, "guessing" the extension point id, not counting for
                 // hits
                 String targetId = prefixId(ComponentInfo.TYPE_NAME,
-                        contribution.getTargetComponentName() + "--" + contribution.getExtensionPoint());
+                        contribution.getTargetComponentName().getName() + "--" + contribution.getExtensionPoint());
                 addEdge(graph, null, createEdge(createNode(targetId), contNode, EDGE_TYPE.REFERENCES.name()));
 
                 // compute requirements
@@ -197,7 +198,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
     /**
      * Adda common root for all roots in the bundle graph, as it is supposed to be a directed tree without cycles.
      */
-    protected void processBundlesRoot(DistributionSnapshot distribution, Graph graph, Map<String, Integer> hits,
+    protected void processBundlesRoot(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
             List<String> children) {
         List<Node> roots = new ArrayList<>();
         for (Node node : graph.getNodes()) {
@@ -225,7 +226,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
      * <li>set integer id on nodes and edges, as required by some rendering frameworks
      * <li>sets weights computed from hits map
      */
-    protected void refine(Graph graph, Map<String, Integer> hits) {
+    protected void refine(EditableGraph graph, Map<String, Integer> hits) {
         // handle ids
         int itemIndex = 1;
         for (Node node : graph.getNodes()) {
@@ -261,8 +262,30 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
     }
 
-    protected Node addMissingNode(Graph graph, String originalId, int id, int weight) {
-        Node node = createNode(originalId);
+    protected Node addMissingNode(EditableGraph graph, String originalId, int id, int weight) {
+        // try to guess category
+        // try to guess type according to prefix
+        String originalIdParsed = originalId;
+        String type = null;
+        NODE_CATEGORY cat = NODE_CATEGORY.PLATFORM;
+        if (originalId.startsWith(BundleInfo.TYPE_NAME)) {
+            type = NODE_TYPE.BUNDLE.name();
+            originalIdParsed = originalId.substring(BundleInfo.TYPE_NAME.length() + 1);
+        } else if (originalId.startsWith(ComponentInfo.TYPE_NAME)) {
+            type = NODE_TYPE.COMPONENT.name();
+            originalIdParsed = originalId.substring(ComponentInfo.TYPE_NAME.length() + 1);
+        } else if (originalId.startsWith(ExtensionPointInfo.TYPE_NAME)) {
+            type = NODE_TYPE.EXTENSION_POINT.name();
+            originalIdParsed = originalId.substring(ExtensionPointInfo.TYPE_NAME.length() + 1);
+        } else if (originalId.startsWith(ServiceInfo.TYPE_NAME)) {
+            type = NODE_TYPE.SERVICE.name();
+            originalIdParsed = originalId.substring(ServiceInfo.TYPE_NAME.length() + 1);
+        } else if (originalId.startsWith(ExtensionInfo.TYPE_NAME)) {
+            type = NODE_TYPE.CONTRIBUTION.name();
+            originalIdParsed = originalId.substring(ExtensionInfo.TYPE_NAME.length() + 1);
+        }
+        cat = NODE_CATEGORY.guessCategory(originalIdParsed);
+        Node node = createNode(originalId, originalIdParsed, 0, "", type, cat.name(), cat.getColor());
         node.setId(id);
         node.setWeight(weight);
         graph.addNode(node);
@@ -316,7 +339,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         return new EdgeImpl(source.getOriginalId(), target.getOriginalId(), value);
     }
 
-    protected void addEdge(Graph graph, Map<String, Integer> hits, Edge edge) {
+    protected void addEdge(EditableGraph graph, Map<String, Integer> hits, Edge edge) {
         graph.addEdge(edge);
         if (hits != null) {
             hit(hits, edge.getOriginalSourceId());
@@ -332,7 +355,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         }
     }
 
-    protected void setWeight(Graph graph, String nodeId, int hit) {
+    protected void setWeight(EditableGraph graph, String nodeId, int hit) {
         Node node = graph.getNode(nodeId);
         if (node != null) {
             node.setWeight(hit);

@@ -142,10 +142,10 @@ public class TestSnapshotPersist {
         for (Graph graph : graphs) {
             sb.append("graph: ").append(graph.getName());
             sb.append(" *** ");
-            sb.append("type: '" + graph.getType() + "'");
-            sb.append("title: '" + graph.getTitle() + "'");
+            sb.append("type: '" + graph.getType() + "', ");
+            sb.append("title: '" + graph.getTitle() + "', ");
             sb.append("desc: '" + graph.getDescription() + "'");
-            sb.append("'\n");
+            sb.append("\n");
         }
 
         return sb.toString().trim();

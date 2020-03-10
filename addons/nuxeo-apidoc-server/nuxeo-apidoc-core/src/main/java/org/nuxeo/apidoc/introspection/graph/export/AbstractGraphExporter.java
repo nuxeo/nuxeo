@@ -16,33 +16,25 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.apidoc.api.graph;
+package org.nuxeo.apidoc.introspection.graph.export;
+
+import org.nuxeo.apidoc.api.graph.EditableGraph;
+import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
 
 /**
  * @since 11.1
  */
-public interface Node {
+public abstract class AbstractGraphExporter implements GraphExporter {
 
-    String getOriginalId();
-
-    String getLabel();
-
-    String getPath();
-
-    String getType();
-
-    String getCategory();
-
-    String getColor();
-
-    int getWeight();
-
-    void setWeight(int weigth);
-
-    int getId();
-
-    void setId(int id);
-
-    Node copy();
+    /**
+     * Syncs basic attributes of a content graph.
+     */
+    protected ContentGraphImpl initGraph(EditableGraph graph) {
+        ContentGraphImpl cgraph = new ContentGraphImpl(graph.getName());
+        cgraph.setTitle(graph.getTitle());
+        cgraph.setDescription(graph.getDescription());
+        cgraph.setType(graph.getType());
+        return cgraph;
+    }
 
 }

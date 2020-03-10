@@ -19,13 +19,9 @@
 package org.nuxeo.apidoc.adapters;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.Graph;
-import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -55,18 +51,8 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
     }
 
     @Override
-    public void setType(String type) {
-        getDoc().setPropertyValue(PROP_GRAPH_TYPE, type);
-    }
-
-    @Override
     public String getName() {
         return getDoc().getName();
-    }
-
-    @Override
-    public void setName(String name) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -75,18 +61,8 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
     }
 
     @Override
-    public void setTitle(String title) {
-        getDoc().setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, title);
-    }
-
-    @Override
     public String getDescription() {
         return (String) getDoc().getPropertyValue(NuxeoArtifact.DESCRIPTION_PROPERTY_PATH);
-    }
-
-    @Override
-    public void setDescription(String description) {
-        getDoc().setPropertyValue(NuxeoArtifact.DESCRIPTION_PROPERTY_PATH, description);
     }
 
     @Override
@@ -117,9 +93,9 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
         }
         doc.setPathInfo(containerPath, name);
         doc.setPropertyValue(Graph.TITLE_PROPERTY_PATH, graph.getTitle());
-        doc.setPropertyValue(Graph.CONTENT_PROPERTY_PATH, (Serializable) graph.getBlob());
         doc.setPropertyValue(Graph.DESCRIPTION_PROPERTY_PATH, graph.getDescription());
         doc.setPropertyValue(Graph.PROP_GRAPH_TYPE, graph.getType());
+        doc.setPropertyValue(Graph.CONTENT_PROPERTY_PATH, (Serializable) graph.getBlob());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -127,46 +103,6 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
             doc = session.createDocument(doc);
         }
         return new GraphDocAdapter(doc);
-    }
-
-    @Override
-    public void addNode(Node node) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addEdge(Edge edge) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Node getNode(String nodeId) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Node> getNodes() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Edge> getEdges() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, String> getProperties() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getProperty(String name, String defaultValue) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setProperties(Map<String, String> properties) {
-        throw new UnsupportedOperationException();
     }
 
 }

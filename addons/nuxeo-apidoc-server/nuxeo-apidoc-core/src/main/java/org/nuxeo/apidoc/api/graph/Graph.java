@@ -18,9 +18,6 @@
  */
 package org.nuxeo.apidoc.api.graph;
 
-import java.util.List;
-import java.util.Map;
-
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.Blob;
 
@@ -40,36 +37,12 @@ public interface Graph extends NuxeoArtifact {
 
     String getName();
 
-    void setName(String name);
-
     String getTitle();
-
-    void setTitle(String title);
 
     String getDescription();
 
-    void setDescription(String description);
-
-    Map<String, String> getProperties();
-
-    String getProperty(String name, String defaultValue);
-
-    void setProperties(Map<String, String> properties);
-
     String getType();
 
-    void setType(String type);
-
     Blob getBlob();
-
-    void addEdge(Edge edge);
-
-    void addNode(Node node);
-
-    Node getNode(String nodeId);
-
-    List<Node> getNodes();
-
-    List<Edge> getEdges();
 
 }

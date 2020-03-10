@@ -47,10 +47,9 @@ public class NodeImpl implements Node {
     protected final String color;
 
     @JsonCreator
-    public NodeImpl(@JsonProperty("originalId") String originalId,
-            @JsonProperty("label") String label, @JsonProperty("weight") int weight, @JsonProperty("path") String path,
-            @JsonProperty("type") String type, @JsonProperty("category") String category,
-            @JsonProperty("color") String color) {
+    public NodeImpl(@JsonProperty("originalId") String originalId, @JsonProperty("label") String label,
+            @JsonProperty("weight") int weight, @JsonProperty("path") String path, @JsonProperty("type") String type,
+            @JsonProperty("category") String category, @JsonProperty("color") String color) {
         super();
         this.originalId = originalId;
         this.label = label;
@@ -103,6 +102,13 @@ public class NodeImpl implements Node {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public Node copy() {
+        Node copy = new NodeImpl(originalId, label, weight, path, type, category, color);
+        copy.setId(id);
+        return copy;
     }
 
 }

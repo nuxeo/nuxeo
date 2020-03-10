@@ -18,6 +18,7 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +28,13 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.api.graph.EDGE_TYPE;
 import org.nuxeo.apidoc.api.graph.Edge;
+import org.nuxeo.apidoc.api.graph.EditableGraph;
+import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
-import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
+import org.nuxeo.apidoc.api.graph.NODE_TYPE;
 import org.nuxeo.apidoc.api.graph.Node;
+import org.nuxeo.apidoc.introspection.graph.export.PlotlyGraphExporter;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 
 /**
@@ -39,49 +42,60 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
  *
  * @since 11.1
  */
-public class GephiGraphGeneratorImpl extends BundleGraphGeneratorImpl {
+public class GephiGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
 
     public GephiGraphGeneratorImpl() {
         super();
     }
 
     @Override
-    public Graph getDefaultGraph(DistributionSnapshot distribution) {
-        Graph graph = super.getDefaultGraph(distribution);
+    public List<Graph> getGraphs(DistributionSnapshot distribution) {
+        EditableGraph graph = getDefaultGraph(distribution);
+        graph.setName(getName());
+        graph.setType(GRAPH_TYPE.BASIC_LAYOUT.name());
+        graph.setTitle("Complete Graph");
+        graph.setDescription("Complete graph, with dependencies, with a layout");
 
-        // build the rest of the tree on top of that, adjusting positions
-        Map<String, Integer> hits = new HashMap<>();
+        ContentGraphImpl g1 = new PlotlyGraphExporter().export(graph);
 
+        EditableGraph copy = graph.copy(new NodeTypeFilter(NODE_TYPE.BUNDLE.name()));
+        copy.setName("bundles");
+        copy.setType(GRAPH_TYPE.BASIC_LAYOUT.name());
+        copy.setTitle("Bundles Graph");
+        copy.setDescription("Selected bundles, with dependencies, with a layout");
+        ContentGraphImpl g2 = new PlotlyGraphExporter().export(copy);
+
+        return Arrays.asList(g1, g2);
+    }
+
+    @Override
+    public EditableGraph getDefaultGraph(DistributionSnapshot distribution) {
+        EditableGraph ograph = super.getDefaultGraph(distribution);
+
+        // process Gephi layouting
+        EditableGraph graph = GephiLayout.getLayout(ograph);
+
+        // reprocess all nodes to compute X Y Z
         for (String bid : distribution.getBundleIds()) {
             BundleInfo bundle = distribution.getBundle(bid);
             Node bundleNode = graph.getNode(prefixId(BundleInfo.TYPE_NAME, bid));
-            NODE_CATEGORY cat = NODE_CATEGORY.getCategory(bundleNode.getCategory());
-            // compute sub components
-            List<ComponentInfo> components = bundle.getComponents();
-            for (ComponentInfo component : components) {
-                Node compNode = createComponentNode(component, cat);
+            for (ComponentInfo component : bundle.getComponents()) {
+                Node compNode = graph.getNode(prefixId(ComponentInfo.TYPE_NAME, component.getId()));
                 copyXY(bundleNode, compNode);
-                graph.addNode(compNode);
-                add3DEdge(graph, hits, createEdge(bundleNode, compNode, EDGE_TYPE.CONTAINS.name()), bundleNode,
-                        compNode);
+                push((PositionedNodeImpl) bundleNode, (PositionedNodeImpl) compNode);
                 for (ServiceInfo service : component.getServices()) {
                     if (service.isOverriden()) {
                         continue;
                     }
-                    Node serviceNode = createServiceNode(service, cat);
+                    Node serviceNode = graph.getNode(prefixId(ServiceInfo.TYPE_NAME, service.getId()));
                     copyXY(bundleNode, serviceNode);
-                    graph.addNode(serviceNode);
-                    add3DEdge(graph, hits, createEdge(compNode, serviceNode, EDGE_TYPE.CONTAINS.name()), compNode,
-                            serviceNode);
+                    push((PositionedNodeImpl) compNode, (PositionedNodeImpl) serviceNode);
                 }
-
                 for (ExtensionPointInfo xp : component.getExtensionPoints()) {
-                    Node xpNode = createXPNode(xp, cat);
+                    Node xpNode = graph.getNode(prefixId(ExtensionPointInfo.TYPE_NAME, xp.getId()));
                     copyXY(bundleNode, xpNode);
-                    graph.addNode(xpNode);
-                    add3DEdge(graph, hits, createEdge(compNode, xpNode, EDGE_TYPE.CONTAINS.name()), compNode, xpNode);
+                    push((PositionedNodeImpl) compNode, (PositionedNodeImpl) xpNode);
                 }
-
                 Map<String, Integer> comps = new HashMap<String, Integer>();
                 for (ExtensionInfo contribution : component.getExtensions()) {
                     // handle multiple contributions to the same extension point
@@ -94,39 +108,20 @@ public class GephiGraphGeneratorImpl extends BundleGraphGeneratorImpl {
                         comps.put(cid, Integer.valueOf(0));
                     }
 
-                    Node contNode = createContributionNode(contribution, cat);
+                    Node contNode = graph.getNode(prefixId(ExtensionInfo.TYPE_NAME, cid));
                     copyXY(compNode, contNode);
-                    graph.addNode(contNode);
-                    // add link to corresponding component
-                    add3DEdge(graph, hits, createEdge(compNode, contNode, EDGE_TYPE.CONTAINS.name()), compNode,
-                            contNode);
-
-                    // also add link to target extension point, "guessing" the extension point id, not counting for
-                    // hits
-                    String targetId = prefixId(ComponentInfo.TYPE_NAME,
-                            contribution.getTargetComponentName() + "--" + contribution.getExtensionPoint());
-                    addEdge(graph, null, createEdge(createNode(targetId), contNode, EDGE_TYPE.REFERENCES.name()));
-
-                    // compute requirements
-                    for (String requirement : component.getRequirements()) {
-                        // XX: setup deps!
-                        addEdge(graph, hits, createEdge(compNode,
-                                createNode(prefixId(ComponentInfo.TYPE_NAME, requirement)), EDGE_TYPE.REQUIRES.name()));
-                    }
+                    push((PositionedNodeImpl) compNode, (PositionedNodeImpl) contNode);
                 }
             }
         }
 
-        refine(graph, hits);
-
         return graph;
     }
 
-    protected Graph createDefaultGraph() {
-        Graph graph = super.createDefaultGraph();
-        graph.setTitle("Complete Graph");
-        graph.setDescription("Complete graph, with dependencies, with a layout");
-        return graph;
+    @Override
+    protected PositionedNodeImpl createNode(String id, String label, int weight, String path, String type,
+            String category, String color) {
+        return new PositionedNodeImpl(id, label, weight, path, type, category, color);
     }
 
     protected void copyXY(Node source, Node target) {
@@ -136,7 +131,7 @@ public class GephiGraphGeneratorImpl extends BundleGraphGeneratorImpl {
         }
     }
 
-    protected void add3DEdge(Graph graph, Map<String, Integer> hits, Edge edge, Node source, Node target) {
+    protected void add3DEdge(EditableGraph graph, Map<String, Integer> hits, Edge edge, Node source, Node target) {
         super.addEdge(graph, hits, edge);
         push((PositionedNodeImpl) target, (PositionedNodeImpl) source);
     }

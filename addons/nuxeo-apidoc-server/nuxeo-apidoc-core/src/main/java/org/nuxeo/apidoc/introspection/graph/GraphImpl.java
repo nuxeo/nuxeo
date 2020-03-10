@@ -21,31 +21,29 @@ package org.nuxeo.apidoc.introspection.graph;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.graph.Edge;
-import org.nuxeo.apidoc.api.graph.Graph;
+import org.nuxeo.apidoc.api.graph.EditableGraph;
 import org.nuxeo.apidoc.api.graph.Node;
+import org.nuxeo.apidoc.introspection.graph.export.GraphExporter;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
+ * Graph implementation supporting edition logics, but does not handle the content generation.
+ *
+ * @see ContentGraphImpl and @see {@link GraphExporter} for content export logics.
  * @since 11.1
  */
-public class GraphImpl extends BaseNuxeoArtifact implements Graph {
+public class GraphImpl extends BaseNuxeoArtifact implements EditableGraph {
 
-    protected String id;
+    protected String name;
 
     protected String type;
 
@@ -62,9 +60,9 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     protected final Map<String, Node> nodeMap = new HashMap<>();
 
     @JsonCreator
-    public GraphImpl(@JsonProperty("id") String id) {
+    public GraphImpl(@JsonProperty("name") String name) {
         super();
-        this.id = id;
+        this.name = name;
     }
 
     @Override
@@ -86,19 +84,19 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     }
 
     @Override
+    public String getId() {
+        return ARTIFACT_PREFIX + getName();
+    }
+
+    @Override
     @JsonIgnore
     public String getName() {
-        return getId();
+        return name;
     }
 
     @Override
     public void setName(String name) {
-        this.id = name;
-    }
-
-    @Override
-    public String getId() {
-        return id;
+        this.name = name;
     }
 
     @Override
@@ -146,38 +144,6 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
         this.properties.putAll(properties);
     }
 
-    protected String getJsonContent() {
-        final ObjectMapper mapper = new ObjectMapper().registerModule(
-                new SimpleModule().addAbstractTypeMapping(Node.class, NodeImpl.class)
-                                  .addAbstractTypeMapping(Edge.class, EdgeImpl.class));
-        LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-        values.put("name", getName());
-        values.put("title", getTitle());
-        values.put("description", getDescription());
-        values.put("type", getType());
-        values.put("nodes", getNodes());
-        values.put("edges", getEdges());
-        try {
-            return mapper.writerFor(LinkedHashMap.class)
-                         .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)
-                         .without(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
-                         .withDefaultPrettyPrinter()
-                         .writeValueAsString(values);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    @JsonIgnore
-    public Blob getBlob() {
-        Blob blob = Blobs.createBlob(getJsonContent());
-        blob.setFilename("graph.json");
-        blob.setMimeType("application/json");
-        blob.setEncoding("UTF-8");
-        return blob;
-    }
-
     public void addNode(Node node) {
         this.nodes.add(node);
         this.nodeMap.put(node.getOriginalId(), node);
@@ -201,6 +167,35 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
     @JsonIgnore
     public List<Edge> getEdges() {
         return Collections.unmodifiableList(edges);
+    }
+
+    @Override
+    public Blob getBlob() {
+        throw new UnsupportedOperationException();
+    }
+
+    public EditableGraph copy(NodeFilter nodeFilter) {
+        GraphImpl g = new GraphImpl(getName());
+        g.setTitle(getTitle());
+        g.setDescription(getDescription());
+        g.setType(getType());
+        for (Node node : getNodes()) {
+            if (nodeFilter != null && nodeFilter.accept(node)) {
+                g.addNode(node.copy());
+            }
+        }
+        for (Edge edge : getEdges()) {
+            if (nodeFilter == null) {
+                g.addEdge(edge.copy());
+            } else {
+                Node source = getNode(edge.getOriginalSourceId());
+                Node target = getNode(edge.getOriginalTargetId());
+                if (nodeFilter.accept(source) && nodeFilter.accept(target)) {
+                    g.addEdge(edge.copy());
+                }
+            }
+        }
+        return g;
     }
 
 }

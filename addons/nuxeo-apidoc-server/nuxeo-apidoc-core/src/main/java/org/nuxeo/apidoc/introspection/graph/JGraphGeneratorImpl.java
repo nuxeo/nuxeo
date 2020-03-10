@@ -18,19 +18,13 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
-import java.io.ByteArrayOutputStream;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
-import org.jgrapht.ext.ComponentAttributeProvider;
-import org.jgrapht.ext.ComponentNameProvider;
-import org.jgrapht.ext.DOTExporter;
-import org.jgrapht.ext.ExportException;
-import org.jgrapht.graph.SimpleDirectedGraph;
-import org.nuxeo.apidoc.api.graph.Edge;
+import org.nuxeo.apidoc.api.graph.EditableGraph;
 import org.nuxeo.apidoc.api.graph.GRAPH_TYPE;
 import org.nuxeo.apidoc.api.graph.Graph;
-import org.nuxeo.apidoc.api.graph.Node;
+import org.nuxeo.apidoc.introspection.graph.export.DOTGraphExporter;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 
 /**
@@ -45,74 +39,15 @@ public class JGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
     }
 
     @Override
-    public Graph getDefaultGraph(DistributionSnapshot distribution) {
-        ContentGraphImpl graph = (ContentGraphImpl) super.getDefaultGraph(distribution);
+    public List<Graph> getGraphs(DistributionSnapshot distribution) {
+        EditableGraph graph = getDefaultGraph(distribution);
 
-        // transform to get corresponding graph
-        SimpleDirectedGraph<Node, Edge> g = new SimpleDirectedGraph<Node, Edge>(Edge.class);
-
-        for (Node node : graph.getNodes()) {
-            g.addVertex(node);
-        }
-
-        for (Edge edge : graph.getEdges()) {
-            Node source = graph.getNode(edge.getOriginalSourceId());
-            Node target = graph.getNode(edge.getOriginalTargetId());
-            g.addEdge(source, target, edge);
-        }
-
-        try {
-            ComponentNameProvider<Node> vertexIDProvider = new ComponentNameProvider<>() {
-                @Override
-                public String getName(Node component) {
-                    return String.valueOf(component.getId());
-                }
-            };
-            ComponentNameProvider<Node> vertexLabelProvider = new ComponentNameProvider<Node>() {
-                @Override
-                public String getName(Node component) {
-                    return component.getLabel();
-                }
-            };
-            ComponentNameProvider<Edge> edgeLabelProvider = new ComponentNameProvider<Edge>() {
-                @Override
-                public String getName(Edge component) {
-                    return component.getValue();
-                }
-            };
-            ComponentAttributeProvider<Node> vertexAttributeProvider = new ComponentAttributeProvider<Node>() {
-                public Map<String, String> getComponentAttributes(Node node) {
-                    Map<String, String> map = new LinkedHashMap<String, String>();
-                    map.put("weight", String.valueOf(node.getWeight()));
-                    map.put("path", String.valueOf(node.getPath()));
-                    map.put("color", String.valueOf(node.getColor()));
-                    map.put("category", String.valueOf(node.getCategory()));
-                    map.put("type", String.valueOf(node.getType()));
-                    return map;
-                }
-            };
-            DOTExporter<Node, Edge> exporter = new DOTExporter<>(vertexIDProvider, vertexLabelProvider,
-                    edgeLabelProvider, vertexAttributeProvider, null);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            exporter.exportGraph(g, out);
-            graph.setContent(out.toString());
-            graph.setContentName("graph.dot");
-            graph.setContentType("application/xml");
-        } catch (ExportException e) {
-            throw new RuntimeException(e);
-        }
-
-        return graph;
-    }
-
-    @Override
-    protected Graph createDefaultGraph() {
-        Graph graph = new ContentGraphImpl(getName());
         graph.setTitle("DOT Graph");
         graph.setDescription("Complete Graph exported in DOT format");
         graph.setType(GRAPH_TYPE.BASIC.name());
-        graph.setProperties(getProperties());
-        return graph;
+        ContentGraphImpl cgraph = new DOTGraphExporter().export(graph);
+
+        return Arrays.asList(cgraph);
     }
 
 }

@@ -16,33 +16,17 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.apidoc.api.graph;
+package org.nuxeo.apidoc.introspection.graph;
+
+import org.nuxeo.apidoc.api.graph.Node;
 
 /**
+ * Interface to allow filtering nodes from a graph.
+ * 
  * @since 11.1
  */
-public interface Node {
+public interface NodeFilter {
 
-    String getOriginalId();
-
-    String getLabel();
-
-    String getPath();
-
-    String getType();
-
-    String getCategory();
-
-    String getColor();
-
-    int getWeight();
-
-    void setWeight(int weigth);
-
-    int getId();
-
-    void setId(int id);
-
-    Node copy();
+    boolean accept(Node node);
 
 }

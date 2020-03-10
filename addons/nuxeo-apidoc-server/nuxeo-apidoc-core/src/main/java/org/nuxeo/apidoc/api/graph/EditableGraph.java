@@ -18,31 +18,40 @@
  */
 package org.nuxeo.apidoc.api.graph;
 
+import java.util.List;
+import java.util.Map;
+
+import org.nuxeo.apidoc.introspection.graph.NodeFilter;
+
 /**
  * @since 11.1
  */
-public interface Node {
+public interface EditableGraph extends Graph {
 
-    String getOriginalId();
+    void setName(String name);
 
-    String getLabel();
+    void setTitle(String title);
 
-    String getPath();
+    void setDescription(String description);
 
-    String getType();
+    void setType(String type);
 
-    String getCategory();
+    void addEdge(Edge edge);
 
-    String getColor();
+    void addNode(Node node);
 
-    int getWeight();
+    Node getNode(String nodeId);
 
-    void setWeight(int weigth);
+    List<Node> getNodes();
 
-    int getId();
+    List<Edge> getEdges();
 
-    void setId(int id);
+    Map<String, String> getProperties();
 
-    Node copy();
+    void setProperties(Map<String, String> properties);
+
+    String getProperty(String name, String defaultValue);
+
+    EditableGraph copy(NodeFilter nodeFilter);
 
 }

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import org.nuxeo.apidoc.api.graph.Node;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -63,6 +65,16 @@ public class PositionedNodeImpl extends NodeImpl {
 
     public void setZ(float z) {
         this.z = z;
+    }
+
+    @Override
+    public Node copy() {
+        PositionedNodeImpl copy = new PositionedNodeImpl(originalId, label, weight, path, type, category, color);
+        copy.setId(id);
+        copy.setX(x);
+        copy.setY(y);
+        copy.setZ(z);
+        return copy;
     }
 
 }

@@ -41,4 +41,6 @@ public interface Edge {
 
     void setTarget(int target);
 
+    Edge copy();
+
 }

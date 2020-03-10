@@ -22,11 +22,6 @@
         <property name="forceLayout.timeout">60</property>
       </properties>
     </graphGenerator>
-    <graphGenerator name="bundles" class="org.nuxeo.apidoc.introspection.graph.BundleGraphGeneratorImpl">
-      <properties>
-        <property name="forceLayout.timeout">60</property>
-      </properties>
-    </graphGenerator>
   </extension>
 
 </component>

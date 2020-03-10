@@ -6520,877 +6520,877 @@
     "color" : "#000000",
     "id" : 724
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "label" : "org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 728
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "label" : "org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 732
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
-    "label" : "NXComponent-service:org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
+    "originalId" : "NXComponent-org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
+    "label" : "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 738
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--widgettypes",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--widgettypes",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--widgettypes",
+    "label" : "org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--widgettypes",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 742
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--layouts",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--layouts",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--layouts",
+    "label" : "org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--layouts",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 745
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
+    "label" : "org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 749
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.types.TypeService--org.nuxeo.ecm.platform.types.TypeService--types",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.types.TypeService--org.nuxeo.ecm.platform.types.TypeService--types",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.types.TypeService--org.nuxeo.ecm.platform.types.TypeService--types",
+    "label" : "org.nuxeo.ecm.platform.types.TypeService--org.nuxeo.ecm.platform.types.TypeService--types",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 753
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
+    "label" : "org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 757
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
-    "label" : "NXComponent-service:org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
+    "originalId" : "NXComponent-org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
+    "label" : "org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 761
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
+    "label" : "org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 769
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "label" : "org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 776
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.directory.ui.DirectoryUIManager--org.nuxeo.ecm.directory.ui.DirectoryUIManager--directories",
-    "label" : "NXComponent-service:org.nuxeo.ecm.directory.ui.DirectoryUIManager--org.nuxeo.ecm.directory.ui.DirectoryUIManager--directories",
+    "originalId" : "NXComponent-org.nuxeo.ecm.directory.ui.DirectoryUIManager--org.nuxeo.ecm.directory.ui.DirectoryUIManager--directories",
+    "label" : "org.nuxeo.ecm.directory.ui.DirectoryUIManager--org.nuxeo.ecm.directory.ui.DirectoryUIManager--directories",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 782
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
-    "label" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "label" : "org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 793
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
+    "label" : "org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 797
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
-    "label" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
+    "originalId" : "NXComponent-org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
+    "label" : "org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 801
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
+    "label" : "org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 805
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "label" : "org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 809
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
+    "label" : "org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 825
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
+    "label" : "org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 840
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
-    "label" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "originalId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "label" : "org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 844
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
-    "label" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
+    "originalId" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
+    "label" : "org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 852
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
+    "label" : "org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 856
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
+    "label" : "org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 862
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
+    "label" : "org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 866
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.automation.io.services.IOComponent--org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
-    "label" : "NXComponent-service:org.nuxeo.ecm.automation.io.services.IOComponent--org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
+    "originalId" : "NXComponent-org.nuxeo.ecm.automation.io.services.IOComponent--org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
+    "label" : "org.nuxeo.ecm.automation.io.services.IOComponent--org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 872
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
+    "label" : "org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 879
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
-    "label" : "NXComponent-service:org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
+    "originalId" : "NXComponent-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
+    "label" : "org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 891
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.automation.server.BatchManager--org.nuxeo.ecm.automation.server.BatchManager--handlers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.automation.server.BatchManager--org.nuxeo.ecm.automation.server.BatchManager--handlers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.automation.server.BatchManager--org.nuxeo.ecm.automation.server.BatchManager--handlers",
+    "label" : "org.nuxeo.ecm.automation.server.BatchManager--org.nuxeo.ecm.automation.server.BatchManager--handlers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 906
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
+    "label" : "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 916
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
+    "label" : "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 920
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.filter.CharacterFilteringService--org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.filter.CharacterFilteringService--org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.filter.CharacterFilteringService--org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
+    "label" : "org.nuxeo.ecm.core.filter.CharacterFilteringService--org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 942
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.migration.MigrationService--org.nuxeo.runtime.migration.MigrationService--configuration",
-    "label" : "NXComponent-service:org.nuxeo.runtime.migration.MigrationService--org.nuxeo.runtime.migration.MigrationService--configuration",
+    "originalId" : "NXComponent-org.nuxeo.runtime.migration.MigrationService--org.nuxeo.runtime.migration.MigrationService--configuration",
+    "label" : "org.nuxeo.runtime.migration.MigrationService--org.nuxeo.runtime.migration.MigrationService--configuration",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 957
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
+    "label" : "org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 961
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
+    "label" : "org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 964
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissions",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissions",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissions",
+    "label" : "org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissions",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 978
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
+    "label" : "org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 981
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--configuration",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--configuration",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--configuration",
+    "label" : "org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--configuration",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 987
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
+    "label" : "org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1002
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
+    "label" : "org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1006
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
+    "label" : "org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1018
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
+    "label" : "org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1047
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
+    "label" : "org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1051
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentValidationService--org.nuxeo.ecm.core.api.DocumentValidationService--activations",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentValidationService--org.nuxeo.ecm.core.api.DocumentValidationService--activations",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentValidationService--org.nuxeo.ecm.core.api.DocumentValidationService--activations",
+    "label" : "org.nuxeo.ecm.core.api.DocumentValidationService--org.nuxeo.ecm.core.api.DocumentValidationService--activations",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1108
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
+    "label" : "org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1120
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
-    "label" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
+    "originalId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
+    "label" : "org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1125
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
-    "label" : "NXComponent-service:org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
+    "originalId" : "NXComponent-org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
+    "label" : "org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1145
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
+    "label" : "org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1169
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
+    "label" : "org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1174
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
+    "label" : "org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1178
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--factory",
-    "label" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--factory",
+    "originalId" : "NXComponent-org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--factory",
+    "label" : "org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--factory",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1201
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--mapper",
-    "label" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--mapper",
+    "originalId" : "NXComponent-org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--mapper",
+    "label" : "org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--mapper",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1204
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--factories",
-    "label" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--factories",
+    "originalId" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--factories",
+    "label" : "org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--factories",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1236
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
+    "label" : "org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1241
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
+    "label" : "org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1244
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
+    "label" : "org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1247
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
+    "label" : "org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1257
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
+    "label" : "org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1260
   }, {
     "originalId" : "NXBundle-javax.servlet",
-    "label" : "NXBundle-javax.servlet",
+    "label" : "javax.servlet",
     "weight" : 2,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1290
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
+    "label" : "org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1294
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
+    "label" : "org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1354
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
+    "label" : "org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1357
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
+    "label" : "org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1370
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
+    "label" : "org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1373
   }, {
     "originalId" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.api",
-    "label" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.api",
+    "label" : "org.nuxeo.ecm.platform.forms.layout.api",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1384
   }, {
     "originalId" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.client",
-    "label" : "NXBundle-org.nuxeo.ecm.platform.forms.layout.client",
+    "label" : "org.nuxeo.ecm.platform.forms.layout.client",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1386
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
+    "label" : "org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1400
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.usermanager.UserService--org.nuxeo.ecm.platform.usermanager.UserService--userManager",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.usermanager.UserService--org.nuxeo.ecm.platform.usermanager.UserService--userManager",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService--org.nuxeo.ecm.platform.usermanager.UserService--userManager",
+    "label" : "org.nuxeo.ecm.platform.usermanager.UserService--org.nuxeo.ecm.platform.usermanager.UserService--userManager",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1425
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
+    "label" : "org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1435
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
+    "label" : "org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1438
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
+    "label" : "org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1441
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
+    "label" : "org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1444
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
+    "label" : "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1448
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.locale--org.nuxeo.ecm.platform.web.common.locale--providers",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.locale--org.nuxeo.ecm.platform.web.common.locale--providers",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.web.common.locale--org.nuxeo.ecm.platform.web.common.locale--providers",
+    "label" : "org.nuxeo.ecm.platform.web.common.locale--org.nuxeo.ecm.platform.web.common.locale--providers",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1457
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
-    "label" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
+    "originalId" : "NXComponent-org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
+    "label" : "org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1469
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
+    "label" : "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1481
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
+    "label" : "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1484
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
+    "label" : "org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1491
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
+    "label" : "org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1494
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
-    "label" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
+    "originalId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
+    "label" : "org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1504
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.webengine.WebEngineComponent--org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
-    "label" : "NXComponent-service:org.nuxeo.ecm.webengine.WebEngineComponent--org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
+    "originalId" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent--org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
+    "label" : "org.nuxeo.ecm.webengine.WebEngineComponent--org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1527
   }, {
     "originalId" : "NXBundle-com.sun.jersey.server",
-    "label" : "NXBundle-com.sun.jersey.server",
+    "label" : "com.sun.jersey.server",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1538
   }, {
     "originalId" : "NXBundle-com.sun.jersey.core",
-    "label" : "NXBundle-com.sun.jersey.core",
+    "label" : "com.sun.jersey.core",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "BUNDLE",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1540
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
-    "label" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
+    "originalId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
+    "label" : "org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1567
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
-    "label" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
+    "originalId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
+    "label" : "org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1571
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
-    "label" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
+    "originalId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
+    "label" : "org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1574
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
-    "label" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
+    "originalId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
+    "label" : "org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1577
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
-    "label" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
+    "originalId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
+    "label" : "org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1595
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.blob.BlobManager--org.nuxeo.ecm.core.blob.BlobManager--configuration",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.blob.BlobManager--org.nuxeo.ecm.core.blob.BlobManager--configuration",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.blob.BlobManager--org.nuxeo.ecm.core.blob.BlobManager--configuration",
+    "label" : "org.nuxeo.ecm.core.blob.BlobManager--org.nuxeo.ecm.core.blob.BlobManager--configuration",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1607
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
-    "label" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
+    "originalId" : "NXComponent-org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
+    "label" : "org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1620
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.RepositoryService--org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.RepositoryService--org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.storage.sql.RepositoryService--org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
+    "label" : "org.nuxeo.ecm.core.storage.sql.RepositoryService--org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1623
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.trackers.files--org.nuxeo.runtime.trackers.files--configs",
-    "label" : "NXComponent-service:org.nuxeo.runtime.trackers.files--org.nuxeo.runtime.trackers.files--configs",
+    "originalId" : "NXComponent-org.nuxeo.runtime.trackers.files--org.nuxeo.runtime.trackers.files--configs",
+    "label" : "org.nuxeo.runtime.trackers.files--org.nuxeo.runtime.trackers.files--configs",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1631
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
-    "label" : "NXComponent-service:org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
+    "originalId" : "NXComponent-org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
+    "label" : "org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "PLATFORM",
+    "color" : "#FF0000",
     "id" : 1639
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
-    "label" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
+    "originalId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
+    "label" : "org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "CORE",
+    "color" : "#0000FF",
     "id" : 1649
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--sorter",
-    "label" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--sorter",
+    "originalId" : "NXComponent-org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--sorter",
+    "label" : "org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--sorter",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1666
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--services",
-    "label" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--services",
+    "originalId" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--services",
+    "label" : "org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--services",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1681
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.codec.service--org.nuxeo.runtime.codec.service--codec",
-    "label" : "NXComponent-service:org.nuxeo.runtime.codec.service--org.nuxeo.runtime.codec.service--codec",
+    "originalId" : "NXComponent-org.nuxeo.runtime.codec.service--org.nuxeo.runtime.codec.service--codec",
+    "label" : "org.nuxeo.runtime.codec.service--org.nuxeo.runtime.codec.service--codec",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1719
   }, {
-    "originalId" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--replacement",
-    "label" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--replacement",
+    "originalId" : "NXComponent-org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--replacement",
+    "label" : "org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--replacement",
     "weight" : 1,
-    "path" : null,
-    "type" : null,
-    "category" : null,
-    "color" : null,
+    "path" : "",
+    "type" : "COMPONENT",
+    "category" : "RUNTIME",
+    "color" : "#000000",
     "id" : 1728
   } ],
   "edges" : [ {
@@ -7408,7 +7408,7 @@
     "source" : 3,
     "target" : 4
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.listener.contrib--listener",
     "value" : "REFERENCES",
     "id" : 727,
@@ -7429,7 +7429,7 @@
     "source" : 5,
     "target" : 6
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.adapterContrib--adapters",
     "value" : "REFERENCES",
     "id" : 731,
@@ -7464,7 +7464,7 @@
     "source" : 7,
     "target" : 10
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
+    "originalSourceId" : "NXComponent-org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
     "value" : "REFERENCES",
     "id" : 737,
@@ -7485,7 +7485,7 @@
     "source" : 11,
     "target" : 12
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--widgettypes",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--widgettypes",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.layout.contrib--widgettypes",
     "value" : "REFERENCES",
     "id" : 741,
@@ -7499,7 +7499,7 @@
     "source" : 11,
     "target" : 13
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--layouts",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--org.nuxeo.ecm.platform.forms.layout.WebLayoutManager--layouts",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.layout.contrib--layouts",
     "value" : "REFERENCES",
     "id" : 744,
@@ -7520,7 +7520,7 @@
     "source" : 14,
     "target" : 15
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.doctypeContrib--doctype",
     "value" : "REFERENCES",
     "id" : 748,
@@ -7541,7 +7541,7 @@
     "source" : 16,
     "target" : 17
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.types.TypeService--org.nuxeo.ecm.platform.types.TypeService--types",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.types.TypeService--org.nuxeo.ecm.platform.types.TypeService--types",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.uiContrib--types",
     "value" : "REFERENCES",
     "id" : 752,
@@ -7562,7 +7562,7 @@
     "source" : 18,
     "target" : 19
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.lifecycle.contrib--types",
     "value" : "REFERENCES",
     "id" : 756,
@@ -7583,7 +7583,7 @@
     "source" : 20,
     "target" : 21
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.directoryContrib--directories",
     "value" : "REFERENCES",
     "id" : 760,
@@ -7604,7 +7604,7 @@
     "source" : 22,
     "target" : 23
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
+    "originalSourceId" : "NXComponent-org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--graphs",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.test.graphs--graphs",
     "value" : "REFERENCES",
     "id" : 764,
@@ -7632,7 +7632,7 @@
     "source" : 24,
     "target" : 25
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.schemaContrib--schema",
     "value" : "REFERENCES",
     "id" : 768,
@@ -7674,7 +7674,7 @@
     "source" : 29,
     "target" : 30
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.test.works--queues",
     "value" : "REFERENCES",
     "id" : 775,
@@ -7688,7 +7688,7 @@
     "source" : 29,
     "target" : 31
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.test.works--queues1",
     "value" : "REFERENCES",
     "id" : 778,
@@ -7709,7 +7709,7 @@
     "source" : 32,
     "target" : 33
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.directory.ui.DirectoryUIManager--org.nuxeo.ecm.directory.ui.DirectoryUIManager--directories",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.directory.ui.DirectoryUIManager--org.nuxeo.ecm.directory.ui.DirectoryUIManager--directories",
     "originalTargetId" : "NXContribution-org.nuxeo.apidoc.directoryUIContrib--directories",
     "value" : "REFERENCES",
     "id" : 781,
@@ -7779,7 +7779,7 @@
     "source" : 43,
     "target" : 44
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.actions.ActionService.properties--configuration",
     "value" : "REFERENCES",
     "id" : 792,
@@ -7800,7 +7800,7 @@
     "source" : 45,
     "target" : 46
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.filters--filters",
     "value" : "REFERENCES",
     "id" : 796,
@@ -7821,7 +7821,7 @@
     "source" : 48,
     "target" : 49
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.core.impl.ReloadListener--listeners",
     "value" : "REFERENCES",
     "id" : 800,
@@ -7842,7 +7842,7 @@
     "source" : 50,
     "target" : 51
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.coreContrib--operations",
     "value" : "REFERENCES",
     "id" : 804,
@@ -7863,7 +7863,7 @@
     "source" : 52,
     "target" : 53
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.marshallers--marshallers",
     "value" : "REFERENCES",
     "id" : 808,
@@ -7968,7 +7968,7 @@
     "source" : 54,
     "target" : 67
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.operation.OperationServiceComponent--adapters",
     "value" : "REFERENCES",
     "id" : 824,
@@ -7989,7 +7989,7 @@
     "source" : 54,
     "target" : 68
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.operation.OperationServiceComponent--listener",
     "value" : "REFERENCES",
     "id" : 828,
@@ -8017,7 +8017,7 @@
     "source" : 69,
     "target" : 70
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.core.impl.workmanager--queues",
     "value" : "REFERENCES",
     "id" : 832,
@@ -8038,7 +8038,7 @@
     "source" : 71,
     "target" : 72
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.core.properties--configuration",
     "value" : "REFERENCES",
     "id" : 835,
@@ -8066,7 +8066,7 @@
     "source" : 74,
     "target" : 75
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.features.bulk--actions",
     "value" : "REFERENCES",
     "id" : 839,
@@ -8087,7 +8087,7 @@
     "source" : 74,
     "target" : 76
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.features.bulk--streamProcessor",
     "value" : "REFERENCES",
     "id" : 843,
@@ -8115,7 +8115,7 @@
     "source" : 77,
     "target" : 78
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.actions.ActionService--org.nuxeo.ecm.platform.actions.ActionService--filters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.actions.core--filters",
     "value" : "REFERENCES",
     "id" : 848,
@@ -8136,7 +8136,7 @@
     "source" : 79,
     "target" : 80
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.features.bindings--bindings",
     "value" : "REFERENCES",
     "id" : 851,
@@ -8157,7 +8157,7 @@
     "source" : 81,
     "target" : 82
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.audit.PageProviderservice.automation.contrib--providers",
     "value" : "REFERENCES",
     "id" : 855,
@@ -8178,7 +8178,7 @@
     "source" : 83,
     "target" : 84
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--operations",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.features.operations--operations",
     "value" : "REFERENCES",
     "id" : 859,
@@ -8192,7 +8192,7 @@
     "source" : 83,
     "target" : 85
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--chains",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.features.operations--chains",
     "value" : "REFERENCES",
     "id" : 861,
@@ -8213,7 +8213,7 @@
     "source" : 86,
     "target" : 87
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.contextContrib--contextHelpers",
     "value" : "REFERENCES",
     "id" : 865,
@@ -8227,7 +8227,7 @@
     "source" : 86,
     "target" : 88
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.contextContrib--configuration",
     "value" : "REFERENCES",
     "id" : 868,
@@ -8248,7 +8248,7 @@
     "source" : 90,
     "target" : 91
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.automation.io.services.IOComponent--org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.automation.io.services.IOComponent--org.nuxeo.ecm.automation.io.services.IOComponent--codecs",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.io.services.IOComponent.codec.contrib--codecs",
     "value" : "REFERENCES",
     "id" : 871,
@@ -8290,7 +8290,7 @@
     "source" : 95,
     "target" : 96
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.server.marshallers--marshallers",
     "value" : "REFERENCES",
     "id" : 878,
@@ -8339,7 +8339,7 @@
     "source" : 98,
     "target" : 102
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--configuration",
     "value" : "REFERENCES",
     "id" : 886,
@@ -8367,7 +8367,7 @@
     "source" : 103,
     "target" : 104
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
+    "originalSourceId" : "NXComponent-org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--org.nuxeo.automation.scripting.internals.AutomationScriptingComponent--classFilter",
     "originalTargetId" : "NXContribution-org.nuxeo.automation.scripting.classfilter--classFilter",
     "value" : "REFERENCES",
     "id" : 890,
@@ -8388,7 +8388,7 @@
     "source" : 105,
     "target" : 106
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.operation.OperationServiceComponent--org.nuxeo.ecm.core.operation.OperationServiceComponent--contextHelpers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.automation.scripting.contextContrib--contextHelpers",
     "value" : "REFERENCES",
     "id" : 894,
@@ -8416,7 +8416,7 @@
     "source" : 108,
     "target" : 109
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.automation.server.AutomationServer--org.nuxeo.ecm.automation.server.AutomationServer--bindings",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.server.bindings--bindings",
     "value" : "REFERENCES",
     "id" : 898,
@@ -8465,7 +8465,7 @@
     "source" : 114,
     "target" : 115
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.automation.server.BatchManager--org.nuxeo.ecm.automation.server.BatchManager--handlers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.automation.server.BatchManager--org.nuxeo.ecm.automation.server.BatchManager--handlers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.server.batch.handler.DefaultBatchHandler--handlers",
     "value" : "REFERENCES",
     "id" : 905,
@@ -8507,7 +8507,7 @@
     "source" : 119,
     "target" : 120
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.rest.pageprovider.contrib--providers",
     "value" : "REFERENCES",
     "id" : 912,
@@ -8528,7 +8528,7 @@
     "source" : 121,
     "target" : 122
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.server.auth.config--authenticators",
     "value" : "REFERENCES",
     "id" : 915,
@@ -8549,7 +8549,7 @@
     "source" : 121,
     "target" : 123
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--specificChains",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.automation.server.auth.config--specificChains",
     "value" : "REFERENCES",
     "id" : 919,
@@ -8619,7 +8619,7 @@
     "source" : 126,
     "target" : 131
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.uidgen.UIDGeneratorService--listener",
     "value" : "REFERENCES",
     "id" : 930,
@@ -8640,7 +8640,7 @@
     "source" : 132,
     "target" : 133
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.event.lifecycle.listener--listener",
     "value" : "REFERENCES",
     "id" : 933,
@@ -8654,7 +8654,7 @@
     "source" : 132,
     "target" : 134
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.event.lifecycle.listener--configuration",
     "value" : "REFERENCES",
     "id" : 935,
@@ -8675,7 +8675,7 @@
     "source" : 135,
     "target" : 136
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.versioning.VersioningDocumentAdapter--adapters",
     "value" : "REFERENCES",
     "id" : 938,
@@ -8696,7 +8696,7 @@
     "source" : 137,
     "target" : 138
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.filter.CharacterFilteringService--org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.filter.CharacterFilteringService--org.nuxeo.ecm.core.filter.CharacterFilteringService--filtering",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.document.characterFiltering.contrib--filtering",
     "value" : "REFERENCES",
     "id" : 941,
@@ -8717,7 +8717,7 @@
     "source" : 139,
     "target" : 140
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.event.orphanVersionRemoval.listener--listener",
     "value" : "REFERENCES",
     "id" : 945,
@@ -8794,7 +8794,7 @@
     "source" : 149,
     "target" : 150
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.migration.MigrationService--org.nuxeo.runtime.migration.MigrationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.migration.MigrationService--org.nuxeo.runtime.migration.MigrationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.trash.service.migrator--configuration",
     "value" : "REFERENCES",
     "id" : 956,
@@ -8815,7 +8815,7 @@
     "source" : 151,
     "target" : 152
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--policies",
     "value" : "REFERENCES",
     "id" : 960,
@@ -8829,7 +8829,7 @@
     "source" : 151,
     "target" : 153
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--schedule",
     "value" : "REFERENCES",
     "id" : 963,
@@ -8843,7 +8843,7 @@
     "source" : 151,
     "target" : 154
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--listener",
     "value" : "REFERENCES",
     "id" : 966,
@@ -8857,7 +8857,7 @@
     "source" : 151,
     "target" : 155
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--actions",
     "value" : "REFERENCES",
     "id" : 968,
@@ -8871,7 +8871,7 @@
     "source" : 151,
     "target" : 156
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.retention.contrib--streamProcessor",
     "value" : "REFERENCES",
     "id" : 970,
@@ -8920,7 +8920,7 @@
     "source" : 161,
     "target" : 162
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissions",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissions",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.security.defaultPermissions--permissions",
     "value" : "REFERENCES",
     "id" : 977,
@@ -8934,7 +8934,7 @@
     "source" : 161,
     "target" : 163
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--permissionsVisibility",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.security.defaultPermissions--permissionsVisibility",
     "value" : "REFERENCES",
     "id" : 980,
@@ -8955,7 +8955,7 @@
     "source" : 164,
     "target" : 165
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--schema",
     "value" : "REFERENCES",
     "id" : 984,
@@ -8969,7 +8969,7 @@
     "source" : 164,
     "target" : 166
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--configuration",
     "value" : "REFERENCES",
     "id" : 986,
@@ -8983,7 +8983,7 @@
     "source" : 164,
     "target" : 167
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--doctype",
     "value" : "REFERENCES",
     "id" : 989,
@@ -8997,7 +8997,7 @@
     "source" : 164,
     "target" : 168
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.CoreExtensions--listener",
     "value" : "REFERENCES",
     "id" : 991,
@@ -9018,7 +9018,7 @@
     "source" : 169,
     "target" : 170
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService--schedule",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.schedulers--schedule",
     "value" : "REFERENCES",
     "id" : 994,
@@ -9032,7 +9032,7 @@
     "source" : 169,
     "target" : 171
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.schedulers--listener",
     "value" : "REFERENCES",
     "id" : 996,
@@ -9046,7 +9046,7 @@
     "source" : 169,
     "target" : 172
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.schedulers--queues",
     "value" : "REFERENCES",
     "id" : 998,
@@ -9067,7 +9067,7 @@
     "source" : 173,
     "target" : 174
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--policies",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.versioning.default-policies--policies",
     "value" : "REFERENCES",
     "id" : 1001,
@@ -9088,7 +9088,7 @@
     "source" : 173,
     "target" : 175
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.versioning.VersioningService--org.nuxeo.ecm.core.api.versioning.VersioningService--filters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.versioning.default-policies--filters",
     "value" : "REFERENCES",
     "id" : 1005,
@@ -9116,7 +9116,7 @@
     "source" : 176,
     "target" : 177
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.deletion.config--actions",
     "value" : "REFERENCES",
     "id" : 1010,
@@ -9137,7 +9137,7 @@
     "source" : 176,
     "target" : 178
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.deletion.config--streamProcessor",
     "value" : "REFERENCES",
     "id" : 1013,
@@ -9165,7 +9165,7 @@
     "source" : 179,
     "target" : 180
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--schedule",
     "value" : "REFERENCES",
     "id" : 1017,
@@ -9179,7 +9179,7 @@
     "source" : 179,
     "target" : 181
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--listener",
     "value" : "REFERENCES",
     "id" : 1020,
@@ -9193,7 +9193,7 @@
     "source" : 179,
     "target" : 182
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.orphanVersionsCleanup--configuration",
     "value" : "REFERENCES",
     "id" : 1022,
@@ -9228,7 +9228,7 @@
     "source" : 185,
     "target" : 186
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.security.SecurityService--org.nuxeo.ecm.core.security.SecurityService--policies",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.security.defaultPolicies--policies",
     "value" : "REFERENCES",
     "id" : 1027,
@@ -9249,7 +9249,7 @@
     "source" : 187,
     "target" : 188
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.uidseq.keyvaluestore--configuration",
     "value" : "REFERENCES",
     "id" : 1030,
@@ -9361,7 +9361,7 @@
     "source" : 202,
     "target" : 203
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.DocumentModel.resolver--resolvers",
     "value" : "REFERENCES",
     "id" : 1046,
@@ -9382,7 +9382,7 @@
     "source" : 204,
     "target" : 205
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--lifecycle",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.LifecycleCoreExtensions--lifecycle",
     "value" : "REFERENCES",
     "id" : 1050,
@@ -9396,7 +9396,7 @@
     "source" : 204,
     "target" : 206
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.lifecycle.LifeCycleService--org.nuxeo.ecm.core.lifecycle.LifeCycleService--types",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.LifecycleCoreExtensions--types",
     "value" : "REFERENCES",
     "id" : 1053,
@@ -9480,7 +9480,7 @@
     "source" : 213,
     "target" : 217
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.trash.TrashService--configuration",
     "value" : "REFERENCES",
     "id" : 1065,
@@ -9543,7 +9543,7 @@
     "source" : 225,
     "target" : 226
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.api.blohodlers.adapters--adapters",
     "value" : "REFERENCES",
     "id" : 1074,
@@ -9606,7 +9606,7 @@
     "source" : 233,
     "target" : 234
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.api.thumbnail.adapter--adapters",
     "value" : "REFERENCES",
     "id" : 1083,
@@ -9648,7 +9648,7 @@
     "source" : 238,
     "target" : 239
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.api.properties--configuration",
     "value" : "REFERENCES",
     "id" : 1089,
@@ -9732,7 +9732,7 @@
     "source" : 249,
     "target" : 250
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.security.acl.properties--configuration",
     "value" : "REFERENCES",
     "id" : 1101,
@@ -9774,7 +9774,7 @@
     "source" : 254,
     "target" : 255
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentValidationService--org.nuxeo.ecm.core.api.DocumentValidationService--activations",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentValidationService--org.nuxeo.ecm.core.api.DocumentValidationService--activations",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.api.DocumentValidationService.activations--activations",
     "value" : "REFERENCES",
     "id" : 1107,
@@ -9830,7 +9830,7 @@
     "source" : 261,
     "target" : 262
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.io--marshallers",
     "value" : "REFERENCES",
     "id" : 1116,
@@ -9851,7 +9851,7 @@
     "source" : 263,
     "target" : 264
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.scroll.contrib.default--scroll",
     "value" : "REFERENCES",
     "id" : 1119,
@@ -9879,7 +9879,7 @@
     "source" : 265,
     "target" : 266
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.config--logConfig",
     "value" : "REFERENCES",
     "id" : 1124,
@@ -9900,7 +9900,7 @@
     "source" : 265,
     "target" : 267
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.config--configuration",
     "value" : "REFERENCES",
     "id" : 1128,
@@ -9921,7 +9921,7 @@
     "source" : 265,
     "target" : 268
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.config--streamProcessor",
     "value" : "REFERENCES",
     "id" : 1131,
@@ -9942,7 +9942,7 @@
     "source" : 265,
     "target" : 269
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.config--actions",
     "value" : "REFERENCES",
     "id" : 1134,
@@ -9963,7 +9963,7 @@
     "source" : 265,
     "target" : 270
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.config--streamProcessor1",
     "value" : "REFERENCES",
     "id" : 1137,
@@ -10012,7 +10012,7 @@
     "source" : 275,
     "target" : 276
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.tests--configuration",
     "value" : "REFERENCES",
     "id" : 1144,
@@ -10026,7 +10026,7 @@
     "source" : 275,
     "target" : 277
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--logConfig",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.bulk.tests--logConfig",
     "value" : "REFERENCES",
     "id" : 1147,
@@ -10061,7 +10061,7 @@
     "source" : 279,
     "target" : 282
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.transientstore.TransientStorageComponent--schedule",
     "value" : "REFERENCES",
     "id" : 1152,
@@ -10075,7 +10075,7 @@
     "source" : 279,
     "target" : 283
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.transientstore.TransientStorageComponent--listener",
     "value" : "REFERENCES",
     "id" : 1154,
@@ -10117,7 +10117,7 @@
     "source" : 288,
     "target" : 289
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.convert.configuration--configuration",
     "value" : "REFERENCES",
     "id" : 1160,
@@ -10173,7 +10173,7 @@
     "source" : 296,
     "target" : 297
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--command",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.convert.commandline.pdf2text--command",
     "value" : "REFERENCES",
     "id" : 1168,
@@ -10201,7 +10201,7 @@
     "source" : 298,
     "target" : 299
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--org.nuxeo.ecm.core.convert.service.ConversionServiceImpl--converter",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.convert.plugins--converter",
     "value" : "REFERENCES",
     "id" : 1173,
@@ -10222,7 +10222,7 @@
     "source" : 301,
     "target" : 302
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.work.config--implementation",
     "value" : "REFERENCES",
     "id" : 1177,
@@ -10236,7 +10236,7 @@
     "source" : 301,
     "target" : 303
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.work.config--queues",
     "value" : "REFERENCES",
     "id" : 1180,
@@ -10355,7 +10355,7 @@
     "source" : 319,
     "target" : 320
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--implementation",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.work.test.default.queuing--implementation",
     "value" : "REFERENCES",
     "id" : 1197,
@@ -10376,7 +10376,7 @@
     "source" : 322,
     "target" : 323
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--factory",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--factory",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.io.avro.factories--factory",
     "value" : "REFERENCES",
     "id" : 1200,
@@ -10390,7 +10390,7 @@
     "source" : 322,
     "target" : 324
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--mapper",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--mapper",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.io.avro.factories--mapper",
     "value" : "REFERENCES",
     "id" : 1203,
@@ -10425,7 +10425,7 @@
     "source" : 327,
     "target" : 328
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.io.MarshallerRegistry.marshallers--marshallers",
     "value" : "REFERENCES",
     "id" : 1209,
@@ -10502,7 +10502,7 @@
     "source" : 337,
     "target" : 338
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.typesContrib--schema",
     "value" : "REFERENCES",
     "id" : 1220,
@@ -10516,7 +10516,7 @@
     "source" : 337,
     "target" : 339
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.typesContrib--doctype",
     "value" : "REFERENCES",
     "id" : 1222,
@@ -10607,7 +10607,7 @@
     "source" : 350,
     "target" : 351
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--factories",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--factories",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.runtime.management.contribs--factories",
     "value" : "REFERENCES",
     "id" : 1235,
@@ -10635,7 +10635,7 @@
     "source" : 353,
     "target" : 354
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--serviceDefinition",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.contribs--serviceDefinition",
     "value" : "REFERENCES",
     "id" : 1240,
@@ -10649,7 +10649,7 @@
     "source" : 353,
     "target" : 355
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.contribs--probes",
     "value" : "REFERENCES",
     "id" : 1243,
@@ -10663,7 +10663,7 @@
     "source" : 353,
     "target" : 356
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.contribs--healthCheck",
     "value" : "REFERENCES",
     "id" : 1246,
@@ -10684,7 +10684,7 @@
     "source" : 357,
     "target" : 358
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.listener--listener",
     "value" : "REFERENCES",
     "id" : 1250,
@@ -10726,7 +10726,7 @@
     "source" : 360,
     "target" : 364
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--mimetype",
     "value" : "REFERENCES",
     "id" : 1256,
@@ -10740,7 +10740,7 @@
     "source" : 360,
     "target" : 365
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService--extension",
     "value" : "REFERENCES",
     "id" : 1259,
@@ -10761,7 +10761,7 @@
     "source" : 367,
     "target" : 368
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.query.properties--configuration",
     "value" : "REFERENCES",
     "id" : 1263,
@@ -10936,7 +10936,7 @@
     "source" : 396,
     "target" : 397
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.storage.mongodb.configuration--configuration",
     "value" : "REFERENCES",
     "id" : 1288,
@@ -10964,7 +10964,7 @@
     "source" : 399,
     "target" : 400
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerService--queryMaker",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.storage.sql.jdbc.querymaker.contrib--queryMaker",
     "value" : "REFERENCES",
     "id" : 1293,
@@ -11020,7 +11020,7 @@
     "source" : 406,
     "target" : 407
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.scheduler.SchedulerService--org.nuxeo.ecm.core.scheduler.SchedulerService--schedule",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.storage.sql.softdelete--schedule",
     "value" : "REFERENCES",
     "id" : 1302,
@@ -11034,7 +11034,7 @@
     "source" : 406,
     "target" : 408
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.storage.sql.softdelete--listener",
     "value" : "REFERENCES",
     "id" : 1304,
@@ -11118,7 +11118,7 @@
     "source" : 415,
     "target" : 418
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.DirectoryServiceImpl--listeners",
     "value" : "REFERENCES",
     "id" : 1316,
@@ -11146,7 +11146,7 @@
     "source" : 419,
     "target" : 420
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.resolver--resolvers",
     "value" : "REFERENCES",
     "id" : 1320,
@@ -11167,7 +11167,7 @@
     "source" : 421,
     "target" : 422
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--schema",
     "value" : "REFERENCES",
     "id" : 1323,
@@ -11181,7 +11181,7 @@
     "source" : 421,
     "target" : 423
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--doctype",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--doctype",
     "value" : "REFERENCES",
     "id" : 1325,
@@ -11195,7 +11195,7 @@
     "source" : 421,
     "target" : 424
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.local.configuration--adapters",
     "value" : "REFERENCES",
     "id" : 1327,
@@ -11244,7 +11244,7 @@
     "source" : 429,
     "target" : 430
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.marshallers--marshallers",
     "value" : "REFERENCES",
     "id" : 1334,
@@ -11272,7 +11272,7 @@
     "source" : 432,
     "target" : 433
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.directory.pageproviders--providers",
     "value" : "REFERENCES",
     "id" : 1338,
@@ -11314,7 +11314,7 @@
     "source" : 438,
     "target" : 439
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.TypeService--org.nuxeo.ecm.core.schema.TypeService--schema",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.directory.types--schema",
     "value" : "REFERENCES",
     "id" : 1344,
@@ -11377,7 +11377,7 @@
     "source" : 447,
     "target" : 448
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--environment",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib--environment",
     "value" : "REFERENCES",
     "id" : 1353,
@@ -11391,7 +11391,7 @@
     "source" : 447,
     "target" : 449
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent--commandTester",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib--commandTester",
     "value" : "REFERENCES",
     "id" : 1356,
@@ -11419,7 +11419,7 @@
     "source" : 451,
     "target" : 452
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.content.template.listener--listener",
     "value" : "REFERENCES",
     "id" : 1361,
@@ -11475,7 +11475,7 @@
     "source" : 458,
     "target" : 459
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factory",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib--factory",
     "value" : "REFERENCES",
     "id" : 1369,
@@ -11489,7 +11489,7 @@
     "source" : 458,
     "target" : 460
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--org.nuxeo.ecm.platform.content.template.service.ContentTemplateService--factoryBinding",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib--factoryBinding",
     "value" : "REFERENCES",
     "id" : 1372,
@@ -11517,7 +11517,7 @@
     "source" : 462,
     "target" : 464
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-DublinCoreStorageService--listener",
     "value" : "REFERENCES",
     "id" : 1377,
@@ -11531,7 +11531,7 @@
     "source" : 462,
     "target" : 465
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-DublinCoreStorageService--configuration",
     "value" : "REFERENCES",
     "id" : 1379,
@@ -11587,7 +11587,7 @@
     "source" : 471,
     "target" : 472
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.contentview.json.marshallers--marshallers",
     "value" : "REFERENCES",
     "id" : 1389,
@@ -11629,7 +11629,7 @@
     "source" : 475,
     "target" : 479
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.query.api.PageProviderService--configuration",
     "value" : "REFERENCES",
     "id" : 1395,
@@ -11657,7 +11657,7 @@
     "source" : 481,
     "target" : 482
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl--computer",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.computedgroups.UserManager.companyComputerContrib--computer",
     "value" : "REFERENCES",
     "id" : 1399,
@@ -11678,7 +11678,7 @@
     "source" : 483,
     "target" : 484
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.api.DocumentAdapterService--org.nuxeo.ecm.core.api.DocumentAdapterService--adapters",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.usermanager.adapter--adapters",
     "value" : "REFERENCES",
     "id" : 1403,
@@ -11727,7 +11727,7 @@
     "source" : 489,
     "target" : 490
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.usermanager.properties--configuration",
     "value" : "REFERENCES",
     "id" : 1410,
@@ -11741,7 +11741,7 @@
     "source" : 489,
     "target" : 491
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.usermanager.properties--configuration1",
     "value" : "REFERENCES",
     "id" : 1412,
@@ -11762,7 +11762,7 @@
     "source" : 492,
     "target" : 493
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.usermanager.marshallers--marshallers",
     "value" : "REFERENCES",
     "id" : 1415,
@@ -11825,7 +11825,7 @@
     "source" : 500,
     "target" : 501
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.usermanager.UserService--org.nuxeo.ecm.platform.usermanager.UserService--userManager",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.usermanager.UserService--org.nuxeo.ecm.platform.usermanager.UserService--userManager",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.usermanager.UserManagerImpl--userManager",
     "value" : "REFERENCES",
     "id" : 1424,
@@ -11846,7 +11846,7 @@
     "source" : 502,
     "target" : 503
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.schema.ObjectResolverService--org.nuxeo.ecm.core.schema.ObjectResolverService--resolvers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.usermanager.resolver--resolvers",
     "value" : "REFERENCES",
     "id" : 1428,
@@ -11867,7 +11867,7 @@
     "source" : 505,
     "target" : 506
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.query.api.PageProviderService--org.nuxeo.ecm.platform.query.api.PageProviderService--providers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.usermanager.pageproviders--providers",
     "value" : "REFERENCES",
     "id" : 1431,
@@ -11888,7 +11888,7 @@
     "source" : 508,
     "target" : 509
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--errorhandlers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--errorhandlers",
     "value" : "REFERENCES",
     "id" : 1434,
@@ -11902,7 +11902,7 @@
     "source" : 508,
     "target" : 510
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--requestdump",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--requestdump",
     "value" : "REFERENCES",
     "id" : 1437,
@@ -11916,7 +11916,7 @@
     "source" : 508,
     "target" : 511
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--listener",
     "value" : "REFERENCES",
     "id" : 1440,
@@ -11930,7 +11930,7 @@
     "source" : 508,
     "target" : 512
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingService--exceptionhandler",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.exceptionhandling.service.ExceptionHandlingContrib--exceptionhandler",
     "value" : "REFERENCES",
     "id" : 1443,
@@ -11951,7 +11951,7 @@
     "source" : 513,
     "target" : 514
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--loginScreen",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.login--loginScreen",
     "value" : "REFERENCES",
     "id" : 1447,
@@ -12007,7 +12007,7 @@
     "source" : 520,
     "target" : 521
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.locale--org.nuxeo.ecm.platform.web.common.locale--providers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.locale--org.nuxeo.ecm.platform.web.common.locale--providers",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.locale.default.contrib--providers",
     "value" : "REFERENCES",
     "id" : 1456,
@@ -12084,7 +12084,7 @@
     "source" : 522,
     "target" : 531
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--implementation",
     "value" : "REFERENCES",
     "id" : 1468,
@@ -12147,7 +12147,7 @@
     "source" : 538,
     "target" : 539
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--authenticators",
     "value" : "REFERENCES",
     "id" : 1478,
@@ -12161,7 +12161,7 @@
     "source" : 538,
     "target" : 540
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--chain",
     "value" : "REFERENCES",
     "id" : 1480,
@@ -12175,7 +12175,7 @@
     "source" : 538,
     "target" : 541
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.defaultConfig--startURL",
     "value" : "REFERENCES",
     "id" : 1483,
@@ -12217,7 +12217,7 @@
     "source" : 545,
     "target" : 546
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib--filterConfig",
     "value" : "REFERENCES",
     "id" : 1490,
@@ -12231,7 +12231,7 @@
     "source" : 545,
     "target" : 547
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--responseHeaders",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService.defaultContrib--responseHeaders",
     "value" : "REFERENCES",
     "id" : 1493,
@@ -12252,7 +12252,7 @@
     "source" : 548,
     "target" : 549
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.EventService--org.nuxeo.runtime.EventService--listeners",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.adminStatusListener.contrib--listeners",
     "value" : "REFERENCES",
     "id" : 1497,
@@ -12273,7 +12273,7 @@
     "source" : 550,
     "target" : 551
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.ConfigurationService--org.nuxeo.runtime.ConfigurationService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.cors--configuration",
     "value" : "REFERENCES",
     "id" : 1500,
@@ -12294,7 +12294,7 @@
     "source" : 553,
     "target" : 554
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--sessionManager",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--sessionManager",
     "value" : "REFERENCES",
     "id" : 1503,
@@ -12322,7 +12322,7 @@
     "source" : 553,
     "target" : 555
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--startURL",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--startURL",
     "value" : "REFERENCES",
     "id" : 1508,
@@ -12350,7 +12350,7 @@
     "source" : 553,
     "target" : 556
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--authenticators",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--authenticators",
     "value" : "REFERENCES",
     "id" : 1512,
@@ -12378,7 +12378,7 @@
     "source" : 553,
     "target" : 557
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService--chain",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig--chain",
     "value" : "REFERENCES",
     "id" : 1516,
@@ -12448,7 +12448,7 @@
     "source" : 558,
     "target" : 564
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.webengine.WebEngineComponent--org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.webengine.WebEngineComponent--org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.webengine.WebEngineComponent--rendering-extension",
     "value" : "REFERENCES",
     "id" : 1526,
@@ -12469,7 +12469,7 @@
     "source" : 558,
     "target" : 565
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerService--filterConfig",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.webengine.WebEngineComponent--filterConfig",
     "value" : "REFERENCES",
     "id" : 1530,
@@ -12644,7 +12644,7 @@
     "source" : 584,
     "target" : 585
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.io.MarshallerRegistry--org.nuxeo.ecm.core.io.MarshallerRegistry--marshallers",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.marshallers--marshallers",
     "value" : "REFERENCES",
     "id" : 1557,
@@ -12665,7 +12665,7 @@
     "source" : 586,
     "target" : 587
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.work.service--org.nuxeo.ecm.core.work.service--queues",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.work.config--queues",
     "value" : "REFERENCES",
     "id" : 1560,
@@ -12686,7 +12686,7 @@
     "source" : 588,
     "target" : 589
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.event.EventServiceComponent--org.nuxeo.ecm.core.event.EventServiceComponent--listener",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.core.listener--listener",
     "value" : "REFERENCES",
     "id" : 1563,
@@ -12707,7 +12707,7 @@
     "source" : 590,
     "target" : 591
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
+    "originalSourceId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchDocWriter",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.ElasticSearchComponent.contrib--elasticSearchDocWriter",
     "value" : "REFERENCES",
     "id" : 1566,
@@ -12728,7 +12728,7 @@
     "source" : 592,
     "target" : 593
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
+    "originalSourceId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchEmbeddedServer",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchEmbeddedServer",
     "value" : "REFERENCES",
     "id" : 1570,
@@ -12742,7 +12742,7 @@
     "source" : 592,
     "target" : 594
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
+    "originalSourceId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchClient",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchClient",
     "value" : "REFERENCES",
     "id" : 1573,
@@ -12756,7 +12756,7 @@
     "source" : 592,
     "target" : 595
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
+    "originalSourceId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchIndex",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.test.contrib--elasticSearchIndex",
     "value" : "REFERENCES",
     "id" : 1576,
@@ -12777,7 +12777,7 @@
     "source" : 596,
     "target" : 597
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.managment.contrib--probes",
     "value" : "REFERENCES",
     "id" : 1580,
@@ -12798,7 +12798,7 @@
     "source" : 596,
     "target" : 598
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.managment.contrib--healthCheck",
     "value" : "REFERENCES",
     "id" : 1583,
@@ -12826,7 +12826,7 @@
     "source" : 599,
     "target" : 600
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.bulk--org.nuxeo.ecm.core.bulk--actions",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.core.bulk.contrib--actions",
     "value" : "REFERENCES",
     "id" : 1587,
@@ -12847,7 +12847,7 @@
     "source" : 599,
     "target" : 601
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.stream.service--org.nuxeo.runtime.stream.service--streamProcessor",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.core.bulk.contrib--streamProcessor",
     "value" : "REFERENCES",
     "id" : 1590,
@@ -12875,7 +12875,7 @@
     "source" : 602,
     "target" : 603
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
+    "originalSourceId" : "NXComponent-org.nuxeo.elasticsearch.ElasticSearchComponent--org.nuxeo.elasticsearch.ElasticSearchComponent--elasticSearchHints",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.hint.contrib--elasticSearchHints",
     "value" : "REFERENCES",
     "id" : 1594,
@@ -12903,7 +12903,7 @@
     "source" : 604,
     "target" : 605
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.scroll.service--org.nuxeo.ecm.core.scroll.service--scroll",
     "originalTargetId" : "NXContribution-org.nuxeo.elasticsearch.scroll.contrib--scroll",
     "value" : "REFERENCES",
     "id" : 1599,
@@ -12952,7 +12952,7 @@
     "source" : 611,
     "target" : 612
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.blob.BlobManager--org.nuxeo.ecm.core.blob.BlobManager--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.blob.BlobManager--org.nuxeo.ecm.core.blob.BlobManager--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.test.blobmanager--configuration",
     "value" : "REFERENCES",
     "id" : 1606,
@@ -13036,7 +13036,7 @@
     "source" : 622,
     "target" : 623
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.storage.sql.test.repo.repository--datasources",
     "value" : "REFERENCES",
     "id" : 1619,
@@ -13050,7 +13050,7 @@
     "source" : 622,
     "target" : 624
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.storage.sql.RepositoryService--org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.storage.sql.RepositoryService--org.nuxeo.ecm.core.storage.sql.RepositoryService--repository",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.storage.sql.test.repo.repository--repository",
     "value" : "REFERENCES",
     "id" : 1622,
@@ -13071,7 +13071,7 @@
     "source" : 625,
     "target" : 626
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.web.common.test.login.as--implementation",
     "value" : "REFERENCES",
     "id" : 1626,
@@ -13099,7 +13099,7 @@
     "source" : 627,
     "target" : 628
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.trackers.files--org.nuxeo.runtime.trackers.files--configs",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.trackers.files--org.nuxeo.runtime.trackers.files--configs",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.trackers.files.threadstracking.config--configs",
     "value" : "REFERENCES",
     "id" : 1630,
@@ -13134,7 +13134,7 @@
     "source" : 631,
     "target" : 632
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--datasources",
     "originalTargetId" : "NXContribution-org.nuxeo.directory.test.sql--datasources",
     "value" : "REFERENCES",
     "id" : 1636,
@@ -13148,7 +13148,7 @@
     "source" : 631,
     "target" : 633
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--org.nuxeo.ecm.directory.sql.SQLDirectoryFactory--directories",
     "originalTargetId" : "NXContribution-org.nuxeo.directory.test.sql--directories",
     "value" : "REFERENCES",
     "id" : 1638,
@@ -13169,7 +13169,7 @@
     "source" : 634,
     "target" : 635
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.LoginAsComponent--org.nuxeo.runtime.LoginAsComponent--implementation",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.api.local.dummy.login--implementation",
     "value" : "REFERENCES",
     "id" : 1642,
@@ -13190,7 +13190,7 @@
     "source" : 636,
     "target" : 637
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.directory.GenericDirectory--org.nuxeo.ecm.directory.GenericDirectory--directories",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.platform.test.directory.sql.storage--directories",
     "value" : "REFERENCES",
     "id" : 1645,
@@ -13211,7 +13211,7 @@
     "source" : 638,
     "target" : 639
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--storageConfiguration",
     "originalTargetId" : "NXContribution-org.nuxeo.ecm.core.management.es.tests--storageConfiguration",
     "value" : "REFERENCES",
     "id" : 1648,
@@ -13323,7 +13323,7 @@
     "source" : 652,
     "target" : 656
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--sorter",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.datasource--org.nuxeo.runtime.datasource--sorter",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.datasource--sorter",
     "value" : "REFERENCES",
     "id" : 1665,
@@ -13372,7 +13372,7 @@
     "source" : 660,
     "target" : 663
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.kv.KeyValueService--org.nuxeo.runtime.kv.KeyValueService--configuration",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.kv.KeyValueService--configuration",
     "value" : "REFERENCES",
     "id" : 1673,
@@ -13421,7 +13421,7 @@
     "source" : 665,
     "target" : 670
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--services",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.management.ResourcePublisher--org.nuxeo.runtime.management.ResourcePublisher--services",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.management.ResourcePublisher--services",
     "value" : "REFERENCES",
     "id" : 1680,
@@ -13680,7 +13680,7 @@
     "source" : 707,
     "target" : 710
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.codec.service--org.nuxeo.runtime.codec.service--codec",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.codec.service--org.nuxeo.runtime.codec.service--codec",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.codec.service--codec",
     "value" : "REFERENCES",
     "id" : 1718,
@@ -13701,7 +13701,7 @@
     "source" : 711,
     "target" : 712
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--probes",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.stream.service.managment.contrib--probes",
     "value" : "REFERENCES",
     "id" : 1722,
@@ -13715,7 +13715,7 @@
     "source" : 711,
     "target" : 713
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
+    "originalSourceId" : "NXComponent-org.nuxeo.ecm.core.management.CoreManagementComponent--org.nuxeo.ecm.core.management.CoreManagementComponent--healthCheck",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.stream.service.managment.contrib--healthCheck",
     "value" : "REFERENCES",
     "id" : 1724,
@@ -13736,7 +13736,7 @@
     "source" : 714,
     "target" : 715
   }, {
-    "originalSourceId" : "NXComponent-service:org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--replacement",
+    "originalSourceId" : "NXComponent-org.nuxeo.runtime.avro--org.nuxeo.runtime.avro--replacement",
     "originalTargetId" : "NXContribution-org.nuxeo.runtime.avro.contrib--replacement",
     "value" : "REFERENCES",
     "id" : 1727,
