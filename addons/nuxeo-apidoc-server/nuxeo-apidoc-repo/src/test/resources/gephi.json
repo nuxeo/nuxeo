@@ -1,10 +1,12 @@
 {
-  "id" : "gephi",
+  "name" : "gephi",
+  "title" : null,
+  "description" : "gephi",
   "type" : "BASIC_LAYOUT",
   "nodes" : [ {
     "originalId" : "NXBundle-org.nuxeo.apidoc.core",
     "label" : "org.nuxeo.apidoc.core",
-    "weight" : 0,
+    "weight" : 1,
     "path" : "",
     "type" : "BUNDLE",
     "category" : "PLATFORM",

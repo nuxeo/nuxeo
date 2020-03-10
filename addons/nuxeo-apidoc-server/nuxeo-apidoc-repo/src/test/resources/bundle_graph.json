@@ -1,5 +1,7 @@
 {
-  "id" : "bundles",
+  "name" : "bundles",
+  "title" : null,
+  "description" : "bundles",
   "type" : "BASIC_LAYOUT",
   "nodes" : [ {
     "originalId" : "NXBundle-org.nuxeo.apidoc.core",

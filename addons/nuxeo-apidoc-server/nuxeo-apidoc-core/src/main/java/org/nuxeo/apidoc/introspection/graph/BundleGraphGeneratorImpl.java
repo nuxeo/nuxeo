@@ -50,6 +50,8 @@ public class BundleGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
             processBundle(distribution, graph, null, children, bundle, cat);
         }
 
+        processBundlesRoot(distribution, graph, null, children);
+
         refine(graph, null);
 
         Graph finalGraph = GephiLayout.getLayout(graph);
