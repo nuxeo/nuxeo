@@ -89,7 +89,7 @@ public class TestTagsMigrator {
     protected NotificationManager notificationManager;
 
     @Test
-    public void testMigrationImpl() throws Exception {
+    public void testMigrationImpl() {
         Migrator migrator = new TagsMigrator();
         List<String> progressLines = new ArrayList<>();
         MigrationContext migrationContext = new MigrationContext() {
@@ -101,6 +101,7 @@ public class TestTagsMigrator {
 
             @Override
             public void requestShutdown() {
+                // test
             }
 
             @Override
@@ -135,7 +136,7 @@ public class TestTagsMigrator {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.tag:relation-tag-service-override.xml")
-    public void testMigrationThroughService() throws Exception {
+    public void testMigrationThroughService() {
         TagService tagService;
 
         tagService = Framework.getService(TagService.class);
@@ -166,7 +167,7 @@ public class TestTagsMigrator {
     }
 
     @SuppressWarnings("deprecation")
-    protected void testMigration(Runnable migrator) throws Exception {
+    protected void testMigration(Runnable migrator) {
         TagService relationTagService = new RelationTagService();
         TagService facetedTagService = new FacetedTagService();
 
@@ -228,7 +229,7 @@ public class TestTagsMigrator {
     }
 
     @Test
-    public void testProbe() throws Exception {
+    public void testProbe() {
         @SuppressWarnings("deprecation")
         TagService relationTagService = new RelationTagService();
         TagService facetedTagService = new FacetedTagService();
