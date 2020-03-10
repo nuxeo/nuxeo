@@ -88,6 +88,9 @@ public class TestTagsMigrator {
     @Inject
     protected NotificationManager notificationManager;
 
+    @Inject
+    protected CoreFeature coreFeature;
+
     @Test
     public void testMigrationImpl() {
         Migrator migrator = new TagsMigrator();
@@ -137,6 +140,11 @@ public class TestTagsMigrator {
     @Test
     @Deploy("org.nuxeo.ecm.platform.tag:relation-tag-service-override.xml")
     public void testMigrationThroughService() {
+        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
+            // NXP-28753: temporarily ignore against PostgreSQL
+            return;
+        }
+
         TagService tagService;
 
         tagService = Framework.getService(TagService.class);
