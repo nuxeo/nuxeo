@@ -46,8 +46,8 @@ public class GephiGraphGeneratorImpl extends BundleGraphGeneratorImpl {
     }
 
     @Override
-    public Graph getGraph(DistributionSnapshot distribution) {
-        Graph graph = super.getGraph(distribution);
+    public Graph getDefaultGraph(DistributionSnapshot distribution) {
+        Graph graph = super.getDefaultGraph(distribution);
 
         // build the rest of the tree on top of that, adjusting positions
         Map<String, Integer> hits = new HashMap<>();
@@ -119,6 +119,13 @@ public class GephiGraphGeneratorImpl extends BundleGraphGeneratorImpl {
 
         refine(graph, hits);
 
+        return graph;
+    }
+
+    protected Graph createDefaultGraph() {
+        Graph graph = super.createDefaultGraph();
+        graph.setTitle("Complete Graph");
+        graph.setDescription("Complete graph, with dependencies, with a layout");
         return graph;
     }
 

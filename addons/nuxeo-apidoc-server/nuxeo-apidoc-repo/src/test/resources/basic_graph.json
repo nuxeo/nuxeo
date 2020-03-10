@@ -1,7 +1,7 @@
 {
   "name" : "basic",
-  "title" : null,
-  "description" : "basic",
+  "title" : "Basic Graph",
+  "description" : "Complete graph, with dependencies, without a layout",
   "type" : "BASIC",
   "nodes" : [ {
     "originalId" : "NXBundle-org.nuxeo.apidoc.core",

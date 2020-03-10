@@ -18,6 +18,8 @@
  */
 package org.nuxeo.apidoc.introspection.graph;
 
+import org.nuxeo.apidoc.api.graph.Graph;
+
 /**
  * @since 11.1
  */
@@ -25,6 +27,14 @@ public class BasicGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
 
     public BasicGraphGeneratorImpl() {
         super();
+    }
+
+    @Override
+    protected Graph createDefaultGraph() {
+        Graph graph = super.createDefaultGraph();
+        graph.setTitle("Basic Graph");
+        graph.setDescription("Complete graph, with dependencies, without a layout");
+        return graph;
     }
 
 }

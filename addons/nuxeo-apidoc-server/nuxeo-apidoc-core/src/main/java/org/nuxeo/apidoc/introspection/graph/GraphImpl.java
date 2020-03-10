@@ -153,10 +153,10 @@ public class GraphImpl extends BaseNuxeoArtifact implements Graph {
         LinkedHashMap<String, Object> values = new LinkedHashMap<>();
         values.put("name", getName());
         values.put("title", getTitle());
-        values.put("description", getId());
+        values.put("description", getDescription());
         values.put("type", getType());
-        values.put("nodes", nodes);
-        values.put("edges", edges);
+        values.put("nodes", getNodes());
+        values.put("edges", getEdges());
         try {
             return mapper.writerFor(LinkedHashMap.class)
                          .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)

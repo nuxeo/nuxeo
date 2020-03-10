@@ -39,8 +39,8 @@ public class BundleGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
     }
 
     @Override
-    public Graph getGraph(DistributionSnapshot distribution) {
-        Graph graph = createGraph();
+    public Graph getDefaultGraph(DistributionSnapshot distribution) {
+        Graph graph = createDefaultGraph();
 
         List<String> children = new ArrayList<>();
 
@@ -60,9 +60,11 @@ public class BundleGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
 
     }
 
-    protected Graph createGraph() {
-        Graph graph = super.createGraph();
+    protected Graph createDefaultGraph() {
+        Graph graph = super.createDefaultGraph();
         graph.setType(GRAPH_TYPE.BASIC_LAYOUT.name());
+        graph.setTitle("Bundles Graph");
+        graph.setDescription("Selected bundles, with dependencies, with a layout");
         return graph;
     }
 

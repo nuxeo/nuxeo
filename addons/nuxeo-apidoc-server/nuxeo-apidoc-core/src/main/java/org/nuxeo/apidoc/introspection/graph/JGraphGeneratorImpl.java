@@ -45,8 +45,8 @@ public class JGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
     }
 
     @Override
-    public Graph getGraph(DistributionSnapshot distribution) {
-        ContentGraphImpl graph = (ContentGraphImpl) super.getGraph(distribution);
+    public Graph getDefaultGraph(DistributionSnapshot distribution) {
+        ContentGraphImpl graph = (ContentGraphImpl) super.getDefaultGraph(distribution);
 
         // transform to get corresponding graph
         SimpleDirectedGraph<Node, Edge> g = new SimpleDirectedGraph<Node, Edge>(Edge.class);
@@ -106,8 +106,10 @@ public class JGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
     }
 
     @Override
-    protected Graph createGraph() {
+    protected Graph createDefaultGraph() {
         Graph graph = new ContentGraphImpl(getName());
+        graph.setTitle("DOT Graph");
+        graph.setDescription("Complete Graph exported in DOT format");
         graph.setType(GRAPH_TYPE.BASIC.name());
         graph.setProperties(getProperties());
         return graph;

@@ -78,12 +78,19 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
     @Override
     public List<Graph> getGraphs(DistributionSnapshot distribution) {
-        Graph g = getGraph(distribution);
+        Graph g = getDefaultGraph(distribution);
         return Arrays.asList(g);
     }
 
-    protected Graph getGraph(DistributionSnapshot distribution) {
-        GraphImpl graph = (GraphImpl) createGraph();
+    protected Graph createDefaultGraph() {
+        Graph graph = new GraphImpl(getName());
+        graph.setType(GRAPH_TYPE.BASIC.name());
+        graph.setProperties(getProperties());
+        return graph;
+    }
+
+    protected Graph getDefaultGraph(DistributionSnapshot distribution) {
+        GraphImpl graph = (GraphImpl) createDefaultGraph();
 
         // introspect the graph, ignore bundle groups but select:
         // - bundles
@@ -260,13 +267,6 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         node.setWeight(weight);
         graph.addNode(node);
         return node;
-    }
-
-    protected Graph createGraph() {
-        Graph graph = new GraphImpl(getName());
-        graph.setType(GRAPH_TYPE.BASIC.name());
-        graph.setProperties(getProperties());
-        return graph;
     }
 
     protected Node createNode(String id, String label, int weight, String path, String type, String category,

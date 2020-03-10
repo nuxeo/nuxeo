@@ -1,7 +1,7 @@
 {
   "name" : "bundles",
-  "title" : null,
-  "description" : "bundles",
+  "title" : "Bundles Graph",
+  "description" : "Selected bundles, with dependencies, with a layout",
   "type" : "BASIC_LAYOUT",
   "nodes" : [ {
     "originalId" : "NXBundle-org.nuxeo.apidoc.core",
