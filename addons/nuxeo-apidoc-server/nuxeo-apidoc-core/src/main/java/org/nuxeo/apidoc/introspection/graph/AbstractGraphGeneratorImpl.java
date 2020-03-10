@@ -202,7 +202,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
             List<String> children) {
         List<Node> roots = new ArrayList<>();
         for (Node node : graph.getNodes()) {
-            if (!children.contains(node.getOriginalId())) {
+            if (!children.contains(node.getId())) {
                 roots.add(node);
             }
         }
@@ -210,7 +210,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
             // add a common root for all roots
             String pbid = prefixId(BundleInfo.TYPE_NAME, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE);
             Node bundleNode = createNode(pbid, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE, 0, "", NODE_TYPE.BUNDLE.name(),
-                    NODE_CATEGORY.RUNTIME.name(), NODE_CATEGORY.RUNTIME.getColor());
+                    NODE_CATEGORY.RUNTIME.name());
             graph.addNode(bundleNode);
             for (Node root : roots) {
                 addEdge(graph, hits, createEdge(root, bundleNode, EDGE_TYPE.REQUIRES.name()));
@@ -223,29 +223,19 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
      * Refines graphs for display.
      * <ul>
      * <li>Adds potentially missing nodes referenced in edges
-     * <li>set integer id on nodes and edges, as required by some rendering frameworks
      * <li>sets weights computed from hits map
      */
     protected void refine(EditableGraph graph, Map<String, Integer> hits) {
-        // handle ids
-        int itemIndex = 1;
-        for (Node node : graph.getNodes()) {
-            node.setId(itemIndex);
-            itemIndex++;
-        }
+        // handle missing references
         for (Edge edge : graph.getEdges()) {
-            edge.setId(itemIndex);
-            itemIndex++;
-            Node source = graph.getNode(edge.getOriginalSourceId());
+            Node source = graph.getNode(edge.getSource());
             if (source == null) {
-                source = addMissingNode(graph, edge.getOriginalSourceId(), itemIndex++, 1);
+                source = addMissingNode(graph, edge.getSource(), 1);
             }
-            edge.setSource(source.getId());
-            Node target = graph.getNode(edge.getOriginalTargetId());
+            Node target = graph.getNode(edge.getTarget());
             if (target == null) {
-                target = addMissingNode(graph, edge.getOriginalTargetId(), itemIndex++, 1);
+                target = addMissingNode(graph, edge.getTarget(), 1);
             }
-            edge.setTarget(target.getId());
         }
         // handle weights
         if (hits == null) {
@@ -262,7 +252,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
     }
 
-    protected Node addMissingNode(EditableGraph graph, String originalId, int id, int weight) {
+    protected Node addMissingNode(EditableGraph graph, String originalId, int weight) {
         // try to guess category
         // try to guess type according to prefix
         String originalIdParsed = originalId;
@@ -285,65 +275,59 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
             originalIdParsed = originalId.substring(ExtensionInfo.TYPE_NAME.length() + 1);
         }
         cat = NODE_CATEGORY.guessCategory(originalIdParsed);
-        Node node = createNode(originalId, originalIdParsed, 0, "", type, cat.name(), cat.getColor());
-        node.setId(id);
+        Node node = createNode(originalId, originalIdParsed, 0, "", type, cat.name());
         node.setWeight(weight);
         graph.addNode(node);
         return node;
     }
 
-    protected Node createNode(String id, String label, int weight, String path, String type, String category,
-            String color) {
-        return new NodeImpl(id, label, weight, path, type, category, color);
+    protected Node createNode(String id, String label, int weight, String path, String type, String category) {
+        return new NodeImpl(id, label, weight, path, type, category);
     }
 
     protected Node createNode(String id) {
-        return createNode(id, id, 0, null, null, null, null);
+        return createNode(id, id, 0, null, null, null);
     }
 
     protected Node createBundleNode(BundleInfo bundle, NODE_CATEGORY cat) {
         String bid = bundle.getId();
         String pbid = prefixId(BundleInfo.TYPE_NAME, bid);
-        return createNode(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name(), cat.getColor());
+        return createNode(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name());
     }
 
     protected Node createComponentNode(ComponentInfo component, NODE_CATEGORY cat) {
         String compid = component.getId();
         String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
-        return createNode(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(), cat.name(),
-                cat.getColor());
+        return createNode(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(), cat.name());
     }
 
     protected Node createServiceNode(ServiceInfo service, NODE_CATEGORY cat) {
         String sid = service.getId();
         String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
-        return createNode(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(), cat.name(),
-                cat.getColor());
+        return createNode(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(), cat.name());
     }
 
     protected Node createXPNode(ExtensionPointInfo xp, NODE_CATEGORY cat) {
         String xpid = xp.getId();
         String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
-        return createNode(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(), cat.name(),
-                cat.getColor());
+        return createNode(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(), cat.name());
     }
 
     protected Node createContributionNode(ExtensionInfo contribution, NODE_CATEGORY cat) {
         String cid = contribution.getId();
         String pcid = prefixId(ExtensionInfo.TYPE_NAME, cid);
-        return createNode(pcid, cid, 0, contribution.getHierarchyPath(), NODE_TYPE.CONTRIBUTION.name(), cat.name(),
-                cat.getColor());
+        return createNode(pcid, cid, 0, contribution.getHierarchyPath(), NODE_TYPE.CONTRIBUTION.name(), cat.name());
     }
 
     protected Edge createEdge(Node source, Node target, String value) {
-        return new EdgeImpl(source.getOriginalId(), target.getOriginalId(), value);
+        return new EdgeImpl(source.getId(), target.getId(), value);
     }
 
     protected void addEdge(EditableGraph graph, Map<String, Integer> hits, Edge edge) {
         graph.addEdge(edge);
         if (hits != null) {
-            hit(hits, edge.getOriginalSourceId());
-            hit(hits, edge.getOriginalTargetId());
+            hit(hits, edge.getSource());
+            hit(hits, edge.getTarget());
         }
     }
 

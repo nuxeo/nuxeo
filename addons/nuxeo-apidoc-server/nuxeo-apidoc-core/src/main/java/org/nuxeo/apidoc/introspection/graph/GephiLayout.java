@@ -64,12 +64,12 @@ public class GephiLayout {
             if (isBundle(node)) {
                 org.gephi.graph.api.Node gnode = createGephiNode(factory, node);
                 ggraph.addNode(gnode);
-                gnodes.put(node.getOriginalId(), gnode);
+                gnodes.put(node.getId(), gnode);
             }
         }
         for (Edge edge : graph.getEdges()) {
-            if (isBundle(graph.getNode(edge.getOriginalSourceId()))
-                    && isBundle(graph.getNode(edge.getOriginalTargetId()))) {
+            if (isBundle(graph.getNode(edge.getSource()))
+                    && isBundle(graph.getNode(edge.getTarget()))) {
                 ggraph.addEdge(createGephiEdge(factory, edge, gnodes));
             }
         }
@@ -108,7 +108,7 @@ public class GephiLayout {
     }
 
     protected static org.gephi.graph.api.Node createGephiNode(GraphFactory factory, Node node) {
-        org.gephi.graph.api.Node gnode = factory.newNode(node.getOriginalId());
+        org.gephi.graph.api.Node gnode = factory.newNode(node.getId());
         gnode.setLabel(node.getLabel());
         gnode.setSize(node.getWeight());
         return gnode;
@@ -117,8 +117,8 @@ public class GephiLayout {
     protected static org.gephi.graph.api.Edge createGephiEdge(GraphFactory factory, Edge edge,
             Map<String, org.gephi.graph.api.Node> gnodes) {
         EDGE_TYPE type = EDGE_TYPE.getType(edge.getValue());
-        org.gephi.graph.api.Edge gedge = factory.newEdge(gnodes.get(edge.getOriginalSourceId()),
-                gnodes.get(edge.getOriginalTargetId()), type.getIndex(), type.isDirected());
+        org.gephi.graph.api.Edge gedge = factory.newEdge(gnodes.get(edge.getSource()),
+                gnodes.get(edge.getTarget()), type.getIndex(), type.isDirected());
         gedge.setLabel(edge.getValue());
         return gedge;
     }

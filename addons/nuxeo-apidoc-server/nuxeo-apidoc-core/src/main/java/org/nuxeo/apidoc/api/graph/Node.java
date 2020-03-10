@@ -23,7 +23,7 @@ package org.nuxeo.apidoc.api.graph;
  */
 public interface Node {
 
-    String getOriginalId();
+    String getId();
 
     String getLabel();
 
@@ -33,15 +33,9 @@ public interface Node {
 
     String getCategory();
 
-    String getColor();
-
     int getWeight();
 
     void setWeight(int weigth);
-
-    int getId();
-
-    void setId(int id);
 
     Node copy();
 

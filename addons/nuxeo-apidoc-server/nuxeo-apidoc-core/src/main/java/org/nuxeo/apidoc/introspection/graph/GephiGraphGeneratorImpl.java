@@ -120,8 +120,8 @@ public class GephiGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
 
     @Override
     protected PositionedNodeImpl createNode(String id, String label, int weight, String path, String type,
-            String category, String color) {
-        return new PositionedNodeImpl(id, label, weight, path, type, category, color);
+            String category) {
+        return new PositionedNodeImpl(id, label, weight, path, type, category);
     }
 
     protected void copyXY(Node source, Node target) {

@@ -37,10 +37,10 @@ public class PositionedNodeImpl extends NodeImpl {
 
     protected float z = 0;
 
-    public PositionedNodeImpl(@JsonProperty("originalId") String originalId, @JsonProperty("label") String label,
+    public PositionedNodeImpl(@JsonProperty("id") String id, @JsonProperty("label") String label,
             @JsonProperty("weight") int weight, @JsonProperty("path") String path, @JsonProperty("type") String type,
-            @JsonProperty("category") String category, @JsonProperty("color") String color) {
-        super(originalId, label, weight, path, type, category, color);
+            @JsonProperty("category") String category) {
+        super(id, label, weight, path, type, category);
     }
 
     public float getX() {
@@ -69,8 +69,7 @@ public class PositionedNodeImpl extends NodeImpl {
 
     @Override
     public Node copy() {
-        PositionedNodeImpl copy = new PositionedNodeImpl(originalId, label, weight, path, type, category, color);
-        copy.setId(id);
+        PositionedNodeImpl copy = new PositionedNodeImpl(id, label, weight, path, type, category);
         copy.setX(x);
         copy.setY(y);
         copy.setZ(z);

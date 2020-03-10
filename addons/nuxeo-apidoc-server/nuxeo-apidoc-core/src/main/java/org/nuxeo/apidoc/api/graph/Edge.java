@@ -23,23 +23,11 @@ package org.nuxeo.apidoc.api.graph;
  */
 public interface Edge {
 
-    String getOriginalSourceId();
+    String getSource();
 
-    String getOriginalTargetId();
+    String getTarget();
 
     String getValue();
-
-    int getId();
-
-    void setId(int id);
-
-    int getSource();
-
-    void setSource(int source);
-
-    int getTarget();
-
-    void setTarget(int target);
 
     Edge copy();
 

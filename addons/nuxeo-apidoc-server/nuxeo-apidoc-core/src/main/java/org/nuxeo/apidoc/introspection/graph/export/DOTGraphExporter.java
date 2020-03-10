@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.introspection.graph.export;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import org.jgrapht.ext.ExportException;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.EditableGraph;
+import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
 
@@ -43,49 +45,56 @@ public class DOTGraphExporter extends AbstractGraphExporter implements GraphExpo
     public ContentGraphImpl export(EditableGraph graph) {
         ContentGraphImpl cgraph = initGraph(graph);
 
-        SimpleDirectedGraph<Node, Edge> g = new SimpleDirectedGraph<Node, Edge>(Edge.class);
+        SimpleDirectedGraph<IdNode, Edge> g = new SimpleDirectedGraph<>(Edge.class);
 
+        int itemIndex = 1;
+        Map<String, IdNode> idMap = new HashMap<>();
         for (Node node : graph.getNodes()) {
-            g.addVertex(node);
+            IdNode idNode = new IdNode(itemIndex, node);
+            g.addVertex(idNode);
+            idMap.put(node.getId(), idNode);
+            itemIndex++;
         }
 
         for (Edge edge : graph.getEdges()) {
-            Node source = graph.getNode(edge.getOriginalSourceId());
-            Node target = graph.getNode(edge.getOriginalTargetId());
-            g.addEdge(source, target, edge);
+            Node source = graph.getNode(edge.getSource());
+            Node target = graph.getNode(edge.getTarget());
+            g.addEdge(idMap.get(source.getId()), idMap.get(target.getId()), edge);
         }
 
         try {
-            ComponentNameProvider<Node> vertexIDProvider = new ComponentNameProvider<>() {
+            ComponentNameProvider<IdNode> vertexIDProvider = new ComponentNameProvider<>() {
                 @Override
-                public String getName(Node component) {
-                    return String.valueOf(component.getId());
+                public String getName(IdNode idNode) {
+                    return String.valueOf(idNode.getId());
                 }
             };
-            ComponentNameProvider<Node> vertexLabelProvider = new ComponentNameProvider<Node>() {
+            ComponentNameProvider<IdNode> vertexLabelProvider = new ComponentNameProvider<>() {
                 @Override
-                public String getName(Node component) {
-                    return component.getLabel();
+                public String getName(IdNode idNode) {
+                    return idNode.getNode().getLabel();
                 }
             };
-            ComponentNameProvider<Edge> edgeLabelProvider = new ComponentNameProvider<Edge>() {
+            ComponentNameProvider<Edge> edgeLabelProvider = new ComponentNameProvider<>() {
                 @Override
-                public String getName(Edge component) {
-                    return component.getValue();
+                public String getName(Edge edge) {
+                    return edge.getValue();
                 }
             };
-            ComponentAttributeProvider<Node> vertexAttributeProvider = new ComponentAttributeProvider<Node>() {
-                public Map<String, String> getComponentAttributes(Node node) {
+            ComponentAttributeProvider<IdNode> vertexAttributeProvider = new ComponentAttributeProvider<>() {
+                public Map<String, String> getComponentAttributes(IdNode idNode) {
                     Map<String, String> map = new LinkedHashMap<String, String>();
+                    Node node = idNode.getNode();
                     map.put("weight", String.valueOf(node.getWeight()));
                     map.put("path", String.valueOf(node.getPath()));
-                    map.put("color", String.valueOf(node.getColor()));
+                    NODE_CATEGORY cat = NODE_CATEGORY.getCategory(node.getCategory(), NODE_CATEGORY.PLATFORM);
+                    map.put("color", String.valueOf(cat.getColor()));
                     map.put("category", String.valueOf(node.getCategory()));
                     map.put("type", String.valueOf(node.getType()));
                     return map;
                 }
             };
-            DOTExporter<Node, Edge> exporter = new DOTExporter<>(vertexIDProvider, vertexLabelProvider,
+            DOTExporter<IdNode, Edge> exporter = new DOTExporter<>(vertexIDProvider, vertexLabelProvider,
                     edgeLabelProvider, vertexAttributeProvider, null);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             exporter.exportGraph(g, out);
@@ -97,6 +106,33 @@ public class DOTGraphExporter extends AbstractGraphExporter implements GraphExpo
         }
 
         return cgraph;
+    }
+
+    class IdNode {
+
+        int id;
+
+        Node node;
+
+        public IdNode(int id, Node node) {
+            super();
+            this.id = id;
+            this.node = node;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public Node getNode() {
+            return node;
+        }
+
+        @Override
+        public String toString() {
+            return "IdNode(" + id + ", " + node.getId() + ")";
+        }
+
     }
 
 }

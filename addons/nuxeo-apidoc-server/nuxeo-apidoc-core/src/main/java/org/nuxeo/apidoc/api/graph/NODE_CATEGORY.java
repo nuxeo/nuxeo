@@ -80,13 +80,13 @@ public enum NODE_CATEGORY {
         return source.toLowerCase().contains(content.toLowerCase());
     }
 
-    public static NODE_CATEGORY getCategory(String cat) {
+    public static NODE_CATEGORY getCategory(String cat, NODE_CATEGORY defaultValue) {
         for (NODE_CATEGORY ecat : NODE_CATEGORY.values()) {
             if (ecat.name().equalsIgnoreCase(cat)) {
                 return ecat;
             }
         }
-        return null;
+        return defaultValue;
     }
 
 }

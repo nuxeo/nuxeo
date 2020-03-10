@@ -146,7 +146,7 @@ public class GraphImpl extends BaseNuxeoArtifact implements EditableGraph {
 
     public void addNode(Node node) {
         this.nodes.add(node);
-        this.nodeMap.put(node.getOriginalId(), node);
+        this.nodeMap.put(node.getId(), node);
     }
 
     public void addEdge(Edge edge) {
@@ -188,8 +188,8 @@ public class GraphImpl extends BaseNuxeoArtifact implements EditableGraph {
             if (nodeFilter == null) {
                 g.addEdge(edge.copy());
             } else {
-                Node source = getNode(edge.getOriginalSourceId());
-                Node target = getNode(edge.getOriginalTargetId());
+                Node source = getNode(edge.getSource());
+                Node target = getNode(edge.getTarget());
                 if (nodeFilter.accept(source) && nodeFilter.accept(target)) {
                     g.addEdge(edge.copy());
                 }

@@ -30,35 +30,29 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreType
 public class EdgeImpl implements Edge {
 
-    protected int id = 0;
+    protected final String source;
 
-    protected int source = 0;
-
-    protected final String originalSourceId;
-
-    protected int target = 0;
-
-    protected final String originalTargetId;
+    protected final String target;
 
     protected final String value;
 
     @JsonCreator
-    public EdgeImpl(@JsonProperty("originalSourceId") String originalSourceId,
-            @JsonProperty("originalTargetId") String originalTargetId, @JsonProperty("value") String value) {
+    public EdgeImpl(@JsonProperty("source") String source, @JsonProperty("target") String target,
+            @JsonProperty("value") String value) {
         super();
-        this.originalSourceId = originalSourceId;
-        this.originalTargetId = originalTargetId;
+        this.source = source;
+        this.target = target;
         this.value = value;
     }
 
     @Override
-    public String getOriginalSourceId() {
-        return originalSourceId;
+    public String getSource() {
+        return source;
     }
 
     @Override
-    public String getOriginalTargetId() {
-        return originalTargetId;
+    public String getTarget() {
+        return target;
     }
 
     @Override
@@ -66,37 +60,9 @@ public class EdgeImpl implements Edge {
         return value;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getSource() {
-        return source;
-    }
-
-    public void setSource(int source) {
-        this.source = source;
-    }
-
-    public int getTarget() {
-        return target;
-    }
-
-    public void setTarget(int target) {
-        this.target = target;
-    }
-
     @Override
     public Edge copy() {
-        Edge copy = new EdgeImpl(originalSourceId, originalTargetId, value);
-        copy.setId(id);
-        copy.setSource(source);
-        copy.setTarget(target);
-        return copy;
+        return new EdgeImpl(source, target, value);
     }
 
 }
