@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockserver.integration.ClientAndProxy.startClientAndProxy;
 import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -44,7 +43,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockserver.client.server.MockServerClient;
-import org.mockserver.integration.ClientAndProxy;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.BinaryBody;
@@ -64,6 +62,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -75,33 +74,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.features")
 public class HTTPHelperTest {
 
-    @Inject
-    CoreSession session;
 
     @Inject
-    ContextService ctxService;
+    protected CoreSession session;
 
-    OperationContext ctx;
+    @Inject
+    protected ContextService ctxService;
 
-    protected ClientAndProxy proxy;
+    protected OperationContext ctx;
 
     protected ClientAndServer mockServer;
 
-    protected final static String SERVER_HOST = "localhost";
 
-    protected final static String SERVER_PATH = "/ws/path/";
 
     protected final static int SERVER_PORT = 1080;
 
+    protected static final String SERVER_HOST = "localhost";
     protected final static String SERVER_URL = "http://" + SERVER_HOST + ":" + String.valueOf(SERVER_PORT)
             + SERVER_PATH;
 
-    protected final static String IMAGE_FILENAME = "sample.jpeg";
+    protected static final String SERVER_PATH = "/ws/path/";
 
-    private final JsonBody DEFAULT_HTTP_RESPONSE = new JsonBody("{\"message\": \"Default answer to requests.\"}");
+    protected static final String IMAGE_FILENAME = "sample.jpeg";
+
+    protected static final JsonBody DEFAULT_HTTP_RESPONSE = new JsonBody(
+            "{\"message\": \"Default answer to requests.\"}");
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mockServer = startClientAndServer(1080);
         proxy = startClientAndProxy(1090);
 
@@ -115,8 +115,7 @@ public class HTTPHelperTest {
     }
 
     @After
-    public void tearDown() throws Exception {
-        proxy.stop();
+    public void tearDown() {
         mockServer.stop();
     }
 
@@ -128,14 +127,15 @@ public class HTTPHelperTest {
                     "HTTP.get(\'%s\', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
                     SERVER_URL);
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
-            String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
+            String result = IOUtils.toString(resultBlob.getStream(), "utf-8"); // NOSONAR
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> jsonResult = mapper.readValue(result, Map.class);
+            Map<String, String> jsonResult = mapper.readValue(result, new TypeReference<Map<String, String>>() {
+            });
 
-            String message = jsonResult.get("message");
-            assertEquals("Default answer to requests.", message);
+            String message = jsonResult.get("message"); // NOSONAR
+            assertEquals("Default answer to requests.", message); // NOSONAR
         } catch (IOException exception) {
-            fail("Problem parsing the result. " + exception);
+            fail("Problem parsing the result. " + exception); // NOSONAR
         }
     }
 
@@ -150,7 +150,8 @@ public class HTTPHelperTest {
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> jsonResult = mapper.readValue(result, Map.class);
+            Map<String, String> jsonResult = mapper.readValue(result, new TypeReference<Map<String, String>>() {
+            });
 
             String message = jsonResult.get("message");
             assertEquals("Default answer to requests.", message);
@@ -170,7 +171,8 @@ public class HTTPHelperTest {
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> jsonResult = mapper.readValue(result, Map.class);
+            Map<String, String> jsonResult = mapper.readValue(result, new TypeReference<Map<String, String>>() {
+            });
 
             String message = jsonResult.get("message");
             assertEquals("Default answer to requests.", message);
@@ -189,7 +191,8 @@ public class HTTPHelperTest {
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> jsonResult = mapper.readValue(result, Map.class);
+            Map<String, String> jsonResult = mapper.readValue(result, new TypeReference<Map<String, String>>() {
+            });
 
             String message = jsonResult.get("message");
             assertEquals("Default answer to requests.", message);
@@ -208,7 +211,8 @@ public class HTTPHelperTest {
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> jsonResult = mapper.readValue(result, Map.class);
+            Map<String, String> jsonResult = mapper.readValue(result, new TypeReference<Map<String, String>>() {
+            });
 
             String message = jsonResult.get("message");
             assertEquals("Default answer to requests.", message);
@@ -227,7 +231,8 @@ public class HTTPHelperTest {
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, String> jsonResult = mapper.readValue(result, Map.class);
+            Map<String, String> jsonResult = mapper.readValue(result, new TypeReference<Map<String, String>>() {
+            });
 
             String message = jsonResult.get("message");
             assertEquals("Default answer to requests.", message);
@@ -271,14 +276,11 @@ public class HTTPHelperTest {
         responseHeaders.add(new Header(HttpHeaders.CONTENT_TYPE, "application/json; charset=utf-8"));
         responseHeaders.add(new Header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400"));
 
-        new MockServerClient(SERVER_HOST, SERVER_PORT)
-                  .when(request().withHeaders(requestHeaders)
-                                 .withMethod(method)
-                                 .withPath(path),
-                          Times.exactly(2))
-                  .respond(response().withStatusCode(200)
-                                     .withHeaders(responseHeaders)
-                                     .withBody(answer)
-                                     .withDelay(new Delay(TimeUnit.SECONDS, 1)));
+        new MockServerClient(SERVER_HOST, SERVER_PORT).when(
+                request().withHeaders(requestHeaders).withMethod(method).withPath(path), Times.exactly(2))
+                                                      .respond(response().withStatusCode(200)
+                                                                         .withHeaders(responseHeaders)
+                                                                         .withBody(answer)
+                                                                         .withDelay(new Delay(TimeUnit.SECONDS, 1)));
     }
 }
