@@ -54,6 +54,7 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 
@@ -101,8 +102,10 @@ public abstract class AbstractDirectory implements Directory {
             }
         }
 
-        sessionCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "active"));
-        sessionMaxCount = registry.counter(MetricRegistry.name("nuxeo", "directories", getName(), "sessions", "max"));
+        sessionCount = registry.counter(MetricName.build("nuxeo", "directories", "directory", "sessions", "active")
+                                                  .tagged("directory", getName()));
+        sessionMaxCount = registry.counter(MetricName.build("nuxeo", "directories", "directory", "sessions", "max")
+                                                     .tagged("directory", getName()));
 
         // add references
         addReferences();

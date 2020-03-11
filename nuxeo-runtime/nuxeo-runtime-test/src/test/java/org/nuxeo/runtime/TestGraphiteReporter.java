@@ -55,10 +55,10 @@ public class TestGraphiteReporter {
                 "nuxeo.directories.digestauth.cache.invalidations", //
                 "nuxeo.directories.digestauth.cache.misses", //
                 "nuxeo.directories.digestauth.cache.size", //
-                "nuxeo.directories.groupDirectory.cache.hits", //
-                "nuxeo.directories.groupDirectory.cache.invalidations", //
-                "nuxeo.directories.groupDirectory.cache.misses", //
-                "nuxeo.directories.groupDirectory.cache.size", //
+                "nuxeo.directories.directory.groupDirectory.cache.hits", //
+                "nuxeo.directories.directory.groupDirectory.cache.invalidations", //
+                "nuxeo.directories.directory.groupDirectory.cache.misses", //
+                "nuxeo.directories.directory.groupDirectory.cache.size", //
                 "nuxeo.cache.vocab-WorkflowType-cache-without-references.invalidate-all-counter", //
                 "nuxeo.cache.vocab-WorkflowType-cache-without-references.read-counter", //
                 "nuxeo.cache.vocab-WorkflowType-cache-without-references.read-hit-counter", //
@@ -86,10 +86,10 @@ public class TestGraphiteReporter {
                 "nuxeo.elasticsearch.service.scroll", //
                 "nuxeo.elasticsearch.service.search");
 
-        List<String> expectedMetrics = Arrays.asList("nuxeo.directories.groupDirectory.cache.hits", //
-                "nuxeo.directories.groupDirectory.cache.invalidations", //
-                "nuxeo.directories.groupDirectory.cache.misses", //
-                "nuxeo.directories.groupDirectory.cache.size", //
+        List<String> expectedMetrics = Arrays.asList("nuxeo.directories.directory.groupDirectory.cache.hits", //
+                "nuxeo.directories.directory.groupDirectory.cache.invalidations", //
+                "nuxeo.directories.directory.groupDirectory.cache.misses", //
+                "nuxeo.directories.directory.groupDirectory.cache.size", //
                 "nuxeo.cache.user-entry-cache-without-references.invalidate-all-counter", //
                 "nuxeo.cache.user-entry-cache-without-references.read-counter", //
                 "nuxeo.cache.user-entry-cache-without-references.read-hit-counter", //
@@ -106,14 +106,11 @@ public class TestGraphiteReporter {
                 "nuxeo.elasticsearch.service.index", //
                 "nuxeo.elasticsearch.service.scroll", //
                 "nuxeo.elasticsearch.service.search");
-
         assertNotEquals(expectedMetrics.size(), metrics.size());
 
-        List<MetricName> filteredMetrics = metrics.stream()
-                                                  .map(metric -> MetricName.build(metric))
-                                                  .filter(graphiteReporter::filter)
-                                                  .collect(
-                Collectors.toList());
+        List<String> filteredMetrics = metrics.stream()
+                                              .filter(name -> graphiteReporter.filter(MetricName.build(name)))
+                                              .collect(Collectors.toList());
 
         assertEquals(expectedMetrics.size(), filteredMetrics.size());
 

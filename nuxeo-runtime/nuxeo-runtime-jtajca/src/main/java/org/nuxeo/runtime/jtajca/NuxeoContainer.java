@@ -106,13 +106,13 @@ public class NuxeoContainer {
             MetricRegistry.name("nuxeo", "transactions", "rollbacks"));
 
     protected static final Counter concurrentCount = registry.counter(
-            MetricRegistry.name("nuxeo", "transactions", "concurrents", "count"));
+            MetricRegistry.name("nuxeo", "transactions", "concurrency"));
 
     protected static final Counter concurrentMaxCount = registry.counter(
-            MetricRegistry.name("nuxeo", "transactions", "concurrents", "max"));
+            MetricRegistry.name("nuxeo", "transactions", "concurrency", "max"));
 
     protected static final Timer transactionTimer = registry.timer(
-            MetricRegistry.name("nuxeo", "transactions", "duration"));
+            MetricRegistry.name("nuxeo", "transactions", "timer"));
 
     protected static final ConcurrentHashMap<Transaction, Timer.Context> timers = new ConcurrentHashMap<>();
 

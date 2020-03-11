@@ -72,8 +72,6 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 import io.dropwizard.metrics5.Timer.Context;
 
-import javax.resource.spi.IllegalStateException;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 

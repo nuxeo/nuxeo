@@ -57,6 +57,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 
@@ -196,10 +197,10 @@ public class PersistenceContext {
         // this has to be linked to keep creation order, as foreign keys
         // are used and need this
         createdIds = new LinkedHashSet<>();
-        cacheCount = registry.counter(
-                MetricRegistry.name("nuxeo", "repositories", session.getRepositoryName(), "caches", "count"));
-        cacheHitCount = registry.counter(
-                MetricRegistry.name("nuxeo", "repositories", session.getRepositoryName(), "caches", "hit"));
+        cacheCount = registry.counter(MetricName.build("nuxeo", "repositories", "repository", "cache", "read")
+                                                .tagged("repository", session.getRepositoryName()));
+        cacheHitCount = registry.counter(MetricName.build("nuxeo", "repositories", "repository", "cache", "hit")
+                                                   .tagged("repository", session.getRepositoryName()));
         try {
             bigSelWarnThreshold = Long.parseLong(
                     Framework.getProperty(SEL_WARN_THRESHOLD_PROP, SEL_WARN_THRESHOLD_DEFAULT));

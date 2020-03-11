@@ -37,6 +37,7 @@ import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
@@ -121,14 +122,18 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     protected void setMetrics(String repositoryName) {
-        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches",
-                "soft-ref", "hits"));
-        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches",
-                "soft-ref", "get"));
-        sorRows = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "soft-ref",
-                "sor", "rows"));
-        sorGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "soft-ref",
-                "sor", "get"));
+        cacheHitCount = registry.counter(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "soft-ref", "hit")
+                          .tagged("repository", repositoryName));
+        cacheGetTimer = registry.timer(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "soft-ref", "timer")
+                          .tagged("repository", repositoryName));
+        sorRows = registry.counter(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "soft-ref", "sor", "rows")
+                          .tagged("repository", repositoryName));
+        sorGetTimer = registry.timer(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "soft-ref", "sor", "timer")
+                          .tagged("repository", repositoryName));
     }
 
     public void close() {

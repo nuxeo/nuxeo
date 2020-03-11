@@ -24,6 +24,7 @@ import org.nuxeo.runtime.jtajca.NuxeoConnectionManager;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.metrics.MetricsService;
 
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.jvm.JmxAttributeGauge;
@@ -54,20 +55,23 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
     @Override
     public void install() {
         self = DefaultMonitorComponent.bind(this, name);
-        registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "count"),
+        registry.register(MetricName.build("nuxeo", "repositories", "repository", "connection", "count")
+                                    .tagged("repository", name),
                 new JmxAttributeGauge(self.name, "ConnectionCount"));
-        registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "idle"),
+        registry.register(MetricName.build("nuxeo", "repositories", "repository", "connection", "idle")
+                                    .tagged("repository", name),
                 new JmxAttributeGauge(self.name, "IdleConnectionCount"));
-        registry.register(MetricRegistry.name("nuxeo", "repositories", name, "connections", "killed"),
+        registry.register(MetricName.build("nuxeo", "repositories", "repository", "connection", "killed")
+                                    .tagged("repository", name),
                 new JmxAttributeGauge(self.name, "KilledActiveConnectionCount"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        registry.remove(MetricRegistry.name("nuxeo", "repositories", name, "connections", "count"));
-        registry.remove(MetricRegistry.name("nuxeo", "repositories", name, "connections", "idle"));
-        registry.remove(MetricRegistry.name("nuxeo", "repositories", name, "connections", "killed"));
+        registry.remove(MetricRegistry.name("nuxeo", "repositories", "repository", "connection", "count"));
+        registry.remove(MetricRegistry.name("nuxeo", "repositories", "repository", "connection", "idle"));
+        registry.remove(MetricRegistry.name("nuxeo", "repositories", "repository", "connection", "killed"));
         self = null;
     }
 

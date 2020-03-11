@@ -28,6 +28,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.MalformedObjectNameException;
@@ -98,7 +99,7 @@ public class MetricsDescriptor implements Serializable {
         /**
          * @since 9.3
          */
-        public static final String DEFAULT_ALLOWED_METRICS = "nuxeo.cache.user-entry-cache,nuxeo.cache.group-entry-cache,nuxeo.directories.userDirectory,nuxeo.directories.groupDirectory";
+        public static final String DEFAULT_ALLOWED_METRICS = "nuxeo.cache.default-cache,nuxeo.cache.user-entry-cache,nuxeo.cache.group-entry-cache,nuxeo.directories.directory.userDirectory,nuxeo.directories.directory.groupDirectory";
 
         /**
          * @since 9.3
@@ -156,9 +157,23 @@ public class MetricsDescriptor implements Serializable {
             return prefix.replace("${hostname}", hostname);
         }
 
+        public static String metricToName(MetricName metric) {
+            if (metric.getTags().isEmpty()) {
+                return metric.getKey();
+            }
+            String name = metric.getKey();
+            for (Map.Entry<String, String> entry : metric.getTags().entrySet()) {
+                String key = "." + entry.getKey() + ".";
+                String keyAndValue = key + entry.getValue() + ".";
+                name = name.replace(key, keyAndValue);
+            }
+            return name;
+        }
+
         public boolean filter(MetricName name) {
-            return allowedMetrics.stream().anyMatch(f -> ALL_METRICS.equals(f) || name.getKey().startsWith(f))
-                    || deniedMetrics.stream().noneMatch(f -> ALL_METRICS.equals(f) || name.getKey().startsWith(f));
+            String graphiteName = metricToName(name);
+            return allowedMetrics.stream().anyMatch(f -> ALL_METRICS.equals(f) || graphiteName.startsWith(f))
+                    || deniedMetrics.stream().noneMatch(f -> ALL_METRICS.equals(f) || graphiteName.startsWith(f));
         }
 
         @Override
@@ -182,7 +197,7 @@ public class MetricsDescriptor implements Serializable {
                                        .convertRatesTo(TimeUnit.SECONDS)
                                        .convertDurationsTo(TimeUnit.MICROSECONDS)
                                        .prefixedWith(getPrefix())
-                                       .filter((name, metric) -> filter(name))
+                                    .filter((name, metric) -> filter(name))
                                     .build(graphite));
             reporter.start(period, TimeUnit.SECONDS);
         }

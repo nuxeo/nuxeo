@@ -31,6 +31,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
@@ -80,12 +81,15 @@ public class SelectionContext {
         softMap = new ReferenceMap(AbstractReferenceMap.HARD, AbstractReferenceMap.SOFT);
         hardMap = new HashMap<>();
         modifiedInTransaction = new HashSet<>();
-        modifiedInTransactionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories",
-                context.session.repository.getName(), "caches", "selections", "modified"));
-        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories",
-                context.session.repository.getName(), "caches", "selections", "hit"));
-        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories",
-                context.session.repository.getName(), "caches", "selections", "get"));
+        modifiedInTransactionCount = registry.counter(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "selections", "modified")
+                          .tagged("repository", context.session.repository.getName()));
+        cacheHitCount = registry.counter(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "selections", "hit")
+                          .tagged("repository", context.session.repository.getName()));
+        cacheGetTimer = registry.timer(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "selections", "timer")
+                          .tagged("repository", context.session.repository.getName()));
     }
 
     public int clearCaches() {

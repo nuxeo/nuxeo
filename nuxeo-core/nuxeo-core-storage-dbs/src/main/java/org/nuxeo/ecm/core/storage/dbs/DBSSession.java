@@ -152,6 +152,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
@@ -197,8 +198,10 @@ public class DBSSession implements Session<QueryFilter> {
         fulltextSearchDisabled = fulltextConfiguration == null || fulltextConfiguration.fulltextSearchDisabled;
         changeTokenEnabled = repository.isChangeTokenEnabled();
 
-        saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
-        queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
+        saveTimer = registry.timer(MetricName.build("nuxeo", "repositories", "repository", "save")
+                                             .tagged("repository", repository.getName()));
+        queryTimer = registry.timer(MetricName.build("nuxeo", "repositories", "repository", "query")
+                                              .tagged("repository", repository.getName()));
         LOG_MIN_DURATION_NS = Long.parseLong(Framework.getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
         isLatestVersionDisabled = Framework.isBooleanPropertyTrue(DISABLED_ISLATESTVERSION_PROPERTY);
     }
