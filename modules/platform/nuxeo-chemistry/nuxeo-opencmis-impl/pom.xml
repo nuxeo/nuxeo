@@ -1,0 +1,134 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.core</groupId>
+    <artifactId>nuxeo-chemistry</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-opencmis-impl</artifactId>
+  <name>Nuxeo Chemistry OpenCMIS Implementation</name>
+  <description>Nuxeo Core: Chemistry OpenCMIS Implementation</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.common</groupId>
+      <artifactId>nuxeo-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-query</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-storage-sql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-audit-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-filemanager-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-mimetype</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-rendition-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-rendition-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.webengine</groupId>
+      <artifactId>nuxeo-webengine-core</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.elasticsearch</groupId>
+      <artifactId>nuxeo-elasticsearch-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+    </dependency>
+
+    <!-- OpenCMIS -->
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-commons-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-commons-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-server-bindings</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-server-support</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-client-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-client-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.chemistry.opencmis</groupId>
+      <artifactId>chemistry-opencmis-client-bindings</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.xml.ws</groupId>
+      <artifactId>jaxws-api</artifactId>
+    </dependency>
+
+    <!-- scope provided -->
+    <dependency>
+      <groupId>javax.resource</groupId>
+      <artifactId>connector-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>

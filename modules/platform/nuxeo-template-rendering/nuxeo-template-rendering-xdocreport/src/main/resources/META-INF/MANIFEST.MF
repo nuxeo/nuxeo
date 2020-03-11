@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo ECM Document template Manager XDocreport plugin
+Bundle-SymbolicName: org.nuxeo.template.manager.xdocreport;singleton:=true
+Bundle-Version: 1.0.0
+Nuxeo-WebModule: org.nuxeo.template.xdocreport.jaxrs.JAXRSRemotingApplication;name=XDocTemplateResources
+Nuxeo-Component: OSGI-INF/templateprocessor-contrib.xml

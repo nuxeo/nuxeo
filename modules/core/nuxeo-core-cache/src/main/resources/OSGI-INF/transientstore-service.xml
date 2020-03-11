@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.transientstore.TransientStorageComponent">
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.transientstore.api.TransientStoreService" />
+  </service>
+
+   <documentation>
+    Provide a way to manage TransientStores where temporary data can be stored by key.
+   </documentation>
+
+  <implementation class="org.nuxeo.ecm.core.transientstore.TransientStorageComponent" />
+
+  <extension-point name="store">
+
+    <documentation>
+    Allow to declare a transient store inside Nuxeo.
+    The store is identified by a name and the descriptor has several parameters :
+
+     <code>
+       <store name="microStore">
+          <!--  a store that can not store anything  -->
+          <targetMaxSizeMB>0</targetMaxSizeMB>
+          <absoluteMaxSizeMB>0</absoluteMaxSizeMB>
+       </store>
+     </code>
+
+     The store tag supports 2 attributes:
+     <ul>
+         <li>name, that is used to identify the store</li>
+         <li>class, that should reference an implementation of the TransientStoreProvider interface (will default to SimpleTransientStore))</li>
+     </ul>
+
+     Nested configuration elements are :
+     <ul>
+         <li>targetMaxSizeMB : target size that ideally should never be exceeded</li>
+         <li>absoluteMaxSizeMB : size that must never be exceeded</li>
+         <li>firstLevelTTL : TTL in minutes of the first level cache</li>
+         <li>secondLevelTTL : TTL in minutes of the first level cache</li>
+     </ul>
+
+    </documentation>
+    <object class="org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig"/>
+
+  </extension-point>
+
+  <extension
+    target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="transientStoreGC">
+      <eventId>transientStoreGCStart</eventId>
+      <eventCategory>default</eventCategory>
+      <!-- cleanup every 15 minutes -->
+      <cronExpression>0 0/15 * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="transientStoreGCTrigger" async="false" postCommit="false"
+      class="org.nuxeo.ecm.core.transientstore.TransientStorageGCTrigger">
+      <event>transientStoreGCStart</event>
+    </listener>
+  </extension>
+
+</component>

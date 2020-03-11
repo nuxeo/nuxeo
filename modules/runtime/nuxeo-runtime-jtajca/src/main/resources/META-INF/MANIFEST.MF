@@ -1,0 +1,30 @@
+Export-Package: org.nuxeo.runtime.jtajca
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Category: runtime
+Bundle-Name: Nuxeo Runtime JTA/JCA Implementation
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Version: 5.4.2.qualifier
+Eclipse-BuddyPolicy: registered
+Bundle-ManifestVersion: 2
+Import-Package: javax.annotation,
+ javax.naming,
+ javax.naming.spi,
+ javax.resource,
+ javax.resource.spi,
+ javax.security.auth,
+ javax.transaction,
+ org.apache.commons.beanutils,
+ org.apache.commons.logging,
+ org.apache.geronimo.connector.outbound,
+ org.apache.geronimo.connector.outbound.connectionmanagerconfig,
+ org.apache.geronimo.connector.outbound.connectiontracking,
+ org.apache.geronimo.transaction,
+ org.apache.geronimo.transaction.manager,
+ org.nuxeo.runtime.api,
+ org.nuxeo.runtime.transaction,
+ org.osgi.framework
+Bundle-SymbolicName: org.nuxeo.runtime.jtajca;singleton:=true
+Nuxeo-Component: OSGI-INF/JtaActivator.xml

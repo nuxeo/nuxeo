@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.ecm.platform.filemanager.service.FileManagerService.Plugins">
+  <documentation>Component to carry default extension points.</documentation>
+
+  <extension
+    target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+    point="plugins">
+    <documentation>
+      Default plugins for the file manager.
+
+      NoteImporter creates a Note document from any text-based content.
+
+      DefaultFileImporter creates a File document from any content.
+    </documentation>
+
+    <plugin name="NoteImporter"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.NoteImporter"
+      order="10">
+      <filter>text/plain</filter>
+      <filter>text/html</filter>
+      <filter>application/xhtml+xml</filter>
+      <filter>text/x-web-markdown</filter>
+    </plugin>
+
+    <plugin name="DefaultFileImporter"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.DefaultFileImporter"
+      order="100">
+      <filter>.*</filter>
+    </plugin>
+
+    <plugin name="ExportedArchivePlugin"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.ExportedZipImporter"
+      order="10">
+      <filter>application/zip</filter>
+    </plugin>
+
+    <plugin name="CSVArchivePlugin"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.CSVZipImporter"
+      order="11">
+      <filter>application/zip</filter>
+    </plugin>
+
+    <documentation>
+      Use a query model to find the list of all Workspaces the user has the
+      right to create new document into.
+    </documentation>
+    <creationContainerListProvider name="defaultCreationContainerListProvider"
+      class="org.nuxeo.ecm.platform.filemanager.service.extension.DefaultCreationContainerListProvider" />
+  </extension>
+
+  <extension
+    target="org.nuxeo.ecm.platform.filemanager.service.FileManagerService"
+    point="unicity">
+    <documentation>
+      Unicity Service disabled by default.
+    </documentation>
+
+    <unicitySettings>
+      <algo>sha-256</algo>
+      <field>file:content</field>
+      <enabled>false</enabled>
+      <computeDigest>false</computeDigest>
+    </unicitySettings>
+  </extension>
+</component>

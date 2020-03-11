@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.escalation.service">
+
+  <documentation>
+    The Document Routing Escalation service is used to execute all the escalation rules
+    from all running workflows.
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.ecm.platform.routing.core.impl.DocumentRoutingEscalationServiceImpl" />
+
+  <service>
+    <provide
+      interface="org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEscalationService" />
+  </service>
+
+</component>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/driveroot/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/driveroot/">
+
+  <xs:complexType name="subscriptionsList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:subscriptionItem" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="subscriptionItem">
+    <xs:sequence>
+      <xs:element name="username" type="xs:string" />
+      <xs:element name="enabled" type="xs:boolean" />
+      <xs:element name="lastChangeDate" type="xs:date" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="subscriptions" type="nxs:subscriptionsList" />
+
+</xs:schema>

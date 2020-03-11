@@ -1,0 +1,76 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ftests</groupId>
+    <artifactId>nuxeo-ftests</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-server-cmis-tests</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Server CMIS Tests</name>
+  <description>CMIS tests on Nuxeo Server</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/itests.xml</buildFile>
+          </buildFiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-nuxeo</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>prepare-environment</target>
+                <target>start</target>
+              </targets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>run-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>run-cmis-tests</target>
+              </targets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-nuxeo</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>stop</target>
+              </targets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

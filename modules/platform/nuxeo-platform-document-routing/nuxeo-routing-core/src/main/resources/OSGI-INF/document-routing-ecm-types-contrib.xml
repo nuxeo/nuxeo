@@ -1,0 +1,129 @@
+<component name="org.nuxeo.ecm.platform.routing.types">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="DocumentRouteInstancesRoot">
+      <default-view>view_documents</default-view>
+      <label>DocumentRouteInstancesRoot</label>
+      <icon>/icons/folder.gif</icon>
+    </type>
+
+    <type id="DocumentRouteModelsRoot">
+      <default-view>view_documents</default-view>
+      <label>DocumentRouteModelsRoot</label>
+      <icon>/icons/folder.gif</icon>
+    </type>
+
+    <type id="DocumentRoute" coreType="DocumentRoute">
+      <label>DocumentRoute</label>
+      <icon>/icons/route.png</icon>
+      <bigIcon>/icons/route_100.png</bigIcon>
+      <category>Collaborative</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>step_folder</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="header">
+        <layout>document_route_header</layout>
+      </layouts>
+      <layouts mode="summary">
+        <layout>summary_document_route_layout</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>orderable_document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+
+    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <type id="StepFolder" coreType="StepFolder">
+      <label>StepFolder</label>
+      <icon>/icons/fork.png</icon>
+      <bigIcon>/icons/fork_100.png</bigIcon>
+      <category>StepContainers</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <edit-view>edit_route_element</edit-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>step_folder</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>step_folder</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>orderable_document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+
+    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <type id="DocumentRouteStep" coreType="DocumentRouteStep">
+      <label>Step</label>
+      <icon>/icons/step.png</icon>
+      <bigIcon>/icons/step_100.png</bigIcon>
+      <category>Steps</category>
+      <description>File.description</description>
+      <default-view>view_documents</default-view>
+      <edit-view>edit_route_element</edit-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+
+    <!--@deprecated since 5.9.2, use only routes of type 'graph'  -->
+    <type id="ConditionalStepFolder" coreType="ConditionalStepFolder">
+      <label>ConditionalStepFolder</label>
+      <icon>/icons/conditional_folder.png</icon>
+      <bigIcon>/icons/conditional_folder_100.png</bigIcon>
+      <category>StepContainers</category>
+      <description>Folder.description</description>
+      <default-view>view_documents</default-view>
+      <edit-view>edit_route_element</edit-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>conditional_step_folder</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>orderable_document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView>document_trash_content</contentView>
+      </contentViews>
+    </type>
+
+    <type id="RouteNode" coreType="RouteNode">
+      <label>Node</label>
+      <icon>/icons/step.png</icon>
+      <bigIcon>/icons/step_100.png</bigIcon>
+      <category>Steps</category>
+      <description>File.description</description>
+      <default-view>view_documents</default-view>
+      <edit-view>edit_route_element</edit-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+      </layouts>
+    </type>
+  </extension>
+
+</component>

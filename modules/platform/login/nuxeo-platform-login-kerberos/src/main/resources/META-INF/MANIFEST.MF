@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Kerberos authentication
+Bundle-SymbolicName: org.nuxeo.ecm.platform.login.kerberos;singleton:=true
+Bundle-Version: ${eclipseVersion}-r${buildNumber}
+Require-Bundle: org.nuxeo.ecm.platform.login,
+ org.nuxeo.ecm.platform.web.common
+Nuxeo-Component: OSGI-INF/Kerberos-authenticator-contrib.xml

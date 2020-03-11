@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/group"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/group">
+
+  <xs:include schemaLocation="base.xsd" />
+
+  <xs:element name="groupname" type="xs:string" />
+  <xs:element name="grouplabel" type="xs:string" />
+  <xs:element name="description" type="xs:string" />
+
+  <!-- references -->
+  <xs:element name="members" type="nxs:stringList" />
+  <xs:element name="subGroups" type="nxs:stringList" />
+
+  <!-- inverse reference -->
+  <xs:element name="parentGroups" type="nxs:stringList" />
+
+</xs:schema>

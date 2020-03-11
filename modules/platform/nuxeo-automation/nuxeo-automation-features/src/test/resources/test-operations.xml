@@ -1,0 +1,44 @@
+<component name="org.nuxeo.ecm.core.automation.test-operations" version="1.0">
+
+  <extension point="operations"
+   target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <operation class="org.nuxeo.ecm.automation.core.test.PushListElementsOperation"/>
+  </extension>
+
+  <extension point="chains"
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent">
+    <chain id="testChain">
+      <operation id="pushElementList">
+      </operation>
+    </chain>
+    <chain id="runOnProviderTestchain">
+      <operation id="Repository.PageProvider">
+	<param type="string" name="providerName">simpleProviderTest1</param>
+      </operation>
+      <operation id="RunOperationOnProvider">
+	<param type="string" name="id">testChain</param>
+	<param type="boolean" name="isolate">false</param>
+      </operation>
+    </chain>
+    <chain id="testChainParameterType">
+      <operation id="Repository.PageProvider">
+        <param type="string" name="providerName">simpleProviderTest1</param>
+        <!-- testing if integer parameter is well registered in automation
+        could be a long one and adapters can handle it as well -->
+        <param type="integer" name="pageSize">1</param>
+      </operation>
+      <operation id="RunOperationOnProvider">
+        <param type="string" name="id">testChain</param>
+        <param type="boolean" name="isolate">false</param>
+      </operation>
+    </chain>
+    <chain id="dateWrapper">
+      <operation id="Repository.PageProvider">
+        <param type="string" name="language">NXQL</param>
+        <param type="properties" name="namedParameters">expr:mydate=@{CurrentDate}</param>
+        <param type="string" name="providerName">testPP</param>
+        <param type="string" name="sortOrder">ASC</param>
+      </operation>
+    </chain>
+  </extension>
+</component>

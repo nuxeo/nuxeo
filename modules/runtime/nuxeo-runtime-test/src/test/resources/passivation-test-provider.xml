@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="runtime:test:passivation:provider">
+
+  <implementation class="org.nuxeo.runtime.api.TestServicePassivation$Provider" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.api.TestServicePassivation$Provider" />
+  </service>
+
+</component>

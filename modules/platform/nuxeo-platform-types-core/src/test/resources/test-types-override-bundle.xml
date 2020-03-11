@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.types.test.override">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="MyDocType">
+      <label>type label 2</label>
+      <icon>type icon 2</icon>
+      <default-view>default_view2</default-view>
+      <create-view>create_view2</create-view>
+      <edit-view>edit_view2</edit-view>
+      <subtypes>
+        <type>MyOtherDocType2</type>
+        <type>MyHiddenDocType</type>
+      </subtypes>
+      <deniedSubtypes>
+        <type>MyOtherDocType</type>
+      </deniedSubtypes>
+      <layouts mode="any">
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="create"></layouts>
+      <!-- XXX: views actions override not ready yet -->
+      <contentViews category="default" append="true">
+        <contentView>cv_3</contentView>
+      </contentViews>
+      <contentViews category="other">
+        <contentView>cv_4</contentView>
+        <contentView>cv_5</contentView>
+      </contentViews>
+    </type>
+
+    <type id="MyOtherDocType" remove="true">
+      <label>removed alternative doc type</label>
+    </type>
+
+    <type id="MyOtherDocType2">
+    </type>
+
+    <type id="DocTypeWithLayout">
+      <label>overridden doc type, but layout left unchanged</label>
+    </type>
+
+    <type id="DocTypeTestLayoutOverride">
+      <layouts mode="any" append="true">
+        <layout>dublincore2</layout>
+      </layouts>
+      <layouts mode="create">
+        <layout>dublincore2</layout>
+      </layouts>
+    </type>
+
+  </extension>
+
+</component>

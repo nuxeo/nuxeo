@@ -41,6 +41,10 @@
     <module>nuxeo-quota-ftests</module>
     <module>nuxeo-saml2-login-ftests</module>
     <module>nuxeo-scan-importer-ftests</module>
+    <module>nuxeo-server-cmis-tests</module>
+    <module>nuxeo-server-gatling-tests</module>
+    <module>nuxeo-server-hotreload-tests</module>
+    <module>nuxeo-server-tests</module>
     <module>nuxeo-shibboleth-login-ftests</module>
     <module>nuxeo-signature-ftests</module>
     <module>nuxeo-template-rendering-ftests</module>

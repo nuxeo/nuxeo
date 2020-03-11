@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.runtime.trackers.files.threadstracking.config">
+
+	<extension target="org.nuxeo.runtime.trackers.files" point="configs">
+		<enableThreadsTracking/>
+	</extension>
+
+</component>

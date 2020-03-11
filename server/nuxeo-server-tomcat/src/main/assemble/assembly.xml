@@ -1,0 +1,250 @@
+<project name="tomcat-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+
+  <target name="init" unless="init.done">
+    <tstamp />
+    <condition property="build.sdk">
+      <or>
+        <isset property="maven.profile.release" />
+        <isset property="maven.profile.sdk" />
+        <isset property="maven.profile.nightly" />
+      </or>
+    </condition>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <property name="tomcat" value="${outdir}/tomcat" />
+    <property name="distribution.dir" value="${outdir}/${maven.project.artifactId}-${maven.project.version}" />
+    <property name="distribution.zip" value="${distribution.dir}.zip" />
+    <property name="distribution.sdk.dir" value="${distribution.dir}-sdk" />
+    <property name="distribution.sdk.zip" value="${distribution.sdk.dir}.zip" />
+    <antcall target="expand" />
+    <property name="init.done" value="true" />
+  </target>
+
+  <target name="expand" unless="no.build">
+    <artifact:nuxeo-expand />
+    <artifact:print output="${outdir}/artifacts-tomcat.properties" mode="sdk" />
+    <artifact:print output="${outdir}/dependency-tree.log" />
+  </target>
+
+  <target name="build" depends="init" unless="no.build">
+    <echo level="info">Building Tomcat standard distributions...</echo>
+    <antcall target="prepare-tomcat" />
+    <artifact:attach file="pom.xml" type="pom" />
+    <antcall target="build-nuxeo-server" />
+    <!-- cleanups -->
+    <delete dir="${tomcat}" failonerror="false" />
+    <delete dir="${distribution.dir}" failonerror="false" />
+    <delete dir="${distribution.sdk.dir}" failonerror="false" />
+  </target>
+
+  <target name="prepare-tomcat">
+    <unzip dest="${outdir}">
+      <artifact:resolveFile key="org.apache.tomcat:tomcat:${tomcat.version}:zip" />
+    </unzip>
+    <move todir="${tomcat}">
+      <fileset dir="${outdir}/apache-tomcat-${tomcat.version}" />
+    </move>
+    <!-- clean up Tomcat and remove unused or heavy files -->
+    <mkdir dir="${tomcat}/doc-tomcat" />
+    <move todir="${tomcat}/doc-tomcat">
+      <fileset dir="${tomcat}">
+        <include name="BUILDING.txt" />
+        <include name="CONTRIBUTING.md" />
+        <include name="LICENSE" />
+        <include name="NOTICE" />
+        <include name="README.md" />
+        <include name="RELEASE-NOTES" />
+        <include name="RUNNING.txt" />
+      </fileset>
+    </move>
+    <delete>
+      <fileset dir="${tomcat}/bin">
+        <include name="catalina.bat" />
+        <include name="catalina.sh" />
+        <include name="configtest.bat" />
+        <include name="configtest.sh" />
+        <include name="shutdown.bat" />
+        <include name="shutdown.sh" />
+        <include name="startup.bat" />
+        <include name="startup.sh" />
+        <include name="version.bat" />
+        <include name="version.sh" />
+        <include name="commons-daemon-native.tar.gz" />
+        <include name="tomcat-native.tar.gz" />
+      </fileset>
+    </delete>
+    <delete dir="${tomcat}/logs" />
+    <delete dir="${tomcat}/temp" />
+    <delete dir="${tomcat}/webapps/docs" />
+    <delete dir="${tomcat}/webapps/examples" />
+    <!-- install Nuxeo-specific files -->
+    <copy tofile="${tomcat}/bin/nuxeo-launcher.jar">
+	<artifact:file key="org.nuxeo:nuxeo-launcher:::jar-with-dependencies" />
+    </copy>
+    <copy todir="${tomcat}">
+      <fileset dir="src/main/resources/tomcat" />
+    </copy>
+  </target>
+
+  <target name="build-nuxeo-server"
+          description="Build Tomcat distribution with Nuxeo Server">
+    <echo level="info">Building Nuxeo Server...</echo>
+    <delete dir="${distribution.dir}" failonerror="false" />
+    <copy todir="${distribution.dir}">
+      <fileset dir="${tomcat}" />
+    </copy>
+    <chmod dir="${distribution.dir}" perm="ug+x" includes="*.command,bin/*.sh,bin/*ctl,bin/*.command" />
+
+    <!-- Nuxeo Server NXR -->
+    <unzip dest="${distribution.dir}/nxserver">
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-nxr-server:${maven.project.version}:zip" />
+    </unzip>
+    <!-- Move templates to their correct location -->
+    <mkdir dir="${distribution.dir}/templates" />
+    <move todir="${distribution.dir}/templates">
+      <fileset dir="${distribution.dir}/nxserver/templates" />
+    </move>
+
+    <echo message="tomcat.version=${tomcat.version}" append="true" file="${distribution.dir}/templates/nuxeo.defaults" />
+
+    <antcall target="set-distribution-properties">
+      <param name="org.nuxeo.distribution.name" value="server" />
+    </antcall>
+
+    <antcall target="reorganize-libs" />
+    <antcall target="build-server" />
+    <antcall target="build-sdk" />
+  </target>
+
+  <target name="build-server">
+    <zip destfile="${distribution.zip}" basedir="${outdir}"
+         includes="${maven.project.artifactId}-${maven.project.version}/**" />
+    <artifact:attach file="${distribution.zip}" type="zip" />
+  </target>
+
+  <target name="reorganize-libs">
+    <!-- Add Tomcat specific requirements -->
+    <copy todir="${distribution.dir}/nxserver/bundles" overwrite="true">
+      <artifact:set excludeRoots="true">
+        <includes>
+          <artifact groupId="org.nuxeo*" scope="" />
+        </includes>
+        <excludes>
+          <artifact groupId="org.nuxeo.lib*" />
+        </excludes>
+      </artifact:set>
+    </copy>
+    <copy todir="${distribution.dir}/nxserver/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" scope="" />
+          <artifact groupId="org.nuxeo.lib*" scope="" />
+        </includes>
+      </artifact:set>
+    </copy>
+    <!-- remove libraries already provided by Tomcat or unneeded -->
+    <delete>
+      <fileset dir="${distribution.dir}/nxserver/lib">
+        <!-- jetty is needed by vcs remote -->
+        <!-- jetty-util is needed by jsp impl jar - which is referring jetty log classes -->
+        <!-- jetty-naming has jndi properties conflicting with Tomcat -->
+        <include name="jetty-naming*" />
+        <include name="el-api*" />
+        <include name="jsp-*" />
+        <include name="juel-api-*" />
+        <include name="tomcat-catalina-*" /> <!-- provided by Tomcat as catalina.jar -->
+        <include name="tomcat-coyote-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-dbcp-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-el-api-*" /> <!-- provided by Tomcat as el-api.jar -->
+        <include name="tomcat-jasper-*" /> <!-- provided by Tomcat as jasper.jar -->
+        <include name="tomcat-jdbc-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-jni-*" /> <!-- provided by Tomcat -->
+        <include name="tomcat-juli-*" /> <!-- provided by Tomcat as bin/tomcat-juli.jar -->
+        <include name="tomcat-util-*" /> <!-- provided by Tomcat -->
+      </fileset>
+      <!-- provided through templates -->
+      <fileset dir="${distribution.dir}/nxserver/lib">
+        <include name="derby-*" />
+        <include name="h2-*" />
+        <include name="mongo-java-driver-*" />
+        <include name="mysql-connector-java-*" />
+        <include name="mariadb-java-client-*" />
+        <include name="postgresql-*" />
+        <include name="quartz-mongodb-*" />
+        <include name="mssql-jdbc-*" />
+      </fileset>
+    </delete>
+    <!-- Move some libraries from nxserver to Tomcat default lib directory -->
+    <move todir="${distribution.dir}/lib">
+      <fileset dir="${distribution.dir}/nxserver/lib">
+        <include name="nuxeo-runtime-*" />
+        <include name="commons-lang-*" />
+        <include name="commons-lang3-*" />
+        <include name="commons-logging-*" />
+        <include name="freemarker-*" />
+        <include name="javax.activation-*" />
+        <include name="mail-*" />
+        <include name="xercesImpl-*" />
+        <include name="xml-apis-*" />
+        <!-- install sl4j bridge in container classpath -->
+        <include name="slf4j*" />
+        <include name="log4j-*" /> <!-- log4j2 / bridges: jcl, slf4j, log4j -->
+        <include name="json-smart-*" />
+        <include name="jsonevent-layout-*" />
+      </fileset>
+    </move>
+    <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
+    <nx:rmdups dir="${distribution.dir}/lib" />
+  </target>
+
+  <target name="set-distribution-properties">
+    <property name="distribution.properties.file"
+              value="${distribution.dir}/templates/common/config/distribution.properties" />
+    <echo append="false" file="${distribution.properties.file}">## DO NOT MANUALLY EDIT THIS FILE
+org.nuxeo.distribution.name=${org.nuxeo.distribution.name}
+org.nuxeo.distribution.server=tomcat
+org.nuxeo.distribution.version=${maven.project.version}
+org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
+org.nuxeo.distribution.package=zip</echo>
+  </target>
+
+  <target name="build-sdk" if="build.sdk">
+    <property name="sdk.dir" value="${distribution.sdk.dir}/sdk" />
+    <delete dir="${distribution.sdk.dir}" failonerror="false" />
+    <copy todir="${distribution.sdk.dir}">
+      <fileset dir="${distribution.dir}"/>
+    </copy>
+    <copy file="${distribution.sdk.dir}/templates/common/config/distribution.properties" todir="${sdk.dir}" />
+    <copy file="${outdir}/artifacts-tomcat.properties" todir="${sdk.dir}" />
+    <move todir="${sdk.dir}">
+      <fileset dir="${distribution.sdk.dir}/nxserver/">
+        <filename name="*artifacts-*.properties" />
+      </fileset>
+    </move>
+    <artifact:printMgt output="${sdk.dir}/artifacts-nuxeo.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:${maven.project.version}:pom"
+                       scopes="compile,provided,runtime" />
+    <artifact:printMgt output="${sdk.dir}/test-artifacts-nuxeo.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:${maven.project.version}:pom"
+                       scopes="test,provided" />
+
+    <copy todir="${sdk.dir}/sources">
+      <artifact:resolveFiles source="${sdk.dir}/artifacts*.properties" classifier="sources" />
+      <artifact:resolveFiles source="${sdk.dir}/test-artifacts*.properties" classifier="sources" />
+    </copy>
+    <copy todir="${sdk.dir}/tests">
+      <artifact:resolveFiles source="${sdk.dir}/test-artifacts*.properties" />
+    </copy>
+
+    <unzip dest="${sdk.dir}/tools">
+      <artifact:file key="org.nuxeo:nuxeo-ecm::zip:tools" />
+    </unzip>
+
+    <zip destfile="${distribution.sdk.zip}" basedir="${outdir}"
+         includes="${maven.project.artifactId}-${maven.project.version}-sdk/**" />
+    <artifact:attach file="${distribution.sdk.zip}" classifier="sdk" type="zip" />
+  </target>
+
+</project>

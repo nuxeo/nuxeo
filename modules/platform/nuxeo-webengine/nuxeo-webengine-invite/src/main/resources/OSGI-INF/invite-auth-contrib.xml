@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.user.invite.webengine.auth.contrib">
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="openUrl">
+    <openUrl name="RegisterUser_validate">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userInvitation/validate</grantPattern>
+    </openUrl>
+    <openUrl name="RegisterUser_enterpassword">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/userInvitation/enterpassword/.*</grantPattern>
+    </openUrl>
+    <openUrl name="Graphical_Resources">
+      <grantPattern>${org.nuxeo.ecm.contextPath}/site/skin/invite/.*</grantPattern>
+    </openUrl>
+  </extension>
+
+</component>

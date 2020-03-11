@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/protocol/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:mail="http://www.nuxeo.org/ecm/schemas/protocol/">
+
+  <xs:element name="email" type="xs:string" />
+  <xs:element name="password" type="xs:string" />
+  <xs:element name="protocol_type" type="xs:string" default="imap" />
+  <xs:element name="host" type="xs:string" />
+  <xs:element name="port" type="xs:string" default="993" />
+  <xs:element name="socket_factory_fallback" type="xs:boolean" default="false" />
+  <xs:element name="socket_factory_port" type="xs:string" default="993" />
+
+  <!-- IMAP specific fields -->
+  <xs:element name="starttls_enable" type="xs:boolean" default="true" />
+  <xs:element name="ssl_protocols" type="xs:string" default="SSLv3" />
+
+  <xs:element name="emails_limit" type="xs:integer" default="100" />
+</xs:schema>

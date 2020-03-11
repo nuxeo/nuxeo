@@ -38,15 +38,7 @@
   </ciManagement>
 
   <modules>
-    <module>nuxeo-common</module>
-    <module>nuxeo-runtime</module>
-    <module>nuxeo-core</module>
-    <module>nuxeo-services</module>
-    <module>nuxeo-features</module>
-    <module>nuxeo-theme</module>
-    <module>nuxeo-webengine</module>
-    <module>nuxeo-dm</module>
-    <module>addons</module>
+    <module>modules</module>
   </modules>
 
   <properties>
@@ -6920,9 +6912,9 @@
     <profile>
       <id>distrib</id>
       <modules>
-        <module>nuxeo-distribution</module>
-        <module>packages</module>
         <module>ftests</module>
+        <module>packages</module>
+        <module>server</module>
       </modules>
     </profile>
 

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/file/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/file/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="content" type="nxs:content" />
+
+</xs:schema>

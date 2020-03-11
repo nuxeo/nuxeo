@@ -1,0 +1,7 @@
+id, label, obsolete
+"=","=","0"
+">",">","0"
+"<","<","0"
+"LIKE","LIKE","0"
+"BETWEEN","BETWEEN","0"
+"STARTSWITH","STARTSWITH","0"

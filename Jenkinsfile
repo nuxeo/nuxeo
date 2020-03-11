@@ -215,13 +215,13 @@ def buildUnitTestStage(env) {
                 envsubst < ci/mvn/nuxeo-test-${env}.properties > ${HOME}/nuxeo-test-${env}.properties
             """
             // run unit tests:
-            // - in nuxeo-core and dependent projects only (nuxeo-common and nuxeo-runtime are run in dedicated stages)
+            // - in modules/core and dependent projects only (modules/runtime is run in dedicated stage)
             // - for the given environment (see the customEnvironment profile in pom.xml):
             //   - in an alternative build directory
             //   - loading some test framework system properties
             def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
             sh """
-              mvn ${MAVEN_ARGS} -rf nuxeo-core \
+              mvn ${MAVEN_ARGS} -rf :nuxeo-core-parent \
                 -Dcustom.environment=${env} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
@@ -315,7 +315,7 @@ pipeline {
           sh """
             mvn ${MAVEN_ARGS} -Pdistrib,docker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
             perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
-            perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' nuxeo-distribution/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
+            perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
           """
         }
       }
@@ -364,32 +364,6 @@ pipeline {
       }
     }
 
-    stage('Run common unit tests') {
-      steps {
-        setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Run common unit tests
-          ----------------------------------------"""
-          dir('nuxeo-common') {
-            sh "mvn ${MAVEN_ARGS} test"
-          }
-        }
-      }
-      post {
-        always {
-          junit testResults: '**/target/surefire-reports/*.xml'
-        }
-        success {
-          setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'FAILURE')
-        }
-      }
-    }
-
     stage('Run runtime unit tests') {
       steps {
         setGitHubBuildStatus('platform/utests/runtime/dev', 'Unit tests - runtime', 'PENDING')
@@ -398,7 +372,7 @@ pipeline {
           ----------------------------------------
           Run runtime unit tests
           ----------------------------------------"""
-          dir('nuxeo-runtime') {
+          dir('modules/runtime') {
             sh "mvn ${MAVEN_ARGS} test"
           }
         }
@@ -436,7 +410,7 @@ pipeline {
           ----------------------------------------
           Package
           ----------------------------------------"""
-          sh "mvn ${MAVEN_ARGS} -f nuxeo-distribution/pom.xml -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} -f server/pom.xml -DskipTests install"
           sh "mvn ${MAVEN_ARGS} -f packages/pom.xml -DskipTests install"
         }
       }
@@ -460,9 +434,6 @@ pipeline {
           ----------------------------------------"""
           script {
             try {
-              runFunctionalTests('nuxeo-distribution/nuxeo-server-tests')
-              runFunctionalTests('nuxeo-distribution/nuxeo-server-hotreload-tests')
-              runFunctionalTests('nuxeo-distribution/nuxeo-server-gatling-tests')
               runFunctionalTests('ftests')
               setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
             } catch (err) {
@@ -489,7 +460,7 @@ pipeline {
           Image tag: ${VERSION}
           """
           echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
-          // Fetch Nuxeo distribution and Nuxeo Content Platform packages with Maven
+          // Fetch Nuxeo Tomcat Server and Nuxeo Content Platform packages with Maven
           sh "mvn ${MAVEN_ARGS} -f docker/pom.xml process-resources"
           skaffoldBuildAll()
         }

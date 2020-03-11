@@ -1,4 +1,0 @@
-This package is targeted for development usage.
-It exposes a REST API and Web pages to access the internal (including configuration) of your Nuxeo instance.
-Deploying this package on a production server may be a risk.
- 

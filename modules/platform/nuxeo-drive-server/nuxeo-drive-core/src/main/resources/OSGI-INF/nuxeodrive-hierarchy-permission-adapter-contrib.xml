@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.drive.adapters.hierarchy.permission"
+  version="1.0">
+
+  <require>org.nuxeo.drive.adapters</require>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="topLevelFolderItemFactory">
+    <topLevelFolderItemFactory
+      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionTopLevelFactory">
+      <parameters>
+        <parameter name="folderName">Nuxeo Drive</parameter>
+        <parameter name="childrenFactories">userSyncRootParentFactory,sharedSyncRootParentFactory
+        </parameter>
+      </parameters>
+    </topLevelFolderItemFactory>
+  </extension>
+
+  <extension target="org.nuxeo.drive.service.FileSystemItemAdapterService"
+    point="fileSystemItemFactory">
+
+    <!-- User synchronization root parent factory (user workspace): order
+      before the "permissionSyncRootFactory" that has an order of 40 and before
+      the "defaultFileSystemItemFactory" that has an order of 50 -->
+    <fileSystemItemFactory name="userSyncRootParentFactory"
+      order="30"
+      class="org.nuxeo.drive.hierarchy.permission.factory.UserSyncRootParentFactory">
+      <parameters>
+        <parameter name="folderName">My Docs</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
+    <!-- Synchronization root factory: order before the "defaultFileSystemItemFactory"
+      that has an order of 50 -->
+    <fileSystemItemFactory name="permissionSyncRootFactory"
+      order="40" facet="DriveSynchronized"
+      class="org.nuxeo.drive.hierarchy.permission.factory.PermissionSyncRootFactory">
+      <parameters>
+        <parameter name="requiredPermission">Read</parameter>
+        <parameter name="userSyncRootParentFactory">userSyncRootParentFactory</parameter>
+        <parameter name="sharedSyncRootParentFactory">
+          sharedSyncRootParentFactory
+        </parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
+    <!-- Shared synchronization root parent factory -->
+    <fileSystemItemFactory name="sharedSyncRootParentFactory"
+      order="100"
+      class="org.nuxeo.drive.hierarchy.permission.factory.SharedSyncRootParentFactory">
+      <parameters>
+        <parameter name="folderName">Other Docs</parameter>
+      </parameters>
+    </fileSystemItemFactory>
+
+  </extension>
+
+</component>

@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://nuxeo.com/schemas/validationSample"
+           xmlns:nxv="http://nuxeo.com/schemas/validationSample"
+           xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/"
+           xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+  <xs:element name="groupCode" type="xs:string" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:restriction base="xs:integer">
+        <xs:minExclusive value="0" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="required_simpleType" type="xs:string" default="imdefault" nillable="false" nxsv:nillable="false" />
+
+  <xs:element name="roles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="role" minOccurs="0" maxOccurs="unbounded" nillable="false" nxsv:nillable="false">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="[a-zA-Z0-9]+"></xs:pattern>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="users">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="user" type="nxv:user" minOccurs="0" maxOccurs="unbounded">
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="manager" type="nxv:user" />
+
+  <xs:complexType name="user">
+    <xs:sequence>
+      <xs:element name="firstname" nillable="false" nxsv:nillable="false">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value=".*\S.*" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="lastname" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[A-Z][a-z '-]+" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:element name="simpleList">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]*"></xs:pattern>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="simpleStringList" nillable="false" nxsv:nillable="false">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="anotherSimpleList" nillable="false" nxsv:nillable="false">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string" />
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
+  <xs:element name="required_complexType" nillable="false" nxsv:nillable="false">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="a_string" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="dummyComplex1" type="nxv:t_dummyComplex1"/>
+  <xs:complexType name="t_dummyComplex1">
+    <xs:sequence>
+      <xs:element name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="dummyResolver" ref:fetchIt="true"/>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="dummyComplex2" type="nxv:t_dummyComplex2"/>
+  <xs:complexType name="t_dummyComplex2">
+    <xs:sequence>
+      <xs:element name="value">
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="dummyResolver" ref:fetchIt="false"/>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

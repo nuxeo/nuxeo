@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo ECM Document template JXLS plugin
-Bundle-SymbolicName: org.nuxeo.template.manager.jxls;singleton:=true
-Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/templateprocessor-contrib.xml
-
-

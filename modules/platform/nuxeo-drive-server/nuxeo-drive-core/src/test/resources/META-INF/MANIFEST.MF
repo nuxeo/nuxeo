@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Version: 5.7
+Bundle-Name: org.nuxeo.drive.core.test
+Bundle-SymbolicName: org.nuxeo.drive.core.test;singleton:=true
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

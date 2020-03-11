@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo ECM Document template Manager XDocreport test plugin
-Bundle-SymbolicName: org.nuxeo.template.manager.xdocreport.test;singleton:=true
-Bundle-Version: 1.0.0
-
-

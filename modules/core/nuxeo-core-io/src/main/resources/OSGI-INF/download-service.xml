@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.download.DownloadService">
+
+  <documentation>
+    Manages repositories.
+  </documentation>
+
+  <require>org.nuxeo.ecm.core.transientstore.TransientStorageComponent</require>
+
+  <implementation class="org.nuxeo.ecm.core.io.download.DownloadServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.io.download.DownloadService" />
+  </service>
+
+  <extension-point name="permissions">
+
+    <documentation>
+      Defines the permissions associated to blob download. Contributions are of the form:
+      <code>
+        <permission name="myperm">
+          <script language="JavaScript">
+            function run() {
+              if (CurrentUser.getName() != "bob") {
+                return false;
+              }
+              if (!CurrentUser.getGroups().contains("members")) {
+                return false;
+              }
+              if (Document.getPropertyValue("dc:format") != "pdf") {
+                return false;
+              }
+              if (Reason != "rendition") {
+                return false;
+              }
+              if (Rendition != "myrendition") {
+                return false;
+              }
+              if (Blob.getFilename() != "myfile.txt") {
+                return false;
+              }
+              if (XPath == "file:content" || XPath == "blobholder:0") {
+                return false;
+              }
+              return true;
+          </script>
+        </permission>
+      </code>
+      The language can be any JVM scripting language, the default is "JavaScript".
+
+      The script must define a "run()" function that returns a boolean:
+      - true means that downloading the blob is not disallowed by this permission.
+      - false means that downloading the blob is forbidden.
+      The method will get called with the following global context (some values may be null):
+      Document (DocumentModel), XPath (String), Blob (Blob), CurrentUser (NuxeoPrincipal),
+      Reason (String), Rendition (String), Infos (Map).
+
+      If there are several permissions defined, a single one returning false is sufficient
+      to forbid the blob download.
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.io.download.DownloadPermissionDescriptor"/>
+
+  </extension-point>
+
+  <extension-point name="redirectResolver">
+
+    <documentation>
+      Defines the redirect resolver associated to blob download. Contributions are of the form:
+      <code>
+        <redirectResolver class="org.nuxeo.ecm.core.io.download.DefaultRedirectResolver"></redirectResolver>
+      </code>
+      This allows you to redirect to a specific cache server or by default the blobManager redirect mechanism
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.io.download.RedirectResolverDescriptor"/>
+
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that enables returning blob URLs with redirections already taken into account.
+      Only applies to code calling the DownloadService.getFullDownloadUrl API.
+    </documentation>
+    <property name="org.nuxeo.download.url.follow.redirect">false</property>
+  </extension>
+
+</component>

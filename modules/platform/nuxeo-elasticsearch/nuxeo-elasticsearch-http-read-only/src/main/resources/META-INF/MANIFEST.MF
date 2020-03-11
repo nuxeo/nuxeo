@@ -1,0 +1,15 @@
+Export-Package: org.nuxeo.elasticsearch.http.readonly
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Localization: bundle
+Bundle-Name: Elasticsearch HTTP Read Only API
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.nuxeo.ecm.webengine.core,org.nuxeo.elasticsearch.core
+Bundle-Vendor: Nuxeo
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.elasticsearch.http.readonly;singleton:=true
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule
+Nuxeo-Component: OSGI-INF/request-filter-service.xml,
+ OSGI-INF/es-audit-http-readonly-filter.xml

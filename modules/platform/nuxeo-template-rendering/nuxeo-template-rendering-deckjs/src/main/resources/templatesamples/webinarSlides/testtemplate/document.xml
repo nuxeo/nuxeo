@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="873c53a5-0295-4db5-8c74-4ac1141dd255">
+  <system>
+    <type>WebTemplateSource</type>
+    <path>NuxeoWorld2K12HtmlSlides</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Downloadable</facet>
+    <facet>Template</facet>
+    <facet>Commentable</facet>
+    <facet>Versionable</facet>
+    <facet>HasRelatedText</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:source/>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+    <dc:nature />
+    <dc:created><![CDATA[2012-10-05T09:55:04.36Z]]></dc:created>
+    <dc:description><![CDATA[]]></dc:description>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified><![CDATA[2013-01-15T22:52:58.81Z]]></dc:modified>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:title><![CDATA[Webinars for Developers 2013]]></dc:title>
+  </schema>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:uid/>
+    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+    <uid:major_version><![CDATA[0]]></uid:major_version>
+  </schema>
+  <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
+    <files:files>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>nuxeo-theme-world-2012.css</filename>
+          <data>ef55d755.blob</data>
+          <digest>63f2a2897c66ae5cc0cee6afedb90ea4</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>nuxeo-transition.css</filename>
+          <data>7cd9bcb9.blob</data>
+          <digest>8d37c44089b5bd5531bfbfd3e8b49735</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>image/png</mime-type>
+          <filename>nxworld.png</filename>
+          <data>eea5996f.blob</data>
+          <digest>bb5e7d0a0e76c3da5a0cd6fc2d3dc387</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>deck.hash.css</filename>
+          <data>1a097f6b.blob</data>
+          <digest>b9a81b029df53558567adace33f7c49f</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/html</mime-type>
+          <filename>deck.hash.html</filename>
+          <data>3cb9ca6f.blob</data>
+          <digest>096ec6f105755c17d33366a17312e4f0</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>deck.hash.js</filename>
+          <data>ad6f82.blob</data>
+          <digest>a1456ff9ff1590c5a1db5cdbeb8402db</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>deck.hash.scss</filename>
+          <data>b4d6bbb3.blob</data>
+          <digest>f266cce9e3b1c2f4b58767570a3d68c1</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>deck.menu.css</filename>
+          <data>5d6d29b5.blob</data>
+          <digest>77779db1ec993a7aff533a7228e2749e</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>deck.menu.js</filename>
+          <data>ae2b3896.blob</data>
+          <digest>a01a6f03b86c121d17fc89eaf5a34a2f</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>deck.menu.scss</filename>
+          <data>e47104ff.blob</data>
+          <digest>e6a8b77a38c4fa8ead0e4d365914a122</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>deck.navigation.css</filename>
+          <data>16f5609d.blob</data>
+          <digest>700863c3b605b83eaae1c54fa990283a</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/html</mime-type>
+          <filename>deck.navigation.html</filename>
+          <data>3e5de901.blob</data>
+          <digest>bbe6448f856a577ea8cf5d5a2eb5d220</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>deck.navigation.js</filename>
+          <data>46f1f19d.blob</data>
+          <digest>e79b66f67fe8f8d6cd8e688666867ea9</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>image/png</mime-type>
+          <filename>title.png</filename>
+          <data>3dc2124.blob</data>
+          <digest>68bed00830dbc1803e509c2c1f905648</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>deck.navigation.scss</filename>
+          <data>ca9362b2.blob</data>
+          <digest>973e7852721721d0b3f023eae55db58c</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>deck.scale.css</filename>
+          <data>775f1190.blob</data>
+          <digest>7c054f699b1c70360ad1c90a521255a5</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>deck.scale.js</filename>
+          <data>d43551fb.blob</data>
+          <digest>d2c9c72c0f826955857bb48e3bbdf684</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>deck.scale.scss</filename>
+          <data>b8bc5b77.blob</data>
+          <digest>1cf1b33e587a0202881285b39060c615</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>deck.core.css</filename>
+          <data>cde9ea65.blob</data>
+          <digest>1f1efaa4f791a0fa2c34a8d24a7517c9</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>deck.core.js</filename>
+          <data>1890804c.blob</data>
+          <digest>fbfa44af2be462be98eb32ccc7a112b7</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>deck.core.scss</filename>
+          <data>19fedc26.blob</data>
+          <digest>ba51dd9fcd2f6b6c181e4c239e687f96</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>deck.goto.css</filename>
+          <data>8c41ffd2.blob</data>
+          <digest>19497b928fd25ba200a6c07a224ac2eb</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/html</mime-type>
+          <filename>deck.goto.html</filename>
+          <data>87679986.blob</data>
+          <digest>c419593d8bf771f9f319c9fd3419eb33</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>deck.goto.js</filename>
+          <data>59315330.blob</data>
+          <digest>03a6ab34e37148bb17fefc78e3e5374e</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>deck.goto.scss</filename>
+          <data>2dbc9327.blob</data>
+          <digest>f42413a23a75bb617faae7da6312b626</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>deck.status.css</filename>
+          <data>b6519768.blob</data>
+          <digest>e30193867d1b1126f707948110e8b18a</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/html</mime-type>
+          <filename>deck.status.html</filename>
+          <data>43179f8.blob</data>
+          <digest>dc5cd7e00c492b45bb1b530e07d9b16c</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>fade.css</filename>
+          <data>30eb43e6.blob</data>
+          <digest>16416e4296784e31205e31bc436be4f7</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>fade.scss</filename>
+          <data>35f5ea6a.blob</data>
+          <digest>924359b9ce1065595d5cd4d83c915d16</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>horizontal-slide.css</filename>
+          <data>3c767e05.blob</data>
+          <digest>bf50905139e48f43015b08dd363edcb8</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>horizontal-slide.scss</filename>
+          <data>aa37a3a7.blob</data>
+          <digest>4b30e27a4b5deab534e00e8def81a985</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>vertical-slide.css</filename>
+          <data>4ca688b1.blob</data>
+          <digest>32dd9320b94907d60669b50302562aa7</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>vertical-slide.scss</filename>
+          <data>ebf5ed6.blob</data>
+          <digest>3c3f4c712104a736436243ae165bd06d</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>modernizr.custom.js</filename>
+          <data>49130799.blob</data>
+          <digest>e90da1516f1c9c98063f881f15e0b24a</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>deck.status.js</filename>
+          <data>a719cdb8.blob</data>
+          <digest>cf3ee666b53ffbd1eb1b3e8b9c210422</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>deck.status.scss</filename>
+          <data>94405f8d.blob</data>
+          <digest>21cd5138855d8d9a7c43e9fd9f24e451</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>neon.css</filename>
+          <data>b6a60d1d.blob</data>
+          <digest>01ac12479665e515b16334a60f0a4892</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>neon.scss</filename>
+          <data>a22ef9f6.blob</data>
+          <digest>9e609f7a4b4d81e4b7473274eea5cd6d</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>swiss.css</filename>
+          <data>40273f01.blob</data>
+          <digest>5c00dff3aea4833c9afec7f5c31cf980</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>swiss.scss</filename>
+          <data>6f7ca793.blob</data>
+          <digest>f123af8b71c6b2c5753bc719bf814842</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>web-2.0.css</filename>
+          <data>d98dd954.blob</data>
+          <digest>612a57d770cea299b771ad15fdd62e42</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type></mime-type>
+          <filename>web-2.0.scss</filename>
+          <data>360d5ed8.blob</data>
+          <digest>7df99e92c8695e804c032da1621d6b2d</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>application/javascript</mime-type>
+          <filename>jquery-1.7.2.min.js</filename>
+          <data>5c88d1ba.blob</data>
+          <digest>b11ced65f32fedbe9bf81ef9db0f3c94</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/plain</mime-type>
+          <filename>mkslides.js</filename>
+          <data>db2d2ca2.blob</data>
+          <digest>22b0866ca99bede078b30a127fcec707</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>image/png</mime-type>
+          <filename>brick-alone.png</filename>
+          <data>1391fbc5.blob</data>
+          <digest>d6356665a1435e35055dbb44addad7ea</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>image/png</mime-type>
+          <filename>nuxeo-webinars-for-developers.png</filename>
+          <data>febef226.blob</data>
+          <digest>ee8b30fee7cb42725c7c25877287df79</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>image/png</mime-type>
+          <filename>outline-background.png</filename>
+          <data>985afe75.blob</data>
+          <digest>517bcd26b71d7c1b03de707f2eb0ff48</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>image/png</mime-type>
+          <filename>webinar-headset.png</filename>
+          <data>a20f893b.blob</data>
+          <digest>e70280ee9ca40cc73b6dd4d91367b21c</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>nuxeo-theme.css</filename>
+          <data>76a10704.blob</data>
+          <digest>1a73dc759821d028f30f48b6548cf1e5</digest>
+        </file>
+      </item>
+      <item>
+        <file>
+          <encoding></encoding>
+          <mime-type>text/css</mime-type>
+          <filename>nuxeo-theme-with-comments.css</filename>
+          <data>576b077.blob</data>
+          <digest>32c9c4c1479478f6fdb99f35706ba6cd</digest>
+        </file>
+      </item>
+    </files:files>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon><![CDATA[/icons/webtemplate.png]]></common:icon>
+    <common:icon-expanded/>
+  </schema>
+  <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
+    <tmpl:forcedTypes>
+      <item><![CDATA[none]]></item>
+    </tmpl:forcedTypes>
+    <tmpl:templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"><nxdt:field name="htmlContent" type="content" source="htmlPreview"></nxdt:field></nxdt:templateParams>]]></tmpl:templateData>
+    <tmpl:allowOverride><![CDATA[true]]></tmpl:allowOverride>
+    <tmpl:templateType><![CDATA[Freemarker]]></tmpl:templateType>
+    <tmpl:useAsMainContent><![CDATA[false]]></tmpl:useAsMainContent>
+    <tmpl:templateName><![CDATA[NuxeoWorld2K12HtmlSlides]]></tmpl:templateName>
+    <tmpl:applicableTypes>
+      <item><![CDATA[Note]]></item>
+    </tmpl:applicableTypes>
+    <tmpl:outputFormat>deckJsToPDF</tmpl:outputFormat>
+    <tmpl:targetRenditionName><![CDATA[webView]]></tmpl:targetRenditionName>
+  </schema>
+  <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
+    <relatedtext:relatedtextresources/>
+  </schema>
+  <schema xmlns:note="http://www.nuxeo.org/ecm/schemas/note/" name="note">
+    <note:mime_type><![CDATA[text/plain]]></note:mime_type>
+    <note:note><![CDATA[<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->  <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>${doc.dublincore.title}</title>
+
+  <meta name="description" content="${doc.dublincore.description}">
+  <meta name="author" content="Nuxeo">
+  <meta name="viewport" content="width=1024, user-scalable=no">
+
+  <!-- Core and extension CSS files -->
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("deck.core.css")}">
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("deck.goto.css")}">
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("deck.menu.css")}">
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("deck.navigation.css")}">
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("deck.status.css")}">
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("deck.hash.css")}">
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("deck.scale.css")}">
+
+  <!-- Nuxeo Slide Default theme -->
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("nuxeo-theme.css")}">
+
+  <!-- Nuxeo Slide with comments theme -->
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("nuxeo-theme-with-comments.css")}">
+
+  <!-- Transition theme. More available in /themes/transition/ or create your own. -->
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("nuxeo-transition.css")}">
+
+  <!-- Nuxeo Slide Webinar theme -->
+  <link rel="stylesheet" href="${jaxrs.getResourceUrl("nuxeo-webinar.css")}">
+
+  <script src="${jaxrs.getResourceUrl("modernizr.custom.js")}"></script>
+
+
+  <style>
+
+/* --
+Nuxeo Techonoly webinar - 2013
+Based on the Default
+=nuxeo world specific => specific rules for nuxeo world's need
+-- */
+
+/* =nuxeo world specific */
+
+/* Background color */
+
+.on-slide-nuxeo-slides, .on-slide-thank-you {
+
+/* SVG fallback(Opera 11.10-, IE9) */
+background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjpyZ2JhKDEzNyw4NiwxNTQsMSk7IiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6cmdiYSgwLDE2NSwyMTMsMSk7IiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IGZpbGw9InVybCgjZ3JhZGllbnQpIiBoZWlnaHQ9IjEwMCUiIHdpZHRoPSIxMDAlIiAvPjwvc3ZnPg==);
+
+/* Opera 11.10+ */
+background: -o-linear-gradient(top, rgba(137,86,154,1), rgba(0,165,213,1));
+
+/* Firefox 3.6+ */
+background: -moz-linear-gradient(top, rgba(137,86,154,1), rgba(0,165,213,1));
+
+/* Chrome 7+ & Safari 5.03+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(137,86,154,1)), color-stop(1, rgba(0,165,213,1)));
+
+/* IE5.5 - IE7 */
+filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#FF89569A,EndColorStr=#FF00A5D5);
+
+/* IE8 */
+-ms-filter: "progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#FF89569A,EndColorStr=#FF00A5D5)";
+
+}
+
+#nuxeo-slides, #thank-you {
+  background:url("${jaxrs.getResourceUrl("outline-background.png")}") center center no-repeat;
+}
+
+.deck-container .nuxeo-logo .slash {
+  background: url("${jaxrs.getResourceUrl("webinar-headset.png")}") top left no-repeat;
+  width:32px;
+  height:32px;
+  display:inline-block;
+  margin-bottom:-12px;
+}
+
+/* brickon each slide */
+
+.deck-container .nuxeo-dev-logo {
+  bottom: 0;
+  color: #000;
+  font-size: .5em;
+  font-weight: bold;
+  margin: 0;
+  right: 5px;
+  z-index: 3;
+  position: fixed;
+  background: url("${jaxrs.getResourceUrl("brick-alone.png")}") top left no-repeat;
+  width:90px;
+  height:53px;
+}
+
+body.on-slide-nuxeo-slides .nuxeo-dev-logo, body.on-slide-nuxeo-slides .deck-status, body.on-slide-nuxeo-slides .nuxeo-logo, body.on-slide-thank-you .nuxeo-dev-logo, body.on-slide-thank-you .deck-status, body.on-slide-thank-you .nuxeo-logo {
+  display: none;
+}
+
+.deck-container .deck-status {
+    bottom: 10px;
+    font-size: 0.4em;
+    right: 103px;
+    color:rgba(100,100,100,0.8);
+}
+
+.slash span {display:none;}
+
+/* Title */
+
+#nuxeo-slides h1, #thank-you h2 {
+  background-color: yellow;
+  margin: 0 1.5em;
+  padding: 0.3em 0;
+  border:2px outset #fcde24;
+  color:black;
+}
+
+.csstransforms #nuxeo-slides h1, .csstransforms #nuxeo-slides .vcenter,
+.csstransforms #thank-you h2 {
+  top:35%;
+}
+
+/* Authors */
+
+.deck-container #nuxeo-slides h6, .deck-container #thank-you h6 {
+  text-align:center;
+  display:inline-block;
+  background-color: rgba(255,255,255,0.4);
+  padding:2em;
+  position: absolute;
+  top:55%;
+  width:30%;
+  left:50%;
+  margin-left:-20%;
+  font-size: 0.5em;
+  }
+</style>
+</head>
+
+<body class="deck-container">
+
+<!-- Nuxeo Logo Training -->
+<div class="nuxeo-logo">
+  <span class="nuxeo">nuxeo</span>
+  <span class="slash"><span>headset</span></span>
+  <span class="sub-part training">Webinars</span>
+</div>
+
+<!-- Nuxeo World Logo -->
+<div class="nuxeo-dev-logo">
+</div>
+
+<!-- Begin slides -->
+<section class="slide cover" id="nuxeo-slides">
+  <h1 id="slideDeckTitle">${doc.dublincore.title}</h1>
+  <h6>  <div id="for-developers"><img src="${jaxrs.getResourceUrl("nuxeo-webinars-for-developers.png")}" alt="For Developers"/></div>
+<#if doc.dublincore.rights?has_content>
+  ${doc.dublincore.rights}
+<#else>
+  ${doc.dublincore.creator}
+</#if>
+<br/>&copy; 2013 - Nuxeo</h6>
+<!-- paste this on the end slide too -->
+</section>
+
+${htmlContent}
+
+<section class="slide" id="thank-you">
+  <h2>Thank you!</h2>
+ <h6>  <div id="for-developers"><img src="${jaxrs.getResourceUrl("nuxeo-webinars-for-developers.png")}" alt="For Developers"/></div>
+${doc.dublincore.creator}<br/>&copy; 2013 - Nuxeo</h6>
+</section>
+
+<!-- deck.navigation snippet -->
+<a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="." title="Permalink to this slide" class="deck-permalink">#</a>
+
+
+<!-- Grab CDN jQuery, with a protocol relative URL; fall back to local if offline -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="${jaxrs.getResourceUrl("jquery-1.7.2.min.js")}"><\/script>')</script>
+
+<!-- Deck Core and extensions -->
+<script src="${jaxrs.getResourceUrl("deck.core.js")}"></script>
+<script src="${jaxrs.getResourceUrl("deck.hash.js")}"></script>
+<script src="${jaxrs.getResourceUrl("deck.menu.js")}"></script>
+<script src="${jaxrs.getResourceUrl("deck.goto.js")}"></script>
+<script src="${jaxrs.getResourceUrl("deck.status.js")}"></script>
+<script src="${jaxrs.getResourceUrl("deck.navigation.js")}"></script>
+<script src="${jaxrs.getResourceUrl("deck.scale.js")}"></script>
+
+<!-- integrate JS to change Markdown output-->
+<script src="${jaxrs.getResourceUrl("mkslides.js")}"></script>
+
+<!-- Initialize the deck -->
+<script>
+$(document).ready(function() {
+ preProcessHtml("${jaxrs.getResourceUrl('')}");
+ $.deck('.slide');
+});
+</script>
+
+</body>
+</html>]]></note:note>
+  </schema>
+</document>

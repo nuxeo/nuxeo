@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-modules</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.runtime</groupId>
+  <artifactId>nuxeo-runtime-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Runtime Parent</name>
+
+  <modules>
+    <module>nuxeo-common</module>
+    <module>nuxeo-connect-standalone</module>
+    <module>nuxeo-launcher-commons</module>
+    <module>nuxeo-runtime</module>
+    <module>nuxeo-runtime-aws</module>
+    <module>nuxeo-runtime-cluster</module>
+    <module>nuxeo-runtime-datasource</module>
+    <module>nuxeo-runtime-deploy</module>
+    <module>nuxeo-runtime-jtajca</module>
+    <module>nuxeo-runtime-kv</module>
+    <module>nuxeo-runtime-launcher</module>
+    <module>nuxeo-runtime-management</module>
+    <module>nuxeo-runtime-metrics</module>
+    <module>nuxeo-runtime-migration</module>
+    <module>nuxeo-runtime-mongodb</module>
+    <module>nuxeo-runtime-osgi</module>
+    <module>nuxeo-runtime-pubsub</module>
+    <module>nuxeo-runtime-redis</module>
+    <module>nuxeo-runtime-reload</module>
+    <module>nuxeo-runtime-server</module>
+    <module>nuxeo-runtime-stream</module>
+    <module>nuxeo-runtime-test</module>
+    <module>nuxeo-runtime-tomcat-adapter</module>
+    <module>nuxeo-stream</module>
+  </modules>
+
+</project>

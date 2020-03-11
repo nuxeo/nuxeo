@@ -1,0 +1,5 @@
+<#if "${test.freemarker.key}" == "true">
+Success
+<#else>
+Failure
+</#if>

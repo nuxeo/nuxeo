@@ -1,0 +1,14 @@
+<!-- Sample contribution, mapping the idp's response to the user properties
+See https://doc.nuxeo.com/nxdoc/saml-20-authentication for more information -->
+<component name="org.nuxeo.ecm.platform.login.saml.mapper">
+  <extension
+    target="org.nuxeo.usermapper.service.UserMapperComponent"
+    point="mapper">
+    <mapper name="saml" type="js">
+      <mapperScript>
+        searchAttributes.put("username", userObject.getNameID().getValue());
+        userAttributes.put("email", userObject.getNameID().getValue());
+      </mapperScript>
+    </mapper>
+  </extension>
+</component>

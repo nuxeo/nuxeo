@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ftests</groupId>
+    <artifactId>nuxeo-ftests</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-server-hotreload-tests</artifactId>
+  <name>Nuxeo Server Hotrealod Tests</name>
+  <description>Hotreload Functional tests on Nuxeo Server</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-features-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-functional-tests</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-client</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <argLine>-Dlog4j.configurationFile=${file.uri.prefix}${basedir}/src/test/resources/log4j2-test.xml
+                -Dnuxeo.log.dir=${project.build.directory}
+                ${it.failsafe.argLine}
+              </argLine>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <configuration>
+          <buildFiles>
+            <buildFile>${basedir}/itests.xml</buildFile>
+          </buildFiles>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-tomcat</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>prepare-environment</target>
+                <target>start</target>
+              </targets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-tomcat</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>stop</target>
+                <target>cleanup-environment</target>
+              </targets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

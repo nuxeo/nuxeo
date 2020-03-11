@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+  <groupId>org.nuxeo.ecm.login</groupId>
+  <artifactId>nuxeo-platform-login-parent</artifactId>
+  <name>Nuxeo Login Parent POM</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-platform-login</module>
+    <module>nuxeo-platform-login-cas2</module>
+    <module>nuxeo-platform-login-cleartrust</module>
+    <module>nuxeo-platform-login-deputy</module>
+    <module>nuxeo-platform-login-digest</module>
+    <module>nuxeo-platform-login-kerberos</module>
+    <module>nuxeo-platform-login-keycloak</module>
+    <module>nuxeo-platform-login-mod_sso</module>
+    <module>nuxeo-platform-login-ntlm</module>
+    <module>nuxeo-platform-login-openid</module>
+    <module>nuxeo-platform-login-portal-sso</module>
+    <module>nuxeo-platform-login-saml2</module>
+    <module>nuxeo-platform-login-shibboleth</module>
+    <module>nuxeo-platform-login-token</module>
+    <module>nuxeo-platform-login-token-rest</module>
+    <module>nuxeo-platform-login-jwt</module>
+  </modules>
+
+</project>

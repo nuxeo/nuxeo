@@ -1,5 +1,0 @@
-
-Wiki: ${title}
-
-CreatePage ?
-

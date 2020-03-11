@@ -1,7 +1,0 @@
-id, label, obsolete
-"http://purl.org/dc/terms/References","label.relation.predicate.inverse.References","0"
-"http://purl.org/dc/terms/IsBasedOn","label.relation.predicate.inverse.IsBasedOn","0"
-"http://purl.org/dc/terms/Replaces","label.relation.predicate.inverse.Replaces","0"
-"http://purl.org/dc/terms/Requires","label.relation.predicate.inverse.Requires","0"
-"http://purl.org/dc/terms/ConformsTo","label.relation.predicate.inverse.ConformsTo","0"
-

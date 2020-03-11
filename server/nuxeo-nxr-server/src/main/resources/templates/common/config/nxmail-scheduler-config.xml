@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.mail.scheduler.config">
+
+  <extension
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+
+    <schedule id="mailReceivedSchedule">
+      <eventId>MailReceivedEvent</eventId>
+      <eventCategory>default</eventCategory>
+      <!-- every half hour of every day -->
+      <cronExpression>0 0/30 * * * ?</cronExpression>
+    </schedule>
+
+  </extension>
+
+</component>

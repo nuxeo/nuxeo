@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.relations.io.contrib">
+
+  <documentation>
+    Sample contribution for relations copy inside a template.
+
+    @author Anahide Tchertchian <a href="mailto:at@nuxeo.com" />
+
+    <pre>
+      <extension target="org.nuxeo.ecm.platform.io.IOManager"
+        point="adapters">
+
+        <adapter name="template_relations"
+          class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+          <property name="graph">default</property>
+          <property name="ignore-external">true</property>
+        </adapter>
+
+      </extension>
+    </pre>
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.platform.io.IOManager"
+    point="adapters">
+
+    <adapter name="template_relations"
+      class="org.nuxeo.ecm.platform.relations.io.IORelationAdapter">
+      <property name="graph">default</property>
+      <property name="ignore-external">true</property>
+    </adapter>
+
+  </extension>
+
+
+</component>

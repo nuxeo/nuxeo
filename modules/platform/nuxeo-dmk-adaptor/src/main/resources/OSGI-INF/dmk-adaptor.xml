@@ -1,0 +1,20 @@
+<component name="org.nuxeo.dmk-adaptor">
+
+  <implementation class="org.nuxeo.dmk.DmkComponent" />
+
+  <extension-point name="protocols">
+    <object class="org.nuxeo.dmk.DmkProtocol"/>
+  </extension-point>
+
+  <extension target="org.nuxeo.dmk-adaptor" point="protocols">
+   <protocol name="html">
+     <port>8081</port>
+   </protocol>
+   <protocol name="http">
+     <port>6868</port>
+   </protocol>
+   <protocol name="https">
+     <port>6869</port>
+   </protocol>
+  </extension>
+</component>

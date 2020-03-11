@@ -1,0 +1,156 @@
+version: 1
+
+# Root of the directory
+#
+dn: dc=example,dc=com
+objectClass: top
+objectClass: organization
+objectClass: dcObject
+dc: example
+o: My Site
+
+# Global directory manager account
+#
+dn: cn=ldapadmin,dc=example,dc=com
+objectClass: top
+objectClass: person
+cn: ldapadmin
+sn: Admin
+userPassword: changeme
+
+# Branch to register applicative accounts
+#
+dn: ou=applications,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: applications
+
+# Account for the nuxeo5 application
+#
+dn: cn=nuxeo5,ou=applications,dc=example,dc=com
+objectClass: top
+objectClass: person
+cn: nuxeo5
+sn: nuxeo5
+userPassword: changeme
+
+# Branch to store real human users
+# (User's passwords are equal to their uids)
+#
+dn: ou=people,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=Administrator,ou=people,dc=example,dc=com
+givenName: Administrator
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: Administrator
+cn: Administrator
+sn: Manager
+initials: A
+o: nuxeo
+mail: ogrisel+Administrator@nuxeo.com
+userPassword: Administrator
+employeeNumber: 1
+gidNumber: 1000
+uidNumber: 1000
+homeDirectory: /home/Administrator
+
+dn: uid=user1,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user1
+cn: User One
+givenName: User
+sn: One
+initials: UO
+o: viral prod
+roomNumber: OpenSpace
+employeeType: Boss
+preferredLanguage: Dollars$$$
+telephoneNumber: 7160
+facsimileTelephoneNumber: 7160
+mail: ogrisel+user1@nuxeo.com
+o: DIR
+ou: MOS
+userPassword: user1
+gidNumber: 1001
+uidNumber: 1001
+homeDirectory: /home/user1
+
+dn: uid=user2,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user2
+cn: User Two
+givenName: User
+sn: One
+initials: UO
+o: super
+roomNumber: OpenSpace
+employeeType: Slave
+employeeNumber: 2
+preferredLanguage: FR
+telephoneNumber: 7160
+facsimileTelephoneNumber: 7160
+# no mail to test missing ids
+#mail: ogrisel+user2@nuxeo.com
+o: DIR
+ou: MOS
+userPassword: user2
+gidNumber: 1002
+uidNumber: 1002
+homeDirectory: /home/user2
+
+dn: uid=user3,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user3
+cn: User Three
+givenName: User
+sn: Three
+mail: ogrisel+user3@nuxeo.com
+userPassword: user3
+o: creole
+gidNumber: 1003
+uidNumber: 1003
+homeDirectory: /home/user3
+
+#
+# Sub-branch to test scoping
+#
+dn: ou=subpeople,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: subpeople
+
+dn: uid=user4,ou=subpeople,ou=people,dc=example,dc=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: posixAccount
+uid: user4
+cn: User Quatro
+givenName: User
+sn: Three
+employeeType: UnterMensh
+mail: ogrisel+user4@nuxeo.com
+userPassword: user4
+gidNumber: 1004
+uidNumber: 1004
+homeDirectory: /home/user4

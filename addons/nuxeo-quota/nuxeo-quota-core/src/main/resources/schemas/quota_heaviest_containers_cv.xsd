@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/mcedica-SANDBOX/quota_heaviest_containers_cv" targetNamespace="http://www.nuxeo.org/ecm/project/schemas/mcedica-SANDBOX/quota_heaviest_containers_cv">  
-  <xs:element name="dublincore_title" type="xs:string"/>
-  <xs:element name="documents_size_statistics_totalSize_min" type="xs:integer"/>
-   <xs:element name="documents_size_statistics_totalSize_max" type="xs:integer"/>
-</xs:schema>

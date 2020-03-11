@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- XXX AT: namespace should be changed to
+  http://www.nuxeo.org/ecm/schemas/uid/ -->
+<xs:schema targetNamespace="http://project.nuxeo.com/geide/schemas/uid/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="uid" type="xs:string" />
+  <xs:element name="major_version" type="xs:int" />
+  <xs:element name="minor_version" type="xs:int" />
+
+</xs:schema>
