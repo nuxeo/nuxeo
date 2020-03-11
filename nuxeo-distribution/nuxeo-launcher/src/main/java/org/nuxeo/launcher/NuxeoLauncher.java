@@ -530,6 +530,7 @@ public abstract class NuxeoLauncher {
             + "        showconf\t\tDisplay the instance configuration.\n" //
             + "        mp-list\t\t\tList local Nuxeo Packages.\n" //
             + "        mp-listall\t\tList all Nuxeo Packages.\n" //
+            + "        mp-init\t\t\tDeprecated: no more Nuxeo Packages locally available in the distribution.\n" //
             + "        mp-update\t\tUpdate cache of Nuxeo Packages list.\n" //
             + "        mp-add\t\t\tAdd Nuxeo Package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n" //
             + "        mp-install\t\tRun Nuxeo Package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n" //
@@ -1198,6 +1199,8 @@ public abstract class NuxeoLauncher {
             launcher.pkgList();
         } else if (launcher.commandIs("mp-listall")) {
             launcher.pkgListAll();
+        } else if (launcher.commandIs("mp-init")) {
+            commandSucceeded = launcher.pkgInit();
         } else if (launcher.commandIs("mp-purge")) {
             commandSucceeded = launcher.pkgPurge();
         } else if (launcher.commandIs("mp-add")) {
@@ -2705,6 +2708,16 @@ public abstract class NuxeoLauncher {
      */
     protected boolean pkgRefreshCache() {
         getConnectBroker().refreshCache();
+        return true;
+    }
+
+    /**
+     * Add packages from the distribution to the local cache
+     *
+     * @since 5.6
+     */
+    protected boolean pkgInit() {
+        log.warn("The 'mp-init' command is deprecated, no more Nuxeo Packages locally available in the distribution.");
         return true;
     }
 
