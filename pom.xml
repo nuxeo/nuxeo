@@ -135,7 +135,7 @@
     <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
     <jgiven.version>0.18.2</jgiven.version>
 
-    <nuxeo.skip.enforcer>true</nuxeo.skip.enforcer>
+    <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
 
     <!-- Tests properties -->
     <!-- for use integration/vcstests.xml and org.nuxeo:nuxeo-ftest -->
@@ -6215,9 +6215,6 @@
           <value>true</value>
         </property>
       </activation>
-      <properties>
-        <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
-      </properties>
       <build>
         <pluginManagement>
           <plugins>
