@@ -171,9 +171,6 @@ public final class MailCoreHelper {
                     properties.put("mail.imaps.port", port);
                     properties.put("mail.imaps.starttls.enable", starttlsEnable.toString());
                     properties.put("mail.imaps.ssl.protocols", sslProtocols);
-                    properties.put("mail.imaps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-                    properties.put("mail.imaps.socketFactory.fallback", socketFactoryFallback.toString());
-                    properties.put("mail.imaps.socketFactory.port", socketFactoryPort);
                     properties.put("mail.imap.partialfetch", FALSE.toString());
                     properties.put("mail.imaps.partialfetch", FALSE.toString());
                 } else if (POP3S.equals(protocolType)) {
