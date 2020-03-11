@@ -156,6 +156,11 @@ public abstract class AbstractWork implements Work {
     // @since 11.1
     public static final String GLOBAL_DLQ_COUNT_REGISTRY_NAME = MetricRegistry.name("nuxeo", "works", "dlq").getKey();
 
+    static {
+        // Initialize the metric so it is reported as 0 from start.
+        SharedMetricRegistries.getOrCreate(MetricsService.class.getName()).counter(GLOBAL_DLQ_COUNT_REGISTRY_NAME);
+    }
+
     /**
      * Constructs a {@link Work} instance with a unique id.
      */
