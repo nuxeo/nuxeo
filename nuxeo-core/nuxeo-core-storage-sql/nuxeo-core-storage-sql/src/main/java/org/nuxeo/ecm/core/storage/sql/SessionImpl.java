@@ -58,7 +58,6 @@ import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -75,6 +74,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
@@ -147,11 +147,12 @@ public class SessionImpl implements Session, XAResource {
         live = true;
         readAclsChanged = false;
 
-        saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
-        queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
-        aclrUpdateTimer = registry.timer(
-                MetricRegistry.name("nuxeo", "repositories", repository.getName(), "aclr-updates"));
-
+        saveTimer = registry.timer(MetricName.build("nuxeo", "repositories", "repository", "save", "timer")
+                                             .tagged("repository", repository.getName()));
+        queryTimer = registry.timer(MetricName.build("nuxeo", "repositories", "repository", "query", "timer")
+                                              .tagged("repository", repository.getName()));
+        aclrUpdateTimer = registry.timer(MetricName.build("nuxeo", "repositories", "repository", "aclr-update", "timer")
+                                                   .tagged("repository", repository.getName()));
         computeRootNode();
     }
 

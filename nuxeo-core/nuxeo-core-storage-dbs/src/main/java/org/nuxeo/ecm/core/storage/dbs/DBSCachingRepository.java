@@ -37,10 +37,9 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
-
-import javax.ws.rs.HEAD;
 
 /**
  * The DBS Cache layer used to cache some method call of real repository
@@ -50,6 +49,10 @@ import javax.ws.rs.HEAD;
 public class DBSCachingRepository implements DBSRepository {
 
     private static final Log log = LogFactory.getLog(DBSCachingRepository.class);
+
+    protected static final String METRIC_CACHE_NAME = "nuxeo.repositories.repository.cache";
+
+    protected static final String METRIC_CHILD_CACHE_NAME = "nuxeo.repositories.repository.childCache";
 
     private final DBSRepository repository;
 
@@ -63,7 +66,7 @@ public class DBSCachingRepository implements DBSRepository {
 
     protected final DBSClusterInvalidator clusterInvalidator;
 
-    protected final MetricRegistry metricRegistry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     public DBSCachingRepository(DBSRepository repository, DBSRepositoryDescriptor descriptor) {
         this.repository = repository;
@@ -103,21 +106,21 @@ public class DBSCachingRepository implements DBSRepository {
 
     protected Cache<String, State> newCache() {
         Cache<String, State> c = newCache(descriptor);
-        metricRegistry.registerAll(GuavaCacheMetric.of(c, "nuxeo", "repositories", getName(), "cache"));
+        registry.registerAll(GuavaCacheMetric.of(cache,
+                MetricName.build(METRIC_CACHE_NAME).tagged("repository", repository.getName())));
         return c;
     }
 
     protected Cache<String, String> newChildCache() {
         Cache<String, String> c = newCache(descriptor);
-        metricRegistry.registerAll(GuavaCacheMetric.of(c, "nuxeo", "repositories", getName(), "childCache"));
+        registry.registerAll(GuavaCacheMetric.of(childCache,
+                MetricName.build(METRIC_CHILD_CACHE_NAME).tagged("repository", repository.getName())));
         return c;
     }
 
     protected void removeCacheMetrics() {
-        String cacheName = MetricRegistry.name("nuxeo", "repositories", getName(), "cache");
-        String childCacheName = MetricRegistry.name("nuxeo", "repositories", getName(), "childCache");
-        metricRegistry.removeMatching(
-                (name, metric) -> name.getKey().startsWith(cacheName) || name.getKey().startsWith(childCacheName));
+        registry.removeMatching((name, metric) -> name.getKey().startsWith(METRIC_CACHE_NAME)
+                || name.getKey().startsWith(METRIC_CHILD_CACHE_NAME));
     }
 
     protected <T> Cache<String, T> newCache(DBSRepositoryDescriptor descriptor) {

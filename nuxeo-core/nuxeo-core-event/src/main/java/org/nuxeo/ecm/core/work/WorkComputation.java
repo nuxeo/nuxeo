@@ -69,7 +69,7 @@ public class WorkComputation extends AbstractComputation {
     public WorkComputation(String name) {
         super(name, 1, 0);
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-        workTimer = registry.timer(MetricName.build("nuxeo.works.local.queue.timer").tagged("queue", name));
+        workTimer = registry.timer(MetricName.build("nuxeo.works.queue.timer").tagged("queue", name));
         stateTTL = Framework.getService(ConfigurationService.class).getLong(STATETTL_KEY, STATETTL_DEFAULT_VALUE);
     }
 

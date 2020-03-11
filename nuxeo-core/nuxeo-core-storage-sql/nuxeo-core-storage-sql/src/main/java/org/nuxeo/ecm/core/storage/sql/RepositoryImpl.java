@@ -68,8 +68,6 @@ public class RepositoryImpl implements Repository {
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Counter repositoryUp;
-
     protected final Counter sessionCount;
 
     private LockManager lockManager;
@@ -99,18 +97,16 @@ public class RepositoryImpl implements Repository {
         sessions = new CopyOnWriteArrayList<>();
         invalidationsPropagator = new VCSInvalidationsPropagator();
 
-        repositoryUp = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
-                "instance-up"));
-        repositoryUp.inc();
-        sessionCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name,
-                "sessions"));
+        sessionCount = registry.counter(MetricName.build("nuxeo", "repositories", "repository", "sessions")
+                                                  .tagged("repository", repositoryDescriptor.name));
         createMetricsGauges();
 
         initRepository();
     }
 
     protected void createMetricsGauges() {
-        MetricName gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "size");
+        MetricName gaugeName = MetricName.build("nuxeo", "repositories", "repository", "cache", "size")
+                                         .tagged("repository", repositoryDescriptor.name);
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -118,7 +114,8 @@ public class RepositoryImpl implements Repository {
                 return getCacheSize();
             }
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "pristines");
+        gaugeName = MetricName.build("nuxeo", "repositories", "repository", "cache", "pristine")
+                              .tagged("repository", repositoryDescriptor.name);
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -126,7 +123,8 @@ public class RepositoryImpl implements Repository {
                 return getCachePristineSize();
             }
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "selections");
+        gaugeName = MetricName.build("nuxeo", "repositories", "repository", "cache", "selection")
+                              .tagged("repository", repositoryDescriptor.name);
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -134,7 +132,8 @@ public class RepositoryImpl implements Repository {
                 return getCacheSelectionSize();
             }
         });
-        gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryDescriptor.name, "caches", "mappers");
+        gaugeName = MetricName.build("nuxeo", "repositories", "repository", "cache", "mapper")
+                .tagged("repository", repositoryDescriptor.name);
         registry.remove(gaugeName);
         registry.register(gaugeName, new Gauge<Long>() {
             @Override
@@ -385,10 +384,6 @@ public class RepositoryImpl implements Repository {
         closeAllSessions();
         model = null;
         backend.shutdown();
-
-        registry.remove(MetricRegistry.name(RepositoryImpl.class, getName(), "cache-size"));
-        registry.remove(MetricRegistry.name(PersistenceContext.class, getName(), "cache-size"));
-        registry.remove(MetricRegistry.name(SelectionContext.class, getName(), "cache-size"));
 
         if (selfRegisteredLockManager) {
             LockManagerService lms = Framework.getService(LockManagerService.class);

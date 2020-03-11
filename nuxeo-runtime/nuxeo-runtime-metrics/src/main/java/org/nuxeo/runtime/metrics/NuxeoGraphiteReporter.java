@@ -24,9 +24,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.Gauge;
 import io.dropwizard.metrics5.Histogram;
@@ -46,44 +43,39 @@ import io.dropwizard.metrics5.graphite.GraphiteReporter;
  * @since 11.1
  */
 public class NuxeoGraphiteReporter extends ScheduledReporter {
-    protected static final Log log = LogFactory.getLog(NuxeoGraphiteReporter.class);
 
     protected final GraphiteReporter reporter;
 
     public NuxeoGraphiteReporter(MetricRegistry registry, MetricFilter filter, GraphiteReporter reporter) {
-        super(registry, "graphite-reporter", filter, TimeUnit.SECONDS, TimeUnit.SECONDS);
+        super(registry, "graphite-reporter", filter, TimeUnit.SECONDS,
+                TimeUnit.SECONDS);
         this.reporter = reporter;
-        log.debug("Creating a NuxeoGraphiteReporter");
     }
 
     @Override
     public void report(SortedMap<MetricName, Gauge> gauges, SortedMap<MetricName, Counter> counters,
             SortedMap<MetricName, Histogram> histograms, SortedMap<MetricName, Meter> meters,
             SortedMap<MetricName, Timer> timers) {
-        reporter.report(getMetrics(gauges), getMetrics(counters), getMetrics(histograms), getMetrics(meters),
-                getMetrics(timers));
+        reporter.report(graphiteMetrics(gauges), graphiteMetrics(counters), graphiteMetrics(histograms),
+                graphiteMetrics(meters), graphiteMetrics(timers));
     }
 
-    protected <T extends Metric> SortedMap<MetricName, T> getMetrics(SortedMap<MetricName, T> metrics) {
+    protected <T extends Metric> SortedMap<MetricName, T> graphiteMetrics(SortedMap<MetricName, T> metrics) {
         final SortedMap<MetricName, T> nuxeoMetrics = new TreeMap<>();
         for (Map.Entry<MetricName, T> entry : metrics.entrySet()) {
             MetricName name = entry.getKey();
-            if (!name.getTags().isEmpty()) {
-                name = convertName(name);
+            if (name.getTags().isEmpty()) {
+                nuxeoMetrics.put(name, entry.getValue());
+            } else {
+                nuxeoMetrics.put(convertName(name), entry.getValue());
             }
-            nuxeoMetrics.put(name, entry.getValue());
         }
         return Collections.unmodifiableSortedMap(nuxeoMetrics);
     }
 
     protected MetricName convertName(MetricName name) {
-        String metricName = name.getKey();
-        for (Map.Entry<String, String> entry : name.getTags().entrySet()) {
-            String key = "." + entry.getKey() + ".";
-            String keyAndValue = key + entry.getValue() + ".";
-            metricName = metricName.replace(key, keyAndValue);
-        }
-        return MetricName.build(metricName);
+        String graphiteName = MetricsDescriptor.GraphiteDescriptor.metricToName(name);
+        return MetricName.build(graphiteName);
     }
 
 }

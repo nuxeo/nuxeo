@@ -34,6 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 
@@ -74,12 +75,16 @@ public class DirectoryCache {
 
     protected DirectoryCache(String name) {
         this.name = name;
-        hitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "hits"));
-        negativeHitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "neghits"));
-        missesCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "misses"));
+        hitsCounter = metrics.counter(
+                MetricName.build("nuxeo", "directories", "directory", "cache", "hit").tagged("directory", name));
+        negativeHitsCounter = metrics.counter(
+                MetricName.build("nuxeo", "directories", "directory", "cache", "hit", "null")
+                          .tagged("directory", name));
+        missesCounter = metrics.counter(
+                MetricName.build("nuxeo", "directories", "directory", "cache", "miss").tagged("directory", name));
         invalidationsCounter = metrics.counter(
-                MetricRegistry.name("nuxeo", "directories", name, "cache", "invalidations"));
-        sizeCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "size"));
+                MetricName.build("nuxeo", "directories", "directory", "cache", "invalidation").tagged("directory", name));
+        sizeCounter = metrics.counter(MetricName.build("nuxeo", "directories", "directory", "cache", "size").tagged("directory", name));
     }
 
     protected boolean isCacheEnabled() {

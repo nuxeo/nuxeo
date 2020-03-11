@@ -38,12 +38,6 @@ import javax.transaction.TransactionManager;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.management.ManagementService;
-import net.sf.ehcache.transaction.manager.TransactionManagerLookup;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
@@ -58,6 +52,12 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 import io.dropwizard.metrics5.Timer.Context;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.management.ManagementService;
+import net.sf.ehcache.transaction.manager.TransactionManagerLookup;
 
 /**
  * A {@link RowMapper} that use an unified ehcache.
@@ -153,16 +153,19 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     protected void setMetrics(String repositoryName) {
-        cacheHitCount = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches",
-                "unified", "hits"));
-        cacheGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches",
-                "unified", "get"));
-        sorRows = registry.counter(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "unified",
-                "sor", "rows"));
-        sorGetTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "unified",
-                "sor", "get"));
-        MetricName gaugeName = MetricRegistry.name("nuxeo", "repositories", repositoryName, "caches", "unified",
-                "cache-size");
+        cacheHitCount = registry.counter(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "unified", "hit")
+                          .tagged("repository", repositoryName));
+        cacheGetTimer = registry.timer(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "unified", "timer")
+                          .tagged("repository", repositoryName));
+        sorRows = registry.counter(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "unified", "sor", "rows")
+                          .tagged("repository", repositoryName));
+        sorGetTimer = registry.timer(
+                MetricName.build("nuxeo", "repositories", "repository", "cache", "unified", "sor", "timer")
+                          .tagged("repository", repositoryName));
+        MetricName gaugeName = MetricName.build("nuxeo", "repositories", "repository", "cache", "unified", "size");
         @SuppressWarnings("rawtypes")
         SortedMap<MetricName, Gauge> gauges = registry.getGauges();
         if (!gauges.containsKey(gaugeName)) {

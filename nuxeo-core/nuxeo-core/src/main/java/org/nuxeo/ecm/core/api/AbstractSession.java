@@ -109,6 +109,7 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import io.dropwizard.metrics5.Counter;
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 
@@ -163,11 +164,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected void createMetrics() {
         createDocumentCount = registry.counter(
-                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "create"));
+                MetricName.build("nuxeo", "repositories", "repository", "documents", "create").tagged("repository", getRepositoryName()));
         deleteDocumentCount = registry.counter(
-                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "delete"));
+                MetricName.build("nuxeo", "repositories", "repository", "documents", "delete").tagged("repository", getRepositoryName()));
         updateDocumentCount = registry.counter(
-                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "update"));
+                MetricName.build("nuxeo", "repositories", "repository", "documents", "update").tagged("repository", getRepositoryName()));
     }
 
     protected SecurityService getSecurityService() {

@@ -45,17 +45,17 @@ public class CacheMetrics extends CacheWrapper {
 
     protected Gauge<Long> size;
 
-    protected final MetricName READ_HIT_NAME = nameOf("read-hit-counter");
+    protected final MetricName READ_HIT_NAME = nameOf("hit");
 
-    protected final MetricName READ_HIT_RATIO_NAME = nameOf("read-hit-ratio");
+    protected final MetricName READ_HIT_RATIO_NAME = nameOf("hit.ratio");
 
-    protected final MetricName READ_MISS_NAME = nameOf("read-miss-counter");
+    protected final MetricName READ_MISS_NAME = nameOf("miss");
 
-    protected final MetricName READ_NAME = nameOf("read-counter");
+    protected final MetricName READ_NAME = nameOf("read");
 
-    protected final MetricName WRITE_NAME = nameOf("write-counter");
+    protected final MetricName WRITE_NAME = nameOf("write");
 
-    protected final MetricName INVALIDATE_ALL_NAME = nameOf("invalidate-all-counter");
+    protected final MetricName INVALIDATE_ALL_NAME = nameOf("invalidation");
 
     protected final MetricName SIZE_NAME = nameOf("size");
 
