@@ -28,6 +28,7 @@ import static org.mockserver.model.HttpResponse.response;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,8 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +60,7 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.features.HTTPHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -74,6 +78,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.features")
 public class HTTPHelperTest {
 
+    private static final Logger log = LogManager.getLogger(HTTPHelperTest.class);
 
     @Inject
     protected CoreSession session;
@@ -85,13 +90,13 @@ public class HTTPHelperTest {
 
     protected ClientAndServer mockServer;
 
+    protected int serverPort;
 
+    protected String serverURL;
 
-    protected final static int SERVER_PORT = 1080;
+    protected static final int RETRIES = 1000;
 
     protected static final String SERVER_HOST = "localhost";
-    protected final static String SERVER_URL = "http://" + SERVER_HOST + ":" + String.valueOf(SERVER_PORT)
-            + SERVER_PATH;
 
     protected static final String SERVER_PATH = "/ws/path/";
 
@@ -102,8 +107,9 @@ public class HTTPHelperTest {
 
     @Before
     public void setUp() {
-        mockServer = startClientAndServer(1080);
-        proxy = startClientAndProxy(1090);
+        serverPort = getFreePort();
+        serverURL = "http://" + SERVER_HOST + ":" + serverPort + SERVER_PATH;
+        mockServer = startClientAndServer(serverPort);
 
         ctx = new OperationContext(session);
 
@@ -125,7 +131,7 @@ public class HTTPHelperTest {
         try {
             String expr = String.format(
                     "HTTP.get(\'%s\', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
-                    SERVER_URL);
+                    serverURL);
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8"); // NOSONAR
             ObjectMapper mapper = new ObjectMapper();
@@ -146,7 +152,7 @@ public class HTTPHelperTest {
             String expr = String.format(
                     "HTTP.get(\'%s\', " + "{'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }, "
                             + "'params' : { 'param1' : [ 'value1' ] , 'param2' : [ 'value2' ] }})",
-                    SERVER_URL);
+                    serverURL);
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
@@ -167,7 +173,7 @@ public class HTTPHelperTest {
             String expr = String.format(
                     "HTTP.get(\'%s\', " + "{'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }, "
                             + "'headers' : { 'Accept' : 'application/json' , 'User-Agent' : 'Mozilla/5.0' }})",
-                    SERVER_URL);
+                    serverURL);
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
@@ -187,7 +193,7 @@ public class HTTPHelperTest {
         try {
             String expr = String.format(
                     "HTTP.post(\'%s\', 'Test', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
-                    SERVER_URL);
+                    serverURL);
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
@@ -207,7 +213,7 @@ public class HTTPHelperTest {
         try {
             String expr = String.format(
                     "HTTP.put(\'%s\', 'Test', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
-                    SERVER_URL);
+                    serverURL);
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
@@ -227,7 +233,7 @@ public class HTTPHelperTest {
         try {
             String expr = String.format(
                     "HTTP.delete(\'%s\', 'Test', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
-                    SERVER_URL);
+                    serverURL);
             Blob resultBlob = (Blob) Scripting.newExpression(expr).eval(ctx);
             String result = IOUtils.toString(resultBlob.getStream(), "utf-8");
             ObjectMapper mapper = new ObjectMapper();
@@ -255,7 +261,7 @@ public class HTTPHelperTest {
 
         String expr = String.format(
                 "HTTP.get(\'%s\', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
-                SERVER_URL + IMAGE_FILENAME);
+                serverURL + IMAGE_FILENAME);
         Blob httpResult = (Blob) Scripting.newExpression(expr).eval(ctx);
         assertTrue(httpResult.getLength() > 0);
         assertEquals(httpResult.getFilename(), IMAGE_FILENAME);
@@ -276,11 +282,33 @@ public class HTTPHelperTest {
         responseHeaders.add(new Header(HttpHeaders.CONTENT_TYPE, "application/json; charset=utf-8"));
         responseHeaders.add(new Header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400"));
 
-        new MockServerClient(SERVER_HOST, SERVER_PORT).when(
+        new MockServerClient(SERVER_HOST, serverPort).when(
                 request().withHeaders(requestHeaders).withMethod(method).withPath(path), Times.exactly(2))
-                                                      .respond(response().withStatusCode(200)
-                                                                         .withHeaders(responseHeaders)
-                                                                         .withBody(answer)
-                                                                         .withDelay(new Delay(TimeUnit.SECONDS, 1)));
+                                                     .respond(response().withStatusCode(200)
+                                                                        .withHeaders(responseHeaders)
+                                                                        .withBody(answer)
+                                                                        .withDelay(new Delay(TimeUnit.SECONDS, 1)));
     }
+
+    /**
+     * Try to find a free port on which a socket will be listening.
+     *
+     * @return a free port number if any
+     * @throws NuxeoException if we cannot find a free port
+     * @since 11.1
+     */
+    protected int getFreePort() {
+        int retryCount = 0;
+        while (retryCount < RETRIES) {
+            try (ServerSocket socket = new ServerSocket(0)) {
+                socket.setReuseAddress(true);
+                return socket.getLocalPort();
+            } catch (IOException e) {
+                retryCount++;
+                log.trace("Failed to allocate port on retry {}", retryCount, e);
+            }
+        }
+        throw new NuxeoException(String.format("Unable to find free port after %d retries", retryCount));
+    }
+
 }
