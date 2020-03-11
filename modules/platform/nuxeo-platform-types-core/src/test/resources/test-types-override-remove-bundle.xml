@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.types.test.override.remove">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <!-- override the removed type -->
+    <type id="MyOtherDocType">
+      <label>Resurrected doc type</label>
+    </type>
+
+  </extension>
+
+</component>

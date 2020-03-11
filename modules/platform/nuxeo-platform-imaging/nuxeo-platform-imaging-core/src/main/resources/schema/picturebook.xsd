@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/picturebook"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:nxs="http://www.nuxeo.org/ecm/schemas/picturebook">
+
+  <xs:include schemaLocation="core-types.xsd"/>
+
+  <xs:element name="timeinterval" type="xs:integer" default="5"/>
+
+  <xs:element name="picturetemplates" type="nxs:picturetemplates"/>
+
+  <xs:complexType name="picturetemplates">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:pictemplate" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="pictemplate">
+    <xs:sequence>
+      <xs:element name="title" type="xs:string"/>
+      <xs:element name="description" type="xs:string"/>
+      <xs:element name="tag" type="xs:string"/>
+      <xs:element name="maxsize" type="xs:integer"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

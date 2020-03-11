@@ -1,0 +1,19 @@
+<html>
+  <head><title>Nuxeo Operations</title></head>
+  <body>
+  <h3>Execute an operation chain</h3>
+  <form method="POST" action="">
+     Enter the path or the UID of the target document (this will become the chain input).
+     <br>
+     <input type="text" size="80" name="input" value="/default-domain/workspaces"/>
+     <p>
+     Fill the textarea using the XML contribution defining the operation chain.
+     <br>
+     <textarea name="chain" rows="20" cols="80"></textarea>
+     <p>
+     <input type="submit" value="Run">
+  </form>
+  <hr>
+    <pre>${This.operationsListAsJson}</pre>
+  </body>
+</html>

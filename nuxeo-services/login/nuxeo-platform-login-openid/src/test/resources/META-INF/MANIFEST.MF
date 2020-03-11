@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo OpenID Test module
-Bundle-SymbolicName: org.nuxeo.ecm.platform.login.openid.test;singleton:=true
-Bundle-Version: ${eclipseVersion}-r${buildNumber}
-Require-Bundle: org.nuxeo.ecm.platform.login
-Nuxeo-Component: OSGI-INF/openid-connect-provider-registry.xml,
- OSGI-INF/openid-google-contrib.xml
-

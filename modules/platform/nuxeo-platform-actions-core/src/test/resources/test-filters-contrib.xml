@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.actions.filters.test">
+
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
+
+    <filter id="null"></filter>
+
+    <filter id="WorkspaceOrSection">
+      <rule grant="true">
+        <type>Workspace</type>
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="WorkspaceOrSection2">
+      <rule grant="true">
+        <type>Workspace</type>
+      </rule>
+      <rule grant="true">
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="NotFolderish">
+      <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="WorkspaceOrSectionFolderish">
+      <rule grant="true">
+        <type>Workspace</type>
+        <type>Section</type>
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="WorkspaceOrSectionNotFolderish">
+      <rule grant="true">
+        <type>Workspace</type>
+        <type>Section</type>
+      </rule>
+      <rule grant="false">
+        <facet>Folderish</facet>
+      </rule>
+    </filter>
+
+    <filter id="badExpression">
+      <rule grant="true">
+        <type>Workspace</type>
+        <type>Section</type>
+        <condition>foo</condition>
+      </rule>
+    </filter>
+
+    <filter id="CheckId">
+      <rule grant="true">
+        <type>Workspace</type>
+        <condition>document.getId()=='My Document ID'</condition>
+      </rule>
+    </filter>
+
+    <!-- non regression test for NXP-408 -->
+    <filter id="NoDenyingRuleNoGrantingRule">
+      <rule grant="false">
+        <type>Workspace</type>
+      </rule>
+      <rule grant="true">
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="OverridenFilter">
+      <rule grant="true">
+        <type>Workspace</type>
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="AppenedFilter">
+      <rule grant="true">
+        <type>Workspace</type>
+        <type>Section</type>
+      </rule>
+    </filter>
+
+    <filter id="GroupFilter">
+      <rule grant="true">
+        <group>administrators</group>
+      </rule>
+    </filter>
+
+  </extension>
+
+</component>

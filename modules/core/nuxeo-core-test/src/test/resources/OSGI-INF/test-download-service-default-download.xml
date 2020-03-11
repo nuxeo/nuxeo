@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.io.download.DownloadService.default.download">
+
+  <extension
+    target="org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent"
+    point="BlobHolderFactory">
+    <blobHolderFactory name="download"
+                       class="org.nuxeo.ecm.core.io.download.MockDownloadBlobHolderFactory" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.io.download.DownloadService" point="permissions">
+    <permission name="myperm">
+      <script>
+        function run() {
+          if (Document.getPropertyValue("dc:format") != "txt") {
+            return false;
+          }
+          return true;
+        }
+      </script>
+    </permission>
+  </extension>
+
+</component>

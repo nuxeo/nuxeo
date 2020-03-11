@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.management.metrics">
+
+  <implementation class="org.nuxeo.runtime.management.metrics.MetricComponent" />
+
+  <require>org.nuxeo.runtime.management.ResourcePublisher</require>
+  <require>org.nuxeo.runtime.management.ServerLocator</require>
+
+  <service>
+    <provide interface="org.nuxeo.runtime.management.metrics.MetricEnabler" />
+    <provide interface="org.nuxeo.runtime.management.metrics.MetricSerializer" />
+  </service>
+
+</component>

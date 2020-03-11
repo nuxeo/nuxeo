@@ -1,0 +1,41 @@
+<component name="MyAPP.Mod_sso">
+   <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+   <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+   <require>org.nuxeo.ecm.automation.server.auth.config</require>
+   <require>org.nuxeo.ecm.platform.login.Proxy</require>
+
+   <!-- Override Proxy Auth into authentication chain -->
+    <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="chain">
+    <authenticationChain>
+        <!--  Keep basic Auth at top of Auth chain to support RSS access via BasicAuth -->
+      <plugins>
+        <plugin>BASIC_AUTH</plugin>
+        <plugin>FORM_AUTH</plugin>
+        <plugin>WEBENGINE_FORM_AUTH</plugin>
+        <plugin>ANONYMOUS_AUTH</plugin>
+        <plugin>PROXY_AUTH</plugin>
+      </plugins>
+    </authenticationChain>
+  </extension>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="specificChains">
+
+    <specificAuthenticationChain name="Automation">
+        <urlPatterns>
+            <url>(.*)/automation.*</url>
+        </urlPatterns>
+
+        <replacementChain>
+            <plugin>AUTOMATION_BASIC_AUTH</plugin>
+            <plugin>ANONYMOUS_AUTH</plugin>
+            <plugin>PROXY_AUTH</plugin>
+        </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>

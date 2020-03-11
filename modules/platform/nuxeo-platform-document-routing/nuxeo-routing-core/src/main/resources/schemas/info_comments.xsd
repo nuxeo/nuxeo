@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema xmlns:nxs="http://casemanagement.nuxeo.com/schemas/info_comments/" xmlns:tsxs="http://cm.nuxeo.com/schemas/info_comments/" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://cm.nuxeo.com/schemas/info_comments/">
+
+ <xs:element default="0" name="numberOfComments" type="xs:int"/>
+
+</xs:schema>

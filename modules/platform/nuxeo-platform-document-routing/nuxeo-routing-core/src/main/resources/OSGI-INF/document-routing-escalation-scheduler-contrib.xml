@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.routing.escalation.scheduler.config">
+
+  <extension
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+
+    <schedule id="escalationScheduler">
+      <eventId>executeEscalationRules</eventId>
+      <eventCategory>escalation</eventCategory>
+      <!-- every 5 mins -->
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+    </schedule>
+
+  </extension>
+
+</component>

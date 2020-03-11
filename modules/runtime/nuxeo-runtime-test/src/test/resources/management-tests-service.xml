@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="test:passivation">
+
+  <implementation class="org.nuxeo.runtime.management.DummyService" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.management.Dummy" />
+  </service>
+
+</component>

@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-modules</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.nuxeo.ecm.core</groupId>
+  <artifactId>nuxeo-core-parent</artifactId>
+  <packaging>pom</packaging>
+  <name>Nuxeo Core Parent</name>
+  <description>
+    Nuxeo Core: the embeddable document/content management core for SOA and
+    next-generation ECM applications.
+  </description>
+
+  <modules>
+    <module>nuxeo-core</module>
+    <module>nuxeo-core-api</module>
+    <module>nuxeo-core-binarymanager-cloud</module>
+    <module>nuxeo-core-bulk</module>
+    <module>nuxeo-core-cache</module>
+    <module>nuxeo-core-convert</module>
+    <module>nuxeo-core-convert-api</module>
+    <module>nuxeo-core-convert-plugins</module>
+    <module>nuxeo-core-convert-plugins-test</module>
+    <module>nuxeo-core-el</module>
+    <module>nuxeo-core-event</module>
+    <module>nuxeo-core-io</module>
+    <module>nuxeo-core-management</module>
+    <module>nuxeo-core-management-jtajca</module>
+    <module>nuxeo-core-management-test</module>
+    <module>nuxeo-core-mimetype</module>
+    <module>nuxeo-core-mongodb</module>
+    <module>nuxeo-core-persistence</module>
+    <module>nuxeo-core-query</module>
+    <module>nuxeo-core-schema</module>
+    <module>nuxeo-core-storage</module>
+    <module>nuxeo-core-storage-dbs</module>
+    <module>nuxeo-core-storage-mem</module>
+    <module>nuxeo-core-storage-mongodb</module>
+    <module>nuxeo-core-storage-sql</module>
+    <module>nuxeo-core-redis</module>
+    <module>nuxeo-core-test</module>
+    <module>nuxeo-platform-commandline-executor</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jmock</groupId>
+      <artifactId>jmock-junit4</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <configuration>
+            <ignoredUnusedDeclaredDependencies combine.children="append">
+              <artifact>org.jmock:jmock-junit4</artifact>
+              <artifact>org.nuxeo.runtime:nuxeo-runtime-test</artifact>
+            </ignoredUnusedDeclaredDependencies>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

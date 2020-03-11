@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task2169" xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/" xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/" targetNamespace="http://www.nuxeo.org/ecm/project/schemas/nuxeo-routing-default/var_Task2169">
+  <!-- helper XSD definitions for list types -->
+  <xs:complexType name="content">
+    <xs:sequence>
+      <xs:element name="encoding" type="xs:string"/>
+      <xs:element name="mime-type" type="xs:string"/>
+      <xs:element name="data" type="xs:base64Binary"/>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="length" type="xs:long"/>
+      <xs:element name="digest" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="stringList">
+    <xs:list itemType="xs:string"/>
+  </xs:simpleType>
+  <xs:simpleType name="doubleList">
+    <xs:list itemType="xs:double"/>
+  </xs:simpleType>
+  <xs:simpleType name="dateList">
+    <xs:list itemType="xs:date"/>
+  </xs:simpleType>
+  <xs:simpleType name="integerList">
+    <xs:list itemType="xs:integer"/>
+  </xs:simpleType>
+  <xs:simpleType name="booleanList">
+    <xs:list itemType="xs:boolean"/>
+  </xs:simpleType>
+  <xs:complexType name="blobList">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:content" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="assignees" type="nxs:stringList"/>
+  <xs:element name="comment" type="xs:string"/>
+</xs:schema>

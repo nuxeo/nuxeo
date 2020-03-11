@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent"
+  version="1.0">
+
+  <documentation>@author Bogdan Stefanescu (bs@nuxeo.com)</documentation>
+
+  <implementation class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletRegistryComponent" />
+
+  <extension-point name="servlets">
+    <documentation>Servlet registration for OSGi HttpService</documentation>
+    <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ServletDescriptor" />
+  </extension-point>
+
+  <extension-point name="filters">
+    <documentation>Filters set registry to contribute new filters to an existing servlet</documentation>
+    <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.FilterSetDescriptor" />
+  </extension-point>
+
+  <extension-point name="resources">
+    <documentation>Resource resolvers can be contributed from outside to a servlet using this extension point</documentation>
+    <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourcesDescriptor" />
+  </extension-point>
+
+  <extension-point name="subresources">
+    <documentation>Sub-resources that can be injected into the given application</documentation>
+    <object class="org.nuxeo.ecm.webengine.jaxrs.servlet.config.ResourceExtension" />
+  </extension-point>
+
+</component>

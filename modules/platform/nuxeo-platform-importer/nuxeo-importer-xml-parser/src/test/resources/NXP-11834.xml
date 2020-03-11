@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<depot idDepot="3" xmlns:webdelibdossier="http://www.adullact.org/webdelib/infodossier/1.0" xmlns:xm="http://www.w3.org/2005/05/xmlmine" date="10/11/2012">
+  <seance idSeance="12">
+    <typeSeance>Conseil Général</typeSeance>
+    <dateSeance>2013-02-07 14:00:00</dateSeance>
+    <dateConvocation>2012-11-30 18:16:01</dateConvocation>
+    <document nom="convocation.pdf" type="convocation">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document nom="odj.pdf" type="odj">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document nom="pv.pdf" type="pv_sommaire">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document nom="pvcomplet.pdf" type="pv_complet">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+  </seance>
+  <dossierActe idActe="38" refSeance="12">
+    <titre>Changement des horaires d'ouverture de la mairie</titre>
+    // informations supplémentaires
+    <natureACTE>Délibération</natureACTE>
+    <dateACTE>2013-02-07 14:00:00</dateACTE>
+    <numeroACTE/>
+    <themeACTE>Administration Generale</themeACTE>
+    <emetteurACTE>Direction Informatique</emetteurACTE>
+    <redacteurACTE>Marc Marchal</redacteurACTE>
+    <rapporteurACTE>Pascal PERTUSA</rapporteurACTE>
+    <cantonACTE>Basse ville</cantonACTE>
+    <communeACTE>Valence</communeACTE>
+    <typeseanceACTE>Commission Ressources</typeseanceACTE>
+    <listeCommissions>Commission Ressources : 2013-02-07 14:00:00, Commission Ressources : 2013-03-29 16:00:00, test FD : 2013-04-05 17:17:00, </listeCommissions>
+    <document idDocument="1" nom="38-document.pdf" type="TexteActe">
+      <signature formatSignature="p7s">true</signature>
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="2" nom="38-document.pdf2" type="Rapport">
+      <signature formatSignature="p7s">true</signature>
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="3" nom="courrier_simple.pdf" type="Annexe">
+      <signature>false</signature>
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="4" nom="DECISION.pdf" type="Annexe">
+      <mimetype>application/pdf2</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="5" nom="signature.zip" type="signature" refDocument="1">
+      <mimetype>application/zip</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="6" nom="signature.zip" type="signature" refDocument="2">
+      <mimetype>application/zip</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+  </dossierActe>
+  <dossierActe id="59" refSeance="12">
+    <titre>Projet chambre des notaires</titre>
+    <description>Projet chambre des notaires</description>
+    <natureACTE>Délibération</natureACTE>
+    <dateACTE>2013-02-07 14:00:00</dateACTE>
+    <numeroACTE>DELIB_0001</numeroACTE>
+    <themeACTE>Technologies d'Information et de Communication</themeACTE>
+    <emetteurACTE>Direction Informatique</emetteurACTE>
+    <redacteurACTE>redac1 redac1</redacteurACTE>
+    <rapporteurACTE>Paul ARNOUX</rapporteurACTE>
+    <cantonACTE>Basse ville</cantonACTE>
+    <communeACTE>Valence</communeACTE>
+    <listeCommissions>Commission Ressources : 2013-02-07 14:00:00, </listeCommissions>
+    <typeseanceACTE>Commission Ressources</typeseanceACTE>
+    <document idDocument="1" nom="59-DELIB_0001.pdf" type="TexteActe">
+      <description>Projet chambre des notaires</description>
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="2" nom="59-DELIB_0001.pdf" type="Rapport">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+  </dossierActe>
+  <dossierActe id="37" refSeance="12">
+    <titre>Éclairage du terrain de foot</titre>
+    <description/>
+    <natureACTE>Délibération</natureACTE>
+    <dateACTE>2013-02-07 14:00:00</dateACTE>
+    <numeroACTE>DELIB_0003</numeroACTE>
+    <themeACTE>Habitat, Urbanisme, Logement</themeACTE>
+    <emetteurACTE>Direction Informatique</emetteurACTE>
+    <redacteurACTE>Marc Marchal</redacteurACTE>
+    <rapporteurACTE>Claude BRES</rapporteurACTE>
+    <cantonACTE>Basse ville</cantonACTE>
+    <communeACTE>Valence</communeACTE>
+    <listeCommissions>Commission Ressources : 2013-02-07 14:00:00, </listeCommissions>
+    <typeseanceACTE>Commission Ressources</typeseanceACTE>
+    <document idDocument="1" nom="37-DELIB_0003.pdf" type="TexteActe">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="2" nom="37-DELIB_0003.pdf" type="Rapport">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+  </dossierActe>
+  <dossierActe id="149">
+    <titre>Tu le verras celui-là ?</titre>
+    <description/>
+    <natureACTE>Arrete</natureACTE>
+    <dateACTE>2013-02-09</dateACTE>
+    <numeroACTE/>
+    <themeACTE/>
+    <emetteurACTE>DGS</emetteurACTE>
+    <redacteurACTE>Brigitte Liège</redacteurACTE>
+    <rapporteurACTE> </rapporteurACTE>
+    <cantonACTE/>
+    <communeACTE>Valence</communeACTE>
+    <listeCommissions/>
+    <document idDocument="1" nom="149-.pdf" type="TexteActe">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="2" nom="149-.pdf" type="Rapport">
+      <description/>
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+  </dossierActe>
+  <dossierActe id="205" refSeance="12">
+    <titre>test ticket</titre>
+    <description/>
+    <natureACTE>Délibération</natureACTE>
+    <dateACTE>2013-02-07 14:00:00</dateACTE>
+    <numeroACTE/>
+    <themeACTE>Sports, Jeunesse, Education Populaire</themeACTE>
+    <emetteurACTE>Direction Informatique</emetteurACTE>
+    <redacteurACTE>Marc Marchal</redacteurACTE>
+    <rapporteurACTE> </rapporteurACTE>
+    <cantonACTE>Basse ville</cantonACTE>
+    <communeACTE>Valence</communeACTE>
+    <listeCommissions>Commission Ressources : 2013-02-07 14:00:00, </listeCommissions>
+    <typeseanceACTE>Commission Ressources</typeseanceACTE>
+    <document idDocument="1" nom="205-.pdf" type="TexteActe">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+    <document idDocument="2" nom="205-.pdf" type="Rapport">
+      <mimetype>application/pdf</mimetype>
+      <encoding>utf-8</encoding>
+    </document>
+  </dossierActe>
+</depot>

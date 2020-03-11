@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-audit-parent</artifactId>
+  <name>Nuxeo Platform audit service parent</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-platform-audit-api</module>
+    <module>nuxeo-platform-audit-core</module>
+    <module>nuxeo-platform-audit-io</module>
+    <module>nuxeo-platform-audit-mongodb</module>
+  </modules>
+
+</project>

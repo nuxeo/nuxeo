@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.nuxeo.ecm.platform.audit
+Bundle-Category: web,stateful
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Nuxeo
+Import-Package: de.odysseus.el;version="2.1.2",javax.annotation;versio
+ n="1.0",javax.el,javax.management,javax.persistence,org.apache.common
+ s.lang.builder,org.apache.commons.logging,org.nuxeo.common.xmap.annot
+ ation,org.nuxeo.ecm.core;api=split,org.nuxeo.ecm.core.api;api=split,o
+ rg.nuxeo.ecm.core.api.event,org.nuxeo.ecm.core.api.repository,org.nux
+ eo.ecm.core.api.security,org.nuxeo.ecm.core.event,org.nuxeo.ecm.core.
+ event.impl,org.nuxeo.ecm.core.persistence,org.nuxeo.ecm.directory;api
+ =split,org.nuxeo.ecm.platform.audit.api,org.nuxeo.ecm.platform.audit.
+ api.query,org.nuxeo.ecm.platform.el,org.nuxeo.runtime.api,org.nuxeo.r
+ untime.management,org.nuxeo.runtime.model,org.osgi.framework;version=
+ "1.5.0"
+Nuxeo-Component: OSGI-INF/nxaudit-service.xml,OSGI-INF/nxaudit-persist
+ ence-config.xml,OSGI-INF/core-type-contrib.xml,OSGI-INF/directories-c
+ ontrib.xml,OSGI-INF/pageprovider-contrib.xml,OSGI-INF/marshallers-con
+ trib.xml, OSGI-INF/user-audit-contrib.xml
+Export-Package: org.nuxeo.ecm.platform.audit.listener,org.nuxeo.ecm.pl
+ atform.audit.service,org.nuxeo.ecm.platform.audit.service.extension,o
+ rg.nuxeo.ecm.platform.audit.service.management
+Bundle-Name: NXAudit Core
+Bundle-Version: 0.0.0.SNAPSHOT
+Bundle-ClassPath: .
+Bundle-Localization: plugin
+Private-Package: .
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)

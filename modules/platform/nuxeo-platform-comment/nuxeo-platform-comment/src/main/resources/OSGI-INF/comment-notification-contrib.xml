@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.platform.comment.service.notification">
+
+  <extension
+          target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+          point="notificationListenerHook">
+    <hookListener name="commentNotification"
+                  class="org.nuxeo.ecm.platform.comment.listener.CommentNotificationListener" />
+  </extension>
+
+  <extension
+          target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+          point="notifications">
+
+    <notification name="CommentAdded" channel="email" enabled="true" availableIn="*"
+                  subject="New comment on '${docTitle}'"
+                  autoSubscribed="false" template="commentAdded" label="notifications.name.CommentAdded">
+      <event name="commentAdded" />
+    </notification>
+
+    <notification name="CommentUpdated" channel="email" enabled="true" availableIn="*"
+                  subject="Updated comment on '${docTitle}'"
+                  autoSubscribed="false" template="commentUpdated" label="notifications.name.Modification">
+      <event name="commentUpdated" />
+    </notification>
+
+  </extension>
+
+  <extension
+          target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+          point="templates">
+    <template name="baseComment" src="templates/baseComment.ftl" />
+    <template name="commentAdded" src="templates/commentAdded.ftl" />
+    <template name="commentUpdated" src="templates/commentUpdated.ftl" />
+  </extension>
+
+  <extension
+          target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
+          point="notificationListenerVeto">
+    <veto name="CommentNotificationVeto" class="org.nuxeo.ecm.platform.comment.notification.CommentNotificationVeto" />
+  </extension>
+
+  <documentation>
+    The TreeCommentManager handles subscription to comment events on documents based on this parameter.
+    If true, document author will be subscribed to comment notifications on his document on the first comment.
+    The comment author will also be subscribed to comment notifications if it is his first comment on the document.
+
+    @author Nour AL KOTOB (nalkotob@nuxeo.com)
+  </documentation>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.ecm.platform.comment.service.notification.autosubscribe">true</property>
+  </extension>
+
+</component>

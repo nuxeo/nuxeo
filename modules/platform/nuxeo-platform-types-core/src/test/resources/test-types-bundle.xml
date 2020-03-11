@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.types.test">
+
+  <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
+
+    <type id="MyDocType">
+      <label>type label</label>
+      <icon>type icon</icon>
+      <default-view>default_view</default-view>
+      <create-view>create_view</create-view>
+      <edit-view>edit_view</edit-view>
+      <subtypes>
+        <type>MyOtherDocType</type>
+        <type>MyHiddenDocType</type>
+        <type hidden="create edit">MyHiddenDocType</type>
+        <type hidden="create,edit">MyHiddenDocType</type>
+        <type hidden=" create ,  edit ">MyHiddenDocType</type>
+        <type hidden="create">MyHiddenDocType</type>
+      </subtypes>
+      <views>
+        <view id="edit_detail" value="edit_detail_view" />
+        <view id="metadata" value="metadata_view" />
+      </views>
+      <layouts mode="any">
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="create">
+        <layout>dublincore</layout>
+        <layout>file</layout>
+      </layouts>
+      <actions>
+        <action>action_id1</action>
+        <action>action_id2</action>
+        <action>action_id3</action>
+      </actions>
+      <contentViews category="default">
+        <contentView showInExportView="false">cv_1</contentView>
+        <contentView>cv_2</contentView>
+      </contentViews>
+      <contentViews category="other">
+        <contentView>cv_3</contentView>
+      </contentViews>
+    </type>
+
+    <type id="MyDocType2">
+      <subtypes>
+        <type>MyOtherDocType</type>
+        <type>MyHiddenDocType</type>
+      </subtypes>
+    </type>
+
+    <type id="MyOtherDocType">
+      <label>initial alternative doc type</label>
+      <icon>initial icon</icon>
+    </type>
+
+    <type id="MyHiddenDocType" />
+
+    <type id="DocTypeWithLayout">
+      <label>doc type with layout</label>
+      <layouts mode="any">
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="create">
+        <layout>dublincore</layout>
+        <layout>file</layout>
+      </layouts>
+    </type>
+
+    <type id="DocTypeTestLayoutOverride">
+      <label>doc type with layout to override</label>
+      <layouts mode="any">
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="create">
+        <layout>dublincore</layout>
+        <layout>file</layout>
+      </layouts>
+    </type>
+
+  </extension>
+
+</component>

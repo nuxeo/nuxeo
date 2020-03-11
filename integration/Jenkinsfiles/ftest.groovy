@@ -31,9 +31,9 @@ node('SLAVE&&STATIC') { // use a static slave in order to share the workspace be
                  browser: [$class: 'GithubWeb', repoUrl: 'https://github.com/nuxeo/nuxeo'],
                  doGenerateSubmoduleConfigurations: false,
                  extensions: [
-                        [$class: 'PathRestriction', excludedRegions: '', includedRegions: '''nuxeo-distribution/.*
+                        [$class: 'PathRestriction', excludedRegions: '', includedRegions: '''ftests/.*
 integration/.*'''],
-                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'pom.xml'], [path: 'nuxeo-distribution'], [path: 'integration']]],
+                        [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'pom.xml'], [path: 'ftests'], [path: 'integration']]],
                         [$class: 'WipeWorkspace'],
                         [$class: 'CleanBeforeCheckout'],
                         [$class: 'CloneOption', depth: 5, noTags: true, reference: '', shallow: true]
@@ -56,8 +56,8 @@ integration/.*'''],
         try {
             parallel (
                 'cmis' : emitVerifyClosure(sha, zipfile, 'cmis', 'nuxeo-server-cmis-tests') {
-                    archiveArtifacts 'nuxeo-distribution/nuxeo-server-cmis-tests/target/**/*.log, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/log/*, nuxeo-distribution/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, nuxeo-distribution/nuxeo-server-cmis-tests/target/nxtools-reports/*'
-                    failOnServerError('nuxeo-distribution/nuxeo-server-cmis-tests/target/tomcat/log/server.log')
+                    archiveArtifacts 'ftests/nuxeo-server-cmis-tests/target/**/*.log, ftests/nuxeo-server-cmis-tests/target/**/log/*, ftests/nuxeo-server-cmis-tests/target/**/nxserver/config/distribution.properties, ftests/nuxeo-server-cmis-tests/target/nxtools-reports/*'
+                    failOnServerError('ftests/nuxeo-server-cmis-tests/target/tomcat/log/server.log')
                     warningsPublisher()
                 }
             )
@@ -86,7 +86,7 @@ def emitVerifyClosure(String sha, String zipfile, String name, String dir, Closu
                 timeout(time: Integer.parseInt(timeoutHours), unit: 'HOURS') {
                     withBuildStatus("${DBPROFILE}-${DBVERSION}/ftest/${name}", 'https://github.com/nuxeo/nuxeo', sha, RUN_DISPLAY_URL) {
                         withDockerCompose("${JOB_NAME}-${BUILD_NUMBER}-${name}", "integration/Jenkinsfiles/docker-compose-${DBPROFILE}-${DBVERSION}.yml",
-                            "JAVA_HOME=${jdk} mvn ${mvnopts} -B -V -f ${WORKSPACE}/nuxeo-distribution/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
+                            "JAVA_HOME=${jdk} mvn ${mvnopts} -B -V -f ${WORKSPACE}/ftests/${dir}/pom.xml -Pqa,tomcat,${DBPROFILE} clean verify", post)
                     }
                 }
             }

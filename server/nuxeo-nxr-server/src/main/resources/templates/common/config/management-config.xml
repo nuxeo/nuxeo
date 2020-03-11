@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.management.ServerLocatorContrib">
+
+  <!-- nuxeo beans are published by default in the platform mbean server,
+       uncomment one of the following configuration if you want to use
+       another place-->
+
+  <!-- use jboss mbean server as default  -->
+  <extension target="org.nuxeo.runtime.management.ServerLocator"
+    point="locators">
+    <locator domain="jboss" default="true" />
+  </extension>
+
+  <!-- use a dedicated mbean server bound
+       server URL can be found in the server log at line "Started a mbean server : ..."
+  <extension target="org.nuxeo.runtime.management.ServerLocator"
+    point="locators">
+    <locator domain="org.nuxeo" exist="false" rmiPort="2100"/>
+  </extension> -->
+
+</component>

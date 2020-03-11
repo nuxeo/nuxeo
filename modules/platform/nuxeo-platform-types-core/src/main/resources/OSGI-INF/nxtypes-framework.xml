@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.types.TypeService">
+  <documentation>
+    The type service provides extension points for pluggable document types.
+
+    Document types here can be seen as entities defining the behavior of a
+    document within the ECM: they hold information about the way they will be
+    managed and rendered.
+
+    @version 1.0
+    @author Anahide Tchertchian (at@nuxeo.com)
+  </documentation>
+
+  <implementation class="org.nuxeo.ecm.platform.types.TypeService" />
+
+  <service>
+    <provide interface="org.nuxeo.ecm.platform.types.TypeManager" />
+  </service>
+
+  <require>org.nuxeo.ecm.core.schema.TypeService</require>
+
+  <extension-point name="types">
+    <documentation>
+      A document type has the following properties:
+
+      - id: its string identifier
+
+      - remove: if true, remove this ecm document type. Can be used, for
+      instance, if there is a document type contributed by nuxeo-dm that you
+      don't want in your application. (Be careful to add a dependency to the
+      contribution that creates this document type.)
+
+      - icon: icon path used to represent the document type.
+
+      - icon-expanded: icon used for instance in tree view
+
+      - bigIcon: icon path aimed at rich application
+
+      - bigIcon-expanded: same as icon-expanded for rich application
+
+      - category: Category of the document type.
+
+      - description: Description of the document type.
+
+      - label: string title.
+
+      - subtypes: list of the allowed sub document types for a given container.
+      This can be used to filter some document types creation and copy to
+      specific kinds of container documents.
+
+      - deniedSubtypes: list of forbidden sub document types for a given
+      container. Useful when you inherit from another container type and want to
+      restrict its subtypes.
+
+      - default-view: this view will be returned when accessing the document.
+
+      - create-view: this view will be returned when creating the document.
+
+      - edit-view: this view can be used to display the document default edit
+      page.
+
+      - views: other views can be defined, so that they can be customized easily
+      and trigger specific behaviour. For instance, defining a view named
+      'after-edit' on the document will allow to parameter which view should be
+      displayed after the document edition.
+
+      WARNING: the views definitions and associated behaviours may change in the
+      future. You should avoid customizing more than default-view and
+      create-view for now.
+
+      - layouts: the list of layouts to use in a given mode. Usual modes are
+      "view", "create" and "edit". When no layouts are defined for a specific
+      mode, layouts for the mode "any" are taken for document rendering. An
+      additional mode is "listing": layouts defined in this mode are used in
+      templates listing children documents.
+
+      - content views: the list of content views to use in a given category.
+      Categories depend on the page displaying the content views. Available
+      since 5.4.0. By default, all content views are shown in the export view of
+      the document (available since 5.4.2) except when adding
+      showInExportView="false" on the content view definition.
+
+      Example:
+
+      <code>
+        <type id="Domain">
+          <label>Domain</label>
+          <icon>/icons/folder.gif</icon>
+          <default-view>view_documents</default-view>
+          <subtypes>
+            <type>WorkspaceRoot</type>
+            <type>SectionRoot</type>
+          </subtypes>
+          <deniedSubtypes>
+            <type>File</type>
+          </deniedSubtypes>
+          <layouts mode="any">
+            <layout>heading</layout>
+          </layouts>
+          <layouts mode="listing">
+            <layout>document_listing</layout>
+            <layout>document_listing_compact_2_columns</layout>
+            <layout>document_listing_icon_2_columns</layout>
+          </layouts>
+          <contentViews category="content">
+            <contentView>document_content</contentView>
+          </contentViews>
+          <contentViews category="trash_content">
+            <contentView showInExportView="false">
+              document_trash_content
+            </contentView>
+          </contentViews>
+        </type>
+      </code>
+
+      Types extension point provides merging features: you can change an
+      existing type definition in your custom extension point provided you use
+      the same identifier.
+
+    </documentation>
+
+    <object class="org.nuxeo.ecm.platform.types.Type" />
+  </extension-point>
+
+</component>

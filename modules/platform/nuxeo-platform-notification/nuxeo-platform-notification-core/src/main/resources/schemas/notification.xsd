@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/notification/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/notification/"
+  xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/">
+
+
+  <xs:element name="notifications" type="nxs:notifications"/>
+
+  <xs:complexType name="notifications">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" minOccurs="0" name="item" type="nxs:notificationEntry"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="notificationEntry">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string"/>
+      <xs:element name="subscribers" type="nxs:subscribers"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="subscribers">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+
+</xs:schema>

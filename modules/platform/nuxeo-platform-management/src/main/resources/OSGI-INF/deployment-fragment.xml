@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<fragment version="1">
+
+  <extension target="web#LISTENER">
+    <listener>
+      <listener-class>org.nuxeo.ecm.platform.management.adapters.HttpSessionMetricListener</listener-class>
+    </listener>
+  </extension>
+
+</fragment>

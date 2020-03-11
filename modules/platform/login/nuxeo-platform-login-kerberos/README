@@ -1,0 +1,190 @@
+Kerberos authenticator for Nuxeo
+================================
+
+## BUILDING
+
+Nothing special. All necessary classes are in JDK 6. Simply run:
+
+    mvn clean install
+
+## HOWTO
+
+Here's an How to to help you configure the SPNEGO/Kerberos authentication for Nuxeo. Notice that this it starts with OS relative guidelines.
+
+
+### Linux ONLY
+
+- first configure Kerberos for your server and client! For example in a Debian-based Linux server install krb5-kdc and krb5-admin-server, and setup a realm (with krb5_newrealm). In a Windows environment you don't have anything to do assuming you already have an Active Directory domain.
+
+- create a service principal and set its service principal name to HTTP/<canonical name of the server>@REALM then export its keytab
+In MIT Kerberos, using kadmin, do the following:
+
+add_principal HTTP/servername
+(type in a password)
+
+Important: the service principal MUST be uppercase HTTP slash the canonical (DNS-wise) name of the server. Any other names will not work (especially, aliases).
+
+ktadd -k /tmp/keytab HTTP/servername
+
+(you may create as many principals you want and add their keys to the same keytab, e.g. HTTP/nuxeo@COMPANY and HTTP/nuxeo.company.com@COMPANY).
+
+
+### Windows ONLY
+
+In Microsoft Active Directory, create a user (with "password does not expire" checked and "use must change password" unchecked) then, in a command-line window register the service principal name(s) you want this user to respond to (generally the server name in its short and fully qualified forms - note that again, it *has* to correspond to the server's canonical name in DNS):
+
+setspn -a HTTP/servername@REALM <username>
+setspn -a HTTP/fully.qualified.servername@REALM <username>
+
+You can check the SPNs with:
+
+setspn -l <username>
+
+Then export the keytab with:
+
+ktpass /out C:\temp\http.keytab /princ HTTP/servername@REALM /mapuser domain\username /pass password /crypto RC4-HMAC-NT /ptype KRB5_NT_PRINCIPAL /kvno 0
+
+(/mapuser and /pass should not be strictly necessary after setspn, but better be safe than sorry.)
+
+
+
+### Generic
+
+- Copy the keytab on your Nuxeo server
+
+- Configure krb5.conf (/etc/krb5.conf or C:\Windows\krb5.ini, depending on the OS)
+
+Note that on Linux servers, while it is not strictly necessary, you should really install the MIT Kerberos user tools (krb5-user in Debian-like). This will setup a basic krb5.conf and give you debugging tools.
+
+This should contain, minimally:
+
+    [libdefaults]
+        default_realm	REALM
+
+     [realms]
+          REALM = {
+               kdc = <kdc>
+               admin_server = <admin_server>
+          }
+
+     [domain_realm]
+          domain = REALM
+          .domain = REALM
+
+where <kdc> and <admin_server> are the names of your kdc and admin servers (duh). On Windows, both are your AD server. On Linux, kdc is where you've installed krb5-kdc and admin_server in where you've installed krb5-admin-server. Usually it's the same machine.
+<domain> is the DNS domain you want to map to a realm. Since we'll always be specifying the realm it's not strictly necessary, but again, better be safe than sorry.
+(it will be necessary in Linux clients though!)
+
+On Linux servers, you can test your Kerberos installation with kinit -k -t /path/to/keytab HTTP/servername@REALM. There should be no errors and klist should list a krbtgt for your service. On my machine that looks like this:
+
+     Ticket cache: FILE:/tmp/krb5cc_1000
+     Default principal: HTTP/loremipsum@LOREMIPSUM
+
+     Valid starting     Expires            Service principal
+     15/12/12 11:35:36  15/12/12 21:35:36  krbtgt/LOREMIPSUM@LOREMIPSUM
+          renew until 16/12/12 11:35:36
+
+Delete the tgt with kdestroy if you use your server as a Kerberos client too (eg it's a development machine!)
+
+### Configure Java
+
+To enable kerberos, you need to use a login configuration implementation. You have two ways of doing this. Either change the default Java configuration or use JAVA_OPTS. Take a look at [JAAS](http://docs.oracle.com/javase/6/docs/technotes/guides/security/jaas/JAASRefGuide.html#AppendixA) documentation for more details.
+
+#### Change the default JRE configuration
+
+in $JAVA_HOME/jre/lib/security/java.security find the login config url (it's commented out by default):
+
+     #login.config.url.1=file:${user.home}/.java.login.config
+
+set this to a regular file, e.g. /opt/nuxeo/java.login.config
+
+#### Give a custom login file as Java argument
+
+In _nuxeo.conf_, add the following line:
+
+    JAVA_OPTS=$JAVA_OPTS -Djava.security.auth.login.config=/opt/nuxeo/java.login.config
+
+Note that using one equal sign append or override parts of the default java.security file whereas using two equal sign completely override the default java.security file content.
+
+    JAVA_OPTS=$JAVA_OPTS -Djava.security.auth.login.config==/opt/nuxeo/java.login.config
+
+
+### Configure JAAS
+
+open the java.login.config file you've setup and add the following configuration:
+
+     Nuxeo {
+        com.sun.security.auth.module.Krb5LoginModule required
+        debug=true
+        storeKey=true
+        useKeyTab=true
+        keyTab="/complete/path/to/keytab"
+        principal="HTTP/servername@REALM";
+     };
+
+(Note that the login configuration MUST be called Nuxeo with an uppercase N!)
+
+
+### Configure Nuxeo (we're almost there!)
+
+deploy the bundle in $NUXEO_HOME/nxserver/bundles
+create a $NUXEO_HOME/nxserver/config/kerberos-config.xml with the following:
+
+     <?xml version="1.0"?>
+     <component name="Kerberos-config">
+             <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+             <require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
+             <require>org.nuxeo.ecm.platform.login.Kerberos</require>
+             <documentation>
+                     This Authentication Plugin uses Kerberos to assert user identity.
+             </documentation>
+             <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+                             point="authenticators">
+                     <authenticationPlugin
+                             name="KRB5_AUTH"
+                             enabled="true"
+                             class="org.nuxeo.ecm.platform.ui.web.auth.krb5.Krb5Authenticator">
+                             <loginModulePlugin>Trusting_LM</loginModulePlugin>
+                     </authenticationPlugin>
+             </extension>
+
+             <extension target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService" point="chain">
+                     <authenticationChain>
+                             <plugins>
+                                     <plugin>BASIC_AUTH</plugin>
+                                     <plugin>KRB5_AUTH</plugin>
+                                     <plugin>FORM_AUTH</plugin>
+                             </plugins>
+                     </authenticationChain>
+             </extension>
+     </component>
+
+(Note: for now we assume all configuration - realm, kdc, server principal, etc. − lives in the server's standard configuration, i.e. either java.login.config or krb5.conf. An interesting update would be to make these configurable in Nuxeo.)
+
+
+Start Nuxeo...
+
+
+
+
+
+### Configure Client
+
+If the client = IE or Chrome on a Windows computer that is an AD domain member, no further configuration should be necessary (just ensure your Nuxeo server is in the Local intranet or Trusted sites security zone).
+
+If the client = Firefox on Windows (AD domain member), go to about:config, search for network.negotiate-auth.trusted-uris and set it to your full server URL.
+
+If the client = Firefox on Linux, in addition to the above, configure krb5.conf as above then get a Kerberos ticket with kinit <username>.
+
+In the browser, type http://nuxeo_server:8080/nuxeo (NOT localhost but the server's canonical name! - that you mapped to the SPN!) and… you should be authenticated!
+
+
+
+
+### Note
+
+The authenticator supports a magic request header to disable it. Simply set the X-Skip-Kerberos request header and Nuxeo will move on to the next filter on the list. This is useful if you want integrated authentication from within a corporate network but not from outside: simply setup two Apache virtual hosts with an "internal" URL and an "external" URL. In the external virtual host, add the following directive:
+
+RequestHeader set X-Skip-Kerberos true
+
+and this will move on to form authentication.

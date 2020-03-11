@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.scanimporter.config">
+
+  <!-- define scheduler event to trigger the import -->
+  <extension
+    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+    <schedule id="scanImporter">
+      <username>Administrator</username>
+      <password>Administrator</password>
+      <eventId>ScanIngestionStart</eventId>
+      <eventCategory>default</eventCategory>
+      <!-- every 30 seconds -->
+      <!-- only edit this part !!! -->
+      <cronExpression>*/30 * * * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent"
+    point="config">
+
+        <!-- define here importer configuration -->
+        <importerConfig>
+            <!-- folder that holds the data to be imported -->
+            <sourcePath>/opt/jboss-4.2.3.GA/server/default/data/testdata</sourcePath>
+            <!-- folder where xml files will be moved when processed (files will be deleted if directory is not set or does not exist)-->
+            <processedPath>/opt/jboss-4.2.3.GA/server/default/data/testdata_out</processedPath>
+            <!-- number of threads used by the importer : keep it to 1 if using H2 or you will break H2's lucene index -->
+            <nbThreads>1</nbThreads>
+            <!-- define how many documents are imported between 2 commits -->
+            <batchSize>10</batchSize>
+            <targetPath>/default-domain/workspaces</targetPath>
+        </importerConfig>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.scanimporter.service.ScannedFileMapperComponent"
+    point="mapping">
+
+    <!-- define here mapping to read xml descriptor -->
+    <mapping>
+
+        <!-- you can define the target foldersih Document Type here  : default to Folder
+        <targetContainerType>Workspace</targetContainerType>
+        -->
+
+        <!-- you can define the target leaf Document type here  : default to File
+        You can use a static definition :
+        <targetLeafType>Picture</targetLeafType>
+
+        Or a dynamic one by defining a class that implements the DocumentTypeMapper interface
+        <targetLeafTypeMapper>org.nuxeo.platform.scanimporter.tests.SampleMapper</targetLeafTypeMapper>
+        -->
+
+        <fieldMappings>
+            <!-- simple meta-data mapping
+                   sourceXPath : xpath expression to locate the target XML node
+                   sourceAttribute : attribute used to read value (if null, TEXT subnode will be used)
+                   targetXPath : xpath of the target field in the Nuxeo DocumentModel
+                   targetType : target type (integer, string,  double, date)
+                   dateFormat : define the date format to be used to parse a date (default to "yyyy-MM-dd'T'hh:mm:ss.sss'Z'")
+
+            -->
+            <fieldMapping sourceXPath="//string[@name='Fournisseur']" sourceAttribute="value" targetXPath="dc:source" targetType="string"/>
+            <fieldMapping sourceXPath="//string[@name='NDeFacture']" sourceAttribute="value" targetXPath="dc:title" targetType="string"/>
+            <fieldMapping sourceXPath="//string[@name='NSAGE']" sourceAttribute="value" targetXPath="dc:coverage" targetType="string"/>
+        </fieldMappings>
+
+        <blobMappings>
+            <!--
+            Mapping for blobs resources :
+                    sourceXPath : xpath expression to locate the target XML node
+                    sourcePathAttribute : attribute used to read the file path (if null, TEXT subnode will be used)
+                    sourceFilenameAttribute : attribute used to read the filename (if null, TEXT subnode will be used)
+                    targetXPath : xpath of the target field in the Nuxeo DocumentModel (if null, Nuxeo will use the default file:content)
+            -->
+            <blobMapping sourceXPath="//file/content" sourcePathAttribute="filepath" sourceFilenameAttribute="name" ></blobMapping>
+        </blobMappings>
+    </mapping>
+
+  </extension>
+
+</component>

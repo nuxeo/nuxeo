@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: Nuxeo Platform Suggestbox Core Test
+Nuxeo-Component: OSGI-INF/test-suggestbox-suggesters-contrib.xml
+Bundle-ManifestVersion: 1
+Bundle-SymbolicName: org.nuxeo.ecm.platform.suggestbox.core.test;singleton:=true

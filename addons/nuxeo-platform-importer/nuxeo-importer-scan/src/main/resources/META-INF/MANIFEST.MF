@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo ECM Scan importer Sample
-Bundle-SymbolicName: org.nuxeo.ecm.platform.scanimporter;singleton:=true
-Require-Bundle: org.nuxeo.ecm.webapp.core
-Nuxeo-Component: OSGI-INF/importerservice-framework.xml,OSGI-INF/liste
- ner-contrib.xml,OSGI-INF/default-scan-config.xml

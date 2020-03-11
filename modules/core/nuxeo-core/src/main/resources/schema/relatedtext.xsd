@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/relatedtext/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:nxs="http://www.nuxeo.org/ecm/schemas/relatedtext/">
+
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- schema to be used for full-text indexing of related annotations, tags
+    and comments -->
+
+  <xs:element name="relatedtextresources" type="nxs:relatedtextresources" />
+
+  <xs:complexType name="relatedtextresources">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:relatedtextresource" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="relatedtextresource">
+    <xs:sequence>
+      <xs:element name="relatedtextid" type="xs:string" minOccurs="0"
+        maxOccurs="1" />
+      <xs:element name="relatedtext" type="nxs:clob" minOccurs="0"
+        maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

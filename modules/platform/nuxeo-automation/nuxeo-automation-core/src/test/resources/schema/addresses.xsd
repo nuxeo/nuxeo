@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/addresses/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/addresses/">
+
+  <xs:element name="addressSingle" type="nxs:address" />
+  <xs:element name="addressesList" type="nxs:addresses" />
+
+  <xs:complexType name="addresses">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:address" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+
+ <xs:complexType name="address">
+    <xs:sequence>
+      <xs:element name="streetNumber" type="xs:string" />
+      <xs:element name="streetName" type="xs:string" />
+      <xs:element name="zipCode" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

@@ -1,0 +1,5 @@
+Context["script_title"] = This.title;
+This.setPropertyValue("dc:title", "modified title");
+//System.out.println(System.identityHashCode(This)+" => "+This);
+//Session.save();
+//Context.input = This

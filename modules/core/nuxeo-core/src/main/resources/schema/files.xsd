@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/files/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/files/">
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:element name="files" type="nxs:files" />
+
+  <xs:complexType name="files">
+    <xs:sequence>
+      <xs:element name="item" type="nxs:file" minOccurs="0"
+        maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="file">
+    <xs:sequence>
+      <xs:element name="file" type="nxs:content" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

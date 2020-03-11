@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 1
-Bundle-Name: Nuxeo ECM Document template sandbox plugins
-Bundle-SymbolicName: org.nuxeo.template.manager.sandbox;singleton:=true
-Bundle-Version: 1.0.0
-Nuxeo-Component: OSGI-INF/templateprocessor-contrib.xml
-
-

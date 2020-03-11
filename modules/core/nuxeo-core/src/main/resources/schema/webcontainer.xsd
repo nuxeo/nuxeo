@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<xs:schema
+  targetNamespace="http://www.nuxeo.org/ecm/schemas/webcontainer/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/webcontainer/"
+  >
+
+  <xs:include schemaLocation="core-types.xsd" />
+
+  <xs:simpleType name="clob">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="999999999" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="isWebContainer" type="xs:boolean"/>
+
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="url" type="xs:string"/>
+  <xs:element name="template" type="xs:string"/>
+  <xs:element name="theme" type="xs:string" default="sites"/>
+  <xs:element name="themePage" type="xs:string" default="workspace"/>
+  <xs:element name="themePerspective" type="xs:string"/>
+  <xs:element name="email" type="xs:string"/>
+
+  <xs:element name="welcomeText" type="nxs:clob"/>
+  <xs:element name="baseline" type="xs:string" />
+  <xs:element name="welcomeMedia" type="nxs:content"/>
+  <xs:element name="logo" type="nxs:content"/>
+
+  <xs:element name="useCaptcha" type="xs:boolean"/>
+  <xs:element name="moderationType" type="xs:string" default="aposteriori"/>
+
+</xs:schema>

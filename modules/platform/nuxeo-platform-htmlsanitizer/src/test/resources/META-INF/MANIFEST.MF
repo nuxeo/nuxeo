@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo HTML Sanitizer Service Tests
+Bundle-Vendor: Nuxeo
+Bundle-SymbolicName: org.nuxeo.ecm.platform.htmlsanitizer.test

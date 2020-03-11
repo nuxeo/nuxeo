@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="content">
+    <xs:sequence>
+      <xs:element name="encoding" type="xs:string" />
+      <xs:element name="mime-type" type="xs:string" />
+      <xs:element name="data" type="xs:base64Binary" />
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="length" type="xs:long" />
+      <xs:element name="digest" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="externalcontent">
+    <xs:sequence>
+      <xs:element name="encoding" type="xs:string" />
+      <xs:element name="mime-type" type="xs:string" />
+      <xs:element name="uri" type="xs:string" />
+      <xs:element name="name" type="xs:string" />
+      <xs:element name="length" type="xs:long" />
+      <xs:element name="digest" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

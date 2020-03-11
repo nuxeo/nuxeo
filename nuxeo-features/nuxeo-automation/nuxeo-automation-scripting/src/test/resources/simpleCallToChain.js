@@ -1,2 +1,0 @@
-Scripting.ChainedHello("John", {});
-

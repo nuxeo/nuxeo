@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: nuxeo-scim-server
+Bundle-SymbolicName: org.nuxeo.scim.server;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Version: 1.0.0
+Nuxeo-WebModule: org.nuxeo.scim.server.jaxrs.SCIMModule;name=scim;extends=base;package=org/nuxeo/scim/server/jaxrs
+Nuxeo-Component: OSGI-INF/usermapper-contribs.xml

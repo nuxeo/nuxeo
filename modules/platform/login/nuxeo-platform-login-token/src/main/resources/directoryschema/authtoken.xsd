@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/vocabulary"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="token" type="xs:string" />
+  <xs:element name="userName" type="xs:string" />
+  <xs:element name="applicationName" type="xs:string" />
+  <xs:element name="deviceId" type="xs:string" />
+  <xs:element name="deviceDescription" type="xs:string" />
+  <xs:element name="permission" type="xs:string" />
+  <xs:element name="creationDate" type="xs:date" />
+
+</xs:schema>

@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Bundle-SymbolicName: org.nuxeo.apidoc.core;singleton:=true
-Bundle-Name: nuxeo api documentation server
-Bundle-Version: 0.0.1
-Bundle-ManifestVersion: 1
-Bundle-Vendor: Nuxeo
-

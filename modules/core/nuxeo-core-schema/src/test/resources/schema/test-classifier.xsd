@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://something.com/schemas/classifier/"
+           targetNamespace="http://something.com/schemas/classifier/"
+           version="1.0">
+
+    <xs:element name="otherLabel" type="xs:string"/>
+    <xs:element name="classifierType" type="tns:classifierType"/>
+
+    <xs:element name="integerBins">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="bin" type="tns:integerBin"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+   <xs:element name="stringBins">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="bin" type="tns:stringBin"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+   <xs:element name="continuousBins">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" name="bin" type="tns:continuousBin"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="role">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="HighTarget"/>
+            <xs:enumeration value="LowTarget"/>
+            <xs:enumeration value="Other"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="bin">
+        <xs:sequence>
+            <xs:element name="binType" type="xs:string"/>
+            <xs:element name="label" type="xs:string"/>
+            <xs:element minOccurs="0" name="baseline" type="xs:double"/>
+            <xs:element minOccurs="0" name="role" type="tns:role"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="integerBin">
+        <!--<xs:complexContent>-->
+            <!--<xs:extension base="tns:bin">-->
+        <xs:sequence>
+            <xs:element name="binType" type="xs:string"/>
+            <xs:element name="label" type="xs:string"/>
+            <xs:element minOccurs="0" name="baseline" type="xs:double"/>
+            <xs:element minOccurs="0" name="role" type="tns:role"/>
+            <xs:element name="matchingValues" type="tns:integerValues"/>
+        </xs:sequence>
+            <!--</xs:extension>-->
+        <!--</xs:complexContent>-->
+    </xs:complexType>
+
+    <xs:complexType name="integerValues">
+        <xs:sequence>
+            <xs:element name="matchingValue" minOccurs="0" maxOccurs="unbounded" type="xs:integer"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="stringBin">
+        <!--<xs:complexContent>-->
+            <!--<xs:extension base="tns:bin">-->
+                <xs:sequence>
+                    <xs:element name="binType" type="xs:string"/>
+                    <xs:element name="label" type="xs:string"/>
+                    <xs:element minOccurs="0" name="baseline" type="xs:double"/>
+                    <xs:element minOccurs="0" name="role" type="tns:role"/>
+                    <xs:element name="matchingValues" type="tns:stringValues"/>
+                </xs:sequence>
+            <!--</xs:extension>-->
+        <!--</xs:complexContent>-->
+    </xs:complexType>
+
+    <xs:complexType name="stringValues">
+        <xs:sequence>
+            <xs:element name="matchingValue" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="continuousBin">
+        <!--<xs:complexContent>-->
+            <!--<xs:extension base="tns:bin">-->
+                <xs:sequence>
+                    <xs:element name="binType" type="xs:string"/>
+                    <xs:element name="label" type="xs:string"/>
+                    <xs:element minOccurs="0" name="baseline" type="xs:double"/>
+                    <xs:element minOccurs="0" name="role" type="tns:role"/>
+                    <xs:element name="upperBound" type="xs:double"/>
+                </xs:sequence>
+            <!--</xs:extension>-->
+        <!--</xs:complexContent>-->
+    </xs:complexType>
+
+    <xs:simpleType name="classifierType">
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Integer"/>
+        <xs:enumeration value="String"/>
+        <xs:enumeration value="Continuous"/>
+      </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

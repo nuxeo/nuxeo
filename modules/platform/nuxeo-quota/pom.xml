@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-quota-parent</artifactId>
+  <name>Nuxeo Quota</name>
+  <description>Nuxeo Quota</description>
+  <version>11.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>nuxeo-quota-core</module>
+    <module>nuxeo-quota-automation</module>
+    <module>nuxeo-quota-core-dependencies</module>
+  </modules>
+
+</project>

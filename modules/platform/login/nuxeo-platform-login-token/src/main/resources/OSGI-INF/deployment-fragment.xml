@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+  <!-- Token Authentication Servlet -->
+  <extension target="web#SERVLET">
+
+    <servlet>
+      <servlet-name>Nuxeo Token Authentication Servlet</servlet-name>
+      <servlet-class>
+        org.nuxeo.ecm.tokenauth.servlet.TokenAuthenticationServlet
+      </servlet-class>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo Token Authentication Servlet</servlet-name>
+      <url-pattern>/authentication/token</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+  <extension target="web#STD-AUTH-FILTER">
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/authentication/*</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+      <filter-name>NuxeoAuthenticationFilter</filter-name>
+      <url-pattern>/acquire_token.jsp</url-pattern>
+      <dispatcher>REQUEST</dispatcher>
+      <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+  </extension>
+
+  <install>
+
+    <!-- Unzip the war template -->
+    <unzip from="${bundle.fileName}" to="/" prefix="web">
+      <include>web/nuxeo.war/**</include>
+    </unzip>
+
+  </install>
+
+</fragment>

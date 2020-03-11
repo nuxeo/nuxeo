@@ -1,0 +1,14 @@
+The files (LGPL-2.1.txt, CDDL-1.0.txt, MIT-LICENSE.txt, EPL-v10.txt, AL-2.0.txt)
+in licenses directory are the licenses mentioned in the source headers.
+
+Most of the code in the Nuxeo Platform project is copyrighted Nuxeo and
+others, and licensed under the Apache License, Version 2.0.
+
+A few files have been reused from other open source projects, under the other
+licenses listed here (LGPL, CDDL, MIT).
+
+When reusing code dual licensed under the GPL and another license, we choose
+NOT to use the GPL, but the other license.
+
+See online documentation for more details and all third-party licenses:
+https://doc.nuxeo.com/nxdoc/licenses/

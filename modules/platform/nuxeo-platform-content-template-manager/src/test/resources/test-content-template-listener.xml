@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<component
+  name="org.nuxeo.ecm.platform.content.template.listener">
+
+  <documentation> Core event listener that takes care of automatically creating children docs according to templates
+  </documentation>
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      Listen for Core event DOCUMENT_UPDATED and DOCUMENT_CREATED and call the
+      DublinCoreStorageService.
+
+      @author Thierry Delprat (td@nuxeo.com)
+    </documentation>
+
+    <listener name="templateCreator" async="false" postCommit="false" class="org.nuxeo.ecm.platform.content.template.listener.ContentCreationListener" priority="100">
+    </listener>
+  </extension>
+
+</component>

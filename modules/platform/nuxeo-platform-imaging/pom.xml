@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo.ecm.platform</groupId>
+    <artifactId>nuxeo-platform-parent</artifactId>
+    <version>11.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>nuxeo-platform-imaging-parent</artifactId>
+  <name>Nuxeo Platform Imaging parent</name>
+  <packaging>pom</packaging>
+  <description>Nuxeo Platform Imaging provides picture management
+               to Nuxeo Web Platform and RCP. It offers minor picture transformation
+               like rotation or resizing.</description>
+
+  <modules>
+    <module>nuxeo-platform-imaging-api</module>
+    <module>nuxeo-platform-imaging-core</module>
+    <module>nuxeo-platform-imaging-convert</module>
+  </modules>
+
+</project>

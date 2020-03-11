@@ -1,0 +1,463 @@
+<html>
+<head>
+
+ <style>
+ /* Reset rules */
+/* http://meyerweb.com/eric/tools/css/reset/ v2.0 | 20110126 */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline }
+
+fieldset {
+  margin: 2px 0px 20px;
+}
+
+legend {
+  font-weight:bold
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary {
+  display: block }
+
+body {
+  line-height: 1 }
+
+ol, ul {
+  list-style: none }
+
+blockquote, q {
+  quotes: none }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0 }
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle }
+
+img,
+a img {
+  border: none }
+
+/* Global styles */
+body {
+  background-color: #f5f5f5;
+  color: #555;
+  margin: 0;
+  padding: 0;
+  font: 1em/1.4em 'Lucida Grande', Arial, Helvetica, Geneva, sans-serif;
+  line-height: 1.4 }
+
+h1, h2, h3, h4, h5, h6 {
+  padding: .8em 0;
+  color: #000;
+  font-weight: bold }
+
+h1 {
+  font-size: 1.5em;
+  line-height: 1.3em }
+
+h2 { font-size: 1.3em }
+h3 { font-size: 1.1em }
+h4 { font-size: 1.08em }
+h5 { font-size: 1.05em }
+h6 { font-size: 1em }
+
+p { padding: 0 0 .7em }
+
+ol {
+  margin: 0 0 .8em;
+  padding: 0 0 0 1.2em;
+  list-style-type: decimal }
+
+ol li {
+  padding: .4em 0;
+  font-size: .9em }
+
+a,
+a:visited {
+  color: #06bbe5;
+  text-decoration: none;
+  transition: all 0.15s ease 0s }
+
+a:hover { color: #006ab1 }
+a:hover, a:active { outline: 0 }
+
+b, strong {
+  font-weight: bold }
+
+pre,
+.code {
+  font-family: "Menlo", "Consolas", "Courier New", monospace }
+
+pre, input[type="search"],
+input[type="text"],
+input[type="button"],
+textarea {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 103%;
+  padding: .4em }
+
+pre:focus, input[type="search"]:focus,
+input[type="text"]:focus,
+input[type="button"]:focus,
+textarea:focus {
+  border-color: #2e9cff;
+  box-shadow: 0 0 3px #b5dcff;
+  outline: 0 none }
+
+input[type="button"] {
+  box-shadow: 0 -3px 0 rgba(0, 0, 0, 0.2) inset;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  cursor: pointer }
+
+pre {
+  cursor: text }
+
+pre code {
+  background: none;
+  line-height: 1.6em }
+
+::-webkit-input-placeholder {
+  color: #747c88;
+  font-weight: normal }
+
+::-moz-placeholder {
+  color: #747c88;
+  font-weight: normal }
+
+:-ms-input-placeholder {
+  color: #747c88;
+  font-weight: normal }
+
+/* Specific classes */
+.container {
+background-color: #fff;
+border-radius: 5px;
+border:1px solid #ddd;
+padding: 1em 1.5em;
+margin: 3em auto;
+width: 960px }
+
+#msg {
+  font-weight:bold;
+  text-align:center;
+  font-size:12pt;
+  background-color:#DDDDDD;
+}
+
+.explain {
+    font-size: smaller;
+    display: block;
+}
+</style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+ <script>
+var baseUrl;
+var started = false;
+
+function doLog(msg) {
+  $("#msg").html(msg);
+}
+
+function doSwitch() {
+  if ($('input[name=importerType]:checked', '#importForm').attr('id') == 'fileImporter') {
+    jQuery("#fileConfig").show();
+    jQuery("#randomConfig").hide();
+    if (document.location.href.indexOf("randomImporter") > 0) {
+      document.location.href = baseUrl.replace("randomImporter",
+          "fileImporter");
+    }
+  } else {
+    jQuery("#fileConfig").hide();
+    jQuery("#randomConfig").show();
+    if (document.location.href.indexOf("fileImporter") > 0) {
+      document.location.href = baseUrl.replace("fileImporter",
+          "randomImporter");
+    }
+  }
+}
+
+function importCompleted() {
+  started = false;
+  doLog("Import Completed!");
+  $("#runBtn").attr("disabled", false);
+  $("#killBtn").css("display", "none");
+}
+
+function killImport() {
+  doLog("Killing import ...");
+  var killUrl = baseUrl + "kill";
+  $.ajax({
+    url : killUrl,
+    type : "GET",
+    success : function(data, textStatus, jqXHR) {
+      doLog("import process killed");
+      started = false;
+      $("#runBtn").attr("disabled", false);
+      $("#killBtn").css("display", "none");
+    },
+    error : function(jqXHR, textStatus, errorThrown) {
+      alert("Unable to kill import");
+    }
+  });
+
+}
+
+function waitForCompletion() {
+  var pingUrl = baseUrl + "running";
+  $.ajax({
+    url : pingUrl,
+    type : "GET",
+    success : function(data, textStatus, jqXHR) {
+      if ("false" == data) {
+        importCompleted();
+      } else {
+        doLog("import in progress");
+        window.setTimeout(waitForCompletion, 5000);
+      }
+    },
+    error : function(jqXHR, textStatus, errorThrown) {
+      alert("Unable to check status");
+    }
+  });
+
+}
+
+function ajaxSubmit() {
+  var actvateLogUrl = baseUrl + "logActivate";
+  $.ajax({
+    url : actvateLogUrl,
+    type : "GET",
+    success : function(data, textStatus, jqXHR) {
+      doLog("starting logging");
+      startImport();
+    },
+    error : function(jqXHR, textStatus, errorThrown) {
+      alert("Unable to start logging");
+    }
+  });
+
+}
+
+function serializeImportForm() {
+    var params = $('#importForm').serializeArray();
+    var cleaned = [];
+    params.forEach(function(o){
+        if((o.name === "leafType" || o.name === "folderishType")){
+            if(o.value !== "") {
+                cleaned.push(o);
+            }
+        } else {
+            cleaned.push(o);
+        }
+    });
+    return cleaned;
+}
+
+function startImport() {
+  started = false;
+  var params = serializeImportForm();//$('#importForm').serializeArray();
+  var formURL = baseUrl + "run";
+  params.push({
+    name : 'interactive',
+    value : 'false'
+  });
+  $("#runBtn").attr("disabled", true);
+  $("#killBtn").css("display", "inline");
+  formURL = formURL + "?" + $.param(params);
+  doLog("starting importer");
+  $.ajax({
+    url : formURL,
+    type : "GET",
+    success : function(data, textStatus, jqXHR) {
+      doLog("Importer started");
+      started = true;
+      logTail();
+      window.setTimeout(waitForCompletion, 5000);
+    },
+    error : function(jqXHR, textStatus, errorThrown) {
+      doLog("Unable to start the importer");
+    }
+  });
+}
+
+function scrollIframe() {
+  if ($("#logTail").size() > 0) {
+    var logContent = $('#logTail').contents();
+    logContent.scrollTop(logContent.height());
+  }
+}
+
+function logTail() {
+  if ($("#logTail").size == 0) {
+    var logTailIFrame = $("<iframe id='logTail' width='100%' height='300px'></iframe>");
+    $("body").append(logTailIFrame);
+  }
+  $("#logTail").attr("src", baseUrl + "log");
+  $("#logTail").load(scrollIframe);
+  // window.setTimeout(scrollIframe, 500);
+  if (started) {
+    window.setTimeout(logTail, 3000);
+  }
+}
+
+$(document).ready(function() {
+  baseUrl = document.location.href;
+  var idx = baseUrl.indexOf("?");
+  if (idx > 0) {
+    baseUrl = baseUrl.substring(0, idx);
+  }
+  if (!(baseUrl.substring(baseUrl.length - 1) == "/")) {
+    baseUrl = baseUrl + "/";
+  }
+  if (document.location.href.indexOf("randomImporter") > 0) {
+    $('input[id=randomImporter]').click();
+  }
+  $("#importForm").attr("action", baseUrl);
+});
+
+ </script>
+
+</head>
+<body>
+
+<div class="container">
+
+  <div id="msg"></div>
+
+<!--
+  <div>
+     <div> Importer status <span id="importerStatus"></span> <input type="button" value="enable" id="stopImporter"> </div>
+     <div> Logging <span id="importerLoggin"></span>  <input type="button" value="enable" id="enableLoggin">  <input type="button" value="disable" id="disableLoggin"></div>
+  </div>
+  <hr/>
+-->
+
+  <form id="importForm" method="GET" enctype="application/x-www-form-urlencoded">
+
+  <fieldset>
+       <legend>Importer type</legend>
+          <input type = "radio" onchange='doSwitch()'
+                 name = "importerType"
+                 id = "fileImporter"
+                 checked = "checked" />
+          <label for = "fileImporter">Use File importer</label>
+
+          <input type = "radio" onchange='doSwitch()'
+                 name = "importerType"
+                 id = "randomImporter" />
+          <label for = "randomImporter">Use random document generator</label>
+  </fieldset>
+
+  <fieldset>
+       <legend>Common configuration</legend>
+   <div>
+     <label for="targetPath">Target path in Nuxeo repository:</label>
+     <input type="text" name="targetPath" placeholder="/" value="/" size="60">
+     <p></p>
+   </div>
+
+   <div>
+     <label for="batchSize">Batch size:</label>
+     <input type="number" name="batchSize" placeholder="10" value="10" style="width:5em">
+     <p><span class="explain">Number of documents imported in a single transaction</span></p>
+   </div>
+
+   <div>
+     <label for="nbThreads">Number of concurrent threads in the importer process: </label>
+     <input type="number" name="nbThreads" placeholder="5" value="5">
+     <p></p>
+   </div>
+
+   <div>
+     <label for="transactionTimeout">Timeout (seconds) of the transaction: </label>
+     <input type="number" name="transactionTimeout" placeholder="0" value="0">
+     <p><span class="explain">0 means "use the default value defined in the importer"</span></p>
+     <p></p>
+   </div>
+
+   <div>
+     <label for="leafType">Leaf type:</label>
+     <input type="text" name="leafType"  style="width:20em">
+     <p><span class="explain">Used by the DocumentModelFactory for the import</span></p>
+   </div>
+
+   <div>
+     <label for="folderishType">Folderish type:</label>
+     <input type="text" name="folderishType" style="width:20em">
+     <p><span class="explain">Used by the DocumentModelFactory for the import</span></p>
+   </div>
+
+  </fieldset>
+
+
+  <fieldset id="fileConfig">
+       <legend>File Importer configuration</legend>
+
+   <div>
+     <label for="inputPath">Local path (on the server) for source files:</label>
+     <input type="text" name="inputPath" placeholder="C:\InputData" value="C:\InputData"  size="60">
+   </div>
+
+   <div>
+     <label for="skipRootContainerCreation">Skip root container creation:</label>
+     <input type="text" name="skipRootContainerCreation" placeholder="false" value="false"/>
+   </div>
+
+  </fieldset>
+
+
+  <fieldset style="display:none" id="randomConfig">
+       <legend>Random Importer configuration</legend>
+
+  <label for="nbNodes">Number of documents to generate: </label>
+   <input type="range" name="nbNodes" onchange="$('#rangeValue').html(this.value)" style="width:300px"
+       min="100"
+       max="50000"
+       step="100"
+       value="200"><span id="rangeValue">200</span> docs<br/>
+
+  <label for="fileSize">Size in KB of the files: </label>
+   <input type="range" name="fileSizeKB" onchange="$('#fileSizeValue').html(this.value)" style="width:300px"
+       min="1"
+       max="1000"
+       step="1"
+       value="2"><span id="fileSizeValue">2</span> KB
+
+  </fieldset>
+
+  <input type="button" id="runBtn"  value="Run" onclick="ajaxSubmit()"/>
+  <input type="button" id="killBtn"  value="Stop import" onclick="killImport()" style="display:none"/>
+
+  </form>
+</div>
+</body>
+</html>
