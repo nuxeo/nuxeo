@@ -74,7 +74,6 @@ import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import io.dropwizard.metrics5.MetricName;
-import io.dropwizard.metrics5.MetricRegistry;
 
 /**
  * WorkManager impl that appends works into a Log. Works are therefore immutable (no state update) and can not be listed
@@ -99,6 +98,13 @@ public class StreamWorkManager extends WorkManagerImpl {
     public static final String DEFAULT_WORK_OVER_PROVISIONING = "3";
 
     public static final int DEFAULT_CONCURRENCY = 4;
+
+    // @since 11.1
+    protected WorkQueueMetrics lastMetrics;
+
+    protected long lastMetricTime;
+
+    protected long CACHE_LAST_METRIC_DURATION_MS = 1000;
 
     /**
      * @since 10.2
@@ -482,11 +488,18 @@ public class StreamWorkManager extends WorkManagerImpl {
     }
 
     protected WorkQueueMetrics getMetricsWithNuxeoClassLoader(String queueId) {
+        long now = System.currentTimeMillis();
+        if (lastMetrics != null && lastMetrics.queueId == queueId
+                && (now - lastMetricTime) < CACHE_LAST_METRIC_DURATION_MS) {
+            return lastMetrics;
+        }
         // JMX threads have distinct class loader that need to be changed to get metrics
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
-            return getMetrics(queueId);
+            lastMetrics = getMetrics(queueId);
+            lastMetricTime = System.currentTimeMillis();
+            return lastMetrics;
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
