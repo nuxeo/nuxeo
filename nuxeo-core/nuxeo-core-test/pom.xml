@@ -189,7 +189,7 @@
     </dependency>
 
     <dependency>
-      <groupId>dumbster</groupId>
+      <groupId>com.github.kirviq</groupId>
       <artifactId>dumbster</artifactId>
     </dependency>
 

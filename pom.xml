@@ -4678,9 +4678,9 @@
       </dependency>
 
       <dependency>
-        <groupId>dumbster</groupId>
+        <groupId>com.github.kirviq</groupId>
         <artifactId>dumbster</artifactId>
-        <version>1.6</version>
+        <version>1.7</version>
         <exclusions>
          <exclusion>
             <!-- use com.sun.activation:javax.activation instead -->
