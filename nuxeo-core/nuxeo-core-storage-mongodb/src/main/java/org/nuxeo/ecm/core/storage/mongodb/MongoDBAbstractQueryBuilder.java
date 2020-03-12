@@ -192,7 +192,7 @@ public abstract class MongoDBAbstractQueryBuilder {
     }
 
     public Document walkNot(Operand value) {
-        Object val = walkOperand(value);
+        Object val = walkOperand(null, value);
         Object not = pushDownNot(val);
         if (!(not instanceof Document)) {
             throw new QueryParseException("Cannot do NOT on: " + val);
@@ -279,7 +279,7 @@ public abstract class MongoDBAbstractQueryBuilder {
 
     protected Document walkAndOr(Expression expr, List<? extends Operand> values) {
         if (values.size() == 1) {
-            return (Document) walkOperand(values.get(0));
+            return (Document) walkOperand(null, values.get(0));
         }
         boolean and = expr.operator == Operator.AND;
         String op = and ? QueryOperators.AND : QueryOperators.OR;
@@ -313,67 +313,55 @@ public abstract class MongoDBAbstractQueryBuilder {
         return field;
     }
 
-    protected Object checkBoolean(FieldInfo fieldInfo, Object right) {
-        if (fieldInfo.isBoolean()) {
-            // convert 0 / 1 to actual booleans
-            if (right instanceof Long) {
-                if (LONG_ZERO.equals(right)) {
-                    right = fieldInfo.isTrueOrNullBoolean ? null : FALSE;
-                } else if (LONG_ONE.equals(right)) {
-                    right = TRUE;
-                } else {
-                    throw new QueryParseException("Invalid boolean: " + right);
-                }
-            }
-        }
-        return right;
-    }
-
     public Document walkEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
-        right = checkBoolean(fieldInfo, right);
-        // TODO check list fields
+        return walkEq(fieldInfo, rvalue);
+    }
+
+    public Document walkEq(FieldInfo fieldInfo, Operand rvalue) {
+        Object right = walkOperand(fieldInfo, rvalue);
         return newDocumentWithField(fieldInfo, right);
     }
 
     public Document walkNotEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
-        right = checkBoolean(fieldInfo, right);
-        // TODO check list fields
+        return walkNotEq(fieldInfo, rvalue);
+    }
+
+    public Document walkNotEq(FieldInfo fieldInfo, Operand rvalue) {
+        Object right = walkOperand(fieldInfo, rvalue);
         return newDocumentWithField(fieldInfo, new Document(QueryOperators.NE, right));
     }
 
     public Document walkLt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
+        Object right = walkOperand(fieldInfo, rvalue);
         return newDocumentWithField(fieldInfo, new Document(QueryOperators.LT, right));
     }
 
     public Document walkGt(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
+        Object right = walkOperand(fieldInfo, rvalue);
         return newDocumentWithField(fieldInfo, new Document(QueryOperators.GT, right));
     }
 
     public Document walkLtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
+        Object right = walkOperand(fieldInfo, rvalue);
         return newDocumentWithField(fieldInfo, new Document(QueryOperators.LTE, right));
     }
 
     public Document walkGtEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
+        Object right = walkOperand(fieldInfo, rvalue);
         return newDocumentWithField(fieldInfo, new Document(QueryOperators.GTE, right));
     }
 
     public Document walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
         LiteralList l = (LiteralList) rvalue;
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object left = walkOperand(l.get(0));
-        Object right = walkOperand(l.get(1));
+        Object left = walkOperand(fieldInfo, l.get(0));
+        Object right = walkOperand(fieldInfo, l.get(1));
         if (positive) {
             Document range = new Document();
             range.put(QueryOperators.GTE, left);
@@ -388,7 +376,11 @@ public abstract class MongoDBAbstractQueryBuilder {
 
     public Document walkIn(Operand lvalue, Operand rvalue, boolean positive) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
+        return walkIn(fieldInfo, rvalue, positive);
+    }
+
+    public Document walkIn(FieldInfo fieldInfo, Operand rvalue, boolean positive) {
+        Object right = walkOperand(fieldInfo, rvalue);
         if (!(right instanceof List)) {
             throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
         }
@@ -403,7 +395,7 @@ public abstract class MongoDBAbstractQueryBuilder {
             throw new QueryParseException("Invalid LIKE/ILIKE, right hand side must be a string: " + rvalue);
         }
         // TODO check list fields
-        String like = walkStringLiteral((StringLiteral) rvalue);
+        String like = (String) walkStringLiteral(fieldInfo, (StringLiteral) rvalue);
         String regex = ExpressionEvaluator.likeToRegex(like);
         // MongoDB native matches are unanchored: optimize the regex for faster matches
         if (regex.startsWith(".*")) {
@@ -428,11 +420,11 @@ public abstract class MongoDBAbstractQueryBuilder {
         return newDocumentWithField(fieldInfo, value);
     }
 
-    public Object walkOperand(Operand op) {
+    public Object walkOperand(FieldInfo fieldInfo, Operand op) {
         if (op instanceof Literal) {
-            return walkLiteral((Literal) op);
+            return walkLiteral(fieldInfo, (Literal) op);
         } else if (op instanceof LiteralList) {
-            return walkLiteralList((LiteralList) op);
+            return walkLiteralList(fieldInfo, (LiteralList) op);
         } else if (op instanceof Function) {
             return walkFunction((Function) op);
         } else if (op instanceof Expression) {
@@ -444,46 +436,63 @@ public abstract class MongoDBAbstractQueryBuilder {
         }
     }
 
-    public Object walkLiteral(Literal lit) {
+    public Object walkLiteral(FieldInfo fieldInfo, Literal lit) {
         if (lit instanceof BooleanLiteral) {
-            return walkBooleanLiteral((BooleanLiteral) lit);
+            return walkBooleanLiteral(fieldInfo, (BooleanLiteral) lit);
         } else if (lit instanceof DateLiteral) {
-            return walkDateLiteral((DateLiteral) lit);
+            return walkDateLiteral(fieldInfo, (DateLiteral) lit);
         } else if (lit instanceof DoubleLiteral) {
-            return walkDoubleLiteral((DoubleLiteral) lit);
+            return walkDoubleLiteral(fieldInfo, (DoubleLiteral) lit);
         } else if (lit instanceof IntegerLiteral) {
-            return walkIntegerLiteral((IntegerLiteral) lit);
+            return walkIntegerLiteral(fieldInfo, (IntegerLiteral) lit);
         } else if (lit instanceof StringLiteral) {
-            return walkStringLiteral((StringLiteral) lit);
+            return walkStringLiteral(fieldInfo, (StringLiteral) lit);
         } else {
             throw new QueryParseException("Unknown literal: " + lit);
         }
     }
 
-    public Object walkBooleanLiteral(BooleanLiteral lit) {
+    public Object walkBooleanLiteral(FieldInfo fieldInfo, BooleanLiteral lit) {
         return Boolean.valueOf(lit.value);
     }
 
-    public Date walkDateLiteral(DateLiteral lit) {
+    public Date walkDateLiteral(FieldInfo fieldInfo, DateLiteral lit) {
         return lit.value.toDate(); // TODO onlyDate
     }
 
-    public Double walkDoubleLiteral(DoubleLiteral lit) {
+    public Double walkDoubleLiteral(FieldInfo fieldInfo, DoubleLiteral lit) {
         return Double.valueOf(lit.value);
     }
 
-    public Long walkIntegerLiteral(IntegerLiteral lit) {
-        return Long.valueOf(lit.value);
+    public Object walkIntegerLiteral(FieldInfo fieldInfo, IntegerLiteral lit) {
+        long value = lit.value;
+        if (fieldInfo != null && fieldInfo.isBoolean()) {
+            // convert 0 / 1 to actual booleans
+            Boolean b;
+            if (value == 0) {
+                b = FALSE;
+            } else if (value == 1) {
+                b = TRUE;
+            } else {
+                throw new QueryParseException("Invalid boolean: " + value);
+            }
+            return converter.serializableToBson(fieldInfo.key, b);
+        }
+        return Long.valueOf(value);
     }
 
-    public String walkStringLiteral(StringLiteral lit) {
-        return lit.value;
+    public Object walkStringLiteral(FieldInfo fieldInfo, StringLiteral lit) {
+        String value = lit.value;
+        if (fieldInfo != null) {
+            return converter.serializableToBson(fieldInfo.key, value);
+        }
+        return value;
     }
 
-    public List<Object> walkLiteralList(LiteralList litList) {
+    public List<Object> walkLiteralList(FieldInfo fieldInfo, LiteralList litList) {
         List<Object> list = new ArrayList<>(litList.size());
         for (Literal lit : litList) {
-            list.add(walkLiteral(lit));
+            list.add(walkLiteral(fieldInfo, lit));
         }
         return list;
     }
@@ -491,7 +500,7 @@ public abstract class MongoDBAbstractQueryBuilder {
     protected List<Object> walkOperandList(List<? extends Operand> values) {
         List<Object> list = new LinkedList<>();
         for (Operand value : values) {
-            list.add(walkOperand(value));
+            list.add(walkOperand(null, value));
         }
         return list;
     }
@@ -512,7 +521,7 @@ public abstract class MongoDBAbstractQueryBuilder {
                 throw new QueryParseException(e);
             }
             DateLiteral dateLiteral = new DateLiteral(dateTime);
-            return walkDateLiteral(dateLiteral);
+            return walkDateLiteral(null, dateLiteral);
         } else {
             throw new QueryParseException("Function not supported: " + func);
         }
@@ -530,6 +539,13 @@ public abstract class MongoDBAbstractQueryBuilder {
         /** NXQL property. */
         public final String prop;
 
+        /**
+         * DBS key.
+         *
+         * @since 11.1
+         */
+        public final String key;
+
         /** MongoDB field for query. foo/0/bar -> foo.0.bar; foo / * / bar -> foo.bar */
         public final String queryField;
 
@@ -538,18 +554,12 @@ public abstract class MongoDBAbstractQueryBuilder {
 
         public final Type type;
 
-        /**
-         * Boolean system properties only use TRUE or NULL, not FALSE, so queries must be updated accordingly.
-         */
-        public final boolean isTrueOrNullBoolean;
-
-        public FieldInfo(String prop, String queryField, String projectionField, Type type,
-                boolean isTrueOrNullBoolean) {
+        public FieldInfo(String prop, String key, String queryField, String projectionField, Type type) {
             this.prop = prop;
+            this.key = key;
             this.queryField = queryField;
             this.projectionField = projectionField;
             this.type = type;
-            this.isTrueOrNullBoolean = isTrueOrNullBoolean;
         }
 
         public boolean isBoolean() {

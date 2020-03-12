@@ -3652,10 +3652,17 @@ public class TestSQLRepositoryAPI {
         String vid; // ver id
         String pid; // proxy id
         if (folderId.length() == 36) {
+            // uuid
             id = "aaaaaaaa-1234-1234-1234-fedcba987654";
             vid = "12345678-1234-1234-1234-fedcba987654";
             pid = "00000000-1234-1234-1234-fedcba987654";
+        } else if (folderId.length() == 16) {
+            // hex long
+            id = "8888888800000001";
+            vid = "7777777700000002";
+            pid = "6666666600000003";
         } else {
+            // sequence
             id = "888001";
             vid = "777002";
             pid = "666003";

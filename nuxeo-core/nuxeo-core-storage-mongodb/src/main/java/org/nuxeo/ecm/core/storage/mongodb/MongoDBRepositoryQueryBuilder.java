@@ -26,7 +26,11 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_MIXIN_TYPES;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_MAJOR_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_MINOR_VERSION;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.PROP_UID_MAJOR_VERSION;
@@ -76,7 +80,6 @@ import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
-import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -248,10 +251,11 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
             // TODO XXX do better
             return new Document(MONGODB_ID, "__nosuchid__");
         }
+        Object bsonId = converter.serializableToBson(KEY_ID, id);
         if (op == Operator.EQ) {
-            return new Document(idKey, id);
+            return new Document(idKey, bsonId);
         } else {
-            return new Document(idKey, new Document(QueryOperators.NE, id));
+            return new Document(idKey, new Document(QueryOperators.NE, bsonId));
         }
     }
 
@@ -263,10 +267,11 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
             throw new QueryParseException(NXQL.ECM_ANCESTORID + " requires literal id as right argument");
         }
         String ancestorId = ((StringLiteral) rvalue).value;
+        Object bsonAncestorId = converter.serializableToBson(KEY_ANCESTOR_IDS, ancestorId);
         if (op == Operator.EQ) {
-            return new Document(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
+            return new Document(KEY_ANCESTOR_IDS, bsonAncestorId);
         } else {
-            return new Document(DBSDocument.KEY_ANCESTOR_IDS, new Document(QueryOperators.NE, ancestorId));
+            return new Document(KEY_ANCESTOR_IDS, new Document(QueryOperators.NE, bsonAncestorId));
         }
     }
 
@@ -405,46 +410,40 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
     @Override
     public Document walkEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
         if (isMixinTypes(fieldInfo)) {
+            Object right = walkOperand(fieldInfo, rvalue);
             if (!(right instanceof String)) {
                 throw new QueryParseException("Invalid EQ rhs: " + rvalue);
             }
             return walkMixinTypes(Collections.singletonList((String) right), true);
         }
-        right = checkBoolean(fieldInfo, right);
-        // TODO check list fields
-        return newDocumentWithField(fieldInfo, right);
+        return super.walkEq(fieldInfo, rvalue);
     }
 
     @Override
     public Document walkNotEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
         if (isMixinTypes(fieldInfo)) {
+            Object right = walkOperand(fieldInfo, rvalue);
             if (!(right instanceof String)) {
                 throw new QueryParseException("Invalid NE rhs: " + rvalue);
             }
             return walkMixinTypes(Collections.singletonList((String) right), false);
         }
-        right = checkBoolean(fieldInfo, right);
-        // TODO check list fields
-        return newDocumentWithField(fieldInfo, new Document(QueryOperators.NE, right));
+        return super.walkNotEq(fieldInfo, rvalue);
     }
 
     @Override
     public Document walkIn(Operand lvalue, Operand rvalue, boolean positive) {
         FieldInfo fieldInfo = walkReference(lvalue);
-        Object right = walkOperand(rvalue);
-        if (!(right instanceof List)) {
-            throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
-        }
         if (isMixinTypes(fieldInfo)) {
+            Object right = walkOperand(fieldInfo, rvalue);
+            if (!(right instanceof List)) {
+                throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
+            }
             return walkMixinTypes((List<String>) right, positive);
         }
-        // TODO check list fields
-        List<Object> list = (List<Object>) right;
-        return newDocumentWithField(fieldInfo, new Document(positive ? QueryOperators.IN : QueryOperators.NIN, list));
+        return super.walkIn(fieldInfo, rvalue, positive);
     }
 
     public Document walkStartsWith(Operand lvalue, Operand rvalue) {
@@ -476,7 +475,8 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
             // TODO XXX do better
             return new Document(MONGODB_ID, "__nosuchid__");
         }
-        return new Document(DBSDocument.KEY_ANCESTOR_IDS, ancestorId);
+        Object bsonAncestorId = converter.serializableToBson(KEY_ANCESTOR_IDS, ancestorId);
+        return new Document(KEY_ANCESTOR_IDS, bsonAncestorId);
     }
 
     protected Document walkStartsWithNonPath(Operand lvalue, String path) {
@@ -526,14 +526,14 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
             if (prop.startsWith(NXQL.ECM_TAG)) {
                 String queryField = FACETED_TAG + "." + FACETED_TAG_LABEL;
                 queryField = stripElemMatchPrefix(queryField);
-                return new FieldInfo(prop, queryField, queryField, StringType.INSTANCE, true);
+                return new FieldInfo(prop, prop, queryField, queryField, StringType.INSTANCE);
             }
             // simple field
             String field = DBSSession.convToInternal(prop);
             Type type = DBSSession.getType(field);
             String queryField = converter.keyToBson(field);
             queryField = stripElemMatchPrefix(queryField);
-            return new FieldInfo(prop, queryField, field, type, true);
+            return new FieldInfo(prop, field, queryField, queryField, type);
         } else {
             String first = parts[0];
             Field field = schemaManager.getField(first);
@@ -561,7 +561,7 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
             if (PROP_UID_MAJOR_VERSION.equals(prop) || PROP_UID_MINOR_VERSION.equals(prop)
                     || PROP_MAJOR_VERSION.equals(prop) || PROP_MINOR_VERSION.equals(prop)) {
                 String fieldName = DBSSession.convToInternal(prop);
-                return new FieldInfo(prop, fieldName, fieldName, type, true);
+                return new FieldInfo(prop, fieldName, fieldName, fieldName, type);
             }
 
             // canonical name
@@ -596,7 +596,7 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
             String queryField = StringUtils.join(queryFieldParts, '.');
             String projectionField = StringUtils.join(projectionFieldParts, '.');
             queryField = stripElemMatchPrefix(queryField);
-            return new FieldInfo(prop, queryField, projectionField, type, false);
+            return new FieldInfo(prop, prop, queryField, projectionField, type);
         }
     }
 
@@ -621,11 +621,11 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
         }
         Type type = DBSSession.getType(last);
         queryField = stripElemMatchPrefix(queryField);
-        return new FieldInfo(prop, queryField, queryField, type, false);
+        return new FieldInfo(prop, prop, queryField, queryField, type);
     }
 
     protected boolean isMixinTypes(FieldInfo fieldInfo) {
-        return fieldInfo.queryField.equals(DBSDocument.KEY_MIXIN_TYPES);
+        return fieldInfo.queryField.equals(KEY_MIXIN_TYPES);
     }
 
     protected Set<String> getMixinDocumentTypes(String mixin) {
@@ -703,11 +703,11 @@ public class MongoDBRepositoryQueryBuilder extends MongoDBAbstractQueryBuilder {
          * MongoDB query generation.
          */
         // match on primary type
-        Document p = new Document(DBSDocument.KEY_PRIMARY_TYPE, new Document(QueryOperators.IN, matchPrimaryTypes));
+        Document p = new Document(KEY_PRIMARY_TYPE, new Document(QueryOperators.IN, matchPrimaryTypes));
         // match on mixin types
         // $in/$nin with an array matches if any/no element of the array matches
         String innin = include ? QueryOperators.IN : QueryOperators.NIN;
-        Document m = new Document(DBSDocument.KEY_MIXIN_TYPES, new Document(innin, matchMixinTypes));
+        Document m = new Document(KEY_MIXIN_TYPES, new Document(innin, matchMixinTypes));
         // and/or between those
         String op = include ? QueryOperators.OR : QueryOperators.AND;
         return new Document(op, Arrays.asList(p, m));

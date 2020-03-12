@@ -45,6 +45,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 import static org.nuxeo.runtime.mongodb.MongoDBComponent.MongoDBCountHelper.countDocuments;
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -53,6 +54,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.Spliterators;
 import java.util.UUID;
@@ -81,9 +83,9 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
-import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
+import org.nuxeo.ecm.core.storage.dbs.DBSSession;
 import org.nuxeo.ecm.core.storage.dbs.DBSStateFlattener;
 import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 import org.nuxeo.runtime.api.Framework;
@@ -119,6 +121,8 @@ import com.mongodb.client.result.UpdateResult;
 public class MongoDBRepository extends DBSRepositoryBase {
 
     private static final Log log = LogFactory.getLog(MongoDBRepository.class);
+
+    protected static final Random RANDOM = new SecureRandom();
 
     /**
      * Prefix used to retrieve a MongoDB connection from {@link MongoDBConnectionService}.
@@ -157,6 +161,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected static final String COUNTER_FIELD = "seq";
 
+    protected static final int SEQUENCE_RANDOMIZED_BLOCKSIZE_DEFAULT = 1000;
+
     /**
      * @since 11.1
      */
@@ -175,7 +181,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
     /** Number of values still available in the in-memory sequence. */
     protected long sequenceLeft;
 
-    /** Last value used from the in-memory sequence. */
+    /**
+     * Last value or randomized value used from the in-memory sequence.
+     * <p>
+     * When used as a randomized sequence, this value (and the rest of the next block) may only be used after a
+     * successful update of the in-database version for the next task needing a randomized value.
+     */
     protected long sequenceLastValue;
 
     /** Sequence allocation block size. */
@@ -199,19 +210,30 @@ public class MongoDBRepository extends DBSRepositoryBase {
             idKey = KEY_ID;
         }
         useCustomId = KEY_ID.equals(idKey);
-        if (idType == IdType.sequence || DEBUG_UUIDS) {
+        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DEBUG_UUIDS) {
             Integer sbs = descriptor.sequenceBlockSize;
-            sequenceBlockSize = sbs == null ? 1 : sbs.longValue();
+            if (sbs == null) {
+                sequenceBlockSize = idType == IdType.sequenceHexRandomized ? SEQUENCE_RANDOMIZED_BLOCKSIZE_DEFAULT : 1;
+            } else {
+                sequenceBlockSize = sbs.longValue();
+            }
             sequenceLeft = 0;
         }
-        converter = new MongoDBConverter(useCustomId ? null : KEY_ID);
-        cursorService = new CursorService<>(ob -> (String) ob.get(converter.keyToBson(KEY_ID)));
+        Set<String> idValuesKeys;
+        if (idType == IdType.sequenceHexRandomized) {
+            // store these ids as longs
+            idValuesKeys = DBSSession.ID_VALUES_KEYS;
+        } else {
+            idValuesKeys = Collections.emptySet();
+        }
+        converter = new MongoDBConverter(useCustomId ? null : KEY_ID, DBSSession.TRUE_OR_NULL_BOOLEAN_KEYS, idValuesKeys);
+        cursorService = new CursorService<>(ob -> (String) converter.getFromBson(ob, idKey, KEY_ID));
         initRepository(descriptor);
     }
 
     @Override
     public List<IdType> getAllowedIdTypes() {
-        return Arrays.asList(IdType.varchar, IdType.sequence);
+        return Arrays.asList(IdType.varchar, IdType.sequence, IdType.sequenceHexRandomized);
     }
 
     @Override
@@ -236,13 +258,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
      */
     protected void initRepository(MongoDBRepositoryDescriptor descriptor) {
         // check root presence
-        if (countDocuments(databaseID, coll, Filters.eq(idKey, getRootId())) > 0) {
+        if (countDocuments(databaseID, coll, converter.filterEq(KEY_ID, getRootId())) > 0) {
             return;
         }
         // create required indexes
         // code does explicit queries on those
         if (useCustomId) {
-            coll.createIndex(Indexes.ascending(idKey), new IndexOptions().unique(true));
+            coll.createIndex(Indexes.ascending(KEY_ID), new IndexOptions().unique(true));
         }
         coll.createIndex(Indexes.ascending(KEY_PARENT_ID));
         coll.createIndex(Indexes.ascending(KEY_ANCESTOR_IDS));
@@ -280,43 +302,151 @@ public class MongoDBRepository extends DBSRepositoryBase {
             coll.createIndex(indexKeys, indexOptions);
         }
         // create basic repository structure needed
-        if (idType == IdType.sequence || DEBUG_UUIDS) {
+        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DEBUG_UUIDS) {
             // create the id counter
+            long counter;
+            if (idType == IdType.sequenceHexRandomized) {
+                counter = randomInitialSeed();
+            } else {
+                counter = 0;
+            }
             Document idCounter = new Document();
             idCounter.put(MONGODB_ID, COUNTER_NAME_UUID);
-            idCounter.put(COUNTER_FIELD, LONG_ZERO);
+            idCounter.put(COUNTER_FIELD, Long.valueOf(counter));
             countersColl.insertOne(idCounter);
         }
         initRoot();
     }
 
-    protected synchronized Long getNextSequenceId() {
-        if (sequenceLeft == 0) {
-            // allocate a new sequence block
-            // the database contains the last value from the last block
-            Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
-            Bson update = Updates.inc(COUNTER_FIELD, Long.valueOf(sequenceBlockSize));
-            Document idCounter = countersColl.findOneAndUpdate(filter, update,
-                    new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
-            if (idCounter == null) {
-                throw new NuxeoException("Repository id counter not initialized");
+    protected synchronized long getNextSequenceId() {
+        if (idType == IdType.sequence) {
+            if (sequenceLeft == 0) {
+                sequenceLeft = sequenceBlockSize;
+                sequenceLastValue = updateSequence();
             }
-            sequenceLeft = sequenceBlockSize;
-            sequenceLastValue = ((Long) idCounter.get(COUNTER_FIELD)).longValue() - sequenceBlockSize;
+            sequenceLastValue++;
+        } else { // idType == IdType.sequenceHexRandomized
+            if (sequenceLeft == 0) {
+                sequenceLeft = sequenceBlockSize;
+                sequenceLastValue = updateRandomizedSequence();
+            }
+            sequenceLastValue = xorshift(sequenceLastValue);
         }
         sequenceLeft--;
-        sequenceLastValue++;
-        return Long.valueOf(sequenceLastValue);
+        return sequenceLastValue;
+    }
+
+    /**
+     * Allocates a new sequence block. The database contains the last value from the last block.
+     */
+    protected long updateSequence() {
+        Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
+        Bson update = Updates.inc(COUNTER_FIELD, Long.valueOf(sequenceBlockSize));
+        Document idCounter = countersColl.findOneAndUpdate(filter, update,
+                new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+        if (idCounter == null) {
+            throw new NuxeoException("Repository id counter not initialized");
+        }
+        return idCounter.getLong(COUNTER_FIELD).longValue() - sequenceBlockSize;
+    }
+
+    /**
+     * Updates the randomized sequence, using xorshift.
+     */
+    protected Long tryUpdateRandomizedSequence() {
+        // find the current value
+        Bson filter = Filters.eq(MONGODB_ID, COUNTER_NAME_UUID);
+        Document res = countersColl.find(filter).first();
+        if (res == null) {
+            throw new NuxeoException(
+                    "Failed to read " + filter + " in collection " + countersColl.getNamespace());
+        }
+        Long lastValue = res.getLong(COUNTER_FIELD);
+        // find the next value after this block is done
+        long newValue = xorshift(lastValue, sequenceBlockSize);
+        // store the next value for whoever needs it next
+        Bson updateFilter = Filters.and( //
+                filter, //
+                Filters.eq(COUNTER_FIELD, lastValue)
+        );
+        Bson update = Updates.set(COUNTER_FIELD, newValue);
+        log.trace("MongoDB: FINDANDMODIFY " + updateFilter + " UPDATE " + update);
+        boolean updated = countersColl.findOneAndUpdate(updateFilter, update) != null;
+        if (updated) {
+            return lastValue;
+        } else {
+            log.trace("MongoDB:    -> FAILED (will retry)");
+            return null;
+        }
+    }
+
+    protected static final int NB_TRY = 15;
+
+    protected long updateRandomizedSequence() {
+        long sleepDuration = 1; // start with 1ms
+        for (int i = 0; i < NB_TRY; i++) {
+            Long value = tryUpdateRandomizedSequence();
+            if (value != null) {
+                return value.longValue();
+            }
+            try {
+                Thread.sleep(sleepDuration);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new NuxeoException();
+            }
+            sleepDuration *= 2; // exponential backoff
+            sleepDuration += System.nanoTime() % 4; // random jitter
+        }
+        throw new ConcurrentUpdateException("Failed to update randomized sequence");
+    }
+
+    /** Initial seed generation. */
+    protected long randomInitialSeed() {
+        long seed;
+        do {
+            seed = RANDOM.nextLong();
+        } while (seed == 0);
+        return seed;
+    }
+
+    /** Iterated version of xorshift. */
+    protected long xorshift(long n, long times) {
+        for (long i = 0; i < times; i++) {
+            n = xorshift(n);
+        }
+        return n;
+    }
+
+    /**
+     * xorshift algorithm from George Marsaglia, with period 2^64 - 1.
+     *
+     * @see https://www.jstatsoft.org/article/view/v008i14/xorshift.pdf
+     */
+    protected long xorshift(long n) {
+        n ^= (n << 13);
+        n ^= (n >>> 7);
+        n ^= (n << 17);
+        return n;
     }
 
     @Override
     public String generateNewId() {
-        if (idType == IdType.sequence || DEBUG_UUIDS) {
-            Long id = getNextSequenceId();
+        if (idType == IdType.sequence || idType == IdType.sequenceHexRandomized || DEBUG_UUIDS) {
+            long id = getNextSequenceId();
             if (DEBUG_UUIDS) {
                 return "UUID_" + id;
+            } else if (idType == IdType.sequence) {
+                return String.valueOf(id);
+            } else { // idType == IdType.sequenceHexRandomized
+                // hex version filled to 16 chars
+                String hex = Long.toHexString(id);
+                int nz = 16 - hex.length();
+                if (nz > 0) {
+                    hex = "0000000000000000".substring(16 - nz) + hex;
+                }
+                return hex;
             }
-            return id.toString();
         } else {
             return UUID.randomUUID().toString();
         }
@@ -366,26 +496,27 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public State readState(String id) {
-        return findOne(Filters.eq(idKey, id));
+        return findOne(converter.filterEq(KEY_ID, id));
     }
 
     @Override
     public State readPartialState(String id, Collection<String> keys) {
         Document fields = new Document();
         keys.forEach(key -> fields.put(converter.keyToBson(key), ONE));
-        return findOne(Filters.eq(idKey, id), fields);
+        return findOne(converter.filterEq(KEY_ID, id), fields);
     }
 
     @Override
     public List<State> readStates(List<String> ids) {
-        return findAll(Filters.in(idKey, ids));
+        return findAll(converter.filterIn(KEY_ID, ids));
     }
 
     @Override
     public void updateState(String id, StateDiff diff, ChangeTokenUpdater changeTokenUpdater) {
         List<Document> updates = converter.diffToBson(diff);
         for (Document update : updates) {
-            Document filter = new Document(idKey, id);
+            Document filter = new Document();
+            converter.putToBson(filter, KEY_ID, id);
             if (changeTokenUpdater == null) {
                 if (log.isTraceEnabled()) {
                     log.trace("MongoDB: UPDATE " + id + ": " + update);
@@ -425,7 +556,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public void deleteStates(Set<String> ids) {
-        Bson filter = Filters.in(idKey, ids);
+        Bson filter = converter.filterIn(KEY_ID, ids);
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: REMOVE " + ids);
         }
@@ -444,7 +575,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     protected void logQuery(String id, Bson fields) {
-        logQuery(Filters.eq(idKey, id), fields);
+        logQuery(converter.filterEq(KEY_ID, id), fields);
     }
 
     protected void logQuery(Bson filter, Bson fields) {
@@ -468,30 +599,32 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected Document getChildQuery(String parentId, String name, Set<String> ignored) {
         Document filter = new Document();
-        filter.put(KEY_PARENT_ID, parentId);
-        filter.put(KEY_NAME, name);
+        converter.putToBson(filter, KEY_PARENT_ID, parentId);
+        converter.putToBson(filter, KEY_NAME, name);
         addIgnoredIds(filter, ignored);
         return filter;
     }
 
     protected void addIgnoredIds(Document filter, Set<String> ignored) {
         if (!ignored.isEmpty()) {
-            Document notInIds = new Document(QueryOperators.NIN, new ArrayList<>(ignored));
+            Document notInIds = new Document(QueryOperators.NIN, converter.listToBson(KEY_ID, ignored));
             filter.put(idKey, notInIds);
         }
     }
 
     @Override
     public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
-        Document filter = new Document(converter.keyToBson(key), value);
+        Document filter = new Document();
+        converter.putToBson(filter, key, value);
         addIgnoredIds(filter, ignored);
         return findAll(filter);
     }
 
     @Override
     public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
-        Document filter = new Document(converter.keyToBson(key1), value1);
-        filter.put(converter.keyToBson(key2), value2);
+        Document filter = new Document();
+        converter.putToBson(filter, key1, value1);
+        converter.putToBson(filter, key2, value2);
         addIgnoredIds(filter, ignored);
         return findAll(filter);
     }
@@ -510,8 +643,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
         default:
             throw new IllegalArgumentException(String.format("Unknown operator: %s", operator));
         }
-        Document filter = new Document(converter.keyToBson(key1), value1);
-        filter.put(converter.keyToBson(key2), comparatorAndValue);
+        Document filter = new Document();
+        converter.putToBson(filter, key1, value1);
+        converter.putToBson(filter, key2, comparatorAndValue);
         addIgnoredIds(filter, ignored);
         return findAll(filter);
     }
@@ -523,7 +657,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys, int limit) {
-        Bson filter = Filters.eq(KEY_ANCESTOR_IDS, rootId);
+        Bson filter = converter.filterEq(KEY_ANCESTOR_IDS, rootId);
         Document fields = new Document();
         if (useCustomId) {
             fields.put(MONGODB_ID, ZERO);
@@ -535,7 +669,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public boolean queryKeyValuePresence(String key, String value, Set<String> ignored) {
-        Document filter = new Document(converter.keyToBson(key), value);
+        Document filter = new Document();
+        converter.putToBson(filter, key, value);
         addIgnoredIds(filter, ignored);
         return exists(filter);
     }
@@ -598,10 +733,10 @@ public class MongoDBRepository extends DBSRepositoryBase {
         boolean completedAbruptly = true;
         MongoCursor<Document> cursor = coll.find(filter).limit(limit).projection(projection).iterator();
         try {
-            Set<String> seen = new HashSet<>();
+            Set<Object> seen = new HashSet<>();
             Stream<State> stream = StreamSupport.stream(Spliterators.spliteratorUnknownSize(cursor, 0), false) //
                                                 .onClose(cursor::close)
-                                                .filter(doc -> seen.add(doc.getString(idKey)))
+                                                .filter(doc -> seen.add(doc.get(idKey)))
                                                 // MongoDB cursors may return the same
                                                 // object several times
                                                 .map(converter::bsonToState);
@@ -727,7 +862,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected void addPrincipals(Document query, Set<String> principals) {
         if (principals != null) {
             Document inPrincipals = new Document(QueryOperators.IN, new ArrayList<>(principals));
-            query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
+            query.put(KEY_READ_ACL, inPrincipals);
         }
     }
 
@@ -806,7 +941,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
         if (log.isTraceEnabled()) {
             logQuery(id, LOCK_FIELDS);
         }
-        Document res = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
+        Document res = coll.find(converter.filterEq(KEY_ID, id)).projection(LOCK_FIELDS).first();
         if (res == null) {
             // document not found
             throw new DocumentNotFoundException(id);
@@ -816,19 +951,19 @@ public class MongoDBRepository extends DBSRepositoryBase {
             // not locked
             return null;
         }
-        Calendar created = (Calendar) converter.scalarToSerializable(res.get(KEY_LOCK_CREATED));
+        Calendar created = (Calendar) converter.bsonToSerializable(KEY_LOCK_CREATED, res.get(KEY_LOCK_CREATED));
         return new Lock(owner, created);
     }
 
     @Override
     public Lock setLock(String id, Lock lock) {
         Bson filter = Filters.and( //
-                Filters.eq(idKey, id), //
+                converter.filterEq(KEY_ID, id),
                 Filters.exists(KEY_LOCK_OWNER, false) // select doc if no lock is set
         );
         Bson setLock = Updates.combine( //
                 Updates.set(KEY_LOCK_OWNER, lock.getOwner()), //
-                Updates.set(KEY_LOCK_CREATED, converter.serializableToBson(lock.getCreated())) //
+                Updates.set(KEY_LOCK_CREATED, converter.serializableToBson(KEY_LOCK_CREATED, lock.getCreated())) //
         );
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: FINDANDMODIFY " + filter + " UPDATE " + setLock);
@@ -843,13 +978,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
             if (log.isTraceEnabled()) {
                 logQuery(id, LOCK_FIELDS);
             }
-            Document old = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
+            Document old = coll.find(converter.filterEq(KEY_ID, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
                 throw new DocumentNotFoundException(id);
             }
             String oldOwner = (String) old.get(KEY_LOCK_OWNER);
-            Calendar oldCreated = (Calendar) converter.scalarToSerializable(old.get(KEY_LOCK_CREATED));
+            Calendar oldCreated = (Calendar) converter.bsonToSerializable(KEY_LOCK_CREATED, old.get(KEY_LOCK_CREATED));
             if (oldOwner != null) {
                 return new Lock(oldOwner, oldCreated);
             }
@@ -861,7 +996,8 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     @Override
     public Lock removeLock(String id, String owner) {
-        Document filter = new Document(idKey, id);
+        Document filter = new Document();
+        converter.putToBson(filter, KEY_ID, id);
         if (owner != null) {
             // remove if owner matches or null
             // implements LockManager.canLockBeRemoved inside MongoDB
@@ -881,7 +1017,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
                 return null;
             } else {
                 // return previous lock
-                Calendar oldCreated = (Calendar) converter.scalarToSerializable(old.get(KEY_LOCK_CREATED));
+                Calendar oldCreated = (Calendar) converter.bsonToSerializable(KEY_LOCK_CREATED, old.get(KEY_LOCK_CREATED));
                 return new Lock(oldOwner, oldCreated);
             }
         } else {
@@ -890,13 +1026,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
             if (log.isTraceEnabled()) {
                 logQuery(id, LOCK_FIELDS);
             }
-            old = coll.find(Filters.eq(idKey, id)).projection(LOCK_FIELDS).first();
+            old = coll.find(converter.filterEq(KEY_ID, id)).projection(LOCK_FIELDS).first();
             if (old == null) {
                 // document not found
                 throw new DocumentNotFoundException(id);
             }
             String oldOwner = (String) old.get(KEY_LOCK_OWNER);
-            Calendar oldCreated = (Calendar) converter.scalarToSerializable(old.get(KEY_LOCK_CREATED));
+            Calendar oldCreated = (Calendar) converter.bsonToSerializable(KEY_LOCK_CREATED, old.get(KEY_LOCK_CREATED));
             if (oldOwner != null) {
                 if (!LockManager.canLockBeRemoved(oldOwner, owner)) {
                     // existing mismatched lock, flag failure
