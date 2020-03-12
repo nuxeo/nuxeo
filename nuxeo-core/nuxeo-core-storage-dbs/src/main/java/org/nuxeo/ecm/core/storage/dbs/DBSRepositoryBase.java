@@ -102,6 +102,12 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         uuid,
         /** Integer sequence maintained by the database. */
         sequence,
+        /**
+         * Integer sequence maintained by the database, in a pseudo-random order, as hex.
+         *
+         * @since 11.1
+         */
+        sequenceHexRandomized,
     }
 
     /** @since 8.3 */
@@ -134,7 +140,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         try {
             idType = IdType.valueOf(idt);
             if (!allowed.contains(idType)) {
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Invalid id type: " + idt);
             }
         } catch (IllegalArgumentException e) {
             throw new NuxeoException("Unknown id type: " + idt + ", allowed: " + allowed);
@@ -309,6 +315,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             return UUID_ZERO;
         case sequence:
             return "0";
+        case sequenceHexRandomized:
+            return "0000000000000000";
         default:
             throw new UnsupportedOperationException();
         }

@@ -561,7 +561,7 @@ public class MongoDBSession extends BaseSession {
             }
             String key = field.getName().getPrefixedName();
             String queryField = stripElemMatchPrefix(key);
-            return new FieldInfo(name, queryField, key, field.getType(), false);
+            return new FieldInfo(name, key, queryField, queryField, field.getType());
         }
 
         protected Document walkOrderBy(OrderByList orderByList) {

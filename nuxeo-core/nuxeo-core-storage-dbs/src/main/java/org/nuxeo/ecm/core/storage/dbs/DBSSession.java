@@ -2169,6 +2169,37 @@ public class DBSSession implements Session<QueryFilter> {
         return null;
     }
 
+    /**
+     * Keys for boolean values that are stored as true or null (never false).
+     *
+     * @since 11.1
+     */
+    public static final Set<String> TRUE_OR_NULL_BOOLEAN_KEYS = new HashSet<>(Arrays.asList( //
+            KEY_IS_VERSION, //
+            KEY_IS_CHECKED_IN, //
+            KEY_IS_LATEST_VERSION, //
+            KEY_IS_LATEST_MAJOR_VERSION, //
+            KEY_IS_PROXY, //
+            KEY_IS_TRASHED, //
+            KEY_IS_RECORD, //
+            KEY_HAS_LEGAL_HOLD));
+
+    /**
+     * Keys for values that are ids.
+     *
+     * @since 11.1
+     */
+    public static final Set<String> ID_VALUES_KEYS = new HashSet<>(Arrays.asList( //
+            KEY_ID, //
+            KEY_PARENT_ID, //
+            KEY_ANCESTOR_IDS, //
+            KEY_VERSION_SERIES_ID, //
+            KEY_BASE_VERSION_ID, //
+            KEY_PROXY_TARGET_ID, //
+            KEY_PROXY_IDS, //
+            KEY_PROXY_VERSION_SERIES_ID, //
+            KEY_FULLTEXT_JOBID));
+
     @Override
     public LockManager getLockManager() {
         return repository.getLockManager();
