@@ -24,6 +24,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElseGet;
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_FROM;
 import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_PREFIX;
 import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_FROM;
 import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_SMTP_HOST;
@@ -33,7 +34,6 @@ import static org.nuxeo.mail.MailConstants.DEFAULT_MAIL_JNDI_NAME;
 import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_HOST;
 import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PORT;
 import static org.nuxeo.mail.MailConstants.NUXEO_CONFIGURATION_MAIL_TRANSPORT_PROTOCOL;
-import static org.nuxeo.mail.MailConstants.CONFIGURATION_MAIL_FROM;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -192,7 +192,7 @@ public class SmtpMailServerFeature implements RunnerFeature {
 
     /**
      * Removes the added properties during mail processing.
-     * 
+     *
      * @since 11.1
      */
     protected void clear() {
@@ -206,7 +206,7 @@ public class SmtpMailServerFeature implements RunnerFeature {
 
     /**
      * Try to find a free port on which a socket will listening.
-     * 
+     *
      * @return a free port number if any
      * @throws NuxeoException if we cannot find a free port
      * @since 11.1
@@ -290,7 +290,7 @@ public class SmtpMailServerFeature implements RunnerFeature {
 
     /**
      * Adapter of the {@link SmtpMessage}.
-     * 
+     *
      * @since 11.1
      */
     public static class MailMessage {
