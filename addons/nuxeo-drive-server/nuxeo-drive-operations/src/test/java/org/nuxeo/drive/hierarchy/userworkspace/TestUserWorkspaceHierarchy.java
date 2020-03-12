@@ -301,7 +301,8 @@ public class TestUserWorkspaceHierarchy {
         // Check top level folder: "Nuxeo Drive"
         // ---------------------------------------------
         UserWorkspaceTopLevelFolderItem topLevelFolder = clientSession1.newRequest(NuxeoDriveGetTopLevelFolder.ID) //
-                .executeReturning(UserWorkspaceTopLevelFolderItem.class);
+                                                                       .executeReturning(
+                                                                               UserWorkspaceTopLevelFolderItem.class);
         assertNotNull(topLevelFolder);
         assertEquals(userWorkspace1ItemId, topLevelFolder.getId());
         assertNull(topLevelFolder.getParentId());
@@ -358,8 +359,8 @@ public class TestUserWorkspaceHierarchy {
 
         // Get children
         List<DefaultSyncRootFolderItem> syncRoots = clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                .set("id", syncRootParent.getId())
-                .executeReturning(LIST_DEFAULT_SYNC_ROOT_FOLDER_ITEM);
+                                                                  .set("id", syncRootParent.getId())
+                                                                  .executeReturning(LIST_DEFAULT_SYNC_ROOT_FOLDER_ITEM);
         assertNotNull(syncRoots);
         assertEquals(2, syncRoots.size());
         Collections.sort(syncRoots);
