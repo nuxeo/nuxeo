@@ -25,7 +25,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public enum EDGE_TYPE {
 
-    DEFAULT(0, false), CONTAINS(1, true), REFERENCES(2, true), REQUIRES(3, true);
+    UNDEFINED(-1, false), CONTAINS(1, true), REQUIRES(2, true), SOFT_REQUIRES(50, false), REFERENCES(100, false);
 
     private int index;
 
@@ -57,7 +57,7 @@ public enum EDGE_TYPE {
                 return etype;
             }
         }
-        return null;
+        return UNDEFINED;
     }
 
 }

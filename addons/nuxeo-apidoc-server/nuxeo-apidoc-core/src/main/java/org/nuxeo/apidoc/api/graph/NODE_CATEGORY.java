@@ -52,7 +52,7 @@ public enum NODE_CATEGORY {
         return cat;
     }
 
-    public static NODE_CATEGORY guessCategory(String id) {
+    public static NODE_CATEGORY guess(String id) {
         return guessCategory(id, PLATFORM);
     }
 

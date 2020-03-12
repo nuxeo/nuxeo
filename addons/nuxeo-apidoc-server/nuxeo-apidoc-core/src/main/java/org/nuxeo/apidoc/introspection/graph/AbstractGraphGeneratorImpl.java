@@ -91,7 +91,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
     }
 
     protected EditableGraph getDefaultGraph(DistributionSnapshot distribution) {
-        GraphImpl graph = (GraphImpl) createDefaultGraph();
+        EditableGraph graph = createDefaultGraph();
 
         // introspect the graph, ignore bundle groups but select:
         // - bundles
@@ -100,20 +100,17 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         // - services
         // - contributions
         Map<String, Integer> hits = new HashMap<>();
-        List<String> children = new ArrayList<>();
 
         for (String bid : distribution.getBundleIds()) {
             BundleInfo bundle = distribution.getBundle(bid);
             NODE_CATEGORY cat = NODE_CATEGORY.guessCategory(bundle);
-            Node bundleNode = processBundle(distribution, graph, hits, children, bundle, cat);
+            Node bundleNode = processBundle(distribution, graph, hits, bundle, cat);
             // compute sub components
             List<ComponentInfo> components = bundle.getComponents();
             for (ComponentInfo component : components) {
-                processComponent(distribution, graph, hits, children, bundleNode, cat, component, true, true, true);
+                processComponent(distribution, graph, hits, bundleNode, cat, component, true, true, true);
             }
         }
-
-        processBundlesRoot(distribution, graph, hits, children);
 
         refine(graph, hits);
 
@@ -121,26 +118,28 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
     }
 
     protected Node processBundle(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
-            List<String> children, BundleInfo bundle, NODE_CATEGORY cat) {
+            BundleInfo bundle, NODE_CATEGORY cat) {
         Node bundleNode = createBundleNode(bundle, cat);
         graph.addNode(bundleNode);
         // compute requirements
         for (String requirement : bundle.getRequirements()) {
-            addEdge(graph, hits, createEdge(bundleNode, createNode(prefixId(BundleInfo.TYPE_NAME, requirement)),
+            addEdge(graph, hits, createEdge(bundleNode, createNode(NODE_TYPE.BUNDLE.prefix(requirement)),
                     EDGE_TYPE.REQUIRES.name()));
         }
         if (bundle.getRequirements().isEmpty()) {
-            children.add(bundle.getId());
+            requireBundleRootNode(graph, hits, bundleNode);
         }
         return bundleNode;
     }
 
     protected Node processComponent(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
-            List<String> children, Node bundleNode, NODE_CATEGORY category, ComponentInfo component,
-            boolean processServices, boolean processExtensionPoints, boolean processExtensions) {
+            Node bundleNode, NODE_CATEGORY category, ComponentInfo component, boolean processServices,
+            boolean processExtensionPoints, boolean processExtensions) {
         Node compNode = createComponentNode(component, category);
         graph.addNode(compNode);
-        addEdge(graph, hits, createEdge(bundleNode, compNode, EDGE_TYPE.CONTAINS.name()));
+        // do not influence the bundle weight based on its contributions as the layout will take them into account to
+        // generate the "ground" bundles graph layout: hits map is ignored here
+        addEdge(graph, null, createEdge(bundleNode, compNode, EDGE_TYPE.CONTAINS.name()));
         if (processServices) {
             for (ServiceInfo service : component.getServices()) {
                 if (service.isOverriden()) {
@@ -180,53 +179,51 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
                 // also add link to target extension point, "guessing" the extension point id, not counting for
                 // hits
-                String targetId = prefixId(ComponentInfo.TYPE_NAME,
-                        contribution.getTargetComponentName().getName() + "--" + contribution.getExtensionPoint());
+                String targetId = NODE_TYPE.EXTENSION_POINT.prefix(contribution.getExtensionPoint());
                 addEdge(graph, null, createEdge(createNode(targetId), contNode, EDGE_TYPE.REFERENCES.name()));
 
-                // compute requirements
-                for (String requirement : component.getRequirements()) {
-                    addEdge(graph, hits, createEdge(compNode,
-                            createNode(prefixId(ComponentInfo.TYPE_NAME, requirement)), EDGE_TYPE.REQUIRES.name()));
-                }
             }
+        }
+
+        // compute requirements
+        for (String requirement : component.getRequirements()) {
+            addEdge(graph, hits, createEdge(compNode, createNode(NODE_TYPE.COMPONENT.prefix(requirement)),
+                    EDGE_TYPE.SOFT_REQUIRES.name()));
         }
 
         return compNode;
     }
 
-    /**
-     * Adda common root for all roots in the bundle graph, as it is supposed to be a directed tree without cycles.
-     */
-    protected void processBundlesRoot(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
-            List<String> children) {
-        List<Node> roots = new ArrayList<>();
-        for (Node node : graph.getNodes()) {
-            if (!children.contains(node.getId())) {
-                roots.add(node);
-            }
-        }
-        if (roots.size() > 1) {
-            // add a common root for all roots
-            String pbid = prefixId(BundleInfo.TYPE_NAME, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE);
-            Node bundleNode = createNode(pbid, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE, 0, "", NODE_TYPE.BUNDLE.name(),
-                    NODE_CATEGORY.RUNTIME.name());
-            graph.addNode(bundleNode);
-            for (Node root : roots) {
-                addEdge(graph, hits, createEdge(root, bundleNode, EDGE_TYPE.REQUIRES.name()));
-            }
-        }
+    protected String getBundleRootId() {
+        return NODE_TYPE.BUNDLE.prefix(BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE);
+    }
 
+    protected void requireBundleRootNode(EditableGraph graph, Map<String, Integer> hits, Node bundleNode) {
+        // make it require the root node, unless we're handling the root itself
+        String rootId = getBundleRootId();
+        if (!rootId.equals(bundleNode.getId())) {
+            addEdge(graph, hits, createEdge(bundleNode, createNode(rootId), EDGE_TYPE.REQUIRES.name()));
+        }
     }
 
     /**
      * Refines graphs for display.
      * <ul>
+     * <li>Adds potentially missing bundle root
      * <li>Adds potentially missing nodes referenced in edges
      * <li>sets weights computed from hits map
      */
     protected void refine(EditableGraph graph, Map<String, Integer> hits) {
+        // handle missing root
+        String rrId = getBundleRootId();
+        Node rrNode = graph.getNode(rrId);
+        if (rrNode == null) {
+            rrNode = createNode(rrId, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE, 0, "", NODE_TYPE.BUNDLE.name(),
+                    NODE_CATEGORY.RUNTIME.name());
+            graph.addNode(rrNode);
+        }
         // handle missing references
+        List<Node> orphans = new ArrayList<Node>();
         for (Edge edge : graph.getEdges()) {
             Node source = graph.getNode(edge.getSource());
             if (source == null) {
@@ -235,7 +232,15 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
             Node target = graph.getNode(edge.getTarget());
             if (target == null) {
                 target = addMissingNode(graph, edge.getTarget(), 1);
+                if (NODE_TYPE.BUNDLE.name().equals(target.getType())
+                        && EDGE_TYPE.REQUIRES.name().equals(edge.getValue())) {
+                    orphans.add(target);
+                }
             }
+        }
+        // handle orphan bundles
+        for (Node orphan : orphans) {
+            requireBundleRootNode(graph, hits, orphan);
         }
         // handle weights
         if (hits == null) {
@@ -252,30 +257,13 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
     }
 
-    protected Node addMissingNode(EditableGraph graph, String originalId, int weight) {
-        // try to guess category
-        // try to guess type according to prefix
-        String originalIdParsed = originalId;
-        String type = null;
+    protected Node addMissingNode(EditableGraph graph, String id, int weight) {
+        // try to guess category and type according to prefix
         NODE_CATEGORY cat = NODE_CATEGORY.PLATFORM;
-        if (originalId.startsWith(BundleInfo.TYPE_NAME)) {
-            type = NODE_TYPE.BUNDLE.name();
-            originalIdParsed = originalId.substring(BundleInfo.TYPE_NAME.length() + 1);
-        } else if (originalId.startsWith(ComponentInfo.TYPE_NAME)) {
-            type = NODE_TYPE.COMPONENT.name();
-            originalIdParsed = originalId.substring(ComponentInfo.TYPE_NAME.length() + 1);
-        } else if (originalId.startsWith(ExtensionPointInfo.TYPE_NAME)) {
-            type = NODE_TYPE.EXTENSION_POINT.name();
-            originalIdParsed = originalId.substring(ExtensionPointInfo.TYPE_NAME.length() + 1);
-        } else if (originalId.startsWith(ServiceInfo.TYPE_NAME)) {
-            type = NODE_TYPE.SERVICE.name();
-            originalIdParsed = originalId.substring(ServiceInfo.TYPE_NAME.length() + 1);
-        } else if (originalId.startsWith(ExtensionInfo.TYPE_NAME)) {
-            type = NODE_TYPE.CONTRIBUTION.name();
-            originalIdParsed = originalId.substring(ExtensionInfo.TYPE_NAME.length() + 1);
-        }
-        cat = NODE_CATEGORY.guessCategory(originalIdParsed);
-        Node node = createNode(originalId, originalIdParsed, 0, "", type, cat.name());
+        NODE_TYPE type = NODE_TYPE.guess(id);
+        String unprefixedId = type.unprefix(id);
+        cat = NODE_CATEGORY.guess(unprefixedId);
+        Node node = createNode(id, unprefixedId, 0, "", type.name(), cat.name());
         node.setWeight(weight);
         graph.addNode(node);
         return node;
@@ -291,31 +279,31 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
 
     protected Node createBundleNode(BundleInfo bundle, NODE_CATEGORY cat) {
         String bid = bundle.getId();
-        String pbid = prefixId(BundleInfo.TYPE_NAME, bid);
+        String pbid = NODE_TYPE.BUNDLE.prefix(bid);
         return createNode(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name());
     }
 
     protected Node createComponentNode(ComponentInfo component, NODE_CATEGORY cat) {
         String compid = component.getId();
-        String pcompid = prefixId(ComponentInfo.TYPE_NAME, compid);
+        String pcompid = NODE_TYPE.COMPONENT.prefix(compid);
         return createNode(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(), cat.name());
     }
 
     protected Node createServiceNode(ServiceInfo service, NODE_CATEGORY cat) {
         String sid = service.getId();
-        String psid = prefixId(ServiceInfo.TYPE_NAME, sid);
+        String psid = NODE_TYPE.SERVICE.prefix(sid);
         return createNode(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(), cat.name());
     }
 
     protected Node createXPNode(ExtensionPointInfo xp, NODE_CATEGORY cat) {
         String xpid = xp.getId();
-        String pxpid = prefixId(ExtensionPointInfo.TYPE_NAME, xpid);
+        String pxpid = NODE_TYPE.EXTENSION_POINT.prefix(xpid);
         return createNode(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(), cat.name());
     }
 
     protected Node createContributionNode(ExtensionInfo contribution, NODE_CATEGORY cat) {
         String cid = contribution.getId();
-        String pcid = prefixId(ExtensionInfo.TYPE_NAME, cid);
+        String pcid = NODE_TYPE.CONTRIBUTION.prefix(cid);
         return createNode(pcid, cid, 0, contribution.getHierarchyPath(), NODE_TYPE.CONTRIBUTION.name(), cat.name());
     }
 
@@ -344,13 +332,6 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         if (node != null) {
             node.setWeight(hit);
         }
-    }
-
-    /**
-     * Prefix all ids assuming each id is unique within a given type, to avoid potential collisions.
-     */
-    protected String prefixId(String prefix, String id) {
-        return prefix + "-" + id;
     }
 
 }

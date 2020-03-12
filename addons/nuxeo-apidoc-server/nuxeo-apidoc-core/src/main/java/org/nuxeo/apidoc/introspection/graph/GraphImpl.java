@@ -180,7 +180,7 @@ public class GraphImpl extends BaseNuxeoArtifact implements EditableGraph {
         g.setDescription(getDescription());
         g.setType(getType());
         for (Node node : getNodes()) {
-            if (nodeFilter != null && nodeFilter.accept(node)) {
+            if (nodeFilter == null || nodeFilter.accept(node)) {
                 g.addNode(node.copy());
             }
         }

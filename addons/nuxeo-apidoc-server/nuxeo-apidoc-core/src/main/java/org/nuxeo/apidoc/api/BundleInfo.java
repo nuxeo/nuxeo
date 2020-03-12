@@ -62,7 +62,7 @@ public interface BundleInfo extends NuxeoArtifact {
      *
      * @since 11.1
      */
-    String RUNTIME_ROOT_PSEUDO_BUNDLE = "org.nuxeo.runtime.root";
+    String RUNTIME_ROOT_PSEUDO_BUNDLE = "org.nuxeo.runtime";
 
     @JsonIgnore
     List<ComponentInfo> getComponents();

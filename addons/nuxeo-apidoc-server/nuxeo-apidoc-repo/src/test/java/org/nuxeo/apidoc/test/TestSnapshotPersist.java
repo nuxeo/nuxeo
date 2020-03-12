@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -59,6 +60,8 @@ import com.google.common.base.Charsets;
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeSnaphotFeature.class })
 public class TestSnapshotPersist {
+
+    public static final boolean UPDATE_LOCAL_FILES = true;
 
     @Inject
     protected CoreSession session;
@@ -173,10 +176,14 @@ public class TestSnapshotPersist {
         List<Graph> persistentGraphs = persistent.getGraphs();
         LinkedHashMap<String, Boolean> refs = new LinkedHashMap<>();
         // boolean indicates if exact math can be done (not possible when layouting)
-        refs.put("basic_graph.json", Boolean.TRUE);
-        refs.put("jgrapht.dot", Boolean.TRUE);
+        refs.put("basic_graph.json", Boolean.FALSE);
+        refs.put("jgrapht.dot", Boolean.FALSE);
         refs.put("gephi.json", Boolean.FALSE);
-        refs.put("bundle_graph.json", Boolean.FALSE);
+        refs.put("gephi_bundles.json", Boolean.FALSE);
+        refs.put("gephi_xp.json", Boolean.FALSE);
+        // refs.put("gephi_oo.json", Boolean.FALSE);
+        // refs.put("gephi_oo_bundles.json", Boolean.FALSE);
+        // refs.put("gephi_ff.json", Boolean.FALSE);
 
         assertEquals(runtimeGraphs.size(), persistentGraphs.size());
         assertEquals(runtimeGraphs.size(), refs.size());
@@ -187,6 +194,20 @@ public class TestSnapshotPersist {
             if (checkContent) {
                 checkContentEquals(getReferenceFileContent(fileId), graph.getBlob().getString(),
                         String.format("File '%s' content differs: ", fileId));
+            } else {
+                // copy content locally to ease up updates
+                if (UPDATE_LOCAL_FILES) {
+                    // ugly hack to get the actual resource file path
+                    // bin/* are for Eclipse, and target/classes* for
+                    // IntelliJ
+                    String filePath = getExpectedFilePath(fileId);
+                    String resourcePath = filePath.replace("bin/test", "src/test/resources")
+                                                  .replace("bin/main", "src/main/resources")
+                                                  .replace("target/test-classes", "src/test/resources")
+                                                  .replace("target/classes", "src/main/resources");
+                    org.apache.commons.io.FileUtils.copyInputStreamToFile(
+                            new ByteArrayInputStream(graph.getBlob().getString().getBytes()), new File(resourcePath));
+                }
             }
             checkContentEquals(persistentGraphs.get(i).getBlob().getString(), graph.getBlob().getString(), null);
             i++;
@@ -207,13 +228,16 @@ public class TestSnapshotPersist {
         tempFile.delete();
     }
 
-    public static void checkFileEquals(String expectedPath, String actualPath) throws IOException {
+    public static String getExpectedFilePath(String expectedPath) {
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(expectedPath);
         if (fileUrl == null) {
             throw new IllegalStateException("File not found: " + expectedPath);
         }
-        String filePath = FileUtils.getFilePathFromUrl(fileUrl);
+        return FileUtils.getFilePathFromUrl(fileUrl);
+    }
 
+    public static void checkFileEquals(String expectedPath, String actualPath) throws IOException {
+        String filePath = getExpectedFilePath(expectedPath);
         String expectedString = org.apache.commons.io.FileUtils.readFileToString(new File(filePath), Charsets.UTF_8)
                                                                .trim();
         String actualString = org.apache.commons.io.FileUtils.readFileToString(new File(actualPath), Charsets.UTF_8)
@@ -223,12 +247,7 @@ public class TestSnapshotPersist {
     }
 
     public static String getReferenceFileContent(String expectedPath) throws IOException {
-        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(expectedPath);
-        if (fileUrl == null) {
-            throw new IllegalStateException("File not found: " + expectedPath);
-        }
-        String filePath = FileUtils.getFilePathFromUrl(fileUrl);
-
+        String filePath = getExpectedFilePath(expectedPath);
         String expectedString = org.apache.commons.io.FileUtils.readFileToString(new File(filePath), Charsets.UTF_8)
                                                                .trim();
         return expectedString;
