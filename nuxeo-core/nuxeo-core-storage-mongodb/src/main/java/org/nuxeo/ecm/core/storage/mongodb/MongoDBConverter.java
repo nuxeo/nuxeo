@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.mongodb;
 
+import static java.lang.Boolean.FALSE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_EACH;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
@@ -32,17 +33,22 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
+
+import com.mongodb.client.model.Filters;
 
 /**
  * Converts between MongoDB types (bson) and DBS types (diff, state, list, serializable).
@@ -57,22 +63,35 @@ public class MongoDBConverter {
     /** The key to use in memory to map the database native "_id". */
     protected final String idKey;
 
+    /** The keys for booleans whose value is true or null (instead of false). */
+    protected final Set<String> trueOrNullBooleanKeys;
+
+    /** The keys whose values are ids and are stored as longs. */
+    protected final Set<String> idValuesKeys;
+
     /**
      * Constructor for a converter that does not map the MongoDB native "_id".
      *
      * @since 10.3
      */
     public MongoDBConverter() {
-        this(null);
+        this(null, Set.of(), Set.of());
     }
 
     /**
      * Constructor for a converter that also knows to optionally translate the native MongoDB "_id" into a custom id.
+     * <p>
+     * When {@code idValuesKeys} are provided, the ids are stored as longs.
      *
      * @param idKey the key to use to map the native "_id" in memory, if not {@code null}
+     * @param trueOrNullBooleanKeys the keys corresponding to boolean values that are only true or null (instead of
+     *            false)
+     * @param idValuesKeys the keys corresponding to values that are ids
      */
-    public MongoDBConverter(String idKey) {
+    public MongoDBConverter(String idKey, Set<String> trueOrNullBooleanKeys, Set<String> idValuesKeys) {
         this.idKey = idKey;
+        this.trueOrNullBooleanKeys = trueOrNullBooleanKeys;
+        this.idValuesKeys = idValuesKeys;
     }
 
     /**
@@ -85,6 +104,10 @@ public class MongoDBConverter {
         return updateBuilder.build(diff);
     }
 
+    public void putToBson(Document doc, String key, Object value) {
+        doc.put(keyToBson(key), valueToBson(key, value));
+    }
+
     public String keyToBson(String key) {
         if (idKey == null) {
             return key;
@@ -93,37 +116,49 @@ public class MongoDBConverter {
         }
     }
 
-    public Object valueToBson(Object value) {
+    public Object valueToBson(String key, Object value) {
         if (value instanceof State) {
             return stateToBson((State) value);
         } else if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> values = (List<Object>) value;
-            return listToBson(values);
+            return listToBson(key, values);
         } else if (value instanceof Object[]) {
-            return listToBson(Arrays.asList((Object[]) value));
+            return listToBson(key, Arrays.asList((Object[]) value));
         } else {
-            return serializableToBson(value);
+            return serializableToBson(key, value);
         }
     }
 
     public Document stateToBson(State state) {
         Document doc = new Document();
         for (Entry<String, Serializable> en : state.entrySet()) {
-            Object val = valueToBson(en.getValue());
-            if (val != null) {
-                doc.put(keyToBson(en.getKey()), val);
+            Serializable value = en.getValue();
+            if (value != null) {
+                putToBson(doc, en.getKey(), value);
             }
         }
         return doc;
     }
 
-    public List<Object> listToBson(List<Object> values) {
+    public <T> List<Object> listToBson(String key, Collection<T> values) {
         ArrayList<Object> objects = new ArrayList<>(values.size());
-        for (Object value : values) {
-            objects.add(valueToBson(value));
+        for (T value : values) {
+            objects.add(valueToBson(key, value));
         }
         return objects;
+    }
+
+    public Bson filterEq(String key, Object value) {
+        return Filters.eq(keyToBson(key), valueToBson(key, value));
+    }
+
+    public <T> Bson filterIn(String key, Collection<T> values) {
+        return Filters.in(keyToBson(key), listToBson(key, values));
+    }
+
+    public Serializable getFromBson(Document doc, String bsonKey, String key) {
+        return bsonToValue(key, doc.get(bsonKey));
     }
 
     public String bsonToKey(String key) {
@@ -139,17 +174,18 @@ public class MongoDBConverter {
             return null;
         }
         State state = new State(doc.keySet().size());
-        for (String key : doc.keySet()) {
-            if (idKey == null && MONGODB_ID.equals(key)) {
+        for (String bsonKey : doc.keySet()) {
+            if (idKey == null && MONGODB_ID.equals(bsonKey)) {
                 // skip native id if it's not mapped to something
                 continue;
             }
-            state.put(bsonToKey(key), bsonToValue(doc.get(key)));
+            String key = bsonToKey(bsonKey);
+            state.put(key, getFromBson(doc, bsonKey, key));
         }
         return state;
     }
 
-    public Serializable bsonToValue(Object value) {
+    public Serializable bsonToValue(String key, Object value) {
         if (value instanceof List) {
             @SuppressWarnings("unchecked")
             List<Object> list = (List<Object>) value;
@@ -159,7 +195,7 @@ public class MongoDBConverter {
                 Class<?> klass = Object.class;
                 for (Object o : list) {
                     if (o != null) {
-                        klass = scalarToSerializableClass(o.getClass());
+                        klass = bsonToSerializableClass(key, o.getClass());
                         break;
                     }
                 }
@@ -174,7 +210,7 @@ public class MongoDBConverter {
                     Object[] ar = (Object[]) Array.newInstance(klass, list.size());
                     int i = 0;
                     for (Object el : list) {
-                        ar[i++] = scalarToSerializable(el);
+                        ar[i++] = bsonToSerializable(key, el);
                     }
                     return ar;
                 }
@@ -182,33 +218,84 @@ public class MongoDBConverter {
         } else if (value instanceof Document) {
             return bsonToState((Document) value);
         } else {
-            return scalarToSerializable(value);
+            return bsonToSerializable(key, value);
         }
     }
 
-    public Object serializableToBson(Object value) {
+    protected boolean valueIsId(String key) {
+        return key != null && idValuesKeys.contains(key);
+    }
+
+    public Object serializableToBson(String key, Object value) {
         if (value instanceof Calendar) {
             return ((Calendar) value).getTime();
+        }
+        if (valueIsId(key)) {
+            return idToBson(value);
+        }
+        if (FALSE.equals(value) && key != null && trueOrNullBooleanKeys.contains(key)) {
+            return null;
         }
         return value;
     }
 
-    public Serializable scalarToSerializable(Object val) {
+    public Serializable bsonToSerializable(String key, Object val) {
         if (val instanceof Date) {
             Calendar cal = Calendar.getInstance();
             cal.setTime((Date) val);
             return cal;
         }
+        if (valueIsId(key)) {
+            return bsonToId(val);
+        }
         return (Serializable) val;
     }
 
-    public Class<?> scalarToSerializableClass(Class<?> klass) {
+    public Class<?> bsonToSerializableClass(String key, Class<?> klass) {
         if (Date.class.isAssignableFrom(klass)) {
             return Calendar.class;
+        }
+        if (valueIsId(key)) {
+            return String.class;
         }
         return klass;
     }
 
+    // exactly 16 chars in lowercase hex
+    protected static final Pattern HEX_RE = Pattern.compile("[0-9a-f]{16}");
+
+    // convert hex id to long
+    protected Object idToBson(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            String string = (String) value;
+            if (!HEX_RE.matcher(string).matches()) {
+                throw new NumberFormatException(string);
+            }
+            return Long.parseUnsignedLong(string, 16);
+        } catch (ClassCastException | NumberFormatException e) {
+            return "__invalid_id__" + value;
+        }
+    }
+
+    // convert long to hex id
+    protected String bsonToId(Object val) {
+        if (val == null) {
+            return null;
+        }
+        try {
+            String hex = Long.toHexString((Long) val);
+            int nz = 16 - hex.length();
+            if (nz > 0) {
+                hex = "0".repeat(nz) + hex;
+            }
+            return hex;
+        } catch (ClassCastException e) {
+            return "__invalid_id__" + val;
+        }
+    }
 
     /**
      * Update list builder to prevent several updates of the same field.
@@ -283,7 +370,7 @@ public class MongoDBConverter {
                         processStateDiff((StateDiff) value, name);
                     } else if (value != NOP) {
                         // set value
-                        set.put(name, valueToBson(value));
+                        set.put(name, valueToBson(prefix, value));
                     }
                     i++;
                 }
@@ -292,9 +379,9 @@ public class MongoDBConverter {
                 Object pushed;
                 if (listDiff.rpush.size() == 1) {
                     // no need to use $each for one element
-                    pushed = valueToBson(listDiff.rpush.get(0));
+                    pushed = valueToBson(prefix, listDiff.rpush.get(0));
                 } else {
-                    pushed = new Document(MONGODB_EACH, listToBson(listDiff.rpush));
+                    pushed = new Document(MONGODB_EACH, listToBson(prefix, listDiff.rpush));
                 }
                 push.put(prefix, pushed);
             }
@@ -303,7 +390,7 @@ public class MongoDBConverter {
         protected void processDelta(Delta delta, String prefix) {
             // MongoDB can $inc a field that doesn't exist, it's treated as 0 BUT it doesn't work on null
             // so we ensure (in diffToUpdates) that we never store a null but remove the field instead
-            Object incValue = valueToBson(delta.getDeltaValue());
+            Object incValue = valueToBson(prefix, delta.getDeltaValue());
             inc.put(prefix, incValue);
         }
 
@@ -314,7 +401,7 @@ public class MongoDBConverter {
                 // because $inc does not work on nulls but works on non-existent fields
                 unset.put(name, ONE);
             } else {
-                set.put(name, valueToBson(value));
+                set.put(name, valueToBson(name, value));
             }
         }
 
@@ -324,13 +411,13 @@ public class MongoDBConverter {
             keys = new HashSet<>();
         }
 
-        protected void update(String op, String key, Object value) {
-            checkForConflict(key);
+        protected void update(String op, String bsonKey, Object val) {
+            checkForConflict(bsonKey);
             Document map = (Document) update.get(op);
             if (map == null) {
                 update.put(op, map = new Document());
             }
-            map.put(key, value);
+            map.put(bsonKey, val);
         }
 
         /**
@@ -351,7 +438,7 @@ public class MongoDBConverter {
             if (prefixKeys.contains(key)) {
                 return true;
             }
-            for (String sk: subkeys) {
+            for (String sk : subkeys) {
                 if (keys.contains(sk)) {
                     return true;
                 }
@@ -361,13 +448,14 @@ public class MongoDBConverter {
 
         /**
          * return a list of parents key
+         * <p>
          * foo.0.bar -> [foo, foo.0, foo.0.bar]
          */
         protected List<String> getPrefixKeys(String key) {
             List<String> ret = new ArrayList<>(10);
-            int i=0;
+            int i = 0;
             while ((i = key.indexOf('.', i)) > 0) {
-               ret.add(key.substring(0, i++));
+                ret.add(key.substring(0, i++));
             }
             ret.add(key);
             return ret;
