@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -126,7 +125,11 @@ public class SmtpMailServerFeature implements RunnerFeature {
         int serverPort = getFreePort();
 
         // Create the server and start it
-        server = SimpleSmtpServer.start(serverPort);
+        try {
+            server = SimpleSmtpServer.start(serverPort);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
         log.debug("Fake smtp server started on port: {}", serverPort);
 
         // backup previous Framework properties
@@ -236,8 +239,9 @@ public class SmtpMailServerFeature implements RunnerFeature {
                 return List.of();
             }
 
-            Iterable<SmtpMessage> iterable = () -> server.getReceivedEmail();
-            return StreamSupport.stream(iterable.spliterator(), false).map(this::convert).collect(Collectors.toList());
+            return StreamSupport.stream(server.getReceivedEmails().spliterator(), false)
+                                .map(this::convert)
+                                .collect(Collectors.toList());
         }
 
         public List<MailMessage> getMailsBySubject(String subject) {
@@ -265,7 +269,7 @@ public class SmtpMailServerFeature implements RunnerFeature {
         }
 
         public int getSize() {
-            return server != null ? server.getReceivedEmailSize() : 0;
+            return server != null ? server.getReceivedEmails().size() : 0;
         }
 
         protected MailMessage convert(SmtpMessage sm) {
@@ -280,8 +284,8 @@ public class SmtpMailServerFeature implements RunnerFeature {
             }
 
             return new MailMessage(sm.getHeaderValue("Message-ID"), //
-                    Arrays.asList(sm.getHeaderValues("From")), //
-                    Arrays.asList(sm.getHeaderValues("To")), //
+                    sm.getHeaderValues("From"), //
+                    sm.getHeaderValues("To"), //
                     sm.getHeaderValue("Subject"), //
                     sm.getHeaderValue("Content-Type"), //
                     sm.getBody(), date);
