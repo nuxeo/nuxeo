@@ -25,20 +25,10 @@ import org.nuxeo.apidoc.api.BundleInfo;
  */
 public enum NODE_CATEGORY {
 
-    RUNTIME("#000000"), CORE("#0000FF"), PLATFORM("#FF0000"), STUDIO("#008000");
-
-    private NODE_CATEGORY(String color) {
-        this.color = color;
-    }
-
-    private String color;
+    RUNTIME, CORE, PLATFORM, STUDIO;
 
     public String toString() {
         return name();
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public static NODE_CATEGORY guessCategory(BundleInfo bundle) {

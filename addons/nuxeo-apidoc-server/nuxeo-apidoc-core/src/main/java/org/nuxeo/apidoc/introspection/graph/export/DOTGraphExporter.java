@@ -30,7 +30,6 @@ import org.jgrapht.ext.ExportException;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.EditableGraph;
-import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
 
@@ -87,8 +86,6 @@ public class DOTGraphExporter extends AbstractGraphExporter implements GraphExpo
                     Node node = idNode.getNode();
                     map.put("weight", String.valueOf(node.getWeight()));
                     map.put("path", String.valueOf(node.getPath()));
-                    NODE_CATEGORY cat = NODE_CATEGORY.getCategory(node.getCategory(), NODE_CATEGORY.PLATFORM);
-                    map.put("color", String.valueOf(cat.getColor()));
                     map.put("category", String.valueOf(node.getCategory()));
                     map.put("type", String.valueOf(node.getType()));
                     return map;

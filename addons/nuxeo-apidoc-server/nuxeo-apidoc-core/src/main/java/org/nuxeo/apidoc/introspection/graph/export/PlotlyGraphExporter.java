@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 
 import org.nuxeo.apidoc.api.graph.Edge;
 import org.nuxeo.apidoc.api.graph.EditableGraph;
-import org.nuxeo.apidoc.api.graph.NODE_CATEGORY;
 import org.nuxeo.apidoc.api.graph.Node;
 import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
 import org.nuxeo.apidoc.introspection.graph.EdgeImpl;
@@ -108,8 +107,6 @@ public class PlotlyGraphExporter extends JsonGraphExporter implements GraphExpor
             jgen.writeStringField("path", node.getPath());
             jgen.writeStringField("type", node.getType());
             jgen.writeStringField("category", node.getCategory());
-            NODE_CATEGORY cat = NODE_CATEGORY.getCategory(node.getCategory(), NODE_CATEGORY.PLATFORM);
-            jgen.writeStringField("color", cat.getColor());
             if (node instanceof PositionedNodeImpl) {
                 PositionedNodeImpl pnode = (PositionedNodeImpl) node;
                 jgen.writeNumberField("x", pnode.getX());
