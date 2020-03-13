@@ -37,8 +37,4 @@ public class MemRepositoryDescriptor extends DBSRepositoryDescriptor {
         return (MemRepositoryDescriptor) super.clone();
     }
 
-    public void merge(MemRepositoryDescriptor other) {
-        super.merge(other);
-    }
-
 }
