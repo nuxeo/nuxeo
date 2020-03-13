@@ -108,10 +108,16 @@ public class GephiGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
         return Arrays.asList(g1, g2, g3);
     }
 
-    protected AutoLayout initLayout(EditableGraph graph) {
+    protected int getTimeoutSeconds(EditableGraph graph) {
         // Layout for 1 minute by default
         String timeout = graph.getProperty(TIMEOUT_PROP, "60");
-        return new AutoLayout(Integer.valueOf(timeout), TimeUnit.SECONDS);
+        int res = Integer.valueOf(timeout);
+        System.err.println("timeout: " + res);
+        return res;
+    }
+
+    protected AutoLayout initLayout(EditableGraph graph) {
+        return new AutoLayout(getTimeoutSeconds(graph), TimeUnit.SECONDS);
     }
 
     protected EditableGraph applyForceLayout(DistributionSnapshot distribution, EditableGraph graph,
@@ -133,7 +139,18 @@ public class GephiGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
             NODE_TYPE weightRef) {
         AutoLayout autoLayout = initLayout(graph);
         YifanHuLayout yhLayout = new YifanHuLayout(null, new StepDisplacement(1f));
-        // XXX: timeout does not apply to it :(
+        // XXX: timeout does not apply to it :( --> pattern to consider:
+        // Thread thread = new Thread(() -> {
+        // layout.execute();
+        // });
+        // thread.start();
+        // thread.join(10_000); // wait 10s for thread completion
+        // if (!layout.isCompleted()) {
+        // layout.cancel();
+        // // wait 1s for cancel to take effect
+        // thread.join(1_000);
+        // thread.interrupt(); // hopefully thread will stop
+        // }
         OpenOrdLayout ooLayout = new OpenOrdLayout(null);
         ooLayout.resetPropertiesValues();
         AutoLayout.DynamicProperty numIterationsProperty = AutoLayout.createDynamicProperty(
