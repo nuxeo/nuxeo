@@ -315,7 +315,7 @@ public class TestSQLRepositoryAPI {
 
         // remove the parent
         session.removeDocument(parent.getRef());
-        session.save();
+        transactionalFeature.nextTransaction();
 
         assertFalse(session.exists(parent.getRef()));
         assertFalse(session.exists(child.getRef()));
@@ -4117,7 +4117,7 @@ public class TestSQLRepositoryAPI {
 
         // remove the parent
         session.removeDocument(parent.getRef());
-        session.save();
+        transactionalFeature.nextTransaction();
 
         assertFalse(session.exists(parent.getRef()));
         assertFalse(session.exists(child.getRef()));
