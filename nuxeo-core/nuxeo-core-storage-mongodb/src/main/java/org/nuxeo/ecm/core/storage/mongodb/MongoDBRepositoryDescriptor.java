@@ -54,7 +54,7 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
 
     @XNode("sequenceBlockSize")
     public Integer sequenceBlockSize;
-    
+
     /** @since 11.1 **/
     @XNode("childNameUniqueConstraintEnabled")
     public Boolean childNameUniqueConstraintEnabled;
@@ -69,8 +69,13 @@ public class MongoDBRepositoryDescriptor extends DBSRepositoryDescriptor {
         return (MongoDBRepositoryDescriptor) super.clone();
     }
 
-    public void merge(MongoDBRepositoryDescriptor other) {
-        super.merge(other);
+    @Override
+    public void merge(DBSRepositoryDescriptor o) {
+        super.merge(o);
+        if (!(o instanceof MongoDBRepositoryDescriptor)) {
+            return;
+        }
+        MongoDBRepositoryDescriptor other = (MongoDBRepositoryDescriptor) o;
         if (other.server != null) {
             server = other.server;
         }
