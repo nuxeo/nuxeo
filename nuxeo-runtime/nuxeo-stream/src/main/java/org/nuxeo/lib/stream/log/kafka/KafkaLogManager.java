@@ -196,6 +196,7 @@ public class KafkaLogManager extends AbstractLogManager {
             case ProducerConfig.LINGER_MS_CONFIG:
             case ProducerConfig.MAX_BLOCK_MS_CONFIG:
             case ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG:
+            case ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG:
             case DEFAULT_REPLICATION_FACTOR_PROP:
                 // Skip non admin config properties to avoid warning on unused properties
                 break;
