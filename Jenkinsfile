@@ -282,6 +282,7 @@ pipeline {
     DOCKER_TAG = getDockerTagFrom("${VERSION}")
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
+    CONNECT_PREPROD_URL = 'https://nos-preprod-connect.nuxeocloud.com/nuxeo'
   }
 
   stages {
@@ -601,6 +602,34 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'FAILURE')
+        }
+      }
+    }
+
+    stage('Upload Nuxeo Packages') {
+      steps {
+        setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Upload Nuxeo Packages to ${CONNECT_PREPROD_URL}
+          ----------------------------------------"""
+          withCredentials([usernameColonPassword(credentialsId: 'connect-preprod', variable: 'CONNECT_PASS')]) {
+            sh """
+              PACKAGES_TO_UPLOAD="packages/nuxeo-*-package/target/nuxeo-*-package-*.zip"
+              for file in \$PACKAGES_TO_UPLOAD ; do
+                curl -i -u "$CONNECT_PASS" -F package=@\$(ls \$file) "$CONNECT_PREPROD_URL"/site/marketplace/upload?batch=true ;
+              done
+            """
+          }
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'FAILURE')
         }
       }
     }
