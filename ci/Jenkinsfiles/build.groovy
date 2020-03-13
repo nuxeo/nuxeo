@@ -266,7 +266,7 @@ pipeline {
           New version: ${VERSION}
           """
           sh """
-            mvn ${MAVEN_ARGS} -Pdocker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
+            mvn ${MAVEN_ARGS} -Pdistrib,docker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
             perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
           """
         }

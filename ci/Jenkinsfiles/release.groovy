@@ -280,7 +280,7 @@ pipeline {
           New version: ${VERSION}
           """
           sh """
-            mvn ${MAVEN_ARGS} -Pdocker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
+            mvn ${MAVEN_ARGS} -Pdistrib,docker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
             perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
             perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' nuxeo-distribution/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
           """
