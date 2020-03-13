@@ -26,6 +26,7 @@ import os
 import sys
 import traceback
 
+from collections import namedtuple
 from IndentedHelpFormatterWithNL import IndentedHelpFormatterWithNL
 from nxutils import ExitException, Repository, assert_git_config, log, system, DEFAULT_MP_CONF_URL
 from release import Release, ReleaseInfo
@@ -34,6 +35,9 @@ from terminalsize import get_terminal_size
 
 CONNECT_TEST_URL = "https://nos-preprod-connect.nuxeocloud.com/nuxeo"
 CONNECT_PROD_URL = "https://connect.nuxeo.com/nuxeo"
+
+Credentials = namedtuple("Credentials", "preprod prod")
+Credential = namedtuple("Credential", "user pwd")
 
 
 # pylint: disable=R0902
@@ -160,7 +164,8 @@ class ReleaseMP(object):
                 owner = None
                 if self.mp_config.has_option(marketplace, "owner"):
                     owner = self.mp_config.get(marketplace, "owner")
-                self.upload(CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=owner)
+                creds = ":".join(self.nos_credentials().preprod)
+                self.upload(creds, CONNECT_TEST_URL, marketplace, dryrun=dryrun, owner=owner)
         os.chdir(cwd)
 
     def release_branch(self, dryrun=False):
@@ -285,10 +290,26 @@ class ReleaseMP(object):
                 owner = None
                 if self.mp_config.has_option(marketplace, "owner"):
                     owner = self.mp_config.get(marketplace, "owner")
-                self.upload(CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=owner)
+                creds = ":".join(self.nos_credentials().prod)
+                self.upload(creds, CONNECT_PROD_URL, marketplace, dryrun=dryrun, owner=owner)
         os.chdir(cwd)
 
-    def upload(self, url, marketplace, dryrun=False, owner=None):
+    def nos_credentials(self):
+        """ Retrieve NOS credentials for PROD and PREPROD from the environment variables 'CONNECT_PREPROD_USR',
+        'CONNECT_PREPROD_PWD', 'CONNECT_PROD_USR' and 'CONNECT_PROD_PWD'.
+        Return a namedtuple. Set empty string for not found credentials.
+        """
+        return Credentials(
+            preprod=Credential(
+                user=os.getenv("CONNECT_PREPROD_USR", ""),
+                pwd=os.getenv("CONNECT_PREPROD_PWD", "")),
+            prod=Credential(
+                user=os.getenv("CONNECT_PROD_USR", ""),
+                pwd=os.getenv("CONNECT_PROD_PWD", ""))
+        )
+
+
+    def upload(self, creds, url, marketplace, dryrun=False, owner=None):
         """ Upload the given Marketplace package and update the config file."""
         uploaded = [url + ":"]
         mp_to_upload = self.mp_config.get(marketplace, "mp_to_upload")
@@ -296,16 +317,16 @@ class ReleaseMP(object):
             mp = mp.strip()
             for pkg in glob.glob(mp):
                 if os.path.isfile(pkg):
-                    retcode = self.upload_file(url, pkg, dryrun=dryrun, owner=owner)
+                    retcode = self.upload_file(creds, url, pkg, dryrun=dryrun, owner=owner)
                     if retcode == 0:
                         uploaded.append(os.path.realpath(pkg))
         if len(uploaded) > 1:
             self.mp_config.set(marketplace, "uploaded", " ".join(uploaded))
             self.repo.save_mp_config(self.mp_config)
 
-    def upload_file(self, url, mp_file, dryrun=False, owner=None):
+    def upload_file(self, creds, url, mp_file, dryrun=False, owner=None):
         """ Upload the given mp_file on the given Connect URL."""
-        cmd = "curl -i -n -F package=@%s %s%s" % (mp_file, url, "/site/marketplace/upload?batch=true")
+        cmd = "curl -i -u '%s' -F package=@%s %s%s" % (creds, mp_file, url, "/site/marketplace/upload?batch=true")
         if owner:
             cmd += "&owner=%s" % (owner,)
         return system(cmd, failonerror=False, run=(not dryrun))
