@@ -112,7 +112,6 @@ public class GephiGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
         // Layout for 1 minute by default
         String timeout = graph.getProperty(TIMEOUT_PROP, "60");
         int res = Integer.valueOf(timeout);
-        System.err.println("timeout: " + res);
         return res;
     }
 
