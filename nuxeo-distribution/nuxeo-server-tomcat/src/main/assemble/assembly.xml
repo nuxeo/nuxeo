@@ -50,8 +50,11 @@
     <mkdir dir="${tomcat}/doc-tomcat" />
     <move todir="${tomcat}/doc-tomcat">
       <fileset dir="${tomcat}">
+        <include name="BUILDING.txt" />
+        <include name="CONTRIBUTING.md" />
         <include name="LICENSE" />
         <include name="NOTICE" />
+        <include name="README.md" />
         <include name="RELEASE-NOTES" />
         <include name="RUNNING.txt" />
       </fileset>
