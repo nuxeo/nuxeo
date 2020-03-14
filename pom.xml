@@ -6247,6 +6247,67 @@
       </distributionManagement>
     </profile>
     <profile>
+      <id>nexus-staging</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nxrm3-maven-plugin</artifactId>
+            <configuration>
+              <nexusUrl>https://packages.nuxeo.com</nexusUrl>
+              <serverId>maven-internal-staging</serverId>
+              <repository>maven-internal-staging</repository>
+              <destinationRepository>maven-hotfix-releases</destinationRepository>
+              <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+            </configuration>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.sonatype.plugins</groupId>
+              <artifactId>nxrm3-maven-plugin</artifactId>
+              <version>1.0.3</version>
+              <extensions>true</extensions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+      <repositories>
+        <repository>
+          <id>maven-internal-staging</id>
+          <url>https://packages.nuxeo.com/repository/maven-internal-staging</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <repository>
+          <id>maven-internal-staging</id>
+          <url>https://packages.nuxeo.com/repository/maven-internal-staging</url>
+          <uniqueVersion>true</uniqueVersion>
+        </repository>
+      </distributionManagement>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>maven-vendor</id>
+          <url>https://packages.nuxeo.com/repository/maven-vendor</url>
+          <name>Nuxeo maven plugins repository</name>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <updatePolicy>always</updatePolicy>
+            <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+    <profile>
       <id>javadoc</id>
       <build>
         <plugins>
