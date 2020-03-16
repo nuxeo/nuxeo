@@ -23,6 +23,6 @@ package org.nuxeo.apidoc.api.graph;
  */
 public enum GRAPH_TYPE {
 
-    BASIC, BASIC_LAYOUT, CYTOSCAPE, DOT
+    BASIC, BASIC_LAYOUT, BASIC_LAYOUT_3D, CYTOSCAPE, DOT
 
 }

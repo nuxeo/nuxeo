@@ -90,4 +90,20 @@ public interface BundleInfo extends NuxeoArtifact {
 
     Map<String, ResourceDocumentationItem> getParentLiveDoc();
 
+    /**
+     * @since 11.1
+     */
+    Integer getDeploymentOrder();
+
+    /**
+     * @since 11.1
+     */
+    // FIXME: this is not bijective, potentially
+    String getPackageName();
+
+    /**
+     * @since 11.1
+     */
+    String getPackageLabel();
+
 }

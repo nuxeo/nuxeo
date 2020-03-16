@@ -45,7 +45,7 @@ public class JGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
         graph.setTitle("DOT Graph");
         graph.setDescription("Complete Graph exported in DOT format");
         graph.setType(GRAPH_TYPE.BASIC.name());
-        ContentGraphImpl cgraph = new DOTGraphExporter().export(graph);
+        ContentGraphImpl cgraph = new DOTGraphExporter(graph).export();
 
         return Arrays.asList(cgraph);
     }

@@ -43,9 +43,13 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  */
 public class PlotlyGraphExporter extends JsonGraphExporter implements GraphExporter {
 
+    public PlotlyGraphExporter(EditableGraph graph) {
+        super(graph);
+    }
+
     @Override
-    public ContentGraphImpl export(EditableGraph graph) {
-        ContentGraphImpl cgraph = initGraph(graph);
+    public ContentGraphImpl export() {
+        ContentGraphImpl cgraph = initContentGraph(graph);
 
         final ObjectMapper mapper = new ObjectMapper().registerModule(
                 new SimpleModule().addAbstractTypeMapping(Node.class, NodeImpl.class)
@@ -114,6 +118,8 @@ public class PlotlyGraphExporter extends JsonGraphExporter implements GraphExpor
                 jgen.writeNumberField("z", pnode.getZ());
             }
             jgen.writeEndObject();
+            // TODO: potential additional info to the node, as described on originally attached object (ComponentInfo,
+            // etc...)
         }
     }
 

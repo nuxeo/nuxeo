@@ -23,11 +23,18 @@ import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
 
 /**
  * Separates logics from graph data to graph final export content.
- * 
+ *
  * @since 11.1
  */
 public interface GraphExporter {
 
-    ContentGraphImpl export(EditableGraph graph);
+    EditableGraph getGraph();
+
+    /**
+     * Returns the current graph, exported.
+     *
+     * @throws RuntimeException is current graph is null or cannot be exported.
+     */
+    ContentGraphImpl export();
 
 }

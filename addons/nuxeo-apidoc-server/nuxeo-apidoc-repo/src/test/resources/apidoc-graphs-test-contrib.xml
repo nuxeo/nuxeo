@@ -7,7 +7,7 @@
   <extension target="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" point="graphs">
     <graphGenerator name="gephi" class="org.nuxeo.apidoc.introspection.graph.GephiGraphGeneratorImpl">
       <properties>
-        <property name="forceLayout.timeout">10</property>
+        <property name="layout.timeout">10</property>
       </properties>
     </graphGenerator>
   </extension>

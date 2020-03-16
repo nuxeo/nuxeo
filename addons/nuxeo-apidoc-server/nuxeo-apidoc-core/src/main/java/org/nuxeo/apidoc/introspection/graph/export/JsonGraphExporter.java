@@ -39,9 +39,13 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class JsonGraphExporter extends AbstractGraphExporter implements GraphExporter {
 
+    public JsonGraphExporter(EditableGraph graph) {
+        super(graph);
+    }
+
     @Override
-    public ContentGraphImpl export(EditableGraph graph) {
-        ContentGraphImpl cgraph = initGraph(graph);
+    public ContentGraphImpl export() {
+        ContentGraphImpl cgraph = initContentGraph(graph);
 
         final ObjectMapper mapper = new ObjectMapper().registerModule(
                 new SimpleModule().addAbstractTypeMapping(Node.class, NodeImpl.class)
@@ -51,6 +55,9 @@ public class JsonGraphExporter extends AbstractGraphExporter implements GraphExp
         values.put("title", graph.getTitle());
         values.put("description", graph.getDescription());
         values.put("type", graph.getType());
+        if (!graph.getProperties().isEmpty()) {
+            values.put("properties", graph.getProperties());
+        }
         values.put("nodes", graph.getNodes());
         values.put("edges", graph.getEdges());
         try {

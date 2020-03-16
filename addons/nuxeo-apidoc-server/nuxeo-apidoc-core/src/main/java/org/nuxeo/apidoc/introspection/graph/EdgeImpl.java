@@ -36,13 +36,16 @@ public class EdgeImpl implements Edge {
 
     protected final String value;
 
+    protected int weight = 0;
+
     @JsonCreator
     public EdgeImpl(@JsonProperty("source") String source, @JsonProperty("target") String target,
-            @JsonProperty("value") String value) {
+            @JsonProperty("value") String value, @JsonProperty("weight") int weight) {
         super();
         this.source = source;
         this.target = target;
         this.value = value;
+        this.weight = weight;
     }
 
     @Override
@@ -60,9 +63,17 @@ public class EdgeImpl implements Edge {
         return value;
     }
 
+    public int getWeight() {
+        return weight;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
     @Override
     public Edge copy() {
-        return new EdgeImpl(source, target, value);
+        return new EdgeImpl(source, target, value, weight);
     }
 
 }

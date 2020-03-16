@@ -41,7 +41,7 @@ public class BasicGraphGeneratorImpl extends AbstractGraphGeneratorImpl {
 
         graph.setTitle("Basic Graph");
         graph.setDescription("Complete graph, with dependencies, without a layout");
-        ContentGraphImpl cgraph = new JsonGraphExporter().export(graph);
+        ContentGraphImpl cgraph = new JsonGraphExporter(graph).export();
 
         return Arrays.asList(cgraph);
     }

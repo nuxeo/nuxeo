@@ -26,10 +26,25 @@ import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
  */
 public abstract class AbstractGraphExporter implements GraphExporter {
 
+    protected EditableGraph graph;
+
+    public AbstractGraphExporter(EditableGraph graph) {
+        super();
+        this.graph = graph;
+    }
+
+    public EditableGraph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(EditableGraph graph) {
+        this.graph = graph;
+    }
+
     /**
      * Syncs basic attributes of a content graph.
      */
-    protected ContentGraphImpl initGraph(EditableGraph graph) {
+    protected ContentGraphImpl initContentGraph(EditableGraph graph) {
         ContentGraphImpl cgraph = new ContentGraphImpl(graph.getName());
         cgraph.setTitle(graph.getTitle());
         cgraph.setDescription(graph.getDescription());

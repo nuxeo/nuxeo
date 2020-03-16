@@ -40,9 +40,13 @@ import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
  */
 public class DOTGraphExporter extends AbstractGraphExporter implements GraphExporter {
 
+    public DOTGraphExporter(EditableGraph graph) {
+        super(graph);
+    }
+
     @Override
-    public ContentGraphImpl export(EditableGraph graph) {
-        ContentGraphImpl cgraph = initGraph(graph);
+    public ContentGraphImpl export() {
+        ContentGraphImpl cgraph = initContentGraph(graph);
 
         SimpleDirectedGraph<IdNode, Edge> g = new SimpleDirectedGraph<>(Edge.class);
 

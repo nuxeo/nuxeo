@@ -179,8 +179,11 @@ public class TestSnapshotPersist {
         refs.put("basic_graph.json", Boolean.FALSE);
         refs.put("jgrapht.dot", Boolean.FALSE);
         refs.put("gephi.json", Boolean.FALSE);
+        refs.put("gephi.gexf", Boolean.FALSE);
+        refs.put("gephi_flat.json", Boolean.FALSE);
         refs.put("gephi_bundles.json", Boolean.FALSE);
         refs.put("gephi_xp.json", Boolean.FALSE);
+        refs.put("gephi_xp_flat.json", Boolean.FALSE);
         // refs.put("gephi_oo.json", Boolean.FALSE);
         // refs.put("gephi_oo_bundles.json", Boolean.FALSE);
         // refs.put("gephi_ff.json", Boolean.FALSE);

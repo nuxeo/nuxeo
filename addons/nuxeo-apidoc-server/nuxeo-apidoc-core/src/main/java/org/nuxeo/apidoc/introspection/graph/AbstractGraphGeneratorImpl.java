@@ -22,8 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -90,183 +92,218 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
         return graph;
     }
 
+    /**
+     * Introspect the graph, ignoring bundle groups but selecting all other nodes.
+     * <ul>
+     * <li>bundles
+     * <li>components
+     * <li>extension points declarations
+     * <li>services
+     * <li>contributions
+     * </ul>
+     * <p>
+     * Relations between nodes will respect the general introspection of bundles.
+     * <p>
+     * TODO: define/describe strategy for node and edge weights.
+     */
     protected EditableGraph getDefaultGraph(DistributionSnapshot distribution) {
         EditableGraph graph = createDefaultGraph();
 
-        // introspect the graph, ignore bundle groups but select:
-        // - bundles
-        // - components
-        // - extension points declarations
-        // - services
-        // - contributions
-        Map<String, Integer> hits = new HashMap<>();
+        Map<String, Integer> nodeHits = new HashMap<>();
+        Set<String> isolatedBundles = new HashSet<>();
 
         for (String bid : distribution.getBundleIds()) {
             BundleInfo bundle = distribution.getBundle(bid);
-            NODE_CATEGORY cat = NODE_CATEGORY.guessCategory(bundle);
-            Node bundleNode = processBundle(distribution, graph, hits, bundle, cat);
-            // compute sub components
-            List<ComponentInfo> components = bundle.getComponents();
-            for (ComponentInfo component : components) {
-                processComponent(distribution, graph, hits, bundleNode, cat, component, true, true, true);
+            NODE_CATEGORY category = NODE_CATEGORY.guessCategory(bundle);
+            Node bundleNode = createBundleNode(bundle, category);
+            bundleNode.setWeight(1);
+            graph.addNode(bundleNode);
+            for (String requirement : bundle.getRequirements()) {
+                graph.addEdge(createEdge(bundleNode, createNode(NODE_TYPE.BUNDLE.prefix(requirement)),
+                        EDGE_TYPE.REQUIRES.name()));
             }
-        }
-
-        refine(graph, hits);
-
-        return graph;
-    }
-
-    protected Node processBundle(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
-            BundleInfo bundle, NODE_CATEGORY cat) {
-        Node bundleNode = createBundleNode(bundle, cat);
-        graph.addNode(bundleNode);
-        // compute requirements
-        for (String requirement : bundle.getRequirements()) {
-            addEdge(graph, hits, createEdge(bundleNode, createNode(NODE_TYPE.BUNDLE.prefix(requirement)),
-                    EDGE_TYPE.REQUIRES.name()));
-        }
-        if (bundle.getRequirements().isEmpty()) {
-            requireBundleRootNode(graph, hits, bundleNode);
-        }
-        return bundleNode;
-    }
-
-    protected Node processComponent(DistributionSnapshot distribution, EditableGraph graph, Map<String, Integer> hits,
-            Node bundleNode, NODE_CATEGORY category, ComponentInfo component, boolean processServices,
-            boolean processExtensionPoints, boolean processExtensions) {
-        Node compNode = createComponentNode(component, category);
-        graph.addNode(compNode);
-        // do not influence the bundle weight based on its contributions as the layout will take them into account to
-        // generate the "ground" bundles graph layout: hits map is ignored here
-        addEdge(graph, null, createEdge(bundleNode, compNode, EDGE_TYPE.CONTAINS.name()));
-        if (processServices) {
-            for (ServiceInfo service : component.getServices()) {
-                if (service.isOverriden()) {
-                    continue;
-                }
-                Node serviceNode = createServiceNode(service, category);
-                graph.addNode(serviceNode);
-                addEdge(graph, hits, createEdge(compNode, serviceNode, EDGE_TYPE.CONTAINS.name()));
+            if (bundle.getRequirements().isEmpty()) {
+                isolatedBundles.add(NODE_TYPE.BUNDLE.prefix(bundle.getId()));
             }
-        }
-
-        if (processExtensionPoints) {
-            for (ExtensionPointInfo xp : component.getExtensionPoints()) {
-                Node xpNode = createXPNode(xp, category);
-                graph.addNode(xpNode);
-                addEdge(graph, hits, createEdge(compNode, xpNode, EDGE_TYPE.CONTAINS.name()));
-            }
-        }
-
-        if (processExtensions) {
-            Map<String, Integer> comps = new HashMap<String, Integer>();
-            for (ExtensionInfo contribution : component.getExtensions()) {
-                // handle multiple contributions to the same extension point
-                String cid = contribution.getId();
-                if (comps.containsKey(cid)) {
-                    Integer num = comps.get(cid);
-                    comps.put(cid, num + 1);
-                    cid += "-" + String.valueOf(num + 1);
-                } else {
-                    comps.put(cid, Integer.valueOf(0));
+            for (ComponentInfo component : bundle.getComponents()) {
+                Node compNode = createComponentNode(component, category);
+                graph.addNode(compNode);
+                graph.addEdge(createEdge(bundleNode, compNode, EDGE_TYPE.CONTAINS.name()));
+                for (ServiceInfo service : component.getServices()) {
+                    if (service.isOverriden()) {
+                        continue;
+                    }
+                    Node serviceNode = createServiceNode(service, category);
+                    graph.addNode(serviceNode);
+                    graph.addEdge(createEdge(compNode, serviceNode, EDGE_TYPE.CONTAINS.name()));
+                    hit(nodeHits, compNode.getId());
                 }
 
-                Node contNode = createContributionNode(contribution, category);
-                graph.addNode(contNode);
-                // add link to corresponding component
-                addEdge(graph, hits, createEdge(compNode, contNode, EDGE_TYPE.CONTAINS.name()));
+                for (ExtensionPointInfo xp : component.getExtensionPoints()) {
+                    Node xpNode = createXPNode(xp, category);
+                    graph.addNode(xpNode);
+                    graph.addEdge(createEdge(compNode, xpNode, EDGE_TYPE.CONTAINS.name()));
+                    hit(nodeHits, compNode.getId());
+                }
 
-                // also add link to target extension point, "guessing" the extension point id, not counting for
-                // hits
-                String targetId = NODE_TYPE.EXTENSION_POINT.prefix(contribution.getExtensionPoint());
-                addEdge(graph, null, createEdge(createNode(targetId), contNode, EDGE_TYPE.REFERENCES.name()));
+                Map<String, Integer> comps = new HashMap<String, Integer>();
+                for (ExtensionInfo contribution : component.getExtensions()) {
+                    // handle multiple contributions to the same extension point
+                    String cid = contribution.getId();
+                    if (comps.containsKey(cid)) {
+                        Integer num = comps.get(cid);
+                        comps.put(cid, num + 1);
+                        cid += "-" + String.valueOf(num + 1);
+                    } else {
+                        comps.put(cid, Integer.valueOf(0));
+                    }
+
+                    Node contNode = createContributionNode(contribution, category);
+                    graph.addNode(contNode);
+                    // add link to corresponding component
+                    graph.addEdge(createEdge(compNode, contNode, EDGE_TYPE.CONTAINS.name()));
+                    hit(nodeHits, compNode.getId());
+
+                    // also add link to target extension point, "guessing" the extension point id, not counting for
+                    // hits
+                    String targetId = NODE_TYPE.EXTENSION_POINT.prefix(contribution.getExtensionPoint());
+                    graph.addEdge(createEdge(createNode(targetId), contNode, EDGE_TYPE.REFERENCES.name()));
+                    hit(nodeHits, targetId);
+                    hit(nodeHits, NODE_TYPE.COMPONENT.prefix(contribution.getTargetComponentName().getRawName()));
+                }
+
+                // compute requirements
+                for (String requirement : component.getRequirements()) {
+                    graph.addEdge(createEdge(compNode, createNode(NODE_TYPE.COMPONENT.prefix(requirement)),
+                            EDGE_TYPE.SOFT_REQUIRES.name()));
+                }
 
             }
         }
 
-        // compute requirements
-        for (String requirement : component.getRequirements()) {
-            addEdge(graph, hits, createEdge(compNode, createNode(NODE_TYPE.COMPONENT.prefix(requirement)),
-                    EDGE_TYPE.SOFT_REQUIRES.name()));
-        }
-
-        return compNode;
-    }
-
-    protected String getBundleRootId() {
-        return NODE_TYPE.BUNDLE.prefix(BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE);
-    }
-
-    protected void requireBundleRootNode(EditableGraph graph, Map<String, Integer> hits, Node bundleNode) {
-        // make it require the root node, unless we're handling the root itself
-        String rootId = getBundleRootId();
-        if (!rootId.equals(bundleNode.getId())) {
-            addEdge(graph, hits, createEdge(bundleNode, createNode(rootId), EDGE_TYPE.REQUIRES.name()));
-        }
-    }
-
-    /**
-     * Refines graphs for display.
-     * <ul>
-     * <li>Adds potentially missing bundle root
-     * <li>Adds potentially missing nodes referenced in edges
-     * <li>sets weights computed from hits map
-     */
-    protected void refine(EditableGraph graph, Map<String, Integer> hits) {
-        // handle missing root
+        // Adds potentially missing bundle root
         String rrId = getBundleRootId();
         Node rrNode = graph.getNode(rrId);
         if (rrNode == null) {
-            rrNode = createNode(rrId, BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE, 0, "", NODE_TYPE.BUNDLE.name(),
-                    NODE_CATEGORY.RUNTIME.name());
+            rrNode = createBundleRoot();
             graph.addNode(rrNode);
         }
-        // handle missing references
-        List<Node> orphans = new ArrayList<Node>();
+        // Adds potentially missing link to bundle root for isolated (children nodes)
+        List<Node> orphans = new ArrayList<>();
+        // handle missing references in all edges too
         for (Edge edge : graph.getEdges()) {
             Node source = graph.getNode(edge.getSource());
             if (source == null) {
-                source = addMissingNode(graph, edge.getSource(), 1);
+                source = addMissingNode(graph, edge.getSource());
             }
             Node target = graph.getNode(edge.getTarget());
             if (target == null) {
-                target = addMissingNode(graph, edge.getTarget(), 1);
+                target = addMissingNode(graph, edge.getTarget());
                 if (NODE_TYPE.BUNDLE.name().equals(target.getType())
                         && EDGE_TYPE.REQUIRES.name().equals(edge.getValue())) {
                     orphans.add(target);
                 }
             }
         }
-        // handle orphan bundles
+        // handle isolated bundles
         for (Node orphan : orphans) {
-            requireBundleRootNode(graph, hits, orphan);
+            requireBundleRootNode(graph, orphan);
         }
-        // handle weights
-        if (hits == null) {
-            for (Node node : graph.getNodes()) {
-                if (node.getWeight() == 0) {
-                    node.setWeight(1);
+        for (String child : isolatedBundles) {
+            requireBundleRootNode(graph, graph.getNode(child));
+        }
+
+        refine(graph, nodeHits);
+
+        return graph;
+    }
+
+    /**
+     * Introspect the graph, centered on services.
+     * <p>
+     * select only services (resolving their dependencies based on their bundle's), linking them as parent of their
+     * extension points, and handling their contributions as a different relation.
+     * <p>
+     * When more than one service is declared within the same component, corresponding extension points and
+     * contributions will be "shared".
+     * <p>
+     * Other contributions, that cannot be linked to any service within the same components, are handled as mere
+     * "contributions" and are only linked to the extension point that they're contributing to.
+     */
+    protected EditableGraph getServicesGraph(DistributionSnapshot distribution) {
+        EditableGraph graph = createDefaultGraph();
+        Map<String, Integer> hits = new HashMap<>();
+        refine(graph, hits);
+
+        return graph;
+    }
+
+    /**
+     * Retrieve services that are a requirement to the given bundle, according to targeted bundles services.
+     */
+    protected List<ServiceInfo> retrieveServiceRequirements(DistributionSnapshot distribution, BundleInfo bundle) {
+        List<ServiceInfo> services = new ArrayList<>();
+        // compute requirements
+        for (String requirement : bundle.getRequirements()) {
+            BundleInfo rbundle = distribution.getBundle(requirement);
+            if (rbundle != null) {
+                for (ComponentInfo rcomponent : rbundle.getComponents()) {
+                    for (ServiceInfo service : rcomponent.getServices()) {
+                        if (service.isOverriden()) {
+                            continue;
+                        }
+                        services.add(service);
+                    }
                 }
             }
+        }
+        return services;
+    }
+
+    protected void requireBundleRootNode(EditableGraph graph, Node bundleNode) {
+        if (bundleNode == null) {
             return;
         }
+        // make it require the root node, unless we're handling the root itself
+        String rootId = getBundleRootId();
+        if (!rootId.equals(bundleNode.getId())) {
+            graph.addEdge(createEdge(bundleNode, createNode(rootId), EDGE_TYPE.REQUIRES.name()));
+        }
+    }
+
+    /**
+     * Refines graphs for display.
+     * <ul>
+     * <li>sets weights computed from hits map
+     * <li>handles zero weights
+     */
+    protected void refine(EditableGraph graph, Map<String, Integer> hits) {
         for (Map.Entry<String, Integer> hit : hits.entrySet()) {
             setWeight(graph, hit.getKey(), hit.getValue());
         }
-
     }
 
-    protected Node addMissingNode(EditableGraph graph, String id, int weight) {
+    protected Node addMissingNode(EditableGraph graph, String id) {
         // try to guess category and type according to prefix
         NODE_CATEGORY cat = NODE_CATEGORY.PLATFORM;
         NODE_TYPE type = NODE_TYPE.guess(id);
         String unprefixedId = type.unprefix(id);
         cat = NODE_CATEGORY.guess(unprefixedId);
-        Node node = createNode(id, unprefixedId, 0, "", type.name(), cat.name());
-        node.setWeight(weight);
+        Node node = createNode(id, unprefixedId, getDefaultNodeWeight(), "", type.name(), cat.name());
         graph.addNode(node);
         return node;
+    }
+
+    protected String getBundleRootId() {
+        return NODE_TYPE.BUNDLE.prefix(BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE);
+    }
+
+    protected int getDefaultNodeWeight() {
+        return 1;
+    }
+
+    protected int getDefaultEdgeWeight() {
+        return 1;
     }
 
     protected Node createNode(String id, String label, int weight, String path, String type, String category) {
@@ -274,49 +311,50 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
     }
 
     protected Node createNode(String id) {
-        return createNode(id, id, 0, null, null, null);
+        return createNode(id, id, getDefaultNodeWeight(), null, null, null);
+    }
+
+    protected Node createBundleRoot() {
+        return createNode(getBundleRootId(), BundleInfo.RUNTIME_ROOT_PSEUDO_BUNDLE, getDefaultNodeWeight(), "",
+                NODE_TYPE.BUNDLE.name(), NODE_CATEGORY.RUNTIME.name());
     }
 
     protected Node createBundleNode(BundleInfo bundle, NODE_CATEGORY cat) {
         String bid = bundle.getId();
         String pbid = NODE_TYPE.BUNDLE.prefix(bid);
-        return createNode(pbid, bid, 0, "", NODE_TYPE.BUNDLE.name(), cat.name());
+        return createNode(pbid, bid, getDefaultNodeWeight(), "", NODE_TYPE.BUNDLE.name(), cat.name());
     }
 
     protected Node createComponentNode(ComponentInfo component, NODE_CATEGORY cat) {
         String compid = component.getId();
         String pcompid = NODE_TYPE.COMPONENT.prefix(compid);
-        return createNode(pcompid, compid, 0, component.getHierarchyPath(), NODE_TYPE.COMPONENT.name(), cat.name());
+        return createNode(pcompid, compid, getDefaultNodeWeight(), component.getHierarchyPath(),
+                NODE_TYPE.COMPONENT.name(), cat.name());
     }
 
     protected Node createServiceNode(ServiceInfo service, NODE_CATEGORY cat) {
         String sid = service.getId();
         String psid = NODE_TYPE.SERVICE.prefix(sid);
-        return createNode(psid, sid, 0, service.getHierarchyPath(), NODE_TYPE.SERVICE.name(), cat.name());
+        return createNode(psid, sid, getDefaultNodeWeight(), service.getHierarchyPath(), NODE_TYPE.SERVICE.name(),
+                cat.name());
     }
 
     protected Node createXPNode(ExtensionPointInfo xp, NODE_CATEGORY cat) {
         String xpid = xp.getId();
         String pxpid = NODE_TYPE.EXTENSION_POINT.prefix(xpid);
-        return createNode(pxpid, xpid, 0, xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(), cat.name());
+        return createNode(pxpid, xpid, getDefaultNodeWeight(), xp.getHierarchyPath(), NODE_TYPE.EXTENSION_POINT.name(),
+                cat.name());
     }
 
     protected Node createContributionNode(ExtensionInfo contribution, NODE_CATEGORY cat) {
         String cid = contribution.getId();
         String pcid = NODE_TYPE.CONTRIBUTION.prefix(cid);
-        return createNode(pcid, cid, 0, contribution.getHierarchyPath(), NODE_TYPE.CONTRIBUTION.name(), cat.name());
+        return createNode(pcid, cid, getDefaultNodeWeight(), contribution.getHierarchyPath(),
+                NODE_TYPE.CONTRIBUTION.name(), cat.name());
     }
 
     protected Edge createEdge(Node source, Node target, String value) {
-        return new EdgeImpl(source.getId(), target.getId(), value);
-    }
-
-    protected void addEdge(EditableGraph graph, Map<String, Integer> hits, Edge edge) {
-        graph.addEdge(edge);
-        if (hits != null) {
-            hit(hits, edge.getSource());
-            hit(hits, edge.getTarget());
-        }
+        return new EdgeImpl(source.getId(), target.getId(), value, getDefaultEdgeWeight());
     }
 
     protected void hit(Map<String, Integer> hits, String source) {
@@ -330,7 +368,7 @@ public abstract class AbstractGraphGeneratorImpl implements GraphGenerator {
     protected void setWeight(EditableGraph graph, String nodeId, int hit) {
         Node node = graph.getNode(nodeId);
         if (node != null) {
-            node.setWeight(hit);
+            node.setWeight(node.getWeight() + hit);
         }
     }
 

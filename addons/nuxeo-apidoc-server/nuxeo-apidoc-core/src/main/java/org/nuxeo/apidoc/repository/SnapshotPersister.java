@@ -53,7 +53,6 @@ import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
-import org.nuxeo.apidoc.introspection.graph.ContentGraphImpl;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.ecm.core.api.Blob;
@@ -344,9 +343,7 @@ public class SnapshotPersister {
         List<Graph> graphs = snapshot.getGraphs();
         for (Graph graph : graphs) {
             // TODO: filter?
-            if (graph instanceof ContentGraphImpl) {
-                persistGraph(snapshot, graph, session, label, parent);
-            }
+            persistGraph(snapshot, graph, session, label, parent);
         }
     }
 

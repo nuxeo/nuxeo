@@ -38,6 +38,7 @@ import java.util.PropertyResourceBundle;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -49,6 +50,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,6 +58,11 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.connect.data.DownloadablePackage;
+import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
@@ -167,7 +174,7 @@ public class ServerInfo {
 
     public void addBundle(Collection<BundleInfo> someBundles) {
         for (BundleInfo bundle : someBundles) {
-            bundles.put(bundle.getId(), bundle);
+            addBundle(bundle);
         }
     }
 
@@ -180,11 +187,12 @@ public class ServerInfo {
                 Framework.getProperty(Environment.DISTRIBUTION_VERSION, "unknown"));
     }
 
-    protected static BundleInfoImpl computeBundleInfo(Bundle bundle) {
+    protected static BundleInfoImpl computeBundleInfo(Bundle bundle, Map<String, LocalPackage> pkgByJar) {
         RuntimeService runtime = Framework.getRuntime();
         BundleInfoImpl binfo = new BundleInfoImpl(bundle.getSymbolicName());
         binfo.setFileName(runtime.getBundleFile(bundle).getName());
         binfo.setLocation(bundle.getLocation());
+
         if (!(bundle instanceof BundleImpl)) {
             return binfo;
         }
@@ -270,6 +278,13 @@ public class ServerInfo {
         } catch (IOException | ParserConfigurationException | SAXException | XPathException | NuxeoException e) {
             log.error(e, e);
         }
+
+        // XXX
+        if (pkgByJar.containsKey(jarFile.getName())) {
+            LocalPackage pkg = pkgByJar.get(jarFile.getName());
+            binfo.setPackageName(pkg.getId());
+            binfo.setPackageLabel(pkg.getTitle());
+        }
         return binfo;
     }
 
@@ -323,10 +338,37 @@ public class ServerInfo {
         BundleInfoImpl configVirtualBundle = new BundleInfoImpl(BundleInfo.RUNTIME_CONFIG_BUNDLE);
         server.addBundle(configVirtualBundle);
 
+        // quick&dirty way to get package link with bundles
+        Map<String, LocalPackage> pkgByJar = new HashMap<>();
+        PackageManager pman = Framework.getService(PackageManager.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
+        if (pman != null) {
+            List<DownloadablePackage> installedPackages = pman.listInstalledPackages();
+            List<String> installedPackagesIds = installedPackages.stream()
+                                                                 .map(DownloadablePackage::getId)
+                                                                 .collect(Collectors.toList());
+            for (String packId : installedPackagesIds) {
+                try {
+                    LocalPackage pkg = pus.getPackage(packId);
+                    if (pkg == null) {
+                        continue;
+                    }
+                    for (File jar : FileUtils.listFiles(pkg.getData().getRoot(), new String[] { "jar" }, true)) {
+                        pkgByJar.put(jar.getName(), pkg);
+                    }
+                } catch (PackageException e) {
+                    continue;
+                }
+            }
+        }
+
         Map<String, ExtensionPointInfoImpl> xpRegistry = new HashMap<>();
         List<ExtensionInfoImpl> contribRegistry = new ArrayList<>();
 
         Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
+        // this list is actually ordered by deployment order (including component requirements) - we can deduce bundle
+        // range ordering from it depending on contained registrations
+        int registrationOrder = 0;
         for (RegistrationInfo ri : registrations) {
             String cname = ri.getName().getName();
             Bundle bundle = ri.getContext().getBundle();
@@ -344,11 +386,13 @@ public class ServerInfo {
                 if (server.bundles.containsKey(bundle.getSymbolicName())) {
                     binfo = (BundleInfoImpl) server.bundles.get(bundle.getSymbolicName());
                 } else {
-                    binfo = computeBundleInfo(bundle);
+                    binfo = computeBundleInfo(bundle, pkgByJar);
                 }
             }
 
             ComponentInfoImpl component = new ComponentInfoImpl(binfo, cname);
+            component.setRegistrationOrder(registrationOrder++);
+
             if (ri.getExtensionPoints() != null) {
                 for (ExtensionPoint xp : ri.getExtensionPoints()) {
                     ExtensionPointInfoImpl xpinfo = new ExtensionPointInfoImpl(component, xp.getName());
@@ -414,13 +458,24 @@ public class ServerInfo {
             server.addBundle(binfo);
         }
 
+        // TODO: error cases
+        // runtime.getComponentManager().getPendingRegistrations();
+        // runtime.getComponentManager().getMissingRegistrations();
+
         // now register the bundles that contains no components !!!
         Bundle[] allbundles = runtime.getContext().getBundle().getBundleContext().getBundles();
+        // still the runtime context holds the deployment order: try to set it on each bundle
+        int bindex = 0;
+        // also try to match the bundle to a package
         for (Bundle bundle : allbundles) {
+            BundleInfo bi = server.bundles.get(bundle.getSymbolicName());
             if (!server.bundles.containsKey(bundle.getSymbolicName())) {
-                BundleInfo bi = computeBundleInfo(bundle);
-                server.addBundle(bi);
+                bi = computeBundleInfo(bundle, pkgByJar);
             }
+            if (bi instanceof BundleInfoImpl) {
+                ((BundleInfoImpl) bi).setDeploymentOrder(bindex++);
+            }
+            server.addBundle(bi);
         }
 
         // associate contrib to XP

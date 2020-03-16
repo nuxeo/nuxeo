@@ -86,4 +86,9 @@ public interface ComponentInfo extends NuxeoArtifact {
      */
     List<String> getRequirements();
 
+    /**
+     * @since 11.1
+     */
+    Integer getRegistrationOrder();
+
 }

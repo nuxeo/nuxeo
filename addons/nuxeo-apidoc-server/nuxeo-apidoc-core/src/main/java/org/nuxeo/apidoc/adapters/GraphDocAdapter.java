@@ -27,6 +27,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 /**
  * Persister for distribution graphs.
@@ -95,7 +96,12 @@ public class GraphDocAdapter extends BaseNuxeoArtifactDocAdapter implements Grap
         doc.setPropertyValue(Graph.TITLE_PROPERTY_PATH, graph.getTitle());
         doc.setPropertyValue(Graph.DESCRIPTION_PROPERTY_PATH, graph.getDescription());
         doc.setPropertyValue(Graph.PROP_GRAPH_TYPE, graph.getType());
-        doc.setPropertyValue(Graph.CONTENT_PROPERTY_PATH, (Serializable) graph.getBlob());
+        try {
+            doc.setPropertyValue(Graph.CONTENT_PROPERTY_PATH, (Serializable) graph.getBlob());
+        } catch (UnsupportedOperationException e) {
+            // some graphs content cannot be persisted
+            doc.setPropertyValue(Graph.CONTENT_PROPERTY_PATH, new StringBlob("Graph content export not supported."));
+        }
 
         if (exist) {
             doc = session.saveDocument(doc);

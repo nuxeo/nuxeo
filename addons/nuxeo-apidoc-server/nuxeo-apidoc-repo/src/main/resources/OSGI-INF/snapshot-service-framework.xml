@@ -19,7 +19,7 @@
     <graphGenerator name="jgrapht" class="org.nuxeo.apidoc.introspection.graph.JGraphGeneratorImpl" />
     <graphGenerator name="gephi" class="org.nuxeo.apidoc.introspection.graph.GephiGraphGeneratorImpl">
       <properties>
-        <property name="forceLayout.timeout">60</property>
+        <property name="layout.timeout">60</property>
       </properties>
     </graphGenerator>
   </extension>

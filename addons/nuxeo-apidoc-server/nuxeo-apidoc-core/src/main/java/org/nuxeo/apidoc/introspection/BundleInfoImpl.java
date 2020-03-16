@@ -46,6 +46,9 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected String manifest; // TODO
 
+    /**
+     * @since 11.1
+     */
     protected final List<String> requirements = new ArrayList<>();
 
     protected String groupId;
@@ -54,11 +57,20 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected String artifactVersion;
 
+    protected String packageName;
+
+    protected String packageLabel;
+
     protected BundleGroup bundleGroup;
 
     protected Map<String, ResourceDocumentationItem> liveDoc;
 
     protected Map<String, ResourceDocumentationItem> parentLiveDoc;
+
+    /**
+     * @since 11.1
+     */
+    protected Integer deploymentOrder;
 
     @JsonCreator
     BundleInfoImpl(@JsonProperty("bundleId") String bundleId, @JsonProperty("fileName") String fileName,
@@ -68,7 +80,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
             @JsonProperty("bundleGroup") BundleGroup bundleGroup,
             @JsonProperty("liveDoc") Map<String, ResourceDocumentationItem> liveDoc,
             @JsonProperty("parentLiveDoc") Map<String, ResourceDocumentationItem> parentLiveDoc,
-            @JsonProperty("location") String location) {
+            @JsonProperty("location") String location, @JsonProperty("deploymentOrder") Integer deploymentOrder) {
         this.bundleId = bundleId;
         this.fileName = fileName;
         this.manifest = manifest;
@@ -82,6 +94,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.liveDoc = liveDoc;
         this.parentLiveDoc = parentLiveDoc;
         this.location = location;
+        this.deploymentOrder = deploymentOrder;
     }
 
     public BundleGroup getBundleGroup() {
@@ -241,6 +254,30 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     @Override
     public Map<String, ResourceDocumentationItem> getParentLiveDoc() {
         return parentLiveDoc;
+    }
+
+    public Integer getDeploymentOrder() {
+        return deploymentOrder;
+    }
+
+    public void setDeploymentOrder(Integer deploymentOrder) {
+        this.deploymentOrder = deploymentOrder;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getPackageLabel() {
+        return packageLabel;
+    }
+
+    public void setPackageLabel(String packageLabel) {
+        this.packageLabel = packageLabel;
     }
 
 }

@@ -29,6 +29,10 @@ public interface Edge {
 
     String getValue();
 
+    int getWeight();
+
+    void setWeight(int weigth);
+
     Edge copy();
 
 }
