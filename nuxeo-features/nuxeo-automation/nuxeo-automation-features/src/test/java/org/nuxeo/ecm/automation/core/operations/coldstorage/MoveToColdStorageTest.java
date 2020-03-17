@@ -15,11 +15,13 @@
  *  
  * Contributors:
  *     Salem Aouana
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.automation.core.operations.coldstorage;
 
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -30,9 +32,13 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 
 /**
  * @since 11.1
@@ -43,8 +49,34 @@ public class MoveToColdStorageTest extends AbstractTestColdStorageOperation {
     protected CoreSession session;
 
     @Test
+    public void shouldFailWithoutRightPermissions() throws OperationException, IOException {
+        ACE[] aces = { new ACE("john", SecurityConstants.READ, true) };
+        DocumentModel documentModel = createFileDocument(session, true, aces);
+
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
+                "john")) {
+            moveContentToColdStorage(userSession, documentModel);
+            fail("Should fail because the user does not have permissions to move document to cold storage");
+        } catch (NuxeoException e) {
+            assertEquals(SC_FORBIDDEN, e.getStatusCode());
+        }
+    }
+
+    @Test
     public void shouldMoveToColdStorage() throws OperationException, IOException {
-        DocumentModel documentModel = createFileDocument(session, true);
+        // with regular user with "WriteColdStorage" permission
+        ACE[] aces = { new ACE("john", SecurityConstants.READ, true), //
+                new ACE("john", SecurityConstants.WRITE, true), //
+                new ACE("john", SecurityConstants.WRITE_COLD_STORAGE, true) };
+        DocumentModel documentModel = createFileDocument(session, true, aces);
+
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
+                "john")) {
+            moveContentToColdStorage(userSession, documentModel);
+        }
+
+        // with Administrator
+        documentModel = createFileDocument(session, true);
         moveContentToColdStorage(session, documentModel);
     }
 
