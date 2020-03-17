@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,6 +37,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.blob.ColdStorageHelper;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.test.ColdStorageFeature;
@@ -72,12 +76,19 @@ public abstract class AbstractTestColdStorageOperation {
         }
     }
 
-    protected DocumentModel createFileDocument(CoreSession session, boolean withBlobContent) {
+    protected DocumentModel createFileDocument(CoreSession session, boolean withBlobContent, ACE... aces) {
         DocumentModel documentModel = session.createDocumentModel("/", "MyFile", "File");
         if (withBlobContent) {
             documentModel.setPropertyValue(ColdStorageHelper.FILE_CONTENT_PROPERTY,
                     (Serializable) Blobs.createBlob(FILE_CONTENT));
         }
-        return session.createDocument(documentModel);
+        DocumentModel document = session.createDocument(documentModel);
+        if (aces.length > 0) {
+            ACP acp = documentModel.getACP();
+            ACL acl = acp.getOrCreateACL();
+            acl.addAll(List.of(aces));
+            document.setACP(acp, true);
+        }
+        return document;
     }
 }

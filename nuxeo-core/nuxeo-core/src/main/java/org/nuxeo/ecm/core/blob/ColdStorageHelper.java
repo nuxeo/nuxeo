@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Salem Aouana
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.core.blob;
@@ -37,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.io.download.DownloadService;
@@ -71,14 +73,24 @@ public class ColdStorageHelper {
 
     /**
      * Moves the main content associated with the document of the given {@link DocumentRef} to a cold storage.
+     * <p/>
+     * The permission {@value org.nuxeo.ecm.core.api.security.SecurityConstants#WRITE_COLD_STORAGE} is required.
      *
      * @return the updated document model if the move succeeds
-     * @throws NuxeoException if the main content is already in the cold storage, or if there is no main content
-     *             associated with the given document
+     * @throws NuxeoException if the main content is already in the cold storage, if there is no main content
+     *             associated with the given document, or if the user does not have the permissions needed to
+     *             perform the action.
      */
     public static DocumentModel moveContentToColdStorage(CoreSession session, DocumentRef documentRef) {
         DocumentModel documentModel = session.getDocument(documentRef);
         log.debug("Move to cold storage the main content of document: {}", documentModel);
+
+        if (!session.hasPermission(documentRef, SecurityConstants.WRITE_COLD_STORAGE)) {
+            log.debug("The user {} does not have the right permissions to move the content of document {}",
+                    session::getPrincipal, () -> documentModel);
+            throw new NuxeoException(String.format("The document: %s cannot be moved to cold storage", documentRef),
+                    SC_FORBIDDEN);
+        }
 
         if (documentModel.hasFacet(FacetNames.COLD_STORAGE)
                 && documentModel.getPropertyValue(COLD_STORAGE_CONTENT_PROPERTY) != null) {

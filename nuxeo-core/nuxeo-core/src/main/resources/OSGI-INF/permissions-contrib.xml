@@ -87,6 +87,8 @@
     <permission name="SetRetention" />
     <permission name="ManageLegalHold" />
 
+    <permission name="WriteColdStorage" />
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.security.SecurityService"

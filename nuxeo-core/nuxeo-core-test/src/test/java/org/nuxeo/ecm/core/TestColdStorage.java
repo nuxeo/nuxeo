@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Salem Aouana
+ *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
 package org.nuxeo.ecm.core;
@@ -46,10 +47,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobStatus;
 import org.nuxeo.ecm.core.blob.ColdStorageHelper;
@@ -90,23 +97,34 @@ public class TestColdStorage {
 
     @Test
     public void shouldMoveToColdStorage() throws IOException {
-        DocumentModel documentModel = createFileDocument(DEFAULT_DOC_NAME, true);
+        // with regular user with "WriteColdStorage" permission
+        ACE[] aces = { new ACE("john", SecurityConstants.READ, true), //
+                new ACE("john", SecurityConstants.WRITE, true), //
+                new ACE("john", SecurityConstants.WRITE_COLD_STORAGE, true) };
+        DocumentModel documentModel = createFileDocument(DEFAULT_DOC_NAME, true, aces);
 
-        // move the blob to cold storage
-        documentModel = ColdStorageHelper.moveContentToColdStorage(session, documentModel.getRef());
-        session.saveDocument(documentModel);
-        transactionalFeature.nextTransaction();
-        documentModel.refresh();
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
+                "john")) {
+            moveAndVerifyContent(userSession, documentModel);
+        }
 
-        assertTrue(documentModel.hasFacet(FacetNames.COLD_STORAGE));
+        // with Administrator
+        documentModel = createFileDocument(DEFAULT_DOC_NAME, true);
+        moveAndVerifyContent(session, documentModel);
+    }
 
-        assertNull(documentModel.getPropertyValue(ColdStorageHelper.FILE_CONTENT_PROPERTY));
+    @Test
+    public void shouldFailWithoutRightPermissions() {
+        ACE[] aces = { new ACE("john", SecurityConstants.READ, true) };
+        DocumentModel documentModel = createFileDocument(DEFAULT_DOC_NAME, true, aces);
 
-        // check if the `coldstorage:coldContent` property contains the original file content
-        Blob content = (Blob) documentModel.getPropertyValue(ColdStorageHelper.COLD_STORAGE_CONTENT_PROPERTY);
-        assertNotNull(content);
-        assertEquals(FILE_CONTENT, content.getString());
-        assertEquals("dummy", ((ManagedBlob) content).getProviderId());
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
+                "john")) {
+            ColdStorageHelper.moveContentToColdStorage(userSession, documentModel.getRef());
+            fail("Should fail because the user does not have permissions to move document to cold storage");
+        } catch (NuxeoException e) {
+            assertEquals(SC_FORBIDDEN, e.getStatusCode());
+        }
     }
 
     @Test
@@ -229,6 +247,23 @@ public class TestColdStorage {
         checkAvailabilityOfDocuments(Arrays.asList(documents.get(1), documents.get(2)), downloadableUntil, 0);
     }
 
+    protected void moveAndVerifyContent(CoreSession session, DocumentModel documentModel) throws IOException {
+        documentModel = ColdStorageHelper.moveContentToColdStorage(session, documentModel.getRef());
+        session.saveDocument(documentModel);
+        transactionalFeature.nextTransaction();
+        documentModel.refresh();
+
+        assertTrue(documentModel.hasFacet(FacetNames.COLD_STORAGE));
+
+        assertNull(documentModel.getPropertyValue(ColdStorageHelper.FILE_CONTENT_PROPERTY));
+
+        // check if the `coldstorage:coldContent` property contains the original file content
+        Blob content = (Blob) documentModel.getPropertyValue(ColdStorageHelper.COLD_STORAGE_CONTENT_PROPERTY);
+        assertNotNull(content);
+        assertEquals(FILE_CONTENT, content.getString());
+        assertEquals("dummy", ((ManagedBlob) content).getProviderId());
+    }
+
     protected DocumentModel moveAndRequestRetrievalFromColdStorage(String documentName) {
         DocumentModel documentModel = createFileDocument(documentName, true);
         documentModel = ColdStorageHelper.moveContentToColdStorage(session, documentModel.getRef());
@@ -238,12 +273,19 @@ public class TestColdStorage {
         return session.saveDocument(documentModel);
     }
 
-    protected DocumentModel createFileDocument(String name, boolean addBlobContent) {
+    protected DocumentModel createFileDocument(String name, boolean addBlobContent, ACE... aces) {
         DocumentModel documentModel = session.createDocumentModel("/", name, "File");
         if (addBlobContent) {
             documentModel.setPropertyValue("file:content", (Serializable) Blobs.createBlob(FILE_CONTENT));
         }
-        return session.createDocument(documentModel);
+        DocumentModel document = session.createDocument(documentModel);
+        if (aces.length > 0) {
+            ACP acp = documentModel.getACP();
+            ACL acl = acp.getOrCreateACL();
+            acl.addAll(List.of(aces));
+            document.setACP(acp, true);
+        }
+        return document;
     }
 
     protected void checkAvailabilityOfDocuments(List<String> expectedAvailableDocIds, Instant downloadableUntil,
