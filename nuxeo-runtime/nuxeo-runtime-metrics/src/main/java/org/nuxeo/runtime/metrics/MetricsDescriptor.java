@@ -27,9 +27,12 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -44,6 +47,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
 
+import io.dropwizard.metrics5.MetricAttribute;
 import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.graphite.Graphite;
@@ -99,17 +103,29 @@ public class MetricsDescriptor implements Serializable {
         /**
          * @since 9.3
          */
-        public static final String DEFAULT_ALLOWED_METRICS = "nuxeo.cache.default-cache,nuxeo.cache.user-entry-cache,nuxeo.cache.group-entry-cache,nuxeo.directories.directory.userDirectory,nuxeo.directories.directory.groupDirectory";
+        public static final String DEFAULT_ALLOWED_METRICS = "nuxeo.cache.default-cache.,nuxeo.cache.user-entry-cache.,nuxeo.cache.group-entry-cache.,nuxeo.directories.directory.userDirectory,nuxeo.directories.directory.groupDirectory";
 
         /**
          * @since 9.3
          */
-        public static final String DEFAULT_DENIED_METRICS = "nuxeo.cache,nuxeo.directories";
+        public static final String DEFAULT_DENIED_METRICS = "nuxeo.cache,nuxeo.directories,nuxeo.ActionService,nuxeo.org.apache.logging.log4j.core.Appender.info,nuxeo.org.apache.logging.log4j.core.Appender.debug,nuxeo.org.apache.logging.log4j.core.Appender.trace,nuxeo.org.nuxeo.ecm.core.management.standby.StandbyComponent";
 
         /**
          * @since 9.3
          */
         public static final String ALL_METRICS = "ALL";
+
+        /**
+         * A comma separated list of timer attributes than will not be reported.
+         *
+         * @since 11.1
+         */
+        public static final String DISABLED_ATTRIBUTES_PROPERTY = "metrics.graphite.disableTimerAttributes";
+
+        /**
+         * @since 11.1
+         */
+        public static final String DEFAULT_DISABLED_ATTRIBUTES = "p999,p95,p99,sum,m15_rate,mean_rate,m5_rate";
 
         @XNode("@enabled")
         protected Boolean enabled = Boolean.valueOf(Framework.getProperty(ENABLED_PROPERTY, "false"));
@@ -176,6 +192,17 @@ public class MetricsDescriptor implements Serializable {
                     || deniedMetrics.stream().noneMatch(f -> ALL_METRICS.equals(f) || graphiteName.startsWith(f));
         }
 
+        public Set<MetricAttribute> getDisabledAttribute() {
+            List<String> attributes = Arrays.asList(
+                    Framework.getProperty(DISABLED_ATTRIBUTES_PROPERTY, DEFAULT_DISABLED_ATTRIBUTES).split(","));
+            if (attributes.isEmpty()) {
+                return Collections.emptySet();
+            }
+            return attributes.stream()
+                             .map(attr -> MetricAttribute.valueOf(attr.toUpperCase().strip()))
+                             .collect(Collectors.toSet());
+        }
+
         @Override
         public String toString() {
             return String.format("graphiteReporter %s prefix: %s, host: %s, port: %d, period: %d",
@@ -198,6 +225,7 @@ public class MetricsDescriptor implements Serializable {
                                        .convertDurationsTo(TimeUnit.MICROSECONDS)
                                        .prefixedWith(getPrefix())
                                     .filter((name, metric) -> filter(name))
+                                    .disabledMetricAttributes(getDisabledAttribute())
                                     .build(graphite));
             reporter.start(period, TimeUnit.SECONDS);
         }
