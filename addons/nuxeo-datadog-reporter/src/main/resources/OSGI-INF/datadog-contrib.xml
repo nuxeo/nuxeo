@@ -6,7 +6,7 @@
     <configuration>
       <apiKey>${datadog.apikey:=}</apiKey>
       <host>${datadog.host:=}</host>
-      <pollInterval>${datadog.pollinterval:=10}</pollInterval>
+      <pollInterval>${datadog.pollinterval:=60}</pollInterval>
       <tags>${datadog.tags:=nuxeo}</tags>
     </configuration>
 
