@@ -30,7 +30,6 @@ properties([
   [$class: 'GithubProjectProperty', projectUrlStr: repositoryUrl],
   [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '60', numToKeepStr: '60', artifactNumToKeepStr: '5']],
   disableConcurrentBuilds(),
-  pipelineTriggers([cron('H 0 * * *')]),
 ])
 
 void setGitHubBuildStatus(String context, String message, String state) {
@@ -40,6 +39,22 @@ void setGitHubBuildStatus(String context, String message, String state) {
     contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
     statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
   ])
+}
+
+String getMavenArgs() {
+  def args = '-B -nsu'
+  if (!isPullRequest()) {
+    args += ' -Prelease'
+  }
+  return args
+}
+
+def isPullRequest() {
+  return BRANCH_NAME =~ /PR-.*/
+}
+
+String getVersion() {
+  return isPullRequest() ? getPullRequestVersion() : getReleaseVersion()
 }
 
 String getReleaseVersion() {
@@ -56,6 +71,10 @@ String getReleaseVersion() {
     }
   }
   return version
+}
+
+String getPullRequestVersion() {
+  return "${BRANCH_NAME}-" + readMavenPom().getVersion()
 }
 
 String getDockerTagFrom(String version) {
@@ -92,13 +111,22 @@ void dockerPush(String image) {
 }
 
 void dockerDeploy(String imageName) {
-  String fullImageName = "${DOCKER_REGISTRY}/${dockerNamespace}/${imageName}"
-  String currentImage = "${fullImageName}:${VERSION}"
-  String newImage = "${fullImageName}:${DOCKER_TAG}"
-  echo "Push ${newImage}"
-  dockerPull(currentImage)
-  dockerTag(currentImage, newImage)
-  dockerPush(newImage)
+  String imageName = "${dockerNamespace}/${imageName}"
+  String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${imageName}:${VERSION}"
+  String latestInternalImage = "${DOCKER_REGISTRY}/${imageName}:${DOCKER_TAG}"
+  String fixedVersionPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${imageName}:${VERSION}"
+  String latestPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${imageName}:${DOCKER_TAG}"
+
+  dockerPull(fixedVersionInternalImage)
+  echo "Push ${latestInternalImage}"
+  dockerTag(fixedVersionInternalImage, latestInternalImage)
+  dockerPush(latestInternalImage)
+  echo "Push ${fixedVersionPublicImage}"
+  dockerTag(fixedVersionInternalImage, fixedVersionPublicImage)
+  dockerPush(fixedVersionPublicImage)
+  echo "Push ${latestPublicImage}"
+  dockerTag(fixedVersionInternalImage, latestPublicImage)
+  dockerPush(latestPublicImage)
 }
 
 /**
@@ -247,13 +275,15 @@ pipeline {
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
+    PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms512m -Xmx3072m"
-    MAVEN_ARGS = '-B -nsu -Prelease'
-    VERSION = getReleaseVersion()
+    MAVEN_ARGS = getMavenArgs()
+    VERSION = getVersion()
     DOCKER_TAG = getDockerTagFrom("${VERSION}")
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
   }
+
   stages {
     stage('Set labels') {
       steps {
@@ -270,6 +300,7 @@ pipeline {
         }
       }
     }
+
     stage('Update version') {
       steps {
         container('maven') {
@@ -287,7 +318,13 @@ pipeline {
         }
       }
     }
+
     stage('Git commit') {
+      when {
+        not {
+          branch 'PR-*'
+        }
+      }
       steps {
         container('maven') {
           echo """
@@ -302,6 +339,7 @@ pipeline {
         }
       }
     }
+
     stage('Compile') {
       steps {
         setGitHubBuildStatus('platform/compile', 'Compile', 'PENDING')
@@ -323,6 +361,7 @@ pipeline {
         }
       }
     }
+
     stage('Run common unit tests') {
       steps {
         setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'PENDING')
@@ -348,6 +387,7 @@ pipeline {
         }
       }
     }
+
     stage('Run runtime unit tests') {
       steps {
         setGitHubBuildStatus('platform/utests/runtime/dev', 'Unit tests - runtime', 'PENDING')
@@ -373,6 +413,7 @@ pipeline {
         }
       }
     }
+
     stage('Run unit tests') {
       steps {
         script {
@@ -384,6 +425,7 @@ pipeline {
         }
       }
     }
+
     stage('Package') {
       steps {
         setGitHubBuildStatus('platform/package', 'Package', 'PENDING')
@@ -405,6 +447,7 @@ pipeline {
         }
       }
     }
+
     stage('Run "dev" functional tests') {
       steps {
         setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
@@ -432,6 +475,7 @@ pipeline {
         }
       }
     }
+
     stage('Build Docker images') {
       steps {
         setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
@@ -457,6 +501,7 @@ pipeline {
         }
       }
     }
+
     stage('Test Docker images') {
       steps {
         setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'PENDING')
@@ -508,31 +553,37 @@ pipeline {
         }
       }
     }
-    stage('Tag Docker images') {
+
+    stage('Deploy Docker images') {
+      when {
+        not {
+          branch 'PR-*'
+        }
+      }
       steps {
-        setGitHubBuildStatus('platform/docker/tag', 'Tag Docker images', 'PENDING')
+        setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'PENDING')
         container('maven') {
           echo """
           ----------------------------------------
-          Tag Docker images
+          Deploy Docker images
           ----------------------------------------
-          Current image tag: ${VERSION}
-          New image tag: ${DOCKER_TAG}
+          Image tag: ${VERSION}
           """
-          echo "Tag and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
+          echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
           dockerDeploy("${SLIM_IMAGE_NAME}")
           dockerDeploy("${NUXEO_IMAGE_NAME}")
         }
       }
       post {
         success {
-          setGitHubBuildStatus('platform/docker/tag', 'Tag Docker images', 'SUCCESS')
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'SUCCESS')
         }
         failure {
-          setGitHubBuildStatus('platform/docker/tag', 'Tag Docker images', 'FAILURE')
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'FAILURE')
         }
       }
     }
+
     stage('Deploy Maven artifacts') {
       steps {
         setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
@@ -553,7 +604,13 @@ pipeline {
         }
       }
     }
+
     stage('Git tag and push') {
+      when {
+        not {
+          branch 'PR-*'
+        }
+      }
       steps {
         container('maven') {
           echo """
@@ -562,14 +619,53 @@ pipeline {
           ----------------------------------------
           """
           sh """
-              #!/usr/bin/env bash -xe
-              # create the Git credentials
-              jx step git credentials
-              git config credential.helper store
+            #!/usr/bin/env bash -xe
+            # create the Git credentials
+            jx step git credentials
+            git config credential.helper store
 
-              # Git tag
-              jx step tag -v ${VERSION}
-            """
+            # Git tag
+            jx step tag -v ${VERSION}
+          """
+        }
+      }
+    }
+
+    stage('JSF pipeline') {
+      when {
+        expression {
+          // only trigger JSF pipeline if the target branch is master or a maintenance branch
+          return CHANGE_TARGET ==~ 'master|\\d+\\.\\d+'
+        }
+      }
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Build JSF pipeline
+          ----------------------------------------
+          Parameters:
+            NUXEO_BRANCH: ${CHANGE_BRANCH}
+            NUXEO_COMMIT_SHA: ${GIT_COMMIT}
+            NUXEO_VERSION: ${VERSION}
+          """
+          build job: "/nuxeo/nuxeo-jsf-ui-status/${CHANGE_TARGET}",
+            parameters: [
+              string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
+              string(name: 'NUXEO_COMMIT_SHA', value: "${GIT_COMMIT}"),
+              string(name: 'NUXEO_VERSION', value: "${VERSION}"),
+            ], propagate: false, wait: false
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      script {
+        if (!isPullRequest()) {
+          // update JIRA issue
+          step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
         }
       }
     }
