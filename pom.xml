@@ -89,7 +89,7 @@
     <textcat.version>1.0.1</textcat.version>
     <apache.httpcore.version>4.4.13</apache.httpcore.version>
     <apache.httpcomponents.version>4.5.11</apache.httpcomponents.version>
-    <apache.poi.version>3.17</apache.poi.version>
+    <apache.poi.version>4.1.2</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX01</jxls.version>
     <xdocreport.version>1.0.5</xdocreport.version>

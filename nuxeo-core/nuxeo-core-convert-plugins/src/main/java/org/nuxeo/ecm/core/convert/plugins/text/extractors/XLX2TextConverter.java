@@ -88,10 +88,10 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
     protected void appendTextFromCell(XSSFCell cell, StringBuilder sb) {
         String cellValue = null;
         switch (cell.getCellType()) {
-        case XSSFCell.CELL_TYPE_NUMERIC:
+        case NUMERIC:
             cellValue = Double.toString(cell.getNumericCellValue()).trim();
             break;
-        case XSSFCell.CELL_TYPE_STRING:
+        case STRING:
             cellValue = cell.getStringCellValue().trim();
             break;
         }

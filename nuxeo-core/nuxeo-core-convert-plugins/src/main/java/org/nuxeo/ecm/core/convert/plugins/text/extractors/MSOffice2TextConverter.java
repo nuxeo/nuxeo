@@ -28,8 +28,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.apache.poi.POITextExtractor;
-import org.apache.poi.extractor.ExtractorFactory;
+import org.apache.poi.extractor.POITextExtractor;
+import org.apache.poi.ooxml.extractor.ExtractorFactory;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.xmlbeans.XmlException;
 import org.nuxeo.ecm.core.api.Blob;

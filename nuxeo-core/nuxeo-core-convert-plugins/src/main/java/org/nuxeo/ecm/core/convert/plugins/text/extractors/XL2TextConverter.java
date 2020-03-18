@@ -78,10 +78,10 @@ public class XL2TextConverter implements Converter {
     protected void appendTextFromCell(HSSFCell cell, StringBuilder sb) {
         String cellValue = null;
         switch (cell.getCellType()) {
-        case HSSFCell.CELL_TYPE_NUMERIC:
+        case NUMERIC:
             cellValue = Double.toString(cell.getNumericCellValue()).trim();
             break;
-        case HSSFCell.CELL_TYPE_STRING:
+        case STRING:
             cellValue = cell.getStringCellValue().trim().replaceAll("\n", " ");
             break;
         }

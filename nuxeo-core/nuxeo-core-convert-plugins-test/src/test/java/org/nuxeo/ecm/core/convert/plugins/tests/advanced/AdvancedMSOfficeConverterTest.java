@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.convert.plugins.text.extractors.PPTX2TextConverter;
 
 public class AdvancedMSOfficeConverterTest extends SimpleConverterTest {
 
+    protected String expectedContentFilename;
+
     /**
      * Note that {@link MSOffice2TextConverter}, contrary to {@link DOCX2TextConverter} or {@link PPTX2TextConverter}
      * cannot distinguish headings from paragraphs, so there are no additional new lines before headings in the
@@ -44,7 +46,7 @@ public class AdvancedMSOfficeConverterTest extends SimpleConverterTest {
     protected void checkTextConversion(String textContent) {
 
         try {
-            Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-docs/advanced/MSOffice_paragraphs.txt"));
+            Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-docs/" + expectedContentFilename));
             blob.setEncoding("UTF-8");
 
             // Get blob string with Unix end of line characters
