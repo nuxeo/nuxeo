@@ -17,9 +17,11 @@
 package org.nuxeo.ecm.core.management.standby;
 
 import javax.management.JMException;
+
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.ServerLocator;
+import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.trackers.concurrent.ThreadEventHandler;
@@ -28,6 +30,7 @@ import org.nuxeo.runtime.trackers.concurrent.ThreadEventListener;
 import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.Meter;
 import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.Timer;
 import io.dropwizard.metrics5.Timer.Context;
 
@@ -38,14 +41,13 @@ public class StandbyComponent extends DefaultComponent {
 
     protected final StandbyCommand command = new StandbyCommand();
 
-    protected final Counter active = Framework.getService(MetricRegistry.class)
-            .counter(MetricRegistry.name(StandbyComponent.class, "active"));
+    protected MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    protected final Meter meter = Framework.getService(MetricRegistry.class)
-            .meter(MetricRegistry.name(StandbyComponent.class, "meter"));
+    protected final Counter active = registry.counter(MetricRegistry.name(StandbyComponent.class, "active"));
 
-    protected final Timer timer = Framework.getService(MetricRegistry.class)
-            .timer(MetricRegistry.name(StandbyComponent.class, "timer"));
+    protected final Meter meter = registry.meter(MetricRegistry.name(StandbyComponent.class, "meter"));
+
+    protected final Timer timer = registry.timer(MetricRegistry.name(StandbyComponent.class, "timer"));
 
     protected final ThreadLocal<Context> holder = new ThreadLocal<>();
 

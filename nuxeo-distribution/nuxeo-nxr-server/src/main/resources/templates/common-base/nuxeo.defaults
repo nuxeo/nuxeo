@@ -226,3 +226,29 @@ nuxeo.stream.health.check.delay=36h
 # JWT config, must be the same cluster-wide
 nuxeo.jwt.secret=
 nuxeo.jwt.defaultTTL=3600
+
+# Metrics
+metrics.enabled=false
+## Instrumentations
+metrics.jvm.enabled=true
+metrics.log4j.enabled=true
+metrics.tomcat.enabled=true
+
+## Graphite reporter
+metrics.graphite.enabled=false
+metrics.graphite.host=graphite
+metrics.graphite.port=2003
+metrics.graphite.udp=false
+metrics.graphite.pollInterval=30
+metrics.graphite.prefix=
+
+## Datadog reporter
+metrics.datadog.enabled=false
+metrics.graphite.pollInterval=60
+metrics.datadog.apiKey=
+metrics.datadog.tags=nuxeo
+metrics.datadog.hostname=
+metrics.datadog.udp=false
+metrics.datadog.host=localhost
+metrics.datadog.port=8125
+

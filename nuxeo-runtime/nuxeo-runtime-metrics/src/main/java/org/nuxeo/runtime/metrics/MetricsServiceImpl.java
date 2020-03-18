@@ -18,79 +18,207 @@
  */
 package org.nuxeo.runtime.metrics;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import static org.apache.logging.log4j.Level.INFO;
+import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
+import static org.nuxeo.runtime.model.Descriptor.UNIQUE_DESCRIPTOR_ID;
+
+import java.lang.management.ManagementFactory;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
-import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
+import io.dropwizard.metrics5.jvm.BufferPoolMetricSet;
+import io.dropwizard.metrics5.jvm.FileDescriptorRatioGauge;
+import io.dropwizard.metrics5.jvm.GarbageCollectorMetricSet;
+import io.dropwizard.metrics5.jvm.JmxAttributeGauge;
+import io.dropwizard.metrics5.jvm.MemoryUsageGaugeSet;
+import io.dropwizard.metrics5.jvm.ThreadStatesGaugeSet;
+import io.dropwizard.metrics5.log4j2.InstrumentedAppender;
 
 public class MetricsServiceImpl extends DefaultComponent implements MetricsService {
 
-    protected static final Log log = LogFactory.getLog(MetricsServiceImpl.class);
-
-    protected MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-
-    private final Counter instanceUp = registry.counter(MetricRegistry.name("nuxeo", "instance-up"));
+    private static final Logger log = LogManager.getLogger(MetricsServiceImpl.class);
 
     protected static final String CONFIGURATION_EP = "configuration";
 
-    protected MetricsDescriptor config;
+    protected static final String REPORTER_EP = "reporter";
 
-    public MetricsServiceImpl() {
-        super();
-    }
+    protected MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (CONFIGURATION_EP.equals(extensionPoint) && contribution instanceof MetricsDescriptor) {
-            log.debug("Registering metrics contribution");
-            config = (MetricsDescriptor) contribution;
-        } else {
-            log.warn("Unknown EP " + extensionPoint);
-        }
-    }
+    protected final Counter instanceUp = registry.counter(MetricRegistry.name("nuxeo", "instance-up"));
+
+    protected MetricsConfigurationDescriptor config;
+
+    protected List<MetricsReporterDescriptor> reporterConfigs;
+
+    protected List<MetricsReporter> reporters;
+
+    protected InstrumentedAppender appender;
 
     @Override
     public void activate(ComponentContext context) {
+        super.activate(context);
+        log.debug("Activating component");
         SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
     }
 
     @Override
     public void deactivate(ComponentContext context) {
+        log.debug("Deactivating component");
         SharedMetricRegistries.remove(MetricsService.class.getName());
-        log.debug("Deactivate component.");
+        super.deactivate(context);
     }
 
     @Override
     public void start(ComponentContext context) {
-        if (config == null) {
-            // Use a default config
-            config = new MetricsDescriptor();
-        }
-        log.info("Setting up metrics configuration");
-        config.enable(registry);
+        super.start(context);
+        log.debug("Starting component");
         instanceUp.inc();
+        config = getDescriptor(CONFIGURATION_EP, UNIQUE_DESCRIPTOR_ID);
+        startReporters();
     }
 
     @Override
     public void stop(ComponentContext context) {
-        try {
-            config.disable(registry);
-        } finally {
-            instanceUp.dec();
-        }
+        log.debug("Stopping component");
+        stopReporters();
+        instanceUp.dec();
+    }
+
+    protected boolean metricEnabled() {
+        return config != null && config.isEnabled();
     }
 
     @Override
-    public <T> T getAdapter(Class<T> adapter) {
-        if (adapter.isAssignableFrom(MetricRegistry.class)) {
-            return adapter.cast(registry);
+    public void startReporters() {
+        if (!metricEnabled() || reporters != null) {
+            log.debug("Metrics disabled or already started.");
+            return;
         }
-        return super.getAdapter(adapter);
+        log.info("Starting reporters");
+        reporterConfigs = getDescriptors(REPORTER_EP);
+        updateInstrumentation(config.getInstruments(), true);
+        reporters = reporterConfigs.stream()
+                                   .filter(MetricsReporterDescriptor::isEnabled)
+                                   .map(MetricsReporterDescriptor::newInstance)
+                                   .collect(Collectors.toList());
+        reporters.forEach(reporter -> reporter.start(registry, config, config.getDeniedExpansions()));
     }
 
+    @Override
+    public void stopReporters() {
+        if (!metricEnabled() || reporters == null) {
+            log.debug("Metrics disabled or already stopped.");
+            return;
+        }
+        log.warn("Stopping reporters");
+        reporters.forEach(MetricsReporter::stop);
+        updateInstrumentation(config.getInstruments(), false);
+        reporters.clear();
+        reporters = null;
+        reporterConfigs = null;
+    }
+
+    protected void updateInstrumentation(List<MetricsConfigurationDescriptor.InstrumentDescriptor> instruments, boolean activate) {
+        for (String instrument : instruments.stream()
+                                            .filter(MetricsConfigurationDescriptor.InstrumentDescriptor::isEnabled)
+                                            .map(MetricsConfigurationDescriptor.InstrumentDescriptor::getId)
+                                            .collect(Collectors.toList())) {
+            switch (instrument) {
+            case "log4j":
+                instrumentLog4j(activate);
+                break;
+            case "tomcat":
+                instrumentTomcat(activate);
+                break;
+            case "jvm":
+                instrumentJvm(activate);
+                break;
+            default:
+                log.warn("Ignoring unknown instrumentation: " + instrument);
+            }
+        }
+    }
+
+    protected void instrumentLog4j(boolean activate) {
+        if (activate) {
+            appender = new InstrumentedAppender(registry, null, null, false);
+            appender.start();
+            @SuppressWarnings("resource") // not ours to close
+            LoggerContext context = (LoggerContext) LogManager.getContext(false);
+            Configuration config = context.getConfiguration();
+            config.getLoggerConfig(ROOT_LOGGER_NAME).addAppender(appender, INFO, null);
+            context.updateLoggers(config);
+        } else if (appender != null) {
+            try {
+                @SuppressWarnings("resource") // not ours to close
+                LoggerContext context = (LoggerContext) LogManager.getContext(false);
+                Configuration config = context.getConfiguration();
+                config.getLoggerConfig(ROOT_LOGGER_NAME).removeAppender(appender.getName());
+                context.updateLoggers(config);
+            } finally {
+                appender = null;
+            }
+        }
+    }
+
+    protected void registerTomcatGauge(String mbean, String attribute, MetricRegistry registry, String name) {
+        try {
+            registry.register(MetricRegistry.name("tomcat", name),
+                    new JmxAttributeGauge(new ObjectName(mbean), attribute));
+        } catch (MalformedObjectNameException | IllegalArgumentException e) {
+            throw new UnsupportedOperationException("Cannot compute object name of " + mbean, e);
+        }
+    }
+
+    protected void instrumentTomcat(boolean activate) {
+        if (activate) {
+            // TODO: do not hard code the common datasource
+            String pool = "org.nuxeo.ecm.core.management.jtajca:type=ConnectionPoolMonitor,name=jdbc/nuxeo";
+            String connector = String.format("Catalina:type=ThreadPool,name=\"http-nio-%s-%s\"",
+                    Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
+                    Framework.getProperty("nuxeo.bind.port", "8080"));
+            String requestProcessor = String.format("Catalina:type=GlobalRequestProcessor,name=\"http-nio-%s-%s\"",
+                    Framework.getProperty("nuxeo.bind.address", "0.0.0.0"),
+                    Framework.getProperty("nuxeo.bind.port", "8080"));
+            String manager = "Catalina:type=Manager,host=localhost,context=/nuxeo";
+            registerTomcatGauge(pool, "ConnectionCount", registry, "jdbc-numActive");
+            registerTomcatGauge(pool, "IdleConnectionCount", registry, "jdbc-numIdle");
+            registerTomcatGauge(connector, "currentThreadCount", registry, "currentThreadCount");
+            registerTomcatGauge(connector, "currentThreadsBusy", registry, "currentThreadBusy");
+            registerTomcatGauge(requestProcessor, "errorCount", registry, "errorCount");
+            registerTomcatGauge(requestProcessor, "requestCount", registry, "requestCount");
+            registerTomcatGauge(requestProcessor, "processingTime", registry, "processingTime");
+            registerTomcatGauge(requestProcessor, "bytesReceived", registry, "bytesReceived");
+            registerTomcatGauge(requestProcessor, "bytesSent", registry, "bytesSent");
+            registerTomcatGauge(manager, "activeSessions", registry, "activeSessions");
+        } else {
+            registry.removeMatching((name, metric) -> name.getKey().startsWith("tomcat."));
+        }
+    }
+
+    protected void instrumentJvm(boolean activate) {
+        if (activate) {
+            registry.register("jvm.memory", new MemoryUsageGaugeSet());
+            registry.register("jvm.garbage", new GarbageCollectorMetricSet());
+            registry.register("jvm.threads", new ThreadStatesGaugeSet());
+            registry.register("jvm.files", new FileDescriptorRatioGauge());
+            registry.register("jvm.buffers", new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+        } else {
+            registry.removeMatching((name, metric) -> name.getKey().startsWith("jvm."));
+        }
+    }
 }

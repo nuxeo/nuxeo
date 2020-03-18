@@ -46,7 +46,11 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-management</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-metrics</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.javasimon</groupId>

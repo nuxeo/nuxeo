@@ -30,6 +30,7 @@ import org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent.Ser
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
+import io.dropwizard.metrics5.MetricName;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.jvm.JmxAttributeGauge;
@@ -38,6 +39,8 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 
     // @since 5.7.2
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+
+    protected MetricName sessionGauge;
 
     @Override
     public int getCount() {
@@ -77,14 +80,14 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
     @Override
     public void install() {
         self = DefaultMonitorComponent.bind(CoreSessionMonitor.class, this);
-        registry.register(MetricRegistry.name("nuxeo.repositories", "sessions"),
-                new JmxAttributeGauge(self.name, "Count"));
+        sessionGauge = MetricRegistry.name("nuxeo.repositories.sessions");
+        registry.register(sessionGauge, new JmxAttributeGauge(self.name, "Count"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        registry.remove(MetricRegistry.name("nuxeo.repositories", "sessions"));
+        registry.remove(sessionGauge);
         self = null;
     }
 

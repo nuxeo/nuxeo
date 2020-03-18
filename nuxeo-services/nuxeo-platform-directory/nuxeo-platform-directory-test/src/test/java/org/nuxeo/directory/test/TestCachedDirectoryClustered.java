@@ -47,6 +47,7 @@ import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+
 import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
@@ -118,11 +119,13 @@ public class TestCachedDirectoryClustered {
     @Test
     public void testGet() {
         try (Session session = getSession()) {
-            MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-            Counter hitsCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
-            Counter missesCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
+            MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+            Counter hitsCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "hit")
+                                  .tagged("directory", "userDirectory"));
+            Counter missesCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "miss")
+                                  .tagged("directory", "userDirectory"));
             long baseHitsCount = hitsCounter.getCount();
             long baseMissesCount = missesCounter.getCount();
 

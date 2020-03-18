@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.metrics.test.contrib">
+
+  <extension target="org.nuxeo.runtime.metrics.MetricsService" point="configuration">
+    <configuration enabled="true">
+      <instrument name="jvm" enabled="${metrics.jvm.enabled}" />
+      <instrument name="log4j" enabled="${metrics.log4j.enabled}" />
+      <instrument name="tomcat" enabled="${metrics.tomcat.enabled}" />
+      <filter>
+        <allow>
+          <prefix>nuxeo.cache.default-cache.</prefix>
+          <prefix>nuxeo.cache.user-entry-cache.</prefix>
+          <prefix>nuxeo.cache.group-entry-cache.</prefix>
+          <prefix>nuxeo.directories.directory.userDirectory</prefix>
+          <prefix>nuxeo.directories.directory.groupDirectory</prefix>
+        </allow>
+        <deny>
+          <prefix>nuxeo.cache</prefix>
+          <prefix>nuxeo.directories</prefix>
+          <prefix>nuxeo.ActionService</prefix>
+          <prefix>org.apache.logging.log4j.core.Appender.debug.count</prefix>
+          <prefix>org.apache.logging.log4j.core.Appender.info</prefix>
+          <prefix>org.apache.logging.log4j.core.Appender.debug</prefix>
+          <prefix>org.apache.logging.log4j.core.Appender.trace</prefix>
+          <prefix>org.nuxeo.ecm.core.management.standby.StandbyComponent</prefix>
+          <!-- Timer expansion to remove -->
+          <expansion>sum</expansion>
+          <expansion>p999</expansion>
+          <expansion>p99</expansion>
+          <expansion>p95</expansion>
+          <expansion>m15_rate</expansion>
+          <expansion>m5_rate</expansion>
+          <expansion>mean_rate</expansion>
+        </deny>
+      </filter>
+    </configuration>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.metrics.MetricsService" point="reporter">
+    <reporter enabled="true" name="mock" pollInterval="42"
+      class="org.nuxeo.runtime.metrics.MockReporter">
+      <option name="foo">bar</option>
+    </reporter>
+  </extension>
+
+</component>
