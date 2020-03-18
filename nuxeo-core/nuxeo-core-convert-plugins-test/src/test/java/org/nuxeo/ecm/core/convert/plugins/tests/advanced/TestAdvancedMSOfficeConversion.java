@@ -32,11 +32,13 @@ public class TestAdvancedMSOfficeConversion extends AdvancedMSOfficeConverterTes
     // Test msoffice2text
     @Test
     public void testWordConverter() throws Exception {
+        expectedContentFilename = "advanced/paragraphs_doc.txt";
         doTestTextConverter("application/msword", "msoffice2text", "advanced/paragraphs.doc");
     }
 
     @Test
     public void testPptConverter() throws Exception {
+        expectedContentFilename = "advanced/paragraphs_ppt.txt";
         doTestTextConverter("application/vnd.ms-powerpoint", "msoffice2text", "advanced/paragraphs.ppt");
     }
 }
