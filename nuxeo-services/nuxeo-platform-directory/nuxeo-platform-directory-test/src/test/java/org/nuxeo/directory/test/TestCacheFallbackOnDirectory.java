@@ -85,11 +85,13 @@ public class TestCacheFallbackOnDirectory {
             assertEquals(5L, desc.getTTL());
             assertEquals(100L, Long.parseLong(desc.options.get(OPTION_MAX_SIZE)));
 
-            MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-            Counter hitsCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
-            Counter missesCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
+            MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+            Counter hitsCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "hit")
+                                  .tagged("directory", "userDirectory"));
+            Counter missesCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "miss")
+                                  .tagged("directory", "userDirectory"));
             long baseHitsCount = hitsCounter.getCount();
             long baseMissesCount = missesCounter.getCount();
 

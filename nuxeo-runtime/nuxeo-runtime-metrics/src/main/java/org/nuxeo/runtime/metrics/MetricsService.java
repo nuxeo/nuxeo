@@ -20,4 +20,8 @@ package org.nuxeo.runtime.metrics;
 
 public interface MetricsService {
 
+    void startReporters();
+
+    void stopReporters();
+
 }

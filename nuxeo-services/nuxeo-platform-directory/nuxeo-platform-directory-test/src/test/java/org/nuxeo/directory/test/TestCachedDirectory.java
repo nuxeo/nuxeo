@@ -83,13 +83,16 @@ public class TestCachedDirectory extends AbstractDirectoryTest {
     @Test
     public void testGetFromCache() throws Exception {
         try (Session session = getDirectory().getSession()) {
-            MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-            Counter hitsCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
-            Counter negativeHitsCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "neghits"));
-            Counter missesCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
+            MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+            Counter hitsCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "hit")
+                                  .tagged("directory", "userDirectory"));
+            Counter negativeHitsCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "hit", "null")
+                                  .tagged("directory", "userDirectory"));
+            Counter missesCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "miss")
+                                  .tagged("directory", "userDirectory"));
             long baseHitsCount = hitsCounter.getCount();
             long baseNegativeHitsCount = negativeHitsCounter.getCount();
             long baseMissesCount = missesCounter.getCount();
@@ -130,13 +133,16 @@ public class TestCachedDirectory extends AbstractDirectoryTest {
 
     protected void doTestNegativeCaching() throws Exception {
         try (Session session = getDirectory().getSession()) {
-            MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-            Counter hitsCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "hits"));
-            Counter negativeHitsCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "neghits"));
-            Counter missesCounter = metrics.counter(
-                    MetricRegistry.name("nuxeo", "directories", "userDirectory", "cache", "misses"));
+            MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+            Counter hitsCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "hit")
+                                  .tagged("directory", "userDirectory"));
+            Counter negativeHitsCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "hit", "null")
+                                  .tagged("directory", "userDirectory"));
+            Counter missesCounter = registry.counter(
+                    MetricRegistry.name("nuxeo", "directories", "directory", "cache", "miss")
+                                  .tagged("directory", "userDirectory"));
             long baseHitsCount = hitsCounter.getCount();
             long baseNegativeHitsCount = negativeHitsCounter.getCount();
             long baseMissesCount = missesCounter.getCount();

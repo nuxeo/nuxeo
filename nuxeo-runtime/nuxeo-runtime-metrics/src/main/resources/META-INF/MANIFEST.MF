@@ -1,10 +1,6 @@
-Export-Package: org.nuxeo.runtime.metrics
-Bundle-ActivationPolicy: lazy
 Manifest-Version: 1.0
-Bundle-Category: runtime
-Bundle-Name: org.nuxeo.runtime.metrics
-Created-By: 1.6.0_20 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ManifestVersion: 2
-Nuxeo-Component: OSGI-INF/runtime-metrics-service.xml
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Runtime Metrics
 Bundle-SymbolicName: org.nuxeo.runtime.metrics;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/runtime-metrics-service.xml

@@ -2,57 +2,21 @@
 <component name="org.nuxeo.runtime.metrics.MetricsService">
 
   <documentation>
-    Define CodeHale Metrics configuration.
+    Filter and Report Dropwizzard Metrics and Tracing.
   </documentation>
 
   <service>
     <provide interface="org.nuxeo.runtime.metrics.MetricsService" />
-    <provide interface="io.dropwizard.metrics5.MetricRegistry" />
   </service>
-
-  <require>org.nuxeo.runtime.management.ServerLocator</require>
 
   <implementation class="org.nuxeo.runtime.metrics.MetricsServiceImpl" />
 
   <extension-point name="configuration">
-    <documentation>
-      The default configuration use metrics.* framework properties but
-      you can override the configuration using a EP like this:
+    <object class="org.nuxeo.runtime.metrics.MetricsConfigurationDescriptor" />
+  </extension-point>
 
-      <extension target="org.nuxeo.runtime.metrics.MetricsService" point="configuration">
-      <metrics>
-        <graphiteReporter enabled="true" periodInSecond="20"
-          host="graphite.server.name" port="2003" prefix="servers.${hostname}.nuxeo."/>
-        <log4jInstrumentation enabled="true" />
-        <tomcatInstrumentation enabled="true" />
-      </metrics>
-      </extension>
-
-      Since 9.3, you can filter the list of metrics reported to Graphite. The ones enabled can be
-      defined with the metrics.graphite.allowedMetrics property and the ones ignored with the
-      metrics.graphite.deniedMetrics property.
-
-      About the allowed metrics, if a metric name starts with any item of this list, then it will be reported.
-      The 'ALL' value means that every metrics will be reported.
-      About the denied metrics, if a metric name starts with any item of this list, then it will be ignored
-      (unless it is part of the allowed metrics). The 'ALL' value means that every metrics will be ignored.
-
-      These properties can be overridden with the previous extension point like this:
-
-      <graphiteReporter enabled="true" periodInSecond="20" host="graphite.server.name" port="2003"
-        prefix="servers.${hostname}.nuxeo.">
-        <allowedMetrics>
-          <metric>nuxeo.cache.user-entry-cache</metric>
-          <metric>nuxeo.cache.group-entry-cache</metric>
-        </allowedMetrics>
-        <deniedMetrics>
-          <metric>nuxeo.cache</metric>
-          <metric>nuxeo.directories</metric>
-        </deniedMetrics>
-      </graphiteReporter>
-
-    </documentation>
-    <object class="org.nuxeo.runtime.metrics.MetricsDescriptor" />
+  <extension-point name="reporter">
+    <object class="org.nuxeo.runtime.metrics.MetricsReporterDescriptor" />
   </extension-point>
 
 </component>

@@ -16,13 +16,15 @@
  * Contributors:
  *     bdelbosc
  */
-package org.nuxeo.runtime.metrics;
+package org.nuxeo.runtime.metrics.reporter.patch;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
+
+import org.nuxeo.runtime.metrics.MetricsConfigurationDescriptor;
 
 import io.dropwizard.metrics5.Counter;
 import io.dropwizard.metrics5.Gauge;
@@ -44,7 +46,7 @@ import io.dropwizard.metrics5.graphite.GraphiteReporter;
  */
 public class NuxeoGraphiteReporter extends ScheduledReporter {
 
-    protected final GraphiteReporter reporter;
+    protected GraphiteReporter reporter;
 
     public NuxeoGraphiteReporter(MetricRegistry registry, MetricFilter filter, GraphiteReporter reporter) {
         super(registry, "graphite-reporter", filter, TimeUnit.SECONDS,
@@ -74,8 +76,14 @@ public class NuxeoGraphiteReporter extends ScheduledReporter {
     }
 
     protected MetricName convertName(MetricName name) {
-        String graphiteName = MetricsDescriptor.GraphiteDescriptor.metricToName(name);
+        String graphiteName = MetricsConfigurationDescriptor.expandName(name);
         return MetricName.build(graphiteName);
     }
 
+    @Override
+    public void stop() {
+        reporter.stop();
+        reporter = null;
+        super.stop();
+    }
 }

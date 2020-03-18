@@ -41,6 +41,12 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
     protected NuxeoConnectionManager cm;
 
+    protected MetricName countGauge;
+
+    protected MetricName idleGauge;
+
+    protected MetricName killedGauge;
+
     protected DefaultConnectionPoolMonitor(String mame, NuxeoConnectionManager cm) {
         name = mame;
         this.cm = cm;
@@ -55,23 +61,23 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
     @Override
     public void install() {
         self = DefaultMonitorComponent.bind(this, name);
-        registry.register(MetricName.build("nuxeo", "repositories", "repository", "connection", "count")
-                                    .tagged("repository", name),
-                new JmxAttributeGauge(self.name, "ConnectionCount"));
-        registry.register(MetricName.build("nuxeo", "repositories", "repository", "connection", "idle")
-                                    .tagged("repository", name),
-                new JmxAttributeGauge(self.name, "IdleConnectionCount"));
-        registry.register(MetricName.build("nuxeo", "repositories", "repository", "connection", "killed")
-                                    .tagged("repository", name),
-                new JmxAttributeGauge(self.name, "KilledActiveConnectionCount"));
+        countGauge = MetricName.build("nuxeo", "repositories", "repository", "connection", "count")
+                               .tagged("repository", name);
+        idleGauge = MetricName.build("nuxeo", "repositories", "repository", "connection", "idle")
+                              .tagged("repository", name);
+        killedGauge = MetricName.build("nuxeo", "repositories", "repository", "connection", "killed")
+                                .tagged("repository", name);
+        registry.register(countGauge, new JmxAttributeGauge(self.name, "ConnectionCount"));
+        registry.register(idleGauge, new JmxAttributeGauge(self.name, "IdleConnectionCount"));
+        registry.register(killedGauge, new JmxAttributeGauge(self.name, "KilledActiveConnectionCount"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        registry.remove(MetricRegistry.name("nuxeo", "repositories", "repository", "connection", "count"));
-        registry.remove(MetricRegistry.name("nuxeo", "repositories", "repository", "connection", "idle"));
-        registry.remove(MetricRegistry.name("nuxeo", "repositories", "repository", "connection", "killed"));
+        registry.remove(countGauge);
+        registry.remove(idleGauge);
+        registry.remove(killedGauge);
         self = null;
     }
 

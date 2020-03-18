@@ -59,7 +59,7 @@ public class DirectoryCache {
 
     protected boolean negativeCaching;
 
-    protected final MetricRegistry metrics = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     protected final Counter hitsCounter;
 
@@ -75,16 +75,18 @@ public class DirectoryCache {
 
     protected DirectoryCache(String name) {
         this.name = name;
-        hitsCounter = metrics.counter(
+        hitsCounter = registry.counter(
                 MetricName.build("nuxeo", "directories", "directory", "cache", "hit").tagged("directory", name));
-        negativeHitsCounter = metrics.counter(
+        negativeHitsCounter = registry.counter(
                 MetricName.build("nuxeo", "directories", "directory", "cache", "hit", "null")
                           .tagged("directory", name));
-        missesCounter = metrics.counter(
+        missesCounter = registry.counter(
                 MetricName.build("nuxeo", "directories", "directory", "cache", "miss").tagged("directory", name));
-        invalidationsCounter = metrics.counter(
-                MetricName.build("nuxeo", "directories", "directory", "cache", "invalidation").tagged("directory", name));
-        sizeCounter = metrics.counter(MetricName.build("nuxeo", "directories", "directory", "cache", "size").tagged("directory", name));
+        invalidationsCounter = registry.counter(
+                MetricName.build("nuxeo", "directories", "directory", "cache", "invalidation")
+                          .tagged("directory", name));
+        sizeCounter = registry.counter(
+                MetricName.build("nuxeo", "directories", "directory", "cache", "size").tagged("directory", name));
     }
 
     protected boolean isCacheEnabled() {

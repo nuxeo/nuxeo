@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -117,9 +116,8 @@ public class CacheComplianceFixture {
 
     @Test
     public void hasMetrics() {
-        List<MetricName> expected = Arrays.asList("nuxeo.cache.read-counter", "nuxeo.cache.read-hit-counter",
-                "nuxeo.cache.read-hit-ratio", "nuxeo.cache.read-miss-counter", "nuxeo.cache.write-counter",
-                "nuxeo.cache.invalidate-all-counter", "nuxeo.cache.size")
+        List<MetricName> expected = Arrays.asList("nuxeo.cache.read", "nuxeo.cache.hit", "nuxeo.cache.hit.ratio",
+                "nuxeo.cache.invalidation", "nuxeo.cache.size")
                                           .stream()
                                           .map(name -> MetricName.build(name).tagged("cache", "default-test-cache"))
                                           .collect(Collectors.toList());
