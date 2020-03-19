@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>9.10-HF42-SNAPSHOT</version>
+    <version>9.10-HF42</version>
   </parent>
 
   <groupId>org.nuxeo.ecm.platform</groupId>
