@@ -63,6 +63,15 @@
       <artifactId>poi-ooxml</artifactId>
       <scope>compile</scope>
     </dependency>
+    <!-- jxls 2 -->
+    <dependency>
+      <groupId>org.jxls</groupId>
+      <artifactId>jxls</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jxls</groupId>
+      <artifactId>jxls-poi</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

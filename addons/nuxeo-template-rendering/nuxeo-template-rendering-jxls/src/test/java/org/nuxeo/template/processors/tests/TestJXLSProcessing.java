@@ -18,6 +18,7 @@
  */
 package org.nuxeo.template.processors.tests;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -41,6 +42,11 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 import org.nuxeo.template.processors.jxls.JXLSTemplateProcessor;
 
 public class TestJXLSProcessing extends SimpleTemplateDocTestCase {
+
+    @Test
+    public void testJXLSVersion() {
+        assertFalse(useJXLS1());
+    }
 
     @Test
     public void testFileUpdateFromParams() throws Exception {
@@ -80,9 +86,10 @@ public class TestJXLSProcessing extends SimpleTemplateDocTestCase {
 
     @Override
     protected Blob getTemplateBlob() throws IOException {
-        File file = FileUtils.getResourceFileFromContext("data/jxls_simpletest.xls");
+        String filename = useJXLS1() ? "jxls_simpletest.xls" : "jxls2_simpletest.xls";
+        File file = FileUtils.getResourceFileFromContext("data/" + filename);
         Blob blob = Blobs.createBlob(file);
-        blob.setFilename("jxls_simpletest.xls");
+        blob.setFilename(filename);
         return blob;
     }
 

@@ -14,5 +14,11 @@
 
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property to activate use of the old JXLS 1 for template rendering instead of JXLS 2.
+    </documentation>
+    <property name="org.nuxeo.template.rendering.jxls1">false</property>
+  </extension>
 
- </component>
+</component>

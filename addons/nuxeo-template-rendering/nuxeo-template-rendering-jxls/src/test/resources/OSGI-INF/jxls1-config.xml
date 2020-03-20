@@ -1,0 +1,9 @@
+<component name="org.nuxeo.template.service.jxls1.config">
+
+  <require>org.nuxeo.template.service.jxlsContrib</require>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.template.rendering.jxls1">true</property>
+  </extension>
+
+</component>

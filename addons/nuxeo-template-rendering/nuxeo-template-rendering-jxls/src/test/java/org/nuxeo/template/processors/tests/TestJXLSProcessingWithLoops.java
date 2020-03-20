@@ -18,6 +18,7 @@
  */
 package org.nuxeo.template.processors.tests;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -40,6 +41,11 @@ import org.nuxeo.template.context.extensions.AuditExtensionFactory;
 import org.nuxeo.template.processors.jxls.JXLSTemplateProcessor;
 
 public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
+
+    @Test
+    public void testJXLSVersion() {
+        assertFalse(useJXLS1());
+    }
 
     @Test
     public void testLoops() throws Exception {
@@ -92,9 +98,10 @@ public class TestJXLSProcessingWithLoops extends SimpleTemplateDocTestCase {
 
     @Override
     protected Blob getTemplateBlob() throws IOException {
-        File file = FileUtils.getResourceFileFromContext("data/jxls_simpleloop.xls");
+        String filename = useJXLS1() ? "jxls_simpleloop.xls" : "jxls2_simpleloop.xls";
+        File file = FileUtils.getResourceFileFromContext("data/" + filename);
         Blob blob = Blobs.createBlob(file);
-        blob.setFilename("jxls_simpletest.xls");
+        blob.setFilename(filename);
         return blob;
     }
 
