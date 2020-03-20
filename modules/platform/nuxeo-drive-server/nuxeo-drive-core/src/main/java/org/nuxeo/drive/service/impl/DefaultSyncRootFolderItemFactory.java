@@ -45,7 +45,7 @@ public class DefaultSyncRootFolderItemFactory extends AbstractSyncRootFolderItem
     @Override
     protected FolderItem getParentItem(DocumentModel doc) {
         FileSystemItemManager fileSystemItemManager = Framework.getService(FileSystemItemManager.class);
-        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getPrincipal();
         return fileSystemItemManager.getTopLevelFolder(principal);
     }
 

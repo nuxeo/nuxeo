@@ -175,7 +175,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     protected AbstractDocumentBackedFileSystemItem(String factoryName, FolderItem parentItem, DocumentModel doc,
             boolean relaxSyncRootConstraint, boolean getLockInfo) {
 
-        super(factoryName, doc.getCoreSession().getPrincipal(), relaxSyncRootConstraint);
+        super(factoryName, doc.getPrincipal(), relaxSyncRootConstraint);
 
         // Backing DocumentModel attributes
         repositoryName = doc.getRepositoryName();

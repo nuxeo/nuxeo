@@ -95,21 +95,21 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
      */
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
-        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted,
             boolean relaxSyncRootConstraint) {
-        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint,
             boolean getLockInfo) {
-        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint,
                 getLockInfo);
     }

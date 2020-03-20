@@ -101,8 +101,8 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
 
         // Fire event to change document
-        DocumentEventContext ctx = new DocumentEventContext(targetDoc.getCoreSession(),
-                targetDoc.getCoreSession().getPrincipal(), targetDoc);
+        DocumentEventContext ctx = new DocumentEventContext(targetDoc.getCoreSession(), targetDoc.getPrincipal(),
+                targetDoc);
         ctx.setProperty(ROOT_DOCUMENT_PROPERTY, doc);
 
         Framework.getService(EventService.class).fireEvent(ctx.newEvent(ABOUT_TO_CREATE_LEAF_VERSION_EVENT));

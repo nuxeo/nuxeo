@@ -61,7 +61,7 @@ public abstract class AbstractRenditionBuilderWork extends TransientStoreWork {
         docRef = doc.getRef();
         repositoryName = doc.getRepositoryName();
         renditionName = def.getName();
-        setOriginatingUsername(doc.getCoreSession().getPrincipal().getName());
+        setOriginatingUsername(doc.getPrincipal().getName());
         this.id = buildId(doc, def);
     }
 

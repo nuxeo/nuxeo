@@ -95,6 +95,16 @@ public interface DocumentModel extends Serializable {
     String getSessionId();
 
     /**
+     * Gets the principal attached to this document's session.
+     *
+     * @return the principal
+     * @since 11.1
+     */
+    default NuxeoPrincipal getPrincipal() {
+        return getCoreSession().getPrincipal();
+    }
+
+    /**
      * Gets the core session to which this document is tied.
      * <p>
      * This may be null if the document has been detached from a session.
