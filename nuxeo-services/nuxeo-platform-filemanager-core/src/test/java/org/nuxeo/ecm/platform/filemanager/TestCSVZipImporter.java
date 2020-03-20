@@ -85,34 +85,9 @@ public class TestCSVZipImporter {
 
     @Test
     public void testArchiveDetection() throws Exception {
-        ZipFile archive = CSVZipImporter.getArchiveFileIfValid(getArchiveFile("test-data/testCSVArchive.zip"));
+         ZipFile archive = CSVZipImporter.getArchiveFileIfValid(getArchiveFile("test-data/completeZipTestArchive.zip"));
         assertNotNull(archive);
         archive.close();
-    }
-
-    @Test
-    public void testImportViaFileManager() throws Exception {
-        File archive = getArchiveFile("test-data/testCSVArchive.zip");
-        FileManager fm = Framework.getService(FileManager.class);
-        Blob blob = Blobs.createBlob(archive);
-        FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace1.getPathAsString())
-                                                         .overwrite(true)
-                                                         .build();
-        fm.createOrUpdateDocument(context);
-        DocumentModelList children = coreSession.getChildren(workspace1.getRef());
-        assertEquals(2, children.size());
-
-        DocumentModel MyFile = coreSession.getChild(workspace1.getRef(), "MyFile");
-        DocumentModel MyNote = coreSession.getChild(workspace1.getRef(), "MyNote");
-
-        assertEquals("My File", MyFile.getTitle());
-        assertEquals("My Note", MyNote.getTitle());
-
-        assertEquals("MyFile", MyFile.getName());
-        assertEquals("MyNote", MyNote.getName());
-
-        assertEquals("this is text", MyNote.getPropertyValue("note:note"));
-        assertNotNull(MyFile.getPropertyValue("file:content"));
     }
 
     @Test
@@ -129,64 +104,43 @@ public class TestCSVZipImporter {
     }
 
     @Test
-    public void testDocumentCreationWithListType() throws Exception {
-        File archive = getArchiveFile("test-data/testCSVListTypeArchive.zip");
+    public void testImportViaFileManager() throws Exception {
+        File archive = getArchiveFile("test-data/completeZipTestArchive.zip");
         FileManager fm = Framework.getService(FileManager.class);
         Blob blob = Blobs.createBlob(archive);
-        FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace2.getPathAsString())
+        FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace1.getPathAsString())
                                                          .overwrite(true)
                                                          .build();
         fm.createOrUpdateDocument(context);
-        DocumentModelList children = coreSession.getChildren(workspace2.getRef());
-        assertEquals(1, children.size());
+        DocumentModelList children = coreSession.getChildren(workspace1.getRef());
+        assertEquals(2, children.size());
 
-        DocumentModel doc = children.get(0);
-        List<String> contributors = Arrays.asList((String[]) doc.getPropertyValue("dc:contributors"));
+        DocumentModel MyFile = coreSession.getChild(workspace1.getRef(), "My File");
+        DocumentModel MyNote = coreSession.getChild(workspace1.getRef(), "MyNote");
+
+        assertEquals("My File", MyFile.getTitle());
+        assertEquals("My Note", MyNote.getTitle());
+
+        assertEquals("My File", MyFile.getName());
+        assertEquals("MyNote", MyNote.getName());
+
+        // Validate some properties
+        assertEquals("this is text", MyNote.getPropertyValue("note:note"));
+        assertNotNull(MyFile.getPropertyValue("file:content"));
+
+        // Validate MultiValue properties can be imported
+        List<String> contributors = Arrays.asList((String[]) MyFile.getPropertyValue("dc:contributors"));
         assertEquals(4, contributors.size());
-    }
 
-    @Test
-    public void testDocumentCreationWithLifecycleState() throws Exception {
-        File archive = getArchiveFile("test-data/testCSVArchiveLifecycleState.zip");
-        FileManager fm = Framework.getService(FileManager.class);
-        Blob blob = Blobs.createBlob(archive);
-        FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace2.getPathAsString())
-                                                         .overwrite(true)
-                                                         .build();
-        fm.createOrUpdateDocument(context);
-        DocumentModelList children = coreSession.getChildren(workspace2.getRef());
-        assertEquals(2, children.size());
+        // Validate lifecycle state can be imported
+        assertEquals("project", MyFile.getCurrentLifeCycleState());
+        assertEquals("approved", MyNote.getCurrentLifeCycleState());
 
-        for (DocumentModel doc : children) {
-            if (doc.getTitle().equals("MyFile")) {
-                assertEquals("project", doc.getCurrentLifeCycleState());
-            } else if (doc.getTitle().equals("My File1")) {
-                assertEquals("approved", doc.getCurrentLifeCycleState());
-            }
-        }
-    }
-
-    @Test
-    public void testDocumentCreationWithTags() throws Exception {
-        File archiveNoTags = getArchiveFile("test-data/testCSVArchiveTags.zip");
-        FileManager fm = Framework.getService(FileManager.class);
-        Blob blob = Blobs.createBlob(archiveNoTags);
-        FileImporterContext context = FileImporterContext.builder(coreSession, blob, workspace2.getPathAsString())
-                                                         .overwrite(true)
-                                                         .build();
-        fm.createOrUpdateDocument(context);
-        DocumentModelList children = coreSession.getChildren(workspace2.getRef());
-        assertEquals(2, children.size());
-
-        for (DocumentModel doc : children) {
-            if (doc.getTitle().equals("My File")) {
-                List<HashMap> tags = (List<HashMap>) doc.getPropertyValue("nxtag:tags");
-                assertEquals(1, tags.size());
-                assertEquals("mynewtag", tags.get(0).get("label"));
-            } else if (doc.getTitle().equals("My File1")) {
-                assertEquals(2, ((List<String>) doc.getPropertyValue("nxtag:tags")).size());
-            }
-        }
+        // Validate tags can be imported
+        List<HashMap> tags = (List<HashMap>) MyFile.getPropertyValue("nxtag:tags");
+        assertEquals(1, tags.size());
+        assertEquals("mynewtag", tags.get(0).get("label"));
+        assertEquals(2, ((List<String>) MyNote.getPropertyValue("nxtag:tags")).size());
     }
 
     protected static File getArchiveFile(String file) {
