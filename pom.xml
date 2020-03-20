@@ -1846,13 +1846,6 @@
         <version>${nuxeo.platform.version}</version>
       </dependency>
 
-      <!-- Datadog reporter -->
-      <dependency>
-        <groupId>org.nuxeo.datadog</groupId>
-        <artifactId>nuxeo-datadog-reporter</artifactId>
-        <version>${nuxeo.platform.version}</version>
-      </dependency>
-
       <!-- PDF Utils -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
@@ -2025,12 +2018,6 @@
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-dam-package</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.packages</groupId>
-        <artifactId>nuxeo-datadog-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>
       </dependency>

@@ -20,7 +20,6 @@
     <module>nuxeo-cas2-login-package</module>
     <module>nuxeo-csv-package</module>
     <module>nuxeo-dam-package</module>
-    <module>nuxeo-datadog-package</module>
     <module>nuxeo-drive-package</module>
     <module>nuxeo-duoweb-authentication-package</module>
     <module>nuxeo-easyshare-package</module>

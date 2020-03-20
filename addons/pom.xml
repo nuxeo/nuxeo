@@ -37,7 +37,6 @@
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-liveconnect</module>
-    <module>nuxeo-datadog-reporter</module>
     <module>nuxeo-fsexporter</module>
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-platform-3d</module>
