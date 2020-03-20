@@ -18,7 +18,14 @@
  */
 package org.nuxeo.template.processors.tests;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,8 +33,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.assertj.core.util.Files;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jxls.common.Context;
+import org.jxls.util.JxlsHelper;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -78,6 +88,29 @@ public class TestXLSTransformer {
             transformer.transformXLS(input.getAbsolutePath(), ctx, out.getAbsolutePath());
         } finally {
             out.delete();
+        }
+    }
+
+    /* JXLS 2 */
+    @Test
+    public void testJxlsHelperProcessTemplate() throws IOException {
+        File input = FileUtils.getResourceFileFromContext("data/ProjectRevenue.xlsx");
+        File out = Framework.createTempFile("testxls", "");
+        try {
+            DocumentModel doc = session.createDocumentModel("nxtrProject");
+            Map<String, Serializable> people1 = new HashMap<>();
+            people1.put("role", "Manager");
+            people1.put("number", Long.valueOf(2));
+            people1.put("price_per_day", Double.valueOf(12345.0));
+            people1.put("number_of_days", Long.valueOf(15));
+            doc.setPropertyValue("nxtrproject:involved_people", (Serializable) Arrays.asList(people1));
+            Map<String, Object> ctx = new SimpleContextBuilder().build(doc, "ProjectRevenue");
+            try (InputStream is = new BufferedInputStream(new FileInputStream(input));
+                    OutputStream os = new BufferedOutputStream(new FileOutputStream(out))) {
+                JxlsHelper.getInstance().processTemplate(is, os, new Context(ctx));
+            }
+        } finally {
+            Files.delete(out);
         }
     }
 

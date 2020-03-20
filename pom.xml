@@ -92,6 +92,7 @@
     <apache.poi.version>4.1.2</apache.poi.version>
     <jodreport.version>2.4.0</jodreport.version>
     <jxls.version>1.0.6-NX02</jxls.version>
+    <jxls2.version>2.8.0</jxls2.version>
     <xdocreport.version>1.0.5</xdocreport.version>
     <jclouds.version>2.2.0</jclouds.version>
     <guava.version>28.2-jre</guava.version>
@@ -2914,6 +2915,17 @@
         <groupId>net.sf.jxls</groupId>
         <artifactId>jxls-reader</artifactId>
         <version>${jxls.version}</version>
+      </dependency>
+      <!-- jxls 2 -->
+      <dependency>
+        <groupId>org.jxls</groupId>
+        <artifactId>jxls</artifactId>
+        <version>${jxls2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jxls</groupId>
+        <artifactId>jxls-poi</artifactId>
+        <version>${jxls2.version}</version>
       </dependency>
 
       <!-- docx report -->
