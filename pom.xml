@@ -4937,7 +4937,7 @@
       </dependency>
       <dependency>
         <groupId>io.opencensus</groupId>
-        <artifactId>opencensus-contrib-dropwizard</artifactId>
+        <artifactId>opencensus-contrib-dropwizard5</artifactId>
         <version>${opencensus.version}</version>
       </dependency>
       <dependency>
