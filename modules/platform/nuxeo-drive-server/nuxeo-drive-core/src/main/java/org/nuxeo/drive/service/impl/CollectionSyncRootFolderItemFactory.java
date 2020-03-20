@@ -73,7 +73,7 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
         if (!relaxSyncRootConstraint) {
             // Check synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getService(NuxeoDriveManager.class);
-            NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+            NuxeoPrincipal principal = doc.getPrincipal();
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (!isSyncRoot) {
                 log.debug(

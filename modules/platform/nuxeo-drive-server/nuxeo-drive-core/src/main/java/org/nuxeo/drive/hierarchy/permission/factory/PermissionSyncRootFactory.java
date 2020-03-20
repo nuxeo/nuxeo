@@ -120,7 +120,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
     protected FolderItem getParentItem(DocumentModel doc) {
-        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getPrincipal();
         String docCreator = (String) doc.getPropertyValue("dc:creator");
         if (principal.getName().equals(docCreator)) {
             FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(userSyncRootParentFactoryName)

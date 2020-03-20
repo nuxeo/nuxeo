@@ -166,7 +166,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
         if (!relaxSyncRootConstraint && doc.isFolder()) {
             // Check not a synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getService(NuxeoDriveManager.class);
-            NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+            NuxeoPrincipal principal = doc.getPrincipal();
             boolean isSyncRoot = nuxeoDriveManager.isSynchronizationRoot(principal, doc);
             if (isSyncRoot) {
                 log.debug(
@@ -212,7 +212,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory
     public boolean needsVersioning(DocumentModel doc) {
 
         String lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
-        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getPrincipal();
         boolean contributorChanged = !principal.getName().equals(lastContributor);
         if (contributorChanged) {
             log.debug(

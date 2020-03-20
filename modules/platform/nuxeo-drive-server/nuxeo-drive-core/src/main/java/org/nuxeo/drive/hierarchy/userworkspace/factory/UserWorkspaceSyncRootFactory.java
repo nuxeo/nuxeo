@@ -64,7 +64,7 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
     protected FolderItem getParentItem(DocumentModel doc) {
-        NuxeoPrincipal principal = doc.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = doc.getPrincipal();
         FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(syncRootParentFactoryName)
                                                          .getVirtualFolderItem(principal);
         if (parent == null) {

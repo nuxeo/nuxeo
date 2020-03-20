@@ -420,7 +420,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
 
     @SuppressWarnings("unchecked")
     protected boolean syncRootFactoryMatches(DocumentModel doc, boolean relaxSyncRootConstraint) {
-        String userName = doc.getCoreSession().getPrincipal().getName();
+        String userName = doc.getPrincipal().getName();
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(
                 NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {

@@ -117,7 +117,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
     public DocumentModel createComment(DocumentModel docModel, DocumentModel commentModel)
             throws CommentSecurityException {
 
-        NuxeoPrincipal principal = commentModel.getCoreSession().getPrincipal();
+        NuxeoPrincipal principal = commentModel.getPrincipal();
         // Open a session as system user since the parent document model can be a comment
         try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentRef docRef = getTopLevelDocumentRef(session, docModel.getRef());
