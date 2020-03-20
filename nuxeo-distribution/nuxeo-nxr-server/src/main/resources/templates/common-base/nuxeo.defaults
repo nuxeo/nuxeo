@@ -244,11 +244,15 @@ metrics.graphite.prefix=
 
 ## Datadog reporter
 metrics.datadog.enabled=false
-metrics.graphite.pollInterval=60
+metrics.datadog.pollInterval=60
 metrics.datadog.apiKey=
 metrics.datadog.tags=nuxeo
 metrics.datadog.hostname=
 metrics.datadog.udp=false
 metrics.datadog.host=localhost
 metrics.datadog.port=8125
+
+## Prometheus reporter
+metrics.prometheus.enabeld=false
+metrics.prometheus.port=9090
 

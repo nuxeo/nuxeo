@@ -42,12 +42,11 @@ public class MetricsReporterDescriptor implements Descriptor {
     @XNode("@class")
     public Class<? extends MetricsReporter> klass;
 
-    // use a string in order to be able to use variable
     @XNode("@pollInterval")
-    protected String pollInterval;
+    protected long pollInterval = 60;
 
     public long getPollInterval() {
-        return Long.valueOf(pollInterval);
+        return pollInterval;
     }
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
