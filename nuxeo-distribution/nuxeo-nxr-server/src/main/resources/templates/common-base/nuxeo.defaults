@@ -234,6 +234,9 @@ metrics.jvm.enabled=true
 metrics.log4j.enabled=true
 metrics.tomcat.enabled=true
 
+## JMX reporter
+metrics.jmx.enabled=true
+
 ## Graphite reporter
 metrics.graphite.enabled=false
 metrics.graphite.host=graphite

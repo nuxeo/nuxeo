@@ -36,8 +36,6 @@ import io.opencensus.metrics.Metrics;
 import io.prometheus.client.exporter.HTTPServer;
 
 /**
- * Patches the dropwizard metrics implementation to support metric with tags.
- *
  * @since 11.1
  */
 public class PrometheusReporter extends AbstractMetricsReporter {

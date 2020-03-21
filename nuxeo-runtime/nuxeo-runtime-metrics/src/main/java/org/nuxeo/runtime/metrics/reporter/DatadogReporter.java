@@ -42,8 +42,6 @@ import io.dropwizard.metrics5.MetricFilter;
 import io.dropwizard.metrics5.MetricRegistry;
 
 /**
- * Patches the coursera implementation to support metric with tags.
- *
  * @since 11.1
  */
 public class DatadogReporter extends AbstractMetricsReporter {
