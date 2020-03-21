@@ -36,8 +36,6 @@ import io.dropwizard.metrics5.graphite.GraphiteSender;
 import io.dropwizard.metrics5.graphite.GraphiteUDP;
 
 /**
- * Patches the dropwizard metrics implementation to support metric with tags.
- *
  * @since 11.1
  */
 public class GraphiteReporter extends AbstractMetricsReporter {

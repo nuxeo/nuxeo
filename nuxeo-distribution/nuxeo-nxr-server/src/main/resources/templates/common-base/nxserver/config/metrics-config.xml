@@ -38,6 +38,10 @@
 
   <extension target="org.nuxeo.runtime.metrics.MetricsService" point="reporter">
 
+    <reporter enabled="${metrics.jmx.enabled}" name="jmx"
+      class="org.nuxeo.runtime.metrics.reporter.JmxReporter">
+    </reporter>
+
     <reporter enabled="${metrics.graphite.enabled}" name="graphite" pollInterval="${metrics.graphite.pollInterval}"
       class="org.nuxeo.runtime.metrics.reporter.GraphiteReporter">
       <option name="prefix">${metrics.graphite.prefix}</option>
