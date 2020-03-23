@@ -18,5 +18,11 @@
     <binding name="Bulk.WaitForAction">
       <administrator>true</administrator>
     </binding>
+    <binding name="Metrics.Start">
+      <administrator>true</administrator>
+    </binding>
+    <binding name="Metrics.Stop">
+      <administrator>true</administrator>
+    </binding>
   </extension>
 </component>
