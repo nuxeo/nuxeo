@@ -1,0 +1,5 @@
+apiVersion: v1
+description: A Helm chart for nuxeo previews
+icon: https://www.nuxeo.com/assets/logos/nuxeo.png
+name: preview
+version: 0.1.0-SNAPSHOT

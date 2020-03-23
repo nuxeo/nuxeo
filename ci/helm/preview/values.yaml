@@ -1,0 +1,69 @@
+expose:
+  Annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded
+  config:
+    # add tls configuration
+    domain: platform.dev.nuxeo.com
+    exposer: Ingress
+    http: true
+    tlsacme: true
+    tlsSecretName: platform-cluster-tls
+    urltemplate: '"{{.Namespace}}.{{.Domain}}"'
+
+cleanup:
+  Args:
+    - --cleanup
+  Annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-delete-policy: hook-succeeded
+
+nuxeo:
+  fullnameOverride: nuxeo-preview
+  nuxeo:
+    customParams: |-
+      elasticsearch.restClient.socketTimeoutMs=300000
+      elasticsearch.restClient.connectionTimeoutMs=300000
+    podLabels:
+      branch: "$BRANCH_NAME"
+      team: platform
+      resource: pod
+      usage: preview
+    service:
+      annotations:
+        fabric8.io/ingress.annotations: |-
+          nginx.ingress.kubernetes.io/proxy-body-size: 0
+          nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
+      labels:
+        branch: "$BRANCH_NAME"
+        team: platform
+        resource: service
+        usage: preview
+    image:
+      repository: $DOCKER_REGISTRY/nuxeo/nuxeo
+      tag: $VERSION
+      pullSecrets: nexus-docker-cfg
+    persistence:
+      enabled: $PERSISTENCE
+  mongodb:
+    deploy: $PERSISTENCE
+    persistence:
+      enabled: $PERSISTENCE
+    labels:
+      branch: "$BRANCH_NAME"
+      resource: deployment
+      team: platform
+      usage: preview
+    podLabels:
+      branch: "$BRANCH_NAME"
+      resource: pod
+      team: platform
+      usage: preview
+  elasticsearch:
+    deploy: $PERSISTENCE
+    master:
+      persistence:
+        enabled: $PERSISTENCE
+    data:
+      persistence:
+        enabled: $PERSISTENCE

@@ -284,6 +284,9 @@ pipeline {
     CHANGE_BRANCH = "${env.CHANGE_BRANCH != null ? env.CHANGE_BRANCH : BRANCH_NAME}"
     CHANGE_TARGET = "${env.CHANGE_TARGET != null ? env.CHANGE_TARGET : BRANCH_NAME}"
     CONNECT_PREPROD_URL = 'https://nos-preprod-connect.nuxeocloud.com/nuxeo'
+    // jx step helm install's --name and --namespace options require alphabetic chars to be lowercase
+    PREVIEW_NAMESPACE = "nuxeo-preview-${BRANCH_NAME.toLowerCase()}"
+    PERSISTENCE = "${!isPullRequest()}"
   }
 
   stages {
@@ -628,6 +631,61 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'FAILURE')
+        }
+      }
+    }
+
+    stage('Deploy Preview') {
+      when {
+        not {
+          branch 'PR-*'
+        }
+      }
+      steps {
+        setGitHubBuildStatus('nuxeo/preview', 'Deploy nuxeo preview', 'PENDING')
+        container('maven') {
+          dir('ci/helm/preview') {
+            echo """
+            ----------------------------------------
+            Deploy Preview environment
+            ----------------------------------------"""
+            // first substitute environment variables in chart values
+            sh """
+              mv values.yaml values.yaml.tosubst
+              envsubst < values.yaml.tosubst > values.yaml
+            """
+            script {
+              boolean nsExists = sh(returnStatus: true, script: "kubectl get namespace ${PREVIEW_NAMESPACE}") == 0
+              if (nsExists) {
+                // Previous preview deployment needs to be scaled to 0 to be replaced correctly
+                sh "kubectl -n ${PREVIEW_NAMESPACE} scale deployment nuxeo-preview --replicas=0"
+              }
+              // build and deploy the chart
+              // To avoid jx gc cron job, reference branch previews are deployed by calling jx step helm install instead of jx preview
+              sh """
+                jx step helm build
+                mkdir target && helm template . --output-dir target
+                jx step helm install --namespace ${PREVIEW_NAMESPACE} --name ${PREVIEW_NAMESPACE} .
+              """
+              // We need to expose the nuxeo url by hand
+              url = sh(returnStdout: true, script: "jx get urls -n ${PREVIEW_NAMESPACE} | grep -oP https://.* | tr -d '\\n'")
+              echo """
+                ----------------------------------------
+                Preview available at: ${url}
+                ----------------------------------------"""
+            }
+          }
+        }
+      }
+      post {
+        always {
+          archiveArtifacts allowEmptyArchive: true, artifacts: '**/requirements.lock, **/target/**/*.yaml'
+        }
+        success {
+          setGitHubBuildStatus('nuxeo/preview', 'Deploy nuxeo preview', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('nuxeo/preview', 'Deploy nuxeo preview', 'FAILURE')
         }
       }
     }
