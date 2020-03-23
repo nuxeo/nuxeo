@@ -632,9 +632,9 @@ pipeline {
     }
 
     stage('Deploy Preview') {
-      when {
-        branch "${REFERENCE_BRANCH}"
-      }
+      // when {
+      //  branch "${REFERENCE_BRANCH}"
+      // }
       steps {
         setGitHubBuildStatus('nuxeo/preview/deploy', 'Deploy nuxeo Preview', 'PENDING')
         container('maven') {
