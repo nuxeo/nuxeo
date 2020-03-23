@@ -22,8 +22,8 @@ dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo'
 testEnvironments= [
   'dev',
-  'mongodb',
-  'postgresql',
+  // 'mongodb',
+  // 'postgresql',
 ]
 
 properties([
@@ -226,7 +226,6 @@ def buildUnitTestStage(env) {
                 -Dnuxeo.test.redis.host=${redisHost} \
                 test
             """
-
             setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'SUCCESS')
           } catch(err) {
             setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'FAILURE')
@@ -286,6 +285,11 @@ pipeline {
 
   stages {
     stage('Set labels') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         container('maven') {
           echo """
@@ -302,6 +306,11 @@ pipeline {
     }
 
     stage('Update version') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         container('maven') {
           echo """
@@ -324,6 +333,9 @@ pipeline {
         not {
           branch 'PR-*'
         }
+        expression {
+          return false
+        }
       }
       steps {
         container('maven') {
@@ -341,6 +353,11 @@ pipeline {
     }
 
     stage('Compile') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/compile', 'Compile', 'PENDING')
         container('maven') {
@@ -363,6 +380,11 @@ pipeline {
     }
 
     stage('Run common unit tests') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/utests/common/dev', 'Unit tests - common', 'PENDING')
         container('maven') {
@@ -389,6 +411,11 @@ pipeline {
     }
 
     stage('Run runtime unit tests') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/utests/runtime/dev', 'Unit tests - runtime', 'PENDING')
         container('maven') {
@@ -427,6 +454,11 @@ pipeline {
     }
 
     stage('Package') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/package', 'Package', 'PENDING')
         container('maven') {
@@ -449,6 +481,11 @@ pipeline {
     }
 
     stage('Run "dev" functional tests') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'PENDING')
         container('maven') {
@@ -477,6 +514,11 @@ pipeline {
     }
 
     stage('Build Docker images') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
         container('maven') {
@@ -503,6 +545,11 @@ pipeline {
     }
 
     stage('Test Docker images') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'PENDING')
         container('maven') {
@@ -559,6 +606,9 @@ pipeline {
         not {
           branch 'PR-*'
         }
+        expression {
+          return false
+        }
       }
       steps {
         setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'PENDING')
@@ -585,6 +635,11 @@ pipeline {
     }
 
     stage('Deploy Maven artifacts') {
+      when {
+        expression {
+          return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
         container('maven') {
@@ -609,6 +664,9 @@ pipeline {
       when {
         not {
           branch 'PR-*'
+        }
+        expression {
+          return false
         }
       }
       steps {
@@ -635,7 +693,8 @@ pipeline {
       when {
         expression {
           // only trigger JSF pipeline if the target branch is master or a maintenance branch
-          return CHANGE_TARGET ==~ 'master|\\d+\\.\\d+'
+          // return CHANGE_TARGET ==~ 'master|\\d+\\.\\d+'
+          return false
         }
       }
       steps {
