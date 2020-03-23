@@ -1,0 +1,86 @@
+expose:
+  Annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded
+  config:
+    # add tls configuration
+    domain: platform.dev.nuxeo.com
+    exposer: Ingress
+    http: true
+    tlsacme: true
+    tlsSecretName: platform-cluster-tls
+    urltemplate: '"{{.Service}}-{{.Namespace}}.{{.Domain}}"'
+
+cleanup:
+  Args:
+    - --cleanup
+  Annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-delete-policy: hook-succeeded
+
+nuxeo:
+  nuxeo:
+    #fullnameOverride: preview
+    podAnnotations:
+      preview/scm.ref: ${SCM_REF}
+    podLabels:
+      branch: "$BRANCH_NAME"
+      team: platform
+      resource: pod
+      usage: preview
+    service:
+      annotations:
+        fabric8.io/ingress.annotations: |-
+          nginx.ingress.kubernetes.io/proxy-body-size: 0
+          nginx.ingress.kubernetes.io/server-snippet: ignore_invalid_headers off;
+      labels:
+        team: platform
+        resource: service
+        usage: preview
+    image:
+      repository: ${DOCKER_REGISTRY}/nuxeo/nuxeo
+      tag: ${VERSION}
+      pullPolicy: Always
+    packages: nuxeo-web-ui nuxeo-dam
+    livenessProbe:
+      initialDelaySeconds: 900
+      periodSeconds: 20
+      successThreshold: 1
+      failureThreshold: 5
+      timeoutSeconds: 10
+    readinessProbe:
+      periodSeconds: 20
+      initialDelaySeconds: 600
+      successThreshold: 1
+      timeoutSeconds: 10
+      failureThreshold: 5
+    custom_envs:
+    - name: NUXEO_CLID
+      valueFrom:
+        secretKeyRef:
+          name: instance-clid
+          key: instance.clid
+    persistence:
+      enabled: ${PERSISTENCE}
+  mongodb:
+    deploy: ${PERSISTENCE}
+    persistence:
+      enabled: ${PERSISTENCE}
+    labels:
+      branch: "$BRANCH_NAME"
+      resource: deployment
+      team: platform
+      usage: preview
+    podLabels:
+      branch: "$BRANCH_NAME"
+      resource: pod
+      team: platform
+      usage: preview
+  elasticsearch:
+    deploy: ${PERSISTENCE}
+    master:
+      persistence:
+        enabled: ${PERSISTENCE}
+    data:
+      persistence:
+        enabled: ${PERSISTENCE}

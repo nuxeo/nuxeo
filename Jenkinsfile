@@ -631,6 +631,76 @@ pipeline {
       }
     }
 
+    stage('Deploy Preview') {
+      when {
+        branch "${REFERENCE_BRANCH}"
+      }
+      steps {
+        setGitHubBuildStatus('nuxeo/preview/deploy', 'Deploy nuxeo Preview', 'PENDING')
+        container('maven') {
+          dir('docker/nuxeo') {
+            echo """
+            ----------------------------------------
+            Build Nuxeo preview image
+            ----------------------------------------
+            Image tag: ${VERSION}
+            Registry: ${DOCKER_REGISTRY}
+            """
+            // push images to the Jenkins X internal Docker registry
+            sh """
+                envsubst < skaffold.yaml > skaffold.yaml~gen
+                skaffold build -f skaffold.yaml~gen
+            """
+          }
+          dir('helm/preview') {
+            echo """
+            ----------------------------------------
+            Deploy Preview environment
+            ----------------------------------------"""
+            // first substitute docker image names and versions
+            sh """
+              mv values.yaml values.yaml.tosubst
+              envsubst < values.yaml.tosubst > values.yaml
+            """
+            // second create target namespace (if doesn't exist) and copy secrets to target namespace
+            script {
+              sh(returnStdout: true, script: 'jx -b ns | sed -r "s/^Using namespace \'([^\']+)\'.+\\$/\\1/"')
+              boolean nsExist = sh(returnStatus: true, script: "kubectl get namespace ${NAMESPACE}") == 0
+              String noCommentOpt = '';
+              if (nsExist) {
+                noCommentOpt = '--no-comment'
+              } else {
+                sh "kubectl create namespace ${NAMESPACE}"
+              }
+              sh "kubectl create secret generic preview-docker-cfg --namespace=${NAMESPACE} --from-file=.dockerconfigjson=/home/jenkins/.docker/config.json --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"
+              // third build and deploy the chart
+              // waiting for https://github.com/jenkins-x/jx/issues/5797 to be fixed in order to remove --source-url
+              sh """
+                jx step helm build --verbose
+                mkdir target && helm template . --output-dir target
+                jx preview \
+                  --namespace ${NAMESPACE} \
+                  --verbose \
+                  --preview-health-timeout 15m \
+                  ${noCommentOpt}
+              """
+            }
+          }
+        }
+      }
+      post {
+        always {
+          archiveArtifacts allowEmptyArchive: true, artifacts: '**/requirements.lock, **/charts/*.tgz, **/target/**/*.yaml'
+        }
+        success {
+          setGitHubBuildStatus('nuxeo/preview/deploy', 'Deploy nuxeo Preview', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('nuxeo/preview/deploy', 'Deploy nuxeo Preview', 'FAILURE')
+        }
+      }
+    }
+
     stage('JSF pipeline') {
       when {
         expression {
