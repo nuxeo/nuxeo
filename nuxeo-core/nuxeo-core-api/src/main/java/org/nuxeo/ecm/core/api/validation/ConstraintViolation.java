@@ -61,7 +61,7 @@ import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
  * Examples :
  * <ul>
  * <li>label.schema.constraint.violation=Value '{0}' for field '{1}.{2}' does not respect constraint '{3}'</li>
- * <li>label.schema.constraint.violation.PatternConstraint='{1}.{2}' value ({0}) should match the following format :
+ * <li>label.schema.constraint.violation.PatternConstraint=({3}) '{1}.{2}' value ({0}) should match the following format :
  * '{4}'</li>
  * <li>label.schema.constraint.violation.PatternConstraint.myuserschema.firstname ='The firstname should not be empty'
  * </li>
