@@ -81,8 +81,8 @@ public class TestFreemarkerRendering {
 
     @Test
     public void testRendering() throws Exception {
-        DocumentModelImpl doc1 = new DocumentModelImpl(null, "File", null, new Path("/root/folder/wiki1"), null, null,
-                null, new String[] { "dublincore", "file" }, null, null, "default");
+        DocumentModelImpl doc1 = new DocumentModelImpl("File", null, new Path("/root/folder/wiki1"), null, null,
+                new String[] { "dublincore", "file" }, null, null, false, null, "default", null);
         doc1.addDataModel(new DataModelImpl("dublincore"));
         DocumentPart documentPart = doc1.getPart("dublincore");
         documentPart.get("title").setValue("The dublincore title for doc1");

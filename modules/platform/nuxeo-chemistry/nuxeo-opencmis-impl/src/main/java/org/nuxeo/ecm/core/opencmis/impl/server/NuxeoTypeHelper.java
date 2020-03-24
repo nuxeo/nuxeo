@@ -563,8 +563,8 @@ public class NuxeoTypeHelper {
     // TODO update BlobHolderAdapterService to be able to do this
     // without constructing a fake document
     protected static boolean supportsBlobHolder(DocumentType documentType) {
-        DocumentModel doc = new DocumentModelImpl(null, documentType.getName(), null, new Path("/"), null, null, null,
-                documentType.getSchemaNames(), documentType.getFacets(), null, "default");
+        DocumentModel doc = new DocumentModelImpl(documentType.getName(), null, new Path("/"), null, null,
+                documentType.getSchemaNames(), documentType.getFacets(), null, false, null, "default", null);
         return doc.getAdapter(BlobHolder.class) != null;
     }
 

@@ -216,24 +216,24 @@ public class TestDocumentValidationActivation {
 
     @Test
     public void testOnImportDocumentActivationWithoutViolation() {
-        DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
-                null, null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl("ValidatedUserGroup", "12345", new Path("doc1"), null, null, null,
+                null, null, false, null, null, null);
         doc.setPropertyValue(SIMPLE_FIELD, VALID);
         session.importDocuments(Arrays.asList(doc));
     }
 
     @Test(expected = DocumentValidationException.class)
     public void testOnImportDocumentActivationWithViolation() {
-        DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
-                null, null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl("ValidatedUserGroup", "12345", new Path("doc1"), null, null, null,
+                null, null, false, null, null, null);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         session.importDocuments(Arrays.asList(doc));
     }
 
     @Test
     public void testOnImportDocumentActivationWithViolationIgnored() {
-        DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
-                null, null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl("ValidatedUserGroup", "12345", new Path("doc1"), null, null, null,
+                null, null, false, null, null, null);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.putContextData(DocumentValidationService.CTX_MAP_KEY, Forcing.TURN_OFF);
         session.importDocuments(Arrays.asList(doc));
@@ -241,8 +241,8 @@ public class TestDocumentValidationActivation {
 
     @Test(expected = DocumentValidationException.class)
     public void testOnImportDocumentActivationWithViolationForced() {
-        DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
-                null, null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl("ValidatedUserGroup", "12345", new Path("doc1"), null, null, null,
+                null, null, false, null, null, null);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.putContextData(DocumentValidationService.CTX_MAP_KEY, Forcing.TURN_ON);
         session.importDocuments(Arrays.asList(doc));
@@ -250,8 +250,8 @@ public class TestDocumentValidationActivation {
 
     @Test(expected = DocumentValidationException.class)
     public void testOnImportDocumentActivationWithViolationNoForcing() {
-        DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
-                null, null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl("ValidatedUserGroup", "12345", new Path("doc1"), null, null, null,
+                null, null, false, null, null, null);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         doc.putContextData(DocumentValidationService.CTX_MAP_KEY, Forcing.USUAL);
         session.importDocuments(Arrays.asList(doc));
@@ -261,8 +261,8 @@ public class TestDocumentValidationActivation {
     @Test
     @Deploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-validation-activation-after-listener-contrib.xml")
     public void testOnImportDocumentActivationAfterListeners() {
-        DocumentModel doc = new DocumentModelImpl(null, "ValidatedUserGroup", "12345", new Path("doc1"), null, null,
-                null, null, null, null, null);
+        DocumentModel doc = new DocumentModelImpl("ValidatedUserGroup", "12345", new Path("doc1"), null, null, null,
+                null, null, false, null, null, null);
         doc.setPropertyValue(SIMPLE_FIELD, INVALID);
         session.importDocuments(Collections.singletonList(doc));
     }
