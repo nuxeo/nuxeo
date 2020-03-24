@@ -88,8 +88,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
                     session = CoreInstance.openCoreSession(repoName);
                     sessionOpened = true;
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Opened a new session '%s' with id %s", repoName,
-                                session.getSessionId()));
+                        log.debug(String.format("Opened a new session '%s' with id %s", repoName, session));
                     }
                 }
                 if (!session.exists(ref)) {

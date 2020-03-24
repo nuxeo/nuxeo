@@ -282,9 +282,6 @@ public class TestSQLRepositoryJTAJCA {
         }
     }
 
-    /**
-     * DocumentModel.getCoreSession cannot reconnect through a sid that does not exist anymore.
-     */
     @Test
     public void testReconnectAfterCloseThroughSessionId() {
         DocumentModel file = session.createDocumentModel("/", "file", "File");
@@ -293,7 +290,7 @@ public class TestSQLRepositoryJTAJCA {
 
         session = coreFeature.reopenCoreSession();
 
-        assertNull(file.getCoreSession());
+        assertNotNull(file.getCoreSession()); // document is still attached
     }
 
     @Test

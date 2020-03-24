@@ -210,8 +210,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
                 task.end(session);
                 // make sure taskDoc is attached to prevent sending event with null session
                 DocumentModel taskDocument = task.getDocument();
-                if (taskDocument.getSessionId() == null) {
-                    taskDocument.attach(coreSession.getSessionId());
+                if (!taskDocument.isAttached()) {
+                    taskDocument.attach(coreSession);
                 }
                 session.saveDocument(taskDocument);
                 break;

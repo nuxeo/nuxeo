@@ -26,21 +26,16 @@ import static org.nuxeo.ecm.platform.rendition.publisher.RenditionPublicationFac
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -196,19 +191,9 @@ public class TestRenditionPublicationWFAprove {
         session.save();
     }
 
-    protected final Set<CloseableCoreSession> others = new HashSet<>();
-
     private void changeUser(String userName) throws Exception {
         session = coreFeature.openCoreSession(userName);
         session.save(); // synch with previous
-        others.add((CloseableCoreSession) session);
-    }
-
-    @After
-    public void closeOthers() {
-        for (CloseableCoreSession session : others) {
-            CoreInstance.closeCoreSession(session);
-        }
     }
 
     @Test

@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.InstanceRef;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -63,6 +64,7 @@ import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.api.model.resolver.DocumentPropertyObjectResolverImpl;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -92,8 +94,6 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     public static final long F_IMMUTABLE = 256L;
 
     private static final Log log = LogFactory.getLog(DocumentModelImpl.class);
-
-    protected String sid;
 
     protected DocumentRef ref;
 
@@ -179,6 +179,13 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     protected String repositoryName;
 
+    // when not null, the document is "attached"
+    protected transient NuxeoPrincipal principal;
+
+    // cache of the CoreSession derived from repositoryName + principal, if available
+    // if this is not null, the principal is not null either
+    protected transient CoreSession coreSession;
+
     protected String sourceId;
 
     protected Map<String, Serializable> contextData = new HashMap<>();
@@ -233,22 +240,28 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     }
 
     /**
-     * Constructor.
-     * <p>
-     * The lock parameter is unused since 5.4.2.
-     *
-     * @param facets the per-instance facets
+     * @deprecated since 11.1, sid and lock are unused
      */
-    // TODO check if we use it
+    @Deprecated
     public DocumentModelImpl(String sid, String type, String id, Path path, Lock lock, DocumentRef docRef,
             DocumentRef parentRef, String[] schemas, Set<String> facets, String sourceId, String repositoryName) {
-        this(sid, type, id, path, docRef, parentRef, schemas, facets, sourceId, repositoryName, false);
+        this(type, id, path, docRef, parentRef, schemas, facets, sourceId, false, null, repositoryName, null);
     }
 
+    /**
+     * @deprecated since 11.1, sid is unused
+     */
+    @Deprecated
     public DocumentModelImpl(String sid, String type, String id, Path path, DocumentRef docRef, DocumentRef parentRef,
             String[] schemas, Set<String> facets, String sourceId, String repositoryName, boolean isProxy) {
+        this(type, id, path, docRef, parentRef, schemas, facets, sourceId, isProxy, null, repositoryName, null);
+    }
+
+    /** @since 11.1 */
+    public DocumentModelImpl(String type, String id, Path path, DocumentRef docRef, DocumentRef parentRef,
+            String[] schemas, Set<String> facets, String sourceId, boolean isProxy, CoreSession coreSession,
+            String repositoryName, NuxeoPrincipal principal) {
         this(type);
-        this.sid = sid;
         this.id = id;
         this.path = path;
         ref = docRef;
@@ -265,9 +278,16 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             this.schemas = new HashSet<>(Arrays.asList(schemas));
         }
         schemasOrig = new HashSet<>(this.schemas);
-        this.repositoryName = repositoryName;
         this.sourceId = sourceId;
         setIsProxy(isProxy);
+        this.coreSession = coreSession;
+        if (coreSession != null) {
+            this.repositoryName = coreSession.getRepositoryName();
+            this.principal = coreSession.getPrincipal();
+        } else {
+            this.repositoryName = repositoryName;
+            this.principal = principal;
+        }
     }
 
     /**
@@ -320,7 +340,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getSessionId() {
-        return sid;
+        return principal == null ? null : repositoryName + "/" + principal;
+    }
+
+    @Override
+    public NuxeoPrincipal getPrincipal() {
+        return principal;
     }
 
     @Override
@@ -342,14 +367,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public CoreSession getCoreSession() {
-        if (sid == null) {
-            return null;
+        if (coreSession == null && principal != null) {
+            // recompute CoreSession from repositoryName + principal
+            coreSession = Framework.getService(CoreSessionService.class).createCoreSession(repositoryName, principal);
         }
-        return Framework.getService(CoreSessionService.class).getCoreSession(sid);
-    }
-
-    protected boolean hasSession() {
-        return getCoreSession() != null;
+        return coreSession;
     }
 
     /**
@@ -367,7 +389,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public void detach(boolean loadAll) {
-        if (sid == null) {
+        if (principal == null) {
             return;
         }
         try {
@@ -393,16 +415,23 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 hasLegalHold();
             }
         } finally {
-            sid = null;
+            principal = null;
+            coreSession = null;
         }
     }
 
     @Override
-    public void attach(String sid) {
-        if (this.sid != null) {
+    public void attach(CoreSession coreSession) {
+        if (principal != null) {
             throw new NuxeoException("Cannot attach a document that is already attached");
         }
-        this.sid = sid;
+        principal = coreSession.getPrincipal();
+        this.coreSession = coreSession;
+    }
+
+    @Override
+    public boolean isAttached() {
+        return principal != null;
     }
 
     /**
@@ -423,7 +452,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             dataModels.put(schema, dataModel);
             return dataModel;
         }
-        if (sid == null) {
+        if (!isAttached()) {
             // supports detached docs
             DataModel dataModel = new DataModelImpl(schema);
             dataModels.put(schema, dataModel);
@@ -605,7 +634,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             return lock;
         }
         // no lock if not tied to a session
-        if (!hasSession()) {
+        if (!isAttached()) {
             return null;
         }
         lock = getSession().getLockInfo(ref);
@@ -622,7 +651,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public boolean isCheckedOut() {
         if (!isStateLoaded) {
-            if (!hasSession()) {
+            if (!isAttached()) {
                 return true;
             }
             refresh(REFRESH_STATE, null);
@@ -652,10 +681,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (detachedVersionLabel != null) {
             return detachedVersionLabel;
         }
-        if (!hasSession()) {
-            return null;
-        }
-        return getSession().getVersionLabel(this);
+        return Framework.getService(VersioningService.class).getVersionLabel(this);
     }
 
     @Override
@@ -708,7 +734,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public boolean isRecord() {
-        if (!isStateLoaded && hasSession()) {
+        if (!isStateLoaded && isAttached()) {
             refresh(REFRESH_STATE, null);
         }
         return isRecord;
@@ -721,7 +747,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Calendar getRetainUntil() {
-        if (!isStateLoaded && hasSession()) {
+        if (!isStateLoaded && isAttached()) {
             refresh(REFRESH_STATE, null);
         }
         return retainUntil;
@@ -734,7 +760,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public boolean hasLegalHold() {
-        if (!isStateLoaded && hasSession()) {
+        if (!isStateLoaded && isAttached()) {
             refresh(REFRESH_STATE, null);
         }
         return hasLegalHold;
@@ -801,7 +827,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public boolean isTrashed() {
-        if (hasSession()) {
+        if (isAttached()) {
             isTrashed = getSession().isTrashed(ref);
         }
         return isTrashed;
@@ -922,7 +948,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (currentLifeCycleState != null) {
             return currentLifeCycleState;
         }
-        if (!hasSession()) {
+        if (!isAttached()) {
             // document was just created => not life cycle yet
             return null;
         }
@@ -1118,8 +1144,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public String getCacheKey() {
-        // UUID - sessionId
-        String key = id + '-' + sid + '-' + getPathAsString();
+        // TODO use repo + id + change token instead
+        String key = id + '-' + getPathAsString();
         // assume the doc holds the dublincore schema (enough for us right now)
         if (hasSchema("dublincore")) {
             Calendar timeStamp = (Calendar) getProperty("dublincore", "modified");
@@ -1488,7 +1514,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             }
             return changeToken;
         }
-        if (hasSession()) {
+        if (isAttached()) {
             changeToken = getSession().getChangeToken(ref);
         }
         return changeToken;
@@ -1506,7 +1532,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public Map<String, String> getBinaryFulltext() {
-        if (!hasSession()) {
+        if (!isAttached()) {
             return null;
         }
         return getSession().getBinaryFulltext(ref);
@@ -1541,7 +1567,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (isDirty()) {
             return this;
         }
-        if (!hasSession()) {
+        if (!isAttached()) {
             return this;
         }
         CoreSession session = getSession();
@@ -1558,7 +1584,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
      * @since 7.10
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
-        detach(ref != null && hasSession() && getSession().exists(ref));
+        detach(ref != null && isAttached() && getSession().exists(ref));
         stream.defaultWriteObject();
     }
 

@@ -69,7 +69,6 @@ public class PublishDocument {
     protected void notifyPublishedEvent(DocumentModel doc) {
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(CoreEventConstants.REPOSITORY_NAME, doc.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE, doc.getCurrentLifeCycleState());
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);

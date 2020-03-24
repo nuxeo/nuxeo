@@ -24,7 +24,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
@@ -95,28 +94,18 @@ public class TestDocumentModel {
     public void testDetachAttach() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
-        String sid = doc.getSessionId();
-        assertNotNull(sid);
         assertEquals("project", doc.getCurrentLifeCycleState());
         assertEquals("0.0", doc.getVersionLabel());
 
         doc.detach(false);
         doc.prefetchCurrentLifecycleState(null);
-        assertNull(doc.getSessionId());
         assertNull(doc.getCurrentLifeCycleState());
-        assertNull(doc.getVersionLabel());
+        assertEquals("0.0", doc.getVersionLabel()); // version label always available
 
-        doc.attach(sid);
+        doc.attach(session);
         session.saveDocument(doc);
         assertEquals("project", doc.getCurrentLifeCycleState());
         assertEquals("0.0", doc.getVersionLabel());
-
-        try {
-            doc.attach("fakesid");
-            fail("Should not allow attach");
-        } catch (NuxeoException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("Cannot attach a document that is already attached"));
-        }
     }
 
     /**

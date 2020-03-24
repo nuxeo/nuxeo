@@ -73,7 +73,6 @@ public class TestDocumentModel {
         assertNull(model.getProperties(""));
         assertNull(model.getProperty("", ""));
         assertNull(model.getRef());
-        assertNull(model.getSessionId());
 
         assertFalse(model.hasFacet(""));
         assertFalse(model.hasSchema(""));
@@ -83,7 +82,6 @@ public class TestDocumentModel {
         assertFalse(model.isVersionable());
         assertFalse(model.isVersion());
         assertNull(model.getRepositoryName());
-        assertNull(model.getSessionId());
         // assertNull(model.getLifeCyclePolicy());
 
         assertTrue(model.equals(model));
@@ -96,9 +94,8 @@ public class TestDocumentModel {
     @Test
     public void testSerialization() {
         DocumentModelImpl original = new DocumentModelImpl("my type");
-        original.attach("somesessionid");
-        // check it's attached
-        checkAttached(original, true);
+        // check it's detached
+        assertFalse(original.isAttached());
         // write it
         byte[] buffer = SerializationUtils.serialize(original);
         original = null;
@@ -107,20 +104,7 @@ public class TestDocumentModel {
         // check it's a document and it's detached
         assertNotNull(rehydrated);
         assertTrue(rehydrated instanceof DocumentModelImpl);
-        checkAttached((DocumentModelImpl) rehydrated, false);
+        assertFalse(((DocumentModel) rehydrated).isAttached());
     }
 
-    private void checkAttached(DocumentModelImpl original, boolean expectAttached) {
-        try {
-            original.attach("someother");
-            if (expectAttached) {
-                Assert.fail();
-            }
-            original.detach(false);
-        } catch (NuxeoException ne) {
-            if (!expectAttached) {
-                Assert.fail();
-            }
-        }
-    }
 }

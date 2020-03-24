@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -296,6 +297,11 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
+    public NuxeoPrincipal getPrincipal() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public CoreSession getCoreSession() {
         throw new UnsupportedOperationException();
     }
@@ -305,7 +311,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void attach(String sid) {
+    public void attach(CoreSession coreSession) {
+    }
+
+    @Override
+    public boolean isAttached() {
+        return false;
     }
 
     @Override

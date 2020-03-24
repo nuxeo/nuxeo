@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.rendition.service;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.impl.StoredRendition;
 
@@ -35,8 +36,8 @@ public class DefaultStoredRenditionManager implements StoredRenditionManager {
         RenditionCreator rc = new RenditionCreator(liveDocument, versionDocument, renditionBlob, renditionDefinition);
         rc.runUnrestricted();
         DocumentModel storedDoc = rc.getDetachedRendition();
-        String sessionId = liveDocument.getCoreSession().getSessionId();
-        return toStoredRendition(storedDoc, renditionDefinition, sessionId);
+        CoreSession coreSession = liveDocument.getCoreSession();
+        return toStoredRendition(storedDoc, renditionDefinition, coreSession);
     }
 
     @Override
@@ -44,8 +45,8 @@ public class DefaultStoredRenditionManager implements StoredRenditionManager {
         RenditionFinder finder = new RenditionFinder(sourceDocument, renditionDefinition);
         finder.runUnrestricted();
         DocumentModel storedDoc = finder.getStoredRendition();
-        String sessionId = sourceDocument.getCoreSession().getSessionId();
-        return toStoredRendition(storedDoc, renditionDefinition, sessionId);
+        CoreSession coreSession = sourceDocument.getCoreSession();
+        return toStoredRendition(storedDoc, renditionDefinition, coreSession);
     }
 
     /**
@@ -56,12 +57,12 @@ public class DefaultStoredRenditionManager implements StoredRenditionManager {
      * @param sessionId the session id
      * @return the stored rendition
      */
-    protected StoredRendition toStoredRendition(DocumentModel storedDoc, RenditionDefinition def, String sessionId) {
+    protected StoredRendition toStoredRendition(DocumentModel storedDoc, RenditionDefinition def, CoreSession coreSession) {
         if (storedDoc == null) {
             return null;
         }
         // re-attach the detached doc
-        storedDoc.attach(sessionId);
+        storedDoc.attach(coreSession);
         return new StoredRendition(storedDoc, def);
     }
 

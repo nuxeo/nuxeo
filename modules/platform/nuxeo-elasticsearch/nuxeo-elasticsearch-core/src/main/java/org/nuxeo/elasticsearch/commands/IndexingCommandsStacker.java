@@ -212,8 +212,7 @@ public abstract class IndexingCommandsStacker {
     }
 
     protected String getDocKey(DocumentModel doc) {
-        // Don't merge commands with different session, so we work only on attached doc
-        return doc.getId() + "#" + doc.getSessionId();
+        return doc.getId();
     }
 
 }

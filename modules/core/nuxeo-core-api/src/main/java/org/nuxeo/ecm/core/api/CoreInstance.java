@@ -111,24 +111,14 @@ public class CoreInstance {
     }
 
     /**
-     * Gets an existing open session for the given session id.
-     * <p>
-     * The returned CoreSession must not be closed, as it is owned by someone else.
-     *
-     * @param sessionId the session id
-     * @return the session, which must not be closed
-     */
-    public CoreSession getSession(String sessionId) {
-        return Framework.getService(CoreSessionService.class).getCoreSession(sessionId);
-    }
-
-    /**
-     * Use {@link CloseableCoreSession#close} instead.
+     * Does nothing.
      *
      * @since 5.9.3
+     * @deprecated since 11.1, does nothing
      */
+    @Deprecated
     public static void closeCoreSession(CloseableCoreSession session) {
-        Framework.getService(CoreSessionService.class).releaseCoreSession(session);
+        // nothing (the session holds no resources to close)
     }
 
     protected static NuxeoPrincipal getPrincipal(String username) {

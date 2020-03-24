@@ -67,7 +67,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
                 }
                 PublishedDocument publishedDocument = super.publishDocument(renditionDocument, targetNode, params);
                 DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
-                proxy.attach(doc.getSessionId());
+                proxy.attach(doc.getCoreSession());
                 if (!hasValidationTask(publishedDocument)) {
                     removeExistingProxiesOnPreviousVersions(proxy);
                 }

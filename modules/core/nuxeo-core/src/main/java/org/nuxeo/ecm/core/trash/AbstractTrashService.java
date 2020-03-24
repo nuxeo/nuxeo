@@ -291,7 +291,6 @@ public abstract class AbstractTrashService implements TrashService {
         ctx.setProperties(new HashMap<>(doc.getContextData()));
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
-        ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
         Event event = ctx.newEvent(eventId);
         event.setInline(false);
         event.setImmediate(immediate);

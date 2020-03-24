@@ -99,7 +99,6 @@ public class PublishRendition {
     protected void notifyPublishedEvent(DocumentModel proxy) {
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(CoreEventConstants.REPOSITORY_NAME, proxy.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE, proxy.getCurrentLifeCycleState());
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), proxy);

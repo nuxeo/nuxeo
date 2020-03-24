@@ -80,18 +80,11 @@ public interface DocumentModel extends Serializable {
     DocumentType getDocumentType();
 
     /**
-     * Retrieves the session id corresponding to this object.
-     * <p>
-     * This method should rarely be used, use {@link #getCoreSession} directly instead.
-     * <p>
-     * Using the session id you can retrieve the core session that created the object.
-     * <p>
-     * Document models created by the user on the client side are not bound to any session. They are simple DTO used to
-     * transport data.
+     * Returns the repository name and principal when the document is attached.
      *
-     * @return the session id the session ID for server side created doc models or null for client side models (used for
-     *         data transportation)
+     * @deprecated since 11.1
      */
+    @Deprecated
     String getSessionId();
 
     /**
@@ -100,9 +93,7 @@ public interface DocumentModel extends Serializable {
      * @return the principal
      * @since 11.1
      */
-    default NuxeoPrincipal getPrincipal() {
-        return getCoreSession().getPrincipal();
-    }
+    NuxeoPrincipal getPrincipal();
 
     /**
      * Gets the core session to which this document is tied.
@@ -123,12 +114,20 @@ public interface DocumentModel extends Serializable {
     void detach(boolean loadAll);
 
     /**
-     * Reattaches a document impl to an existing session.
+     * Reattaches a document to an existing session.
      *
-     * @param sid the session id
-     * @since 5.6
+     * @param coreSession the session to attach to
+     * @since 11.1
      */
-    void attach(String sid);
+    void attach(CoreSession coreSession);
+
+    /**
+     * Checks whether this document is attached to a session.
+     *
+     * @return {@code true} if the document is attached to a session
+     * @since 11.1
+     */
+    boolean isAttached();
 
     /**
      * Gets a reference to the core document that can be used either remotely or locally (opens the core JVM).

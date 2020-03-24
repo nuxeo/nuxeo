@@ -211,7 +211,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
      */
     protected void setInitialVersion(Document doc) {
         // Create a document model for filters
-        DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, null, null);
+        DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, null);
         InitialStateDescriptor initialState = versioningPolicies.values()
                                                                 .stream()
                                                                 .sorted()
@@ -544,8 +544,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     protected void sendEvent(CoreSession session, Document doc, String previousLifecycleState,
             Map<String, Serializable> options) {
-        String sid = session.getSessionId();
-        DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, sid, null);
+        DocumentModel docModel = DocumentModelFactory.createDocumentModel(doc, session);
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), docModel);
 
@@ -553,7 +552,6 @@ public class StandardVersioningService implements ExtendableVersioningService {
         ctx.setProperty(TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
         ctx.setProperty(TRANSTION_EVENT_OPTION_TRANSITION, BACK_TO_PROJECT_TRANSITION);
         ctx.setProperty(REPOSITORY_NAME, session.getRepositoryName());
-        ctx.setProperty(SESSION_ID, sid);
         ctx.setProperty(DOC_LIFE_CYCLE, BACK_TO_PROJECT_TRANSITION);
         ctx.setProperty(CATEGORY, DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY);
         ctx.setProperty(COMMENT, options.get(COMMENT));

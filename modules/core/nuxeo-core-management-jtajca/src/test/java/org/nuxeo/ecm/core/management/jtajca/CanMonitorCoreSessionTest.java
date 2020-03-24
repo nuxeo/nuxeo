@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.management.jtajca;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -29,7 +27,6 @@ import javax.inject.Named;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -55,15 +52,6 @@ public class CanMonitorCoreSessionTest {
     public void isMonitorInstalled() {
         assertThat(monitor, notNullValue());
         monitor.getCount(); // throw exception is monitor not present
-    }
-
-    @Test
-    public void isSessionOpened() {
-        int count = monitor.getCount();
-        assertThat(count, is(1));
-        String firstInfo = monitor.getInfos()[0];
-        assertThat(firstInfo.length(), greaterThan(0));
-        return;
     }
 
 }

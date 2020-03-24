@@ -404,6 +404,8 @@ public class DefaultDocumentView implements DocumentView {
         }
     };
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     protected static final Field SID = new Field() {
         @Override
         public String getName() {
@@ -412,7 +414,7 @@ public class DefaultDocumentView implements DocumentView {
 
         @Override
         public Object getValue(DocumentModel doc) {
-            return doc.getSessionId();
+            return "";
         }
     };
 

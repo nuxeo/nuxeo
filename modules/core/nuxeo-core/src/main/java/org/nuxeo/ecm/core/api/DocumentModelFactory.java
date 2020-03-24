@@ -60,10 +60,9 @@ public class DocumentModelFactory {
      *
      * @param doc the document
      * @param sid the session id for this document
-     * @param schemas the schemas to prefetch (deprecated), or {@code null}
      * @return the new document model
      */
-    public static DocumentModelImpl createDocumentModel(Document doc, String sid, String[] schemas) {
+    public static DocumentModelImpl createDocumentModel(Document doc, CoreSession coreSession) {
 
         DocumentType type = doc.getType();
         if (type == null) {
@@ -95,9 +94,8 @@ public class DocumentModelFactory {
         Path path = p == null ? null : new Path(p);
 
         // create the document model
-        // lock is unused
-        DocumentModelImpl docModel = new DocumentModelImpl(sid, type.getName(), doc.getUUID(), path, docRef, parentRef,
-                null, facets, sourceId, repositoryName, doc.isProxy());
+        DocumentModelImpl docModel = new DocumentModelImpl(type.getName(), doc.getUUID(), path, docRef, parentRef, null,
+                facets, sourceId, doc.isProxy(), coreSession, repositoryName, null);
 
         docModel.setPosInternal(doc.getPos());
 
@@ -110,17 +108,15 @@ public class DocumentModelFactory {
 
         // populate datamodels
         List<String> loadSchemas = new LinkedList<>();
-        if (schemas == null) {
-            PrefetchInfo prefetchInfo = type.getPrefetchInfo();
-            if (prefetchInfo != null) {
-                schemas = prefetchInfo.getSchemas();
-            }
-        }
-        if (schemas != null) {
-            Set<String> validSchemas = new HashSet<>(Arrays.asList(docModel.getSchemas()));
-            for (String schemaName : schemas) {
-                if (validSchemas.contains(schemaName)) {
-                    loadSchemas.add(schemaName);
+        PrefetchInfo prefetchInfo = type.getPrefetchInfo();
+        if (prefetchInfo != null) {
+            String[] schemas = prefetchInfo.getSchemas();
+            if (schemas != null) {
+                Set<String> validSchemas = new HashSet<>(Arrays.asList(docModel.getSchemas()));
+                for (String schemaName : schemas) {
+                    if (validSchemas.contains(schemaName)) {
+                        loadSchemas.add(schemaName);
+                    }
                 }
             }
         }
@@ -151,9 +147,7 @@ public class DocumentModelFactory {
      * @since 5.4.2
      */
     public static DocumentModelImpl createDocumentModel(String docType) {
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        DocumentType type = schemaManager.getDocumentType(docType);
-        return createDocumentModel(null, type);
+        return createDocumentModel(docType, null, null);
     }
 
     /**
@@ -161,30 +155,21 @@ public class DocumentModelFactory {
      * <p>
      * Initializes the proper data models according to the type info.
      *
-     * @param sessionId the CoreSession id
-     * @param docType the document type
-     * @return the document model
-     */
-    public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType) {
-        return createDocumentModel(sessionId, docType, null);
-    }
-
-    /**
-     * Creates a document model for a new document.
-     * <p>
-     * Initializes the proper data models according to the type info.
-     *
-     * @param sessionId the CoreSession id
-     * @param docType the document type
+     * @param typeName the document type
      * @param parentRef the parent ref
      * @return the document model
      * @since 11.1
      */
-    public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType, DocumentRef parentRef) {
-
-        DocumentModelImpl docModel = new DocumentModelImpl(sessionId, docType.getName(), null, null, null, null,
-                parentRef, null, null, null, null);
-        for (Schema schema : docType.getSchemas()) {
+    public static DocumentModelImpl createDocumentModel(String typeName, DocumentRef parentRef,
+            CoreSession coreSession) {
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        DocumentType type = schemaManager.getDocumentType(typeName);
+        if (type == null) {
+            throw new IllegalArgumentException(typeName + " is not a registered core type");
+        }
+        DocumentModelImpl docModel = new DocumentModelImpl(typeName, null, null, null, parentRef, null, null, null,
+                false, coreSession, null, null);
+        for (Schema schema : type.getSchemas()) {
             docModel.addDataModel(createDataModel(null, schema));
         }
         return docModel;
@@ -258,7 +243,7 @@ public class DocumentModelFactory {
         }
 
         // TODO: here we can optimize document part doesn't need to be read
-        DocumentModel newModel = createDocumentModel(doc, docModel.getSessionId(), null);
+        DocumentModel newModel = createDocumentModel(doc, docModel.getCoreSession());
         newModel.copyContextData(docModel);
         return newModel;
     }
@@ -312,12 +297,14 @@ public class DocumentModelFactory {
      * attach a documentmodel that has been serialized and modified.
      *
      * @since 5.7.2
+     * @deprecated since 11.1, unused
      */
+    @Deprecated
     public static DocumentModel createDocumentModel(String type, String id) {
         SchemaManager sm = Framework.getService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(type);
-        DocumentModelImpl doc = new DocumentModelImpl(null, docType.getName(), id, null, null, new IdRef(id), null,
-                null, null, null, null);
+        DocumentModelImpl doc = new DocumentModelImpl(type, id, null, new IdRef(id), null, null, null, null, false,
+                null, null, null);
         docType.getSchemas().forEach(schema -> doc.addDataModel(createDataModel(null, schema)));
         return doc;
     }

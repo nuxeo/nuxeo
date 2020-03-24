@@ -197,8 +197,8 @@ public class DocumentTaskProvider implements TaskProvider {
         task.end(coreSession);
         // make sure taskDoc is attached to prevent sending event with null session
         DocumentModel taskDocument = task.getDocument();
-        if (taskDocument.getSessionId() == null) {
-            taskDocument.attach(coreSession.getSessionId());
+        if (!taskDocument.isAttached()) {
+            taskDocument.attach(coreSession);
         }
         coreSession.saveDocument(taskDocument);
         if (StringUtils.isNotBlank(eventName)) {

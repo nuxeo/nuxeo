@@ -60,10 +60,10 @@ public class EsFetcher extends Fetcher {
     public DocumentModelListImpl fetchDocuments() {
         DocumentModelListImpl ret = new DocumentModelListImpl(getResponse().getHits().getHits().length);
         DocumentModel doc;
-        String sid = getSession().getSessionId();
+        CoreSession session = getSession();
         for (SearchHit hit : getResponse().getHits()) {
             // TODO: this does not work on multi repo
-            doc = DocumentModelReaders.fromSource(hit.getSourceAsMap()).sid(sid).getDocumentModel();
+            doc = DocumentModelReaders.fromSource(hit.getSourceAsMap()).session(session).getDocumentModel();
 
             if (consumer != null) {
                 consumer.accept(hit, doc);

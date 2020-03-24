@@ -167,11 +167,6 @@ public interface CoreSession {
     DocumentType getDocumentType(String type);
 
     /**
-     * Returns true if the session is currently connected to the repository.
-     */
-    boolean isLive(boolean onThread);
-
-    /**
      * Cancels any pending change made through this session.
      */
     void cancel();
@@ -182,12 +177,12 @@ public interface CoreSession {
     void save();
 
     /**
-     * Gets the current session id.
-     * <p>
-     * If the client is not connected returns null.
+     * Returns the repository name and principal.
      *
-     * @return the session id or null if not connected
+     * @return the repository name and principal
+     * @deprecated since 11.1
      */
+    @Deprecated
     String getSessionId();
 
     /**

@@ -46,16 +46,16 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
             + " WHERE ecm:primaryType = 'Section' AND ecm:path STARTSWITH %s"
             + " AND ecm:isVersion = 0 AND ecm:isProxy = 0 " + " AND ecm:isTrashed = 0 ";
 
-    protected String coreSessionId;
+    protected CoreSession coreSession;
 
     protected String path;
 
     protected PublishedDocumentFactory factory;
 
-    public VirtualCoreFolderPublicationNode(String coreSessionId, String documentPath, PublicationTree tree,
+    public VirtualCoreFolderPublicationNode(CoreSession coreSession, String documentPath, PublicationTree tree,
             PublishedDocumentFactory factory) {
         super(tree);
-        this.coreSessionId = coreSessionId;
+        this.coreSession = coreSession;
         this.path = documentPath;
         this.factory = factory;
     }
@@ -78,7 +78,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
     @Override
     public List<PublicationNode> getChildrenNodes() {
         List<PublicationNode> childrenNodes = new ArrayList<>();
-        CoreSession session = getCoreSession();
+        CoreSession session = coreSession;
         if (session != null) {
             String query = String.format(ACCESSIBLE_CHILDREN_QUERY, NXQL.escapeString(path));
             List<DocumentModel> docs = session.query(query);
@@ -96,10 +96,6 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
             }
         }
         return childrenNodes;
-    }
-
-    protected CoreSession getCoreSession() {
-        return Framework.getService(CoreSessionService.class).getCoreSession(coreSessionId);
     }
 
     @Override

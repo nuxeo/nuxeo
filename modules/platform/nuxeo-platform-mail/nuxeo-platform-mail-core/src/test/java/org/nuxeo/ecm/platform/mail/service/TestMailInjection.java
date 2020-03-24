@@ -139,7 +139,6 @@ public class TestMailInjection {
         assertNotNull(pipe);
         Visitor visitor = new Visitor(pipe);
         ExecutionContext initialExecutionContext = new ExecutionContext();
-        assertNotNull(session.getSessionId());
         initialExecutionContext.put(MailCoreConstants.CORE_SESSION_KEY, session);
         initialExecutionContext.put(MailCoreConstants.MIMETYPE_SERVICE_KEY,
                 Framework.getService(MimetypeRegistry.class));

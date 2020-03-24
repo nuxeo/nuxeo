@@ -151,7 +151,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode {
                 parent = new CoreFolderPublicationNode(getCoreSession().getDocument(folder.getParentRef()), tree,
                         factory);
             } else {
-                parent = new VirtualCoreFolderPublicationNode(getCoreSession().getSessionId(), docRef.toString(), tree,
+                parent = new VirtualCoreFolderPublicationNode(getCoreSession(), docRef.toString(), tree,
                         factory);
             }
         }
