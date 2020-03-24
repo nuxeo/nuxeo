@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -154,21 +155,50 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     private Long maxResults;
 
     // @since 5.7.2
-    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    protected static final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
+    // static caches shared by all threads
+    protected static final Map<String, Counter> CREATE_DOC_COUNT = new ConcurrentHashMap<>();
+
+    protected static final Map<String, Counter> DELETE_DOC_COUNT = new ConcurrentHashMap<>();
+
+    protected static final Map<String, Counter> UPDATE_DOC_COUNT = new ConcurrentHashMap<>();
+
+    // lazily initialized counters
     protected Counter createDocumentCount;
 
     protected Counter deleteDocumentCount;
 
     protected Counter updateDocumentCount;
 
-    protected void createMetrics() {
-        createDocumentCount = registry.counter(
-                MetricName.build("nuxeo", "repositories", "repository", "documents", "create").tagged("repository", getRepositoryName()));
-        deleteDocumentCount = registry.counter(
-                MetricName.build("nuxeo", "repositories", "repository", "documents", "delete").tagged("repository", getRepositoryName()));
-        updateDocumentCount = registry.counter(
-                MetricName.build("nuxeo", "repositories", "repository", "documents", "update").tagged("repository", getRepositoryName()));
+    protected void createDocumentCountInc() {
+        if (createDocumentCount == null) {
+            createDocumentCount = CREATE_DOC_COUNT.computeIfAbsent(getRepositoryName(),
+                    repositoryName -> registry.counter(
+                            MetricName.build("nuxeo", "repositories", "repository", "documents", "create")
+                                      .tagged("repository", repositoryName)));
+        }
+        createDocumentCount.inc();
+    }
+
+    protected void deleteDocumentCountInc() {
+        if (deleteDocumentCount == null) {
+            deleteDocumentCount = DELETE_DOC_COUNT.computeIfAbsent(getRepositoryName(),
+                    repositoryName -> registry.counter(
+                            MetricName.build("nuxeo", "repositories", "repository", "documents", "delete")
+                                      .tagged("repository", repositoryName)));
+        }
+        deleteDocumentCount.inc();
+    }
+
+    protected void updateDocumentCountInc() {
+        if (updateDocumentCount == null) {
+            updateDocumentCount = UPDATE_DOC_COUNT.computeIfAbsent(getRepositoryName(),
+                    repositoryName -> registry.counter(
+                            MetricName.build("nuxeo", "repositories", "repository", "documents", "update")
+                                      .tagged("repository", repositoryName)));
+        }
+        updateDocumentCount.inc();
     }
 
     protected SecurityService getSecurityService() {
@@ -739,7 +769,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options, null, null, true, false);
         docModel = writeModel(doc, docModel);
 
-        createDocumentCount.inc();
+        createDocumentCountInc();
         return docModel;
     }
 
@@ -1411,7 +1441,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             e.addInfo("Failed to remove document " + doc.getUUID());
             throw e;
         }
-        deleteDocumentCount.inc();
+        deleteDocumentCountInc();
     }
 
     protected void removeNotifyOneDoc(Document doc) {
@@ -1614,7 +1644,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
 
         notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
-        updateDocumentCount.inc();
+        updateDocumentCountInc();
 
         // Notify that proxies have been updated
         List<Document> proxies = getSession().getProxies(doc);
