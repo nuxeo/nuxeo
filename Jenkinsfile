@@ -111,11 +111,11 @@ void dockerPush(String image) {
 }
 
 void dockerDeploy(String imageName) {
-  String imageName = "${dockerNamespace}/${imageName}"
-  String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${imageName}:${VERSION}"
-  String latestInternalImage = "${DOCKER_REGISTRY}/${imageName}:${DOCKER_TAG}"
-  String fixedVersionPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${imageName}:${VERSION}"
-  String latestPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${imageName}:${DOCKER_TAG}"
+  String fullImageName = "${dockerNamespace}/${imageName}"
+  String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
+  String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
+  String fixedVersionPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
+  String latestPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
 
   dockerPull(fixedVersionInternalImage)
   echo "Push ${latestInternalImage}"
