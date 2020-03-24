@@ -138,10 +138,10 @@ public class TestIORelationAdapter {
         String id2 = doc1RefCopy;
         String name = "file1";
         String parentPath = "/";
-        DocumentModel doc1 = new DocumentModelImpl((String) null, type, id1, new Path(name), null, null, new PathRef(
-                parentPath), null, null, null, session.getRepositoryName());
-        DocumentModel doc2 = new DocumentModelImpl((String) null, type, id2, new Path(name), null, null, new PathRef(
-                parentPath), null, null, null, session.getRepositoryName());
+        DocumentModel doc1 = new DocumentModelImpl(type, id1, new Path(name), null, new PathRef(parentPath), null, null,
+                null, false, null, session.getRepositoryName(), null);
+        DocumentModel doc2 = new DocumentModelImpl(type, id2, new Path(name), null, new PathRef(parentPath), null, null,
+                null, false, null, session.getRepositoryName(), null);
         session.importDocuments(Arrays.asList(doc1, doc2));
         session.save();
     }

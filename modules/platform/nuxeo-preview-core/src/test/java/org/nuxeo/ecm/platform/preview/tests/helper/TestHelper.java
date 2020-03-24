@@ -56,8 +56,8 @@ public class TestHelper {
 
     @Test
     public void testPreviewURLDefault() {
-        DocumentModel doc = new DocumentModelImpl("", "File", uuid, new Path("/"), null, null, null, null, null, null,
-                "default");
+        DocumentModel doc = new DocumentModelImpl("File", uuid, new Path("/"), null, null, null, null, null, false,
+                null, "default", null);
 
         String previewURL = PreviewHelper.getPreviewURL(doc);
         assertNotNull(previewURL);
@@ -66,8 +66,8 @@ public class TestHelper {
 
     @Test
     public void testPreviewURL() {
-        DocumentModel doc = new DocumentModelImpl("", "File", uuid, new Path("/"), null, null, null, null, null, null,
-                "default");
+        DocumentModel doc = new DocumentModelImpl("File", uuid, new Path("/"), null, null, null, null, null, false,
+                null, "default", null);
 
         String previewURL = PreviewHelper.getPreviewURL(doc, "file:content");
         assertNotNull(previewURL);

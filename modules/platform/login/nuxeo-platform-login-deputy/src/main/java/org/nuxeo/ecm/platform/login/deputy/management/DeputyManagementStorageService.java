@@ -211,8 +211,8 @@ public class DeputyManagementStorageService implements DeputyManager {
 
     protected DocumentModel newEntry(String username, String deputy) {
         DataModel data = new DataModelImpl(directorySchema, new HashMap<String, Object>());
-        DocumentModelImpl entry = new DocumentModelImpl(null, directorySchema, "0", null, null, null, null,
-                new String[] { directorySchema }, null, null, null);
+        DocumentModelImpl entry = new DocumentModelImpl(directorySchema, "0", null, null, null,
+                new String[] { directorySchema }, null, null, false, null, null, null);
         entry.addDataModel(data);
         entry.setProperty(directorySchema, DIR_COL_ID, id(username, deputy));
         entry.setProperty(directorySchema, DIR_COL_USERID, username);

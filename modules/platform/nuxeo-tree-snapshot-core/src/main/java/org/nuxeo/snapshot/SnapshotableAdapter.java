@@ -376,8 +376,8 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                 if (name == null) {
                     name = child.getType() + System.currentTimeMillis();
                 }
-                placeholder = new DocumentModelImpl((String) null, child.getType(), liveUUID, new Path(name), null,
-                        null, target.getRef(), null, null, null, null);
+                placeholder = new DocumentModelImpl(child.getType(), liveUUID, new Path(name), null, target.getRef(),
+                        null, null, null, false, null, null, null);
                 placeholder.putContextData(CoreSession.IMPORT_CHECKED_IN, Boolean.TRUE);
                 placeholder.addFacet(Snapshot.FACET);
                 placeholder.addFacet(FacetNames.VERSIONABLE);

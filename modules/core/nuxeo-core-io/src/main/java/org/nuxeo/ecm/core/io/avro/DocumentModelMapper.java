@@ -99,8 +99,8 @@ public class DocumentModelMapper extends AvroMapper<DocumentModel, GenericRecord
         Boolean isProxy = (Boolean) input.get(AvroConstants.IS_PROXY);
         DocumentRef parentRef = parentId == null ? null : new IdRef(parentId);
         Set<String> facets = (Set<String>) input.get(AvroConstants.MIXIN_TYPES);
-        DocumentModelImpl doc = new DocumentModelImpl(null, type, uuid, new Path(path), null, parentRef,
-                null, facets, null, repositoryName, isProxy);
+        DocumentModelImpl doc = new DocumentModelImpl(type, uuid, new Path(path), null, parentRef, null, facets, null,
+                isProxy, null, repositoryName, null);
         doc.setIsVersion((Boolean) input.get(AvroConstants.IS_VERSION));
         doc.prefetchCurrentLifecycleState((String) input.get(AvroConstants.CURRENT_LIFE_CYCLE_STATE));
         Boolean isRecord = (Boolean) input.get(AvroConstants.IS_RECORD);

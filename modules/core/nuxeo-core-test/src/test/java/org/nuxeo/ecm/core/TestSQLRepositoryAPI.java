@@ -3699,8 +3699,8 @@ public class TestSQLRepositoryAPI {
         String typeName = "File";
         DocumentRef parentRef = null;
         String name = "foobar";
-        DocumentModel ver = new DocumentModelImpl(null, typeName, vid, new Path(name), null, null, parentRef, null,
-                null, null, null);
+        DocumentModel ver = new DocumentModelImpl(typeName, vid, new Path(name), null, parentRef, null, null, null,
+                false, null, null, null);
         Calendar vcr = new GregorianCalendar(2009, Calendar.JANUARY, 1, 2, 3, 4);
         ver.putContextData(CoreSession.IMPORT_VERSION_VERSIONABLE_ID, id);
         ver.putContextData(CoreSession.IMPORT_VERSION_CREATED, vcr);
@@ -3743,8 +3743,8 @@ public class TestSQLRepositoryAPI {
         typeName = CoreSession.IMPORT_PROXY_TYPE;
         parentRef = new IdRef(folderId);
         name = "myproxy";
-        DocumentModel proxy = new DocumentModelImpl(null, typeName, pid, new Path(name), null, null, parentRef,
-                new String[0], null, null, null);
+        DocumentModel proxy = new DocumentModelImpl(typeName, pid, new Path(name), null, parentRef, new String[0], null,
+                null, false, null, null, null);
         proxy.putContextData(CoreSession.IMPORT_PROXY_TARGET_ID, vid);
         proxy.putContextData(CoreSession.IMPORT_PROXY_VERSIONABLE_ID, id);
         session.importDocuments(Collections.singletonList(proxy));
@@ -3764,8 +3764,8 @@ public class TestSQLRepositoryAPI {
         typeName = "File";
         parentRef = new IdRef(folderId);
         name = "mydoc";
-        DocumentModel doc = new DocumentModelImpl(null, typeName, id, new Path(name), null, null, parentRef, null, null,
-                null, null);
+        DocumentModel doc = new DocumentModelImpl(typeName, id, new Path(name), null, parentRef, null, null, null,
+                false, null, null, null);
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_POLICY, "lcp");
         doc.putContextData(CoreSession.IMPORT_LIFECYCLE_STATE, "lcst");
         Calendar lockCreated = new GregorianCalendar(2011, Calendar.JANUARY, 1, 5, 5, 5);
@@ -3807,8 +3807,8 @@ public class TestSQLRepositoryAPI {
 
         // try to import another doc with the same id
         // detected by session transient state
-        DocumentModel doc2 = new DocumentModelImpl(null, "File", docId, new Path("/doc2"), null, null, new IdRef(rootId),
-                null, null, null, null);
+        DocumentModel doc2 = new DocumentModelImpl("File", docId, new Path("/doc2"), null, new IdRef(rootId), null,
+                null, null, false, null, null, null);
         try {
             // VCS fails in importDocuments because its cache know the id alreay exists
             session.importDocuments(Collections.singletonList(doc2));
@@ -3836,8 +3836,8 @@ public class TestSQLRepositoryAPI {
 
         // try to import another doc with the same id
         // this is prevented by a unique index on the id field in the database
-        DocumentModel doc2 = new DocumentModelImpl(null, "File", docId, new Path("/doc2"), null, null, new IdRef(rootId),
-                null, null, null, null);
+        DocumentModel doc2 = new DocumentModelImpl("File", docId, new Path("/doc2"), null, new IdRef(rootId), null,
+                null, null, false, null, null, null);
         session.importDocuments(Collections.singletonList(doc2));
         try {
             session.save();
