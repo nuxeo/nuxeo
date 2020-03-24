@@ -36,3 +36,5 @@ build:
           repo: ${DOCKER_REGISTRY}/nuxeo/base/cache
   cluster:
     namespace: platform
+    dockerConfig:
+      secretName: jenkins-docker-cfg
