@@ -310,7 +310,6 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         EventService eventService = Framework.getService(EventService.class);
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), sourceDocument);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
-        ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
         ctx.setProperty("category", NuxeoDriveEvents.EVENT_CATEGORY);
         ctx.setProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY, impactedUserName);
         Event event = ctx.newEvent(eventName);

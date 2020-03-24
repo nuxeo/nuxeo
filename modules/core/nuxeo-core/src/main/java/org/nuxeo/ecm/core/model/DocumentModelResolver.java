@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.schema.types.resolver.AbstractObjectResolver;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
@@ -216,29 +215,24 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
         CloseableCoreSession closeableCoreSession = null;
         try {
             CoreSession session;
-            try {
-                if (ref.repo != null) {
-                    // we have an explicit repository name
-                    if (context != null && ref.repo.equals(((CoreSession) context).getRepositoryName())) {
-                        // if it's the same repository as the context session, use it directly
-                        session = (CoreSession) context;
-                    } else {
-                        // otherwise open a new one
-                        closeableCoreSession = CoreInstance.openCoreSession(ref.repo);
-                        session = closeableCoreSession;
-                    }
-                } else {
-                    // use session from context
+            if (ref.repo != null) {
+                // we have an explicit repository name
+                if (context != null && ref.repo.equals(((CoreSession) context).getRepositoryName())) {
+                    // if it's the same repository as the context session, use it directly
                     session = (CoreSession) context;
-                    if (session == null) {
-                        // use the default repository if none is provided in the context
-                        closeableCoreSession = CoreInstance.openCoreSession(null);
-                        session = closeableCoreSession;
-                    }
+                } else {
+                    // otherwise open a new one
+                    closeableCoreSession = CoreInstance.openCoreSession(ref.repo);
+                    session = closeableCoreSession;
                 }
-            } catch (LocalException e) {
-                // no such repository
-                return;
+            } else {
+                // use session from context
+                session = (CoreSession) context;
+                if (session == null) {
+                    // use the default repository if none is provided in the context
+                    closeableCoreSession = CoreInstance.openCoreSession(null);
+                    session = closeableCoreSession;
+                }
             }
             DocumentRef docRef;
             switch (mode) {

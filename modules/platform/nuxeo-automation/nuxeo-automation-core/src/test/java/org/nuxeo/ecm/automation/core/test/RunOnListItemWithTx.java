@@ -59,7 +59,6 @@ public class RunOnListItemWithTx {
         String user = (String) ctx.get("item");
         Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
         getOrCreateList("result").add(user);
-        getOrCreateList("sids").add(session.getSessionId());
         getOrCreateList("txids").add(tx.toString());
 
     }

@@ -69,7 +69,6 @@ import org.nuxeo.ecm.core.query.sql.model.QueryBuilder;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -103,8 +102,6 @@ public class LDAPSession extends BaseSession {
 
     protected final Set<String> emptySet = Collections.emptySet();
 
-    protected final String sid;
-
     protected final String rdnAttribute;
 
     protected final String rdnField;
@@ -117,7 +114,6 @@ public class LDAPSession extends BaseSession {
         idAttribute = fieldMapper.getBackendField(getIdField());
         LDAPDirectoryDescriptor descriptor = directory.getDescriptor();
         idCase = descriptor.getIdCase();
-        sid = String.valueOf(SIDGenerator.next());
         searchBaseDn = descriptor.getSearchBaseDn();
         substringMatchType = descriptor.getSubstringMatchType();
         rdnAttribute = descriptor.getRdnAttribute();
@@ -668,7 +664,7 @@ public class LDAPSession extends BaseSession {
     protected DocumentModel fieldMapToDocumentModel(Map<String, Object> fieldMap) {
         String id = String.valueOf(fieldMap.get(getIdField()));
         try {
-            DocumentModel docModel = BaseSession.createEntryModel(sid, schemaName, id, fieldMap, isReadOnly());
+            DocumentModel docModel = BaseSession.createEntryModel(schemaName, id, fieldMap, isReadOnly());
             EntryAdaptor adaptor = getDirectory().getDescriptor().getEntryAdaptor();
             if (adaptor != null) {
                 docModel = adaptor.adapt(directory, docModel);
@@ -1061,7 +1057,7 @@ public class LDAPSession extends BaseSession {
     @Override
     // useful for the log function
     public String toString() {
-        return String.format("LDAPSession '%s' for directory %s", sid, directory.getName());
+        return String.format("LDAPSession for directory %s", directory.getName());
     }
 
     @Override

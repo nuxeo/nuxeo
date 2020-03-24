@@ -154,7 +154,6 @@ public class TrashAction implements StreamProcessorTopology {
             docs.forEach(d -> {
                 DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), d);
                 ctx.setProperty(REPOSITORY_NAME, session.getRepositoryName());
-                ctx.setProperty(SESSION_ID, session.getSessionId());
                 ctx.setCategory(EVENT_DOCUMENT_CATEGORY);
                 Event event = ctx.newEvent(eventId);
                 event.setImmediate(false);

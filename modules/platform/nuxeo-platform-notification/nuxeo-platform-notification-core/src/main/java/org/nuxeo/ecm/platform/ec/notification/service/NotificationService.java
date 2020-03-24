@@ -320,9 +320,6 @@ public class NotificationService extends DefaultComponent implements Notificatio
         // Name of the current repository
         options.put(CoreEventConstants.REPOSITORY_NAME, doc.getRepositoryName());
 
-        // Add the session ID
-        options.put(CoreEventConstants.SESSION_ID, doc.getSessionId());
-
         // options for confirmation email
         options.put("recipients", username);
         options.put("notifName", notification);

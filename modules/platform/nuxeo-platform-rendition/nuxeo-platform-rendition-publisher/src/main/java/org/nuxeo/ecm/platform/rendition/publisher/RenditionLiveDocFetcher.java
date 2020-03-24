@@ -33,14 +33,14 @@ public class RenditionLiveDocFetcher extends UnrestrictedSessionRunner {
 
     protected final DocumentModel proxy;
 
-    protected final String sid;
+    protected final CoreSession coreSession;
 
     protected DocumentModel liveDocument;
 
     protected RenditionLiveDocFetcher(CoreSession session, DocumentModel source) {
         super(session);
         this.proxy = source;
-        this.sid = session.getSessionId();
+        this.coreSession = session;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class RenditionLiveDocFetcher extends UnrestrictedSessionRunner {
         String targetUUID = (String) proxy.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY);
         liveDocument = session.getDocument(new IdRef(targetUUID));
         liveDocument.detach(true);
-        liveDocument.attach(sid);
+        liveDocument.attach(coreSession);
     }
 
     public DocumentModel getLiveDocument() {

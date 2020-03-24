@@ -50,6 +50,8 @@ public final class CoreEventConstants {
 
     public static final String REPOSITORY_NAME = "repositoryName";
 
+    /** @deprecated since 11.1 */
+    @Deprecated
     public static final String SESSION_ID = "sessionId";
 
     public static final String OLD_ACP = "oldACP";

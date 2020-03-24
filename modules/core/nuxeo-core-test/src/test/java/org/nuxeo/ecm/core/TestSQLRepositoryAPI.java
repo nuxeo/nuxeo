@@ -4739,7 +4739,7 @@ public class TestSQLRepositoryAPI {
         doc = session.getDocument(doc.getRef());
         doc.detach(true);
         assertEquals(retainUntil, doc.getRetainUntil());
-        doc.attach(session.getSessionId());
+        doc.attach(session);
 
         // cannot be deleted
         checkUndeletable(folder, doc);
@@ -4800,7 +4800,7 @@ public class TestSQLRepositoryAPI {
         doc = session.getDocument(doc.getRef());
         doc.detach(true);
         assertTrue(doc.hasLegalHold());
-        doc.attach(session.getSessionId());
+        doc.attach(session);
 
         checkUndeletable(folder, doc);
         // bob cannot delete it

@@ -259,18 +259,36 @@ public abstract class BaseSession implements Session, EntrySource {
      * Can be used for creation screen.
      *
      * @since 5.2M4
+     * @deprecated since 11.1, sessionId is unused
      */
+    @Deprecated
     public static DocumentModel createEntryModel(String sessionId, String schema, String id, Map<String, Object> values)
             throws PropertyException {
-        DocumentModelImpl entry = new DocumentModelImpl(sessionId, schema, id, null, null, null, null,
-                new String[] { schema }, new HashSet<>(), null, null);
-        DataModel dataModel;
-        if (values == null) {
-            values = Collections.emptyMap();
-        }
-        dataModel = new DataModelImpl(schema, values);
-        entry.addDataModel(dataModel);
-        return entry;
+        return createEntryModel(schema, id, values, false);
+    }
+
+    /**
+     * Returns a bare document model suitable for directory implementations.
+     *
+     * @param schema the directory schema
+     * @return the directory entry
+     * @since 11.1
+     */
+    public static DocumentModel createEntryModel(String schema) {
+        return createEntryModel(schema, null, null, false);
+    }
+
+    /**
+     * Returns a bare document model suitable for directory implementations.
+     *
+     * @param schema the directory schema
+     * @param id the entry id
+     * @param values the entry values, or {@code null}
+     * @return the directory entry
+     * @since 11.1
+     */
+    public static DocumentModel createEntryModel(String schema, String id, Map<String, Object> values) {
+        return createEntryModel(schema, id, values, false);
     }
 
     /**
@@ -279,10 +297,36 @@ public abstract class BaseSession implements Session, EntrySource {
      * Allow setting the readonly entry flag to {@code Boolean.TRUE}. See {@code Session#isReadOnlyEntry(DocumentModel)}
      *
      * @since 5.3.1
+     * @deprecated since 11.1, sessionId is unused
      */
+    @Deprecated
     public static DocumentModel createEntryModel(String sessionId, String schema, String id, Map<String, Object> values,
             boolean readOnly) throws PropertyException {
-        DocumentModel entry = createEntryModel(sessionId, schema, id, values);
+        return createEntryModel(schema, id, values, readOnly);
+    }
+
+    /**
+     * Returns a bare document model suitable for directory implementations.
+     * <p>
+     * Allow setting the readonly entry flag to {@code Boolean.TRUE}. See {@code Session#isReadOnlyEntry(DocumentModel)}
+     *
+     * @param schema the directory schema
+     * @param id the entry id
+     * @param values the entry values, or {@code null}
+     * @param readOnly the readonly flag
+     * @return the directory entry
+     * @since 11.1
+     */
+    public static DocumentModel createEntryModel(String schema, String id, Map<String, Object> values,
+            boolean readOnly) {
+        DocumentModelImpl entry = new DocumentModelImpl(schema, id, null, null, null, new String[] { schema },
+                new HashSet<>(), null, false, null, null, null);
+        DataModel dataModel;
+        if (values == null) {
+            values = Collections.emptyMap();
+        }
+        dataModel = new DataModelImpl(schema, values);
+        entry.addDataModel(dataModel);
         if (readOnly) {
             setReadOnlyEntry(entry);
         }

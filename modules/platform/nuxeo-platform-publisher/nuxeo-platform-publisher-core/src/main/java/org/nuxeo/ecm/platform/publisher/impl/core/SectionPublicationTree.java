@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -40,7 +39,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.helper.PublicationRelationHelper;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple implementation of a {@link PublicationTree} using the Core Sections.
@@ -59,8 +57,6 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
 
     protected DocumentModel treeRoot;
 
-    protected String sessionId;
-
     @Override
     public void initTree(CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
             String configName, String title) {
@@ -76,20 +72,14 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
             treeRoot = coreSession.getDocument(new PathRef(rootPath));
             rootNode = new CoreFolderPublicationNode(treeRoot, this, factory);
         } else {
-            rootNode = new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), rootPath, this, factory);
-            sessionId = coreSession.getSessionId();
+            rootNode = new VirtualCoreFolderPublicationNode(coreSession, rootPath, this, factory);
         }
-    }
-
-    protected CoreSession getCoreSession() {
-        String coreSessionId = treeRoot == null ? sessionId : treeRoot.getSessionId();
-        return Framework.getService(CoreSessionService.class).getCoreSession(coreSessionId);
     }
 
     @Override
     public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
         List<PublishedDocument> publishedDocs = new ArrayList<>();
-        DocumentModelList proxies = getCoreSession().getProxies(docLoc.getDocRef(), null);
+        DocumentModelList proxies = coreSession.getProxies(docLoc.getDocRef(), null);
         for (DocumentModel proxy : proxies) {
             if (proxy.getPathAsString().startsWith(rootPath)) {
                 publishedDocs.add(factory.wrapDocumentModel(proxy));
@@ -131,8 +121,8 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
         }
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         PublicationRelationHelper.removePublicationRelation(proxy);
-        getCoreSession().removeDocument(proxy.getRef());
-        getCoreSession().save();
+        coreSession.removeDocument(proxy.getRef());
+        coreSession.save();
     }
 
     @Override
@@ -141,7 +131,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree {
         if (coreSession.hasPermission(docRef, SecurityConstants.READ)) {
             return new CoreFolderPublicationNode(coreSession.getDocument(new PathRef(path)), this, factory);
         } else {
-            return new VirtualCoreFolderPublicationNode(coreSession.getSessionId(), path, this, factory);
+            return new VirtualCoreFolderPublicationNode(coreSession, path, this, factory);
         }
 
     }

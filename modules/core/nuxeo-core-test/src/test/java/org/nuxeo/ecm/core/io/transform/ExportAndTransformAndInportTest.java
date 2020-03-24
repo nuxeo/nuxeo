@@ -125,9 +125,6 @@ public class ExportAndTransformAndInportTest extends BaseExport {
 
         } finally {
             FileUtils.deleteQuietly(out);
-            if (importSession != null) {
-                CoreInstance.closeCoreSession(importSession);
-            }
         }
     }
 

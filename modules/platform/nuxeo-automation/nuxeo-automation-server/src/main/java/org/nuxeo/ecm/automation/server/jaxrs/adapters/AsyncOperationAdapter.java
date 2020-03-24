@@ -331,8 +331,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     }
 
     protected void attach(DocumentModel doc) {
-        String sid = ctx.getCoreSession().getSessionId();
-        doc.attach(sid);
+        doc.attach(ctx.getCoreSession());
     }
 
     protected void detach(DocumentModel doc) {

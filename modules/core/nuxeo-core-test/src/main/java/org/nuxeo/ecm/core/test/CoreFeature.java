@@ -36,8 +36,6 @@ import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.CoreSessionService;
-import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -212,22 +210,6 @@ public class CoreFeature implements RunnerFeature {
         if (granularity != Granularity.METHOD) {
             cleanupSession(); // close the session for us
         }
-
-        List<CoreSessionRegistrationInfo> leakedInfos = Framework.getService(CoreSessionService.class)
-                                                                 .getCoreSessionRegistrationInfos();
-        if (leakedInfos.isEmpty()) {
-            return;
-        }
-        AssertionError leakedErrors = new AssertionError(String.format("leaked %d sessions", leakedInfos.size()));
-        for (CoreSessionRegistrationInfo info : leakedInfos) {
-            try {
-                ((CloseableCoreSession) info.getCoreSession()).close();
-                leakedErrors.addSuppressed(info);
-            } catch (RuntimeException cause) {
-                leakedErrors.addSuppressed(cause);
-            }
-        }
-        throw leakedErrors;
     }
 
     @Override

@@ -31,12 +31,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.CoreSessionService;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -78,8 +77,6 @@ public class IndexingCommand implements Serializable {
 
     protected long order;
 
-    protected transient String sessionId;
-
     protected transient static AtomicLong seq = new AtomicLong(0);
 
     protected IndexingCommand() {
@@ -110,7 +107,6 @@ public class IndexingCommand implements Serializable {
         DocumentModel targetDocument = getValidTargetDocument(document);
         repositoryName = targetDocument.getRepositoryName();
         targetDocumentId = targetDocument.getId();
-        sessionId = targetDocument.getSessionId();
         path = targetDocument.getPathAsString();
         if (targetDocumentId == null) {
             throw new IllegalArgumentException("Target document has a null uid: " + this);
@@ -142,8 +138,6 @@ public class IndexingCommand implements Serializable {
             throw new IllegalArgumentException(
                     "Invalid session, expected repo: " + repositoryName + " actual: " + session.getRepositoryName());
         }
-        sessionId = session.getSessionId();
-        assert sessionId != null : "Attach to session with a null sessionId";
     }
 
     /**
@@ -152,13 +146,7 @@ public class IndexingCommand implements Serializable {
      * @throws java.lang.IllegalStateException if there is no session attached
      */
     public DocumentModel getTargetDocument() {
-        CoreSession session = null;
-        if (sessionId != null) {
-            session = Framework.getService(CoreSessionService.class).getCoreSession(sessionId);
-        }
-        if (session == null) {
-            throw new IllegalStateException("Command is not attached to a valid session: " + this);
-        }
+        CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName);
         IdRef idref = new IdRef(targetDocumentId);
         if (!session.exists(idref)) {
             // Doc was deleted : no way we can fetch it

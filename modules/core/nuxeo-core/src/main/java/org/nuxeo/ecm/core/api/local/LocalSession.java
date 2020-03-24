@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,18 @@
 
 package org.nuxeo.ecm.core.api.local;
 
-import java.util.Collections;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.model.Repository;
@@ -48,26 +47,16 @@ public class LocalSession extends AbstractSession implements CloseableCoreSessio
 
     private static final long serialVersionUID = 1L;
 
-    private static final AtomicLong SID_COUNTER = new AtomicLong();
-
     private static final Log log = LogFactory.getLog(LocalSession.class);
 
     protected String repositoryName;
 
     protected NuxeoPrincipal principal;
 
-    /** Defined once at connect time. */
-    private String sessionId;
-
     /**
-     * Thread-local session allocated.
+     * Thread-local sessions allocated, per repository.
      */
-    private final ThreadLocal<SessionInfo> sessionHolder = new ThreadLocal<>();
-
-    /**
-     * All sessions allocated in all threads, in order to detect close leaks.
-     */
-    private final Set<SessionInfo> allSessions = Collections.newSetFromMap(new ConcurrentHashMap<SessionInfo, Boolean>());
+    private static final Map<String, ThreadLocal<Session<?>>> SESSIONS = new ConcurrentHashMap<>(1);
 
     public LocalSession(String repositoryName, NuxeoPrincipal principal) {
         if (TransactionHelper.isTransactionMarkedRollback()) {
@@ -78,12 +67,6 @@ public class LocalSession extends AbstractSession implements CloseableCoreSessio
         }
         this.repositoryName = repositoryName;
         this.principal = principal;
-        createMetrics(); // needs repo name
-        sessionId = newSessionId(repositoryName, principal);
-        if (log.isDebugEnabled()) {
-            log.debug("Creating CoreSession: " + sessionId);
-        }
-        createSession(); // create first session for current thread
     }
 
     @Override
@@ -91,67 +74,59 @@ public class LocalSession extends AbstractSession implements CloseableCoreSessio
         return repositoryName;
     }
 
-    protected static String newSessionId(String repositoryName, NuxeoPrincipal principal) {
-        return repositoryName + '/' + principal.getName() + '#' + SID_COUNTER.incrementAndGet();
-    }
-
     @Override
     public String getSessionId() {
-        return sessionId;
+        return toString();
     }
 
     @Override
-    public Session getSession() {
+    public String toString() {
+        return repositoryName + "/" + principal;
+    }
+
+    @Override
+    public Session<?> getSession() {
         if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             throw new NuxeoException("Cannot use a CoreSession outside a transaction");
         }
         TransactionHelper.checkTransactionTimeout();
-        SessionInfo si = sessionHolder.get();
-        if (si == null || !si.session.isLive()) {
+        ThreadLocal<Session<?>> repoSessions = SESSIONS.computeIfAbsent(repositoryName, r -> new ThreadLocal<>());
+        Session<?> session = repoSessions.get();
+        if (session == null || !session.isLive()) {
             // close old one, previously completed
             closeInThisThread();
             if (log.isDebugEnabled()) {
-                log.debug("Reconnecting CoreSession: " + sessionId);
+                log.debug("Reconnecting CoreSession: " + toString());
             }
             if (TransactionHelper.isTransactionMarkedRollback()) {
                 throw new NuxeoException("Cannot reconnect a CoreSession when transaction is marked rollback-only");
             }
-            si = createSession();
+            session = createSession();
+            repoSessions.set(session);
+            TransactionHelper.registerSynchronization(this);
         }
-        return si.session;
+        return session;
     }
 
     /**
-     * Creates the session. It will be destroyed by calling {@link #destroy}.
+     * Creates the session.
      */
-    protected SessionInfo createSession() {
+    protected Session<?> createSession() {
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         Repository repository = repositoryService.getRepository(repositoryName);
         if (repository == null) {
-            throw new LocalException("No such repository: " + repositoryName);
+            throw new DocumentNotFoundException("No such repository: " + repositoryName);
         }
-        Session session = repository.getSession();
-        TransactionHelper.registerSynchronization(this);
-        SessionInfo si = new SessionInfo(session);
-        sessionHolder.set(si);
-        allSessions.add(si);
+        Session<?> session = repository.getSession();
         if (log.isDebugEnabled()) {
-            log.debug("Adding thread " + Thread.currentThread().getName() + " for CoreSession: " + sessionId);
+            log.debug("Adding thread " + Thread.currentThread().getName() + " for CoreSession: " + toString());
         }
-        return si;
-    }
-
-    @Override
-    public boolean isLive(boolean onThread) {
-        if (!onThread) {
-            return !allSessions.isEmpty();
-        }
-        return sessionHolder.get() != null;
+        return session;
     }
 
     @Override
     public void close() {
-        CoreInstance.closeCoreSession(this); // calls back destroy()
+        // nothing (the session holds no resources to close)
     }
 
     @Override
@@ -169,28 +144,30 @@ public class LocalSession extends AbstractSession implements CloseableCoreSessio
     }
 
     protected void closeInThisThread() {
-        SessionInfo si = sessionHolder.get();
-        if (si == null) {
+        ThreadLocal<Session<?>> repoSessions = SESSIONS.get(repositoryName);
+        if (repoSessions == null) {
+            // shouldn't happen
+            return;
+        }
+        Session<?> session = repoSessions.get();
+        if (session == null) {
+            // already closed
             return;
         }
         if (log.isDebugEnabled()) {
-            log.debug("Removing thread " + Thread.currentThread().getName() + " for CoreSession: " + sessionId);
+            log.debug("Removing thread " + Thread.currentThread().getName() + " for CoreSession: " + repositoryName
+                    + "/" + principal);
         }
         try {
-            si.session.close();
+            session.close();
         } finally {
-            sessionHolder.remove();
-            allSessions.remove(si);
+            repoSessions.remove();
         }
     }
 
-    // explicit close()
     @Override
     public void destroy() {
-        if (log.isDebugEnabled()) {
-            log.debug("Destroying CoreSession: " + sessionId);
-        }
-        closeInThisThread();
+        // nothing (deprecated)
     }
 
     @Override

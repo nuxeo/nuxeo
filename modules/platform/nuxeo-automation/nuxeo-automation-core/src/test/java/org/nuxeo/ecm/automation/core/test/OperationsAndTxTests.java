@@ -106,14 +106,11 @@ public class OperationsAndTxTests {
             service.run(ctx, chain);
             List<String> result = (List<String>) ctx.remove("result");
             List<String> txids = (List<String>) ctx.remove("txids");
-            List<String> sids = (List<String>) ctx.remove("sids");
 
             assertTrue(result.contains("tic"));
             assertTrue(result.contains("tac"));
             assertTrue(result.contains("toc"));
             assertFalse(txids.get(0).equals(txids.get(1)));
-            assertTrue(sids.get(0).equals(sids.get(1)));
-            assertTrue(sids.get(0).equals(sids.get(2)));
 
             // Same test with RunOperationOnList.ID
             chain = new OperationChain("testChain");
@@ -122,14 +119,11 @@ public class OperationsAndTxTests {
             service.run(ctx, chain);
             result = (List<String>) ctx.remove("result");
             txids = (List<String>) ctx.remove("txids");
-            sids = (List<String>) ctx.remove("sids");
 
             assertTrue(result.contains("tic"));
             assertTrue(result.contains("tac"));
             assertTrue(result.contains("toc"));
             assertFalse(txids.get(0).equals(txids.get(1)));
-            assertTrue(sids.get(0).equals(sids.get(1)));
-            assertTrue(sids.get(0).equals(sids.get(2)));
 
         } finally {
             service.removeOperation(RunOnListItemWithTx.class);
@@ -144,7 +138,6 @@ public class OperationsAndTxTests {
             // storing in context which session and transaction id is
             // used in main process.
             Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-            getOrCreateList(ctx, "sids").add(session.getSessionId());
             getOrCreateList(ctx, "txids").add(tx.toString());
             ctx.setInput(document);
             OperationChain chain = new OperationChain("testChain");
@@ -155,11 +148,9 @@ public class OperationsAndTxTests {
             // Checking if new transaction id has been registered if same
             // session has been used.
             List<String> txids = (List<String>) ctx.get("txids");
-            List<String> sids = (List<String>) ctx.get("sids");
 
             assertNotNull(result);
             assertFalse(txids.get(0).equals(txids.get(1)));
-            assertTrue(sids.get(0).equals(sids.get(1)));
         } finally {
             service.removeOperation(RunOnListItemWithTx.class);
         }
@@ -175,7 +166,6 @@ public class OperationsAndTxTests {
             // storing in context which session and transaction id is
             // used in main process.
             Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-            getOrCreateList(ctx, "sids").add(session.getSessionId());
             getOrCreateList(ctx, "txids").add(tx.toString());
             Blob blob = Blobs.createBlob("blob");
             ctx.setInput(blob);
@@ -186,11 +176,9 @@ public class OperationsAndTxTests {
             // Checking if new transaction id has been registered if same
             // session has been used.
             List<String> txids = (List<String>) ctx.get("txids");
-            List<String> sids = (List<String>) ctx.get("sids");
 
             assertNotNull(result);
             assertFalse(txids.get(0).equals(txids.get(1)));
-            assertTrue(sids.get(0).equals(sids.get(1)));
         } finally {
             service.removeOperation(RunOnListItemWithTx.class);
         }

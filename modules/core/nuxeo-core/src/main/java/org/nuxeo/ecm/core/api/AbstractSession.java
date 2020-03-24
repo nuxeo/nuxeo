@@ -249,7 +249,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public DocumentEventContext newEventContext(DocumentModel source) {
         DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, getRepositoryName());
-        ctx.setProperty(CoreEventConstants.SESSION_ID, getSessionId());
         return ctx;
     }
 
@@ -264,7 +263,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             ctx.setProperties(options);
         }
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, getRepositoryName());
-        ctx.setProperty(CoreEventConstants.SESSION_ID, getSessionId());
         // Document life cycle
         if (source != null && withLifeCycle) {
             String currentLifeCycleState = source.getCurrentLifeCycleState();
@@ -382,7 +380,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @return the document model
      */
     protected DocumentModel readModel(Document doc) {
-        return DocumentModelFactory.createDocumentModel(doc, getSessionId(), null);
+        return DocumentModelFactory.createDocumentModel(doc, this);
     }
 
     /**
@@ -652,11 +650,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     private DocumentModel createDocumentModelFromParentAndType(DocumentRef parentRef, String typeName,
             Map<String, Serializable> options) {
-        DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(typeName);
-        if (docType == null) {
-            throw new IllegalArgumentException(typeName + " is not a registered core type");
-        }
-        DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType, parentRef);
+        DocumentModel docModel = DocumentModelFactory.createDocumentModel(typeName, parentRef, this);
         if (options == null) {
             options = new HashMap<>();
         } else if (options.containsKey(CoreEventConstants.PARENT_PATH)
@@ -705,9 +699,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         CharacterFilteringService charFilteringService = Framework.getService(CharacterFilteringService.class);
         charFilteringService.filter(docModel);
 
-        if (docModel.getSessionId() == null) {
-            // docModel was created using constructor instead of CoreSession.createDocumentModel
-            docModel.attach(getSessionId());
+        if (!docModel.isAttached()) {
+            docModel.attach(this);
         }
         String typeName = docModel.getType();
         DocumentRef parentRef = docModel.getParentRef();

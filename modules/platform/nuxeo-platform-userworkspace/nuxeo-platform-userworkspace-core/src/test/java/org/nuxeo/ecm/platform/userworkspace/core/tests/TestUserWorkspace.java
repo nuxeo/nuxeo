@@ -181,7 +181,7 @@ public class TestUserWorkspace {
             assertNotNull(uw);
             assertTrue(uw.getPathAsString().contains("user1"));
             assertEquals(user1WorkspacePath, uw.getPathAsString());
-            assertNull("Document is correctly detached", uw.getSessionId());
+            assertFalse("Document is correctly detached", uw.isAttached());
         }
     }
 
@@ -241,7 +241,7 @@ public class TestUserWorkspace {
         // Check the user workspace with the old name format is retrieved
         assertTrue(uw.getPathAsString().endsWith("/John-Von-Verylonglastname"));
         assertEquals(johnWorkspacePath, uw.getPathAsString());
-        assertNull("Document is correctly detached", uw.getSessionId());
+        assertFalse("Document is correctly detached", uw.isAttached());
     }
 
     @Test

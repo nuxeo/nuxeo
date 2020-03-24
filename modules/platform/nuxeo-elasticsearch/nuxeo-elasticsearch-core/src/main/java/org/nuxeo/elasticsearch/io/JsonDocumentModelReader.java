@@ -54,7 +54,7 @@ public class JsonDocumentModelReader {
 
     private final Map<String, Object> source;
 
-    private String sid;
+    private CoreSession coreSession;
 
     public JsonDocumentModelReader(String json) {
         byte[] bytes = json.getBytes();
@@ -66,12 +66,7 @@ public class JsonDocumentModelReader {
     }
 
     public JsonDocumentModelReader session(CoreSession session) {
-        sid = session.getSessionId();
-        return this;
-    }
-
-    public JsonDocumentModelReader sid(String sid) {
-        this.sid = sid;
+        this.coreSession = session;
         return this;
     }
 
@@ -98,8 +93,8 @@ public class JsonDocumentModelReader {
         Path pathObj = path == null ? null : new Path(path);
         DocumentRef docRef = new IdRef(id);
         DocumentRef parentRef = parentId == null ? null : new IdRef(parentId);
-        DocumentModelImpl doc = new DocumentModelImpl(sid, type, id, pathObj, docRef, parentRef, null, facets, sourceId,
-                repositoryName, isProxy);
+        DocumentModelImpl doc = new DocumentModelImpl(type, id, pathObj, docRef, parentRef, null, facets, sourceId,
+                isProxy, coreSession, repositoryName, null);
 
         // preload DataModel to prevent DB access
         for (String schemaName : doc.getSchemas()) { // all schemas including from facets

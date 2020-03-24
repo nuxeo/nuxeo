@@ -980,7 +980,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             NuxeoPrincipal principal = session == null ? getPrincipal() : session.getPrincipal();
             ctx = new DocumentEventContext(session, principal, doc);
             ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, doc.getRepositoryName());
-            ctx.setProperty(CoreEventConstants.SESSION_ID, doc.getSessionId());
         } else {
             ctx = new EventContextImpl(null, getPrincipal());
         }

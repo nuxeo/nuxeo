@@ -195,4 +195,8 @@ public class RepositoryService extends DefaultComponent {
         return repositoryManager.getRepositoryNames();
     }
 
+    public int getActiveSessionsCount() {
+        return repositories.values().stream().mapToInt(Repository::getActiveSessionsCount).sum();
+    }
+
 }

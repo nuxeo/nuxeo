@@ -127,7 +127,6 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         }
 
         properties.put(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID, session.getSessionId());
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE, dm.getCurrentLifeCycleState());
 
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), dm);

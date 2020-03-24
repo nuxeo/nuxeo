@@ -92,7 +92,7 @@ public class TestDocumentModelReader {
         Assert.assertEquals("file0", doc.getName());
         Assert.assertEquals("/root/my/path/file0", doc.getPathAsString());
         Assert.assertEquals("test", doc.getRepositoryName());
-        Assert.assertNull(doc.getSessionId());
+        Assert.assertFalse(doc.isAttached());
         Assert.assertFalse(doc.isProxy());
         Assert.assertFalse(doc.isFolder());
         Assert.assertFalse(doc.isVersion());

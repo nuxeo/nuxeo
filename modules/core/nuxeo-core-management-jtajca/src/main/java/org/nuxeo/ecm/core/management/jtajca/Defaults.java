@@ -25,8 +25,6 @@ import java.io.PrintStream;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
-
 public class Defaults {
 
     public static final Defaults instance = new Defaults();
@@ -47,12 +45,4 @@ public class Defaults {
         }
     }
 
-    public String printStackTrace(CoreSessionRegistrationInfo info) {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();) {
-            info.printStackTrace(new PrintStream(bos));
-            return bos.toString();
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot write stack to byte array", e);
-        }
-    }
 }

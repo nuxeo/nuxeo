@@ -162,7 +162,6 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
             properties = new HashMap<>();
         }
         properties.put(CoreEventConstants.REPOSITORY_NAME, dm.getRepositoryName());
-        properties.put(CoreEventConstants.SESSION_ID, coreSession.getSessionId());
         properties.put(CoreEventConstants.DOC_LIFE_CYCLE, dm.getCurrentLifeCycleState());
 
         DocumentEventContext ctx = new DocumentEventContext(coreSession, coreSession.getPrincipal(), dm);

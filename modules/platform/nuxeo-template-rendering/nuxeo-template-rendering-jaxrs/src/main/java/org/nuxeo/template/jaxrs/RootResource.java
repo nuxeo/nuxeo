@@ -36,7 +36,7 @@ public class RootResource extends ModuleRoot {
 
     @GET
     public String index() {
-        String sid = getContext().getCoreSession().getSessionId();
+        String sid = getContext().getCoreSession().toString();
         return "ok :sid =" + sid;
     }
 

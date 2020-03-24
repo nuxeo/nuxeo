@@ -18,14 +18,8 @@
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.CoreSessionService;
-import org.nuxeo.ecm.core.api.CoreSessionService.CoreSessionRegistrationInfo;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
-import org.nuxeo.ecm.core.management.jtajca.Defaults;
 import org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent.ServerInstance;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -49,30 +43,7 @@ public class DefaultCoreSessionMonitor implements CoreSessionMonitor {
 
     @Override
     public String[] getInfos() {
-        List<CoreSessionRegistrationInfo> infos = Framework.getService(CoreSessionService.class)
-                                                           .getCoreSessionRegistrationInfos();
-        return toInfos(toSortedRegistration(infos));
-    }
-
-    public CoreSessionRegistrationInfo[] toSortedRegistration(List<CoreSessionRegistrationInfo> infos) {
-        CoreSessionRegistrationInfo[] sortedInfos = infos.toArray(new CoreSessionRegistrationInfo[infos.size()]);
-        Arrays.sort(sortedInfos, new Comparator<CoreSessionRegistrationInfo>() {
-
-            @Override
-            public int compare(CoreSessionRegistrationInfo o1, CoreSessionRegistrationInfo o2) {
-                return o2.getCoreSession().getSessionId().compareTo(o1.getCoreSession().getSessionId());
-            }
-
-        });
-        return sortedInfos;
-    }
-
-    public String[] toInfos(CoreSessionRegistrationInfo[] infos) {
-        String[] values = new String[infos.length];
-        for (int i = 0; i < infos.length; ++i) {
-            values[i] = Defaults.instance.printStackTrace(infos[i]);
-        }
-        return values;
+        return new String[0];
     }
 
     protected ServerInstance self;

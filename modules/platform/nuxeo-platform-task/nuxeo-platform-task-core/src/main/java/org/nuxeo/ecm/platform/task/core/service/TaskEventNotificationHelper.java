@@ -67,7 +67,6 @@ public final class TaskEventNotificationHelper {
         EventContext eventContext;
         if (document != null) {
             properties.put(CoreEventConstants.REPOSITORY_NAME, document.getRepositoryName());
-            properties.put(CoreEventConstants.SESSION_ID, coreSession.getSessionId());
             properties.put(CoreEventConstants.DOC_LIFE_CYCLE, document.getCurrentLifeCycleState());
             eventContext = new DocumentEventContext(coreSession, principal, document);
         } else {

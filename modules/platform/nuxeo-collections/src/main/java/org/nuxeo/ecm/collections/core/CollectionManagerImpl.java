@@ -387,7 +387,6 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         EventService eventService = Framework.getService(EventService.class);
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
-        ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
         ctx.setProperty("category", DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperties(props);
         Event event = ctx.newEvent(eventName);

@@ -120,7 +120,6 @@ public class RetentionExpiredAction implements StreamProcessorTopology {
             DocumentModel doc = session.getDocument(ref);
             DocumentEventContext ctx = new DocumentEventContext(session, null, doc);
             ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
-            ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
             ctx.setProperty(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
             ctx.setProperty(CoreEventConstants.RETAIN_UNTIL, retainUntil);
             ctx.setProperty(DocumentEventContext.COMMENT_PROPERTY_KEY, retainUntil.toInstant().toString());

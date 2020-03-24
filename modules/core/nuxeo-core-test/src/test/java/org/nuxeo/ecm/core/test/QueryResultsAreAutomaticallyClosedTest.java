@@ -127,13 +127,13 @@ public class QueryResultsAreAutomaticallyClosedTest {
             NestedQueryRunner runner = new NestedQueryRunner(main.getRepositoryName());
             mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
             runner.runUnrestricted();
-            assertFalse(runner.result.mustBeClosed());
             if (coreFeature.getStorageConfiguration().isVCS()) {
+                // autoclose done at commit time, not CoreSession close time
+                assertTrue(runner.result.mustBeClosed());
                 assertTrue(mainResults.mustBeClosed());
             }
-            assertWarnInLogs();
-            logCaptureResults.clear();
         }
+        assertTrue(mainResults.mustBeClosed());
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         assertFalse(mainResults.mustBeClosed());

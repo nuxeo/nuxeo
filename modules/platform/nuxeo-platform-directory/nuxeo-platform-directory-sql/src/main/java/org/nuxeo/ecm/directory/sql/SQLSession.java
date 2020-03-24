@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Select;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Update;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
-import org.nuxeo.ecm.core.utils.SIDGenerator;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
@@ -85,8 +84,6 @@ public class SQLSession extends BaseSession {
 
     protected SQLStaticFilter[] staticFilters;
 
-    String sid;
-
     Connection sqlConnection;
 
     protected final Dialect dialect;
@@ -97,7 +94,6 @@ public class SQLSession extends BaseSession {
         super(directory, TableReference.class);
         table = directory.getTable();
         dialect = directory.getDialect();
-        sid = String.valueOf(SIDGenerator.next());
         staticFilters = config.getStaticFilters();
         acquireConnection();
     }
@@ -215,7 +211,7 @@ public class SQLSession extends BaseSession {
 
         String id = String.valueOf(fieldMap.get(idFieldName));
         try {
-            DocumentModel docModel = BaseSession.createEntryModel(sid, schemaName, id, fieldMap, isReadOnly());
+            DocumentModel docModel = BaseSession.createEntryModel(schemaName, id, fieldMap, isReadOnly());
             return docModel;
         } catch (PropertyException e) {
             log.error(e, e);
@@ -1278,7 +1274,7 @@ public class SQLSession extends BaseSession {
 
     @Override
     public String toString() {
-        return "SQLSession [directory=" + directory.getName() + ", sid=" + sid + "]";
+        return "SQLSession [directory=" + directory.getName() + "]";
     }
 
 }
