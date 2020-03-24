@@ -56,10 +56,22 @@ public interface Constraint extends Serializable {
      *
      * @param invalidValue The invalid value that don't match any entity.
      * @param locale The language in which the message should be generated.
-     * @return A message in the specified language or
+     * @return A message in the system's locale or English if not available
      * @since 7.1
      */
     String getErrorMessage(Object invalidValue, Locale locale);
+    
+    /**
+     * Provides an error message to display when some invalid value does not match existing entity.  Parameters
+     * include the schema and field (xpath) names
+     *
+     * @param invalidValue The invalid value that don't match any entity.
+     * @param locale The language in which the message should be generated.
+     * @param params Contains the 0: field value, 1: schema name, and 2: xpath reference; may be null
+     * @return A message in the system's locale or English if not available
+     * @since 7.1
+     */
+    String getErrorMessage(Object invalidValue, Locale locale, Object[] params);
 
     /**
      * Provides a description of a constraint. For example, a constraint which control String format could return

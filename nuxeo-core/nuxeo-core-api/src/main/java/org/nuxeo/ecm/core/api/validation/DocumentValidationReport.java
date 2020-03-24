@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.core.api.validation;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,7 +29,7 @@ import java.util.Locale;
  *
  * @since 7.1
  */
-public class DocumentValidationReport {
+public class DocumentValidationReport implements Iterable<ConstraintViolation> {
 
     protected List<ConstraintViolation> violations;
 
@@ -48,6 +49,11 @@ public class DocumentValidationReport {
     public List<ConstraintViolation> asList() {
         return Collections.unmodifiableList(violations);
     }
+    
+	@Override
+	public Iterator<ConstraintViolation> iterator() {
+		return asList().iterator();
+	}
 
     @Override
     public String toString() {

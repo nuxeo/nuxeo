@@ -57,6 +57,11 @@ public abstract class AbstractConstraint implements Constraint {
 
     @Override
     public String getErrorMessage(Object invalidValue, Locale locale) {
+    	return getErrorMessage(invalidValue, locale, null);
+    }
+    
+    @Override
+    public String getErrorMessage(Object invalidValue, Locale locale, Object[] params) {
         // test whether there's a constraint specific translation
         // the expected key is label.schema.constraint.violation.[TheConstraintName]
         // if there's none, replies to a generic message
@@ -75,7 +80,9 @@ public abstract class AbstractConstraint implements Constraint {
                 computedInvalidValue = invalidValueString;
             }
         }
-        Object[] params = new Object[] { computedInvalidValue };
+        if (params == null) {
+            params = new Object[] { computedInvalidValue };
+        }
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
         String message = getMessageString(MESSAGES_BUNDLE, keyConstraint, params, computedLocale);
 
@@ -111,3 +118,5 @@ public abstract class AbstractConstraint implements Constraint {
     }
 
 }
+
+    

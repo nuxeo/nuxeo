@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -111,15 +112,21 @@ public class ConstraintViolation implements Serializable {
      * @since 7.1
      */
     public String getMessage(Locale locale) {
+    	// Default to English to prevent in-method recursion.
+    	if (locale == null) {
+    		locale = Locale.ENGLISH;
+    	}
         // test whether there's a specific translation for for this field and this constraint
         // the expected key is label.schema.constraint.violation.[constraintName].[schemaName].[field].[subField]
         List<String> pathTokens = new ArrayList<>();
+        List<String> pathRef = new ArrayList<>(path.size());
         pathTokens.add(Constraint.MESSAGES_KEY);
         pathTokens.add(constraint.getDescription().getName());
         pathTokens.add(schema.getName());
         for (PathNode node : path) {
             String name = node.getField().getName().getLocalName();
             pathTokens.add(name);
+            pathRef.add(node.getField().getName().toString());
         }
         String key = StringUtils.join(pathTokens, '.');
         String computedInvalidValue = "null";
@@ -131,7 +138,8 @@ public class ConstraintViolation implements Serializable {
                 computedInvalidValue = invalidValueString;
             }
         }
-        Object[] params = new Object[] { computedInvalidValue };
+        Object[] params = new Object[] { computedInvalidValue, schema.getName(), 
+        								 pathRef.stream().collect(Collectors.joining("/")) };
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
         String message;
         try {
@@ -146,7 +154,7 @@ public class ConstraintViolation implements Serializable {
         } else {
             if (locale != null && Locale.ENGLISH.getLanguage().equals(locale.getLanguage())) {
                 // use the constraint message
-                return constraint.getErrorMessage(invalidValue, locale);
+                return constraint.getErrorMessage(invalidValue, locale, params);
             } else {
                 return getMessage(Locale.ENGLISH);
             }

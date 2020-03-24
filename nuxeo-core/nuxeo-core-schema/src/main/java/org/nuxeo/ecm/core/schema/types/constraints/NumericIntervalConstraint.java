@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -146,7 +147,7 @@ public class NumericIntervalConstraint extends AbstractConstraint {
     }
 
     @Override
-    public String getErrorMessage(Object invalidValue, Locale locale) {
+    public String getErrorMessage(Object invalidValue, Locale locale, Object[] params) {
         // test whether there's a custom translation for this field constraint specific translation
         // the expected key is label.schema.constraint.violation.[ConstraintName].mininmaxin ou
         // the expected key is label.schema.constraint.violation.[ConstraintName].minexmaxin ou
@@ -157,15 +158,19 @@ public class NumericIntervalConstraint extends AbstractConstraint {
         // the expected key is label.schema.constraint.violation.[ConstraintName].maxin ou
         // the expected key is label.schema.constraint.violation.[ConstraintName].maxex
         // follow the AbstractConstraint behavior otherwise
-        Object[] params;
+        List<Object> args = new ArrayList<>(5);
         String subKey = (min != null ? (includingMin ? "minin" : "minex") : "")
                 + (max != null ? (includingMax ? "maxin" : "maxex") : "");
         if (min != null && max != null) {
-            params = new Object[] { min, max };
+           args.add(min);
+           args.add(max);
         } else if (min != null) {
-            params = new Object[] { min };
+            args.add(min);
         } else {
-            params = new Object[] { max };
+            args.add(max);
+        }
+        if (params != null) {
+            args.addAll(Arrays.asList(params));
         }
         List<String> pathTokens = new ArrayList<>();
         pathTokens.add(MESSAGES_KEY);
@@ -173,13 +178,13 @@ public class NumericIntervalConstraint extends AbstractConstraint {
         pathTokens.add(subKey);
         String key = StringUtils.join(pathTokens, '.');
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        String message = getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        String message = getMessageString(MESSAGES_BUNDLE, key, args.toArray(), computedLocale);
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
             // use a custom constraint message if there's one
             return message;
         } else {
             // follow AbstractConstraint behavior otherwise
-            return super.getErrorMessage(invalidValue, computedLocale);
+            return super.getErrorMessage(invalidValue, computedLocale, params);
         }
     }
 

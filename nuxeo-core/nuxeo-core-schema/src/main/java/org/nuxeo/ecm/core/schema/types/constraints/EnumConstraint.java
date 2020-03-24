@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,7 +95,7 @@ public class EnumConstraint extends AbstractConstraint {
     }
 
     @Override
-    public String getErrorMessage(Object invalidValue, Locale locale) {
+    public String getErrorMessage(Object invalidValue, Locale locale, Object[] params) {
         // test whether there's a custom translation for this field constraint specific translation
         // the expected key is label.schema.constraint.violation.[ConstraintName]
         // follow the AbstractConstraint behavior otherwise
@@ -102,15 +103,19 @@ public class EnumConstraint extends AbstractConstraint {
         pathTokens.add(MESSAGES_KEY);
         pathTokens.add(EnumConstraint.NAME);
         String key = StringUtils.join(pathTokens, '.');
-        Object[] params = new Object[] { StringUtils.join(getPossibleValues(), ", ") };
+        List<Object> args = new ArrayList<>(4);
+        args.add(StringUtils.join(getPossibleValues(), ", "));
+        if (params != null) {
+            args.addAll(Arrays.asList(params));
+        }
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        String message = getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        String message = getMessageString(MESSAGES_BUNDLE, key, args.toArray(), computedLocale);
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
             // use a custom constraint message if there's one
             return message;
         } else {
             // follow AbstractConstraint behavior otherwise
-            return super.getErrorMessage(invalidValue, computedLocale);
+            return super.getErrorMessage(invalidValue, computedLocale, params);
         }
     }
 

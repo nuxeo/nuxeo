@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -221,12 +222,14 @@ public class TestConstraintsTranslation {
 
     private void checkConstraintMessage(Constraint constraint) {
         for (Locale locale : Arrays.asList(Locale.FRENCH, Locale.ENGLISH)) {
-            String message = constraint.getErrorMessage("  ", locale);
+            String message = constraint.getErrorMessage("  ", locale, new Object[] { "  ", "sample", "samp:field" });
             assertNotNull(message);
             assertFalse(message.isEmpty());
             assertFalse(message.contains(Constraint.MESSAGES_KEY));
-            System.out.println(String.format("[%s] %s : %s", locale.toString(), constraint.getDescription().getName(),
-                    message));
+            String formatted = String.format("[%s] %s : %s", locale.toString(),
+                constraint.getDescription().getName(), message);
+            assertTrue(formatted, message.startsWith("<samp:field>"));
+            System.out.println(formatted);
         }
     }
 

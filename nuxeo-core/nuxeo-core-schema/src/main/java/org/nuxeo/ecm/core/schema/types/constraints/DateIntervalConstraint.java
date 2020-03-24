@@ -22,6 +22,7 @@ package org.nuxeo.ecm.core.schema.types.constraints;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -169,7 +170,7 @@ public class DateIntervalConstraint extends AbstractConstraint {
     }
 
     @Override
-    public String getErrorMessage(Object invalidValue, Locale locale) {
+    public String getErrorMessage(Object invalidValue, Locale locale, Object[] params) {
         // test whether there's a custom translation for this field constraint specific translation
         // the expected key is label.schema.constraint.violation.[ConstraintName].mininmaxin ou
         // the expected key is label.schema.constraint.violation.[ConstraintName].minexmaxin ou
@@ -181,33 +182,37 @@ public class DateIntervalConstraint extends AbstractConstraint {
         // the expected key is label.schema.constraint.violation.[ConstraintName].maxex
         // follow the AbstractConstraint behavior otherwise
         Locale computedLocale = locale != null ? locale : Constraint.MESSAGES_DEFAULT_LANG;
-        Object[] params;
         String subKey = (minTime != null ? (includingMin ? "minin" : "minex") : "")
                 + (maxTime != null ? (includingMax ? "maxin" : "maxex") : "");
         DateFormat format = DateFormat.getDateInstance(DateFormat.MEDIUM, computedLocale);
+        List<Object> args = new ArrayList<>(5);
         if (minTime != null && maxTime != null) {
             String min = format.format(new Date(minTime));
             String max = format.format(new Date(maxTime));
-            params = new Object[] { min, max };
+            args.add(min);
+            args.add(max);
         } else if (minTime != null) {
             String min = format.format(new Date(minTime));
-            params = new Object[] { min };
+            args.add(min);
         } else {
             String max = format.format(new Date(maxTime));
-            params = new Object[] { max };
+            args.add(max);
+        }
+        if (params != null) {
+            args.addAll(Arrays.asList(params));
         }
         List<String> pathTokens = new ArrayList<>();
         pathTokens.add(MESSAGES_KEY);
         pathTokens.add(DateIntervalConstraint.NAME);
         pathTokens.add(subKey);
         String key = StringUtils.join(pathTokens, '.');
-        String message = getMessageString(MESSAGES_BUNDLE, key, params, computedLocale);
+        String message = getMessageString(MESSAGES_BUNDLE, key, args.toArray(), computedLocale);
         if (message != null && !message.trim().isEmpty() && !key.equals(message)) {
             // use a custom constraint message if there's one
             return message;
         } else {
             // follow AbstractConstraint behavior otherwise
-            return super.getErrorMessage(invalidValue, computedLocale);
+            return super.getErrorMessage(invalidValue, computedLocale, params);
         }
     }
 

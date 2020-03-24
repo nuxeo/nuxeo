@@ -31,7 +31,7 @@ public class DocumentValidationException extends NuxeoException {
     private static final String MESSAGE_SINGLE = "Constraint violation thrown: '%s'";
 
     private static final String MESSAGE = "%s constraint violation(s) thrown. First one is: '%s', call "
-            + DocumentValidationException.class.getSimpleName() + ".getViolations() to get the others";
+            + DocumentValidationException.class.getSimpleName() + ".getReport() to get the others";
 
     private static final long serialVersionUID = 1L;
 
