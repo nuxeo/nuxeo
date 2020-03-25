@@ -71,6 +71,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 
 import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 
 /**
  * Default RuntimeHarness implementation.
@@ -82,13 +83,15 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     protected static final Logger log = LogManager.getLogger(RuntimeHarnessImpl.class);
 
     protected static URL[] introspectClasspath() {
-        return new ClassGraph().getClasspathFiles().stream().map(file -> {
-            try {
-                return file.toURI().toURL();
-            } catch (MalformedURLException cause) {
-                throw new RuntimeServiceException("Could not get URL from " + file, cause);
-            }
-        }).toArray(URL[]::new);
+        try (ScanResult scanResult = new ClassGraph().verbose().removeTemporaryFilesAfterScan().scan(2)) {
+            return scanResult.getClasspathFiles().stream().map(file -> {
+                try {
+                    return file.toURI().toURL();
+                } catch (MalformedURLException cause) {
+                    throw new RuntimeServiceException("Could not get URL from " + file, cause);
+                }
+            }).toArray(URL[]::new);
+        }
     }
 
     protected StandaloneBundleLoader bundleLoader;
