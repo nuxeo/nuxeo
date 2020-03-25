@@ -189,7 +189,9 @@ public class TestAESBlobStore extends TestLocalBlobStoreAbstract {
                 fail("Should fail to decrypt, but read: " + result);
             } catch (IOException e) {
                 String message = e.getMessage();
-                assertTrue(message, message.contains("Given final block not properly padded"));
+                if (!message.contains("invalid stream header")) {
+                    assertTrue(message, message.contains("Given final block not properly padded"));
+                }
             }
         }
     }
