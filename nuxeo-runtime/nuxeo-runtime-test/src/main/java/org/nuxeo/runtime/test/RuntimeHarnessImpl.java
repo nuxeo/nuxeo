@@ -82,7 +82,8 @@ public class RuntimeHarnessImpl implements RuntimeHarness {
     protected static final Logger log = LogManager.getLogger(RuntimeHarnessImpl.class);
 
     protected static URL[] introspectClasspath() {
-        return new ClassGraph().getClasspathFiles().stream().map(file -> {
+//        return new ClassGraph().getClasspathFiles().stream().map(file -> {
+        return new ClassGraph().verbose().getClasspathFiles().stream().map(file -> {
             try {
                 return file.toURI().toURL();
             } catch (MalformedURLException cause) {

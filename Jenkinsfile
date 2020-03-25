@@ -220,7 +220,7 @@ def buildUnitTestStage(env) {
             //   - loading some test framework system properties
             def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
             sh """
-              mvn ${MAVEN_ARGS} -rf nuxeo-core \
+              mvn ${MAVEN_ARGS} -pl nuxeo-features/nuxeo-automation/nuxeo-automation-features \
                 -Dcustom.environment=${env} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
@@ -353,11 +353,11 @@ pipeline {
     }
 
     stage('Compile') {
-      when {
-        expression {
-          return false
-        }
-      }
+      // when {
+        // expression {
+          // return false
+        // }
+      // }
       steps {
         setGitHubBuildStatus('platform/compile', 'Compile', 'PENDING')
         container('maven') {
