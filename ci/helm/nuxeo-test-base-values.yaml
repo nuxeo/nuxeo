@@ -13,5 +13,12 @@ redis:
         resource: service
         team: platform
         usage: utests
+    tolerations:
+      - key: team
+        operator: Equal
+        value: platform
+        effect: NoSchedule
+    nodeSelector:
+      team: platform
 tags:
   redis: true
