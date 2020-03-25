@@ -9,6 +9,38 @@ mongodb:
     resource: pod
     team: platform
     usage: utests
+  tolerations:
+    - key: team
+      operator: Equal
+      value: platform
+      effect: NoSchedule
+  nodeSelector:
+    team: platform
+elasticsearch:
+  client:
+    tolerations:
+      - key: team
+        operator: Equal
+        value: platform
+        effect: NoSchedule
+    nodeSelector:
+      team: platform
+  master:
+    tolerations:
+      - key: team
+        operator: Equal
+        value: platform
+        effect: NoSchedule
+    nodeSelector:
+      team: platform
+  data:
+    tolerations:
+      - key: team
+        operator: Equal
+        value: platform
+        effect: NoSchedule
+    nodeSelector:
+      team: platform
 tags:
   elasticsearch: true
   mongodb: true
