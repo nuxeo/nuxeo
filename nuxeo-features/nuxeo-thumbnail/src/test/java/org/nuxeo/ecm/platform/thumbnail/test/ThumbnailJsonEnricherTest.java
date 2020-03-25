@@ -21,6 +21,7 @@
 
 package org.nuxeo.ecm.platform.thumbnail.test;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder.enrichDoc;
 
 import org.junit.Test;
@@ -66,6 +67,6 @@ public class ThumbnailJsonEnricherTest extends AbstractJsonWriterTest.Local<Docu
         json = json.has("thumbnail").isObject();
         json = json.has("url").isText();
         json.isEquals(String.format(ThumbnailJsonEnricher.THUMBNAIL_URL_PATTERN, "http://fake-url.nuxeo.com",
-                root.getRepositoryName(), root.getId(), root.getChangeToken()));
+                root.getRepositoryName(), root.getId(), defaultString(root.getChangeToken())));
     }
 }
