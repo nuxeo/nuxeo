@@ -46,6 +46,8 @@ public class ComputationContextImpl implements ComputationContext {
 
     protected final ComputationPolicy policy;
 
+    protected final boolean isSpare;
+
     protected boolean checkpointFlag;
 
     protected long lowWatermark;
@@ -55,20 +57,22 @@ public class ComputationContextImpl implements ComputationContext {
     protected LogOffset lastOffset;
 
     public ComputationContextImpl(StreamManager streamManager, ComputationMetadataMapping metadata,
-            ComputationPolicy policy) {
+            ComputationPolicy policy, boolean isSpare) {
         this.manager = streamManager;
         this.metadata = metadata;
         this.timers = new HashMap<>();
         this.streamRecords = new HashMap<>();
         this.policy = policy;
+        this.isSpare = isSpare;
     }
 
-    public ComputationContextImpl(StreamManager streamManager, ComputationMetadataMapping metadata) {
-        this(streamManager, metadata, ComputationPolicy.NONE);
+    public ComputationContextImpl(StreamManager streamManager, ComputationMetadataMapping metadata,
+            ComputationPolicy policy) {
+        this(streamManager, metadata, policy, false);
     }
 
     public ComputationContextImpl(ComputationMetadataMapping computationMetadataMapping) {
-        this(null, computationMetadataMapping);
+        this(null, computationMetadataMapping, ComputationPolicy.NONE, false);
     }
 
     public List<Record> getRecords(String streamName) {
@@ -128,6 +132,11 @@ public class ComputationContextImpl implements ComputationContext {
         return policy;
     }
 
+    @Override
+    public boolean isSpareComputation() {
+        return isSpare;
+    }
+
     public void setLastOffset(LogOffset lastOffset) {
         this.lastOffset = lastOffset;
     }
@@ -166,5 +175,21 @@ public class ComputationContextImpl implements ComputationContext {
 
     public boolean requireTerminate() {
         return terminateFlag;
+    }
+
+    @Override
+    public String toString() {
+        return "ComputationContextImpl{" +
+                "metadata=" + metadata +
+                ", streamRecords=" + streamRecords +
+                ", timers=" + timers +
+                ", manager=" + manager +
+                ", policy=" + policy +
+                ", isSpare=" + isSpare +
+                ", checkpointFlag=" + checkpointFlag +
+                ", lowWatermark=" + lowWatermark +
+                ", terminateFlag=" + terminateFlag +
+                ", lastOffset=" + lastOffset +
+                '}';
     }
 }

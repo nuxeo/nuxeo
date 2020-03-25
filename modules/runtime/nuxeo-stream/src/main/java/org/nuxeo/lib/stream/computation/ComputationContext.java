@@ -82,4 +82,11 @@ public interface ComputationContext {
      */
     ComputationPolicy getPolicy();
 
+    /**
+     * @return {@code true} if the computation is a spare instance without any Stream partition assigned.
+     * A spare computation will not receive any record and its timer will not be executed.
+     *
+     * @since 11.1
+     */
+    boolean isSpareComputation();
 }

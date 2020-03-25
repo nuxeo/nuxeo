@@ -61,6 +61,8 @@ import net.jodah.failsafe.Failsafe;
 public class ComputationRunner implements Runnable, RebalanceListener {
     public static final Duration READ_TIMEOUT = Duration.ofMillis(25);
 
+    public static final Duration READ_TIMEOUT_SPARE = Duration.ofSeconds(1);
+
     protected static final long STARVING_TIMEOUT_MS = 1000;
 
     protected static final long INACTIVITY_BREAK_MS = 100;
@@ -137,15 +139,18 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             List<LogPartition> defaultAssignment, LogStreamManager streamManager, ComputationPolicy policy) {
         this.supplier = supplier;
         this.metadata = metadata;
-        this.context = new ComputationContextImpl(streamManager, metadata, policy);
         this.streamManager = streamManager;
         this.policy = policy;
         if (metadata.inputStreams().isEmpty()) {
             this.tailer = null;
+            this.context = new ComputationContextImpl(streamManager, metadata, policy, false);
             assignmentLatch.countDown();
         } else if (streamManager.supportSubscribe()) {
             this.tailer = streamManager.subscribe(metadata.name(), metadata.inputStreams(), this);
+            // create a spare context until the assignment is done
+            this.context = new ComputationContextImpl(streamManager, metadata, policy, true);
         } else {
+            this.context = new ComputationContextImpl(streamManager, metadata, policy,  defaultAssignment.isEmpty());
             this.tailer = streamManager.createTailer(metadata.name(), defaultAssignment);
             assignmentLatch.countDown();
         }
@@ -511,10 +516,11 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     @Override
     public void onPartitionsAssigned(Collection<LogPartition> partitions) {
         lastReadTime = System.currentTimeMillis();
+        boolean isSpare = partitions.isEmpty();
         setThreadName("rebalance assigned");
         // reset the context
-        this.context = new ComputationContextImpl(streamManager, metadata, policy);
-        log.debug(metadata.name() + ": Init");
+        this.context = new ComputationContextImpl(streamManager, metadata, policy, partitions.isEmpty());
+        log.debug(metadata.name() + ": Init isSpare=" + isSpare);
         computation.init(context);
         lastReadTime = System.currentTimeMillis();
         lastTimerExecution = 0;

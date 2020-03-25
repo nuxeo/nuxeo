@@ -29,7 +29,7 @@ public interface Computation {
 
     /**
      * Called when the framework has registered the computation successfully. Gives users a first opportunity to
-     * schedule timer callbacks and produce records.
+     * schedule timer callbacks and produce records. This method can be called multiple times.
      *
      * @param context The computation context object provided by the system.
      */
