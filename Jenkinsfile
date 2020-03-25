@@ -183,6 +183,7 @@ def buildUnitTestStage(env) {
               jx step helm install ${HELM_CHART_REPOSITORY_NAME}/${HELM_CHART_NUXEO} \
                 --name=${TEST_HELM_CHART_RELEASE} \
                 --namespace=${testNamespace} \
+                --version=1.0.5-PR-7-2 \
                 ${testValues}
             """
             // wait for Redis to be ready
