@@ -35,7 +35,7 @@ public class TestRedisInvalidations {
         invals.addModified(new RowId("dublincore", "docid1"));
 
         RedisInvalidations srcInvals = new RedisInvalidations("node1", invals);
-        assertEquals("RedisInvalidationsInvalidations(fromNode=node1, Invalidations(modified=[RowId(dublincore, docid1)]))",
+        assertEquals("RedisInvalidationsInvalidations(fromNode=node1, VCSInvalidations(modified=[RowId(dublincore, docid1)]))",
                 srcInvals.toString());
 
         RedisInvalidations destInvals = new RedisInvalidations("node1", srcInvals.serialize());
