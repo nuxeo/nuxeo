@@ -4,7 +4,6 @@
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-    <schema name="files" enabled="false" />
     <schema name="retention_rule" src="schemas/retention_rule.xsd"
       prefix="retention_rule" />
     <schema name="retention_definition" src="schemas/retention_definition.xsd"
@@ -15,10 +14,6 @@
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
-    <facet name="Commentable" enabled="false" />
-    <facet name="Publishable" enabled="false" />
-    <facet name="Versionable" enabled="false" />
-
     <doctype name="RetentionSearch" extends="SavedSearch">
       <facet name="ContentViewDisplay" />
       <schema name="retention_search" />
