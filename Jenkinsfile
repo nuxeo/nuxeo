@@ -220,10 +220,19 @@ def buildUnitTestStage(env) {
             //   - in an alternative build directory
             //   - loading some test framework system properties
             def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
+            def surefireJMXPort = 1099
+            if (env == 'mongodb') {
+              surefireJMXPort = 1100
+            } else if (env == 'postgresql') {
+              surefireJMXPort = 1101
+            }
             sh """
+              mvn -nsu -N install
+
               mvn ${MAVEN_ARGS} -pl nuxeo-features/nuxeo-automation/nuxeo-automation-features \
                 -Dcustom.environment=${env} \
                 -Dcustom.environment.log.dir=target-${env} \
+                -Dsurefire.jmx.port=${surefireJMXPort} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
                 test
