@@ -58,10 +58,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.CoreService;
@@ -2071,25 +2071,24 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             throw new PropertyException("Document is not a record");
         }
         Calendar current = doc.getRetainUntil();
-        if (Objects.equals(current, retainUntil)) {
+        if (current!=null && retainUntil!=null && current.compareTo(retainUntil) == 0) {
             // unchanged, don't do anything
             return;
         }
         checkPermission(doc, SET_RETENTION);
         Map<String, Serializable> options = new HashMap<>();
         options.put(CoreEventConstants.RETAIN_UNTIL, retainUntil);
-        String commentStart = retainUntil == null ? null : retainUntil.toInstant().toString();
-        if (comment == null) {
-            comment = commentStart;
-        } else if (commentStart != null) {
-            comment = commentStart + " " + comment;
-        }
-        options.put("comment", comment);
+        options.put("comment", retainUntil == null ? "" : retainUntil.toInstant().toString());
         DocumentModel docModel = readModel(doc);
-        notifyEvent(DocumentEventTypes.BEFORE_SET_RETENTION, docModel, options, null, null, true, false);
+        boolean currentIndeterminate = current == null || RETAIN_UNTIL_INDETERMINATE.compareTo(current) == 0;
+        String beforeRetentionEvent = currentIndeterminate ? DocumentEventTypes.BEFORE_SET_RETENTION
+                : DocumentEventTypes.BEFORE_EXTEND_RETENTION;
+        notifyEvent(beforeRetentionEvent, docModel, options, null, null, true, false);
         doc.setRetainUntil(retainUntil);
         docModel = readModel(doc);
-        notifyEvent(DocumentEventTypes.AFTER_SET_RETENTION, docModel, options, null, null, true, false);
+        String afterRetentionEvent = currentIndeterminate ? DocumentEventTypes.AFTER_SET_RETENTION
+                : DocumentEventTypes.AFTER_EXTEND_RETENTION;
+        notifyEvent(afterRetentionEvent, docModel, options, null, null, true, false);
     }
 
     @Override
@@ -2112,18 +2111,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         checkPermission(doc, MANAGE_LEGAL_HOLD);
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<>();
-        options.put(CoreEventConstants.LEGAL_HOLD, Boolean.valueOf(hold));
-        String commentStart = Boolean.toString(hold);
-        if (comment == null) {
-            comment = commentStart;
-        } else {
-            comment = commentStart + " " + comment;
-        }
-        options.put("comment", comment);
-        notifyEvent(DocumentEventTypes.BEFORE_SET_LEGAL_HOLD, docModel, options, null, null, true, false);
+        options.put("comment", StringUtils.defaultString(comment));
+        String beforeLegalHoldEvent = hold ? DocumentEventTypes.BEFORE_SET_LEGAL_HOLD : DocumentEventTypes.BEFORE_REMOVE_LEGAL_HOLD;
+        notifyEvent(beforeLegalHoldEvent, docModel, options, null, null, true, false);
         doc.setLegalHold(hold);
         docModel = readModel(doc);
-        notifyEvent(DocumentEventTypes.AFTER_SET_LEGAL_HOLD, docModel, options, null, null, true, false);
+        String afterLegalHoldEvent = hold ? DocumentEventTypes.AFTER_SET_LEGAL_HOLD : DocumentEventTypes.AFTER_REMOVE_LEGAL_HOLD;
+        notifyEvent(afterLegalHoldEvent, docModel, options, null, null, true, false);
     }
 
     @Override
