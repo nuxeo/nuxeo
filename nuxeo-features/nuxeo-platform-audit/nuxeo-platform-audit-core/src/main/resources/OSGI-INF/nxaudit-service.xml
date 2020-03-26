@@ -146,8 +146,10 @@
     <event name="removedFromCollection" />
     <event name="afterMakeRecord" />
     <event name="afterSetRetention" />
+    <event name="afterExtendRetention" />
     <event name="retentionExpired" />
     <event name="afterSetLegalHold" />
+    <event name="afterRemoveLegalHold" />
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"

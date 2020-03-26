@@ -27,7 +27,9 @@
       <event>documentUntrashed</event>
       <event>afterMakeRecord</event>
       <event>afterSetRetention</event>
+      <event>afterExtendRetention</event>
       <event>afterSetLegalHold</event>
+      <event>afterRemoveLegalHold</event>
     </listener>
 
   </extension>
