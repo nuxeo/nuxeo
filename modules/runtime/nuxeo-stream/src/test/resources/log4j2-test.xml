@@ -5,7 +5,7 @@
       <ThresholdFilter level="WARN" onMatch="ACCEPT" />
       <PatternLayout pattern="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m%n" />
     </Console>
-    <File name="FILE" fileName="target/trace.log" append="false">
+    <File name="FILE" fileName="${sys:custom.environment.log.dir:-target}/trace.log" append="false">
       <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
       <PatternLayout pattern="%d{HH:mm:ss,SSS} [%t] %-5p [%C{1}] %m %X%n" />
     </File>
