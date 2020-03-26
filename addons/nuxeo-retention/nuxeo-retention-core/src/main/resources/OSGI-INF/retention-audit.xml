@@ -1,5 +1,15 @@
 <component name="org.nuxeo.retention.audit" version="1.0">
   <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">
     <event name="retentionRuleAttached" />
+    <event name="afterSetRetention">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.retainUntil}" key="retainUntil" />
+      </extendedInfos>
+    </event>
+    <event name="afterExtendRetention">
+      <extendedInfos>
+        <extendedInfo expression="${message.properties.retainUntil}" key="retainUntil" />
+      </extendedInfos>
+    </event>
   </extension>
 </component>

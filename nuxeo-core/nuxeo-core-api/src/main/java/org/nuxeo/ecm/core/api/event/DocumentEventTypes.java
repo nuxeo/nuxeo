@@ -183,22 +183,40 @@ public final class DocumentEventTypes {
     public static final String AFTER_MAKE_RECORD = "afterMakeRecord";
 
     /**
-     * Event triggered when a retention is about to be set or updated on a document.
+     * Event triggered when a retention is about to be set on a document.
      * <p>
-     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link Calendar} object).
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link java.util.Calendar} object).
      *
      * @since 11.1
      */
     public static final String BEFORE_SET_RETENTION = "beforeSetRetention";
 
     /**
-     * Event triggered after a retention has been set or updated on a document.
+     * Event triggered when a retention is about to be extended on a document.
      * <p>
-     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link Calendar} object).
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link java.util.Calendar} object).
+     *
+     * @since 11.1
+     */
+    public static final String BEFORE_EXTEND_RETENTION = "beforeExtendRetention";
+
+    /**
+     * Event triggered after a retention has been set on a document.
+     * <p>
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link java.util.Calendar} object).
      *
      * @since 11.1
      */
     public static final String AFTER_SET_RETENTION = "afterSetRetention";
+
+    /**
+     * Event triggered after a retention has been extended on a document.
+     * <p>
+     * The event's options map contains {@link CoreEventConstants#RETAIN_UNTIL} (a {@link java.util.Calendar} object).
+     *
+     * @since 11.1
+     */
+    public static final String AFTER_EXTEND_RETENTION = "afterExtendRetention";
 
     /**
      * Event triggered (some time) after the retention of a document has expired.
@@ -211,22 +229,32 @@ public final class DocumentEventTypes {
     public static final String RETENTION_EXPIRED = "retentionExpired";
 
     /**
-     * Event triggered when a legal hold is about to be set or removed on a document.
-     * <p>
-     * The event's options map contains {@link CoreEventConstants#LEGAL_HOLD} (a {@link Boolean} object).
+     * Event triggered when a legal hold is about to be set on a document.
      *
      * @since 11.1
      */
     public static final String BEFORE_SET_LEGAL_HOLD = "beforeSetLegalHold";
 
     /**
-     * Event triggered after a legal hold has been set or removed on a document.
-     * <p>
-     * The event's options map contains {@link CoreEventConstants#LEGAL_HOLD} (a {@link Boolean} object).
+     * Event triggered when a legal hold is about to be removed on a document.
+     *
+     * @since 11.1
+     */
+    public static final String BEFORE_REMOVE_LEGAL_HOLD = "beforeRemoveLegalHold";
+
+    /**
+     * Event triggered after a legal hold has been set on a document.
      *
      * @since 11.1
      */
     public static final String AFTER_SET_LEGAL_HOLD = "afterSetLegalHold";
+
+    /**
+     * Event triggered after a legal hold has been removed on a document.
+     *
+     * @since 11.1
+     */
+    public static final String AFTER_REMOVE_LEGAL_HOLD = "afterRemoveLegalHold";
 
     /**
      * Event triggered when the active state of the retention changes.
