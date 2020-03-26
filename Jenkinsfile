@@ -229,6 +229,8 @@ def buildUnitTestStage(env) {
             sh """
               mvn -nsu -N install
 
+              mvn -nsu -pl nuxeo-runtime/nuxeo-runtime-test install
+
               mvn ${MAVEN_ARGS} -pl nuxeo-features/nuxeo-automation/nuxeo-automation-features \
                 -Dcustom.environment=${env} \
                 -Dcustom.environment.log.dir=target-${env} \
