@@ -43,7 +43,7 @@ public class TestJson {
     public void canSerializeAndReadBack() throws IOException {
         try (ByteArrayOutputStream sink = new ByteArrayOutputStream()) {
             DistributionSnapshot.jsonWriter().writeValue(sink, RuntimeSnapshot.build());
-            try (OutputStream file = Files.newOutputStream(Paths.get("target/test.json"),
+            try (OutputStream file = Files.newOutputStream(Paths.get(FeaturesRunner.getBuildDirectory() + "/test.json"),
                     StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
                 file.write(sink.toByteArray());
             }
