@@ -2010,12 +2010,6 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
-        <artifactId>nuxeo-dam-package</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>zip</type>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-drive-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>

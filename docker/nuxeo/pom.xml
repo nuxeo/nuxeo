@@ -37,11 +37,6 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.packages</groupId>
-      <artifactId>nuxeo-dam-package</artifactId>
-      <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.packages</groupId>
       <artifactId>nuxeo-template-rendering-package</artifactId>
       <type>zip</type>
     </dependency>
