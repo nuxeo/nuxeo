@@ -48,7 +48,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -906,12 +905,11 @@ public class TestSQLRepositoryFulltextQuery {
     @Test
     public void testFulltextSecurity() {
         createDocs();
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            bobSession.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:fulltext = 'world'");
-            // this failed with ORA-00918 on Oracle (NXP-5410)
-            bobSession.query("SELECT * FROM Document WHERE ecm:fulltext = 'world'");
-            // we don't care about the answer, just that the query executes
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        bobSession.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND ecm:fulltext = 'world'");
+        // this failed with ORA-00918 on Oracle (NXP-5410)
+        bobSession.query("SELECT * FROM Document WHERE ecm:fulltext = 'world'");
+        // we don't care about the answer, just that the query executes
     }
 
     @Test

@@ -28,8 +28,8 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -61,26 +61,25 @@ public class StoreMessageAction implements MessageAction {
             log.debug("Storing message: " + message.getSubject());
         }
         Thread.currentThread().setContextClassLoader(Framework.class.getClassLoader());
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(null)) {
-            DocumentModel doc = session.createDocumentModel(getMailDocumentType());
-            doc.setProperty("dublincore", "title", title + System.currentTimeMillis());
-            doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
-            doc.setProperty("dublincore", "title", title);
-            doc = session.createDocument(doc);
-            Map<String, Map<String, Object>> schemas = (Map<String, Map<String, Object>>) context.get("transformed");
-            for (Map.Entry<String, Map<String, Object>> entry : schemas.entrySet()) {
-                doc.setProperties(entry.getKey(), entry.getValue());
-            }
-            doc = session.saveDocument(doc);
-            ACL acl = (ACL) context.get("acl");
-            if (acl != null) {
-                ACP acp = doc.getACP();
-                acp.addACL(acl);
-                doc.setACP(acp, true);
-            }
-            session.save();
-            context.put("document", doc);
+        CoreSession session = CoreInstance.getCoreSessionSystem(null);
+        DocumentModel doc = session.createDocumentModel(getMailDocumentType());
+        doc.setProperty("dublincore", "title", title + System.currentTimeMillis());
+        doc.setPathInfo(parentPath, pss.generatePathSegment(doc));
+        doc.setProperty("dublincore", "title", title);
+        doc = session.createDocument(doc);
+        Map<String, Map<String, Object>> schemas = (Map<String, Map<String, Object>>) context.get("transformed");
+        for (Map.Entry<String, Map<String, Object>> entry : schemas.entrySet()) {
+            doc.setProperties(entry.getKey(), entry.getValue());
         }
+        doc = session.saveDocument(doc);
+        ACL acl = (ACL) context.get("acl");
+        if (acl != null) {
+            ACP acp = doc.getACP();
+            acp.addACL(acl);
+            doc.setACP(acp, true);
+        }
+        session.save();
+        context.put("document", doc);
         return true;
     }
 

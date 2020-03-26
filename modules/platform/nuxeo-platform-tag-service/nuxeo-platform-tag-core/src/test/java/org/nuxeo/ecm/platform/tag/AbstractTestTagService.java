@@ -45,7 +45,6 @@ import javax.inject.Inject;
 import org.awaitility.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -427,42 +426,38 @@ public abstract class AbstractTestTagService {
         session.save();
 
         // Test untag for user with write permission
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        // Tag document
+        tagService.tag(bobSession, file1Id, "mytag");
 
-            // Tag document
-            tagService.tag(bobSession, file1Id, "mytag");
+        // Test tag present
+        Set<String> tags = tagService.getTags(bobSession, file1Id);
+        assertEquals(1, tags.size());
+        assertEquals("mytag", new ArrayList<>(tags).get(0));
 
-            // Test tag present
-            Set<String> tags = tagService.getTags(bobSession, file1Id);
-            assertEquals(1, tags.size());
-            assertEquals("mytag", new ArrayList<>(tags).get(0));
+        // Untag
+        tagService.untag(bobSession, file1Id, "mytag");
 
-            // Untag
-            tagService.untag(bobSession, file1Id, "mytag");
-
-            // Test tag absent
-            tags = tagService.getTags(bobSession, file1Id);
-            assertTrue(tags.isEmpty());
-        }
+        // Test tag absent
+        tags = tagService.getTags(bobSession, file1Id);
+        assertTrue(tags.isEmpty());
 
         // Test untag for user which created tag
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
+        CoreSession benderSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bender");
+        // Tag document
+        tagService.tag(benderSession, file1Id, "othertag");
 
-            // Tag document
-            tagService.tag(bobSession, file1Id, "othertag");
+        // Test tag present
+        tags = tagService.getTags(benderSession, file1Id);
+        assertEquals(1, tags.size());
+        assertEquals("othertag", tags.toArray()[0]);
 
-            // Test tag present
-            Set<String> tags = tagService.getTags(bobSession, file1Id);
-            assertEquals(1, tags.size());
-            assertEquals("othertag", tags.toArray()[0]);
+        // Untag
+        tagService.untag(benderSession, file1Id, "othertag");
 
-            // Untag
-            tagService.untag(bobSession, file1Id, "othertag");
-
-            // Test tag absent
-            tags = tagService.getTags(bobSession, file1Id);
-            assertTrue(tags.isEmpty());
-        }
+        // Test tag absent
+        tags = tagService.getTags(benderSession, file1Id);
+        assertTrue(tags.isEmpty());
     }
 
     /*
@@ -483,30 +478,29 @@ public abstract class AbstractTestTagService {
         session.setACP(file1.getRef(), acp, false);
         session.save();
 
-        try (CloseableCoreSession benderSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bender")) {
+        CoreSession benderSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bender");
+        // Tag document
+        tagService.tag(benderSession, file1Id, "mytag");
 
-            // Tag document
-            tagService.tag(benderSession, file1Id, "mytag");
+        // Test tag present
+        Set<String> tags = tagService.getTags(benderSession, file1Id);
+        assertEquals(1, tags.size());
+        assertEquals("mytag", tags.toArray()[0]);
 
-            // Test tag present
-            Set<String> tags = tagService.getTags(benderSession, file1Id);
-            assertEquals(1, tags.size());
-            assertEquals("mytag", tags.toArray()[0]);
-
-            try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-                // Untag with bob user
-                tagService.untag(bobSession, file1Id, "mytag");
-                fail("bob is not allowed to untag document file1 tagged by bender");
-            } catch (DocumentSecurityException e) {
-                assertEquals("User 'bob' is not allowed to remove tag 'mytag' on document '" + file1Id + "'",
-                        e.getMessage());
-            }
-
-            // Test tag present
-            tags = tagService.getTags(benderSession, file1Id);
-            assertEquals(1, tags.size());
-            assertEquals("mytag", tags.toArray()[0]);
+        try {
+            CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+            // Untag with bob user
+            tagService.untag(bobSession, file1Id, "mytag");
+            fail("bob is not allowed to untag document file1 tagged by bender");
+        } catch (DocumentSecurityException e) {
+            assertEquals("User 'bob' is not allowed to remove tag 'mytag' on document '" + file1Id + "'",
+                    e.getMessage());
         }
+
+        // Test tag present
+        tags = tagService.getTags(benderSession, file1Id);
+        assertEquals(1, tags.size());
+        assertEquals("mytag", tags.toArray()[0]);
     }
 
     @Test
@@ -801,12 +795,11 @@ public abstract class AbstractTestTagService {
         session.setACP(file1.getRef(), acp, false);
         session.save();
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            // Tag with bob user does not chang the last contributor on the document
-            tagService.tag(bobSession, file1Id, "tag");
-            file1.refresh();
-            assertEquals("Administrator", file1.getPropertyValue("dc:lastContributor"));
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        // Tag with bob user does not chang the last contributor on the document
+        tagService.tag(bobSession, file1Id, "tag");
+        file1.refresh();
+        assertEquals("Administrator", file1.getPropertyValue("dc:lastContributor"));
 
         // Also check that the event was not logged in the audit
         AuditBackend backend = auditEventsService.getBackend();

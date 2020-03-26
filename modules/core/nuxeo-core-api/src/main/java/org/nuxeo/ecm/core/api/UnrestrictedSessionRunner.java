@@ -118,9 +118,8 @@ public abstract class UnrestrictedSessionRunner {
             }
 
             CoreSession baseSession = session;
-            try (NuxeoLoginContext loginContext = Framework.loginSystem(originatingUsername);
-                    CloseableCoreSession closeableCoreSession = CoreInstance.openCoreSession(repositoryName)) {
-                session = closeableCoreSession;
+            try (NuxeoLoginContext loginContext = Framework.loginSystem(originatingUsername)) {
+                session = CoreInstance.getCoreSession(repositoryName);
                 run();
             } finally {
                 session = baseSession;

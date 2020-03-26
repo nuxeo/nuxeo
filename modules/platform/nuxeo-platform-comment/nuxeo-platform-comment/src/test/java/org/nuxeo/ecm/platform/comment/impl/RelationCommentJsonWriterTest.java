@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.time.Instant;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.comment.RelationCommentFeature;
@@ -91,25 +91,24 @@ public class RelationCommentJsonWriterTest extends AbstractCommentJsonWriterTest
     @Test
     @Override
     public void shouldGetCommentsWhenIHaveRightPermissions() throws IOException {
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(docModel.getRepositoryName(), "james")) {
-            Comment lastReply = replies.get(replies.size() - 1);
-            lastReply.setModificationDate(Instant.now());
+        CoreSession jamesSession = CoreInstance.getCoreSession(docModel.getRepositoryName(), "james");
+        Comment lastReply = replies.get(replies.size() - 1);
+        lastReply.setModificationDate(Instant.now());
 
-            RenderingContext ctx = RenderingContext.CtxBuilder.session(jamesSession).get();
-            JsonAssert json = jsonAssert(lastReply, ctx);
-            assertCommentProperties(json);
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(jamesSession).get();
+        JsonAssert json = jsonAssert(lastReply, ctx);
+        assertCommentProperties(json);
 
-            json.has("id").isEquals(lastReply.getId());
-            json.has("parentId").isEquals(lastReply.getParentId());
-            json.has("ancestorIds").length(0);
-            json.has("author").isEquals(lastReply.getAuthor());
-            json.has("text").isEquals(lastReply.getText());
-            json.has("entity").isEquals(((CommentImpl) lastReply).getEntity());
-            json.has("entityId").isEquals(((CommentImpl) lastReply).getEntityId());
-            json.has("origin").isEquals(((CommentImpl) lastReply).getOrigin());
-            json.hasNot("numberOfReplies");
-            json.hasNot("lastReplyDate");
-        }
+        json.has("id").isEquals(lastReply.getId());
+        json.has("parentId").isEquals(lastReply.getParentId());
+        json.has("ancestorIds").length(0);
+        json.has("author").isEquals(lastReply.getAuthor());
+        json.has("text").isEquals(lastReply.getText());
+        json.has("entity").isEquals(((CommentImpl) lastReply).getEntity());
+        json.has("entityId").isEquals(((CommentImpl) lastReply).getEntityId());
+        json.has("origin").isEquals(((CommentImpl) lastReply).getOrigin());
+        json.hasNot("numberOfReplies");
+        json.hasNot("lastReplyDate");
     }
 
     @Override

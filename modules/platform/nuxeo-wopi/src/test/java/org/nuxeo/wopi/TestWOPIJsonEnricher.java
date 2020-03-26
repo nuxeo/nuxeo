@@ -40,7 +40,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -107,14 +106,13 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         toReplace.put(REPOSITORY_VAR, doc.getRepositoryName());
         toReplace.put(DOC_ID_VAR, doc.getId());
 
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            doc = joeSession.getDocument(doc.getRef());
-            json = jsonAssert(doc, getRenderingContext());
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        doc = joeSession.getDocument(doc.getRef());
+        json = jsonAssert(doc, getRenderingContext());
 
-            File file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher.json");
-            String expected = readFile(file, toReplace);
-            JSONAssert.assertEquals(expected, json.toString(), false);
-        }
+        File file = FileUtils.getResourceFileFromContext("json/testWOPIJsonEnricher.json");
+        String expected = readFile(file, toReplace);
+        JSONAssert.assertEquals(expected, json.toString(), false);
     }
 
     @Test
@@ -139,14 +137,13 @@ public class TestWOPIJsonEnricher extends AbstractJsonWriterTest.Local<DocumentM
         toReplace.put(REPOSITORY_VAR, doc.getRepositoryName());
         toReplace.put(DOC_ID_VAR, doc.getId());
 
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            doc = joeSession.getDocument(doc.getRef());
-            JsonAssert json = jsonAssert(doc, getRenderingContext());
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        doc = joeSession.getDocument(doc.getRef());
+        JsonAssert json = jsonAssert(doc, getRenderingContext());
 
-            File file = FileUtils.getResourceFileFromContext("json/testMultipleBlobsWOPIJsonEnricher.json");
-            String expected = readFile(file, toReplace);
-            JSONAssert.assertEquals(expected, json.toString(), false);
-        }
+        File file = FileUtils.getResourceFileFromContext("json/testMultipleBlobsWOPIJsonEnricher.json");
+        String expected = readFile(file, toReplace);
+        JSONAssert.assertEquals(expected, json.toString(), false);
     }
 
     protected RenderingContext getRenderingContext() {

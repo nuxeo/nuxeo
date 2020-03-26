@@ -37,7 +37,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -224,16 +223,15 @@ public class TestRenditionOperation {
         List<DocumentModel> publishedDocs = session.query(publishedDocQuery);
         assertEquals(2, publishedDocs.size());
 
-        try (CloseableCoreSession totoSession = coreFeature.openCoreSession("toto")) {
-            publishedDocs = totoSession.query(publishedDocQuery);
-            assertEquals(2, publishedDocs.size());
-            try (OperationContext totoCtx = new OperationContext(totoSession)) {
-                totoCtx.setInput(file);
-                automationService.run(totoCtx, UnpublishAll.ID);
-            }
-            publishedDocs = totoSession.query(publishedDocQuery);
-            assertEquals(2, publishedDocs.size());
+        CoreSession totoSession = coreFeature.getCoreSession("toto");
+        publishedDocs = totoSession.query(publishedDocQuery);
+        assertEquals(2, publishedDocs.size());
+        try (OperationContext totoCtx = new OperationContext(totoSession)) {
+            totoCtx.setInput(file);
+            automationService.run(totoCtx, UnpublishAll.ID);
         }
+        publishedDocs = totoSession.query(publishedDocQuery);
+        assertEquals(2, publishedDocs.size());
         ctx.setInput(file);
         automationService.run(ctx, UnpublishAll.ID);
         publishedDocs = session.query(publishedDocQuery);

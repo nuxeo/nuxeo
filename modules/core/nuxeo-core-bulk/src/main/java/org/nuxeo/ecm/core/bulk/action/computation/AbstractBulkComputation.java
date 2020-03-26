@@ -32,7 +32,6 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -137,8 +136,8 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
             try {
                 String username = command.getUsername();
                 String repository = command.getRepository();
-                try (NuxeoLoginContext loginContext = loginSystemOrUser(username);
-                        CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
+                try (NuxeoLoginContext loginContext = loginSystemOrUser(username)) {
+                    CoreSession session = CoreInstance.getCoreSession(repository);
                     compute(session, batch, command.getParams());
                 }
             } catch (LoginException e) {

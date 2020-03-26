@@ -35,7 +35,7 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -142,8 +142,8 @@ public class TestPutOperations extends AbstractSimpleConfigurationTest {
     public void nonAuthorizedUserShouldNotBeAbleToPutNewParameter() throws Exception {
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        try (CloseableCoreSession newSession = openSessionAs("user1");
-                OperationContext newCtx = new OperationContext(newSession)) {
+        CoreSession newSession = openSessionAs("user1");
+        try (OperationContext newCtx = new OperationContext(newSession)) {
 
             // PutSimpleConfigurationParameter
             OperationChain chain = new OperationChain("testPutSimpleConfigurationParametersChain");

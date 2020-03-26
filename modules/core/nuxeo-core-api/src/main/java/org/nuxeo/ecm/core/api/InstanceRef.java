@@ -67,11 +67,10 @@ public class InstanceRef implements DocumentRef {
             started = TransactionHelper.startTransaction();
         }
         try {
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-                referent = session.getDocument(ref);
-                referent.detach(true);
-                return referent;
-            }
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+            referent = session.getDocument(ref);
+            referent.detach(true);
+            return referent;
         } catch (RuntimeException cause) {
             InvalidObjectException error = new InvalidObjectException(
                     "Cannot refetch " + ref + " from " + repositoryName);

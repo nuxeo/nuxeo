@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -57,8 +56,6 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
     public Serializable getResourceRepresentation(Resource resource, Map<String, Object> context) {
         Serializable object = null;
         if (resource.isQNameResource()) {
-            CoreSession session = null;
-            boolean sessionOpened = false;
             try {
                 String repoName;
                 String uid;
@@ -76,6 +73,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
                 }
                 DocumentRef ref = new IdRef(uid);
 
+                CoreSession session = null;
                 if (context != null) {
                     session = (CoreSession) context.get(CORE_SESSION_CONTEXT_KEY);
                     if (!session.getRepositoryName().equals(repoName)) {
@@ -85,8 +83,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
                 }
                 if (session == null) {
                     // open one
-                    session = CoreInstance.openCoreSession(repoName);
-                    sessionOpened = true;
+                    session = CoreInstance.getCoreSession(repoName);
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Opened a new session '%s' with id %s", repoName, session));
                     }
@@ -97,10 +94,6 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
                 object = session.getDocument(ref);
             } catch (DocumentNotFoundException e) {
                 log.warn("Cannot get resource: " + resource, e);
-            } finally {
-                if (sessionOpened) {
-                    ((CloseableCoreSession) session).close();
-                }
             }
         }
         return object;

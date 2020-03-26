@@ -192,7 +192,7 @@ public class TestRenditionPublicationWFAprove {
     }
 
     private void changeUser(String userName) throws Exception {
-        session = coreFeature.openCoreSession(userName);
+        session = coreFeature.getCoreSession(userName);
         session.save(); // synch with previous
     }
 

@@ -35,7 +35,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -80,11 +79,10 @@ public class BulkRestartWorkflow {
 
     @OperationMethod
     public void run() {
-        CloseableCoreSession session = null;
         boolean transactionStarted = false;
         Split split = SimonManager.getStopwatch(ID).start();
         try {
-            session = CoreInstance.openCoreSession(null);
+            CoreSession session = CoreInstance.getCoreSession(null);
 
             // Fetching all routes
             // If the nodeId parameter is null, fetch all the workflow routes
@@ -146,10 +144,9 @@ public class BulkRestartWorkflow {
 
                     routesRestartedCount++;
                     if (routesRestartedCount % batchSize == 0) {
-                        session.close();
                         TransactionHelper.commitOrRollbackTransaction();
                         TransactionHelper.startTransaction();
-                        session = CoreInstance.openCoreSession(null);
+                        session = CoreInstance.getCoreSession(null);
                     }
                 } catch (NuxeoException e) {
                     Throwable t = unwrapException(e);
@@ -159,9 +156,6 @@ public class BulkRestartWorkflow {
                 }
             }
         } finally {
-            if (session != null) {
-                session.close();
-            }
             TransactionHelper.commitOrRollbackTransaction();
             if (!transactionStarted) {
                 TransactionHelper.startTransaction();

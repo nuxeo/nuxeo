@@ -40,7 +40,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -302,22 +301,20 @@ public class TestRenditionPublication {
 
         session.save();
 
-        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(),
-                JOE_USERNAME)) {
-            // Check that joe user cannot access the template document
-            try {
-                joeSession.getDocument(templateDoc.getRef());
-                fail("privilege to the template document is granted but should not be");
-            } catch (DocumentSecurityException e) {
-                // ok
-            }
-
-            // Check that joe user can access the template based document
-            DocumentModel joeTemplateBasedDoc = joeSession.getDocument(templateBasedDoc.getRef());
-            assertNotNull(joeTemplateBasedDoc);
-            TemplateBasedDocument joeTemplateBased = joeTemplateBasedDoc.getAdapter(TemplateBasedDocument.class);
-            assertNull(joeTemplateBased.getSourceTemplate(TEMPLATE_NAME));
-            assertNull(joeTemplateBased.getTemplateNameForRendition(WEBVIEW_RENDITION));
+        CoreSession joeSession = CoreInstance.getCoreSession(session.getRepositoryName(), JOE_USERNAME);
+        // Check that joe user cannot access the template document
+        try {
+            joeSession.getDocument(templateDoc.getRef());
+            fail("privilege to the template document is granted but should not be");
+        } catch (DocumentSecurityException e) {
+            // ok
         }
+
+        // Check that joe user can access the template based document
+        DocumentModel joeTemplateBasedDoc = joeSession.getDocument(templateBasedDoc.getRef());
+        assertNotNull(joeTemplateBasedDoc);
+        TemplateBasedDocument joeTemplateBased = joeTemplateBasedDoc.getAdapter(TemplateBasedDocument.class);
+        assertNull(joeTemplateBased.getSourceTemplate(TEMPLATE_NAME));
+        assertNull(joeTemplateBased.getTemplateNameForRendition(WEBVIEW_RENDITION));
     }
 }

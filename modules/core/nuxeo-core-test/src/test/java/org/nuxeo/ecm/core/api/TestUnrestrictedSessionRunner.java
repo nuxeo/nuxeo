@@ -53,17 +53,15 @@ public class TestUnrestrictedSessionRunner {
 
     @Test
     public void testUnrestrictedPropertySetter() throws Exception {
-        try (CloseableCoreSession session = coreFeature.openCoreSession("bob")) {
-            seeDocCreatedByUnrestricted(session);
-        }
+        CoreSession session = coreFeature.getCoreSession("bob");
+        seeDocCreatedByUnrestricted(session);
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
-        try (CloseableCoreSession session = coreFeature.openCoreSession(SecurityConstants.ADMINISTRATOR)) {
-            unrestrictedSeesDocCreatedBefore(session);
-        }
+        CoreSession session = coreFeature.getCoreSession(SecurityConstants.ADMINISTRATOR);
+        unrestrictedSeesDocCreatedBefore(session);
     }
 
     /*

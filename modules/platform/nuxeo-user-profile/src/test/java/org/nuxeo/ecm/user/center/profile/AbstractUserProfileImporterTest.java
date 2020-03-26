@@ -71,7 +71,7 @@ public abstract class AbstractUserProfileImporterTest {
     }
 
     protected CoreSession openSession(NuxeoPrincipal principal) {
-        return coreFeature.openCoreSession(principal);
+        return coreFeature.getCoreSession(principal);
     }
 
     protected NuxeoPrincipal createUser(String username, String tenant) {

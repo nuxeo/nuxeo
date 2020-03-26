@@ -31,8 +31,8 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -164,15 +164,14 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = service.createNewInstance(route, new ArrayList<String>(), session, true);
         assertNotNull(route);
         session.save();
-        try (CloseableCoreSession managersSession = CoreInstance.openCoreSession(session.getRepositoryName(), "routeManagers")) {
-            DocumentModel step = managersSession.getChildren(route.getDocument().getRef()).get(0);
-            service.lockDocumentRoute(route, managersSession);
-            service.removeRouteElement(step.getAdapter(DocumentRouteElement.class), managersSession);
-            service.unlockDocumentRoute(route, managersSession);
-            DocumentRoute newModel = service.saveRouteAsNewModel(route, managersSession);
-            assertNotNull(newModel);
-            assertEquals("(COPY) route1", newModel.getDocument().getPropertyValue("dc:title"));
-        }
+        CoreSession managersSession = CoreInstance.getCoreSession(session.getRepositoryName(), "routeManagers");
+        DocumentModel step = managersSession.getChildren(route.getDocument().getRef()).get(0);
+        service.lockDocumentRoute(route, managersSession);
+        service.removeRouteElement(step.getAdapter(DocumentRouteElement.class), managersSession);
+        service.unlockDocumentRoute(route, managersSession);
+        DocumentRoute newModel = service.saveRouteAsNewModel(route, managersSession);
+        assertNotNull(newModel);
+        assertEquals("(COPY) route1", newModel.getDocument().getPropertyValue("dc:title"));
     }
 
     @Test
@@ -199,31 +198,28 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.saveDocument(routeModel);
         session.save();
 
-        try (CloseableCoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
-            Exception e = null;
-            try {
-                service.lockDocumentRoute(route, jdoeSession);
-            } catch (DocumentRouteAlredayLockedException e2) {
-                e = e2;
-            }
-            assertNotNull(e);
+        CoreSession jdoeSession = CoreInstance.getCoreSession(session.getRepositoryName(), "jdoe");
+        Exception e = null;
+        try {
+            service.lockDocumentRoute(route, jdoeSession);
+        } catch (DocumentRouteAlredayLockedException e2) {
+            e = e2;
         }
+        assertNotNull(e);
 
         // service.lockDocumentRoute(route, session);
         service.removeRouteElement(step32.getAdapter(DocumentRouteElement.class), session);
         service.unlockDocumentRoute(route, session);
 
-        try (CloseableCoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
-            Exception e = null;
-            try {
-                service.unlockDocumentRoute(route, jdoeSession);
-            } catch (DocumentRouteNotLockedException e2) {
-                e = e2;
-            }
-            assertNotNull(e);
-            childs = service.getOrderedRouteElement(stepFolder.getId(), jdoeSession);
-            assertEquals(1, childs.size());
+        e = null;
+        try {
+            service.unlockDocumentRoute(route, jdoeSession);
+        } catch (DocumentRouteNotLockedException e2) {
+            e = e2;
         }
+        assertNotNull(e);
+        childs = service.getOrderedRouteElement(stepFolder.getId(), jdoeSession);
+        assertEquals(1, childs.size());
     }
 
     @Test
@@ -284,10 +280,9 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         route = session.getDocument(route.getRef());
         assertEquals("validated", route.getCurrentLifeCycleState());
 
-        try (CloseableCoreSession jdoeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jdoe")) {
-            assertFalse(jdoeSession.hasPermission(route.getRef(), SecurityConstants.WRITE));
-            assertTrue(jdoeSession.hasPermission(route.getRef(), SecurityConstants.READ));
-        }
+        CoreSession jdoeSession = CoreInstance.getCoreSession(session.getRepositoryName(), "jdoe");
+        assertFalse(jdoeSession.hasPermission(route.getRef(), SecurityConstants.WRITE));
+        assertTrue(jdoeSession.hasPermission(route.getRef(), SecurityConstants.READ));
     }
 
     @Test
@@ -347,24 +342,23 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.save();
         waitForAsyncExec();
 
-        try (CloseableCoreSession managerSession = CoreInstance.openCoreSession(session.getRepositoryName(), "routeManagers")) {
-            route = managerSession.getDocument(routeRef).getAdapter(DocumentRoute.class);
-            DocumentRoute routeInstance = service.createNewInstance(route, Collections.singletonList(doc1.getId()),
-                    managerSession, true);
-            managerSession.save();
-            waitForAsyncExec();
-            assertTrue(routeInstance.isDone());
+        CoreSession managerSession = CoreInstance.getCoreSession(session.getRepositoryName(), "routeManagers");
+        route = managerSession.getDocument(routeRef).getAdapter(DocumentRoute.class);
+        DocumentRoute routeInstance = service.createNewInstance(route, Collections.singletonList(doc1.getId()),
+                managerSession, true);
+        managerSession.save();
+        waitForAsyncExec();
+        assertTrue(routeInstance.isDone());
 
-            // check if branch no 1 in the optional folder was executed
-            children = managerSession.getChildren(routeInstance.getDocument().getRef(),
-                    DocumentRoutingConstants.CONDITIONAL_STEP_DOCUMENT_TYPE);
+        // check if branch no 1 in the optional folder was executed
+        children = managerSession.getChildren(routeInstance.getDocument().getRef(),
+                DocumentRoutingConstants.CONDITIONAL_STEP_DOCUMENT_TYPE);
 
-            children = service.getOrderedRouteElement(children.get(0).getId(), managerSession);
-            // branch executed in done
-            assertEquals("done", children.get(1).getCurrentLifeCycleState());
-            // branch not executed is now in canceled state
-            assertEquals("canceled", children.get(2).getCurrentLifeCycleState());
-        }
+        children = service.getOrderedRouteElement(children.get(0).getId(), managerSession);
+        // branch executed in done
+        assertEquals("done", children.get(1).getCurrentLifeCycleState());
+        // branch not executed is now in canceled state
+        assertEquals("canceled", children.get(2).getCurrentLifeCycleState());
     }
 
     protected void setPermissionToUser(DocumentModel doc, String username, String... perms) {

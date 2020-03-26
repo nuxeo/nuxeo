@@ -31,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -425,11 +424,10 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         DocumentModelList containers = new DocumentModelListImpl();
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-                DocumentModelList docs = getCreationContainers(session, docType);
-                docs.forEach(doc -> doc.detach(true));
-                containers.addAll(docs);
-            }
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+            DocumentModelList docs = getCreationContainers(session, docType);
+            docs.forEach(doc -> doc.detach(true));
+            containers.addAll(docs);
         }
         return containers;
     }

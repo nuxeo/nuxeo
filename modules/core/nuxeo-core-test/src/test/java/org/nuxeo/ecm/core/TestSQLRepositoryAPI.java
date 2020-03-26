@@ -65,7 +65,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -168,12 +167,12 @@ public class TestSQLRepositoryAPI {
     @Inject
     protected BulkService bulkService;
 
-    protected CloseableCoreSession openSessionAs(String username) {
-        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.getCoreSession(session.getRepositoryName(), username);
     }
 
-    protected CloseableCoreSession openSessionAs(NuxeoPrincipal principal) {
-        return CoreInstance.openCoreSession(session.getRepositoryName(), principal);
+    protected CoreSession openSessionAs(NuxeoPrincipal principal) {
+        return CoreInstance.getCoreSession(session.getRepositoryName(), principal);
     }
 
     protected void reopenSession() {
@@ -1022,14 +1021,13 @@ public class TestSQLRepositoryAPI {
         assertEquals(new HashSet<>(Arrays.asList("doc1", "doc2", "doc3")), names);
 
         // bob doesn't see doc2
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            names.clear();
-            for (DocumentModel doc : bobSession.getChildrenIterator(new PathRef("/"))) {
-                names.add(doc.getName());
-            }
-            // doc2 is not in the returned set
-            assertEquals(new HashSet<>(Arrays.asList("doc1", "doc3")), names);
+        CoreSession bobSession = openSessionAs("bob");
+        names.clear();
+        for (DocumentModel doc : bobSession.getChildrenIterator(new PathRef("/"))) {
+            names.add(doc.getName());
         }
+        // doc2 is not in the returned set
+        assertEquals(new HashSet<>(Arrays.asList("doc1", "doc3")), names);
     }
 
     /**
@@ -1326,14 +1324,13 @@ public class TestSQLRepositoryAPI {
 
         // relation, check as admin
 
-        try (CloseableCoreSession admSession = openSessionAs(new UserPrincipal("adm", null, false, true))) {
-            DocumentModel rel = admSession.createDocumentModel(null, "myrel", "Relation");
-            rel = admSession.createDocument(rel);
-            admSession.save();
-            docs = admSession.getParentDocuments(rel.getRef());
-            assertEquals(1, docs.size());
-            assertEquals("myrel", docs.get(0).getName());
-        }
+        CoreSession admSession = openSessionAs(new UserPrincipal("adm", null, false, true));
+        DocumentModel rel = admSession.createDocumentModel(null, "myrel", "Relation");
+        rel = admSession.createDocument(rel);
+        admSession.save();
+        docs = admSession.getParentDocuments(rel.getRef());
+        assertEquals(1, docs.size());
+        assertEquals("myrel", docs.get(0).getName());
     }
 
     @Test
@@ -1843,21 +1840,21 @@ public class TestSQLRepositoryAPI {
         assertEquals(2, dml.size());
 
         // as bob
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            // check bob doesn't see doc1
-            dml = bobSession.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f1'");
-            assertEquals(1, dml.size());
+        CoreSession bobSession = openSessionAs("bob");
 
-            // do copy
-            bobSession.copy(f1.getRef(), root.getRef(), "f2");
+        // check bob doesn't see doc1
+        dml = bobSession.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f1'");
+        assertEquals(1, dml.size());
 
-            // save is mandatory to propagate read acls after a copy
-            bobSession.save();
+        // do copy
+        bobSession.copy(f1.getRef(), root.getRef(), "f2");
 
-            // check bob doesn't see doc1's copy
-            dml = bobSession.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f2'");
-            assertEquals(1, dml.size());
-        }
+        // save is mandatory to propagate read acls after a copy
+        bobSession.save();
+
+        // check bob doesn't see doc1's copy
+        dml = bobSession.query("SELECT * FROM Document WHERE ecm:path STARTSWITH '/f2'");
+        assertEquals(1, dml.size());
     }
 
     @Test
@@ -2776,7 +2773,8 @@ public class TestSQLRepositoryAPI {
         MutableObject<RuntimeException> me = new MutableObject<>();
         Thread thread = new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
-                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+                try {
+                    CoreSession session2 = CoreInstance.getCoreSession(coreFeature.getRepositoryName());
                     session2.move(new PathRef("/doc"), new PathRef("/folder"), null);
                     session2.save();
                 } catch (RuntimeException e) {
@@ -4379,7 +4377,8 @@ public class TestSQLRepositoryAPI {
         // set rollback-only
         TransactionHelper.setTransactionRollbackOnly();
         // then create a session
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+        try {
+            CoreSession session2 = CoreInstance.getCoreSession(coreFeature.getRepositoryName());
             fail("should not allow creation of session when marked rollback-only");
         } catch (NuxeoException e) {
             assertEquals("Cannot create a CoreSession when transaction is marked rollback-only", e.getMessage());
@@ -4536,24 +4535,23 @@ public class TestSQLRepositoryAPI {
         Lock relock = session.setLock(docRef);
         assertEquals(lock, relock);
 
-        try (CloseableCoreSession peteSession = openSessionAs("pete")) {
-            // cannot relock as pete
-            // try to relock as pete
-            try {
-                peteSession.getDocument(docRef).setLock();
-                fail();
-            } catch (LockException e) {
-                assertEquals(409, e.getStatusCode());
-            }
+        CoreSession peteSession = openSessionAs("pete");
+        // cannot relock as pete
+        // try to relock as pete
+        try {
+            peteSession.getDocument(docRef).setLock();
+            fail();
+        } catch (LockException e) {
+            assertEquals(409, e.getStatusCode());
+        }
 
-            // cannot remove lock as pete
-            // try to remove lock as pete
-            try {
-                peteSession.removeLock(docRef);
-                fail();
-            } catch (LockException e) {
-                assertTrue(e.getMessage(), e.getMessage().contains("Document already locked"));
-            }
+        // cannot remove lock as pete
+        // try to remove lock as pete
+        try {
+            peteSession.removeLock(docRef);
+            fail();
+        } catch (LockException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Document already locked"));
         }
 
         lock = session.removeLock(docRef);
@@ -4567,17 +4565,14 @@ public class TestSQLRepositoryAPI {
         lock = session.removeLock(docRef);
         assertNull(lock);
 
-        // as pete
-        try (CloseableCoreSession peteSession = openSessionAs("pete")) {
-            // set lock as pete
-            lock = peteSession.setLock(docRef);
-            assertNotNull(lock);
-            assertEquals("pete", lock.getOwner());
+        // set lock as pete
+        lock = peteSession.setLock(docRef);
+        assertNotNull(lock);
+        assertEquals("pete", lock.getOwner());
 
-            // remove as pete
-            lock = peteSession.removeLock(docRef);
-            assertNotNull(lock);
-        }
+        // remove as pete
+        lock = peteSession.removeLock(docRef);
+        assertNotNull(lock);
     }
 
     @Test
@@ -4708,9 +4703,8 @@ public class TestSQLRepositoryAPI {
         // make it a record
         session.makeRecord(doc.getRef());
         // bob can delete it
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
-        }
+        CoreSession bobSession = openSessionAs("bob");
+        assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
 
         // first, set inderminate retention
         assertNull(session.getRetainUntil(doc.getRef()));
@@ -4723,9 +4717,7 @@ public class TestSQLRepositoryAPI {
         // cannot be deleted
         checkUndeletable(folder, doc);
         // bob cannot delete it
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
-        }
+        assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
 
         // then reduce retention to an actual date in the future
         Calendar retainUntil = Calendar.getInstance();
@@ -4744,9 +4736,7 @@ public class TestSQLRepositoryAPI {
         // cannot be deleted
         checkUndeletable(folder, doc);
         // bob cannot delete it
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
-        }
+        assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
 
         // cannot reduce retention
         Calendar retainUntilEarlier = Calendar.getInstance();
@@ -4785,9 +4775,8 @@ public class TestSQLRepositoryAPI {
         // make it a record
         session.makeRecord(doc.getRef());
         // bob can delete it
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
-        }
+        CoreSession bobSession = openSessionAs("bob");
+        assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
 
         // set legal hold
         assertFalse(session.hasLegalHold(doc.getRef()));
@@ -4804,18 +4793,15 @@ public class TestSQLRepositoryAPI {
 
         checkUndeletable(folder, doc);
         // bob cannot delete it
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
-        }
+        assertFalse(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
 
         // unset legal hold, can now delete
         session.setLegalHold(doc.getRef(), false, null);
         doc.refresh();
         assertFalse(doc.hasLegalHold());
         // bob can delete it
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
-        }
+        assertTrue(bobSession.hasPermission(doc.getRef(), SecurityConstants.REMOVE));
+
         session.removeDocument(doc.getRef());
     }
 
@@ -5183,7 +5169,8 @@ public class TestSQLRepositoryAPI {
             try {
                 barrier.await(5, TimeUnit.SECONDS);
                 TransactionHelper.startTransaction();
-                try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
+                try {
+                    CoreSession session = CoreInstance.getCoreSessionSystem(repositoryName);
                     // update first doc
                     barrier.await(5, TimeUnit.SECONDS);
                     DocumentModel doc = session.getDocument(doc1Ref);
@@ -5343,7 +5330,8 @@ public class TestSQLRepositoryAPI {
         MutableObject<RuntimeException> me = new MutableObject<>();
         Thread thread = new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
-                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
+                try {
+                    CoreSession session2 = CoreInstance.getCoreSession(coreFeature.getRepositoryName());
                     DocumentModel doc2 = session2.getDocument(docRef);
                     doc2.setPropertyValue("dc:title", "bar parallel");
                     doc2.putContextData(CoreSession.USER_CHANGE, Boolean.TRUE);
@@ -5399,7 +5387,8 @@ public class TestSQLRepositoryAPI {
             try {
                 barrier.await(5, TimeUnit.SECONDS);
                 TransactionHelper.runInTransaction(() -> {
-                    try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {
+                    try {
+                        CoreSession session = CoreInstance.getCoreSession(null);
                         for (DocumentRef docRef : docRefs) {
                             DocumentModel doc = session.getDocument(docRef);
                             doc.setPropertyValue("dc:title", "foo" + System.nanoTime());

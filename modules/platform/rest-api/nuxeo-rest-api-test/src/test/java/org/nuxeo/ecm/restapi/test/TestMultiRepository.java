@@ -34,7 +34,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -65,13 +64,13 @@ public class TestMultiRepository extends BaseTest {
     @Inject
     protected CoreSession defaultRepositorySession;
 
-    protected CloseableCoreSession otherRepositorySession;
+    protected CoreSession otherRepositorySession;
 
     protected Map<String, CoreSession> sessions;
 
     @Before
     public void init() throws Exception {
-        otherRepositorySession = CoreInstance.openCoreSession("other");
+        otherRepositorySession = CoreInstance.getCoreSession("other");
         sessions = Stream.of(defaultRepositorySession, otherRepositorySession)
                          .collect(Collectors.toMap(CoreSession::getRepositoryName, Function.identity()));
     }
@@ -79,7 +78,6 @@ public class TestMultiRepository extends BaseTest {
     @After
     public void cleanUp() throws Exception {
         otherRepositorySession.removeChildren(new PathRef("/"));
-        otherRepositorySession.close();
     }
 
     // Tests on the /api/v1/id/{docId} endpoint.

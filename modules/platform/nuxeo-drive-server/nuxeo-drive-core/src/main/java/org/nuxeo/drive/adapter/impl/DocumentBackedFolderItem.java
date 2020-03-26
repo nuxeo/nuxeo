@@ -40,7 +40,6 @@ import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -121,64 +120,62 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            // Update doc properties
-            DocumentModel doc = getDocument(session);
-            doc.setPropertyValue("dc:title", name);
-            doc.putContextData(CoreSession.SOURCE, "drive");
-            doc = session.saveDocument(doc);
-            session.save();
-            // Update FileSystemItem attributes
-            this.docTitle = name;
-            this.name = name;
-            updateLastModificationDate(doc);
-        }
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+        // Update doc properties
+        DocumentModel doc = getDocument(session);
+        doc.setPropertyValue("dc:title", name);
+        doc.putContextData(CoreSession.SOURCE, "drive");
+        doc = session.saveDocument(doc);
+        session.save();
+        // Update FileSystemItem attributes
+        this.docTitle = name;
+        this.name = name;
+        updateLastModificationDate(doc);
     }
 
     /*--------------------- FolderItem -----------------*/
     @Override
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = new HashMap<>();
-            props.put(CORE_SESSION_PROPERTY, (Serializable) session);
-            PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props, docId);
-            long pageSize = childrenPageProvider.getPageSize();
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<>();
+        props.put(CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                FOLDER_ITEM_CHILDREN_PAGE_PROVIDER, null, null, 0L, props, docId);
+        long pageSize = childrenPageProvider.getPageSize();
 
-            List<FileSystemItem> children = new ArrayList<>();
-            int nbChildren = 0;
-            boolean reachedPageSize = false;
-            boolean hasNextPage = true;
-            // Since query results are filtered, make sure we iterate on PageProvider to get at most its page size
-            // number of
-            // FileSystemItems
-            while (nbChildren < pageSize && hasNextPage) {
-                List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
-                for (DocumentModel dmChild : dmChildren) {
-                    // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this, false,
-                            false, false);
-                    if (child != null) {
-                        children.add(child);
-                        nbChildren++;
-                        if (nbChildren == pageSize) {
-                            reachedPageSize = true;
-                            break;
-                        }
-                    }
-                }
-                if (!reachedPageSize) {
-                    hasNextPage = childrenPageProvider.isNextPageAvailable();
-                    if (hasNextPage) {
-                        childrenPageProvider.nextPage();
+        List<FileSystemItem> children = new ArrayList<>();
+        int nbChildren = 0;
+        boolean reachedPageSize = false;
+        boolean hasNextPage = true;
+        // Since query results are filtered, make sure we iterate on PageProvider to get at most its page size
+        // number of
+        // FileSystemItems
+        while (nbChildren < pageSize && hasNextPage) {
+            List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
+            for (DocumentModel dmChild : dmChildren) {
+                // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this, false, false,
+                        false);
+                if (child != null) {
+                    children.add(child);
+                    nbChildren++;
+                    if (nbChildren == pageSize) {
+                        reachedPageSize = true;
+                        break;
                     }
                 }
             }
-
-            return children;
+            if (!reachedPageSize) {
+                hasNextPage = childrenPageProvider.isNextPageAvailable();
+                if (hasNextPage) {
+                    childrenPageProvider.nextPage();
+                }
+            }
         }
+
+        return children;
     }
 
     @Override
@@ -208,25 +205,24 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     protected ScrollFileSystemItemList doScrollDescendants(String scrollId, int batchSize, long keepAlive) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
 
-            // Limit batch size sent by the client
-            checkBatchSize(batchSize);
+        // Limit batch size sent by the client
+        checkBatchSize(batchSize);
 
-            // Scroll through a batch of documents
-            ScrollDocumentModelList descendantDocsBatch = getScrollBatch(scrollId, batchSize, session, keepAlive);
-            String newScrollId = descendantDocsBatch.getScrollId();
-            if (descendantDocsBatch.isEmpty()) {
-                // No more descendants left to return
-                return new ScrollFileSystemItemListImpl(newScrollId, 0);
-            }
-
-            // Adapt documents as FileSystemItems
-            List<FileSystemItem> descendants = adaptDocuments(descendantDocsBatch, session);
-            log.debug("Retrieved {} descendants of FolderItem {} (batchSize = {})", descendants::size, () -> docPath,
-                    () -> batchSize);
-            return new ScrollFileSystemItemListImpl(newScrollId, descendants);
+        // Scroll through a batch of documents
+        ScrollDocumentModelList descendantDocsBatch = getScrollBatch(scrollId, batchSize, session, keepAlive);
+        String newScrollId = descendantDocsBatch.getScrollId();
+        if (descendantDocsBatch.isEmpty()) {
+            // No more descendants left to return
+            return new ScrollFileSystemItemListImpl(newScrollId, 0);
         }
+
+        // Adapt documents as FileSystemItems
+        List<FileSystemItem> descendants = adaptDocuments(descendantDocsBatch, session);
+        log.debug("Retrieved {} descendants of FolderItem {} (batchSize = {})", descendants::size, () -> docPath,
+                () -> batchSize);
+        return new ScrollFileSystemItemListImpl(newScrollId, descendants);
     }
 
     protected void checkBatchSize(int batchSize) {
@@ -436,7 +432,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     @Override
     public FolderItem createFolder(String name, boolean overwrite) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try {
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
             DocumentModel folder = getFileManager().createFolder(session, name, docPath, overwrite);
             if (folder == null) {
                 throw new NuxeoException(String.format(
@@ -456,7 +453,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     @Override
     public FileItem createFile(Blob blob, boolean overwrite) {
         String fileName = blob.getFilename();
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try {
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
             FileImporterContext context = FileImporterContext.builder(session, blob, docPath)
                                                              .overwrite(overwrite)
                                                              .excludeOneToMany(true)

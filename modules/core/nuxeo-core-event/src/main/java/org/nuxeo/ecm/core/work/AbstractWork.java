@@ -38,7 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -297,7 +296,7 @@ public abstract class AbstractWork implements Work {
      */
     public void openSystemSession() {
         loginContext = Framework.loginSystem(originatingUsername);
-        session = CoreInstance.openCoreSessionSystem(repositoryName, originatingUsername);
+        session = CoreInstance.getCoreSessionSystem(repositoryName, originatingUsername);
     }
 
     /**
@@ -318,7 +317,7 @@ public abstract class AbstractWork implements Work {
             throw new NuxeoException(e);
         }
 
-        session = CoreInstance.openCoreSession(repositoryName);
+        session = CoreInstance.getCoreSession(repositoryName);
     }
 
     /**
@@ -327,11 +326,11 @@ public abstract class AbstractWork implements Work {
      * @param repositoryName the repository name
      * @return the session (also available in {@code session} field)
      * @deprecated since 8.1. Use {@link #openSystemSession()} to open a session on the configured repository name,
-     *             otherwise use {@link CoreInstance#openCoreSessionSystem(String)}.
+     *             otherwise use {@link CoreInstance#getCoreSessionSystem(String)}.
      */
     @Deprecated
     public CoreSession initSession(String repositoryName) {
-        session = CoreInstance.openCoreSessionSystem(repositoryName, originatingUsername);
+        session = CoreInstance.getCoreSessionSystem(repositoryName, originatingUsername);
         return session;
     }
 
@@ -341,11 +340,6 @@ public abstract class AbstractWork implements Work {
      * @since 5.8
      */
     public void closeSession() {
-        if (session != null) {
-            ((CloseableCoreSession) session).close();
-            session = null;
-        }
-
         // loginContext may be null in tests
         if (loginContext != null) {
             loginContext.close();

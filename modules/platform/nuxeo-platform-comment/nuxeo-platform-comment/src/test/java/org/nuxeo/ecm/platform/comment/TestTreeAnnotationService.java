@@ -43,7 +43,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -95,17 +94,16 @@ public class TestTreeAnnotationService {
 
     @Before
     public void setup() {
-        try (var systemSession = coreFeature.openCoreSessionSystem()) {
-            DocumentModel domain = systemSession.createDocumentModel("/", "testDomain", "Domain");
-            systemSession.createDocument(domain);
-            // Give permissions on root to jdoe
-            ACLImpl acl = new ACLImpl();
-            acl.addAll(List.of(new ACE(JDOE, SecurityConstants.READ_WRITE), //
-                    new ACE(JDOE, SecurityConstants.WRITE_SECURITY)));
-            ACPImpl acp = new ACPImpl();
-            acp.addACL(acl);
-            systemSession.setACP(new PathRef("/"), acp, true);
-        }
+        CoreSession systemSession = coreFeature.getCoreSessionSystem();
+        DocumentModel domain = systemSession.createDocumentModel("/", "testDomain", "Domain");
+        systemSession.createDocument(domain);
+        // Give permissions on root to jdoe
+        ACLImpl acl = new ACLImpl();
+        acl.addAll(List.of(new ACE(JDOE, SecurityConstants.READ_WRITE), //
+                new ACE(JDOE, SecurityConstants.WRITE_SECURITY)));
+        ACPImpl acp = new ACPImpl();
+        acp.addACL(acl);
+        systemSession.setACP(new PathRef("/"), acp, true);
     }
 
     @Test
@@ -143,7 +141,8 @@ public class TestTreeAnnotationService {
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
         assertEquals(origin, ((ExternalEntity) annotation).getOrigin());
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotationService.createAnnotation(bobSession, annotation);
             fail("bob should not be able to create annotation");
         } catch (CommentSecurityException e) {
@@ -162,18 +161,18 @@ public class TestTreeAnnotationService {
         String xpathToAnnotate = "files:files/0/file";
 
         String annotationId;
-        try (CloseableCoreSession adminSession = coreFeature.openCoreSessionSystem()) {
-            Annotation annotation = new AnnotationImpl();
-            annotation.setParentId(docIdToAnnotate);
-            annotation.setXpath(xpathToAnnotate);
-            ((ExternalEntity) annotation).setEntityId(entityId);
-            annotationId = annotationService.createAnnotation(adminSession, annotation).getId();
-        }
+        CoreSession adminSession = coreFeature.getCoreSessionSystem();
+        Annotation annotation = new AnnotationImpl();
+        annotation.setParentId(docIdToAnnotate);
+        annotation.setXpath(xpathToAnnotate);
+        ((ExternalEntity) annotation).setEntityId(entityId);
+        annotationId = annotationService.createAnnotation(adminSession, annotation).getId();
 
-        Annotation annotation = annotationService.getAnnotation(session, annotationId);
+        annotation = annotationService.getAnnotation(session, annotationId);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotation = annotationService.getAnnotation(bobSession, annotationId);
             fail("bob should not be able to get annotation");
         } catch (CommentSecurityException e) {
@@ -205,7 +204,8 @@ public class TestTreeAnnotationService {
         assertEquals("Entity",
                 ((ExternalEntity) annotationService.getAnnotation(session, annotation.getId())).getEntity());
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotationService.updateAnnotation(bobSession, annotation.getId(), annotation);
             fail("bob should not be able to edit annotation");
         } catch (CommentSecurityException e) {
@@ -238,7 +238,8 @@ public class TestTreeAnnotationService {
             assertNotNull(e.getMessage());
         }
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotationService.deleteAnnotation(bobSession, annotation.getId());
             fail("bob should not be able to delete annotation");
         } catch (CommentSecurityException e) {
@@ -289,7 +290,8 @@ public class TestTreeAnnotationService {
         assertEquals(nbAnnotations2,
                 annotationService.getAnnotations(session, docToAnnotate2.getId(), xpathToAnnotate).size());
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotationService.getAnnotations(bobSession, docToAnnotate1.getId(), xpathToAnnotate);
             fail("bob should not be able to get annotations");
         } catch (CommentSecurityException e) {
@@ -318,7 +320,8 @@ public class TestTreeAnnotationService {
         annotation = annotationService.getExternalAnnotation(session, entityId);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotationService.getExternalAnnotation(bobSession, entityId);
             fail("bob should not be able to get annotation");
         } catch (CommentNotFoundException e) {
@@ -359,7 +362,8 @@ public class TestTreeAnnotationService {
         annotation = annotationService.getExternalAnnotation(session, entityId);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotationService.updateExternalAnnotation(bobSession, entityId, annotation);
             fail("bob should not be able to edit annotation");
         } catch (CommentNotFoundException e) {
@@ -394,7 +398,8 @@ public class TestTreeAnnotationService {
             assertNotNull(e.getMessage());
         }
 
-        try (CloseableCoreSession bobSession = coreFeature.openCoreSession("bob")) {
+        try {
+            CoreSession bobSession = coreFeature.getCoreSession("bob");
             annotationService.deleteAnnotation(bobSession, annotation.getId());
             fail("bob should not be able to delete annotation");
         } catch (CommentSecurityException e) {
@@ -437,17 +442,16 @@ public class TestTreeAnnotationService {
         session.save();
 
         CommentManager commentManager = Framework.getService(CommentManager.class);
-        try (CloseableCoreSession systemSession = coreFeature.openCoreSession()) {
-            assertEquals(docToAnnotate.getRef(),
-                    commentManager.getTopLevelDocumentRef(systemSession, new IdRef(annotation.getId())));
-        }
+        CoreSession systemSession = coreFeature.getCoreSessionSystem();
+        assertEquals(docToAnnotate.getRef(),
+                commentManager.getTopLevelDocumentRef(systemSession, new IdRef(annotation.getId())));
 
-        try (CloseableCoreSession jamesSession = coreFeature.openCoreSession("james")) {
-            assertEquals(docToAnnotate.getRef(),
-                    commentManager.getTopLevelDocumentRef(jamesSession, new IdRef(annotation.getId())));
-        }
+        CoreSession jamesSession = coreFeature.getCoreSession("james");
+        assertEquals(docToAnnotate.getRef(),
+                commentManager.getTopLevelDocumentRef(jamesSession, new IdRef(annotation.getId())));
 
-        try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
+        try {
+            CoreSession janeSession = coreFeature.getCoreSession("jane");
             assertEquals(docToAnnotate.getRef(),
                     commentManager.getTopLevelDocumentRef(janeSession, new IdRef(annotation.getId())));
             fail("jane should not be able to get the top level annotation ancestor");

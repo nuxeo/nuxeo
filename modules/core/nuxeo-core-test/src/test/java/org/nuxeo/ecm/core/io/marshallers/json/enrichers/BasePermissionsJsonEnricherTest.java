@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -65,14 +64,14 @@ public class BasePermissionsJsonEnricherTest extends
 
     @Test
     public void test() throws Exception {
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user1")) {
-            DocumentModel doc = userSession.getDocument(new PathRef("/myDoc1"));
-            JsonAssert json = jsonAssert(doc, CtxBuilder.enrichDoc("permissions").get());
-            json = json.has("contextParameters").isObject();
-            json.properties(1);
-            json.has("permissions").contains("Browse", "Read", "ReadVersion", "ReadProperties", "ReadChildren",
-                    "ReadLifeCycle", "ReadSecurity", "ReviewParticipant");
-        }
+        CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(), "user1");
+        DocumentModel doc = userSession.getDocument(new PathRef("/myDoc1"));
+        JsonAssert json = jsonAssert(doc, CtxBuilder.enrichDoc("permissions").get());
+        json = json.has("contextParameters").isObject();
+        json.properties(1);
+        json.has("permissions")
+            .contains("Browse", "Read", "ReadVersion", "ReadProperties", "ReadChildren", "ReadLifeCycle",
+                    "ReadSecurity", "ReviewParticipant");
     }
 
 }

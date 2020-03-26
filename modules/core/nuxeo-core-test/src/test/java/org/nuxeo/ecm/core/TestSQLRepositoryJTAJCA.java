@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -98,15 +97,15 @@ public class TestSQLRepositoryJTAJCA {
         session.getRootDocument(); // use the session at least once
         assertEquals(1, repo.getActiveSessionsCount());
 
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(repositoryName, ADMINISTRATOR)) {
-            assertEquals(1, repo.getActiveSessionsCount());
-            DocumentModel doc = session.createDocumentModel("/", "doc", "Document");
-            doc = session.createDocument(doc);
-            session.save();
-            // check that this is immediately seen from other connection
-            // (underlying ManagedConnection is the same)
-            assertTrue(session2.exists(new PathRef("/doc")));
-        }
+        CoreSession session2 = CoreInstance.getCoreSession(repositoryName, ADMINISTRATOR);
+        assertEquals(1, repo.getActiveSessionsCount());
+        DocumentModel doc = session.createDocumentModel("/", "doc", "Document");
+        doc = session.createDocument(doc);
+        session.save();
+        // check that this is immediately seen from other connection
+        // (underlying ManagedConnection is the same)
+        assertTrue(session2.exists(new PathRef("/doc")));
+
         assertEquals(1, repo.getActiveSessionsCount());
     }
 
@@ -124,7 +123,8 @@ public class TestSQLRepositoryJTAJCA {
         Thread t = new Thread(() -> {
             try {
                 TransactionHelper.startTransaction();
-                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
+                try {
+                    CoreSession session2 = CoreInstance.getCoreSession(session.getRepositoryName(), ADMINISTRATOR);
                     assertTrue(session2.exists(new PathRef("/doc")));
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
@@ -179,7 +179,8 @@ public class TestSQLRepositoryJTAJCA {
         Thread t = new Thread(() -> {
             try {
                 TransactionHelper.startTransaction();
-                try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), ADMINISTRATOR)) {
+                try {
+                    CoreSession session2 = CoreInstance.getCoreSession(session.getRepositoryName(), ADMINISTRATOR);
                     DocumentModel doc1 = session2.getDocument(ref);
                     doc1.getProperty("dc:title").setValue("second update");
                     session2.saveDocument(doc1);

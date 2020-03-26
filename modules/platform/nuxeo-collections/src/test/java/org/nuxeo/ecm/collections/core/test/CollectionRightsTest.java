@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -93,21 +92,20 @@ public class CollectionRightsTest {
         DocumentRef docRef = testFile.getRef();
 
         String repositoryName = coreFeature.getStorageConfiguration().getRepositoryName();
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(repositoryName, "user1")) {
-            testFile = userSession.getDocument(docRef);
+        CoreSession userSession = CoreInstance.getCoreSession(repositoryName, "user1");
+        testFile = userSession.getDocument(docRef);
 
-            collectionManager.addToNewCollection("Collection1", "blablabla", testFile, userSession);
+        collectionManager.addToNewCollection("Collection1", "blablabla", testFile, userSession);
 
-            DataModel dm = testFile.getDataModel("dublincore");
+        DataModel dm = testFile.getDataModel("dublincore");
 
-            String[] contributorsArray = (String[]) dm.getData("contributors");
+        String[] contributorsArray = (String[]) dm.getData("contributors");
 
-            assertNotNull(contributorsArray);
+        assertNotNull(contributorsArray);
 
-            assertEquals(1, contributorsArray.length);
+        assertEquals(1, contributorsArray.length);
 
-            assertFalse(contributorsArray[0].equals("user1"));
-        }
+        assertFalse(contributorsArray[0].equals("user1"));
 
     }
 

@@ -42,7 +42,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -207,39 +206,37 @@ public class TestLock {
     @Test
     public void testCollaborativeEdition() {
         NuxeoPrincipal johnPrincipal = setUpPrincipal("john");
-        try (CloseableCoreSession johnSession = coreFeature.openCoreSession(johnPrincipal)) {
-            // no lock -> Write permission granted to john
-            assertTrue(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+        CoreSession johnSession = coreFeature.getCoreSession(johnPrincipal);
+        // no lock -> Write permission granted to john
+        assertTrue(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
 
-            // lock document as joe
-            NuxeoPrincipal joePrincipal = setUpPrincipal("joe");
-            try (CloseableCoreSession joeSession = coreFeature.openCoreSession(joePrincipal)) {
-                doc = joeSession.getDocument(doc.getRef());
-                doc.setLock();
-                assertTrue(joeSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
-            }
+        // lock document as joe
+        NuxeoPrincipal joePrincipal = setUpPrincipal("joe");
+        CoreSession joeSession = coreFeature.getCoreSession(joePrincipal);
+        doc = joeSession.getDocument(doc.getRef());
+        doc.setLock();
+        assertTrue(joeSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
 
-            // not a WOPI lock -> Write permission denied to john
-            assertFalse(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+        // not a WOPI lock -> Write permission denied to john
+        assertFalse(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
 
-            // add a WOPI lock as joe
-            LockHelper.addLock(fileId, "foo");
-            assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
+        // add a WOPI lock as joe
+        LockHelper.addLock(fileId, "foo");
+        assertTrue(LockHelper.isLocked(doc.getRepositoryName(), doc.getId()));
 
-            // WOPI lock but not a WOPI request -> Write permission denied to john
-            assertFalse(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+        // WOPI lock but not a WOPI request -> Write permission denied to john
+        assertFalse(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
 
-            // WOPI lock and a WOPI request -> Write permission granted to john
-            // This is possible thanks to the WOPI lock security policy that grants access if the doc is locked by a
-            // WOPI client (existing WOPI lock) and the request originates from a WOPI client.
-            LockHelper.flagWOPIRequest();
-            assertTrue(LockHelper.isWOPIRequest());
-            assertTrue(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+        // WOPI lock and a WOPI request -> Write permission granted to john
+        // This is possible thanks to the WOPI lock security policy that grants access if the doc is locked by a
+        // WOPI client (existing WOPI lock) and the request originates from a WOPI client.
+        LockHelper.flagWOPIRequest();
+        assertTrue(LockHelper.isWOPIRequest());
+        assertTrue(johnSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
 
-            // Unflag request
-            LockHelper.unflagWOPIRequest();
-            assertFalse(LockHelper.isWOPIRequest());
-        }
+        // Unflag request
+        LockHelper.unflagWOPIRequest();
+        assertFalse(LockHelper.isWOPIRequest());
     }
 
     @Test

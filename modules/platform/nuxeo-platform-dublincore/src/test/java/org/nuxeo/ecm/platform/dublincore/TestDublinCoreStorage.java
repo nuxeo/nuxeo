@@ -38,7 +38,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.CoreSession.CopyOption;
@@ -148,16 +147,15 @@ public class TestDublinCoreStorage {
         // create a new session
         session.save();
 
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
-            DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
-            childFile3.setProperty("dublincore", "source", "testing");
-            childFile3 = session2.saveDocument(childFile3);
+        CoreSession session2 = CoreInstance.getCoreSession(session.getRepositoryName(), "Jacky");
+        DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
+        childFile3.setProperty("dublincore", "source", "testing");
+        childFile3 = session2.saveDocument(childFile3);
 
-            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-            contributorsList = Arrays.asList(contributorsArray);
-            assertTrue(contributorsList.contains("Jacky"));
-            assertEquals("Administrator", childFile3.getProperty("dublincore", "creator"));
-        }
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+        contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Jacky"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore", "creator"));
     }
 
     @Test
@@ -186,57 +184,51 @@ public class TestDublinCoreStorage {
         session.save();
 
         // create a new session
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
-            DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
-            childFile3.setProperty("dublincore", "source", "testing");
-            childFile3 = session2.saveDocument(childFile3);
+        CoreSession session2 = CoreInstance.getCoreSession(session.getRepositoryName(), "Jacky");
+        DocumentModel childFile3 = session2.getDocument(childFile2.getRef());
+        childFile3.setProperty("dublincore", "source", "testing");
+        childFile3 = session2.saveDocument(childFile3);
 
-            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-            contributorsList = Arrays.asList(contributorsArray);
-            assertTrue(contributorsList.contains("Jacky"));
-            assertEquals(1, contributorsList.indexOf("Jacky"));
-            assertEquals("Jacky", childFile3.getProperty("dublincore", "lastContributor"));
-            session2.save();
-        }
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+        contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Jacky"));
+        assertEquals(1, contributorsList.indexOf("Jacky"));
+        assertEquals("Jacky", childFile3.getProperty("dublincore", "lastContributor"));
+        session2.save();
 
         // Test if a new contributor will be at the end of the list
-        try (CloseableCoreSession session3 = CoreInstance.openCoreSession(session.getRepositoryName(), "Fredo")) {
-            DocumentModel childFile3 = session3.getDocument(childFile2.getRef());
-            childFile3.setProperty("dublincore", "source", "testing2"); // make a change
-            childFile3 = session3.saveDocument(childFile3);
+        CoreSession session3 = CoreInstance.getCoreSession(session.getRepositoryName(), "Fredo");
+        childFile3 = session3.getDocument(childFile2.getRef());
+        childFile3.setProperty("dublincore", "source", "testing2"); // make a change
+        childFile3 = session3.saveDocument(childFile3);
 
-            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-            contributorsList = Arrays.asList(contributorsArray);
-            assertTrue(contributorsList.contains("Fredo"));
-            assertEquals("Fredo", childFile3.getProperty("dublincore", "lastContributor"));
-            session3.save();
-        }
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+        contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Fredo"));
+        assertEquals("Fredo", childFile3.getProperty("dublincore", "lastContributor"));
+        session3.save();
 
         // Test if a previously contributor will be move to the end of the list
-        try (CloseableCoreSession session4 = CoreInstance.openCoreSession(session.getRepositoryName(),
-                "Administrator")) {
-            DocumentModel childFile3 = session4.getDocument(childFile2.getRef());
-            childFile3.setProperty("dublincore", "source", "testing");
-            childFile3 = session4.saveDocument(childFile3);
+        CoreSession session4 = CoreInstance.getCoreSession(session.getRepositoryName(), "Administrator");
+        childFile3 = session4.getDocument(childFile2.getRef());
+        childFile3.setProperty("dublincore", "source", "testing");
+        childFile3 = session4.saveDocument(childFile3);
 
-            contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
-            contributorsList = Arrays.asList(contributorsArray);
-            assertTrue(contributorsList.contains("Administrator"));
-            assertEquals("Administrator", childFile3.getProperty("dublincore", "lastContributor"));
-        }
+        contributorsArray = (String[]) childFile3.getDataModel("dublincore").getData("contributors");
+        contributorsList = Arrays.asList(contributorsArray);
+        assertTrue(contributorsList.contains("Administrator"));
+        assertEquals("Administrator", childFile3.getProperty("dublincore", "lastContributor"));
     }
 
     @Test
     public void testLastContributorForSystemSession() {
         // use a system session with no originating user name
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSessionSystem(session.getRepositoryName(),
-                (String) null)) {
-            DocumentModel file = session2.createDocumentModel("/", "file", "File");
-            file = session2.createDocument(file);
-            // check we haven't inserted a null in last contributors
-            assertEquals(Collections.singletonList(SecurityConstants.SYSTEM_USERNAME),
-                    Arrays.asList((String[]) file.getPropertyValue("dc:contributors")));
-        }
+        CoreSession session2 = CoreInstance.getCoreSessionSystem(session.getRepositoryName(), (String) null);
+        DocumentModel file = session2.createDocumentModel("/", "file", "File");
+        file = session2.createDocument(file);
+        // check we haven't inserted a null in last contributors
+        assertEquals(Collections.singletonList(SecurityConstants.SYSTEM_USERNAME),
+                Arrays.asList((String[]) file.getPropertyValue("dc:contributors")));
     }
 
     @Test
@@ -345,13 +337,12 @@ public class TestDublinCoreStorage {
 
     @Test
     public void testCreatorForUnrestrictedSessionCreatedDoc() {
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(session.getRepositoryName(), "Jacky")) {
-            CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session2);
-            runner.runUnrestricted();
-            DocumentModel doc = runner.getFolder();
-            String creator = (String) doc.getPropertyValue("dc:creator");
-            assertEquals("Jacky", creator);
-        }
+        CoreSession session2 = CoreInstance.getCoreSession(session.getRepositoryName(), "Jacky");
+        CreateDocumentUnrestricted runner = new CreateDocumentUnrestricted(session2);
+        runner.runUnrestricted();
+        DocumentModel doc = runner.getFolder();
+        String creator = (String) doc.getPropertyValue("dc:creator");
+        assertEquals("Jacky", creator);
     }
 
     public class CreateDocumentUnrestricted extends UnrestrictedSessionRunner {

@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -72,12 +71,11 @@ public class TestMongoDBIndices {
 
     @Test
     public void shouldFailWhenCreatingExistingChildNameDocument() {
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(coreSession.getRepositoryName(), "bob")) {
-            createDocument(bobSession, folder, DOCUMENT_NAME);
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(coreSession.getRepositoryName(), "bob");
+        createDocument(bobSession, folder, DOCUMENT_NAME);
 
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(coreSession.getRepositoryName(),
-                "james")) {
+        try {
+            CoreSession jamesSession = CoreInstance.getCoreSession(coreSession.getRepositoryName(), "james");
             createDocument(jamesSession, folder, DOCUMENT_NAME);
             fail("should throw a ConcurrentUpdateException");
         } catch (ConcurrentUpdateException cue) {
@@ -91,12 +89,11 @@ public class TestMongoDBIndices {
 
     @Test
     public void shouldFailWhenMovingDocumentToExistingChildName() {
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(coreSession.getRepositoryName(), "bob")) {
-            createDocument(bobSession, folder, DOCUMENT_NAME);
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(coreSession.getRepositoryName(), "bob");
+        createDocument(bobSession, folder, DOCUMENT_NAME);
 
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(coreSession.getRepositoryName(),
-                "james")) {
+        try {
+            CoreSession jamesSession = CoreInstance.getCoreSession(coreSession.getRepositoryName(), "james");
             DocumentModel documentModel = createDocument(jamesSession, folder, "jamesFileName");
 
             // DBSession.move will check the unicity and throw a DocumentExistsException before calling the backend

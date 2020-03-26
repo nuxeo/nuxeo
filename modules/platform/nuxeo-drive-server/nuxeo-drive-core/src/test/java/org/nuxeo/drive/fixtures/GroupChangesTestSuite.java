@@ -40,7 +40,6 @@ import org.nuxeo.drive.listener.NuxeoDriveGroupUpdateListener;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveEvents;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -90,16 +89,12 @@ public class GroupChangesTestSuite extends AbstractChangeFinderTestCase {
 
         commitAndWaitForAsyncCompletion();
 
-        userSession = CoreInstance.openCoreSession(session.getRepositoryName(), userManager.getPrincipal("user"));
+        userSession = CoreInstance.getCoreSession(session.getRepositoryName(), userManager.getPrincipal("user"));
     }
 
     @Override
     @After
     public void tearDown() {
-        if (userSession != null) {
-            ((CloseableCoreSession) userSession).close();
-        }
-
         deleteGroup("grandParentGroup");
         deleteGroup(PARENT_GROUP);
         deleteGroup(GROUP_2);

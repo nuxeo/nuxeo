@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -169,15 +168,14 @@ public class TestSQLRepositoryLocking {
             public void run() {
                 TransactionHelper.startTransaction();
                 try {
-                    try (CloseableCoreSession session2 = CoreInstance.openCoreSession(repositoryName, ADMINISTRATOR)) {
-                        DocumentModel root2 = session2.getRootDocument();
-                        DocumentModel doc2 = session2.getChild(root2.getRef(), "doc");
-                        // let main thread continue
-                        threadStartLatch.countDown();
-                        // wait main thread trigger
-                        lockingLatch.await();
-                        locked = doc2.isLocked();
-                    }
+                    CoreSession session2 = CoreInstance.getCoreSession(repositoryName, ADMINISTRATOR);
+                    DocumentModel root2 = session2.getRootDocument();
+                    DocumentModel doc2 = session2.getChild(root2.getRef(), "doc");
+                    // let main thread continue
+                    threadStartLatch.countDown();
+                    // wait main thread trigger
+                    lockingLatch.await();
+                    locked = doc2.isLocked();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 } finally {

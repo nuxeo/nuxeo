@@ -29,8 +29,8 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.event.Event;
@@ -79,7 +79,8 @@ public class MailEventListener implements EventListener {
 
     public void doHandleEvent(Event event) {
 
-        try (CloseableCoreSession coreSession = CoreInstance.openCoreSession(null)) {
+        try {
+            CoreSession coreSession = CoreInstance.getCoreSession(null);
             StringBuilder query = new StringBuilder();
             query.append("SELECT * FROM MailFolder ");
             query.append(" WHERE ecm:isTrashed = 0 ");

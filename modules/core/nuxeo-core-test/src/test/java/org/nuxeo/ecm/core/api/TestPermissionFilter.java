@@ -68,68 +68,65 @@ public class TestPermissionFilter {
 
     @Test
     public void testIncludedPermissions() {
-        try (CloseableCoreSession newSession = coreFeature.openCoreSession("foo")) {
-            DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
-            doc = newSession.createDocument(doc);
-            assertNotNull(doc);
+        CoreSession newSession = coreFeature.getCoreSession("foo");
+        DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
+        doc = newSession.createDocument(doc);
+        assertNotNull(doc);
 
-            PermissionFilter filter = new PermissionFilter(Arrays.asList(READ), null);
-            assertTrue(filter.accept(doc));
+        PermissionFilter filter = new PermissionFilter(Arrays.asList(READ), null);
+        assertTrue(filter.accept(doc));
 
-            filter = new PermissionFilter(Arrays.asList(WRITE), null);
-            assertFalse(filter.accept(doc));
+        filter = new PermissionFilter(Arrays.asList(WRITE), null);
+        assertFalse(filter.accept(doc));
 
-            filter = new PermissionFilter("Bar", true);
-            assertFalse(filter.accept(doc));
+        filter = new PermissionFilter("Bar", true);
+        assertFalse(filter.accept(doc));
 
-            filter = new PermissionFilter(READ, true);
-            assertTrue(filter.accept(doc));
-        }
+        filter = new PermissionFilter(READ, true);
+        assertTrue(filter.accept(doc));
     }
 
     @Test
     public void testExcludedPermissions() {
-        try (CloseableCoreSession newSession = coreFeature.openCoreSession("foo")) {
-            DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
-            doc = newSession.createDocument(doc);
-            assertNotNull(doc);
+        CoreSession newSession = coreFeature.getCoreSession("foo");
+        DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
+        doc = newSession.createDocument(doc);
+        assertNotNull(doc);
 
-            PermissionFilter filter = new PermissionFilter(null, Arrays.asList(READ));
-            assertFalse(filter.accept(doc));
+        PermissionFilter filter = new PermissionFilter(null, Arrays.asList(READ));
+        assertFalse(filter.accept(doc));
 
-            filter = new PermissionFilter(null, Arrays.asList("Foo"));
-            assertTrue(filter.accept(doc));
+        filter = new PermissionFilter(null, Arrays.asList("Foo"));
+        assertTrue(filter.accept(doc));
 
-            filter = new PermissionFilter("Bar", false);
-            assertTrue(filter.accept(doc));
+        filter = new PermissionFilter("Bar", false);
+        assertTrue(filter.accept(doc));
 
-            filter = new PermissionFilter(READ, false);
-            assertFalse(filter.accept(doc));
-        }
+        filter = new PermissionFilter(READ, false);
+        assertFalse(filter.accept(doc));
     }
 
     @Test
     public void testIncludedAndExcludedPermissions() {
-        try (CloseableCoreSession newSession = coreFeature.openCoreSession("foo")) {
-            DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
-            doc = newSession.createDocument(doc);
-            assertNotNull(doc);
+        CoreSession newSession = coreFeature.getCoreSession("foo");
+        DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
+        doc = newSession.createDocument(doc);
+        assertNotNull(doc);
 
-            PermissionFilter filter = new PermissionFilter(Arrays.asList(READ), Arrays.asList(WRITE));
-            assertTrue(filter.accept(doc));
+        PermissionFilter filter = new PermissionFilter(Arrays.asList(READ), Arrays.asList(WRITE));
+        assertTrue(filter.accept(doc));
 
-            filter = new PermissionFilter(Arrays.asList(READ, "Foo"), Arrays.asList(WRITE));
-            assertFalse(filter.accept(doc));
+        filter = new PermissionFilter(Arrays.asList(READ, "Foo"), Arrays.asList(WRITE));
+        assertFalse(filter.accept(doc));
 
-            filter = new PermissionFilter(Arrays.asList(READ, "Foo"), Arrays.asList(WRITE, "Bar"));
-            assertFalse(filter.accept(doc));
+        filter = new PermissionFilter(Arrays.asList(READ, "Foo"), Arrays.asList(WRITE, "Bar"));
+        assertFalse(filter.accept(doc));
 
-            filter = new PermissionFilter(Arrays.asList(READ), Arrays.asList(WRITE, "Bar"));
-            assertTrue(filter.accept(doc));
+        filter = new PermissionFilter(Arrays.asList(READ), Arrays.asList(WRITE, "Bar"));
+        assertTrue(filter.accept(doc));
 
-            filter = new PermissionFilter(Arrays.asList(WRITE), Arrays.asList("Bar"));
-            assertFalse(filter.accept(doc));
-        }
+        filter = new PermissionFilter(Arrays.asList(WRITE), Arrays.asList("Bar"));
+        assertFalse(filter.accept(doc));
     }
 
 }

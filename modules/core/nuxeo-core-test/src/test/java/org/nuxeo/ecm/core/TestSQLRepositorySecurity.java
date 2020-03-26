@@ -55,7 +55,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -117,12 +116,12 @@ public class TestSQLRepositorySecurity {
         Framework.getProperties().remove(SQLSession.ALLOW_NEGATIVE_ACL_PROPERTY);
     }
 
-    protected CloseableCoreSession openSessionAs(String username) {
-        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.getCoreSession(session.getRepositoryName(), username);
     }
 
-    protected CloseableCoreSession openSessionAs(NuxeoPrincipal principal) {
-        return CoreInstance.openCoreSession(session.getRepositoryName(), principal);
+    protected CoreSession openSessionAs(NuxeoPrincipal principal) {
+        return CoreInstance.getCoreSession(session.getRepositoryName(), principal);
     }
 
     // overridden to test with allowed negative properties
@@ -181,116 +180,115 @@ public class TestSQLRepositorySecurity {
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
 
-        try (CloseableCoreSession anonSession = openSessionAs("anonymous")) {
-            DocumentModel root = anonSession.getRootDocument();
+        CoreSession anonSession = openSessionAs("anonymous");
+        DocumentModel root = anonSession.getRootDocument();
 
-            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
-            folder = anonSession.createDocument(folder);
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
+        folder = anonSession.createDocument(folder);
 
-            ACP acp = folder.getACP();
-            assertNotNull(acp); // the acp inherited from root is returned
+        ACP acp = folder.getACP();
+        assertNotNull(acp); // the acp inherited from root is returned
 
-            acp = new ACPImpl();
+        acp = new ACPImpl();
 
-            ACL acl = new ACLImpl();
-            acl.add(new ACE("a", "Read", true));
-            acl.add(new ACE("b", "Write", true));
-            acp.addACL(acl);
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("a", "Read", true));
+        acl.add(new ACE("b", "Write", true));
+        acp.addACL(acl);
 
-            folder.setACP(acp, true);
+        folder.setACP(acp, true);
 
-            acp = folder.getACP();
+        acp = folder.getACP();
 
-            assertNotNull(acp);
+        assertNotNull(acp);
 
-            assertEquals("a", acp.getACL(ACL.LOCAL_ACL).get(0).getUsername());
-            assertEquals("b", acp.getACL(ACL.LOCAL_ACL).get(1).getUsername());
+        assertEquals("a", acp.getACL(ACL.LOCAL_ACL).get(0).getUsername());
+        assertEquals("b", acp.getACL(ACL.LOCAL_ACL).get(1).getUsername());
 
-            assertSame(GRANT, acp.getAccess("a", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("a", "Write"));
-            assertSame(GRANT, acp.getAccess("b", "Write"));
-            assertSame(UNKNOWN, acp.getAccess("b", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("c", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("c", "Write"));
+        assertSame(GRANT, acp.getAccess("a", "Read"));
+        assertSame(UNKNOWN, acp.getAccess("a", "Write"));
+        assertSame(GRANT, acp.getAccess("b", "Write"));
+        assertSame(UNKNOWN, acp.getAccess("b", "Read"));
+        assertSame(UNKNOWN, acp.getAccess("c", "Read"));
+        assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
-            // insert a deny Write ACE before the GRANT
+        // insert a deny Write ACE before the GRANT
 
-            acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
-            // store changes
-            folder.setACP(acp, true);
-            // refetch ac
-            acp = folder.getACP();
-            // check perms now
-            assertSame(GRANT, acp.getAccess("a", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("a", "Write"));
-            assertSame(DENY, acp.getAccess("b", "Write"));
-            assertSame(UNKNOWN, acp.getAccess("b", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("c", "Read"));
-            assertSame(UNKNOWN, acp.getAccess("c", "Write"));
+        acp.getACL(ACL.LOCAL_ACL).add(0, new ACE("b", "Write", false));
+        // store changes
+        folder.setACP(acp, true);
+        // refetch ac
+        acp = folder.getACP();
+        // check perms now
+        assertSame(GRANT, acp.getAccess("a", "Read"));
+        assertSame(UNKNOWN, acp.getAccess("a", "Write"));
+        assertSame(DENY, acp.getAccess("b", "Write"));
+        assertSame(UNKNOWN, acp.getAccess("b", "Read"));
+        assertSame(UNKNOWN, acp.getAccess("c", "Read"));
+        assertSame(UNKNOWN, acp.getAccess("c", "Write"));
 
-            // create a child document and grant on it the write for b
+        // create a child document and grant on it the write for b
 
-            // remove anonymous Everything privileges on the root
-            // so that it not influence test results
-            removePermissionToAnonymous();
-            anonSession.save(); // process invalidations
+        // remove anonymous Everything privileges on the root
+        // so that it not influence test results
+        removePermissionToAnonymous();
+        anonSession.save(); // process invalidations
 
-            try {
-                DocumentModel folder2 = session.createDocumentModel(folder.getPathAsString(), "folder#2", "Folder");
-                folder2 = anonSession.createDocument(folder2);
-                fail("privilege is granted but should not be");
-            } catch (DocumentSecurityException e) {
-                // ok
-            }
-
-            setPermissionToAnonymous(EVERYTHING);
-            anonSession.save(); // process invalidations
-
-            root = anonSession.getRootDocument();
-
-            // and try again - this time it should work
+        try {
             DocumentModel folder2 = session.createDocumentModel(folder.getPathAsString(), "folder#2", "Folder");
             folder2 = anonSession.createDocument(folder2);
+            fail("privilege is granted but should not be");
+        } catch (DocumentSecurityException e) {
+            // ok
+        }
 
-            ACP acp2 = new ACPImpl();
-            acl = new ACLImpl();
-            acl.add(new ACE("b", "Write", true));
-            acp2.addACL(acl);
+        setPermissionToAnonymous(EVERYTHING);
+        anonSession.save(); // process invalidations
 
-            folder2.setACP(acp2, true);
-            acp2 = folder2.getACP();
+        root = anonSession.getRootDocument();
 
-            assertSame(GRANT, acp2.getAccess("a", "Read"));
-            assertSame(UNKNOWN, acp2.getAccess("a", "Write"));
-            assertSame(GRANT, acp2.getAccess("b", "Write"));
-            assertSame(UNKNOWN, acp2.getAccess("b", "Read"));
-            assertSame(UNKNOWN, acp2.getAccess("c", "Read"));
-            assertSame(UNKNOWN, acp2.getAccess("c", "Write"));
+        // and try again - this time it should work
+        DocumentModel folder2 = session.createDocumentModel(folder.getPathAsString(), "folder#2", "Folder");
+        folder2 = anonSession.createDocument(folder2);
 
-            // remove anonymous Everything privileges on the root
-            // so that it not influence test results
-            removePermissionToAnonymous();
-            anonSession.save(); // process invalidations
+        ACP acp2 = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("b", "Write", true));
+        acp2.addACL(acl);
 
-            setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN, REMOVE_CHILDREN, READ);
-            root = anonSession.getRootDocument();
+        folder2.setACP(acp2, true);
+        acp2 = folder2.getACP();
 
-            DocumentModel folder3 = session.createDocumentModel(folder.getPathAsString(), "folder#3", "Folder");
+        assertSame(GRANT, acp2.getAccess("a", "Read"));
+        assertSame(UNKNOWN, acp2.getAccess("a", "Write"));
+        assertSame(GRANT, acp2.getAccess("b", "Write"));
+        assertSame(UNKNOWN, acp2.getAccess("b", "Read"));
+        assertSame(UNKNOWN, acp2.getAccess("c", "Read"));
+        assertSame(UNKNOWN, acp2.getAccess("c", "Write"));
+
+        // remove anonymous Everything privileges on the root
+        // so that it not influence test results
+        removePermissionToAnonymous();
+        anonSession.save(); // process invalidations
+
+        setPermissionToEveryone(WRITE, REMOVE, ADD_CHILDREN, REMOVE_CHILDREN, READ);
+        root = anonSession.getRootDocument();
+
+        DocumentModel folder3 = session.createDocumentModel(folder.getPathAsString(), "folder#3", "Folder");
+        folder3 = anonSession.createDocument(folder3);
+
+        anonSession.removeDocument(folder3.getRef());
+
+        removePermissionToEveryone();
+        setPermissionToEveryone(REMOVE);
+        anonSession.save(); // process invalidations
+
+        try {
+            folder3 = session.createDocumentModel(folder.getPathAsString(), "folder#3", "Folder");
             folder3 = anonSession.createDocument(folder3);
+            fail();
+        } catch (Exception e) {
 
-            anonSession.removeDocument(folder3.getRef());
-
-            removePermissionToEveryone();
-            setPermissionToEveryone(REMOVE);
-            anonSession.save(); // process invalidations
-
-            try {
-                folder3 = session.createDocumentModel(folder.getPathAsString(), "folder#3", "Folder");
-                folder3 = anonSession.createDocument(folder3);
-                fail();
-            } catch (Exception e) {
-
-            }
         }
     }
 
@@ -365,12 +363,10 @@ public class TestSQLRepositorySecurity {
         assertTrue("list parents for" + ws2.getName() + "under " + session.getPrincipal().getName() + " is not empty:",
                 !ws2ParentsUnderAdministrator.isEmpty());
 
-        try (CloseableCoreSession testSession = openSessionAs("test")) {
-            List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
-            assertTrue(
-                    "list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName() + " is empty:",
-                    ws2ParentsUnderTest.isEmpty());
-        }
+        CoreSession testSession = openSessionAs("test");
+        List<DocumentModel> ws2ParentsUnderTest = testSession.getParentDocuments(ws2.getRef());
+        assertTrue("list parents for" + ws2.getName() + "under " + testSession.getPrincipal().getName() + " is empty:",
+                ws2ParentsUnderTest.isEmpty());
     }
 
     @Test
@@ -414,79 +410,76 @@ public class TestSQLRepositorySecurity {
     public void testPermissionChecks() throws Throwable {
         DocumentRef ref = createDocumentModelWithSamplePermissions("docWithPerms");
 
-        try (CloseableCoreSession joeReaderSession = openSessionAs("joe_reader")) {
-            // reader only has the right to consult the document
-            DocumentModel joeReaderDoc = joeReaderSession.getDocument(ref);
-            try {
-                joeReaderSession.saveDocument(joeReaderDoc);
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-
-            try {
-                joeReaderSession.createDocument(
-                        session.createDocumentModel(joeReaderDoc.getPathAsString(), "child", "File"));
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-
-            try {
-                joeReaderSession.removeDocument(ref);
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-            joeReaderSession.save();
+        CoreSession joeReaderSession = openSessionAs("joe_reader");
+        // reader only has the right to consult the document
+        DocumentModel joeReaderDoc = joeReaderSession.getDocument(ref);
+        try {
+            joeReaderSession.saveDocument(joeReaderDoc);
+            fail("should have raised a security exception");
+        } catch (DocumentSecurityException e) {
         }
+
+        try {
+            joeReaderSession.createDocument(
+                    session.createDocumentModel(joeReaderDoc.getPathAsString(), "child", "File"));
+            fail("should have raised a security exception");
+        } catch (DocumentSecurityException e) {
+        }
+
+        try {
+            joeReaderSession.removeDocument(ref);
+            fail("should have raised a security exception");
+        } catch (DocumentSecurityException e) {
+        }
+        joeReaderSession.save();
 
         // contributor only has the right to write the properties of
         // document
-        try (CloseableCoreSession joeContributorSession = openSessionAs("joe_contributor")) {
-            DocumentModel joeContributorDoc = joeContributorSession.getDocument(ref);
+        CoreSession joeContributorSession = openSessionAs("joe_contributor");
+        DocumentModel joeContributorDoc = joeContributorSession.getDocument(ref);
 
-            joeContributorSession.saveDocument(joeContributorDoc);
+        joeContributorSession.saveDocument(joeContributorDoc);
 
-            DocumentRef childRef = joeContributorSession.createDocument(
-                    session.createDocumentModel(joeContributorDoc.getPathAsString(), "child", "File")).getRef();
-            joeContributorSession.save();
+        DocumentRef childRef = joeContributorSession.createDocument(
+                session.createDocumentModel(joeContributorDoc.getPathAsString(), "child", "File")).getRef();
+        joeContributorSession.save();
 
-            // joe contributor can copy the newly created doc
-            joeContributorSession.copy(childRef, ref, "child_copy");
+        // joe contributor can copy the newly created doc
+        joeContributorSession.copy(childRef, ref, "child_copy");
 
-            // joe contributor cannot move the doc
-            try {
-                joeContributorSession.move(childRef, ref, "child_move");
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-
-            // joe contributor cannot remove the folder either
-            try {
-                joeContributorSession.removeDocument(ref);
-                fail("should have raised a security exception");
-            } catch (DocumentSecurityException e) {
-            }
-            joeContributorSession.save();
+        // joe contributor cannot move the doc
+        try {
+            joeContributorSession.move(childRef, ref, "child_move");
+            fail("should have raised a security exception");
+        } catch (DocumentSecurityException e) {
         }
+
+        // joe contributor cannot remove the folder either
+        try {
+            joeContributorSession.removeDocument(ref);
+            fail("should have raised a security exception");
+        } catch (DocumentSecurityException e) {
+        }
+        joeContributorSession.save();
 
         // local manager can read, write, create and remove
-        try (CloseableCoreSession joeLocalManagerSession = openSessionAs("joe_localmanager")) {
-            DocumentModel joeLocalManagerDoc = joeLocalManagerSession.getDocument(ref);
+        CoreSession joeLocalManagerSession = openSessionAs("joe_localmanager");
+        DocumentModel joeLocalManagerDoc = joeLocalManagerSession.getDocument(ref);
 
-            joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
+        joeLocalManagerSession.saveDocument(joeLocalManagerDoc);
 
-            DocumentRef childRef = joeLocalManagerSession.createDocument(
-                    session.createDocumentModel(joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
-            joeLocalManagerSession.save();
+        childRef = joeLocalManagerSession.createDocument(
+                session.createDocumentModel(joeLocalManagerDoc.getPathAsString(), "child2", "File")).getRef();
+        joeLocalManagerSession.save();
 
-            // joe local manager can copy the newly created doc
-            joeLocalManagerSession.copy(childRef, ref, "child2_copy");
+        // joe local manager can copy the newly created doc
+        joeLocalManagerSession.copy(childRef, ref, "child2_copy");
 
-            // joe local manager cannot move the doc
-            joeLocalManagerSession.move(childRef, ref, "child2_move");
+        // joe local manager cannot move the doc
+        joeLocalManagerSession.move(childRef, ref, "child2_move");
 
-            joeLocalManagerSession.removeDocument(ref);
-            joeLocalManagerSession.save();
-        }
+        joeLocalManagerSession.removeDocument(ref);
+        joeLocalManagerSession.save();
 
     }
 
@@ -558,38 +551,37 @@ public class TestSQLRepositorySecurity {
         }
         session.save();
 
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list;
-            list = joeSession.query("SELECT * FROM Folder");
-            List<String> names = new ArrayList<>();
-            for (DocumentModel doc : list) {
-                names.add(doc.getName());
-            }
-            assertEquals("Expecting " + docNames + " got " + names, browsePermissions.length, list.size());
-
-            list = joeSession.query("SELECT * FROM Folder WHERE ecm:isProxy = 0");
-            names.clear();
-            for (DocumentModel doc : list) {
-                names.add(doc.getName());
-            }
-            assertEquals("Expecting " + docNames + " got " + names, browsePermissions.length, list.size());
-
-            // Add a new folder to update the read acls
-            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "new-folder", "Folder");
-            folder = session.createDocument(folder);
-            ACP acp = folder.getACP();
-            assertNotNull(acp); // the acp inherited from root is returned
-            acp = new ACPImpl();
-            ACL acl = new ACLImpl();
-            acl.add(new ACE("joe", browsePermissions[0], true));
-            acl.add(new ACE("bob", browsePermissions[0], true));
-            acp.addACL(acl);
-            folder.setACP(acp, true);
-            session.save();
-
-            list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(browsePermissions.length + 1, list.size());
+        CoreSession joeSession = openSessionAs("joe");
+        DocumentModelList list;
+        list = joeSession.query("SELECT * FROM Folder");
+        List<String> names = new ArrayList<>();
+        for (DocumentModel doc : list) {
+            names.add(doc.getName());
         }
+        assertEquals("Expecting " + docNames + " got " + names, browsePermissions.length, list.size());
+
+        list = joeSession.query("SELECT * FROM Folder WHERE ecm:isProxy = 0");
+        names.clear();
+        for (DocumentModel doc : list) {
+            names.add(doc.getName());
+        }
+        assertEquals("Expecting " + docNames + " got " + names, browsePermissions.length, list.size());
+
+        // Add a new folder to update the read acls
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "new-folder", "Folder");
+        folder = session.createDocument(folder);
+        ACP acp = folder.getACP();
+        assertNotNull(acp); // the acp inherited from root is returned
+        acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("joe", browsePermissions[0], true));
+        acl.add(new ACE("bob", browsePermissions[0], true));
+        acp.addACL(acl);
+        folder.setACP(acp, true);
+        session.save();
+
+        list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(browsePermissions.length + 1, list.size());
     }
 
     @Test
@@ -609,31 +601,28 @@ public class TestSQLRepositorySecurity {
         doc.setACP(acp, true);
         session.save();
 
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list;
-            list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(1, list.size());
-            // Remove the document, so the ACLR created is not anymore assigned
-            session.removeDocument(doc.getRef());
-            session.save();
-            list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(0, list.size());
-        }
+        CoreSession joeSession = openSessionAs("joe");
+        DocumentModelList list;
+        list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(1, list.size());
+        // Remove the document, so the ACLR created is not anymore assigned
+        session.removeDocument(doc.getRef());
+        session.save();
+        list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(0, list.size());
 
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            DocumentModelList list;
-            // Perform a query to init the ACLR cache
-            list = bobSession.query("SELECT * FROM Folder");
-            assertEquals(0, list.size());
-            // Create a new doc with the same ACLR
-            doc = session.createDocumentModel(root.getPathAsString(), "bar", "Folder");
-            doc = session.createDocument(doc);
-            doc.setACP(acp, true);
-            session.save();
-            // Check that the ACLR has been added to the user cache
-            list = bobSession.query("SELECT * FROM Folder");
-            assertEquals(1, list.size());
-        }
+        CoreSession bobSession = openSessionAs("bob");
+        // Perform a query to init the ACLR cache
+        list = bobSession.query("SELECT * FROM Folder");
+        assertEquals(0, list.size());
+        // Create a new doc with the same ACLR
+        doc = session.createDocumentModel(root.getPathAsString(), "bar", "Folder");
+        doc = session.createDocument(doc);
+        doc.setACP(acp, true);
+        session.save();
+        // Check that the ACLR has been added to the user cache
+        list = bobSession.query("SELECT * FROM Folder");
+        assertEquals(1, list.size());
     }
 
     @Test
@@ -645,12 +634,11 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // nothing can be seen by joe
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(0, list.size());
-            list = joeSession.query("SELECT * FROM File");
-            assertEquals(0, list.size());
-        }
+        CoreSession joeSession = openSessionAs("joe");
+        DocumentModelList list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(0, list.size());
+        list = joeSession.query("SELECT * FROM File");
+        assertEquals(0, list.size());
 
         // set ACL on folder
         ACL acl = new ACLImpl();
@@ -661,14 +649,12 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // now joe sees things
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(1, list.size());
-            assertEquals(folder.getId(), list.get(0).getId());
-            list = joeSession.query("SELECT * FROM File");
-            assertEquals(1, list.size());
-            assertEquals(doc.getId(), list.get(0).getId());
-        }
+        list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(1, list.size());
+        assertEquals(folder.getId(), list.get(0).getId());
+        list = joeSession.query("SELECT * FROM File");
+        assertEquals(1, list.size());
+        assertEquals(doc.getId(), list.get(0).getId());
     }
 
     @Test
@@ -679,17 +665,15 @@ public class TestSQLRepositorySecurity {
 
         // folder can be seen by a member
         UserPrincipal joeMember = new UserPrincipal("joe", Arrays.asList("Everyone", "members"), false, false);
-        try (CloseableCoreSession joeSession = openSessionAs(joeMember)) {
-            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(1, list.size());
-            assertEquals(folder.getId(), list.get(0).getId());
-        }
+        CoreSession joeSession = openSessionAs(joeMember);
+        DocumentModelList list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(1, list.size());
+        assertEquals(folder.getId(), list.get(0).getId());
 
         // but not as a non-member
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(0, list.size());
-        }
+        joeSession = openSessionAs("joe");
+        list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(0, list.size());
 
         // set ACL on folder
         ACL acl = new ACLImpl();
@@ -700,11 +684,9 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // the folder can be seen by joe
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM Folder");
-            assertEquals(1, list.size());
-            assertEquals(folder.getId(), list.get(0).getId());
-        }
+        list = joeSession.query("SELECT * FROM Folder");
+        assertEquals(1, list.size());
+        assertEquals(folder.getId(), list.get(0).getId());
 
         // create a doc under the folder
         DocumentModel doc = session.createDocumentModel("/folder", "doc", "File");
@@ -712,11 +694,9 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // the doc can be seen by joe
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM File");
-            assertEquals(1, list.size());
-            assertEquals(doc.getId(), list.get(0).getId());
-        }
+        list = joeSession.query("SELECT * FROM File");
+        assertEquals(1, list.size());
+        assertEquals(doc.getId(), list.get(0).getId());
     }
 
     @Test
@@ -737,20 +717,17 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // doc under folder1 cannot be read by joe
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM File");
-            assertEquals(0, list.size());
-        }
+        CoreSession joeSession = openSessionAs("joe");
+        DocumentModelList list = joeSession.query("SELECT * FROM File");
+        assertEquals(0, list.size());
 
         // move doc under folder2
         session.move(doc.getRef(), folder2.getRef(), null);
         session.save();
 
         // check doc now readable by joe
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM File");
-            assertEquals(1, list.size());
-        }
+        list = joeSession.query("SELECT * FROM File");
+        assertEquals(1, list.size());
     }
 
     @Test
@@ -771,21 +748,18 @@ public class TestSQLRepositorySecurity {
         session.save();
 
         // doc under folder1 cannot be read by joe
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM File");
-            assertEquals(0, list.size());
-        }
+        CoreSession joeSession = openSessionAs("joe");
+        DocumentModelList list = joeSession.query("SELECT * FROM File");
+        assertEquals(0, list.size());
 
         // copy doc under folder2
         session.copy(doc.getRef(), folder2.getRef(), "doccopy");
         session.save();
 
         // check doc copy now readable by joe
-        try (CloseableCoreSession joeSession = openSessionAs("joe")) {
-            DocumentModelList list = joeSession.query("SELECT * FROM File");
-            assertEquals(1, list.size());
-            assertEquals("doccopy", list.get(0).getName());
-        }
+        list = joeSession.query("SELECT * FROM File");
+        assertEquals(1, list.size());
+        assertEquals("doccopy", list.get(0).getName());
     }
 
     @Test
@@ -907,11 +881,10 @@ public class TestSQLRepositorySecurity {
     }
 
     protected int numberOfReadableDocuments(String username) {
-        try (CloseableCoreSession userSession = openSessionAs(username)) {
-            String nxql = "SELECT ecm:uuid FROM Document";
-            PartialList<Map<String, Serializable>> pl = userSession.queryProjection(nxql, 0, 0);
-            return pl.size();
-        }
+        CoreSession userSession = openSessionAs(username);
+        String nxql = "SELECT ecm:uuid FROM Document";
+        PartialList<Map<String, Serializable>> pl = userSession.queryProjection(nxql, 0, 0);
+        return pl.size();
     }
 
 }

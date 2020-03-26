@@ -52,20 +52,19 @@ public class TestLockSecurityPolicy {
     protected CoreFeature coreFeature;
 
     private void setTestPermissions(String user, String... perms) {
-        try (CloseableCoreSession session = coreFeature.openCoreSession()) {
-            DocumentModel doc = session.getRootDocument();
-            ACP acp = doc.getACP();
-            if (acp == null) {
-                acp = new ACPImpl();
-            }
-            UserEntryImpl userEntry = new UserEntryImpl(user);
-            for (String perm : perms) {
-                userEntry.addPrivilege(perm);
-            }
-            acp.setRules("test", new UserEntry[] { userEntry });
-            doc.setACP(acp, true);
-            session.save();
+        CoreSession session = coreFeature.getCoreSessionSystem();
+        DocumentModel doc = session.getRootDocument();
+        ACP acp = doc.getACP();
+        if (acp == null) {
+            acp = new ACPImpl();
         }
+        UserEntryImpl userEntry = new UserEntryImpl(user);
+        for (String perm : perms) {
+            userEntry.addPrivilege(perm);
+        }
+        acp.setRules("test", new UserEntry[] { userEntry });
+        doc.setACP(acp, true);
+        session.save();
     }
 
     public static void checkLockPermissions(CoreSession session, DocumentRef docRef, boolean canWrite) {
@@ -80,41 +79,37 @@ public class TestLockSecurityPolicy {
     public void testLockSecurityPolicy() throws Exception {
         // create document
         DocumentRef folderRef;
-        try (CloseableCoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
-            DocumentModel root = session.getRootDocument();
-            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
-            folder = session.createDocument(folder);
-            folderRef = folder.getRef();
+        CoreSession session = coreFeature.getCoreSession(ADMINISTRATOR);
+        DocumentModel root = session.getRootDocument();
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
+        folder = session.createDocument(folder);
+        folderRef = folder.getRef();
 
-            // write granted to admin
-            checkLockPermissions(session, folderRef, true);
+        // write granted to admin
+        checkLockPermissions(session, folderRef, true);
 
-            // add read/write to anonymous
-            setTestPermissions(ANONYMOUS, READ_WRITE);
+        // add read/write to anonymous
+        setTestPermissions(ANONYMOUS, READ_WRITE);
 
-            session.save();
-        }
+        session.save();
 
-        try (CloseableCoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
-            // write granted to anonymous
-            checkLockPermissions(session, folderRef, true);
+        CoreSession anonSession = coreFeature.getCoreSession(ANONYMOUS);
+        // write granted to anonymous
+        checkLockPermissions(anonSession, folderRef, true);
 
-            // set lock
-            DocumentModel folder = session.getDocument(folderRef);
-            folder.setLock();
-            folder = session.saveDocument(folder);
+        // set lock
+        folder = anonSession.getDocument(folderRef);
+        folder.setLock();
+        folder = anonSession.saveDocument(folder);
 
-            // write still granted
-            checkLockPermissions(session, folderRef, true);
+        // write still granted
+        checkLockPermissions(anonSession, folderRef, true);
 
-            session.save();
-        }
+        anonSession.save();
 
         // write denied to admin
-        try (CloseableCoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
-            checkLockPermissions(session, folderRef, false);
-            session.save();
-        }
+        checkLockPermissions(session, folderRef, false);
+        session.save();
     }
 
 }

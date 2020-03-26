@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -216,13 +215,11 @@ public class TestElasticSearchQuery {
         Assert.assertEquals(1, ret.totalSize());
 
         // no match for unknown user
-        try (CloseableCoreSession restrictedSession = CoreInstance.openCoreSession(session.getRepositoryName(),
-                "bob")) {
-            ret = ess.query(new NxQueryBuilder(restrictedSession).nxql("SELECT * FROM Document"));
-            Assert.assertEquals(0, ret.totalSize());
-            ret = ess.query(new NxQueryBuilder(restrictedSession).esQuery(qb));
-            Assert.assertEquals(0, ret.totalSize());
-        }
+        CoreSession restrictedSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        ret = ess.query(new NxQueryBuilder(restrictedSession).nxql("SELECT * FROM Document"));
+        Assert.assertEquals(0, ret.totalSize());
+        ret = ess.query(new NxQueryBuilder(restrictedSession).esQuery(qb));
+        Assert.assertEquals(0, ret.totalSize());
     }
 
     protected void createDocumentWithFiles() throws Exception {

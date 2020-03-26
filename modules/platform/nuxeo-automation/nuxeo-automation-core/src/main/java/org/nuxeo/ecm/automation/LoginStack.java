@@ -26,7 +26,6 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -67,7 +66,7 @@ public class LoginStack {
         } else {
             repositoryName = null; // default repository
         }
-        entry.session = CoreInstance.openCoreSession(repositoryName);
+        entry.session = CoreInstance.getCoreSession(repositoryName);
         currentSession = entry.session;
         stack.add(entry);
     }
@@ -118,7 +117,7 @@ public class LoginStack {
 
         public LoginContext lc;
 
-        public CloseableCoreSession session;
+        public CoreSession session;
 
         public Entry(LoginContext lc) {
             this.lc = lc;
@@ -131,11 +130,7 @@ public class LoginStack {
         public final void dispose() {
             try {
                 if (session != null) {
-                    try {
-                        session.save();
-                    } finally {
-                        session.close();
-                    }
+                    session.save();
                 }
             } finally {
                 try {

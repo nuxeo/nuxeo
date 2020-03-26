@@ -32,7 +32,6 @@ import static org.nuxeo.ecm.permissions.PermissionHelper.computeDirectoryId;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -69,12 +68,11 @@ public class ACEStatusUpdatedListener implements PostCommitFilteringEventListene
             return;
         }
 
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
-            refsToACEs.keySet().stream().filter(session::exists).forEach(ref -> {
-                DocumentModel doc = session.getDocument(ref);
-                checkForEffectiveACE(session, doc, refsToACEs.get(ref));
-            });
-        }
+        CoreSession session = CoreInstance.getCoreSessionSystem(repositoryName);
+        refsToACEs.keySet().stream().filter(session::exists).forEach(ref -> {
+            DocumentModel doc = session.getDocument(ref);
+            checkForEffectiveACE(session, doc, refsToACEs.get(ref));
+        });
     }
 
     protected void checkForEffectiveACE(CoreSession session, DocumentModel doc, List<ACE> aces) {

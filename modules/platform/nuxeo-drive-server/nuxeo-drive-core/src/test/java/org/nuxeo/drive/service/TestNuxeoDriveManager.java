@@ -43,7 +43,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -170,8 +169,8 @@ public class TestNuxeoDriveManager {
         setPermissions(workspace1, new ACE(MEMBERS, SecurityConstants.READ));
         setPermissions(workspace2, new ACE(MEMBERS, SecurityConstants.READ_WRITE));
 
-        user1Session = coreFeature.openCoreSession(userManager.getPrincipal(USER_1));
-        user2Session = coreFeature.openCoreSession(userManager.getPrincipal(USER_2));
+        user1Session = coreFeature.getCoreSession(userManager.getPrincipal(USER_1));
+        user2Session = coreFeature.getCoreSession(userManager.getPrincipal(USER_2));
 
         user1Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(user1Session).getRef();
         user2Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(user2Session).getRef();
@@ -179,12 +178,6 @@ public class TestNuxeoDriveManager {
 
     @After
     public void closeSessionsAndDeleteUsers() {
-        if (user1Session != null) {
-            ((CloseableCoreSession) user1Session).close();
-        }
-        if (user2Session != null) {
-            ((CloseableCoreSession) user2Session).close();
-        }
         try (Session usersDir = directoryService.open("userDirectory")) {
             usersDir.deleteEntry(USER_1);
             usersDir.deleteEntry(USER_2);

@@ -40,7 +40,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -238,12 +237,11 @@ public abstract class AbstractTestCommentManager {
         comment = commentManager.createComment(session, comment);
         assertEquals(doc.getRef(), commentManager.getTopLevelDocumentRef(session, new IdRef(comment.getId())));
 
-        try (CloseableCoreSession jamesSession = coreFeature.openCoreSession("james")) {
-            assertEquals(doc.getRef(),
-                    commentManager.getTopLevelDocumentRef(jamesSession, new IdRef(comment.getId())));
-        }
+        CoreSession jamesSession = coreFeature.getCoreSession("james");
+        assertEquals(doc.getRef(), commentManager.getTopLevelDocumentRef(jamesSession, new IdRef(comment.getId())));
 
-        try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
+        try {
+            CoreSession janeSession = coreFeature.getCoreSession("jane");
             assertEquals(doc.getRef(),
                     commentManager.getTopLevelDocumentRef(janeSession, new IdRef(comment.getId())));
             fail("jane should not be able to get the top level comment ancestor");

@@ -32,8 +32,8 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.ScrollFileSystemItemList;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -69,25 +69,24 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem {
     @Override
     @SuppressWarnings("unchecked")
     public List<FileSystemItem> getChildren() {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-            Map<String, Serializable> props = new HashMap<>();
-            props.put(CORE_SESSION_PROPERTY, (Serializable) session);
-            PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, null, 0L, props, docId);
-            List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+        PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
+        Map<String, Serializable> props = new HashMap<>();
+        props.put(CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<DocumentModel> childrenPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, null, 0L, props, docId);
+        List<DocumentModel> dmChildren = childrenPageProvider.getCurrentPage();
 
-            List<FileSystemItem> children = new ArrayList<>(dmChildren.size());
-            for (DocumentModel dmChild : dmChildren) {
-                // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-                FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this, false, false,
-                        false);
-                if (child != null) {
-                    children.add(child);
-                }
+        List<FileSystemItem> children = new ArrayList<>(dmChildren.size());
+        for (DocumentModel dmChild : dmChildren) {
+            // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+            FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(dmChild, this, false, false,
+                    false);
+            if (child != null) {
+                children.add(child);
             }
-            return children;
         }
+        return children;
     }
 
     @Override

@@ -26,7 +26,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.APIVersion;
@@ -341,8 +340,7 @@ public interface RenderingContext {
     }
 
     /**
-     * Session wrapper that manage the closing of new created session and preserve request scoped or document scoped
-     * session.
+     * Session wrapper. This used to be needed to close session, which isn't needed anymore.
      *
      * @since 7.2
      */
@@ -350,27 +348,17 @@ public interface RenderingContext {
 
         private CoreSession session;
 
-        private boolean shouldBeClosed;
-
-        public SessionWrapper(CoreSession session, boolean shouldBeClosed) {
+        public SessionWrapper(CoreSession session) {
             super();
             this.session = session;
-            this.shouldBeClosed = shouldBeClosed;
         }
 
         public CoreSession getSession() {
             return session;
         }
 
-        public boolean shouldBeClosed() {
-            return shouldBeClosed;
-        }
-
         @Override
         public void close() throws IOException {
-            if (shouldBeClosed) {
-                ((CloseableCoreSession) session).close();
-            }
         }
 
     }

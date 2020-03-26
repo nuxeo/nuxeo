@@ -51,7 +51,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -131,8 +130,8 @@ public class TestSQLRepositoryProperties {
         doc = session.createDocument(doc);
     }
 
-    protected CloseableCoreSession openSessionAs(String username) {
-        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.getCoreSession(session.getRepositoryName(), username);
     }
 
     protected void reopenSession() {
@@ -604,23 +603,22 @@ public class TestSQLRepositoryProperties {
         session.save();
         // has not created the complex properties at that point
 
-        try (CloseableCoreSession s1 = openSessionAs("Administrator"); //
-                CloseableCoreSession s2 = openSessionAs("Administrator")) {
-            DocumentModel d1 = s1.getDocument(new IdRef(doc2.getId()));
-            DocumentModel d2 = s2.getDocument(new IdRef(doc2.getId()));
-            // read the complex prop to trigger documentpart fetch
-            // and node creation (SQLSession.makeProperties)
-            d1.getProperty("tp:complex");
-            d2.getProperty("tp:complex");
-            // write an unrelated property, to trigger flush()
-            d1.setPropertyValue("dc:title", "d1");
-            d2.setPropertyValue("dc:title", "d2");
-            s1.saveDocument(d1);
-            s2.saveDocument(d2);
-            s1.save();
-            // without the fix the following save would cause a second insert
-            s2.save();
-        }
+        CoreSession s1 = openSessionAs("Administrator");
+        CoreSession s2 = openSessionAs("Administrator");
+        DocumentModel d1 = s1.getDocument(new IdRef(doc2.getId()));
+        DocumentModel d2 = s2.getDocument(new IdRef(doc2.getId()));
+        // read the complex prop to trigger documentpart fetch
+        // and node creation (SQLSession.makeProperties)
+        d1.getProperty("tp:complex");
+        d2.getProperty("tp:complex");
+        // write an unrelated property, to trigger flush()
+        d1.setPropertyValue("dc:title", "d1");
+        d2.setPropertyValue("dc:title", "d2");
+        s1.saveDocument(d1);
+        s2.saveDocument(d2);
+        s1.save();
+        // without the fix the following save would cause a second insert
+        s2.save();
     }
 
     @Test

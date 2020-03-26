@@ -27,7 +27,6 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.CoreSessionProvider;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -43,11 +42,11 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
     private static final Log log = LogFactory.getLog(PerSessionCoreProvider.class);
 
     public static class Ref implements SessionRef {
-        protected CloseableCoreSession session;
+        protected CoreSession session;
 
         protected ReentrantLock lock;
 
-        public Ref(CloseableCoreSession session) {
+        public Ref(CoreSession session) {
             this.session = session;
             this.lock = new ReentrantLock();
         }
@@ -70,12 +69,8 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
 
         @Override
         public void destroy() {
-            try {
-                session.close();
-            } finally {
-                session = null;
-                lock = null;
-            }
+            session = null;
+            lock = null;
         }
 
     }
@@ -88,7 +83,7 @@ public class PerSessionCoreProvider extends CoreSessionProvider<Ref> implements 
     }
 
     @Override
-    protected Ref createSessionRef(CloseableCoreSession session) {
+    protected Ref createSessionRef(CoreSession session) {
         return new Ref(session);
     }
 

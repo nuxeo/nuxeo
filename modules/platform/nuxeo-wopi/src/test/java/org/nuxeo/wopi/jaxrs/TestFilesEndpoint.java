@@ -78,7 +78,6 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -230,47 +229,46 @@ public class TestFilesEndpoint {
         expectedFileBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-file.txt"));
         expectedAttachementBlob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-attachment.txt"));
 
-        try (CloseableCoreSession johnSession = coreFeature.openCoreSession("john")) {
-            blobDoc = johnSession.createDocumentModel("/wopi", "blobDoc", "File");
-            blobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) expectedFileBlob);
-            blobDoc = johnSession.createDocument(blobDoc);
-            // retrieve the blob to get an updated digest
-            expectedFileBlob = (Blob) blobDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
-            blobDocFileId = FileInfo.computeFileId(blobDoc, FILE_CONTENT_PROPERTY);
+        CoreSession johnSession = coreFeature.getCoreSession("john");
+        blobDoc = johnSession.createDocumentModel("/wopi", "blobDoc", "File");
+        blobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) expectedFileBlob);
+        blobDoc = johnSession.createDocument(blobDoc);
+        // retrieve the blob to get an updated digest
+        expectedFileBlob = (Blob) blobDoc.getPropertyValue(FILE_CONTENT_PROPERTY);
+        blobDocFileId = FileInfo.computeFileId(blobDoc, FILE_CONTENT_PROPERTY);
 
-            zeroLengthBlobDoc = johnSession.createDocumentModel("/wopi", "zeroLengthBlobDoc", "File");
-            Blob zeroLengthBlob = Blobs.createBlob("");
-            zeroLengthBlob.setFilename("zero-length-blob");
-            zeroLengthBlobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) zeroLengthBlob);
-            zeroLengthBlobDoc = johnSession.createDocument(zeroLengthBlobDoc);
-            zeroLengthBlobDocFileId = FileInfo.computeFileId(zeroLengthBlobDoc, FILE_CONTENT_PROPERTY);
+        zeroLengthBlobDoc = johnSession.createDocumentModel("/wopi", "zeroLengthBlobDoc", "File");
+        Blob zeroLengthBlob = Blobs.createBlob("");
+        zeroLengthBlob.setFilename("zero-length-blob");
+        zeroLengthBlobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) zeroLengthBlob);
+        zeroLengthBlobDoc = johnSession.createDocument(zeroLengthBlobDoc);
+        zeroLengthBlobDocFileId = FileInfo.computeFileId(zeroLengthBlobDoc, FILE_CONTENT_PROPERTY);
 
-            hugeBlobDoc = johnSession.createDocumentModel("/wopi", "hugeBlobDoc", "File");
-            Blob hugeBlob = mock(Blob.class, withSettings().serializable());
-            Mockito.when(hugeBlob.getLength()).thenReturn(Long.MAX_VALUE);
-            Mockito.when(hugeBlob.getStream()).thenReturn(new ByteArrayInputStream(new byte[] {}));
-            Mockito.when(hugeBlob.getFilename()).thenReturn("hugeBlobFilename");
-            hugeBlobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) hugeBlob);
-            hugeBlobDoc = johnSession.createDocument(hugeBlobDoc);
-            hugeBlobDocFileId = FileInfo.computeFileId(hugeBlobDoc, FILE_CONTENT_PROPERTY);
+        hugeBlobDoc = johnSession.createDocumentModel("/wopi", "hugeBlobDoc", "File");
+        Blob hugeBlob = mock(Blob.class, withSettings().serializable());
+        Mockito.when(hugeBlob.getLength()).thenReturn(Long.MAX_VALUE);
+        Mockito.when(hugeBlob.getStream()).thenReturn(new ByteArrayInputStream(new byte[] {}));
+        Mockito.when(hugeBlob.getFilename()).thenReturn("hugeBlobFilename");
+        hugeBlobDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) hugeBlob);
+        hugeBlobDoc = johnSession.createDocument(hugeBlobDoc);
+        hugeBlobDocFileId = FileInfo.computeFileId(hugeBlobDoc, FILE_CONTENT_PROPERTY);
 
-            noBlobDoc = johnSession.createDocumentModel("/wopi", "noBlobDoc", "File");
-            noBlobDoc = johnSession.createDocument(noBlobDoc);
-            noBlobDocFileId = FileInfo.computeFileId(noBlobDoc, FILE_CONTENT_PROPERTY);
+        noBlobDoc = johnSession.createDocumentModel("/wopi", "noBlobDoc", "File");
+        noBlobDoc = johnSession.createDocument(noBlobDoc);
+        noBlobDocFileId = FileInfo.computeFileId(noBlobDoc, FILE_CONTENT_PROPERTY);
 
-            multipleBlobsDoc = johnSession.createDocumentModel("/wopi", "multipleBlobsDoc", "File");
-            multipleBlobsDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) expectedFileBlob);
-            List<Map<String, Serializable>> files = Collections.singletonList(
-                    Collections.singletonMap("file", (Serializable) expectedAttachementBlob));
-            multipleBlobsDoc.setPropertyValue("files:files", (Serializable) files);
-            multipleBlobsDoc = johnSession.createDocument(multipleBlobsDoc);
-            // retrieve the blob to get an updated digest
-            files = (List<Map<String, Serializable>>) multipleBlobsDoc.getPropertyValue("files:files");
-            expectedAttachementBlob = (Blob) files.get(0).get("file");
+        multipleBlobsDoc = johnSession.createDocumentModel("/wopi", "multipleBlobsDoc", "File");
+        multipleBlobsDoc.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) expectedFileBlob);
+        List<Map<String, Serializable>> files = Collections.singletonList(
+                Collections.singletonMap("file", (Serializable) expectedAttachementBlob));
+        multipleBlobsDoc.setPropertyValue("files:files", (Serializable) files);
+        multipleBlobsDoc = johnSession.createDocument(multipleBlobsDoc);
+        // retrieve the blob to get an updated digest
+        files = (List<Map<String, Serializable>>) multipleBlobsDoc.getPropertyValue("files:files");
+        expectedAttachementBlob = (Blob) files.get(0).get("file");
 
-            multipleBlobsDocFileId = FileInfo.computeFileId(multipleBlobsDoc, FILE_CONTENT_PROPERTY);
-            multipleBlobsDocAttachementId = FileInfo.computeFileId(multipleBlobsDoc, FILES_FIRST_FILE_PROPERTY);
-        }
+        multipleBlobsDocFileId = FileInfo.computeFileId(multipleBlobsDoc, FILE_CONTENT_PROPERTY);
+        multipleBlobsDocAttachementId = FileInfo.computeFileId(multipleBlobsDoc, FILES_FIRST_FILE_PROPERTY);
     }
 
     protected void setPermissions(DocumentModel doc, Map<String, String> userPermissions) {

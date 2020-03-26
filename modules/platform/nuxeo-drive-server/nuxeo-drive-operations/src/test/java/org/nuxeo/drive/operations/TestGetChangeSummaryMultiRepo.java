@@ -40,7 +40,6 @@ import org.nuxeo.drive.service.FileSystemItemChange;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.impl.FileSystemChangeSummaryImpl;
 import org.nuxeo.ecm.automation.test.HttpAutomationSession;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -73,7 +72,7 @@ public class TestGetChangeSummaryMultiRepo {
     @Inject
     protected HttpAutomationSession clientSession;
 
-    protected CloseableCoreSession otherSession;
+    protected CoreSession otherSession;
 
     protected long lastEventLogId;
 
@@ -88,7 +87,7 @@ public class TestGetChangeSummaryMultiRepo {
     @Before
     public void init() {
 
-        otherSession = CoreInstance.openCoreSession("other", "Administrator");
+        otherSession = CoreInstance.getCoreSession("other", "Administrator");
 
         lastEventLogId = 0;
         lastSyncActiveRoots = "";
@@ -106,10 +105,6 @@ public class TestGetChangeSummaryMultiRepo {
 
         // Reset 'other' repository
         otherSession.removeChildren(new PathRef("/"));
-
-        // Close session bound to the 'other' repository
-        otherSession.close();
-        otherSession = null;
     }
 
     @Test

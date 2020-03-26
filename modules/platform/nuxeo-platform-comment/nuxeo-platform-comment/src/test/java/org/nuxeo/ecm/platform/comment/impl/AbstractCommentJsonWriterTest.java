@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -227,27 +226,26 @@ public abstract class AbstractCommentJsonWriterTest
 
     @Test
     public void shouldGetCommentsWhenIHaveRightPermissions() throws IOException {
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(docModel.getRepositoryName(), "james")) {
-            Comment lastReply = replies.get(replies.size() - 1);
-            lastReply.setModificationDate(Instant.now());
+        CoreSession jamesSession = CoreInstance.getCoreSession(docModel.getRepositoryName(), "james");
+        Comment lastReply = replies.get(replies.size() - 1);
+        lastReply.setModificationDate(Instant.now());
 
-            RenderingContext ctx = RenderingContext.CtxBuilder.session(jamesSession).get();
-            JsonAssert json = jsonAssert(lastReply, ctx);
-            assertCommentProperties(json);
+        RenderingContext ctx = RenderingContext.CtxBuilder.session(jamesSession).get();
+        JsonAssert json = jsonAssert(lastReply, ctx);
+        assertCommentProperties(json);
 
-            json.has("id").isEquals(lastReply.getId());
-            json.has("parentId").isEquals(lastReply.getParentId());
-            json.has("ancestorIds").length(2);
-            json.has("author").isEquals(lastReply.getAuthor());
-            json.has("text").isEquals(lastReply.getText());
-            json.has("creationDate").isEquals(lastReply.getCreationDate().toString());
-            json.has("modificationDate").isEquals(lastReply.getModificationDate().toString());
-            json.has("entity").isEquals(((CommentImpl) lastReply).getEntity());
-            json.has("entityId").isEquals(((CommentImpl) lastReply).getEntityId());
-            json.has("origin").isEquals(((CommentImpl) lastReply).getOrigin());
-            json.hasNot("numberOfReplies");
-            json.hasNot("lastReplyDate");
-        }
+        json.has("id").isEquals(lastReply.getId());
+        json.has("parentId").isEquals(lastReply.getParentId());
+        json.has("ancestorIds").length(2);
+        json.has("author").isEquals(lastReply.getAuthor());
+        json.has("text").isEquals(lastReply.getText());
+        json.has("creationDate").isEquals(lastReply.getCreationDate().toString());
+        json.has("modificationDate").isEquals(lastReply.getModificationDate().toString());
+        json.has("entity").isEquals(((CommentImpl) lastReply).getEntity());
+        json.has("entityId").isEquals(((CommentImpl) lastReply).getEntityId());
+        json.has("origin").isEquals(((CommentImpl) lastReply).getOrigin());
+        json.hasNot("numberOfReplies");
+        json.hasNot("lastReplyDate");
     }
 
 }
