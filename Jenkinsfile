@@ -221,8 +221,9 @@ def buildUnitTestStage(env) {
             //   - loading some test framework system properties
             def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
             sh """
-              mvn ${MAVEN_ARGS} -rf nuxeo-core \
+              mvn ${MAVEN_ARGS} -pl nuxeo-features/nuxeo-automation/nuxeo-automation-features \
                 -Dcustom.environment=${env} \
+                -Dcustom.environment.log.dir=target-${env} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
                 test
@@ -233,7 +234,10 @@ def buildUnitTestStage(env) {
             throw err
           } finally {
             try {
+              archiveArtifacts allowEmptyArchive: true, artifacts: "nuxeo-features/nuxeo-automation/nuxeo-automation-features/target-${env}/*.log"
               junit testResults: "**/target-${env}/surefire-reports/*.xml"
+            } catch (err) {
+              echo hudson.Functions.printThrowable(err)
             } finally {
               echo "${env} unit tests: clean up test namespace"
               // uninstall the nuxeo Helm chart
