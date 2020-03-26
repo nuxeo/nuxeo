@@ -28,7 +28,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -68,14 +67,13 @@ public class TestMailMessageSecurityPolicy {
         acp.addACE(ACL.LOCAL_ACL, new ACE("user1", SecurityConstants.READ_WRITE, true));
         doc.setACP(acp, true);
         session.save();
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user1")) {
-            if (expectPermissionDenied) {
-                assertFalse(userSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
-                assertFalse(userSession.hasPermission(doc.getRef(), WRITE));
-            } else {
-                assertTrue(userSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
-                assertTrue(userSession.hasPermission(doc.getRef(), WRITE));
-            }
+        CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(), "user1");
+        if (expectPermissionDenied) {
+            assertFalse(userSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+            assertFalse(userSession.hasPermission(doc.getRef(), WRITE));
+        } else {
+            assertTrue(userSession.hasPermission(doc.getRef(), WRITE_PROPERTIES));
+            assertTrue(userSession.hasPermission(doc.getRef(), WRITE));
         }
     }
 }

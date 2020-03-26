@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -119,27 +118,25 @@ public class PropertyCommentManager extends AbstractCommentManager {
 
         NuxeoPrincipal principal = commentModel.getPrincipal();
         // Open a session as system user since the parent document model can be a comment
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentRef docRef = getTopLevelDocumentRef(session, docModel.getRef());
-            if (!session.hasPermission(principal, docRef, SecurityConstants.READ)) {
-                throw new CommentSecurityException(
-                        "The user " + principal.getName() + " can not create comments on document " + docModel.getId());
-            }
-
-            String path = getCommentContainerPath(session, docModel.getId());
-
-            DocumentModel commentModelToCreate = session.createDocumentModel(path, COMMENT_NAME,
-                    commentModel.getType());
-            commentModelToCreate.copyContent(commentModel);
-            commentModelToCreate.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, docModel.getId());
-            commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY,
-                    computeAncestorIds(session, docModel.getId()));
-            DocumentModel comment = session.createDocument(commentModelToCreate);
-            comment.detach(true);
-            notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, comment);
-
-            return comment;
+        CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
+        DocumentRef docRef = getTopLevelDocumentRef(session, docModel.getRef());
+        if (!session.hasPermission(principal, docRef, SecurityConstants.READ)) {
+            throw new CommentSecurityException(
+                    "The user " + principal.getName() + " can not create comments on document " + docModel.getId());
         }
+
+        String path = getCommentContainerPath(session, docModel.getId());
+
+        DocumentModel commentModelToCreate = session.createDocumentModel(path, COMMENT_NAME, commentModel.getType());
+        commentModelToCreate.copyContent(commentModel);
+        commentModelToCreate.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, docModel.getId());
+        commentModelToCreate.setPropertyValue(COMMENT_ANCESTOR_IDS_PROPERTY,
+                computeAncestorIds(session, docModel.getId()));
+        DocumentModel comment = session.createDocument(commentModelToCreate);
+        comment.detach(true);
+        notifyEvent(session, CommentEvents.COMMENT_ADDED, docModel, comment);
+
+        return comment;
     }
 
     @Override

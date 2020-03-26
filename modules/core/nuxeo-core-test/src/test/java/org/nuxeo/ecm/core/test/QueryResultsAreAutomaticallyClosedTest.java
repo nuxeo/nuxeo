@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -81,7 +81,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     public void testWithoutTransaction() throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
         try {
-            coreFeature.openCoreSessionSystem();
+            coreFeature.getCoreSessionSystem();
             fail("Should not allow creation of CoreSession outside a transaction");
         } catch (NuxeoException e) {
             String msg = e.getMessage();
@@ -94,13 +94,12 @@ public class QueryResultsAreAutomaticallyClosedTest {
     // needs a JCA connection for this to work
     @Test
     public void testTransactional() throws Exception {
-        try (CloseableCoreSession session = coreFeature.openCoreSessionSystem()) {
-            try (IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL")) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-                assertFalse(results.mustBeClosed());
-                assertWarnInLogs();
-            }
+        CoreSession session = coreFeature.getCoreSessionSystem();
+        try (IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL")) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+            assertFalse(results.mustBeClosed());
+            assertWarnInLogs();
         }
     }
 
@@ -123,15 +122,14 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testNested() throws Exception {
         IterableQueryResult mainResults;
-        try (CloseableCoreSession main = coreFeature.openCoreSessionSystem()) {
-            NestedQueryRunner runner = new NestedQueryRunner(main.getRepositoryName());
-            mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
-            runner.runUnrestricted();
-            if (coreFeature.getStorageConfiguration().isVCS()) {
-                // autoclose done at commit time, not CoreSession close time
-                assertTrue(runner.result.mustBeClosed());
-                assertTrue(mainResults.mustBeClosed());
-            }
+        CoreSession main = coreFeature.getCoreSessionSystem();
+        NestedQueryRunner runner = new NestedQueryRunner(main.getRepositoryName());
+        mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
+        runner.runUnrestricted();
+        if (coreFeature.getStorageConfiguration().isVCS()) {
+            // autoclose done at commit time, not CoreSession close time
+            assertTrue(runner.result.mustBeClosed());
+            assertTrue(mainResults.mustBeClosed());
         }
         assertTrue(mainResults.mustBeClosed());
         TransactionHelper.commitOrRollbackTransaction();

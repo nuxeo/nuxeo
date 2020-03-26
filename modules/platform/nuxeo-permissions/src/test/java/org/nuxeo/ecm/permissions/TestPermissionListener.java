@@ -36,7 +36,6 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -125,8 +124,8 @@ public class TestPermissionListener {
         rootACP.addACE(ACL.LOCAL_ACL, new ACE("joe", EVERYTHING, true));
         root.setACP(rootACP, true);
 
-        try (NuxeoLoginContext loginContext = Framework.loginUser("joe");
-                CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("joe")) {
+            CoreSession joeSession = CoreInstance.getCoreSession(repositoryName);
             DocumentModel doc = joeSession.createDocumentModel("/", "file", "File");
             doc = joeSession.createDocument(doc);
             docId = doc.getId();
@@ -159,8 +158,8 @@ public class TestPermissionListener {
             assertEquals(fryACEId, entry.getPropertyValue("aceinfo:aceId"));
         }
 
-        try (NuxeoLoginContext loginContext = Framework.loginUser("joe");
-                CloseableCoreSession joeSession = CoreInstance.openCoreSession(repositoryName)) {
+        try (NuxeoLoginContext loginContext = Framework.loginUser("joe")) {
+            CoreSession joeSession = CoreInstance.getCoreSession(repositoryName);
             DocumentModel doc = joeSession.getDocument(new IdRef(docId));
             ACP acp = doc.getACP();
             ACL acl = acp.getOrCreateACL();

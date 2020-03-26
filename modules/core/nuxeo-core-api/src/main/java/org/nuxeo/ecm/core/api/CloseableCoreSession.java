@@ -22,19 +22,24 @@ package org.nuxeo.ecm.core.api;
  * Closeable Core Session.
  *
  * @since 10.1
+ * @deprecated since 11.1, use just {@link CoreSession} instead
  */
+@Deprecated
 public interface CloseableCoreSession extends CoreSession, AutoCloseable {
 
     /**
      * Does nothing.
      *
      * @since 5.9.3
+     * @deprecated since 11.1
      */
     @Override
     void close();
 
     /**
      * Does nothing.
+     *
+     * @deprecated since 11.1
      */
     void destroy();
 

@@ -57,7 +57,6 @@ import org.nuxeo.drive.test.NuxeoDriveFeature;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -377,20 +376,19 @@ public class DefaultFileSystemItemFactoryFixture {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
-            note = joeSession.getDocument(note.getRef());
-            fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
-            assertFalse(fsItem.getCanRename());
-            assertFalse(fsItem.getCanDelete());
+        note = joeSession.getDocument(note.getRef());
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
+        assertFalse(fsItem.getCanRename());
+        assertFalse(fsItem.getCanDelete());
 
-            // As a user with WRITE permission
-            setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
-            fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
-            assertTrue(fsItem.getCanRename());
-            assertTrue(fsItem.getCanDelete());
-        }
+        // As a user with WRITE permission
+        setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
         resetPermissions(rootDoc, "joe");
     }
 
@@ -398,38 +396,37 @@ public class DefaultFileSystemItemFactoryFixture {
     @Deploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permissions-contrib.xml")
     public void testPermissionCheckOptimized() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            log.trace("Register the sync root for Joe's account");
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
-            folder = joeSession.getDocument(folder.getRef());
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        log.trace("Register the sync root for Joe's account");
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
+        folder = joeSession.getDocument(folder.getRef());
 
-            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Read granted on parent folder");
-            FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            assertFalse(folderItem.getCanDelete());
-            assertFalse(folderItem.getCanCreateChild());
+        log.trace("Check canDelete/canCreateChild flags on folder for user joe with Read granted on parent folder");
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertFalse(folderItem.getCanDelete());
+        assertFalse(folderItem.getCanCreateChild());
 
-            log.trace(
-                    "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
-            setPermission(folder, "joe", SecurityConstants.WRITE, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // True here as optimized => no explicit check of AddChildren on
-            // folder nor RemoveChildren on parent folder
-            assertTrue(folderItem.getCanDelete());
-            assertTrue(folderItem.getCanCreateChild());
+        log.trace(
+                "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
+        setPermission(folder, "joe", SecurityConstants.WRITE, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        // True here as optimized => no explicit check of AddChildren on
+        // folder nor RemoveChildren on parent folder
+        assertTrue(folderItem.getCanDelete());
+        assertTrue(folderItem.getCanCreateChild());
 
-            log.trace(
-                    "Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
-            setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // Still true with RemoveChildren on the parent folder
-            assertTrue(folderItem.getCanDelete());
+        log.trace(
+                "Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
+        setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        // Still true with RemoveChildren on the parent folder
+        assertTrue(folderItem.getCanDelete());
 
-            log.trace("Check canCreateChild flag on folder for user joe with AddChildren granted on folder");
-            setPermission(folder, "joe", SecurityConstants.ADD_CHILDREN, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // Still true with AddChildren on the folder
-            assertTrue(folderItem.getCanCreateChild());
-        }
+        log.trace("Check canCreateChild flag on folder for user joe with AddChildren granted on folder");
+        setPermission(folder, "joe", SecurityConstants.ADD_CHILDREN, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        // Still true with AddChildren on the folder
+        assertTrue(folderItem.getCanCreateChild());
         resetPermissions(folder, "joe");
         resetPermissions(syncRootFolder, "joe");
     }
@@ -439,41 +436,40 @@ public class DefaultFileSystemItemFactoryFixture {
             "org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-permission-check-not-optimized-contrib.xml" })
     public void testPermissionCheckNotOptimized() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ, true);
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            log.trace("Register the sync root for Joe's account");
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
-            folder = joeSession.getDocument(folder.getRef());
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        log.trace("Register the sync root for Joe's account");
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
+        folder = joeSession.getDocument(folder.getRef());
 
-            log.trace("Check canDelete/canCreateChild flags on folder for user joe with Read granted on parent folder");
-            FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            assertFalse(folderItem.getCanDelete());
-            assertFalse(folderItem.getCanCreateChild());
+        log.trace("Check canDelete/canCreateChild flags on folder for user joe with Read granted on parent folder");
+        FolderItem folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertFalse(folderItem.getCanDelete());
+        assertFalse(folderItem.getCanCreateChild());
 
-            log.trace(
-                    "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
-            setPermission(folder, "joe", SecurityConstants.WRITE, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // False here as not optimized => explicit check of RemoveChildren
-            // on parent folder and AddChildren on
-            // folder
-            assertFalse(folderItem.getCanDelete());
-            assertFalse(folderItem.getCanCreateChild());
+        log.trace(
+                "Check canDelete/canCreateChild flags on folder for user joe with Write granted on folder, AddChildren not granted on folder and RemoveChildren not granted on parent folder");
+        setPermission(folder, "joe", SecurityConstants.WRITE, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        // False here as not optimized => explicit check of RemoveChildren
+        // on parent folder and AddChildren on
+        // folder
+        assertFalse(folderItem.getCanDelete());
+        assertFalse(folderItem.getCanCreateChild());
 
-            log.trace(
-                    "Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
-            setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // True here thanks to RemoveChildren on the parent folder
-            assertTrue(folderItem.getCanDelete());
-            // Still false here because of missing AddChildren on folder
-            assertFalse(folderItem.getCanCreateChild());
+        log.trace(
+                "Check canDelete flag on folder for user joe with Write (thus RemoveChildren) granted on parent folder");
+        setPermission(syncRootFolder, "joe", SecurityConstants.WRITE, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        // True here thanks to RemoveChildren on the parent folder
+        assertTrue(folderItem.getCanDelete());
+        // Still false here because of missing AddChildren on folder
+        assertFalse(folderItem.getCanCreateChild());
 
-            log.trace("Check canCreateChild flag on folder for user joe with AddChildren granted on folder");
-            setPermission(folder, "joe", SecurityConstants.ADD_CHILDREN, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            // True here thanks to AddChildren on folder
-            assertTrue(folderItem.getCanCreateChild());
-        }
+        log.trace("Check canCreateChild flag on folder for user joe with AddChildren granted on folder");
+        setPermission(folder, "joe", SecurityConstants.ADD_CHILDREN, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        // True here thanks to AddChildren on folder
+        assertTrue(folderItem.getCanCreateChild());
         resetPermissions(folder, "joe");
         resetPermissions(syncRootFolder, "joe");
     }
@@ -607,137 +603,136 @@ public class DefaultFileSystemItemFactoryFixture {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
-            file = joeSession.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            assertFalse(fileItem.getCanUpdate());
+        file = joeSession.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertFalse(fileItem.getCanUpdate());
 
-            // As a user with WRITE permission
-            setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            assertTrue(fileItem.getCanUpdate());
+        // As a user with WRITE permission
+        setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertTrue(fileItem.getCanUpdate());
 
-            // Re-fetch file with Administrator session
-            file = session.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
 
-            // ------------------------------------------------------
-            // FileItem#getBlob
-            // ------------------------------------------------------
-            Blob fileItemBlob = fileItem.getBlob();
-            assertEquals("Joe.odt", fileItemBlob.getFilename());
-            assertEquals("Content of Joe's file.", fileItemBlob.getString());
-            // Check versioning
-            assertVersion("0.0", file);
+        // ------------------------------------------------------
+        // FileItem#getBlob
+        // ------------------------------------------------------
+        Blob fileItemBlob = fileItem.getBlob();
+        assertEquals("Joe.odt", fileItemBlob.getFilename());
+        assertEquals("Content of Joe's file.", fileItemBlob.getString());
+        // Check versioning
+        assertVersion("0.0", file);
 
-            // ------------------------------------------------------
-            // FileItem#setBlob and versioning
-            // ------------------------------------------------------
-            Blob newBlob = new StringBlob("This is a new file.");
-            newBlob.setFilename("New blob.txt");
-            ensureJustModified(file, session);
-            fileItem.setBlob(newBlob);
-            file = session.getDocument(file.getRef());
-            Blob updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
-            assertEquals("New blob.txt", updatedBlob.getFilename());
-            assertEquals("This is a new file.", updatedBlob.getString());
-            // Check versioning => should not be versioned since same
-            // contributor
-            // and last modification was done before the versioning delay
-            assertVersion("0.0", file);
+        // ------------------------------------------------------
+        // FileItem#setBlob and versioning
+        // ------------------------------------------------------
+        Blob newBlob = new StringBlob("This is a new file.");
+        newBlob.setFilename("New blob.txt");
+        ensureJustModified(file, session);
+        fileItem.setBlob(newBlob);
+        file = session.getDocument(file.getRef());
+        Blob updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
+        assertEquals("New blob.txt", updatedBlob.getFilename());
+        assertEquals("This is a new file.", updatedBlob.getString());
+        // Check versioning => should not be versioned since same
+        // contributor
+        // and last modification was done before the versioning delay
+        assertVersion("0.0", file);
 
-            // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY); // NOSONAR
+        // Wait for versioning delay
+        Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
-            newBlob.setFilename("File name modified.txt");
-            fileItem.setBlob(newBlob);
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
-            assertEquals("File name modified.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned since last
-            // modification was done after the versioning delay
-            assertVersion("0.1", file);
-            List<DocumentModel> fileVersions = session.getVersions(file.getRef());
-            assertEquals(1, fileVersions.size());
-            DocumentModel lastFileVersion = fileVersions.get(0);
-            Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
-            assertEquals("New blob.txt", versionedBlob.getFilename());
+        newBlob.setFilename("File name modified.txt");
+        fileItem.setBlob(newBlob);
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
+        assertEquals("File name modified.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since last
+        // modification was done after the versioning delay
+        assertVersion("0.1", file);
+        List<DocumentModel> fileVersions = session.getVersions(file.getRef());
+        assertEquals(1, fileVersions.size());
+        DocumentModel lastFileVersion = fileVersions.get(0);
+        Blob versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
+        assertEquals("New blob.txt", versionedBlob.getFilename());
 
-            // Update file with another contributor
-            file = joeSession.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            newBlob.setFilename("File name modified by Joe.txt");
-            fileItem.setBlob(newBlob);
-            // Re-fetch file with Administrator session
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
-            assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned since updated by a
-            // different contributor
-            assertVersion("0.2", file);
-            fileVersions = session.getVersions(file.getRef());
-            assertEquals(2, fileVersions.size());
-            lastFileVersion = fileVersions.get(1);
-            versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
-            assertEquals("File name modified.txt", versionedBlob.getFilename());
+        // Update file with another contributor
+        file = joeSession.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        newBlob.setFilename("File name modified by Joe.txt");
+        fileItem.setBlob(newBlob);
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
+        assertEquals("File name modified by Joe.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since updated by a
+        // different contributor
+        assertVersion("0.2", file);
+        fileVersions = session.getVersions(file.getRef());
+        assertEquals(2, fileVersions.size());
+        lastFileVersion = fileVersions.get(1);
+        versionedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
+        assertEquals("File name modified.txt", versionedBlob.getFilename());
 
-            // ------------------------------------------------------
-            // DocumentBackedFileItem#rename and versioning
-            // ------------------------------------------------------
-            // Save document to trigger the DublinCoreListener and update
-            // dc:lastContributor to "Administrator"
-            // rename the file to enable dc listener (disable if not dirty)
-            file.setPropertyValue("file:content/name", "newTitle");
-            file = session.saveDocument(file);
-            // Check versioning => should be versioned cause last contributor has changed
-            assertVersion("0.3", file);
-            // Switch back to Administrator as last contributor
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            ensureJustModified(file, session);
-            fileItem.rename("Renamed file.txt");
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
-            assertEquals("Renamed file.txt", updatedBlob.getFilename());
-            // Check versioning => should not be versioned since same
-            // contributor and last modification was done before the
-            // versioning delay
-            assertVersion("0.3", file);
+        // ------------------------------------------------------
+        // DocumentBackedFileItem#rename and versioning
+        // ------------------------------------------------------
+        // Save document to trigger the DublinCoreListener and update
+        // dc:lastContributor to "Administrator"
+        // rename the file to enable dc listener (disable if not dirty)
+        file.setPropertyValue("file:content/name", "newTitle");
+        file = session.saveDocument(file);
+        // Check versioning => should be versioned cause last contributor has changed
+        assertVersion("0.3", file);
+        // Switch back to Administrator as last contributor
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        ensureJustModified(file, session);
+        fileItem.rename("Renamed file.txt");
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
+        assertEquals("Renamed file.txt", updatedBlob.getFilename());
+        // Check versioning => should not be versioned since same
+        // contributor and last modification was done before the
+        // versioning delay
+        assertVersion("0.3", file);
 
-            // Wait for versioning delay
-            Thread.sleep(VERSIONING_DELAY); // NOSONAR
+        // Wait for versioning delay
+        Thread.sleep(VERSIONING_DELAY); // NOSONAR
 
-            fileItem.rename("Renamed again.txt");
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
-            assertEquals("Renamed again.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned since last
-            // modification was done after the versioning delay
-            assertVersion("0.4", file);
-            fileVersions = session.getVersions(file.getRef());
-            assertEquals(4, fileVersions.size());
-            lastFileVersion = fileVersions.get(3);
-            updatedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
-            assertEquals("Renamed file.txt", updatedBlob.getFilename());
+        fileItem.rename("Renamed again.txt");
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
+        assertEquals("Renamed again.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since last
+        // modification was done after the versioning delay
+        assertVersion("0.4", file);
+        fileVersions = session.getVersions(file.getRef());
+        assertEquals(4, fileVersions.size());
+        lastFileVersion = fileVersions.get(3);
+        updatedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
+        assertEquals("Renamed file.txt", updatedBlob.getFilename());
 
-            // Update file with another contributor
-            file = joeSession.getDocument(file.getRef());
-            fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
-            fileItem.rename("File renamed by Joe.txt");
-            // Re-fetch file with Administrator session
-            file = session.getDocument(file.getRef());
-            updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
-            assertEquals("File renamed by Joe.txt", updatedBlob.getFilename());
-            // Check versioning => should be versioned since updated by a
-            // different contributor
-            assertVersion("0.5", file);
-            fileVersions = session.getVersions(file.getRef());
-            assertEquals(5, fileVersions.size());
-            lastFileVersion = fileVersions.get(4);
-            updatedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
-            assertEquals("Renamed again.txt", updatedBlob.getFilename());
-        }
+        // Update file with another contributor
+        file = joeSession.getDocument(file.getRef());
+        fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
+        fileItem.rename("File renamed by Joe.txt");
+        // Re-fetch file with Administrator session
+        file = session.getDocument(file.getRef());
+        updatedBlob = (Blob) file.getPropertyValue(FILE_CONTENT);
+        assertEquals("File renamed by Joe.txt", updatedBlob.getFilename());
+        // Check versioning => should be versioned since updated by a
+        // different contributor
+        assertVersion("0.5", file);
+        fileVersions = session.getVersions(file.getRef());
+        assertEquals(5, fileVersions.size());
+        lastFileVersion = fileVersions.get(4);
+        updatedBlob = (Blob) lastFileVersion.getPropertyValue(FILE_CONTENT);
+        assertEquals("Renamed again.txt", updatedBlob.getFilename());
         resetPermissions(rootDoc, "joe");
     }
 
@@ -760,29 +755,28 @@ public class DefaultFileSystemItemFactoryFixture {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            folder = joeSession.getDocument(folder.getRef());
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        folder = joeSession.getDocument(folder.getRef());
 
-            // By default folder is not under any sync root for Joe, hence
-            // should not be mappable as an fs item.
-            try {
-                defaultFileSystemItemFactory.getFileSystemItem(folder);
-                fail("Should have raised RootlessItemException as ");
-            } catch (RootlessItemException e) {
-                // expected
-            }
-
-            // Register the sync root for Joe's account
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
-
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            assertFalse(folderItem.getCanCreateChild());
-
-            // As a user with WRITE permission
-            setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
-            folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
-            assertTrue(folderItem.getCanCreateChild());
+        // By default folder is not under any sync root for Joe, hence
+        // should not be mappable as an fs item.
+        try {
+            defaultFileSystemItemFactory.getFileSystemItem(folder);
+            fail("Should have raised RootlessItemException as ");
+        } catch (RootlessItemException e) {
+            // expected
         }
+
+        // Register the sync root for Joe's account
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertFalse(folderItem.getCanCreateChild());
+
+        // As a user with WRITE permission
+        setPermission(rootDoc, "joe", SecurityConstants.WRITE, true);
+        folderItem = (FolderItem) defaultFileSystemItemFactory.getFileSystemItem(folder);
+        assertTrue(folderItem.getCanCreateChild());
         resetPermissions(rootDoc, "joe");
 
         // ------------------------------------------------------
@@ -911,81 +905,78 @@ public class DefaultFileSystemItemFactoryFixture {
     public void testLockedDocument() {
         setPermission(syncRootFolder, "joe", SecurityConstants.READ_WRITE, true);
         setPermission(syncRootFolder, "jack", SecurityConstants.READ_WRITE, true);
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
-            DocumentModel joeFile = joeSession.getDocument(file.getRef());
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, joeSession);
+        DocumentModel joeFile = joeSession.getDocument(file.getRef());
 
-            log.trace("Check readonly flags on an unlocked document");
-            FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
-            assertTrue(fsItem.getCanRename());
-            assertTrue(fsItem.getCanDelete());
-            assertTrue(((FileItem) fsItem).getCanUpdate());
-            assertNull(fsItem.getLockInfo());
+        log.trace("Check readonly flags on an unlocked document");
+        FileSystemItem fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
+        assertTrue(((FileItem) fsItem).getCanUpdate());
+        assertNull(fsItem.getLockInfo());
 
-            log.trace("Check readonly flags on an document locked by the current user");
-            joeSession.setLock(joeFile.getRef());
-            // Re-fetch document to clear lock info
-            joeFile = joeSession.getDocument(file.getRef());
-            fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
-            assertTrue(fsItem.getCanRename());
-            assertTrue(fsItem.getCanDelete());
-            assertTrue(((FileItem) fsItem).getCanUpdate());
-            Lock lockInfo = fsItem.getLockInfo();
-            assertNotNull(lockInfo);
-            assertEquals("joe", lockInfo.getOwner());
-            assertNotNull(lockInfo.getCreated());
+        log.trace("Check readonly flags on an document locked by the current user");
+        joeSession.setLock(joeFile.getRef());
+        // Re-fetch document to clear lock info
+        joeFile = joeSession.getDocument(file.getRef());
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(joeFile);
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
+        assertTrue(((FileItem) fsItem).getCanUpdate());
+        Lock lockInfo = fsItem.getLockInfo();
+        assertNotNull(lockInfo);
+        assertEquals("joe", lockInfo.getOwner());
+        assertNotNull(lockInfo.getCreated());
 
-            // Check that the lock info is not fetched for FileSystemItem
-            // adaptation when calling getChildren or
-            // scrollDescendants
-            FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
-                    syncRootFolder);
-            List<FileSystemItem> children = syncRootFolderItem.getChildren();
-            assertEquals(5, children.size());
-            for (FileSystemItem child : children) {
-                assertNull(child.getLockInfo());
-            }
-            children = syncRootFolderItem.scrollDescendants(null, 10, 1000);
-            assertEquals(5, children.size());
-            for (FileSystemItem child : children) {
-                assertNull(child.getLockInfo());
-            }
-
-            try (CloseableCoreSession jackSession = coreFeature.openCoreSession("jack")) {
-                nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
-                DocumentModel jackFile = jackSession.getDocument(file.getRef());
-
-                log.trace("Check readonly flags for a non administrator on a document locked by another user");
-                fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
-                assertFalse(fsItem.getCanRename());
-                assertFalse(fsItem.getCanDelete());
-                assertFalse(((FileItem) fsItem).getCanUpdate());
-                lockInfo = fsItem.getLockInfo();
-                assertNotNull(lockInfo);
-                assertEquals("joe", lockInfo.getOwner());
-                assertNotNull(lockInfo.getCreated());
-
-                log.trace("Check readonly flags for an administrator on a document locked by another user");
-                fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
-                assertTrue(fsItem.getCanRename());
-                assertTrue(fsItem.getCanDelete());
-                assertTrue(((FileItem) fsItem).getCanUpdate());
-                lockInfo = fsItem.getLockInfo();
-                assertNotNull(lockInfo);
-                assertEquals("joe", lockInfo.getOwner());
-                assertNotNull(lockInfo.getCreated());
-
-                log.trace("Check readonly flags for a non administrator on an unlocked document");
-                joeSession.removeLock(joeFile.getRef());
-                // Re-fetch document to clear lock info
-                jackFile = jackSession.getDocument(file.getRef());
-                fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
-                assertTrue(fsItem.getCanRename());
-                assertTrue(fsItem.getCanDelete());
-                assertTrue(((FileItem) fsItem).getCanUpdate());
-                assertNull(fsItem.getLockInfo());
-            }
+        // Check that the lock info is not fetched for FileSystemItem
+        // adaptation when calling getChildren or
+        // scrollDescendants
+        FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
+        List<FileSystemItem> children = syncRootFolderItem.getChildren();
+        assertEquals(5, children.size());
+        for (FileSystemItem child : children) {
+            assertNull(child.getLockInfo());
         }
+        children = syncRootFolderItem.scrollDescendants(null, 10, 1000);
+        assertEquals(5, children.size());
+        for (FileSystemItem child : children) {
+            assertNull(child.getLockInfo());
+        }
+
+        CoreSession jackSession = coreFeature.getCoreSession("jack");
+        nuxeoDriveManager.registerSynchronizationRoot(jackSession.getPrincipal(), syncRootFolder, jackSession);
+        DocumentModel jackFile = jackSession.getDocument(file.getRef());
+
+        log.trace("Check readonly flags for a non administrator on a document locked by another user");
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
+        assertFalse(fsItem.getCanRename());
+        assertFalse(fsItem.getCanDelete());
+        assertFalse(((FileItem) fsItem).getCanUpdate());
+        lockInfo = fsItem.getLockInfo();
+        assertNotNull(lockInfo);
+        assertEquals("joe", lockInfo.getOwner());
+        assertNotNull(lockInfo.getCreated());
+
+        log.trace("Check readonly flags for an administrator on a document locked by another user");
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(file);
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
+        assertTrue(((FileItem) fsItem).getCanUpdate());
+        lockInfo = fsItem.getLockInfo();
+        assertNotNull(lockInfo);
+        assertEquals("joe", lockInfo.getOwner());
+        assertNotNull(lockInfo.getCreated());
+
+        log.trace("Check readonly flags for a non administrator on an unlocked document");
+        joeSession.removeLock(joeFile.getRef());
+        // Re-fetch document to clear lock info
+        jackFile = jackSession.getDocument(file.getRef());
+        fsItem = defaultFileSystemItemFactory.getFileSystemItem(jackFile);
+        assertTrue(fsItem.getCanRename());
+        assertTrue(fsItem.getCanDelete());
+        assertTrue(((FileItem) fsItem).getCanUpdate());
+        assertNull(fsItem.getLockInfo());
         resetPermissions(syncRootFolder, "jack");
         resetPermissions(syncRootFolder, "joe");
     }
@@ -1122,19 +1113,16 @@ public class DefaultFileSystemItemFactoryFixture {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableCoreSession joeSession = coreFeature.openCoreSession("joe")) {
-            log.trace("Register \"/syncRoot\" as a synchronization root for joe");
-            nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
+        CoreSession joeSession = coreFeature.getCoreSession("joe");
+        log.trace("Register \"/syncRoot\" as a synchronization root for joe");
+        nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
-            log.trace(
-                    "Scroll through the descendants of \"/syncRoot\", expecting its 4 directly accessible descendants, "
-                            + "the blocked \"folder\" and its descendants being ignored");
-            syncRootFolder = joeSession.getDocument(syncRootFolder.getRef());
-            FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(
-                    syncRootFolder);
-            ScrollFileSystemItemList descendants = syncRootFolderItem.scrollDescendants(null, 10, 1000);
-            assertEquals(4, descendants.size());
-        }
+        log.trace("Scroll through the descendants of \"/syncRoot\", expecting its 4 directly accessible descendants, "
+                + "the blocked \"folder\" and its descendants being ignored");
+        syncRootFolder = joeSession.getDocument(syncRootFolder.getRef());
+        FolderItem syncRootFolderItem = (FolderItem) defaultSyncRootFolderItemFactory.getFileSystemItem(syncRootFolder);
+        ScrollFileSystemItemList descendants = syncRootFolderItem.scrollDescendants(null, 10, 1000);
+        assertEquals(4, descendants.size());
         resetPermissions(syncRootFolder, "joe");
     }
 

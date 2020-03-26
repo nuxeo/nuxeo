@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.core.events.EventHandler;
 import org.nuxeo.ecm.automation.core.events.EventHandlerRegistry;
 import org.nuxeo.ecm.automation.core.impl.adapters.StringToProperties;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -124,11 +123,10 @@ public class EventOperationsTest {
 
         // reopen session since the modification occurred in another session in
         // another thread
-        try (CloseableCoreSession session2 = CoreInstance.openCoreSession(null)) {
-            DocumentModel doc = session2.getChild(folder.getRef(), "note_pc");
-            assertEquals("MyDocPc", doc.getTitle());
-            assertEquals("Note", doc.getType());
-        }
+        CoreSession session2 = CoreInstance.getCoreSession(null);
+        DocumentModel doc = session2.getChild(folder.getRef(), "note_pc");
+        assertEquals("MyDocPc", doc.getTitle());
+        assertEquals("Note", doc.getType());
     }
 
     @Test

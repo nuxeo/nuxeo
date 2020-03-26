@@ -146,7 +146,7 @@ public class IndexingCommand implements Serializable {
      * @throws java.lang.IllegalStateException if there is no session attached
      */
     public DocumentModel getTargetDocument() {
-        CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName);
+        CoreSession session = CoreInstance.getCoreSessionSystem(repositoryName);
         IdRef idref = new IdRef(targetDocumentId);
         if (!session.exists(idref)) {
             // Doc was deleted : no way we can fetch it

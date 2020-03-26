@@ -32,8 +32,8 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.SynchronizationRoots;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -65,38 +65,37 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
         Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getService(NuxeoDriveManager.class)
                                                                      .getSynchronizationRoots(principal);
         for (Map.Entry<String, SynchronizationRoots> entry : syncRootsByRepo.entrySet()) {
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(entry.getKey(), principal)) {
-                Set<IdRef> syncRootRefs = entry.getValue().getRefs();
-                Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
-                while (syncRootRefsIt.hasNext()) {
-                    IdRef idRef = syncRootRefsIt.next();
-                    // TODO: ensure sync roots cache is up-to-date if ACL
-                    // change, for now need to check permission
-                    // See https://jira.nuxeo.com/browse/NXP-11146
-                    if (!session.hasPermission(idRef, SecurityConstants.READ)) {
+            CoreSession session = CoreInstance.getCoreSession(entry.getKey(), principal);
+            Set<IdRef> syncRootRefs = entry.getValue().getRefs();
+            Iterator<IdRef> syncRootRefsIt = syncRootRefs.iterator();
+            while (syncRootRefsIt.hasNext()) {
+                IdRef idRef = syncRootRefsIt.next();
+                // TODO: ensure sync roots cache is up-to-date if ACL
+                // change, for now need to check permission
+                // See https://jira.nuxeo.com/browse/NXP-11146
+                if (!session.hasPermission(idRef, SecurityConstants.READ)) {
+                    log.debug(
+                            "User {} has no READ access on synchronization root {}, not including it in children.",
+                            session::getPrincipal, () -> idRef);
+                    continue;
+                }
+                DocumentModel doc = session.getDocument(idRef);
+                // Filter by creator
+                // TODO: allow filtering by dc:creator in
+                // NuxeoDriveManager#getSynchronizationRoots(NuxeoPrincipal
+                // principal)
+                if (!session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
+                    // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
+                    FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this, false,
+                            false, false);
+                    if (child == null) {
                         log.debug(
-                                "User {} has no READ access on synchronization root {}, not including it in children.",
-                                session::getPrincipal, () -> idRef);
+                                "Synchronization root {} cannot be adapted as a FileSystemItem, maybe because user {} doesn't have the required permission on it (default required permission is ReadWrite). Not including it in children.",
+                                () -> idRef, session::getPrincipal);
                         continue;
                     }
-                    DocumentModel doc = session.getDocument(idRef);
-                    // Filter by creator
-                    // TODO: allow filtering by dc:creator in
-                    // NuxeoDriveManager#getSynchronizationRoots(NuxeoPrincipal
-                    // principal)
-                    if (!session.getPrincipal().getName().equals(doc.getPropertyValue("dc:creator"))) {
-                        // NXP-19442: Avoid useless and costly call to DocumentModel#getLockInfo
-                        FileSystemItem child = getFileSystemItemAdapterService().getFileSystemItem(doc, this, false,
-                                false, false);
-                        if (child == null) {
-                            log.debug(
-                                    "Synchronization root {} cannot be adapted as a FileSystemItem, maybe because user {} doesn't have the required permission on it (default required permission is ReadWrite). Not including it in children.",
-                                    () -> idRef, session::getPrincipal);
-                            continue;
-                        }
-                        log.debug("Including synchronization root {} in children.", idRef);
-                        children.add(child);
-                    }
+                    log.debug("Including synchronization root {} in children.", idRef);
+                    children.add(child);
                 }
             }
         }

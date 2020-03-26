@@ -31,8 +31,8 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -119,16 +119,14 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     public FolderItem getVirtualFolderItem(NuxeoPrincipal principal) {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         // TODO: handle multiple repositories
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(),
-                principal)) {
-            UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
-            DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
-            if (userWorkspace == null) {
-                throw new NuxeoException(
-                        String.format("No personal workspace found for user %s.", principal.getName()));
-            }
-            return (FolderItem) getFileSystemItem(userWorkspace);
+        CoreSession session = CoreInstance.getCoreSession(repositoryManager.getDefaultRepositoryName(), principal);
+        UserWorkspaceService userWorkspaceService = Framework.getService(UserWorkspaceService.class);
+        DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session);
+        if (userWorkspace == null) {
+            throw new NuxeoException(
+                    String.format("No personal workspace found for user %s.", principal.getName()));
         }
+        return (FolderItem) getFileSystemItem(userWorkspace);
     }
 
     @Override

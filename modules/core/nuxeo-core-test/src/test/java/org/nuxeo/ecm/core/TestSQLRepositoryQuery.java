@@ -68,7 +68,6 @@ import org.nuxeo.common.utils.DateUtils;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -916,8 +915,8 @@ public class TestSQLRepositoryQuery {
         properties.setProperty(AbstractSession.LIMIT_RESULTS_PROPERTY, "true");
         properties.setProperty(AbstractSession.MAX_RESULTS_PROPERTY, "5");
         // need to open a new session to refresh properties
-        try (CloseableCoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(),
-                "Administrator")) {
+        try {
+            CoreSession admSession = CoreInstance.getCoreSession(session.getRepositoryName(), "Administrator");
             dml = admSession.query(sql, null, 5, 0, true);
             assertEquals(5, dml.size());
             assertTrue(dml.totalSize() < 0);
@@ -1368,10 +1367,9 @@ public class TestSQLRepositoryQuery {
         folder1.setACP(acp, true);
         session.save();
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            DocumentModelList dml = bobSession.query("SELECT * FROM Document");
-            assertEquals(3, dml.size());
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        DocumentModelList dml = bobSession.query("SELECT * FROM Document");
+        assertEquals(3, dml.size());
     }
 
     // same with queryAndFetch
@@ -1394,11 +1392,10 @@ public class TestSQLRepositoryQuery {
         folder1.setACP(acp, true);
         session.save();
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            IterableQueryResult res = bobSession.queryAndFetch("SELECT * FROM Document", "NXQL");
-            assertEquals(3, res.size());
-            res.close();
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        IterableQueryResult res = bobSession.queryAndFetch("SELECT * FROM Document", "NXQL");
+        assertEquals(3, res.size());
+        res.close();
     }
 
     @Test
@@ -1440,53 +1437,50 @@ public class TestSQLRepositoryQuery {
 
         // needs a user who is not really an administrator
         // otherwise security policies are bypassed
-        try (CloseableCoreSession admSession = CoreInstance.openCoreSession(session.getRepositoryName(),
-                "Administrator")) {
-            dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
-            assertEquals(4, dml.size());
-            assertEquals(4, dml.totalSize());
-            dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 0, true);
-            assertEquals(2, dml.size());
-            assertEquals(4, dml.totalSize());
-            dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 2, true);
-            assertEquals(2, dml.size());
-            assertEquals(4, dml.totalSize());
-            dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 3, true);
-            assertEquals(1, dml.size());
-            assertEquals(4, dml.totalSize());
+        CoreSession admSession = CoreInstance.getCoreSession(session.getRepositoryName(), "Administrator");
+        dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
+        assertEquals(4, dml.size());
+        assertEquals(4, dml.totalSize());
+        dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 0, true);
+        assertEquals(2, dml.size());
+        assertEquals(4, dml.totalSize());
+        dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 2, true);
+        assertEquals(2, dml.size());
+        assertEquals(4, dml.totalSize());
+        dml = admSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 3, true);
+        assertEquals(1, dml.size());
+        assertEquals(4, dml.totalSize());
 
-            // add an ACL as well
-            DocumentModel root = admSession.getRootDocument();
-            ACP acp = new ACPImpl();
-            ACL acl = new ACLImpl();
-            acl.add(new ACE("Administrator", "Everything", true));
-            acl.add(new ACE("bob", "Browse", true));
-            acp.addACL(acl);
-            root.setACP(acp, true);
-            DocumentModel folder1 = admSession.getDocument(new PathRef("/testfolder2/testfolder3"));
-            acp = new ACPImpl();
-            acl = new ACLImpl();
-            acl.add(new ACE("Administrator", "Everything", true));
-            acl.add(ACE.BLOCK);
-            acp.addACL(acl);
-            folder1.setACP(acp, true);
-            admSession.save();
-        }
+        // add an ACL as well
+        DocumentModel root = admSession.getRootDocument();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(new ACE("bob", "Browse", true));
+        acp.addACL(acl);
+        root.setACP(acp, true);
+        DocumentModel folder1 = admSession.getDocument(new PathRef("/testfolder2/testfolder3"));
+        acp = new ACPImpl();
+        acl = new ACLImpl();
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
+        acp.addACL(acl);
+        folder1.setACP(acp, true);
+        admSession.save();
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
-            assertEquals(3, dml.size());
-            assertEquals(3, dml.totalSize());
-            dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 0, true);
-            assertEquals(2, dml.size());
-            assertEquals(3, dml.totalSize());
-            dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 1, true);
-            assertEquals(2, dml.size());
-            assertEquals(3, dml.totalSize());
-            dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 2, true);
-            assertEquals(1, dml.size());
-            assertEquals(3, dml.totalSize());
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0");
+        assertEquals(3, dml.size());
+        assertEquals(3, dml.totalSize());
+        dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 0, true);
+        assertEquals(2, dml.size());
+        assertEquals(3, dml.totalSize());
+        dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 1, true);
+        assertEquals(2, dml.size());
+        assertEquals(3, dml.totalSize());
+        dml = bobSession.query("SELECT * FROM Document WHERE ecm:isVersion = 0", null, 2, 2, true);
+        assertEquals(1, dml.size());
+        assertEquals(3, dml.totalSize());
     }
 
     private static void assertIdSet(DocumentModelList dml, String... ids) {
@@ -1711,9 +1705,8 @@ public class TestSQLRepositoryQuery {
         String query = String.format("SELECT * FROM Document WHERE ecm:uuid = '%s'", folder1.getId());
         checkQueryACL(1, query);
 
-        try (CloseableCoreSession leelaSession = coreFeature.openCoreSession("leela")) {
-            checkQueryACL(leelaSession, 0, query);
-        }
+        CoreSession leelaSession = coreFeature.getCoreSession("leela");
+        checkQueryACL(leelaSession, 0, query);
 
     }
 
@@ -3622,11 +3615,10 @@ public class TestSQLRepositoryQuery {
         DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
         session.createDocument(doc1);
         session.save();
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            ScrollResult<String> ret = session.scroll("SELECT * FROM Document", 1, 10);
-            assertTrue(ret.hasResults());
-            assertEquals(1, ret.getResults().size());
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        ScrollResult<String> ret = session.scroll("SELECT * FROM Document", 1, 10);
+        assertTrue(ret.hasResults());
+        assertEquals(1, ret.getResults().size());
     }
 
     @Test
@@ -3815,16 +3807,15 @@ public class TestSQLRepositoryQuery {
         folder1.setACP(acp, true);
         session.save();
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            ScrollResult<String> ret = bobSession.scroll("SELECT * FROM Document", 1, 10);
-            int total = 0;
-            while (ret.hasResults()) {
-                List<String> ids = ret.getResults();
-                total += ids.size();
-                ret = bobSession.scroll(ret.getScrollId());
-            }
-            assertEquals(3, total);
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        ScrollResult<String> ret = bobSession.scroll("SELECT * FROM Document", 1, 10);
+        int total = 0;
+        while (ret.hasResults()) {
+            List<String> ids = ret.getResults();
+            total += ids.size();
+            ret = bobSession.scroll(ret.getScrollId());
         }
+        assertEquals(3, total);
     }
 
     @Test

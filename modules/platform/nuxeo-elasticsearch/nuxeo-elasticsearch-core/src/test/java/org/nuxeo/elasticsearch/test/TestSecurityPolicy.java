@@ -26,7 +26,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -136,11 +135,10 @@ public class TestSecurityPolicy {
         Assert.assertEquals(6, docs.totalSize());
 
         // As user File document are not denied
-        try (CloseableCoreSession restrictedSession = CoreInstance.openCoreSession(null, "toto")) {
-            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
-            Assert.assertEquals(1, docs.size());
-            Assert.assertEquals(1, docs.totalSize());
-        }
+        CoreSession restrictedSession = CoreInstance.getCoreSession(null, "toto");
+        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
+        Assert.assertEquals(1, docs.size());
+        Assert.assertEquals(1, docs.totalSize());
     }
 
     protected void grantBrowsePermToUser(String path, String username) throws Exception {

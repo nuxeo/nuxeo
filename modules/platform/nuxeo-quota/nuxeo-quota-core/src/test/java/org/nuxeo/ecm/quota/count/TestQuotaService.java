@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -76,17 +75,16 @@ public class TestQuotaService {
     }
 
     protected DocumentRef createUserWorkspace(String username) {
-        try (CloseableCoreSession userSession = coreFeature.openCoreSession(username)) {
-            DocumentModel userWS = uwm.getCurrentUserPersonalWorkspace(userSession);
-            assertNotNull(userWS);
-            coreFeature.waitForAsyncCompletion(); // commit the transaction
+        CoreSession userSession = coreFeature.getCoreSession(username);
+        DocumentModel userWS = uwm.getCurrentUserPersonalWorkspace(userSession);
+        assertNotNull(userWS);
+        coreFeature.waitForAsyncCompletion(); // commit the transaction
 
-            // check creator
-            String creator = (String) userWS.getProperty("dublincore", "creator");
-            assertEquals(username, creator);
+        // check creator
+        String creator = (String) userWS.getProperty("dublincore", "creator");
+        assertEquals(username, creator);
 
-            return userWS.getRef();
-        }
+        return userWS.getRef();
     }
 
 }

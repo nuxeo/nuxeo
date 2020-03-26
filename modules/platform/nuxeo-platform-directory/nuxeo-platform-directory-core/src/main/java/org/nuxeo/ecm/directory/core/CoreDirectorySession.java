@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -71,7 +70,7 @@ public class CoreDirectorySession extends BaseSession {
     public CoreDirectorySession(CoreDirectory directory) {
         super(directory, null);
         CoreDirectoryDescriptor descriptor = directory.getDescriptor();
-        coreSession = CoreInstance.openCoreSession(descriptor.getRepositoryName());
+        coreSession = CoreInstance.getCoreSession(descriptor.getRepositoryName());
         schemaIdField = directory.getFieldMapper().getBackendField(getIdField());
         schemaPasswordField = directory.getFieldMapper().getBackendField(getPasswordField());
         docType = descriptor.docType;
@@ -375,7 +374,6 @@ public class CoreDirectorySession extends BaseSession {
 
     @Override
     public void close() {
-        ((CloseableCoreSession) coreSession).close();
         getDirectory().removeSession(this);
     }
 

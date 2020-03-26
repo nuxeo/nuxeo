@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -153,9 +152,8 @@ public class TestSQLRepositoryReadAcls {
 
         // after both threads have run, check that we don't see
         // duplicate documents
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, username)) {
-            checkOneDoc(session, name); // failed for PostgreSQL
-        }
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, username);
+        checkOneDoc(session, name); // failed for PostgreSQL
     }
 
     protected static void checkOneDoc(CoreSession session, String name) {
@@ -190,7 +188,8 @@ public class TestSQLRepositoryReadAcls {
         @Override
         public void run() {
             TransactionHelper.startTransaction();
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, username)) {
+            try {
+                CoreSession session = CoreInstance.getCoreSession(repositoryName, username);
                 if (ready != null) {
                     ready.countDown();
                     ready = null;

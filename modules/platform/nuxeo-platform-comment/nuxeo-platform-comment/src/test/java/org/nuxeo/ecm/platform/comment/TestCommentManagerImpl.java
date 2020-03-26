@@ -31,7 +31,7 @@ import javax.inject.Inject;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -88,35 +88,34 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         acl.add(new ACE(USERNAME, SecurityConstants.READ, true));
         doc.setACP(acp, true);
 
-        try (CloseableCoreSession userSession = coreFeature.openCoreSession(USERNAME)) {
-            // Get the document as the user
-            DocumentModel userDoc = userSession.getDocument(doc.getRef());
+        CoreSession userSession = coreFeature.getCoreSession(USERNAME);
+        // Get the document as the user
+        DocumentModel userDoc = userSession.getDocument(doc.getRef());
 
-            // Comment the document as the user
-            Comment comment = new CommentImpl();
-            comment.setAuthor(session.getPrincipal().getName());
-            comment.setText(COMMENT_CONTENT);
-            comment.setParentId(userDoc.getId());
-            commentManager.createComment(session, comment);
+        // Comment the document as the user
+        Comment comment = new CommentImpl();
+        comment.setAuthor(session.getPrincipal().getName());
+        comment.setText(COMMENT_CONTENT);
+        comment.setParentId(userDoc.getId());
+        commentManager.createComment(session, comment);
 
-            // Check the comment document can be retrieved by a system session query
-            List<DocumentModel> dml = session.query(QUERY_COMMENTS_AS_DOCUMENTS);
-            assertEquals(1, dml.size());
+        // Check the comment document can be retrieved by a system session query
+        List<DocumentModel> dml = session.query(QUERY_COMMENTS_AS_DOCUMENTS);
+        assertEquals(1, dml.size());
 
-            // Check the comment document cannot be retrieved by the user session query
-            dml = userSession.query(QUERY_COMMENTS_AS_DOCUMENTS);
-            assertEquals(0, dml.size());
+        // Check the comment document cannot be retrieved by the user session query
+        dml = userSession.query(QUERY_COMMENTS_AS_DOCUMENTS);
+        assertEquals(0, dml.size());
 
-            // Check the comment can be retrieved by the user via the comment service
-            List<Comment> comments = commentManager.getComments(userSession, userDoc.getId());
-            assertEquals(1, comments.size());
-            assertEquals(COMMENT_CONTENT, comments.get(0).getText());
+        // Check the comment can be retrieved by the user via the comment service
+        List<Comment> comments = commentManager.getComments(userSession, userDoc.getId());
+        assertEquals(1, comments.size());
+        assertEquals(COMMENT_CONTENT, comments.get(0).getText());
 
-            // Check the comment was deleted by the user
-            commentManager.deleteComment(userSession, comments.get(0).getId());
-            comments = commentManager.getComments(userSession, userDoc.getId());
-            assertEquals(0, comments.size());
-        }
+        // Check the comment was deleted by the user
+        commentManager.deleteComment(userSession, comments.get(0).getId());
+        comments = commentManager.getComments(userSession, userDoc.getId());
+        assertEquals(0, comments.size());
     }
 
     @Test

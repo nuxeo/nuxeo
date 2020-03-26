@@ -22,7 +22,6 @@ package org.nuxeo.ecm.core;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -86,13 +85,12 @@ public class TestGetOrCreateDocument {
         for (int t = 0; t < NB_THREADS; t++) {
             CompletableFuture<DocumentModelList> completableFuture = CompletableFuture.supplyAsync(
                     () -> TransactionHelper.runInTransaction(() -> {
-                        try (CloseableCoreSession s = CoreInstance.openCoreSession(coreFeature.getRepositoryName())) {
-                            return docs.stream().map(doc -> {
-                                DocumentModel fetchedDoc = s.getOrCreateDocument(doc);
-                                s.save();
-                                return fetchedDoc;
-                            }).collect(Collectors.toCollection(DocumentModelListImpl::new));
-                        }
+                        CoreSession s = CoreInstance.getCoreSession(coreFeature.getRepositoryName());
+                        return docs.stream().map(doc -> {
+                            DocumentModel fetchedDoc = s.getOrCreateDocument(doc);
+                            s.save();
+                            return fetchedDoc;
+                        }).collect(Collectors.toCollection(DocumentModelListImpl::new));
                     }), executor);
             futures.add(completableFuture);
         }

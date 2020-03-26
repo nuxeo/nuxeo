@@ -41,7 +41,6 @@ import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -136,16 +135,15 @@ public class CommentManagerImpl extends AbstractCommentManager {
 
     @Override
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentModel commentDM = session.createDocumentModel(COMMENT_DOC_TYPE);
-            commentDM.setPropertyValue(COMMENT_TEXT_PROPERTY, comment);
-            commentDM.setPropertyValue(COMMENT_AUTHOR_PROPERTY, author);
-            commentDM.setPropertyValue(COMMENT_CREATION_DATE_PROPERTY, Calendar.getInstance());
-            commentDM = internalCreateComment(session, docModel, commentDM, null);
-            session.save();
+        CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
+        DocumentModel commentDM = session.createDocumentModel(COMMENT_DOC_TYPE);
+        commentDM.setPropertyValue(COMMENT_TEXT_PROPERTY, comment);
+        commentDM.setPropertyValue(COMMENT_AUTHOR_PROPERTY, author);
+        commentDM.setPropertyValue(COMMENT_CREATION_DATE_PROPERTY, Calendar.getInstance());
+        commentDM = internalCreateComment(session, docModel, commentDM, null);
+        session.save();
 
-            return commentDM;
-        }
+        return commentDM;
     }
 
     @Override
@@ -186,12 +184,11 @@ public class CommentManagerImpl extends AbstractCommentManager {
 
     @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws CommentSecurityException {
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentModel doc = internalCreateComment(session, docModel, comment, null);
-            session.save();
-            doc.detach(true);
-            return doc;
-        }
+        CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
+        DocumentModel doc = internalCreateComment(session, docModel, comment, null);
+        session.save();
+        doc.detach(true);
+        return doc;
     }
 
     protected DocumentModel internalCreateComment(CoreSession session, DocumentModel docModel, DocumentModel comment,
@@ -324,32 +321,30 @@ public class CommentManagerImpl extends AbstractCommentManager {
 
     @Override
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentRef ref = comment.getRef();
-            if (!session.exists(ref)) {
-                throw new NuxeoException("Comment Document does not exist: " + comment.getId());
-            }
-
-            // fetch top level doc before deleting document
-            DocumentModel topLevelDoc = getTopLevelDocument(session, comment);
-            // finally remove the doc and fire event
-            session.removeDocument(ref);
-            notifyEvent(session, CommentEvents.COMMENT_REMOVED, topLevelDoc, docModel, comment);
-
-            session.save();
+        CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
+        DocumentRef ref = comment.getRef();
+        if (!session.exists(ref)) {
+            throw new NuxeoException("Comment Document does not exist: " + comment.getId());
         }
+
+        // fetch top level doc before deleting document
+        DocumentModel topLevelDoc = getTopLevelDocument(session, comment);
+        // finally remove the doc and fire event
+        session.removeDocument(ref);
+        notifyEvent(session, CommentEvents.COMMENT_REMOVED, topLevelDoc, docModel, comment);
+
+        session.save();
     }
 
     @Override
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentModel parentDocModel = session.getDocument(parent.getRef());
-            String containerPath = parent.getPath().removeLastSegments(1).toString();
-            DocumentModel newComment = internalCreateComment(session, parentDocModel, child, containerPath);
+        CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
+        DocumentModel parentDocModel = session.getDocument(parent.getRef());
+        String containerPath = parent.getPath().removeLastSegments(1).toString();
+        DocumentModel newComment = internalCreateComment(session, parentDocModel, child, containerPath);
 
-            session.save();
-            return newComment;
-        }
+        session.save();
+        return newComment;
     }
 
     @Override
@@ -406,11 +401,10 @@ public class CommentManagerImpl extends AbstractCommentManager {
     @Override
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
             throws CommentSecurityException {
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            DocumentModel createdComment = internalCreateComment(session, docModel, comment, path);
-            session.save();
-            return createdComment;
-        }
+        CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
+        DocumentModel createdComment = internalCreateComment(session, docModel, comment, path);
+        session.save();
+        return createdComment;
     }
 
     @Override

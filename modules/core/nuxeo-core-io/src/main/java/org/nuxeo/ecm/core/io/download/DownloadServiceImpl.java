@@ -60,7 +60,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -289,18 +288,17 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         String downloadPath = pair.getLeft();
         try {
             DownloadBlobInfo downloadBlobInfo = new DownloadBlobInfo(downloadPath);
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
-                DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
-                if (!session.exists(docRef)) {
-                    return null;
-                }
-                DocumentModel doc = session.getDocument(docRef);
-                Blob blob = resolveBlob(doc, downloadBlobInfo.xpath);
-                if (!checkPermission(doc, downloadBlobInfo.xpath, blob, null, null)) {
-                    return null;
-                }
-                return blob;
+            CoreSession session = CoreInstance.getCoreSession(downloadBlobInfo.repository);
+            DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
+            if (!session.exists(docRef)) {
+                return null;
             }
+            DocumentModel doc = session.getDocument(docRef);
+            Blob blob = resolveBlob(doc, downloadBlobInfo.xpath);
+            if (!checkPermission(doc, downloadBlobInfo.xpath, blob, null, null)) {
+                return null;
+            }
+            return blob;
         } catch (IllegalArgumentException e) {
             return null;
         }
@@ -361,41 +359,40 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             }
             String xpath = downloadBlobInfo.xpath;
             String filename = downloadBlobInfo.filename;
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(downloadBlobInfo.repository)) {
-                DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
-                if (!session.exists(docRef)) {
-                    // Send a security exception to force authentication, if the current user is anonymous
-                    NuxeoPrincipal principal = NuxeoPrincipal.getCurrent();
-                    if (principal != null && principal.isAnonymous()) {
-                        throw new DocumentSecurityException("Authentication is needed for downloading the blob");
-                    }
-                    resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
+            CoreSession session = CoreInstance.getCoreSession(downloadBlobInfo.repository);
+            DocumentRef docRef = new IdRef(downloadBlobInfo.docId);
+            if (!session.exists(docRef)) {
+                // Send a security exception to force authentication, if the current user is anonymous
+                NuxeoPrincipal principal = NuxeoPrincipal.getCurrent();
+                if (principal != null && principal.isAnonymous()) {
+                    throw new DocumentSecurityException("Authentication is needed for downloading the blob");
+                }
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No document found");
+                return;
+            }
+            DocumentModel doc = session.getDocument(docRef);
+            if (info) {
+                Blob blob = resolveBlob(doc, xpath);
+                if (blob == null) {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No blob found");
                     return;
                 }
-                DocumentModel doc = session.getDocument(docRef);
-                if (info) {
-                    Blob blob = resolveBlob(doc, xpath);
-                    if (blob == null) {
-                        resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No blob found");
-                        return;
-                    }
-                    String downloadUrl = baseUrl + getDownloadUrl(doc, xpath, filename);
-                    String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
-                            + downloadUrl;
-                    resp.setContentType("text/plain");
-                    if (!isHead(req)) {
-                        resp.getWriter().write(result);
-                        resp.getWriter().flush();
-                    }
-                } else {
-                    DownloadContext context = DownloadContext.builder(req, resp)
-                                                             .doc(doc)
-                                                             .xpath(xpath)
-                                                             .filename(filename)
-                                                             .reason("download")
-                                                             .build();
-                    downloadBlob(context);
+                String downloadUrl = baseUrl + getDownloadUrl(doc, xpath, filename);
+                String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
+                        + downloadUrl;
+                resp.setContentType("text/plain");
+                if (!isHead(req)) {
+                    resp.getWriter().write(result);
+                    resp.getWriter().flush();
                 }
+            } else {
+                DownloadContext context = DownloadContext.builder(req, resp)
+                                                         .doc(doc)
+                                                         .xpath(xpath)
+                                                         .filename(filename)
+                                                         .reason("download")
+                                                         .build();
+                downloadBlob(context);
             }
         } catch (NuxeoException e) {
             if (tx) {

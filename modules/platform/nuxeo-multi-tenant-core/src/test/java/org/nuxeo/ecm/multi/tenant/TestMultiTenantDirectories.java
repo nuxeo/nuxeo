@@ -32,7 +32,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -99,15 +99,15 @@ public class TestMultiTenantDirectories {
 
         // As user0, add a new entry in directory
         try (NuxeoLoginContext loginContext = Framework.loginUser("user0");
-                CloseableCoreSession userSession = openSession();
                 Session sessionDir = directoryService.open("testDirectory")) {
+            CoreSession userSession = openSession();
             sessionDir.createEntry(newEntry);
         }
 
         // As user1, add the same entry in directory
         try (NuxeoLoginContext loginContext = Framework.loginUser("user1");
-                CloseableCoreSession userSession = openSession();
                 Session sessionDir = directoryService.open("testDirectory")) {
+            CoreSession userSession = openSession();
             sessionDir.createEntry(newEntry);
         }
 
@@ -139,8 +139,8 @@ public class TestMultiTenantDirectories {
 
         // As user0, add a new entry in directory
         try (NuxeoLoginContext loginContext = Framework.loginUser("user0");
-                CloseableCoreSession userSession = openSession();
                 Session sessionDir = directoryService.open("testDirectory")) {
+            CoreSession userSession = openSession();
             sessionDir.createEntry(newEntry);
             // Test if the second creation fails
             try {
@@ -151,7 +151,7 @@ public class TestMultiTenantDirectories {
         }
     }
 
-    protected CloseableCoreSession openSession() {
-        return coreFeature.openCoreSession();
+    protected CoreSession openSession() {
+        return coreFeature.getCoreSessionCurrentUser();
     }
 }

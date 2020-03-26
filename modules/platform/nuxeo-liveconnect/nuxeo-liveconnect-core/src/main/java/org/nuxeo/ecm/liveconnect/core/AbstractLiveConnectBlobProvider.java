@@ -35,8 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
@@ -157,35 +157,33 @@ public abstract class AbstractLiveConnectBlobProvider<O extends OAuth2ServicePro
         final RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         final WorkManager workManager = Framework.getService(WorkManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
+            CoreSession session = CoreInstance.getCoreSessionSystem(repositoryName);
+            long offset = 0;
+            List<DocumentModel> nextDocumentsToBeUpdated;
+            PageProviderService ppService = Framework.getService(PageProviderService.class);
+            Map<String, Serializable> props = new HashMap<>();
+            props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+            @SuppressWarnings("unchecked")
+            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    getPageProviderNameForUpdate(), null, null, null, props);
+            final long maxResult = pp.getPageSize();
+            do {
+                pp.setCurrentPageOffset(offset);
+                pp.refresh();
+                nextDocumentsToBeUpdated = pp.getCurrentPage();
 
-                long offset = 0;
-                List<DocumentModel> nextDocumentsToBeUpdated;
-                PageProviderService ppService = Framework.getService(PageProviderService.class);
-                Map<String, Serializable> props = new HashMap<>();
-                props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-                @SuppressWarnings("unchecked")
-                PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                        getPageProviderNameForUpdate(), null, null, null, props);
-                final long maxResult = pp.getPageSize();
-                do {
-                    pp.setCurrentPageOffset(offset);
-                    pp.refresh();
-                    nextDocumentsToBeUpdated = pp.getCurrentPage();
-
-                    if (nextDocumentsToBeUpdated.isEmpty()) {
-                        break;
-                    }
-                    List<String> docIds = nextDocumentsToBeUpdated.stream().map(DocumentModel::getId).collect(
-                            Collectors.toList());
-                    BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
-                            buildWorkId(repositoryName, offset), blobProviderId);
-                    work.setDocuments(repositoryName, docIds);
-                    workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
-                    offset += maxResult;
-                } while (nextDocumentsToBeUpdated.size() == maxResult);
-
-            }
+                if (nextDocumentsToBeUpdated.isEmpty()) {
+                    break;
+                }
+                List<String> docIds = nextDocumentsToBeUpdated.stream()
+                                                              .map(DocumentModel::getId)
+                                                              .collect(Collectors.toList());
+                BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
+                        buildWorkId(repositoryName, offset), blobProviderId);
+                work.setDocuments(repositoryName, docIds);
+                workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+                offset += maxResult;
+            } while (nextDocumentsToBeUpdated.size() == maxResult);
         }
     }
 

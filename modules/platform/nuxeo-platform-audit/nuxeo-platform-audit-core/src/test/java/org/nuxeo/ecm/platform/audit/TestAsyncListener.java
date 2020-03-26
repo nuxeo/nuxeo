@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -77,11 +76,10 @@ public class TestAsyncListener {
         session.save();
         DummyAsyncEventListener.actingUser = null;
         // as bob, send an event which is going to be handled by an async listener
-        try (CloseableCoreSession s = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            DocumentModel d = s.getDocument(doc.getRef());
-            EventContextImpl ctx = new DocumentEventContext(s, s.getPrincipal(), d);
-            eventService.fireEvent(ctx.newEvent("testdummyasync"));
-        }
+        CoreSession s = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        DocumentModel d = s.getDocument(doc.getRef());
+        EventContextImpl ctx = new DocumentEventContext(s, s.getPrincipal(), d);
+        eventService.fireEvent(ctx.newEvent("testdummyasync"));
         txFeature.nextTransaction();
         eventService.waitForAsyncCompletion();
         assertEquals("bob", DummyAsyncEventListener.actingUser);

@@ -46,7 +46,6 @@ import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -344,7 +343,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         int limit = Integer.parseInt(Framework.getProperty(DOCUMENT_CHANGE_LIMIT_PROPERTY, "1000"));
         if (!allRepositories.isEmpty() && lowerBound >= 0 && upperBound > lowerBound) {
             for (String repositoryName : allRepositories) {
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+                CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+                try {
                     // Get document changes
                     Set<IdRef> lastRefs = lastSyncRootRefs.get(repositoryName);
                     if (lastRefs == null) {
@@ -426,9 +426,8 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         Map<String, SynchronizationRoots> syncRoots = new HashMap<>();
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-                syncRoots.putAll(queryAndFetchSynchronizationRoots(session, query));
-            }
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+            syncRoots.putAll(queryAndFetchSynchronizationRoots(session, query));
         }
         return syncRoots;
     }
@@ -465,25 +464,24 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             Set<String> collectionMemberIds = new HashSet<>();
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-                Map<String, Serializable> props = new HashMap<>();
-                props.put(CORE_SESSION_PROPERTY, (Serializable) session);
-                PageProvider<DocumentModel> collectionPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                        CollectionConstants.ALL_COLLECTIONS_PAGE_PROVIDER, null, null, 0L, props);
-                List<DocumentModel> collections = collectionPageProvider.getCurrentPage();
-                for (DocumentModel collection : collections) {
-                    if (isSynchronizationRoot(principal, collection)) {
-                        PageProvider<DocumentModel> collectionMemberPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                                CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null,
-                                COLLECTION_CONTENT_PAGE_SIZE, 0L, props, collection.getId());
-                        List<DocumentModel> collectionMembers = collectionMemberPageProvider.getCurrentPage();
-                        for (DocumentModel collectionMember : collectionMembers) {
-                            collectionMemberIds.add(collectionMember.getId());
-                        }
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+            Map<String, Serializable> props = new HashMap<>();
+            props.put(CORE_SESSION_PROPERTY, (Serializable) session);
+            PageProvider<DocumentModel> collectionPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    CollectionConstants.ALL_COLLECTIONS_PAGE_PROVIDER, null, null, 0L, props);
+            List<DocumentModel> collections = collectionPageProvider.getCurrentPage();
+            for (DocumentModel collection : collections) {
+                if (isSynchronizationRoot(principal, collection)) {
+                    PageProvider<DocumentModel> collectionMemberPageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                            CollectionConstants.COLLECTION_CONTENT_PAGE_PROVIDER, null, COLLECTION_CONTENT_PAGE_SIZE,
+                            0L, props, collection.getId());
+                    List<DocumentModel> collectionMembers = collectionMemberPageProvider.getCurrentPage();
+                    for (DocumentModel collectionMember : collectionMembers) {
+                        collectionMemberIds.add(collectionMember.getId());
                     }
                 }
-                collectionSyncRootMemberIds.put(repositoryName, collectionMemberIds);
             }
+            collectionSyncRootMemberIds.put(repositoryName, collectionMemberIds);
         }
         return collectionSyncRootMemberIds;
     }

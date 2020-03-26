@@ -21,7 +21,6 @@ package org.nuxeo.easyshare;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -36,21 +35,18 @@ public abstract class EasyShareUnrestrictedRunner {
 
     public Object runUnrestricted(String docId) {
         NuxeoLoginContext loginContext = Framework.loginSystem();
-        CloseableCoreSession coreSession = null;
         try {
-            coreSession = CoreInstance.openCoreSession(null);
+            CoreSession coreSession = CoreInstance.getCoreSession(null);
 
             // Run unrestricted operation
             IdRef docRef = new IdRef(docId);
             return run(coreSession, docRef);
 
         } finally {
-            final CloseableCoreSession session2close = coreSession;
             RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
 
                 @Override
                 public void cleanup(HttpServletRequest req) {
-                    session2close.close();
                     loginContext.close();
                 }
             });

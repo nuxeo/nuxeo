@@ -63,7 +63,6 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.ecm.automation.test.HttpAutomationClient;
 import org.nuxeo.ecm.automation.test.HttpAutomationSession;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -139,9 +138,9 @@ public class TestPermissionHierarchy {
     @Inject
     protected HttpAutomationClient automationClient;
 
-    protected CloseableCoreSession session1;
+    protected CoreSession session1;
 
-    protected CloseableCoreSession session2;
+    protected CoreSession session2;
 
     protected DocumentModel userWorkspace1;
 
@@ -217,8 +216,8 @@ public class TestPermissionHierarchy {
         createUser(USER_2, USER_2);
 
         // Open a core session for each user
-        session1 = coreFeature.openCoreSession(USER_1);
-        session2 = coreFeature.openCoreSession(USER_2);
+        session1 = coreFeature.getCoreSession(USER_1);
+        session2 = coreFeature.getCoreSession(USER_2);
 
         // Create user workspace for each user
         userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1);
@@ -270,10 +269,6 @@ public class TestPermissionHierarchy {
 
     @After
     public void tearDown() {
-        // Close core sessions
-        session1.close();
-        session2.close();
-
         // Delete test users
         deleteUser(USER_1);
         deleteUser(USER_2);

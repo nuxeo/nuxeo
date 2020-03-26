@@ -55,7 +55,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -479,21 +478,18 @@ public class TestRenditionService {
 
         // now get a different rendition as a different user
         NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");
-        try (CloseableCoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
-            folder = userSession.getDocument(folder.getRef());
-            Rendition totoRendition = getRendition(folder, renditionName, true, isLazy, false);
-            assertTrue(totoRendition.isStored());
-            assertNotEquals(renditionDocument.getRef(), totoRendition.getHostDocument().getRef());
+        CoreSession userSession = coreFeature.getCoreSession(totoPrincipal);
+        folder = userSession.getDocument(folder.getRef());
+        Rendition totoRendition = getRendition(folder, renditionName, true, isLazy, false);
+        assertTrue(totoRendition.isStored());
+        assertNotEquals(renditionDocument.getRef(), totoRendition.getHostDocument().getRef());
 
-            // verify Administrator's rendition is larger than user's rendition
-            assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
-            long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
-            long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
-            assertTrue(
-                    String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
-                            adminZipEntryCount, totoZipEntryCount),
-                    adminZipEntryCount > totoZipEntryCount);
-        }
+        // verify Administrator's rendition is larger than user's rendition
+        assertNotEquals(rendition.getHostDocument().getRef(), totoRendition.getHostDocument().getRef());
+        long adminZipEntryCount = countZipEntries(new ZipInputStream(rendition.getBlob().getStream()));
+        long totoZipEntryCount = countZipEntries(new ZipInputStream(totoRendition.getBlob().getStream()));
+        assertTrue(String.format("Admin rendition entry count %s should be greater than user rendition entry count %s",
+                adminZipEntryCount, totoZipEntryCount), adminZipEntryCount > totoZipEntryCount);
 
         coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
 
@@ -624,11 +620,10 @@ public class TestRenditionService {
 
         // get rendition as non-admin user 'toto'
         NuxeoPrincipal totoPrincipal = Framework.getService(UserManager.class).getPrincipal("toto");
-        try (CloseableCoreSession userSession = coreFeature.openCoreSession(totoPrincipal)) {
-            folder = userSession.getDocument(folder.getRef());
-            totoRendition = renditionService.getRendition(folder, renditionName, true);
-            assertTrue(totoRendition.isStored());
-        }
+        CoreSession userSession = coreFeature.getCoreSession(totoPrincipal);
+        folder = userSession.getDocument(folder.getRef());
+        totoRendition = renditionService.getRendition(folder, renditionName, true);
+        assertTrue(totoRendition.isStored());
 
         txFeature.nextTransaction();
 
@@ -969,15 +964,13 @@ public class TestRenditionService {
         public void run() {
             TransactionHelper.startTransaction();
             try {
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, username)) {
-                    DocumentModel doc = session.getDocument(new IdRef(docId));
+                CoreSession session = CoreInstance.getCoreSession(repositoryName, username);
+                DocumentModel doc = session.getDocument(new IdRef(docId));
 
-                    doc.putContextData("delayed", Boolean.valueOf(delayed));
+                doc.putContextData("delayed", Boolean.valueOf(delayed));
 
-                    RenditionService renditionService = Framework.getService(RenditionService.class);
-                    detachedRendition = renditionService.getRendition(doc, renditionName, true);
-
-                }
+                RenditionService renditionService = Framework.getService(RenditionService.class);
+                detachedRendition = renditionService.getRendition(doc, renditionName, true);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             } finally {
@@ -1219,24 +1212,23 @@ public class TestRenditionService {
         section.setACP(acp, true);
         session.save();
 
-        try (CloseableCoreSession totoSession = coreFeature.openCoreSession("toto")) {
-            file = totoSession.getDocument(file.getRef());
-            section = totoSession.getDocument(section.getRef());
-            DocumentModel publishedRendition = renditionService.publishRendition(file, section,
-                    PDF_RENDITION_DEFINITION, false);
-            assertNotNull(publishedRendition);
-            assertTrue(publishedRendition.isProxy());
-            assertEquals(section.getRef(), publishedRendition.getParentRef());
-        }
-        try (CloseableCoreSession pouetSession = coreFeature.openCoreSession("pouet")) {
-            file = pouetSession.getDocument(file.getRef());
-            section = pouetSession.getDocument(section.getRef());
-            try {
-                renditionService.publishRendition(file, section, PDF_RENDITION_DEFINITION, false);
-                fail("User should not have permission to publish");
-            } catch (DocumentSecurityException e) {
-                // Expected
-            }
+        CoreSession totoSession = coreFeature.getCoreSession("toto");
+        file = totoSession.getDocument(file.getRef());
+        section = totoSession.getDocument(section.getRef());
+        DocumentModel publishedRendition = renditionService.publishRendition(file, section, PDF_RENDITION_DEFINITION,
+                false);
+        assertNotNull(publishedRendition);
+        assertTrue(publishedRendition.isProxy());
+        assertEquals(section.getRef(), publishedRendition.getParentRef());
+
+        CoreSession pouetSession = coreFeature.getCoreSession("pouet");
+        file = pouetSession.getDocument(file.getRef());
+        section = pouetSession.getDocument(section.getRef());
+        try {
+            renditionService.publishRendition(file, section, PDF_RENDITION_DEFINITION, false);
+            fail("User should not have permission to publish");
+        } catch (DocumentSecurityException e) {
+            // Expected
         }
     }
 

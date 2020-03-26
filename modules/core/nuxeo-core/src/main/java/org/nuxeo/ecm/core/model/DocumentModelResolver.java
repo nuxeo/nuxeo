@@ -28,7 +28,6 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -212,48 +211,39 @@ public class DocumentModelResolver extends AbstractObjectResolver implements Obj
         if (ref == null) {
             return;
         }
-        CloseableCoreSession closeableCoreSession = null;
-        try {
-            CoreSession session;
-            if (ref.repo != null) {
-                // we have an explicit repository name
-                if (context != null && ref.repo.equals(((CoreSession) context).getRepositoryName())) {
-                    // if it's the same repository as the context session, use it directly
-                    session = (CoreSession) context;
-                } else {
-                    // otherwise open a new one
-                    closeableCoreSession = CoreInstance.openCoreSession(ref.repo);
-                    session = closeableCoreSession;
-                }
-            } else {
-                // use session from context
+        CoreSession session;
+        if (ref.repo != null) {
+            // we have an explicit repository name
+            if (context != null && ref.repo.equals(((CoreSession) context).getRepositoryName())) {
+                // if it's the same repository as the context session, use it directly
                 session = (CoreSession) context;
-                if (session == null) {
-                    // use the default repository if none is provided in the context
-                    closeableCoreSession = CoreInstance.openCoreSession(null);
-                    session = closeableCoreSession;
-                }
+            } else {
+                // otherwise open a new one
+                session = CoreInstance.getCoreSession(ref.repo);
             }
-            DocumentRef docRef;
-            switch (mode) {
-            case ID_ONLY_REF:
-            case REPO_AND_ID_REF:
-                docRef = new IdRef(ref.ref);
-                break;
-            case PATH_ONLY_REF:
-            case REPO_AND_PATH_REF:
-                docRef = new PathRef(ref.ref);
-                break;
-            default:
-                // unknown ref type
-                return;
-            }
-            resolver.accept(session, docRef);
-        } finally {
-            if (closeableCoreSession != null) {
-                closeableCoreSession.close();
+        } else {
+            // use session from context
+            session = (CoreSession) context;
+            if (session == null) {
+                // use the default repository if none is provided in the context
+                session = CoreInstance.getCoreSession(null);
             }
         }
+        DocumentRef docRef;
+        switch (mode) {
+        case ID_ONLY_REF:
+        case REPO_AND_ID_REF:
+            docRef = new IdRef(ref.ref);
+            break;
+        case PATH_ONLY_REF:
+        case REPO_AND_PATH_REF:
+            docRef = new PathRef(ref.ref);
+            break;
+        default:
+            // unknown ref type
+            return;
+        }
+        resolver.accept(session, docRef);
     }
 
     @Override

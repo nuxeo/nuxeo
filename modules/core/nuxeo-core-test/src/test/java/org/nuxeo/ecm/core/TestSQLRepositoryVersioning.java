@@ -40,7 +40,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -81,8 +80,8 @@ public class TestSQLRepositoryVersioning {
     @Inject
     protected CoreSession session;
 
-    protected CloseableCoreSession openSessionAs(String username) {
-        return CoreInstance.openCoreSession(session.getRepositoryName(), username);
+    protected CoreSession openSessionAs(String username) {
+        return CoreInstance.getCoreSession(session.getRepositoryName(), username);
     }
 
     /**
@@ -381,7 +380,8 @@ public class TestSQLRepositoryVersioning {
         Throwable[] throwables = new Throwable[2];
         Thread t1 = new Thread(() -> {
             TransactionHelper.startTransaction();
-            try (CloseableCoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+            try {
+                CoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR);
                 DocumentModel doc1 = session.getDocument(docRef);
                 assertEquals("t2", doc1.getPropertyValue("dc:title"));
                 // 1. sync
@@ -405,7 +405,8 @@ public class TestSQLRepositoryVersioning {
         });
         Thread t2 = new Thread(() -> {
             TransactionHelper.startTransaction();
-            try (CloseableCoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+            try {
+                CoreSession session = openSessionAs(SecurityConstants.ADMINISTRATOR);
                 DocumentModel doc12 = session.getDocument(docRef);
                 assertEquals("t2", doc12.getPropertyValue("dc:title"));
                 // 1. sync
@@ -525,9 +526,8 @@ public class TestSQLRepositoryVersioning {
         acp = session.getACP(version.getRef());
         assertNull(acp);
         // check proxy still accessible (in another session)
-        try (CloseableCoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
-            session2.getDocument(proxy.getRef());
-        }
+        CoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR);
+        session2.getDocument(proxy.getRef());
     }
 
     @Test
@@ -1054,10 +1054,9 @@ public class TestSQLRepositoryVersioning {
         session.removeDocument(doc.getRef());
         session.save();
         // now search as non-admin
-        try (CloseableCoreSession bobSession = openSessionAs("bob")) {
-            // if this returns then all is well, otherwise it means there's an infinite loop somewhere
-            bobSession.query("SELECT * FROM Document");
-        }
+        CoreSession bobSession = openSessionAs("bob");
+        // if this returns then all is well, otherwise it means there's an infinite loop somewhere
+        bobSession.query("SELECT * FROM Document");
     }
 
     @Test

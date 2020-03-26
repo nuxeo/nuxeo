@@ -31,8 +31,8 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -286,54 +286,50 @@ public class TestDocumentRoutingServiceWait extends DocumentRoutingTestCase {
 
         // bob creates the route and validates it
         DocumentRef routeInstanceRef;
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            DocumentRoute route = createDocumentRoute(bobSession, ROUTE1);
-            assertNotNull(route);
-            bobSession.save();
-            List<DocumentRoute> routes = service.getAvailableDocumentRoute(bobSession);
-            assertEquals(1, routes.size());
-            DocumentRoute routeModel = routes.get(0);
-            DocumentModel doc1 = createTestDocument("test1", bobSession);
-            bobSession.save();
-            service.lockDocumentRoute(route, bobSession);
-            route = service.validateRouteModel(route, bobSession);
-            service.unlockDocumentRouteUnrestrictedSession(route, bobSession);
-            assertEquals("validated", route.getDocument().getCurrentLifeCycleState());
-            assertEquals("validated",
-                    bobSession.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
-            bobSession.save();
-            waitForAsyncExec();
-            DocumentRoute routeInstance = service.createNewInstance(routeModel,
-                    Collections.singletonList(doc1.getId()), bobSession, true);
-            routeInstanceRef = routeInstance.getDocument().getRef();
-        }
+        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
+        DocumentRoute route = createDocumentRoute(bobSession, ROUTE1);
+        assertNotNull(route);
+        bobSession.save();
+        List<DocumentRoute> routes = service.getAvailableDocumentRoute(bobSession);
+        assertEquals(1, routes.size());
+        DocumentRoute routeModel = routes.get(0);
+        DocumentModel doc1 = createTestDocument("test1", bobSession);
+        bobSession.save();
+        service.lockDocumentRoute(route, bobSession);
+        route = service.validateRouteModel(route, bobSession);
+        service.unlockDocumentRouteUnrestrictedSession(route, bobSession);
+        assertEquals("validated", route.getDocument().getCurrentLifeCycleState());
+        assertEquals("validated",
+                bobSession.getChildren(route.getDocument().getRef()).get(0).getCurrentLifeCycleState());
+        bobSession.save();
+        waitForAsyncExec();
+        DocumentRoute routeInstance = service.createNewInstance(routeModel, Collections.singletonList(doc1.getId()),
+                bobSession, true);
+        routeInstanceRef = routeInstance.getDocument().getRef();
 
         // jack checks he can't do anything on it
-        try (CloseableCoreSession jackSession = CoreInstance.openCoreSession(session.getRepositoryName(), "jack")) {
-            assertFalse(jackSession.exists(routeInstanceRef));
-        }
+        CoreSession jackSession = CoreInstance.getCoreSession(session.getRepositoryName(), "jack");
+        assertFalse(jackSession.exists(routeInstanceRef));
 
         // bob finishes the route
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
-            DocumentRoute routeInstance = bobSession.getDocument(routeInstanceRef).getAdapter(DocumentRoute.class);
-            List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
-            WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
-            waiting = WaitingStepRuntimePersister.getRunningStepIds();
-            assertEquals(1, waiting.size());
-            WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
-            waiting = WaitingStepRuntimePersister.getRunningStepIds();
-            assertEquals(2, waiting.size());
-            WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
-            waiting = WaitingStepRuntimePersister.getRunningStepIds();
-            assertEquals(1, waiting.size());
-            assertFalse(routeInstance.isDone());
-            WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
-            assertEquals(0, waiting.size());
-            routeInstance = bobSession.getDocument(routeInstanceRef).getAdapter(DocumentRoute.class);
-            assertTrue(routeInstance.isDone());
-            assertEquals((6/* route */ + 4 /* number of steps */ * 3 /* number of event per waiting step */
-                    + 2 /* workflow started + first task audit */), CounterListener.getCounter());
-        }
+        routeInstance = bobSession.getDocument(routeInstanceRef).getAdapter(DocumentRoute.class);
+        List<String> waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(2, waiting.size());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
+        waiting = WaitingStepRuntimePersister.getRunningStepIds();
+        assertEquals(1, waiting.size());
+        assertFalse(routeInstance.isDone());
+        WaitingStepRuntimePersister.resumeStep(waiting.get(0), bobSession);
+        assertEquals(0, waiting.size());
+        routeInstance = bobSession.getDocument(routeInstanceRef).getAdapter(DocumentRoute.class);
+        assertTrue(routeInstance.isDone());
+        assertEquals((6/* route */ + 4 /* number of steps */ * 3 /* number of event per waiting step */
+                + 2 /* workflow started + first task audit */), CounterListener.getCounter());
     }
 
     @Test

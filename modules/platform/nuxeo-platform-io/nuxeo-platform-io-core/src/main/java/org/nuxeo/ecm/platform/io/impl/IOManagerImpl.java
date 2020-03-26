@@ -40,8 +40,8 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -268,41 +268,40 @@ public class IOManagerImpl implements IOManager {
         }
 
         List<DocumentRef> roots = new ArrayList<>();
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repo)) {
-            for (DocumentRef source : sources) {
-                DocumentTranslationMap map = new DocumentTranslationMapImpl(repo, repo);
-                DocumentModel sourceDoc = session.getDocument(source);
-                DocumentModel destDoc = session.copy(source, targetLocation.getDocRef(), null);
-                roots.add(destDoc.getRef());
-                // iterate on each tree to build translation map
-                DocumentTreeIterator sourceIt = new DocumentTreeIterator(session, sourceDoc);
-                DocumentTreeIterator destIt = new DocumentTreeIterator(session, destDoc);
-                while (sourceIt.hasNext()) {
-                    DocumentModel sourceItem = sourceIt.next();
-                    DocumentRef sourceRef = sourceItem.getRef();
-                    if (!destIt.hasNext()) {
-                        map.put(sourceRef, null);
-                    } else {
-                        DocumentModel destItem = destIt.next();
-                        DocumentRef destRef = destItem.getRef();
-                        map.put(sourceRef, destRef);
-                    }
+        CoreSession session = CoreInstance.getCoreSession(repo);
+        for (DocumentRef source : sources) {
+            DocumentTranslationMap map = new DocumentTranslationMapImpl(repo, repo);
+            DocumentModel sourceDoc = session.getDocument(source);
+            DocumentModel destDoc = session.copy(source, targetLocation.getDocRef(), null);
+            roots.add(destDoc.getRef());
+            // iterate on each tree to build translation map
+            DocumentTreeIterator sourceIt = new DocumentTreeIterator(session, sourceDoc);
+            DocumentTreeIterator destIt = new DocumentTreeIterator(session, destDoc);
+            while (sourceIt.hasNext()) {
+                DocumentModel sourceItem = sourceIt.next();
+                DocumentRef sourceRef = sourceItem.getRef();
+                if (!destIt.hasNext()) {
+                    map.put(sourceRef, null);
+                } else {
+                    DocumentModel destItem = destIt.next();
+                    DocumentRef destRef = destItem.getRef();
+                    map.put(sourceRef, destRef);
                 }
-                Collection<DocumentRef> allSources = map.getDocRefMap().keySet();
-                if (ioAdapters != null && !ioAdapters.isEmpty()) {
-                    for (String adapterName : ioAdapters) {
-                        IOResourceAdapter adapter = getAdapter(adapterName);
-                        if (adapter == null) {
-                            log.warn("Adapter " + adapterName + " not found");
-                            continue;
-                        }
-                        IOResources resources = adapter.extractResources(repo, allSources);
-                        IOResources newResources = adapter.translateResources(repo, resources, map);
-                        adapter.storeResources(newResources);
-                    }
-                }
-                session.save();
             }
+            Collection<DocumentRef> allSources = map.getDocRefMap().keySet();
+            if (ioAdapters != null && !ioAdapters.isEmpty()) {
+                for (String adapterName : ioAdapters) {
+                    IOResourceAdapter adapter = getAdapter(adapterName);
+                    if (adapter == null) {
+                        log.warn("Adapter " + adapterName + " not found");
+                        continue;
+                    }
+                    IOResources resources = adapter.extractResources(repo, allSources);
+                    IOResources newResources = adapter.translateResources(repo, resources, map);
+                    adapter.storeResources(newResources);
+                }
+            }
+            session.save();
         }
         return roots;
     }

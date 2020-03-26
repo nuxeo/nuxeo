@@ -48,7 +48,6 @@ import javax.el.ELException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.Logger;
 import org.jboss.el.ExpressionFactoryImpl;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -322,14 +321,13 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
     protected long syncLogCreationEntries(BaseLogEntryProvider provider, String repoId, String path, Boolean recurs) {
 
         provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repoId)) {
-            DocumentRef rootRef = new PathRef(path);
-            DocumentModel root = guardedDocument(session, rootRef);
-            long nbAddedEntries = doSyncNode(provider, session, root, recurs);
+        CoreSession session = CoreInstance.getCoreSession(repoId);
+        DocumentRef rootRef = new PathRef(path);
+        DocumentModel root = guardedDocument(session, rootRef);
+        long nbAddedEntries = doSyncNode(provider, session, root, recurs);
 
-            log.debug("synced {}  entries on {}", nbAddedEntries, path);
-            return nbAddedEntries;
-        }
+        log.debug("synced {}  entries on {}", nbAddedEntries, path);
+        return nbAddedEntries;
     }
 
     protected long doSyncNode(BaseLogEntryProvider provider, CoreSession session, DocumentModel node, boolean recurs) {

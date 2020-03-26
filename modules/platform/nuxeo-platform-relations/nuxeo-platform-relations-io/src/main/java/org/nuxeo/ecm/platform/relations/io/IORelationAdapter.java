@@ -37,8 +37,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -238,54 +238,53 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             log.error("Cannot extract resources, no graph supplied");
             return null;
         }
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
-            RelationManager relManager = getRelationManager();
-            Graph graph = relManager.getGraphByName(graphName);
-            if (graph == null) {
-                log.error("Cannot resolve graph " + graphName);
-                return null;
-            }
-            Map<DocumentRef, Set<Resource>> docResources = new HashMap<>();
-            List<Statement> statements = new ArrayList<>();
-            Set<Resource> allResources = new HashSet<>();
-            for (DocumentRef docRef : sources) {
-                DocumentModel doc = session.getDocument(docRef);
-                Map<String, Object> context = Collections.<String, Object> singletonMap(
-                        ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
-                Set<Resource> resources = relManager.getAllResources(doc, context);
-                docResources.put(docRef, resources);
-                allResources.addAll(resources);
-                for (Resource resource : resources) {
-                    statements.addAll(getMatchingStatements(graph, resource));
-                }
-            }
-            Map<String, String> namespaces = graph.getNamespaces();
-            // filter duplicate statements + statements involving external
-            // resources
-            IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, statements);
-            Graph memoryGraph = graphHelper.getGraph();
-            List<Statement> toRemove = new ArrayList<>();
-            if (getBooleanProperty(IORelationAdapterProperties.IGNORE_EXTERNAL)) {
-                for (Statement stmt : memoryGraph.getStatements()) {
-                    Subject subject = stmt.getSubject();
-                    if (subject.isQNameResource()) {
-                        if (!allResources.contains(subject)) {
-                            toRemove.add(stmt);
-                            continue;
-                        }
-                    }
-                    Node object = stmt.getObject();
-                    if (object.isQNameResource()) {
-                        if (!allResources.contains(subject)) {
-                            toRemove.add(stmt);
-                            continue;
-                        }
-                    }
-                }
-            }
-            memoryGraph.remove(toRemove);
-            return new IORelationResources(namespaces, docResources, memoryGraph.getStatements());
+        CoreSession session = CoreInstance.getCoreSessionSystem(repo);
+        RelationManager relManager = getRelationManager();
+        Graph graph = relManager.getGraphByName(graphName);
+        if (graph == null) {
+            log.error("Cannot resolve graph " + graphName);
+            return null;
         }
+        Map<DocumentRef, Set<Resource>> docResources = new HashMap<>();
+        List<Statement> statements = new ArrayList<>();
+        Set<Resource> allResources = new HashSet<>();
+        for (DocumentRef docRef : sources) {
+            DocumentModel doc = session.getDocument(docRef);
+            Map<String, Object> context = Collections.<String, Object> singletonMap(
+                    ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
+            Set<Resource> resources = relManager.getAllResources(doc, context);
+            docResources.put(docRef, resources);
+            allResources.addAll(resources);
+            for (Resource resource : resources) {
+                statements.addAll(getMatchingStatements(graph, resource));
+            }
+        }
+        Map<String, String> namespaces = graph.getNamespaces();
+        // filter duplicate statements + statements involving external
+        // resources
+        IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, statements);
+        Graph memoryGraph = graphHelper.getGraph();
+        List<Statement> toRemove = new ArrayList<>();
+        if (getBooleanProperty(IORelationAdapterProperties.IGNORE_EXTERNAL)) {
+            for (Statement stmt : memoryGraph.getStatements()) {
+                Subject subject = stmt.getSubject();
+                if (subject.isQNameResource()) {
+                    if (!allResources.contains(subject)) {
+                        toRemove.add(stmt);
+                        continue;
+                    }
+                }
+                Node object = stmt.getObject();
+                if (object.isQNameResource()) {
+                    if (!allResources.contains(subject)) {
+                        toRemove.add(stmt);
+                        continue;
+                    }
+                }
+            }
+        }
+        memoryGraph.remove(toRemove);
+        return new IORelationResources(namespaces, docResources, memoryGraph.getStatements());
     }
 
     @Override
@@ -388,79 +387,78 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         if (!(resources instanceof IORelationResources)) {
             return resources;
         }
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
-            IORelationResources relResources = (IORelationResources) resources;
-            Map<String, String> namespaces = relResources.getNamespaces();
-            IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, relResources.getStatements());
-            Graph graph = graphHelper.getGraph();
-            RelationManager relManager = getRelationManager();
-            // variables for date update
-            Literal newDate = RelationDate.getLiteralDate(new Date());
-            String[] dateUris = getStringArrayProperty(IORelationAdapterProperties.UPDATE_DATE_METADATA);
-            List<Resource> dateProperties = new ArrayList<>();
-            if (dateUris != null) {
-                for (String dateUri : dateUris) {
-                    dateProperties.add(new ResourceImpl(dateUri));
-                }
+        CoreSession session = CoreInstance.getCoreSessionSystem(repo);
+        IORelationResources relResources = (IORelationResources) resources;
+        Map<String, String> namespaces = relResources.getNamespaces();
+        IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, relResources.getStatements());
+        Graph graph = graphHelper.getGraph();
+        RelationManager relManager = getRelationManager();
+        // variables for date update
+        Literal newDate = RelationDate.getLiteralDate(new Date());
+        String[] dateUris = getStringArrayProperty(IORelationAdapterProperties.UPDATE_DATE_METADATA);
+        List<Resource> dateProperties = new ArrayList<>();
+        if (dateUris != null) {
+            for (String dateUri : dateUris) {
+                dateProperties.add(new ResourceImpl(dateUri));
             }
-            for (Map.Entry<DocumentRef, Set<Resource>> entry : relResources.getResourcesMap().entrySet()) {
-                DocumentRef oldRef = entry.getKey();
-                DocumentRef newRef = map.getDocRefMap().get(oldRef);
-                Set<Resource> docResources = relResources.getDocumentResources(oldRef);
-                for (Resource resource : docResources) {
-                    if (!resource.isQNameResource() || oldRef.equals(newRef)) {
-                        // cannot translate or no change => keep same
-                        continue;
-                    }
-                    Statement pattern = new StatementImpl(resource, null, null);
-                    List<Statement> outgoing = graph.getStatements(pattern);
-                    pattern = new StatementImpl(null, null, resource);
-                    List<Statement> incoming = graph.getStatements(pattern);
-
-                    // remove old statements
-                    graph.remove(outgoing);
-                    graph.remove(incoming);
-
-                    if (newRef == null) {
-                        // do not replace
-                        continue;
-                    }
-
-                    DocumentModel newDoc;
-                    try {
-                        newDoc = session.getDocument(newRef);
-                    } catch (DocumentNotFoundException e) {
-                        // do not replace
-                        continue;
-                    }
-                    QNameResource qnameRes = (QNameResource) resource;
-                    Map<String, Object> context = Collections.<String, Object> singletonMap(
-                            ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
-                    Resource newResource = relManager.getResource(qnameRes.getNamespace(), newDoc, context);
-                    Statement newStatement;
-                    List<Statement> newOutgoing = new ArrayList<>();
-                    for (Statement stmt : outgoing) {
-                        newStatement = (Statement) stmt.clone();
-                        newStatement.setSubject(newResource);
-                        if (dateProperties != null) {
-                            newStatement = updateDate(newStatement, newDate, dateProperties);
-                        }
-                        newOutgoing.add(newStatement);
-                    }
-                    graph.add(newOutgoing);
-                    List<Statement> newIncoming = new ArrayList<>();
-                    for (Statement stmt : incoming) {
-                        newStatement = (Statement) stmt.clone();
-                        newStatement.setObject(newResource);
-                        if (dateProperties != null) {
-                            newStatement = updateDate(newStatement, newDate, dateProperties);
-                        }
-                        newIncoming.add(newStatement);
-                    }
-                    graph.add(newIncoming);
-                }
-            }
-            return new IORelationResources(namespaces, relResources.getResourcesMap(), graph.getStatements());
         }
+        for (Map.Entry<DocumentRef, Set<Resource>> entry : relResources.getResourcesMap().entrySet()) {
+            DocumentRef oldRef = entry.getKey();
+            DocumentRef newRef = map.getDocRefMap().get(oldRef);
+            Set<Resource> docResources = relResources.getDocumentResources(oldRef);
+            for (Resource resource : docResources) {
+                if (!resource.isQNameResource() || oldRef.equals(newRef)) {
+                    // cannot translate or no change => keep same
+                    continue;
+                }
+                Statement pattern = new StatementImpl(resource, null, null);
+                List<Statement> outgoing = graph.getStatements(pattern);
+                pattern = new StatementImpl(null, null, resource);
+                List<Statement> incoming = graph.getStatements(pattern);
+
+                // remove old statements
+                graph.remove(outgoing);
+                graph.remove(incoming);
+
+                if (newRef == null) {
+                    // do not replace
+                    continue;
+                }
+
+                DocumentModel newDoc;
+                try {
+                    newDoc = session.getDocument(newRef);
+                } catch (DocumentNotFoundException e) {
+                    // do not replace
+                    continue;
+                }
+                QNameResource qnameRes = (QNameResource) resource;
+                Map<String, Object> context = Collections.<String, Object> singletonMap(
+                        ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
+                Resource newResource = relManager.getResource(qnameRes.getNamespace(), newDoc, context);
+                Statement newStatement;
+                List<Statement> newOutgoing = new ArrayList<>();
+                for (Statement stmt : outgoing) {
+                    newStatement = (Statement) stmt.clone();
+                    newStatement.setSubject(newResource);
+                    if (dateProperties != null) {
+                        newStatement = updateDate(newStatement, newDate, dateProperties);
+                    }
+                    newOutgoing.add(newStatement);
+                }
+                graph.add(newOutgoing);
+                List<Statement> newIncoming = new ArrayList<>();
+                for (Statement stmt : incoming) {
+                    newStatement = (Statement) stmt.clone();
+                    newStatement.setObject(newResource);
+                    if (dateProperties != null) {
+                        newStatement = updateDate(newStatement, newDate, dateProperties);
+                    }
+                    newIncoming.add(newStatement);
+                }
+                graph.add(newIncoming);
+            }
+        }
+        return new IORelationResources(namespaces, relResources.getResourcesMap(), graph.getStatements());
     }
 }

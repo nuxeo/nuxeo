@@ -38,7 +38,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -469,16 +468,13 @@ public class TestPageProvider {
         assertEquals(2, entries.size());
 
         // Check that a non-admin user cannot have results from the page provider
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(),
-                userManager.getPrincipal(testUsername))) {
+        CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(),
+                userManager.getPrincipal(testUsername));
+        props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) userSession);
+        pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, 6L, 0L, props);
 
-            props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) userSession);
-            pp = pps.getPageProvider(LATEST_CREATED_USERS_OR_GROUPS_PROVIDER, null, 6L, 0L, props);
-
-            entries = (List<DocumentModel>) pp.getCurrentPage();
-            assertEquals(0, entries.size());
-
-        }
+        entries = (List<DocumentModel>) pp.getCurrentPage();
+        assertEquals(0, entries.size());
     }
 
 }

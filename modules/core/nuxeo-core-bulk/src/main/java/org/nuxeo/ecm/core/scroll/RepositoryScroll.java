@@ -26,8 +26,8 @@ import java.util.NoSuchElementException;
 
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
@@ -45,7 +45,7 @@ public class RepositoryScroll implements Scroll {
 
     protected NuxeoLoginContext loginContext;
 
-    protected CloseableCoreSession session;
+    protected CoreSession session;
 
     protected ScrollResult<String> repoScroller;
 
@@ -72,7 +72,7 @@ public class RepositoryScroll implements Scroll {
     }
 
     protected void openSession() {
-        session = CoreInstance.openCoreSession(request.getRepository());
+        session = CoreInstance.getCoreSession(request.getRepository());
     }
 
     @Override
@@ -107,10 +107,6 @@ public class RepositoryScroll implements Scroll {
 
     @Override
     public void close() {
-        if (session != null) {
-            session.close();
-            session = null;
-        }
         if (loginContext != null) {
             loginContext.close();
             loginContext = null;

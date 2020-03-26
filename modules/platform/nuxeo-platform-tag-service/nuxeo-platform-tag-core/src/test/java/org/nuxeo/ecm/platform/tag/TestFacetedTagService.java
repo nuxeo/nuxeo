@@ -37,8 +37,8 @@ import java.util.Set;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -177,9 +177,8 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         // add a tag with a different user
         // we don't want a versioning policy like "collaborative-save" to be triggered and version the doc
-        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
-            tagService.tag(joeSession, doc.getId(), "mytag");
-        }
+        CoreSession joeSession = CoreInstance.getCoreSession(session.getRepositoryName(), "joe");
+        tagService.tag(joeSession, doc.getId(), "mytag");
 
         doc.refresh();
         assertEquals("0.0", doc.getVersionLabel()); // version unchanged
@@ -199,9 +198,8 @@ public class TestFacetedTagService extends AbstractTestTagService {
 
         // add a tag with a different user
         // we don't want a versioning policy like "collaborative-save" to be triggered and version the doc
-        try (CloseableCoreSession joeSession = CoreInstance.openCoreSession(session.getRepositoryName(), "joe")) {
-            tagService.tag(joeSession, doc.getId(), "mytag");
-        }
+        CoreSession joeSession = CoreInstance.getCoreSession(session.getRepositoryName(), "joe");
+        tagService.tag(joeSession, doc.getId(), "mytag");
 
         doc.refresh();
         assertEquals("1.0", doc.getVersionLabel()); // version unchanged

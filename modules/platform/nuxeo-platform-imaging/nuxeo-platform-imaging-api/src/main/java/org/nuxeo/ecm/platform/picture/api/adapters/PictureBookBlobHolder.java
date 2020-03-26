@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,27 +44,19 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     @Override
     public Blob getBlob() {
         CoreSession session = getSession();
-        boolean sessionOpened = false;
         if (session == null) {
-            sessionOpened = true;
-            session = CoreInstance.openCoreSession(doc.getRepositoryName());
+            session = CoreInstance.getCoreSession(doc.getRepositoryName());
         }
-        try {
-            DocumentModelList docs = session.getChildren(doc.getRef(), "Picture");
-            if (docs.isEmpty()) {
-                return null;
-            }
-            DocumentModel documentModel = docs.get(0);
-            if (documentModel == null) {
-                return null;
-            }
-            BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
-            return bh.getBlob();
-        } finally {
-            if (sessionOpened) {
-                ((CloseableCoreSession) session).close();
-            }
+        DocumentModelList docs = session.getChildren(doc.getRef(), "Picture");
+        if (docs.isEmpty()) {
+            return null;
         }
+        DocumentModel documentModel = docs.get(0);
+        if (documentModel == null) {
+            return null;
+        }
+        BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
+        return bh.getBlob();
 
     }
 
@@ -77,29 +68,21 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     @SuppressWarnings("resource") // session closed only if we opened it
     public List<Blob> getBlobs(String title) {
         CoreSession session = getSession();
-        boolean sessionOpened = false;
         if (session == null) {
-            sessionOpened = true;
-            session = CoreInstance.openCoreSession(doc.getRepositoryName());
+            session = CoreInstance.getCoreSession(doc.getRepositoryName());
         }
-        try {
-            DocumentModelList docList = session.getChildren(doc.getRef(), "Picture");
-            List<Blob> blobList = new ArrayList<>(docList.size());
-            for (DocumentModel documentModel : docList) {
-                if ("Original".equals(title)) {
-                    BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
-                    blobList.add(bh.getBlob());
-                } else {
-                    PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
-                    blobList.add(picture.getPictureFromTitle(title));
-                }
-            }
-            return blobList;
-        } finally {
-            if (sessionOpened) {
-                ((CloseableCoreSession) session).close();
+        DocumentModelList docList = session.getChildren(doc.getRef(), "Picture");
+        List<Blob> blobList = new ArrayList<>(docList.size());
+        for (DocumentModel documentModel : docList) {
+            if ("Original".equals(title)) {
+                BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
+                blobList.add(bh.getBlob());
+            } else {
+                PictureResourceAdapter picture = documentModel.getAdapter(PictureResourceAdapter.class);
+                blobList.add(picture.getPictureFromTitle(title));
             }
         }
+        return blobList;
     }
 
     @Override

@@ -128,7 +128,6 @@ import org.elasticsearch.search.SearchHits;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -219,9 +218,6 @@ public class NuxeoCmisService extends AbstractCmisService
 
     protected final NuxeoRepository repository;
 
-    /** When false, we don't own the core session and shouldn't close it. */
-    protected final boolean coreSessionOwned;
-
     protected CoreSession coreSession;
 
     /* To avoid refetching it several times per session. */
@@ -278,7 +274,6 @@ public class NuxeoCmisService extends AbstractCmisService
 
     protected NuxeoCmisService(CoreSession coreSession, String repositoryName) {
         this.coreSession = coreSession;
-        coreSessionOwned = coreSession == null;
         repository = getNuxeoRepository(repositoryName);
         documentFilter = getDocumentFilter();
         SecurityService securityService = Framework.getService(SecurityService.class);
@@ -294,10 +289,7 @@ public class NuxeoCmisService extends AbstractCmisService
     // called in a finally block from dispatcher
     @Override
     public void close() {
-        if (coreSessionOwned && coreSession != null) {
-            ((CloseableCoreSession) coreSession).close();
-            coreSession = null;
-        }
+        coreSession = null;
         clearObjectInfos();
         CMISVersioningFilter.disable();
     }
@@ -340,7 +332,7 @@ public class NuxeoCmisService extends AbstractCmisService
         if (repositoryName == null) {
             return null;
         }
-        return CoreInstance.openCoreSession(repositoryName, username);
+        return CoreInstance.getCoreSession(repositoryName, username);
     }
 
     public NuxeoRepository getNuxeoRepository() {
@@ -369,7 +361,7 @@ public class NuxeoCmisService extends AbstractCmisService
     public void setCallContext(CallContext callContext) {
         close();
         this.callContext = callContext;
-        if (coreSessionOwned) {
+        if (coreSession == null) {
             // for non-local binding, the principal is found
             // in the login stack
             String username = callContext.getBinding().equals(CallContext.BINDING_LOCAL) ? callContext.getUsername()

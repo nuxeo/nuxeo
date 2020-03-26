@@ -41,7 +41,6 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -124,9 +123,8 @@ public class SignPDFTest {
 
     @Test
     public void testNotAllowedToSignPDF() throws Exception {
-        try (CloseableCoreSession notAdminSession = CoreInstance.openCoreSession(session.getRepositoryName(),
-                DEFAULT_USER_ID); //
-                OperationContext ctx = buildCtx(notAdminSession)) {
+        CoreSession notAdminSession = CoreInstance.getCoreSession(session.getRepositoryName(), DEFAULT_USER_ID);
+        try (OperationContext ctx = buildCtx(notAdminSession)) {
             Map<String, Object> params = buildParams();
             try {
                 automationService.run(ctx, SignPDF.ID, params);

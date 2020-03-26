@@ -93,11 +93,11 @@ public class RenderingContextImpl implements RenderingContext {
                 // do nothing
             }
             if (docSession != null) {
-                return new SessionWrapper(docSession, false);
+                return new SessionWrapper(docSession);
             }
         }
         if (session != null) {
-            return new SessionWrapper(session, false);
+            return new SessionWrapper(session);
         }
 
         if (sessionWrapperSupplier != null) {
@@ -120,8 +120,8 @@ public class RenderingContextImpl implements RenderingContext {
         }
         if (!StringUtils.isBlank(repoNameFound)) {
             // this session will be closed when the wrapper is closed
-            CoreSession repoSession = CoreInstance.openCoreSession(repoNameFound);
-            return new SessionWrapper(repoSession, true);
+            CoreSession repoSession = CoreInstance.getCoreSession(repoNameFound);
+            return new SessionWrapper(repoSession);
         }
         throw new MarshallingException("Unable to create a new session");
     }

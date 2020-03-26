@@ -11,8 +11,8 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -56,7 +56,6 @@ public class ExportAndTransformAndInportTest extends BaseExport {
     public void testExportWithTransformThenImport() throws Exception {
 
         NuxeoPrincipal principal = session.getPrincipal();
-        CloseableCoreSession importSession = null;
 
         DocumentModel root = createSomethingToExport(session);
 
@@ -68,7 +67,7 @@ public class ExportAndTransformAndInportTest extends BaseExport {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
 
-            importSession = CoreInstance.openCoreSession("import", principal);
+            CoreSession importSession = CoreInstance.getCoreSession("import", principal);
 
             runImport(importSession.getRootDocument(), out);
 

@@ -114,7 +114,7 @@ public final class RenderingContextWebUtils {
             // current session
             builder.sessionWrapperSupplier(() -> {
                 CoreSession session = SessionFactory.getSession(webRequest);
-                return session == null ? null : new RenderingContext.SessionWrapper(session, false);
+                return session == null ? null : new RenderingContext.SessionWrapper(session);
             });
             // gets the locale from the request or takes the server's default
             Locale locale = request.getLocale();

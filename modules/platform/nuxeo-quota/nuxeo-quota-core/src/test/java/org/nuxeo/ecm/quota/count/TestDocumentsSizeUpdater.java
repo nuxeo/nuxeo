@@ -39,7 +39,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -1019,16 +1018,16 @@ public class TestDocumentsSizeUpdater {
         createUser("titi");
         createUser("toto");
 
-        try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
-            assertNotNull(uw);
-            userSession.save();
-        }
-        try (CloseableCoreSession userSession = coreFeature.openCoreSession("titi")) {
-            DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
-            assertNotNull(uw);
-            userSession.save();
-        }
+        CoreSession totoSession = coreFeature.getCoreSession("toto");
+        DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(totoSession);
+        assertNotNull(uw);
+        totoSession.save();
+
+        CoreSession titiSession = coreFeature.getCoreSession("titi");
+        uw = uwm.getCurrentUserPersonalWorkspace(titiSession);
+        assertNotNull(uw);
+        titiSession.save();
+
         quotaStatsService.activateQuotaOnUserWorkspaces(300L, session);
         quotaStatsService.launchSetMaxQuotaOnUserWorkspaces(300L, session.getRootDocument(), session);
         coreFeature.waitForAsyncCompletion(); // commit the transaction

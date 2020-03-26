@@ -47,7 +47,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -103,10 +102,8 @@ public class TestColdStorage {
                 new ACE("john", SecurityConstants.WRITE_COLD_STORAGE, true) };
         DocumentModel documentModel = createFileDocument(DEFAULT_DOC_NAME, true, aces);
 
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
-                "john")) {
-            moveAndVerifyContent(userSession, documentModel);
-        }
+        CoreSession userSession = CoreInstance.getCoreSession(documentModel.getRepositoryName(), "john");
+        moveAndVerifyContent(userSession, documentModel);
 
         // with Administrator
         documentModel = createFileDocument(DEFAULT_DOC_NAME, true);
@@ -118,8 +115,8 @@ public class TestColdStorage {
         ACE[] aces = { new ACE("john", SecurityConstants.READ, true) };
         DocumentModel documentModel = createFileDocument(DEFAULT_DOC_NAME, true, aces);
 
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
-                "john")) {
+        try {
+            CoreSession userSession = CoreInstance.getCoreSession(documentModel.getRepositoryName(), "john");
             ColdStorageHelper.moveContentToColdStorage(userSession, documentModel.getRef());
             fail("Should fail because the user does not have permissions to move document to cold storage");
         } catch (NuxeoException e) {

@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -170,299 +169,262 @@ public abstract class TestCorePublicationWithWorkflow {
     public void testRights() throws Exception {
         // myuser1 requests publishing
         DocumentRef publishedDocumentRef;
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            PublicationNode targetNode = nodes.get(0);
-            PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
-            sessionUser1.save();
-            assertFalse(treeUser1.canUnpublish(publishedDocument));
-            publishedDocumentRef = new PathRef(publishedDocument.getPath());
-        }
+        CoreSession sessionUser1 = coreFeature.getCoreSession("myuser1");
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        PublicationNode targetNode = nodes.get(0);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
+        sessionUser1.save();
+        assertFalse(treeUser1.canUnpublish(publishedDocument));
+        publishedDocumentRef = new PathRef(publishedDocument.getPath());
 
         // myuser3 has no rights on proxy
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            assertFalse(sessionUser3.exists(publishedDocumentRef));
-        }
+        CoreSession sessionUser3 = coreFeature.getCoreSession("myuser3");
+        assertFalse(sessionUser3.exists(publishedDocumentRef));
 
         // myuser4 has no rights on proxy
-        try (CloseableCoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
-            assertFalse(sessionUser4.exists(publishedDocumentRef));
-        }
+        CoreSession sessionUser4 = coreFeature.getCoreSession("myuser4");
+        assertFalse(sessionUser4.exists(publishedDocumentRef));
 
         // myuser2 can unpublish or validate
-        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
-            PublishedDocument publishedDocument = new SimpleCorePublishedDocument(sessionUser2.getDocument(publishedDocumentRef));
-            PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
-            assertTrue(treeUser2.canUnpublish(publishedDocument));
-            assertTrue(treeUser2.hasValidationTask(publishedDocument));
-        }
+        CoreSession sessionUser2 = coreFeature.getCoreSession("myuser2");
+        publishedDocument = new SimpleCorePublishedDocument(sessionUser2.getDocument(publishedDocumentRef));
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
+        assertTrue(treeUser2.canUnpublish(publishedDocument));
+        assertTrue(treeUser2.hasValidationTask(publishedDocument));
     }
 
     @Test
     public void testApprovePublication() throws Exception {
         // myuser1 requests publishing
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            assertTrue(treeUser1.canPublishTo(targetNode));
-            PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
-            assertTrue(publishedDocument.isPending());
-            assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-            sessionUser1.save();
-        }
+        CoreSession sessionUser1 = coreFeature.getCoreSession("myuser1");
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
+        assertTrue(publishedDocument.isPending());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        sessionUser1.save();
 
         // myuser3 can't see the document waiting for validation
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
-            assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        CoreSession sessionUser3 = coreFeature.getCoreSession("myuser3");
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
-        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
-            PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2,
-                    factoryParams);
-            List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
-                    new DocumentLocationImpl(doc2Publish));
-            assertEquals(1, publishedDocuments.size());
-            PublishedDocument publishedDocument = publishedDocuments.get(0);
-            assertTrue(publishedDocument.isPending());
-            // myuser2 must be able to validate without having Read permission on the live document 'doc2publish'
-            treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
-            assertFalse(publishedDocument.isPending());
-        }
+        CoreSession sessionUser2 = coreFeature.getCoreSession("myuser2");
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
+        assertEquals(1, publishedDocuments.size());
+        publishedDocument = publishedDocuments.get(0);
+        assertTrue(publishedDocument.isPending());
+        // myuser2 must be able to validate without having Read permission on the live document 'doc2publish'
+        treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
+        assertFalse(publishedDocument.isPending());
 
         // published so myuser3 can see it
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
-            assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-            sessionUser3.save();
-        }
+        treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        sessionUser3.save();
     }
 
     @Test
     public void testRejectPublication() throws Exception {
         // myuser1 requests publishing
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
-            assertTrue(publishedDocument.isPending());
-            assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-            sessionUser1.save(); // so that canManagePublishing's search works
-        }
+        CoreSession sessionUser1 = coreFeature.getCoreSession("myuser1");
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        PublicationNode targetNode = nodes.get(0);
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
+        assertTrue(publishedDocument.isPending());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        sessionUser1.save(); // so that canManagePublishing's search works
 
         // myuser3 can't see the document waiting for validation
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
-            assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        CoreSession sessionUser3 = coreFeature.getCoreSession("myuser3");
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // myuser2 can see it, it's the validator
         DocumentRef proxyRef;
-        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
-            PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2,
-                    factoryParams);
-            List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
-                    new DocumentLocationImpl(doc2Publish));
-            assertEquals(1, publishedDocuments.size());
-            PublishedDocument publishedDocument = publishedDocuments.get(0);
-            assertTrue(publishedDocument.isPending());
-            assertTrue(treeUser2.canManagePublishing(publishedDocument));
-            assertTrue(treeUser2.hasValidationTask(publishedDocument));
-            // reject publication
-            treeUser2.validatorRejectPublication(publishedDocument, "Rejected!");
-            assertTrue(publishedDocument.isPending());
-            proxyRef = ((SimpleCorePublishedDocument) publishedDocument).getProxy().getRef();
-            // No more document to approve
-            assertEquals(0, treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        CoreSession sessionUser2 = coreFeature.getCoreSession("myuser2");
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
+        assertEquals(1, publishedDocuments.size());
+        publishedDocument = publishedDocuments.get(0);
+        assertTrue(publishedDocument.isPending());
+        assertTrue(treeUser2.canManagePublishing(publishedDocument));
+        assertTrue(treeUser2.hasValidationTask(publishedDocument));
+        // reject publication
+        treeUser2.validatorRejectPublication(publishedDocument, "Rejected!");
+        assertTrue(publishedDocument.isPending());
+        proxyRef = ((SimpleCorePublishedDocument) publishedDocument).getProxy().getRef();
+        // No more document to approve
+        assertEquals(0, treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // not published so myuser3 still can't see it
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
-            assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // No more document published for myuser1
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            assertEquals(0, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-            assertFalse(sessionUser1.exists(proxyRef));
-        }
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        assertEquals(0, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        assertFalse(sessionUser1.exists(proxyRef));
     }
 
     @Test
     public void testFirstPublicationByValidator() throws Exception {
         // myuser2 directly publishes a doc
         // TODO not sure it should, as it has no read access on the doc...
-        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
-            PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
-            List<PublicationNode> nodes = treeUser2.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            assertTrue(treeUser2.canPublishTo(targetNode));
-            PublishedDocument publishedDocument = treeUser2.publish(doc2Publish, targetNode);
-            assertFalse(publishedDocument.isPending());
-        }
+        CoreSession sessionUser2 = coreFeature.getCoreSession("myuser2");
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
+        List<PublicationNode> nodes = treeUser2.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser2.canPublishTo(targetNode));
+        PublishedDocument publishedDocument = treeUser2.publish(doc2Publish, targetNode);
+        assertFalse(publishedDocument.isPending());
 
         // myuser3 can see the document
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
-            assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        CoreSession sessionUser3 = coreFeature.getCoreSession("myuser3");
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        assertEquals(1, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
     }
 
     @Test
     public void testFirstPublicationByNonValidator() throws Exception {
         // myuser1 requests publishing
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            assertTrue(treeUser1.canPublishTo(targetNode));
-            PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
-            assertTrue(publishedDocument.isPending());
-        }
+        CoreSession sessionUser1 = coreFeature.getCoreSession("myuser1");
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
+        assertTrue(publishedDocument.isPending());
 
         // myuser3 can't see the document
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
-            assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        CoreSession sessionUser3 = coreFeature.getCoreSession("myuser3");
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        assertEquals(0, treeUser3.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
     }
 
     @Test
     public void testPublishOfAlreadyWaitingToBePublishedDocByNonValidator() throws Exception {
         // my user1 ask for publication
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            assertTrue(treeUser1.canPublishTo(targetNode));
-            PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
-            assertTrue(publishedDocument.isPending());
-            assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-            sessionUser1.save();
-        }
+        CoreSession sessionUser1 = coreFeature.getCoreSession("myuser1");
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
+        assertTrue(publishedDocument.isPending());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        sessionUser1.save();
 
         // my user3 ask for publication
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3,
-                    factoryParams);
-            List<PublicationNode> nodes = treeUser3.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            assertTrue(treeUser3.canPublishTo(targetNode));
-            PublishedDocument publishedDocument = treeUser3.publish(doc2Publish, targetNode);
-            assertTrue(publishedDocument.isPending());
-            sessionUser3.save();
-        }
+        CoreSession sessionUser3 = coreFeature.getCoreSession("myuser3");
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        nodes = treeUser3.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        targetNode = nodes.get(0);
+        assertTrue(treeUser3.canPublishTo(targetNode));
+        publishedDocument = treeUser3.publish(doc2Publish, targetNode);
+        assertTrue(publishedDocument.isPending());
+        sessionUser3.save();
 
         // my user1 can still see the document
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // my user 2 publish the document
-        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
-            PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2,
-                    factoryParams);
-            List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
-                    new DocumentLocationImpl(doc2Publish));
-            assertEquals(1, publishedDocuments.size());
-            PublishedDocument publishedDocument = publishedDocuments.get(0);
-            assertTrue(publishedDocument.isPending());
-            treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
-            assertFalse(publishedDocument.isPending());
-            sessionUser2.save();
-        }
+        CoreSession sessionUser2 = coreFeature.getCoreSession("myuser2");
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
+        assertEquals(1, publishedDocuments.size());
+        publishedDocument = publishedDocuments.get(0);
+        assertTrue(publishedDocument.isPending());
+        treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
+        assertFalse(publishedDocument.isPending());
+        sessionUser2.save();
     }
 
     @Test
     public void testMultiplePublishThenPublishByValidator() throws Exception {
         // my user1 ask for publication
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            assertTrue(treeUser1.canPublishTo(targetNode));
-            PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
-            assertTrue(publishedDocument.isPending());
-            assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-            sessionUser1.save();
-        }
+        CoreSession sessionUser1 = coreFeature.getCoreSession("myuser1");
+        PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        List<PublicationNode> nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        PublicationNode targetNode = nodes.get(0);
+        assertTrue(treeUser1.canPublishTo(targetNode));
+        PublishedDocument publishedDocument = treeUser1.publish(doc2Publish, targetNode);
+        assertTrue(publishedDocument.isPending());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
+        sessionUser1.save();
 
         // my user3 ask for publication
-        try (CloseableCoreSession sessionUser3 = coreFeature.openCoreSession("myuser3")) {
-            PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
-            List<PublicationNode> nodes = treeUser3.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            PublicationNode targetNode = nodes.get(0);
-            assertTrue(treeUser3.canPublishTo(targetNode));
-            PublishedDocument publishedDocument = treeUser3.publish(doc2Publish, targetNode);
-            assertTrue(publishedDocument.isPending());
-            sessionUser3.save();
-        }
+        CoreSession sessionUser3 = coreFeature.getCoreSession("myuser3");
+        PublicationTree treeUser3 = publisherService.getPublicationTree(defaultTreeName, sessionUser3, factoryParams);
+        nodes = treeUser3.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        targetNode = nodes.get(0);
+        assertTrue(treeUser3.canPublishTo(targetNode));
+        publishedDocument = treeUser3.publish(doc2Publish, targetNode);
+        assertTrue(publishedDocument.isPending());
+        sessionUser3.save();
 
         // my user1 can still see the document
-        try (CloseableCoreSession sessionUser1 = coreFeature.openCoreSession("myuser1")) {
-            PublicationTree treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
-            List<PublicationNode> nodes = treeUser1.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        treeUser1 = publisherService.getPublicationTree(defaultTreeName, sessionUser1, factoryParams);
+        nodes = treeUser1.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        assertEquals(1, treeUser1.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // my user4 don't see the document
-        try (CloseableCoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
-            PublicationTree treeUser4 = publisherService.getPublicationTree(defaultTreeName, sessionUser4, factoryParams);
-            List<PublicationNode> nodes = treeUser4.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            assertEquals(0, treeUser4.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        CoreSession sessionUser4 = coreFeature.getCoreSession("myuser4");
+        PublicationTree treeUser4 = publisherService.getPublicationTree(defaultTreeName, sessionUser4, factoryParams);
+        nodes = treeUser4.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        assertEquals(0, treeUser4.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
 
         // my user 2 publish the document
-        try (CloseableCoreSession sessionUser2 = coreFeature.openCoreSession("myuser2")) {
-            PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
-            List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
-                    new DocumentLocationImpl(doc2Publish));
-            assertEquals(1, publishedDocuments.size());
-            PublishedDocument publishedDocument = publishedDocuments.get(0);
-            assertTrue(publishedDocument.isPending());
-            treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
-            assertFalse(publishedDocument.isPending());
-            sessionUser2.save();
-        }
+        CoreSession sessionUser2 = coreFeature.getCoreSession("myuser2");
+        PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, sessionUser2, factoryParams);
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
+        assertEquals(1, publishedDocuments.size());
+        publishedDocument = publishedDocuments.get(0);
+        assertTrue(publishedDocument.isPending());
+        treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
+        assertFalse(publishedDocument.isPending());
+        sessionUser2.save();
 
         // my user4 see the document
-        try (CloseableCoreSession sessionUser4 = coreFeature.openCoreSession("myuser4")) {
-            PublicationTree treeUser4 = publisherService.getPublicationTree(defaultTreeName, sessionUser4, factoryParams);
-            List<PublicationNode> nodes = treeUser4.getChildrenNodes();
-            assertEquals(1, nodes.size());
-            assertEquals("section1", nodes.get(0).getTitle());
-            assertEquals(1, treeUser4.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
-        }
+        treeUser4 = publisherService.getPublicationTree(defaultTreeName, sessionUser4, factoryParams);
+        nodes = treeUser4.getChildrenNodes();
+        assertEquals(1, nodes.size());
+        assertEquals("section1", nodes.get(0).getTitle());
+        assertEquals(1, treeUser4.getExistingPublishedDocument(new DocumentLocationImpl(doc2Publish)).size());
     }
 
 }

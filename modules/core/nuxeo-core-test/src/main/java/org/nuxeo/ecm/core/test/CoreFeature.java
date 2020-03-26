@@ -126,7 +126,7 @@ public class CoreFeature implements RunnerFeature {
     protected Granularity granularity;
 
     // this value gets injected
-    protected CloseableCoreSession session;
+    protected CoreSession session;
 
     protected boolean cleaned;
 
@@ -235,7 +235,8 @@ public class CoreFeature implements RunnerFeature {
         releaseCoreSession(); // release session for tests
         // open an administrator session to cleanup repository
         TransactionHelper.runInNewTransaction(() -> {
-            try (var adminSession = openCoreSession(createAdministrator())) {
+            try {
+                CoreSession adminSession = getCoreSession(createAdministrator());
                 log.trace("remove everything except root");
                 // remove proxies first, as we cannot remove a target if there's a proxy pointing to it
                 try (IterableQueryResult results = adminSession.queryAndFetch(
@@ -323,16 +324,15 @@ public class CoreFeature implements RunnerFeature {
         CoreScope.INSTANCE.enter();
         // populate repository and get root acp
         Framework.doPrivileged(() -> {
-            try (var adminSession = openCoreSession(createAdministrator())) {
-                if (repositoryInit != null) {
-                    repositoryInit.populate(adminSession);
-                    adminSession.save();
-                    waitForAsyncCompletion();
-                }
-                // save current root acp
-                DocumentModel root = adminSession.getRootDocument();
-                rootAcp = root.getACP();
+            CoreSession adminSession = getCoreSession(createAdministrator());
+            if (repositoryInit != null) {
+                repositoryInit.populate(adminSession);
+                adminSession.save();
+                waitForAsyncCompletion();
             }
+            // save current root acp
+            DocumentModel root = adminSession.getRootDocument();
+            rootAcp = root.getACP();
         });
         // open session for test
         createCoreSession();
@@ -342,25 +342,49 @@ public class CoreFeature implements RunnerFeature {
         return getStorageConfiguration().getRepositoryName();
     }
 
+    public CoreSession getCoreSession(String username) {
+        return CoreInstance.getCoreSession(getRepositoryName(), username);
+    }
+
+    public CoreSession getCoreSession(NuxeoPrincipal principal) {
+        return CoreInstance.getCoreSession(getRepositoryName(), principal);
+    }
+
+    public CoreSession getCoreSessionCurrentUser() {
+        return CoreInstance.getCoreSession(getRepositoryName());
+    }
+
+    public CoreSession getCoreSessionSystem() {
+        return CoreInstance.getCoreSessionSystem(getRepositoryName());
+    }
+
+    /** @deprecated since 11.1, use {@link #getCoreSession(String)} instead */
+    @Deprecated
     public CloseableCoreSession openCoreSession(String username) {
-        return CoreInstance.openCoreSession(getRepositoryName(), username);
+        return (CloseableCoreSession) getCoreSession(username);
     }
 
+    /** @deprecated since 11.1, use {@link #getCoreSession(NuxeoPrincipal)} instead */
+    @Deprecated
     public CloseableCoreSession openCoreSession(NuxeoPrincipal principal) {
-        return CoreInstance.openCoreSession(getRepositoryName(), principal);
+        return (CloseableCoreSession) getCoreSession(principal);
     }
 
+    /** @deprecated since 11.1, use {@link #getCoreSessionCurrentUser()} instead */
+    @Deprecated
     public CloseableCoreSession openCoreSession() {
-        return CoreInstance.openCoreSession(getRepositoryName());
+        return (CloseableCoreSession) getCoreSessionCurrentUser();
     }
 
+    /** @deprecated since 11.1, use {@link #getCoreSessionSystem()} instead */
+    @Deprecated
     public CloseableCoreSession openCoreSessionSystem() {
-        return CoreInstance.openCoreSessionSystem(getRepositoryName());
+        return (CloseableCoreSession) getCoreSessionSystem();
     }
 
-    public CloseableCoreSession createCoreSession() {
+    public CoreSession createCoreSession() {
         NuxeoPrincipal principal = loginFeature.getPrincipal();
-        session = CoreInstance.openCoreSession(getRepositoryName(), principal);
+        session = CoreInstance.getCoreSession(getRepositoryName(), principal);
         return session;
     }
 
@@ -369,10 +393,7 @@ public class CoreFeature implements RunnerFeature {
     }
 
     public void releaseCoreSession() {
-        if (session != null) {
-            session.close();
-            session = null;
-        }
+        session = null;
     }
 
     public CoreSession reopenCoreSession() {

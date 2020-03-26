@@ -35,7 +35,6 @@ import org.javasimon.Split;
 import org.javasimon.Stopwatch;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -368,8 +367,8 @@ public class GenericThreadedImportTask implements Runnable {
         }
         TransactionHelper.startTransaction(transactionTimeout);
         boolean completedAbruptly = true;
-        try (CloseableCoreSession closeableCoreSession = CoreInstance.openCoreSessionSystem(repositoryName)) {
-            session = closeableCoreSession;
+        try {
+            session = CoreInstance.getCoreSessionSystem(repositoryName);
             log.info("Starting new import task");
             Framework.doPrivileged(() -> {
                 if (rootDoc != null) {
@@ -391,7 +390,6 @@ public class GenericThreadedImportTask implements Runnable {
             notifyImportError();
         } finally {
             log.info("End of task");
-            session = null;
             if (completedAbruptly) {
                 TransactionHelper.setTransactionRollbackOnly();
             }

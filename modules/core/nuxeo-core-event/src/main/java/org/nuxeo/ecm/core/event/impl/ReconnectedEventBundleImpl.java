@@ -32,7 +32,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -64,7 +63,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     protected transient NuxeoLoginContext loginCtx;
 
-    protected transient CloseableCoreSession reconnectedCoreSession;
+    protected transient CoreSession reconnectedCoreSession;
 
     private static final Log log = LogFactory.getLog(ReconnectedEventBundleImpl.class);
 
@@ -84,7 +83,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
     protected CoreSession getReconnectedCoreSession(String repoName, String originatingUsername) {
         if (reconnectedCoreSession == null) {
             loginCtx = Framework.loginSystem();
-            reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName, originatingUsername);
+            reconnectedCoreSession = CoreInstance.getCoreSessionSystem(repoName, originatingUsername);
         } else {
             // Sanity Check
             if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
@@ -224,9 +223,6 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
 
     @Override
     public void disconnect() {
-        if (reconnectedCoreSession != null) {
-            reconnectedCoreSession.close();
-        }
         reconnectedCoreSession = null;
         reconnectedEvents = null;
         if (loginCtx != null) {

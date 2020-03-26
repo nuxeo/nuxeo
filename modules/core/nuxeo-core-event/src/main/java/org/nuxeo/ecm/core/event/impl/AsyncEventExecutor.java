@@ -21,18 +21,14 @@
  */
 package org.nuxeo.ecm.core.event.impl;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -96,18 +92,10 @@ public class AsyncEventExecutor {
 
             TransactionHelper.runInTransaction(() -> {
                 EventBundle connectedBundle = new EventBundleImpl();
-                Map<String, CoreSession> sessions = new HashMap<>();
 
                 List<Event> events = ((ReconnectedEventBundleImpl)tmpBundle).getReconnectedEvents();
                 for (Event event : events) {
                     connectedBundle.push(event);
-                    CoreSession session = event.getContext().getCoreSession();
-                    if (!(sessions.keySet().contains(session.getRepositoryName()))) {
-                        sessions.put(session.getRepositoryName(), session);
-                    }
-                }
-                for (CoreSession session : sessions.values()) {
-                    ((CloseableCoreSession) session).close();
                 }
                 scheduleListeners(listeners, connectedBundle);
             });

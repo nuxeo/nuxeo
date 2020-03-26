@@ -61,20 +61,19 @@ public class TestSecurityPolicyService {
     protected CoreFeature coreFeature;
 
     private void setTestPermissions(String user, String... perms) {
-        try (CloseableCoreSession session = coreFeature.openCoreSession()) {
-            DocumentModel doc = session.getRootDocument();
-            ACP acp = doc.getACP();
-            if (acp == null) {
-                acp = new ACPImpl();
-            }
-            UserEntryImpl userEntry = new UserEntryImpl(user);
-            for (String perm : perms) {
-                userEntry.addPrivilege(perm);
-            }
-            acp.setRules("test", new UserEntry[] { userEntry });
-            doc.setACP(acp, true);
-            session.save();
+        CoreSession session = coreFeature.getCoreSessionSystem();
+        DocumentModel doc = session.getRootDocument();
+        ACP acp = doc.getACP();
+        if (acp == null) {
+            acp = new ACPImpl();
         }
+        UserEntryImpl userEntry = new UserEntryImpl(user);
+        for (String perm : perms) {
+            userEntry.addPrivilege(perm);
+        }
+        acp.setRules("test", new UserEntry[] { userEntry });
+        doc.setACP(acp, true);
+        session.save();
     }
 
     @Test
@@ -82,40 +81,38 @@ public class TestSecurityPolicyService {
     public void testNewSecurityPolicy() throws Exception {
         // create document
         DocumentRef folderRef;
-        try (CloseableCoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
-            setTestPermissions(ANONYMOUS, READ);
-            DocumentModel root = session.getRootDocument();
-            DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
-            // set access security
-            folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
-            folder = session.createDocument(folder);
-            folderRef = folder.getRef();
-            session.save();
+        CoreSession session = coreFeature.getCoreSession(ADMINISTRATOR);
+        setTestPermissions(ANONYMOUS, READ);
+        DocumentModel root = session.getRootDocument();
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), "folder#1", "Folder");
+        // set access security
+        folder.setProperty("secupolicy", "securityLevel", Long.valueOf(4));
+        folder = session.createDocument(folder);
+        folderRef = folder.getRef();
+        session.save();
 
-            // test permission for 'foo' user using hasPermission
-            NuxeoPrincipal fooUser = new UserPrincipal("foo", new ArrayList<String>(), false, false);
-            assertFalse(session.hasPermission(fooUser, folderRef, READ));
-            assertTrue(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)).isEmpty());
-            setTestPermissions(fooUser.getName(), READ);
-            assertTrue(session.hasPermission(fooUser, folderRef, READ));
-            assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)),
-                    Arrays.asList(READ));
-        }
+        // test permission for 'foo' user using hasPermission
+        NuxeoPrincipal fooUser = new UserPrincipal("foo", new ArrayList<String>(), false, false);
+        assertFalse(session.hasPermission(fooUser, folderRef, READ));
+        assertTrue(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)).isEmpty());
+        setTestPermissions(fooUser.getName(), READ);
+        assertTrue(session.hasPermission(fooUser, folderRef, READ));
+        assertEquals(session.filterGrantedPermissions(fooUser, folderRef, Arrays.asList(READ)),
+                Arrays.asList(READ));
 
         // open session as anonymous and set access on user info
-        try (CloseableCoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
-            DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
-            Map<String, Object> data = new HashMap<>();
-            data.put("accessLevel", Long.valueOf(3));
-            documentModelImpl.addDataModel(new DataModelImpl("user", data));
-            session.getPrincipal().setModel(documentModelImpl);
-            // access level is too low for this doc
-            assertFalse(session.hasPermission(folderRef, READ));
-            // change user access level => can read
-            session.getPrincipal().getModel().setProperty("user", "accessLevel", Long.valueOf(5));
-            assertTrue(session.hasPermission(folderRef, READ));
-            session.save();
-        }
+        CoreSession anonSession = coreFeature.getCoreSession(ANONYMOUS);
+        DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
+        Map<String, Object> data = new HashMap<>();
+        data.put("accessLevel", Long.valueOf(3));
+        documentModelImpl.addDataModel(new DataModelImpl("user", data));
+        anonSession.getPrincipal().setModel(documentModelImpl);
+        // access level is too low for this doc
+        assertFalse(anonSession.hasPermission(folderRef, READ));
+        // change user access level => can read
+        anonSession.getPrincipal().getModel().setProperty("user", "accessLevel", Long.valueOf(5));
+        assertTrue(anonSession.hasPermission(folderRef, READ));
+        anonSession.save();
     }
 
 }

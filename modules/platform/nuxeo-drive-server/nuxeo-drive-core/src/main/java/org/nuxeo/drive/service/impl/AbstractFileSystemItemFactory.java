@@ -25,7 +25,6 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -142,7 +141,8 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try {
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
             DocumentModel doc = getDocumentById(docId, session);
             return isFileSystemItem(doc);
         } catch (DocumentNotFoundException e) {
@@ -159,7 +159,8 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try {
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc);
         } catch (DocumentNotFoundException e) {
@@ -177,7 +178,8 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
+        try {
+            CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
             FileSystemItem parentItem = Framework.getService(FileSystemItemAdapterService.class)
                                                  .getFileSystemItemFactoryForId(parentId)
                                                  .getFileSystemItemById(parentId, principal);

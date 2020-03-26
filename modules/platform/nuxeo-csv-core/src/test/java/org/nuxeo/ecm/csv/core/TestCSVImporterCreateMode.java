@@ -43,7 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -476,7 +476,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CloseableCoreSession leelaSession = openSessionAs("leela")) {
+        try {
+            CoreSession leelaSession = openSessionAs("leela");
             String importId = csvImporter.launchImport(leelaSession, "/", getCSVBlob(DOCS_WITHOUT_CONTRIBUTORS_CSV),
                     options);
 
@@ -693,8 +694,8 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
         assertEquals(999, importStatus.getTotalNumberOfDocument());
     }
 
-    public CloseableCoreSession openSessionAs(String username) {
-        return coreFeature.openCoreSession(username);
+    public CoreSession openSessionAs(String username) {
+        return coreFeature.getCoreSession(username);
     }
 
 }

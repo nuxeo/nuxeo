@@ -29,7 +29,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,22 +65,13 @@ public class VcsFetcher extends Fetcher {
         List<DocumentModel> docs = new ArrayList<>();
         String openSessionRepository = getSession().getRepositoryName();
         for (String repo : repoHits.keySet()) {
-            boolean closeSession;
             CoreSession session;
             if (openSessionRepository.equals(repo)) {
                 session = getSession();
-                closeSession = false;
             } else {
-                session = CoreInstance.openCoreSession(repo);
-                closeSession = true;
+                session = CoreInstance.getCoreSession(repo);
             }
-            try {
-                docs.addAll(fetchFromVcs(repoHits.get(repo), session));
-            } finally {
-                if (closeSession) {
-                    ((CloseableCoreSession) session).close();
-                }
-            }
+            docs.addAll(fetchFromVcs(repoHits.get(repo), session));
         }
         return docs;
     }

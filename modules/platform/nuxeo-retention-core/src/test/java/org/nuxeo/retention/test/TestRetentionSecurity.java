@@ -25,8 +25,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -45,7 +45,8 @@ public class TestRetentionSecurity extends RetentionTestCase {
 
     @Test
     public void shouldBeAuthorizedToManageLegalHold() {
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user")) {
+        try {
+            CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(), "user");
             service.attachRule(file, createManualImmediateRuleMillis(100), userSession);
             fail("Sould not be abe to attach rule");
         } catch (NuxeoException e) {
@@ -59,7 +60,8 @@ public class TestRetentionSecurity extends RetentionTestCase {
 
     @Test
     public void shouldNotBeAuthorizedToAttachRule() {
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user")) {
+        try {
+            CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(), "user");
             service.attachRule(file, createManualImmediateRuleMillis(100), userSession);
             fail("Sould not be abe to attach rule");
         } catch (NuxeoException e) {
@@ -81,10 +83,9 @@ public class TestRetentionSecurity extends RetentionTestCase {
         acp.addACL(acl);
         file.setACP(acp, true);
         file = session.saveDocument(file);
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user")) {
-            file = service.attachRule(file, createManualImmediateRuleMillis(5000), userSession);
-            assertTrue(userSession.isUnderRetentionOrLegalHold(file.getRef()));
-        }
+        CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(), "user");
+        file = service.attachRule(file, createManualImmediateRuleMillis(5000), userSession);
+        assertTrue(userSession.isUnderRetentionOrLegalHold(file.getRef()));
     }
 
     @Test
@@ -96,10 +97,9 @@ public class TestRetentionSecurity extends RetentionTestCase {
         acp.addACL(acl);
         file.setACP(acp, true);
         file = session.saveDocument(file);
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "user")) {
-            userSession.makeRecord(file.getRef());
-            userSession.setLegalHold(file.getRef(), true, null);
-        }
+        CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(), "user");
+        userSession.makeRecord(file.getRef());
+        userSession.setLegalHold(file.getRef(), true, null);
     }
 
     @Test

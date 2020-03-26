@@ -33,8 +33,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -81,32 +81,31 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         if (sources == null || sources.isEmpty()) {
             return null;
         }
-        try (CloseableCoreSession session = CoreInstance.openCoreSessionSystem(repo)) {
-            Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<>();
+        CoreSession session = CoreInstance.getCoreSessionSystem(repo);
+        Map<DocumentRef, List<LogEntry>> docLogs = new HashMap<>();
 
-            Logs logService = Framework.getService(Logs.class);
+        Logs logService = Framework.getService(Logs.class);
 
-            for (DocumentRef docRef : sources) {
-                try {
-                    final String uuid;
-                    if (docRef.type() == DocumentRef.ID) {
-                        uuid = docRef.toString();
-                    } else {
-                        DocumentModel doc = session.getDocument(docRef);
-                        uuid = doc.getId();
-                    }
-
-                    List<LogEntry> logEntries = logService.getLogEntriesFor(uuid, repo);
-
-                    docLogs.put(docRef, logEntries);
-                } catch (DocumentNotFoundException e) {
-                    List<LogEntry> emptyList = Collections.emptyList();
-                    docLogs.put(docRef, emptyList);
-                    continue;
+        for (DocumentRef docRef : sources) {
+            try {
+                final String uuid;
+                if (docRef.type() == DocumentRef.ID) {
+                    uuid = docRef.toString();
+                } else {
+                    DocumentModel doc = session.getDocument(docRef);
+                    uuid = doc.getId();
                 }
+
+                List<LogEntry> logEntries = logService.getLogEntriesFor(uuid, repo);
+
+                docLogs.put(docRef, logEntries);
+            } catch (DocumentNotFoundException e) {
+                List<LogEntry> emptyList = Collections.emptyList();
+                docLogs.put(docRef, emptyList);
+                continue;
             }
-            return new IOAuditResources(docLogs);
         }
+        return new IOAuditResources(docLogs);
     }
 
     @Override

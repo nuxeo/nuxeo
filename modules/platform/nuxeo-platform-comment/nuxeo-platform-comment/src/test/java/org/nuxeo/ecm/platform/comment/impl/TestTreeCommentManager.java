@@ -60,7 +60,6 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.document.CopyDocument;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -237,9 +236,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         ACL acl = acp.getOrCreateACL();
         acl.add(new ACE("james", SecurityConstants.READ, true));
         session.setACP(doc.getRef(), acp, false);
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "james")) {
-            createAndCheckComment(jamesSession, doc, commentToCreate, 1);
-        }
+        CoreSession jamesSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "james");
+        createAndCheckComment(jamesSession, doc, commentToCreate, 1);
     }
 
     @Test
@@ -294,7 +292,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
     public void iCannotCreateComment() {
         DocumentModel doc = createDocumentModel("myOwnFile");
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
+        try {
+            CoreSession bobSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "bob");
             Comment commentToCreate = createSampleComment(doc.getId());
             createAndCheckComment(bobSession, doc, commentToCreate, 1);
             fail("bob should not be able to create comment");
@@ -344,13 +343,12 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         session.setACP(doc.getRef(), acp, false);
         transactionalFeature.nextTransaction();
 
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "james")) {
-            assertNotNull(commentManager.getComment(jamesSession, createdComment.getId()));
+        CoreSession jamesSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "james");
+        assertNotNull(commentManager.getComment(jamesSession, createdComment.getId()));
 
-            retrievedComments = commentManager.getComments(jamesSession, doc.getId());
-            assertEquals(2, retrievedComments.size());
-            assertNotNull(createdComment.getId(), retrievedComments.get(0).getId());
-        }
+        retrievedComments = commentManager.getComments(jamesSession, doc.getId());
+        assertEquals(2, retrievedComments.size());
+        assertNotNull(createdComment.getId(), retrievedComments.get(0).getId());
     }
 
     @Test
@@ -360,7 +358,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         Comment commentToCreate = createSampleComment(doc.getId());
         Comment createdComment = createAndCheckComment(session, doc, commentToCreate, 1);
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
+        CoreSession bobSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "bob");
+        try {
             commentManager.getComment(bobSession, createdComment.getId());
             fail("bob should not be able to get comment");
         } catch (CommentSecurityException cse) {
@@ -369,7 +368,7 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
                     cse.getMessage());
         }
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
+        try {
             commentManager.getComments(bobSession, doc.getId());
             fail("bob should not be able to get comments");
         } catch (CommentSecurityException cse) {
@@ -400,13 +399,12 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         // re-init modification date
         newComment.setModificationDate(null);
         // I can update the comment if I'm an administrator
-        try (CloseableCoreSession systemSession = coreFeature.openCoreSessionSystem()) {
-            newComment.setText("Can you call me on my phone, please");
-            updatedComment = commentManager.updateComment(systemSession, commentId, newComment);
-            verifyCommonsInfo(doc, newComment, updatedComment, 1);
-            assertNotNull(updatedComment.getModificationDate());
-            assertTrue(firstModification.isBefore(updatedComment.getModificationDate()));
-        }
+        CoreSession systemSession = coreFeature.getCoreSessionSystem();
+        newComment.setText("Can you call me on my phone, please");
+        updatedComment = commentManager.updateComment(systemSession, commentId, newComment);
+        verifyCommonsInfo(doc, newComment, updatedComment, 1);
+        assertNotNull(updatedComment.getModificationDate());
+        assertTrue(firstModification.isBefore(updatedComment.getModificationDate()));
     }
 
     @Test
@@ -419,7 +417,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         Comment newComment = createSampleComment(doc.getId());
         newComment.setText("I try to update this comment !");
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
+        try {
+            CoreSession bobSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "bob");
             commentManager.updateComment(bobSession, createdComment.getId(), newComment);
             fail("bob should not be able to update a comment");
         } catch (CommentSecurityException cse) {
@@ -451,11 +450,10 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         createdComment = createAndCheckComment(session, doc, commentToCreate, 1);
 
         // If i am the author of the comment then i can delete it
-        try (CloseableCoreSession jamesSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "james")) {
-            commentManager.deleteComment(jamesSession, createdComment.getId());
-            assertFalse(jamesSession.exists(new IdRef(createdComment.getId())));
-            assertFalse(session.exists(new IdRef(createdComment.getId())));
-        }
+        CoreSession jamesSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "james");
+        commentManager.deleteComment(jamesSession, createdComment.getId());
+        assertFalse(jamesSession.exists(new IdRef(createdComment.getId())));
+        assertFalse(session.exists(new IdRef(createdComment.getId())));
 
         // Create another comment with another author
         commentToCreate = createSampleComment(doc.getId());
@@ -467,11 +465,10 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         acl.add(new ACE("julia", SecurityConstants.EVERYTHING, true));
         session.setACP(doc.getRef(), acp, false);
         transactionalFeature.nextTransaction();
-        try (CloseableCoreSession juliaSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "julia")) {
-            commentManager.deleteComment(juliaSession, createdComment.getId());
-        }
+        CoreSession juliaSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "julia");
+        commentManager.deleteComment(juliaSession, createdComment.getId());
 
-        try (CloseableCoreSession juliaSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "julia")) {
+        try {
             commentManager.getComment(juliaSession, createdComment.getId());
             fail(String.format("The comment %s should not exist.", createdComment.getId()));
         } catch (CommentNotFoundException cnfe) {
@@ -487,7 +484,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
         Comment commentToCreate = createSampleComment(doc.getId());
         Comment createdComment = createAndCheckComment(session, doc, commentToCreate, 1);
 
-        try (CloseableCoreSession bobSession = CoreInstance.openCoreSession(doc.getRepositoryName(), "bob")) {
+        try {
+            CoreSession bobSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "bob");
             commentManager.deleteComment(bobSession, createdComment.getId());
             fail("bob should not be able to delete a comment");
         } catch (CommentSecurityException cse) {

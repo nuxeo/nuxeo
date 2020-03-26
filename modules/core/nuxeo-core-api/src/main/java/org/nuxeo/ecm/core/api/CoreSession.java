@@ -150,10 +150,10 @@ public interface CoreSession {
     String USER_CHANGE = "userChange";
 
     /**
-     * Closes this session.
+     * Does nothing.
      *
      * @since 5.9.3
-     * @deprecated since 10.1, use {@link CloseableCoreSession#close} instead
+     * @deprecated since 10.1
      */
     @Deprecated
     void close();

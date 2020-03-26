@@ -40,8 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -82,39 +82,38 @@ public class WOPIServlet extends HttpServlet {
         String repository = parts[1];
         String docId = parts[2];
         String xpath = String.join("/", Arrays.asList(parts).subList(3, length));
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
-            DocumentRef ref = new IdRef(docId);
-            if (!session.exists(ref)) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Document not found");
-                return;
-            }
-
-            DocumentModel doc = session.getDocument(ref);
-            Blob blob = Helpers.getEditableBlob(doc, xpath);
-            if (blob == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "No editable blob on document");
-                return;
-            }
-
-            String actionURL = wopiService.getActionURL(blob, action);
-            if (actionURL == null) {
-                // TODO http code?
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Cannot open file with Office Online");
-                return;
-            }
-
-            String token = Helpers.createJWTToken();
-            request.setAttribute(ACCESS_TOKEN_ATTRIBUTE, token);
-            request.setAttribute(ACCESS_TOKEN_TTL_ATTRIBUTE, Helpers.getJWTTokenExp(token));
-            String baseURL = VirtualHostHelper.getBaseURL(request);
-            String wopiBaseURL = Framework.getProperty(WOPI_BASE_URL_PROPERTY, baseURL);
-            String fileId = FileInfo.computeFileId(doc, xpath);
-            String wopiSrc = URLEncoder.encode(String.format("%s%s%s", wopiBaseURL, FILES_ENDPOINT_PATH, fileId),
-                    UTF_8.name());
-            request.setAttribute(FORM_URL, String.format("%s%s=%s", actionURL, WOPI_SRC, wopiSrc));
-            RequestDispatcher requestDispatcher = request.getRequestDispatcher(WOPI_JSP);
-            requestDispatcher.forward(request, response);
+        CoreSession session = CoreInstance.getCoreSession(repository);
+        DocumentRef ref = new IdRef(docId);
+        if (!session.exists(ref)) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Document not found");
+            return;
         }
+
+        DocumentModel doc = session.getDocument(ref);
+        Blob blob = Helpers.getEditableBlob(doc, xpath);
+        if (blob == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "No editable blob on document");
+            return;
+        }
+
+        String actionURL = wopiService.getActionURL(blob, action);
+        if (actionURL == null) {
+            // TODO http code?
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Cannot open file with Office Online");
+            return;
+        }
+
+        String token = Helpers.createJWTToken();
+        request.setAttribute(ACCESS_TOKEN_ATTRIBUTE, token);
+        request.setAttribute(ACCESS_TOKEN_TTL_ATTRIBUTE, Helpers.getJWTTokenExp(token));
+        String baseURL = VirtualHostHelper.getBaseURL(request);
+        String wopiBaseURL = Framework.getProperty(WOPI_BASE_URL_PROPERTY, baseURL);
+        String fileId = FileInfo.computeFileId(doc, xpath);
+        String wopiSrc = URLEncoder.encode(String.format("%s%s%s", wopiBaseURL, FILES_ENDPOINT_PATH, fileId),
+                UTF_8.name());
+        request.setAttribute(FORM_URL, String.format("%s%s=%s", actionURL, WOPI_SRC, wopiSrc));
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(WOPI_JSP);
+        requestDispatcher.forward(request, response);
     }
 
 }

@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,9 +52,8 @@ public class LockExpirationListener implements PostCommitEventListener {
         LockHelper.getExpiredLocksByRepository(directorySession).entrySet().forEach(entry -> {
             String repository = entry.getKey();
             List<DocumentModel> lockEntries = entry.getValue();
-            try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
-                lockEntries.forEach(lockEntry -> handleExpiredLock(session, directorySession, lockEntry));
-            }
+            CoreSession session = CoreInstance.getCoreSession(repository);
+            lockEntries.forEach(lockEntry -> handleExpiredLock(session, directorySession, lockEntry));
         });
     }
 

@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -60,17 +59,14 @@ public class DocumentMessageConsumer extends AbstractConsumer<DocumentMessage> {
     @Override
     public void close() throws Exception {
         super.close();
-        if (session != null) {
-            ((CloseableCoreSession) session).close();
-            TransactionHelper.commitOrRollbackTransaction();
-        }
+        TransactionHelper.commitOrRollbackTransaction();
     }
 
     @Override
     public void begin() {
         TransactionHelper.startTransaction();
         if (session == null) {
-            this.session = CoreInstance.openCoreSessionSystem(repositoryName);
+            this.session = CoreInstance.getCoreSessionSystem(repositoryName);
         }
     }
 

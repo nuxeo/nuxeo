@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -65,10 +65,9 @@ public class NuxeoRepositories extends DefaultComponent {
         }
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            try (CloseableCoreSession coreSession = CoreInstance.openCoreSession(repositoryName)) {
-                String rootFolderId = coreSession.getRootDocument().getId();
-                repositories.put(repositoryName, new NuxeoRepository(repositoryName, rootFolderId));
-            }
+            CoreSession coreSession = CoreInstance.getCoreSession(repositoryName);
+            String rootFolderId = coreSession.getRootDocument().getId();
+            repositories.put(repositoryName, new NuxeoRepository(repositoryName, rootFolderId));
         }
     }
 

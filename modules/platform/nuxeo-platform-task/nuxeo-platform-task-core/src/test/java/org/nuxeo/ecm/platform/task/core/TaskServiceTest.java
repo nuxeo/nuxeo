@@ -36,7 +36,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.directory.test.DirectoryFeature;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -618,36 +617,34 @@ public class TaskServiceTest {
         assertEquals(1, tasks.size());
 
         // check as user1
-        try (CloseableCoreSession session1 = coreFeature.openCoreSession(user1.getName())) {
-            tasks = taskService.getTaskInstances(document, user1, session1);
-            assertNotNull(tasks);
-            assertEquals(1, tasks.size());
-            task = tasks.get(0);
-            assertEquals("Task assigned to user1", task.getName());
-            pooledActorIds = task.getActors();
-            assertEquals(1, pooledActorIds.size());
-            assertTrue(pooledActorIds.contains(user1.getName()));
+        CoreSession session1 = coreFeature.getCoreSession(user1.getName());
+        tasks = taskService.getTaskInstances(document, user1, session1);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        task = tasks.get(0);
+        assertEquals("Task assigned to user1", task.getName());
+        pooledActorIds = task.getActors();
+        assertEquals(1, pooledActorIds.size());
+        assertTrue(pooledActorIds.contains(user1.getName()));
 
-            tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session1);
-            assertNotNull(tasks);
-            assertEquals(1, tasks.size());
-        }
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session1);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
 
         // check that user2 sees them if requesting the given user / all
-        try (CloseableCoreSession session2 = coreFeature.openCoreSession(user2.getName())) {
-            tasks = taskService.getTaskInstances(document, user1, session2);
-            assertNotNull(tasks);
-            assertEquals(1, tasks.size());
-            task = tasks.get(0);
-            assertEquals("Task assigned to user1", task.getName());
-            pooledActorIds = task.getActors();
-            assertEquals(1, pooledActorIds.size());
-            assertTrue(pooledActorIds.contains(user1.getName()));
+        CoreSession session2 = coreFeature.getCoreSession(user2.getName());
+        tasks = taskService.getTaskInstances(document, user1, session2);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        task = tasks.get(0);
+        assertEquals("Task assigned to user1", task.getName());
+        pooledActorIds = task.getActors();
+        assertEquals(1, pooledActorIds.size());
+        assertTrue(pooledActorIds.contains(user1.getName()));
 
-            tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session2);
-            assertNotNull(tasks);
-            assertEquals(1, tasks.size());
-        }
+        tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session2);
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
     }
 
     protected Task getTask(final String taskId) {

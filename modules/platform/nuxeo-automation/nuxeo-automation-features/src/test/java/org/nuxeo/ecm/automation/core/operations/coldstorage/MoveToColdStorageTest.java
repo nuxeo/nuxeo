@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  * Contributors:
  *     Salem Aouana
  *     Nuno Cunha <ncunha@nuxeo.com>
@@ -32,7 +32,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,8 +52,8 @@ public class MoveToColdStorageTest extends AbstractTestColdStorageOperation {
         ACE[] aces = { new ACE("john", SecurityConstants.READ, true) };
         DocumentModel documentModel = createFileDocument(session, true, aces);
 
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
-                "john")) {
+        try {
+            CoreSession userSession = CoreInstance.getCoreSession(documentModel.getRepositoryName(), "john");
             moveContentToColdStorage(userSession, documentModel);
             fail("Should fail because the user does not have permissions to move document to cold storage");
         } catch (NuxeoException e) {
@@ -70,10 +69,8 @@ public class MoveToColdStorageTest extends AbstractTestColdStorageOperation {
                 new ACE("john", SecurityConstants.WRITE_COLD_STORAGE, true) };
         DocumentModel documentModel = createFileDocument(session, true, aces);
 
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(documentModel.getRepositoryName(),
-                "john")) {
-            moveContentToColdStorage(userSession, documentModel);
-        }
+        CoreSession userSession = CoreInstance.getCoreSession(documentModel.getRepositoryName(), "john");
+        moveContentToColdStorage(userSession, documentModel);
 
         // with Administrator
         documentModel = createFileDocument(session, true);

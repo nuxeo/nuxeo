@@ -26,7 +26,6 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -151,31 +150,29 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     /*--------------------- FileSystemItem ---------------------*/
     @Override
     public void rename(String name) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            /* Update doc properties */
-            DocumentModel doc = getDocument(session);
-            BlobHolder bh = getBlobHolder(doc);
-            Blob blob = getBlob(bh);
-            blob.setFilename(name);
-            bh.setBlob(blob);
-            updateDocTitleIfNeeded(doc, name);
-            doc.putContextData(CoreSession.SOURCE, "drive");
-            doc = session.saveDocument(doc);
-            session.save();
-            /* Update FileSystemItem attributes */
-            this.name = name;
-            updateDownloadURL();
-            updateLastModificationDate(doc);
-        }
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+        /* Update doc properties */
+        DocumentModel doc = getDocument(session);
+        BlobHolder bh = getBlobHolder(doc);
+        Blob blob = getBlob(bh);
+        blob.setFilename(name);
+        bh.setBlob(blob);
+        updateDocTitleIfNeeded(doc, name);
+        doc.putContextData(CoreSession.SOURCE, "drive");
+        doc = session.saveDocument(doc);
+        session.save();
+        /* Update FileSystemItem attributes */
+        this.name = name;
+        updateDownloadURL();
+        updateLastModificationDate(doc);
     }
 
     /*--------------------- FileItem -----------------*/
     @Override
     public Blob getBlob() {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            DocumentModel doc = getDocument(session);
-            return getBlob(doc);
-        }
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+        DocumentModel doc = getDocument(session);
+        return getBlob(doc);
     }
 
     @Override
@@ -206,28 +203,27 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     @Override
     public void setBlob(Blob blob) {
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
-            /* Update doc properties */
-            DocumentModel doc = getDocument(session);
-            // If blob's filename is empty, set it to the current name
-            String blobFileName = blob.getFilename();
-            if (StringUtils.isEmpty(blobFileName)) {
-                blob.setFilename(name);
-            } else {
-                updateDocTitleIfNeeded(doc, blobFileName);
-                name = blobFileName;
-                updateDownloadURL();
-            }
-            BlobHolder bh = getBlobHolder(doc);
-            bh.setBlob(blob);
-            doc.putContextData(CoreSession.SOURCE, "drive");
-            doc = session.saveDocument(doc);
-            session.save();
-            /* Update FileSystemItem attributes */
-            updateLastModificationDate(doc);
-            updateDigest(getBlob(doc));
-            updateSize(blob);
+        CoreSession session = CoreInstance.getCoreSession(repositoryName, principal);
+        /* Update doc properties */
+        DocumentModel doc = getDocument(session);
+        // If blob's filename is empty, set it to the current name
+        String blobFileName = blob.getFilename();
+        if (StringUtils.isEmpty(blobFileName)) {
+            blob.setFilename(name);
+        } else {
+            updateDocTitleIfNeeded(doc, blobFileName);
+            name = blobFileName;
+            updateDownloadURL();
         }
+        BlobHolder bh = getBlobHolder(doc);
+        bh.setBlob(blob);
+        doc.putContextData(CoreSession.SOURCE, "drive");
+        doc = session.saveDocument(doc);
+        session.save();
+        /* Update FileSystemItem attributes */
+        updateLastModificationDate(doc);
+        updateDigest(getBlob(doc));
+        updateSize(blob);
     }
 
     /*--------------------- Object -----------------*/

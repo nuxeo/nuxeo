@@ -173,7 +173,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         new Thread(() -> {
             TransactionHelper.runInTransaction(() -> {
                 LoginComponent.pushPrincipal(principal);
-                try (var s = CoreInstance.openCoreSession(repoName, principal)){
+                try {
+                    CoreSession s = CoreInstance.getCoreSession(repoName, principal);
                     opCtx.setCoreSession(s);
                     service.run(opCtx, opId, xreq.getParams());
                 } catch (OperationException e) {

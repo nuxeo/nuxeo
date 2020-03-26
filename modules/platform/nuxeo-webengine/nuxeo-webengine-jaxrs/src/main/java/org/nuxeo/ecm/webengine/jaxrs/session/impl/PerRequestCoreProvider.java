@@ -20,7 +20,6 @@ package org.nuxeo.ecm.webengine.jaxrs.session.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.CoreSessionProvider;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionRef;
@@ -32,9 +31,9 @@ import org.nuxeo.ecm.webengine.jaxrs.session.impl.PerRequestCoreProvider.Ref;
 public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
 
     public static class Ref implements SessionRef {
-        protected CloseableCoreSession session;
+        protected CoreSession session;
 
-        public Ref(CloseableCoreSession session) {
+        public Ref(CoreSession session) {
             this.session = session;
         }
 
@@ -50,11 +49,7 @@ public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
 
         @Override
         public void destroy() {
-            try {
-                session.close();
-            } finally {
-                session = null;
-            }
+            session = null;
         }
     }
 
@@ -70,7 +65,7 @@ public class PerRequestCoreProvider extends CoreSessionProvider<Ref> {
     }
 
     @Override
-    protected Ref createSessionRef(CloseableCoreSession session) {
+    protected Ref createSessionRef(CoreSession session) {
         return new Ref(session);
     }
 

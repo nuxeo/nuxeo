@@ -69,8 +69,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -685,27 +685,26 @@ public class TestDownloadService {
     @Test
     public void testResolveBlobFromDownloadUrl() throws IOException {
         String repositoryName = "test";
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName)) {
-            DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
-            doc.setProperty("dublincore", "title", "Diamonds are forever");
+        CoreSession session = CoreInstance.getCoreSession(repositoryName);
+        DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
+        doc.setProperty("dublincore", "title", "Diamonds are forever");
 
-            FileBlob blob = new FileBlob("Synopsis");
-            String blobFilename = "synopsis.txt";
-            blob.setFilename(blobFilename);
+        FileBlob blob = new FileBlob("Synopsis");
+        String blobFilename = "synopsis.txt";
+        blob.setFilename(blobFilename);
 
-            Map<String, Object> fileMap = new HashMap<>();
-            fileMap.put("file", blob);
-            List<Map<String, Object>> docFiles = new ArrayList<>();
-            docFiles.add(fileMap);
+        Map<String, Object> fileMap = new HashMap<>();
+        fileMap.put("file", blob);
+        List<Map<String, Object>> docFiles = new ArrayList<>();
+        docFiles.add(fileMap);
 
-            doc.setProperty("files", "files", docFiles);
-            doc = session.createDocument(doc);
-            session.save();
+        doc.setProperty("files", "files", docFiles);
+        doc = session.createDocument(doc);
+        session.save();
 
-            String path = "nxfile/" + repositoryName + "/" + doc.getId() + "/files:files/0/file/" + blobFilename;
-            Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(path);
-            assertEquals(blob, resolvedBlob);
-        }
+        String path = "nxfile/" + repositoryName + "/" + doc.getId() + "/files:files/0/file/" + blobFilename;
+        Blob resolvedBlob = downloadService.resolveBlobFromDownloadUrl(path);
+        assertEquals(blob, resolvedBlob);
     }
 
     @Test
@@ -781,31 +780,30 @@ public class TestDownloadService {
     @Test
     public void testDownloadUrlWithChangeToken() throws IOException {
         String repositoryName = "test";
-        try (CloseableCoreSession session = CoreInstance.openCoreSession(repositoryName)) {
-            Framework.getProperties().setProperty("nuxeo.url", "http://localhost:8080/nuxeo");
-            DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
-            doc.setProperty("dublincore", "title", "Spectre");
+        CoreSession session = CoreInstance.getCoreSession(repositoryName);
+        Framework.getProperties().setProperty("nuxeo.url", "http://localhost:8080/nuxeo");
+        DocumentModel doc = session.createDocumentModel("/", "James-Bond", "File");
+        doc.setProperty("dublincore", "title", "Spectre");
 
-            FileBlob blob = new FileBlob("Synopsis");
-            String blobFilename = "synopsis.txt";
-            blob.setFilename(blobFilename);
+        FileBlob blob = new FileBlob("Synopsis");
+        String blobFilename = "synopsis.txt";
+        blob.setFilename(blobFilename);
 
-            Map<String, Object> fileMap = new HashMap<>();
-            fileMap.put("file", blob);
-            List<Map<String, Object>> docFiles = new ArrayList<>();
-            docFiles.add(fileMap);
+        Map<String, Object> fileMap = new HashMap<>();
+        fileMap.put("file", blob);
+        List<Map<String, Object>> docFiles = new ArrayList<>();
+        docFiles.add(fileMap);
 
-            doc.setProperty("files", "files", docFiles);
-            doc = session.createDocument(doc);
-            session.save();
+        doc.setProperty("files", "files", docFiles);
+        doc = session.createDocument(doc);
+        session.save();
 
-            String pattern = "nxfile/test/.*/file:content/synopsis.txt\\?changeToken=[^&]+";
-            String url = downloadService.getDownloadUrl(repositoryName, doc.getId(), "file:content", "synopsis.txt",
-                    doc.getChangeToken());
-            assertTrue(url.matches(pattern));
-            url = downloadService.getDownloadUrl(doc, "file:content", "synopsis.txt");
-            assertTrue(url.matches(pattern));
-        }
+        String pattern = "nxfile/test/.*/file:content/synopsis.txt\\?changeToken=[^&]+";
+        String url = downloadService.getDownloadUrl(repositoryName, doc.getId(), "file:content", "synopsis.txt",
+                doc.getChangeToken());
+        assertTrue(url.matches(pattern));
+        url = downloadService.getDownloadUrl(doc, "file:content", "synopsis.txt");
+        assertTrue(url.matches(pattern));
     }
 
     @Test
