@@ -23,7 +23,6 @@
     <module>nuxeo-audit-storage-directory-ftests</module>
     <module>nuxeo-cas2-login-ftests</module>
     <module>nuxeo-csv-ftests</module>
-    <module>nuxeo-dam-ftests</module>
     <module>nuxeo-drive-ftests</module>
     <module>nuxeo-duoweb-authentication-ftests</module>
     <module>nuxeo-easyshare-ftests</module>
