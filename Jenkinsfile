@@ -223,6 +223,7 @@ def buildUnitTestStage(env) {
             sh """
               mvn ${MAVEN_ARGS} -rf :nuxeo-core-parent \
                 -Dcustom.environment=${env} \
+                -Dcustom.environment.log.dir=target-${env} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
                 test
