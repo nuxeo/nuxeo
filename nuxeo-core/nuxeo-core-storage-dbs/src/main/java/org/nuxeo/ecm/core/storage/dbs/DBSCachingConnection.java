@@ -91,8 +91,8 @@ public class DBSCachingConnection implements DBSConnection {
         // Init caches
         if (repository.supportsTransactions()) {
             // connection-local cache
-            cache = repository.newCache();
-            childCache = repository.newChildCache();
+            cache = repository.newCache(false);
+            childCache = repository.newChildCache(false);
         } else {
             // no transaction, use a repository-wide cache
             cache = repository.getCache();
