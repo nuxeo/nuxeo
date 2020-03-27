@@ -20,9 +20,10 @@
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
+
     <command name="resizer" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet -depth #{targetDepth} #{inputFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
+      <parameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
       <winParameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</winParameterString>
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
@@ -35,8 +36,8 @@
 
     <command name="jpegResizer" enabled="true">
       <commandLine>convert</commandLine>
-      <parameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
-      <winParameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</winParameterString>
+      <parameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet -resize #{targetWidth}x#{targetHeight} \(#{inputFilePath}[0] -background white -flatten -depth #{targetDepth}\) #{outputFilePath}</parameterString>
+      <winParameterString>-define registry:temporary-path=#{nuxeo.tmp.dir} -quiet -resize #{targetWidth}x#{targetHeight} \(#{inputFilePath}[0] -background white -flatten -depth #{targetDepth}\) #{outputFilePath}</winParameterString>
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
