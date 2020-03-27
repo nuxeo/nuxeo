@@ -1,10 +1,10 @@
-"errorResponses": [
+"responseMessages": [
     {
-        "reason": "Not Authorized to get document",
+        "message": "Not Authorized to get document",
         "code": 401
     },
     {
-        "reason": "Document not found",
+        "message": "Document not found",
         "code": 404
     }
 ]
