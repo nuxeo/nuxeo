@@ -233,7 +233,6 @@ def buildUnitTestStage(env) {
 
               mvn ${MAVEN_ARGS} -pl nuxeo-features/nuxeo-automation/nuxeo-automation-features \
                 -Dcustom.environment=${env} \
-                -Dcustom.environment.log.dir=target-${env} \
                 -Dsurefire.jmx.port=${surefireJMXPort} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
