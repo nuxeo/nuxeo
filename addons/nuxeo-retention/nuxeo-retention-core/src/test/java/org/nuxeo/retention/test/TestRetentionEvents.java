@@ -21,6 +21,7 @@ package org.nuxeo.retention.test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.core.api.CoreSession.RETAIN_UNTIL_INDETERMINATE;
 
 import java.util.Calendar;
 
@@ -83,8 +84,8 @@ public class TestRetentionEvents extends RetentionTestCase {
                 DocumentEventTypes.AFTER_EXTEND_RETENTION);
 
         // current retention is indeterminate
-        session.setRetainUntil(file.getRef(), CoreSession.RETAIN_UNTIL_INDETERMINATE, null);
-        transactionalFeature.nextTransaction();
+        setRetentionAndCheckEvents(RETAIN_UNTIL_INDETERMINATE, DocumentEventTypes.BEFORE_EXTEND_RETENTION,
+                DocumentEventTypes.AFTER_EXTEND_RETENTION);
 
         // modify an indeterminate once
         retainUntil = Calendar.getInstance();
@@ -100,7 +101,8 @@ public class TestRetentionEvents extends RetentionTestCase {
 
             String[] eventsNames = listener.streamCapturedEvents().map(Event::getName).toArray(String[]::new);
             assertArrayEquals(expectedEvents, eventsNames);
-            String expectedComment = retainUntil.toInstant().toString();
+            String expectedComment = RETAIN_UNTIL_INDETERMINATE.compareTo(retainUntil) == 0 ? ""
+                    : retainUntil.toInstant().toString();
             listener.streamCapturedEvents()
                     .forEach(ev -> assertEquals("Event: " + ev.getName(), expectedComment,
                             ev.getContext().getProperties().get("comment")));

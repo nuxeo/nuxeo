@@ -2078,7 +2078,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         checkPermission(doc, SET_RETENTION);
         Map<String, Serializable> options = new HashMap<>();
         options.put(CoreEventConstants.RETAIN_UNTIL, retainUntil);
-        options.put("comment", retainUntil == null ? "" : retainUntil.toInstant().toString());
+        boolean retainUntilIndeterminate = retainUntil == null
+                || RETAIN_UNTIL_INDETERMINATE.compareTo(retainUntil) == 0;
+        options.put("comment", retainUntilIndeterminate ? "" : retainUntil.toInstant().toString());
         DocumentModel docModel = readModel(doc);
         boolean currentIndeterminate = current == null || RETAIN_UNTIL_INDETERMINATE.compareTo(current) == 0;
         String beforeRetentionEvent = currentIndeterminate ? DocumentEventTypes.BEFORE_SET_RETENTION
