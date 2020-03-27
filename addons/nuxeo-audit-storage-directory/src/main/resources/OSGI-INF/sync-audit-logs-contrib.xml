@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<component
+  name="org.nuxeo.audit.storage.operation.defaultSyncAuditLogs">
+
+  <extension
+    target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations">
+
+    <operation
+      class="org.nuxeo.audit.storage.operation.SyncAuditLogsFromStorageOperation" />
+    <operation
+      class="org.nuxeo.audit.storage.operation.SyncAuditLogsFromBackendOperation" />
+
+  </extension>
+
+</component>

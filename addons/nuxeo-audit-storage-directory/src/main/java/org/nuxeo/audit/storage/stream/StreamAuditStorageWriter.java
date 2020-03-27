@@ -29,6 +29,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.audit.storage.impl.DirectoryAuditStorage;
+import org.nuxeo.audit.storage.operation.SyncAuditLogsFromStorageOperation;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -60,10 +62,17 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
         int batchSize = getOptionAsInteger(options, BATCH_SIZE_OPT, DEFAULT_BATCH_SIZE);
         int batchThresholdMs = getOptionAsInteger(options, BATCH_THRESHOLD_MS_OPT, DEFAULT_BATCH_THRESHOLD_MS);
         return Topology.builder()
-                       .addComputation(() -> new AuditStorageLogWriterComputation(COMPUTATION_NAME, batchSize,
-                               batchThresholdMs), Collections.singletonList("i1:" + STREAM_NAME))
-                       .build();
+				.addComputation(
+						() -> new AuditStorageLogWriterComputation(COMPUTATION_NAME, batchSize, batchThresholdMs),
+						Collections.singletonList("i1:" + STREAM_NAME))
+				.build();
     }
+
+    static boolean skipRestoreAuditLogEntry(LogEntry logEntry) {
+		return logEntry.getExtendedInfos().containsKey(SyncAuditLogsFromStorageOperation.RESTORE_AUDIT_STORAGE_LOG_KEY)
+				&& SyncAuditLogsFromStorageOperation.RESTORE_AUDIT_STORAGE_LOG_VALUE.equals(logEntry.getExtendedInfos()
+						.get(SyncAuditLogsFromStorageOperation.RESTORE_AUDIT_STORAGE_LOG_KEY).getSerializableValue());
+	}
 
     public class AuditStorageLogWriterComputation extends AbstractComputation {
         protected final int batchSize;
@@ -94,10 +103,15 @@ public class StreamAuditStorageWriter implements StreamProcessorTopology {
 
         @Override
         public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-            jsonEntries.add(new String(record.data, UTF_8));
-            if (jsonEntries.size() >= batchSize) {
-                writeJsonEntriesToAudit(context);
-            }
+			String jsonStr = new String(record.data, UTF_8);
+
+			// need to filter out audit sync events to avoid duplicated logs
+			if (!skipRestoreAuditLogEntry(SyncAuditLogsFromStorageOperation.getLogEntryFromJson(jsonStr))) {
+				jsonEntries.add(jsonStr);
+				if (jsonEntries.size() >= batchSize) {
+					writeJsonEntriesToAudit(context);
+				}
+			}
         }
 
         @Override
