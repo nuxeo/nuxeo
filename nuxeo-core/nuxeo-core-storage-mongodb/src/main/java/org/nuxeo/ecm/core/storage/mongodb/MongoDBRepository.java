@@ -173,6 +173,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
             hasSessions = false;
             hasTransactions = false;
         }
+        // TODO: reactivate sessions/transactions when they can be better tested
+        hasSessions = false;
+        hasTransactions = false;
         supportsSessions = hasSessions;
         supportsTransactions = hasTransactions;
     }

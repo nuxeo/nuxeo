@@ -78,8 +78,8 @@ public class DBSCachingRepository implements DBSRepository {
             childCache = null;
         } else {
             // one global cache held by the repository
-            cache = newCache();
-            childCache = newChildCache();
+            cache = newCache(true);
+            childCache = newChildCache(true);
         }
         if (log.isInfoEnabled()) {
             log.info(String.format("DBS cache activated on '%s' repository", getName()));
@@ -104,17 +104,21 @@ public class DBSCachingRepository implements DBSRepository {
         return clusterInvalidator;
     }
 
-    protected Cache<String, State> newCache() {
+    protected Cache<String, State> newCache(boolean metrics) {
         Cache<String, State> c = newCache(descriptor);
-        registry.registerAll(GuavaCacheMetric.of(cache,
-                MetricName.build(METRIC_CACHE_NAME).tagged("repository", repository.getName())));
+        if (metrics) {
+            registry.registerAll(GuavaCacheMetric.of(c,
+                    MetricName.build(METRIC_CACHE_NAME).tagged("repository", repository.getName())));
+        }
         return c;
     }
 
-    protected Cache<String, String> newChildCache() {
+    protected Cache<String, String> newChildCache(boolean metrics) {
         Cache<String, String> c = newCache(descriptor);
-        registry.registerAll(GuavaCacheMetric.of(childCache,
-                MetricName.build(METRIC_CHILD_CACHE_NAME).tagged("repository", repository.getName())));
+        if (metrics) {
+            registry.registerAll(GuavaCacheMetric.of(c,
+                    MetricName.build(METRIC_CHILD_CACHE_NAME).tagged("repository", repository.getName())));
+        }
         return c;
     }
 
