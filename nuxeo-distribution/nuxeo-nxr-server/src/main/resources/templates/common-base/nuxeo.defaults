@@ -256,6 +256,6 @@ metrics.datadog.host=localhost
 metrics.datadog.port=8125
 
 ## Prometheus reporter
-metrics.prometheus.enabeld=false
+metrics.prometheus.enabled=false
 metrics.prometheus.port=9090
 
