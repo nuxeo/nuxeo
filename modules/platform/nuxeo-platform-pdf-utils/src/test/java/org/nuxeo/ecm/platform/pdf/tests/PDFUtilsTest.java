@@ -100,7 +100,7 @@ public class PDFUtilsTest {
         FileBlob fb = PDFUtils.saveInTempFile(doc);
         assertNotNull(fb);
         assertEquals("application/pdf", fb.getMimeType());
-        assertEquals(67100, fb.getLength());
+        assertEquals(66369, fb.getLength());
         doc.close();
     }
 
