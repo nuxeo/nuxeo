@@ -157,7 +157,7 @@ def buildUnitTestStage(env) {
   def redisHost = "${TEST_REDIS_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
   return {
     stage("Run ${env} unit tests") {
-      container('maven') {
+      container("maven-${env}") {
         script {
           setGitHubBuildStatus("platform/utests/${env}", "Unit tests - ${env} environment", 'PENDING')
           try {
