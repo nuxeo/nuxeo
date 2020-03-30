@@ -11,7 +11,7 @@
           <prefix>nuxeo.cache.default-cache.</prefix>
           <prefix>nuxeo.cache.user-entry-cache.</prefix>
           <prefix>nuxeo.cache.group-entry-cache.</prefix>
-           <prefix>nuxeo.directories.directory.userDirectory</prefix>
+          <prefix>nuxeo.directories.directory.userDirectory</prefix>
           <prefix>nuxeo.directories.directory.groupDirectory</prefix>
         </allow>
         <deny>
@@ -37,10 +37,7 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.metrics.MetricsService" point="reporter">
-
-    <reporter enabled="${metrics.jmx.enabled}" name="jmx"
-      class="org.nuxeo.runtime.metrics.reporter.JmxReporter">
-    </reporter>
+    <reporter enabled="${metrics.jmx.enabled}" name="jmx" class="org.nuxeo.runtime.metrics.reporter.JmxReporter" />
 
     <reporter enabled="${metrics.graphite.enabled}" name="graphite" pollInterval="${metrics.graphite.pollInterval}"
       class="org.nuxeo.runtime.metrics.reporter.GraphiteReporter">
@@ -64,7 +61,10 @@
       class="org.nuxeo.runtime.metrics.reporter.PrometheusReporter">
       <option name="port">${metrics.prometheus.port}</option>
     </reporter>
+  </extension>
 
- </extension>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="metrics.streams.interval">${metrics.streams.interval}</property>
+  </extension>
 
 </component>

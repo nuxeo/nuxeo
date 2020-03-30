@@ -164,7 +164,12 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
             return;
         }
         log.info("Init Stream processor: {} with manager: {}", descriptor.getId(), descriptor.config);
-        getLogManager(descriptor.config);
+        try {
+            getLogManager(descriptor.config);
+        } catch (IllegalArgumentException e) {
+            log.error("Unknown logConfig: {}, on processor: {}", descriptor.config, descriptor.getId());
+            throw e;
+        }
         StreamManager streamManager = getStreamManager(descriptor.config);
         Topology topology;
         try {

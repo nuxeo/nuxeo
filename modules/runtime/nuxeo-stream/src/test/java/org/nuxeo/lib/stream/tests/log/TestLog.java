@@ -792,7 +792,7 @@ public abstract class TestLog {
                 (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()), (Record::getKey));
         // check that the latency point to the last committed keys
         assertEquals(latencies.get(0).toString(), "here", latencies.get(0).key());
-        assertEquals(latencies.get(1).toString(), "here", latencies.get(1).key());
+        assertNull(latencies.get(1).toString(), latencies.get(1).key());
         assertEquals(latencies.get(2).toString(), "here", latencies.get(2).key());
         assertNull(latencies.get(3).toString(), latencies.get(3).key());
         assertNull(latencies.get(4).toString(), latencies.get(4).key());
