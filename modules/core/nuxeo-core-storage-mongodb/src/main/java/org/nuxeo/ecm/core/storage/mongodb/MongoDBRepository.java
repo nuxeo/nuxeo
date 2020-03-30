@@ -178,12 +178,18 @@ public class MongoDBRepository extends DBSRepositoryBase {
         hasTransactions = false;
         supportsSessions = hasSessions;
         supportsTransactions = hasTransactions;
+        initRepository();
     }
 
     @Override
     public void shutdown() {
         super.shutdown();
         cursorService.clear();
+    }
+
+    protected void initRepository() {
+        // the first connection will init the repository
+        getConnection().close();
     }
 
     @Override
