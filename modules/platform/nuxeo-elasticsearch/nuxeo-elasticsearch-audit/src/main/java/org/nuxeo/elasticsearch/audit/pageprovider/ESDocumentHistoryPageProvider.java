@@ -79,6 +79,14 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
     @Override
     protected String getFixedPart() {
+        if (getDefinition().getWhereClause() != null) {
+            //if the pp definition contains a fixed part, use it
+            String fixedPart = getDefinition().getWhereClause().getFixedPart();
+            if (fixedPart != null && !fixedPart.isEmpty()) {
+                return fixedPart;
+            }
+        }
+
         if (getParameters().length == 3) {
             return complexQuery;
         } else {
