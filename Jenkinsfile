@@ -22,9 +22,8 @@ dockerNamespace = 'nuxeo'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo'
 testEnvironments= [
   'dev',
-  // NXP-28710-NXP-28818: temporarily run in dev environment only, waiting for the multi-environment tests to be definitely fixed
-  // 'mongodb',
-  // 'postgresql',
+  'mongodb',
+  'postgresql',
 ]
 
 properties([
