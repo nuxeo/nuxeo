@@ -123,6 +123,7 @@ public class RepositoryService extends DefaultComponent {
         Duration pollDelay = Duration.ofSeconds(1);
         clusterService.runAtomically("start-repository-" + repositoryName, duration, pollDelay, () -> {
             Repository repository = (Repository) factory.call();
+            repository.getSession().close(); // init
             repositories.put(repositoryName, repository);
         });
     }
