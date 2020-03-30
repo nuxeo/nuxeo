@@ -18,27 +18,39 @@
  */
 package org.nuxeo.runtime.stream.tests;
 
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.MetricName;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.lib.stream.computation.log.ComputationRunner.NUXEO_METRICS_REGISTRY_NAME;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.SortedMap;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.computation.ComputationMetadataMapping;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
+import org.nuxeo.lib.stream.computation.internals.ComputationContextImpl;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.runtime.management.api.ProbeStatus;
+import org.nuxeo.runtime.stream.StreamMetricsComputation;
 import org.nuxeo.runtime.stream.StreamProbe;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -222,4 +234,32 @@ public class TestStreamService {
         }
     }
 
+    @Test
+    public void testStreamMetrics() throws Exception {
+        // before running the stream metrics computation no stream metrics are registered
+        MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
+        SortedMap<MetricName, Gauge> gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
+        assertTrue(gauges.isEmpty());
+
+        // create a stream metrics computation
+        StreamMetricsComputation comp = new StreamMetricsComputation(Duration.ofMinutes(1), null);
+        ComputationContext context = new ComputationContextImpl(
+                new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
+        assertFalse(context.isSpareComputation());
+        comp.init(context);
+        // run the timer that is supposed to register the stream metrics
+        comp.processTimer(context, "tracker", 0);
+
+        // we have a gauges per existing computations
+        gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
+        assertFalse(gauges.isEmpty());
+        Gauge gauge = gauges.get(MetricName.build("nuxeo.streams.global.stream.group.end").tagged("stream", "input").tagged("group", "myComputation"));
+        assertNotNull(gauge);
+        assertNotNull(gauge.getValue());
+
+        // stop the computation should unregister the metrics
+        comp.destroy();
+        gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
+        assertTrue(gauges.isEmpty());
+    }
 }
