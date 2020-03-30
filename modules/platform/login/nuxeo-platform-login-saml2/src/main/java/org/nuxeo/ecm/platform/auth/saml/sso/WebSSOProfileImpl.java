@@ -30,31 +30,34 @@ import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.auth.saml.AbstractSAMLProfile;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
-import org.opensaml.common.SAMLException;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.SAMLVersion;
-import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.AttributeStatement;
-import org.opensaml.saml2.core.AuthnContextClassRef;
-import org.opensaml.saml2.core.AuthnContextComparisonTypeEnumeration;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.AuthnStatement;
-import org.opensaml.saml2.core.EncryptedAssertion;
-import org.opensaml.saml2.core.EncryptedAttribute;
-import org.opensaml.saml2.core.Issuer;
-import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.core.NameIDPolicy;
-import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.core.RequestedAuthnContext;
-import org.opensaml.saml2.core.Response;
-import org.opensaml.saml2.core.StatusCode;
-import org.opensaml.saml2.core.Subject;
-import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.SingleSignOnService;
-import org.opensaml.xml.encryption.DecryptionException;
-import org.opensaml.xml.signature.Signature;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.saml.common.SAMLException;
+import org.opensaml.saml.common.SAMLObject;
+import org.opensaml.saml.common.SAMLVersion;
+import org.opensaml.saml.common.binding.SAMLBindingSupport;
+import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
+import org.opensaml.saml.common.messaging.context.SAMLSelfEntityContext;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
+import org.opensaml.saml.saml2.core.AttributeStatement;
+import org.opensaml.saml.saml2.core.AuthnContextClassRef;
+import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration;
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.AuthnStatement;
+import org.opensaml.saml.saml2.core.EncryptedAssertion;
+import org.opensaml.saml.saml2.core.EncryptedAttribute;
+import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.NameID;
+import org.opensaml.saml.saml2.core.NameIDPolicy;
+import org.opensaml.saml.saml2.core.NameIDType;
+import org.opensaml.saml.saml2.core.RequestedAuthnContext;
+import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.StatusCode;
+import org.opensaml.saml.saml2.core.Subject;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.SingleSignOnService;
+import org.opensaml.xmlsec.encryption.support.DecryptionException;
+import org.opensaml.xmlsec.signature.Signature;
 
 /**
  * WebSSO (Single Sign On) profile implementation.
@@ -73,7 +76,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
     }
 
     @Override
-    public SAMLCredential processAuthenticationResponse(SAMLMessageContext context) throws SAMLException {
+    public SAMLCredential processAuthenticationResponse(MessageContext<SAMLObject> context) throws SAMLException {
         SAMLObject message = context.getInboundSAMLMessage();
 
         // Validate type
@@ -85,7 +88,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
 
         // Validate status
         String statusCode = response.getStatus().getStatusCode().getValue();
-        if (!StringUtils.equals(statusCode, StatusCode.SUCCESS_URI)) {
+        if (!StringUtils.equals(statusCode, StatusCode.SUCCESS)) {
             log.debug("StatusCode was not a success: " + statusCode);
             throw new SAMLException("StatusCode was not a success: " + statusCode);
         }
@@ -192,8 +195,12 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         Serializable additionalData = null; // processAdditionalData(context);
 
         // Create the credential
-        return new SAMLCredential(nameID, sessionIndexes, context.getPeerEntityMetadata().getEntityID(),
-                context.getRelayState(), attributes, context.getLocalEntityId(), additionalData);
+        // XXX subContext may be null
+        String peerEntityId = context.getSubcontext(SAMLPeerEntityContext.class).getEntityId();
+        String relayState = SAMLBindingSupport.getRelayState(context);
+        String selfEntityId = context.getSubcontext(SAMLSelfEntityContext.class).getEntityId();
+        return new SAMLCredential(nameID, sessionIndexes, peerEntityId, relayState, attributes, selfEntityId,
+                additionalData);
 
     }
 
@@ -234,7 +241,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
     }
 
     @Override
-    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException {
+    protected void validateAssertion(Assertion assertion, MessageContext<SAMLObject> context) throws SAMLException {
         super.validateAssertion(assertion, context);
         Signature signature = assertion.getSignature();
         if (signature == null) {

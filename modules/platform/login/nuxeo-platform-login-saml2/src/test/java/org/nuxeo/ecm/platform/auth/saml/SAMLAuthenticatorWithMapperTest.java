@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,16 +51,17 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.usermapper.test.UserMapperFeature;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.ws.message.decoder.MessageDecodingException;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.io.Unmarshaller;
-import org.opensaml.xml.io.UnmarshallingException;
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.parse.XMLParserException;
-import org.opensaml.xml.util.Base64;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Unmarshaller;
+import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.messaging.decoder.MessageDecodingException;
+import org.opensaml.saml.common.SAMLObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.codec.Base64Support;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import net.shibboleth.utilities.java.support.xml.XMLParserException;
 
 @RunWith(FeaturesRunner.class)
 @Features(UserMapperFeature.class)
@@ -148,7 +150,7 @@ public class SAMLAuthenticatorWithMapperTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         URL urlP = new URL(url);
         File file = new File(getClass().getResource(messageFile).toURI());
-        String message = Base64.encodeFromFile(file.getAbsolutePath());
+        String message = Base64Support.encode(Files.readAllBytes(file.toPath()), Base64Support.UNCHUNKED);
         when(request.getMethod()).thenReturn(method);
         when(request.getContentLength()).thenReturn(message.length());
         when(request.getContentType()).thenReturn(contentType);
@@ -167,7 +169,7 @@ public class SAMLAuthenticatorWithMapperTest {
 
     protected SAMLObject decodeMessage(String message) {
         try {
-            byte[] decodedBytes = Base64.decode(message);
+            byte[] decodedBytes = Base64Support.decode(message);
             if (decodedBytes == null) {
                 throw new MessageDecodingException("Unable to Base64 decode incoming message");
             }
@@ -178,7 +180,7 @@ public class SAMLAuthenticatorWithMapperTest {
             Document messageDoc = new BasicParserPool().parse(is);
             Element messageElem = messageDoc.getDocumentElement();
 
-            Unmarshaller unmarshaller = Configuration.getUnmarshallerFactory().getUnmarshaller(messageElem);
+            Unmarshaller unmarshaller = XMLObjectProviderRegistrySupport.getUnmarshallerFactory().getUnmarshaller(messageElem);
 
             return (SAMLObject) unmarshaller.unmarshall(messageElem);
         } catch (MessageDecodingException | XMLParserException | UnmarshallingException e) {

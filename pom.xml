@@ -162,6 +162,7 @@
     <metrics.version>5.0.0-rc3</metrics.version>
     <maven.surefire.version>2.22.2</maven.surefire.version>
     <opencensus.version>0.25.0</opencensus.version>
+    <opensaml.version>3.4.5</opensaml.version>
   </properties>
 
   <dependencyManagement>
@@ -4152,49 +4153,18 @@
       <!-- saml -->
       <dependency>
         <groupId>org.opensaml</groupId>
-        <artifactId>opensaml</artifactId>
-        <version>2.6.4</version>
-        <scope>compile</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>xml-apis</artifactId>
-            <groupId>org.apache.xerces</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>serializer</artifactId>
-            <groupId>org.apache.xerces</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <groupId>org.slf4j</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <!-- former xmlsec was not compatible jdk9+ -->
-      <dependency>
-        <groupId>org.apache.santuario</groupId>
-        <artifactId>xmlsec</artifactId>
-        <version>2.1.4</version>
+        <artifactId>opensaml-core</artifactId>
+        <version>${opensaml.version}</version>
       </dependency>
       <dependency>
         <groupId>org.opensaml</groupId>
-        <artifactId>openws</artifactId>
-        <version>1.5.4</version>
+        <artifactId>opensaml-saml-api</artifactId>
+        <version>${opensaml.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.owasp.esapi</groupId>
-        <artifactId>esapi</artifactId>
-        <version>2.2.0.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.opensaml</groupId>
+        <artifactId>opensaml-saml-impl</artifactId>
+        <version>${opensaml.version}</version>
       </dependency>
       <!-- SCIM -->
       <dependency>

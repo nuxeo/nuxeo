@@ -18,17 +18,13 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.binding;
 
-import org.opensaml.common.SAMLException;
-import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.binding.decoding.HTTPRedirectDeflateDecoder;
-import org.opensaml.saml2.binding.encoding.HTTPRedirectDeflateEncoder;
-import org.opensaml.ws.message.encoder.MessageEncodingException;
-import org.opensaml.ws.transport.InTransport;
-import org.opensaml.ws.transport.OutTransport;
-import org.opensaml.ws.transport.http.HTTPInTransport;
-import org.opensaml.ws.transport.http.HTTPOutTransport;
-import org.opensaml.ws.transport.http.HTTPTransport;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.messaging.encoder.MessageEncodingException;
+import org.opensaml.saml.common.SAMLException;
+import org.opensaml.saml.common.SAMLObject;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.binding.decoding.impl.HTTPRedirectDeflateDecoder;
+import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
 
 /**
  * HTTP Redirect Binding
@@ -41,8 +37,8 @@ public class HTTPRedirectBinding extends SAMLBinding {
      * Extends {@link HTTPRedirectDeflateEncoder} to allow building the redirect URL
      */
     private static class DeflateEncoder extends HTTPRedirectDeflateEncoder {
-        public String buildRedirectURL(SAMLMessageContext context, String endpointURL) throws SAMLException {
-            removeSignature(context);
+        public String buildRedirectURL(MessageContext<SAMLObject> context, String endpointURL) throws SAMLException {
+            removeSignature(context.getMessage());
             try {
                 String encodedMessage = deflateAndBase64Encode(context.getOutboundSAMLMessage());
                 return buildRedirectURL(context, endpointURL, encodedMessage);

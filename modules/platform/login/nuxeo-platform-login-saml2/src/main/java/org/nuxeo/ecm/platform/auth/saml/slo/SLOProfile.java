@@ -19,10 +19,11 @@
 package org.nuxeo.ecm.platform.auth.saml.slo;
 
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
-import org.opensaml.common.SAMLException;
-import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.saml2.core.LogoutRequest;
-import org.opensaml.saml2.metadata.Endpoint;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.saml.common.SAMLException;
+import org.opensaml.saml.common.SAMLObject;
+import org.opensaml.saml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.metadata.Endpoint;
 
 /**
  * WebSLO (Single Log Out) profile.
@@ -36,11 +37,11 @@ public interface SLOProfile {
      */
     String PROFILE_URI = "urn:oasis:names:tc:SAML:2.0:profiles:SSO:logout";
 
-    LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException;
+    LogoutRequest buildLogoutRequest(MessageContext<SAMLObject> context, SAMLCredential credential) throws SAMLException;
 
-    void processLogoutResponse(SAMLMessageContext context) throws SAMLException;
+    void processLogoutResponse(MessageContext<SAMLObject> context) throws SAMLException;
 
-    boolean processLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException;
+    boolean processLogoutRequest(MessageContext<SAMLObject> context, SAMLCredential credential) throws SAMLException;
 
     Endpoint getEndpoint();
 }

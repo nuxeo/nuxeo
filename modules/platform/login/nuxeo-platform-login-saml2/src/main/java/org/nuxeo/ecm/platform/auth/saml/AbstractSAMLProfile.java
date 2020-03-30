@@ -28,32 +28,31 @@ import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.opensaml.Configuration;
-import org.opensaml.common.SAMLException;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.core.Assertion;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.Conditions;
-import org.opensaml.saml2.core.Issuer;
-import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.core.Response;
-import org.opensaml.saml2.encryption.Decrypter;
-import org.opensaml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml2.metadata.Endpoint;
-import org.opensaml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.security.MetadataCriteria;
-import org.opensaml.security.SAMLSignatureProfileValidator;
-import org.opensaml.xml.XMLObjectBuilderFactory;
-import org.opensaml.xml.security.CriteriaSet;
-import org.opensaml.xml.security.SecurityException;
-import org.opensaml.xml.security.credential.UsageType;
-import org.opensaml.xml.security.criteria.EntityIDCriteria;
-import org.opensaml.xml.security.criteria.UsageCriteria;
-import org.opensaml.xml.signature.Signature;
-import org.opensaml.xml.signature.SignatureTrustEngine;
-import org.opensaml.xml.validation.ValidationException;
+import org.opensaml.core.criterion.EntityIdCriterion;
+import org.opensaml.core.xml.XMLObjectBuilderFactory;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.saml.common.SAMLException;
+import org.opensaml.saml.common.SAMLObject;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.Conditions;
+import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.NameIDType;
+import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.encryption.Decrypter;
+import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
+import org.opensaml.saml.saml2.metadata.Endpoint;
+import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
+import org.opensaml.saml.security.impl.SAMLSignatureProfileValidator;
+import org.opensaml.security.credential.UsageType;
+import org.opensaml.security.criteria.UsageCriterion;
+import org.opensaml.xmlsec.signature.Signature;
+import org.opensaml.xmlsec.signature.support.SignatureException;
+import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
+
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 
 /**
  * Base abstract class for SAML profile processors.
@@ -75,7 +74,7 @@ public abstract class AbstractSAMLProfile {
 
     public AbstractSAMLProfile(Endpoint endpoint) {
         this.endpoint = endpoint;
-        this.builderFactory = Configuration.getBuilderFactory();
+        this.builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
         this.skewTimeMillis = SAMLConfiguration.getSkewTimeMillis();
     }
 
@@ -85,7 +84,7 @@ public abstract class AbstractSAMLProfile {
     abstract public String getProfileIdentifier();
 
     protected <T extends SAMLObject> T build(QName qName) {
-        return (T) builderFactory.getBuilder(qName).buildObject(qName);
+        return (T) builderFactory.getBuilderOrThrow(qName).buildObject(qName);
     }
 
     // VALIDATION
@@ -100,21 +99,21 @@ public abstract class AbstractSAMLProfile {
             SAMLSignatureProfileValidator validator = new SAMLSignatureProfileValidator();
             validator.validate(signature);
             CriteriaSet criteriaSet = new CriteriaSet();
-            criteriaSet.add(new EntityIDCriteria(IDPEntityID));
-            criteriaSet.add(new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, SAMLConstants.SAML20P_NS));
-            criteriaSet.add(new UsageCriteria(UsageType.SIGNING));
+            criteriaSet.add(new EntityIdCriterion(IDPEntityID));
+            // criteriaSet.add(new MetadataCriteria(IDPSSODescriptor.DEFAULT_ELEMENT_NAME, SAMLConstants.SAML20P_NS));
+            criteriaSet.add(new UsageCriterion(UsageType.SIGNING));
             log.debug("Verifying signature: " + signature);
 
             if (!getTrustEngine().validate(signature, criteriaSet)) {
                 throw new SAMLException("Signature is not trusted or invalid");
             }
-        } catch (ValidationException | SecurityException e) {
+        } catch (SignatureException | org.opensaml.security.SecurityException e) {
             throw new SAMLException("Error validating signature", e);
         }
 
     }
 
-    protected void validateIssuer(Issuer issuer, SAMLMessageContext context) throws SAMLException {
+    protected void validateIssuer(Issuer issuer, MessageContext<SAMLObject> context) throws SAMLException {
         // Validate format of issuer
         if (issuer.getFormat() != null && !issuer.getFormat().equals(NameIDType.ENTITY)) {
             throw new SAMLException("Assertion invalidated by issuer type");
@@ -174,7 +173,7 @@ public abstract class AbstractSAMLProfile {
         }
     }
 
-    protected void validateAssertion(Assertion assertion, SAMLMessageContext context) throws SAMLException {
+    protected void validateAssertion(Assertion assertion, MessageContext<SAMLObject> context) throws SAMLException {
 
         validateIssuer(assertion.getIssuer(), context);
 

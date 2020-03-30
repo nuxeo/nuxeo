@@ -19,11 +19,11 @@
 
 package org.nuxeo.ecm.platform.auth.saml;
 
-import org.opensaml.saml2.core.Attribute;
-import org.opensaml.saml2.core.NameID;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.opensaml.saml.saml2.core.Attribute;
+import org.opensaml.saml.saml2.core.NameID;
 
 /**
  * @since 6.0

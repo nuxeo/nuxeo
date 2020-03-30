@@ -22,12 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
-import org.opensaml.common.SAMLRuntimeException;
-import org.opensaml.xml.security.CriteriaSet;
-import org.opensaml.xml.security.SecurityException;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.credential.KeyStoreCredentialResolver;
-import org.opensaml.xml.security.criteria.EntityIDCriteria;
+import org.opensaml.core.criterion.EntityIdCriterion;
+import org.opensaml.saml.common.SAMLRuntimeException;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.security.credential.impl.KeyStoreCredentialResolver;
+
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
+import net.shibboleth.utilities.java.support.resolver.ResolverException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -112,10 +113,10 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     public Credential getCredential(String keyName) {
         try {
             CriteriaSet cs = new CriteriaSet();
-            EntityIDCriteria criteria = new EntityIDCriteria(keyName);
+            EntityIdCriterion criteria = new EntityIdCriterion(keyName);
             cs.add(criteria);
             return resolveSingle(cs);
-        } catch (org.opensaml.xml.security.SecurityException e) {
+        } catch (ResolverException e) {
             throw new SAMLRuntimeException("Can't obtain SP signing key", e);
         }
     }
@@ -175,12 +176,12 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
     }
 
     @Override
-    public Iterable<Credential> resolve(CriteriaSet criteria) throws org.opensaml.xml.security.SecurityException {
+    public Iterable<Credential> resolve(CriteriaSet criteria) throws ResolverException {
         return credentialResolver.resolve(criteria);
     }
 
     @Override
-    public Credential resolveSingle(CriteriaSet criteria) throws SecurityException {
+    public Credential resolveSingle(CriteriaSet criteria) throws ResolverException {
         return credentialResolver.resolveSingle(criteria);
     }
 

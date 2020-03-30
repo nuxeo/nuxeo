@@ -31,26 +31,15 @@
     </dependency>
     <dependency>
       <groupId>org.opensaml</groupId>
-      <artifactId>opensaml</artifactId>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>xml-apis</artifactId>
-          <groupId>org.apache.xerces</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jcl-over-slf4j</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>serializer</artifactId>
-          <groupId>org.apache.xerces</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>log4j-over-slf4j</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-      </exclusions>
+      <artifactId>opensaml-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opensaml</groupId>
+      <artifactId>opensaml-saml-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opensaml</groupId>
+      <artifactId>opensaml-saml-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>

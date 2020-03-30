@@ -30,12 +30,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
-import org.opensaml.saml2.metadata.EntityDescriptor;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.io.Marshaller;
-import org.opensaml.xml.io.MarshallingException;
-import org.opensaml.xml.util.XMLHelper;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.Marshaller;
+import org.opensaml.core.xml.io.MarshallingException;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.w3c.dom.Element;
+
+import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 /**
  * Servlet that returns local SP metadata for configuring IdPs.
@@ -56,14 +57,14 @@ public class MetadataServlet extends HttpServlet {
         EntityDescriptor descriptor = SAMLConfiguration.getEntityDescriptor(baseURL);
 
         try {
-            Marshaller marshaller = Configuration.getMarshallerFactory().getMarshaller(descriptor);
+            Marshaller marshaller = XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(descriptor);
             if (marshaller == null) {
                 log.error("Unable to marshall message, no marshaller registered for message object: "
                         + descriptor.getElementQName());
                 return;
             }
             Element dom = marshaller.marshall(descriptor);
-            XMLHelper.writeNode(dom, response.getWriter());
+            SerializeSupport.writeNode(dom, response.getOutputStream());
         } catch (MarshallingException e) {
             log.error("Unable to write metadata.");
         }

@@ -18,16 +18,18 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.binding;
 
-import org.opensaml.common.binding.decoding.BaseSAMLMessageDecoder;
-import org.opensaml.common.binding.decoding.URIComparator;
-import org.opensaml.util.SimpleURLCanonicalizer;
-import org.opensaml.ws.message.MessageContext;
-import org.opensaml.ws.message.decoder.MessageDecoder;
-import org.opensaml.ws.message.decoder.MessageDecodingException;
-import org.opensaml.ws.message.encoder.MessageEncoder;
-import org.opensaml.ws.message.encoder.MessageEncodingException;
-import org.opensaml.ws.transport.InTransport;
-import org.opensaml.ws.transport.OutTransport;
+import java.net.MalformedURLException;
+
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.messaging.decoder.MessageDecodingException;
+import org.opensaml.messaging.encoder.MessageEncodingException;
+import org.opensaml.saml.common.SAMLRuntimeException;
+import org.opensaml.saml.common.binding.decoding.SAMLMessageDecoder;
+import org.opensaml.saml.common.binding.encoding.SAMLMessageEncoder;
+
+import net.shibboleth.utilities.java.support.net.SimpleURLCanonicalizer;
+import net.shibboleth.utilities.java.support.net.URIComparator;
+import net.shibboleth.utilities.java.support.net.URIException;
 
 /**
  * Based class for SAML bindings, used for parsing messages.
@@ -36,34 +38,38 @@ import org.opensaml.ws.transport.OutTransport;
  */
 public abstract class SAMLBinding {
 
-    protected MessageDecoder decoder;
+    protected SAMLMessageDecoder decoder;
 
-    protected MessageEncoder encoder;
+    protected SAMLMessageEncoder encoder;
 
     /**
      * URIComparator that strips scheme to avoid issues with reverse proxies
      */
     public static final URIComparator uriComparator = new URIComparator() {
         @Override
-        public boolean compare(String uri1, String uri2) {
+        public boolean compare(String uri1, String uri2) throws URIException {
             if (uri1 == null && uri2 == null) {
                 return true;
             } else if (uri1 == null || uri2 == null) {
                 return false;
             } else {
-                String uri1Canon = SimpleURLCanonicalizer.canonicalize(uri1).replaceFirst("^(https:|http:)", "");
-                String uri2Canon = SimpleURLCanonicalizer.canonicalize(uri2).replaceFirst("^(https:|http:)", "");
-                return uri1Canon.equals(uri2Canon);
+                try {
+                    String uri1Canon = SimpleURLCanonicalizer.canonicalize(uri1).replaceFirst("^(https:|http:)", "");
+                    String uri2Canon = SimpleURLCanonicalizer.canonicalize(uri2).replaceFirst("^(https:|http:)", "");
+                    return uri1Canon.equals(uri2Canon);
+                } catch (MalformedURLException e) {
+                    throw new URIException(e);
+                }
             }
         }
     };
 
-    public SAMLBinding(MessageDecoder decoder, MessageEncoder encoder) {
+    public SAMLBinding(SAMLMessageDecoder decoder, SAMLMessageEncoder encoder) {
         this.decoder = decoder;
         this.encoder = encoder;
         // NXP-17044: strips scheme to fix validity check with reverse proxies
         if (decoder != null) {
-            ((BaseSAMLMessageDecoder) decoder).setURIComparator(uriComparator);
+//            ((BaseSAMLMessageDecoder) decoder).setURIComparator(uriComparator);
         }
     }
 
@@ -74,7 +80,7 @@ public abstract class SAMLBinding {
      * @throws org.opensaml.xml.security.SecurityException
      * @throws MessageDecodingException
      */
-    public void decode(MessageContext context) throws org.opensaml.xml.security.SecurityException,
+    public void decode(MessageContext context) throws org.opensaml.security.SecurityException,
             MessageDecodingException {
         decoder.decode(context);
     }

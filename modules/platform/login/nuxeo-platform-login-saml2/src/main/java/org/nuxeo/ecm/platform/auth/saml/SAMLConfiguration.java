@@ -24,21 +24,21 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
 import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
 import org.nuxeo.runtime.api.Framework;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.core.NameIDType;
-import org.opensaml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml2.metadata.EntityDescriptor;
-import org.opensaml.saml2.metadata.KeyDescriptor;
-import org.opensaml.saml2.metadata.NameIDFormat;
-import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.SingleLogoutService;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.security.SecurityHelper;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.credential.UsageType;
-import org.opensaml.xml.security.keyinfo.KeyInfoGenerator;
-import org.opensaml.xml.signature.KeyInfo;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.saml.common.SAMLObject;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.core.NameIDType;
+import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml.saml2.metadata.KeyDescriptor;
+import org.opensaml.saml.saml2.metadata.NameIDFormat;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.SingleLogoutService;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.security.credential.UsageType;
+import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
+import org.opensaml.xmlsec.keyinfo.KeyInfoSupport;
+import org.opensaml.xmlsec.signature.KeyInfo;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -202,16 +202,16 @@ public class SAMLConfiguration {
 
     private static KeyInfo generateKeyInfoForCredential(Credential credential) {
         try {
-            KeyInfoGenerator keyInfoGenerator = SecurityHelper.getKeyInfoGenerator(credential, null, null);
+            KeyInfoGenerator keyInfoGenerator = KeyInfoSupport.getKeyInfoGenerator(credential, null, null);
             return keyInfoGenerator.generate(credential);
-        } catch (org.opensaml.xml.security.SecurityException e) {
+        } catch (org.opensaml.security.SecurityException e) {
             log.error("Failed to  generate key info.");
         }
         return null;
     }
 
     private static <T extends SAMLObject> T build(QName qName) {
-        return (T) Configuration.getBuilderFactory().getBuilder(qName).buildObject(qName);
+        return (T) XMLObjectProviderRegistrySupport.getBuilderFactory().getBuilderOrThrow(qName).buildObject(qName);
     }
 
 }

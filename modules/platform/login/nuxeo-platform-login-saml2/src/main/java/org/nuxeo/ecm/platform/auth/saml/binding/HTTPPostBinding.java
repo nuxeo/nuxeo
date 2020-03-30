@@ -18,13 +18,8 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.binding;
 
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.binding.decoding.HTTPPostDecoder;
-import org.opensaml.ws.transport.InTransport;
-import org.opensaml.ws.transport.OutTransport;
-import org.opensaml.ws.transport.http.HTTPInTransport;
-import org.opensaml.ws.transport.http.HTTPOutTransport;
-import org.opensaml.ws.transport.http.HTTPTransport;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.binding.decoding.impl.HTTPPostDecoder;
 
 /**
  * HTTP Post Binding

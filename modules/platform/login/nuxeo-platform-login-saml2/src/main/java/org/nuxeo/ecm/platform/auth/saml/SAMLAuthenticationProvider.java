@@ -60,45 +60,48 @@ import org.nuxeo.ecm.platform.web.common.CookieHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.usermapper.service.UserMapperService;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.common.SAMLException;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.binding.BasicSAMLMessageContext;
-import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.core.AuthnRequest;
-import org.opensaml.saml2.core.LogoutRequest;
-import org.opensaml.saml2.core.LogoutResponse;
-import org.opensaml.saml2.core.NameID;
-import org.opensaml.saml2.encryption.Decrypter;
-import org.opensaml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver;
-import org.opensaml.saml2.metadata.EntityDescriptor;
-import org.opensaml.saml2.metadata.IDPSSODescriptor;
-import org.opensaml.saml2.metadata.RoleDescriptor;
-import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.SingleLogoutService;
-import org.opensaml.saml2.metadata.SingleSignOnService;
-import org.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
-import org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
-import org.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.security.MetadataCredentialResolver;
-import org.opensaml.ws.message.decoder.MessageDecodingException;
-import org.opensaml.ws.transport.InTransport;
-import org.opensaml.ws.transport.http.HttpServletRequestAdapter;
-import org.opensaml.ws.transport.http.HttpServletResponseAdapter;
-import org.opensaml.xml.Configuration;
-import org.opensaml.xml.ConfigurationException;
-import org.opensaml.xml.encryption.ChainingEncryptedKeyResolver;
-import org.opensaml.xml.encryption.InlineEncryptedKeyResolver;
-import org.opensaml.xml.encryption.SimpleRetrievalMethodEncryptedKeyResolver;
-import org.opensaml.xml.parse.BasicParserPool;
-import org.opensaml.xml.security.credential.Credential;
-import org.opensaml.xml.security.keyinfo.KeyInfoCredentialResolver;
-import org.opensaml.xml.security.keyinfo.StaticKeyInfoCredentialResolver;
-import org.opensaml.xml.signature.SignatureTrustEngine;
-import org.opensaml.xml.signature.impl.ExplicitKeySignatureTrustEngine;
+import org.opensaml.core.config.InitializationException;
+import org.opensaml.core.config.InitializationService;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.messaging.decoder.MessageDecodingException;
+import org.opensaml.saml.common.SAMLException;
+import org.opensaml.saml.common.SAMLObject;
+import org.opensaml.saml.common.binding.SAMLBindingSupport;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.metadata.resolver.MetadataResolver;
+import org.opensaml.saml.metadata.resolver.impl.AbstractMetadataResolver;
+import org.opensaml.saml.metadata.resolver.impl.FilesystemMetadataResolver;
+import org.opensaml.saml.metadata.resolver.impl.HTTPMetadataResolver;
+import org.opensaml.saml.metadata.resolver.impl.PredicateRoleDescriptorResolver;
+import org.opensaml.saml.saml2.binding.decoding.impl.HTTPArtifactDecoder;
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.core.LogoutResponse;
+import org.opensaml.saml.saml2.core.NameID;
+import org.opensaml.saml.saml2.encryption.Decrypter;
+import org.opensaml.saml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.RoleDescriptor;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.SingleLogoutService;
+import org.opensaml.saml.saml2.metadata.SingleSignOnService;
+import org.opensaml.saml.security.impl.MetadataCredentialResolver;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
+import org.opensaml.xmlsec.encryption.support.ChainingEncryptedKeyResolver;
+import org.opensaml.xmlsec.encryption.support.InlineEncryptedKeyResolver;
+import org.opensaml.xmlsec.encryption.support.SimpleRetrievalMethodEncryptedKeyResolver;
+import org.opensaml.xmlsec.keyinfo.KeyInfoCredentialResolver;
+import org.opensaml.xmlsec.keyinfo.impl.StaticKeyInfoCredentialResolver;
+import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
+import org.opensaml.xmlsec.signature.support.impl.ExplicitKeySignatureTrustEngine;
+
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
+import net.shibboleth.utilities.java.support.resolver.ResolverException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
 
 /**
  * A SAML2 authentication provider.
@@ -129,18 +132,20 @@ public class SAMLAuthenticationProvider
     static List<SAMLBinding> bindings = new ArrayList<>();
 
     static {
+        try {
+            InitializationService.initialize();
+        } catch (InitializationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
         bindings.add(new HTTPPostBinding());
         bindings.add(new HTTPRedirectBinding());
     }
 
     // Decryption key resolver
-    private static ChainingEncryptedKeyResolver encryptedKeyResolver = new ChainingEncryptedKeyResolver();
-
-    static {
-        encryptedKeyResolver.getResolverChain().add(new InlineEncryptedKeyResolver());
-        encryptedKeyResolver.getResolverChain().add(new EncryptedElementTypeEncryptedKeyResolver());
-        encryptedKeyResolver.getResolverChain().add(new SimpleRetrievalMethodEncryptedKeyResolver());
-    }
+    private static ChainingEncryptedKeyResolver encryptedKeyResolver = new ChainingEncryptedKeyResolver(
+            List.of(new InlineEncryptedKeyResolver(), //
+                    new EncryptedElementTypeEncryptedKeyResolver(), //
+                    new SimpleRetrievalMethodEncryptedKeyResolver()));
 
     // Profiles supported by the IdP
     private Map<String, AbstractSAMLProfile> profiles = new HashMap<>();
@@ -153,7 +158,7 @@ public class SAMLAuthenticationProvider
 
     private Decrypter decrypter;
 
-    private MetadataProvider metadataProvider;
+    private MetadataResolver metadataProvider;
 
     @Override
     public void initPlugin(Map<String, String> parameters) {
@@ -183,23 +188,22 @@ public class SAMLAuthenticationProvider
             log.error("Failed to initialize user resolver " + userResolverClassname);
         }
 
-        // Initialize the OpenSAML library
-        try {
-            DefaultBootstrap.bootstrap();
-        } catch (ConfigurationException e) {
-            log.error("Failed to bootstrap OpenSAML", e);
-        }
-
         // Read the IdP metadata and initialize the supported profiles
         try {
             // Read the IdP metadata
             initializeMetadataProvider(parameters);
 
             // Setup Signature Trust Engine
-            MetadataCredentialResolver metadataCredentialResolver = new MetadataCredentialResolver(metadataProvider);
+            PredicateRoleDescriptorResolver roleResolver = new PredicateRoleDescriptorResolver(metadataProvider);
+            roleResolver.initialize();
+
+            MetadataCredentialResolver metadataCredentialResolver = new MetadataCredentialResolver();
+            metadataCredentialResolver.setRoleDescriptorResolver(roleResolver);
+            metadataCredentialResolver.setKeyInfoCredentialResolver(DefaultSecurityConfigurationBootstrap.buildBasicInlineKeyInfoCredentialResolver());
+            metadataCredentialResolver.initialize();
+
             trustEngine = new ExplicitKeySignatureTrustEngine(metadataCredentialResolver,
-                    org.opensaml.xml.Configuration.getGlobalSecurityConfiguration()
-                                                  .getDefaultKeyInfoCredentialResolver());
+                    DefaultSecurityConfigurationBootstrap.buildBasicInlineKeyInfoCredentialResolver());
 
             // Setup decrypter
             Credential encryptionCredential = getKeyManager().getEncryptionCredential();
@@ -214,7 +218,7 @@ public class SAMLAuthenticationProvider
 
                 // Web SSO role
                 if (roleDescriptor.getElementQName().equals(IDPSSODescriptor.DEFAULT_ELEMENT_NAME)
-                        && roleDescriptor.isSupportedProtocol(org.opensaml.common.xml.SAMLConstants.SAML20P_NS)) {
+                        && roleDescriptor.isSupportedProtocol(SAMLConstants.SAML20P_NS)) {
 
                     IDPSSODescriptor idpSSO = (IDPSSODescriptor) roleDescriptor;
 
@@ -236,7 +240,7 @@ public class SAMLAuthenticationProvider
                 }
             }
 
-        } catch (MetadataProviderException e) {
+        } catch (ResolverException | ComponentInitializationException e) {
             log.warn("Failed to register IdP: " + e.getMessage());
         }
 
@@ -253,21 +257,28 @@ public class SAMLAuthenticationProvider
         profiles.put(profile.getProfileIdentifier(), profile);
     }
 
-    private void initializeMetadataProvider(Map<String, String> parameters) throws MetadataProviderException {
-        AbstractMetadataProvider metadataProvider;
+    private void initializeMetadataProvider(Map<String, String> parameters)
+            throws ResolverException, ComponentInitializationException {
+        AbstractMetadataResolver metadataProvider;
 
         String metadataUrl = parameters.get("metadata");
         if (metadataUrl == null) {
-            throw new MetadataProviderException("No metadata URI set for provider "
+            throw new ResolverException("No metadata URI set for provider "
                     + ((parameters.containsKey("name")) ? parameters.get("name") : ""));
         }
 
         int requestTimeout = parameters.containsKey("timeout") ? Integer.parseInt(parameters.get("timeout")) : 5;
+        HttpClientBuilder builder = new HttpClientBuilder();
+        builder.setConnectionRequestTimeout(requestTimeout * 1000);
 
         if (metadataUrl.startsWith("http:") || metadataUrl.startsWith("https:")) {
-            metadataProvider = new HTTPMetadataProvider(metadataUrl, requestTimeout * 1000);
+            try {
+                metadataProvider = new HTTPMetadataResolver(builder.buildClient(), metadataUrl);
+            } catch (Exception e) {
+                throw new NuxeoException();
+            }
         } else { // file
-            metadataProvider = new FilesystemMetadataProvider(new File(metadataUrl));
+            metadataProvider = new FilesystemMetadataResolver(new File(metadataUrl));
         }
 
         metadataProvider.setParserPool(new BasicParserPool());
@@ -276,7 +287,7 @@ public class SAMLAuthenticationProvider
         this.metadataProvider = metadataProvider;
     }
 
-    private EntityDescriptor getIdPDescriptor() throws MetadataProviderException {
+    private EntityDescriptor getIdPDescriptor() throws ResolverException {
         return (EntityDescriptor) metadataProvider.getMetadata();
     }
 
@@ -291,13 +302,13 @@ public class SAMLAuthenticationProvider
 
         // Create and populate the context
         @SuppressWarnings("rawtypes")
-        SAMLMessageContext context = new BasicSAMLMessageContext();
+        MessageContext<SAMLObject> context = new MessageContext<>();
         populateLocalContext(context, request);
 
         // Store the requested URL in the Relay State
         String requestedUrl = getRequestedUrl(request);
         if (requestedUrl != null) {
-            context.setRelayState(requestedUrl);
+            SAMLBindingSupport.setRelayState(context, requestedUrl);
         }
 
         // Build Uri
@@ -379,7 +390,7 @@ public class SAMLAuthenticationProvider
         // Decode the message
         try {
             binding.decode(context);
-        } catch (org.opensaml.xml.security.SecurityException | MessageDecodingException e) {
+        } catch (org.opensaml.security.SecurityException | MessageDecodingException e) {
             log.error("Error during SAML decoding", e);
             return null;
         }
@@ -395,7 +406,7 @@ public class SAMLAuthenticationProvider
             if (context.getPeerEntityRole() == null) {
                 context.setPeerEntityRole(IDPSSODescriptor.DEFAULT_ELEMENT_NAME);
             }
-        } catch (MetadataProviderException e) {
+        } catch (ResolverException e) {
             //
         }
 
@@ -502,7 +513,7 @@ public class SAMLAuthenticationProvider
         return null;
     }
 
-    private void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context, HttpServletRequest request) {
+    private void populateLocalContext(MessageContext<SAMLObject> context, HttpServletRequest request) {
         // Set local info
         context.setLocalEntityId(SAMLConfiguration.getEntityId());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -546,8 +557,9 @@ public class SAMLAuthenticationProvider
         SAMLCredential credential = getSamlCredential(request);
 
         // Create and populate the context
-        @SuppressWarnings("rawtypes")
-        SAMLMessageContext context = new BasicSAMLMessageContext();
+        HTTPArtifactDecoder decoder = new HTTPArtifactDecoder();
+        decoder.setHttpServletRequest(request);
+        MessageContext<SAMLObject> context = decoder.getMessageContext();
         populateLocalContext(context, request);
 
         try {
@@ -575,8 +587,8 @@ public class SAMLAuthenticationProvider
             String nameValue = parts[1];
             String nameFormat = parts[2];
 
-            NameID nameID = (NameID) Configuration.getBuilderFactory()
-                                                  .getBuilder(NameID.DEFAULT_ELEMENT_NAME)
+            NameID nameID = (NameID) XMLObjectProviderRegistrySupport.getBuilderFactory()
+                                                  .getBuilderOrThrow(NameID.DEFAULT_ELEMENT_NAME)
                                                   .buildObject(NameID.DEFAULT_ELEMENT_NAME);
             nameID.setValue(nameValue);
             nameID.setFormat(nameFormat);

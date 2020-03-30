@@ -22,13 +22,19 @@ import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.auth.saml.AbstractSAMLProfile;
 import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
-import org.opensaml.common.SAMLException;
-import org.opensaml.common.SAMLObject;
-import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.saml2.core.*;
-import org.opensaml.saml2.metadata.SingleLogoutService;
-import org.opensaml.xml.encryption.DecryptionException;
+import org.opensaml.messaging.context.MessageContext;
+import org.opensaml.saml.common.SAMLException;
+import org.opensaml.saml.common.SAMLObject;
+import org.opensaml.saml.common.SAMLVersion;
+import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.core.LogoutResponse;
+import org.opensaml.saml.saml2.core.NameID;
+import org.opensaml.saml.saml2.core.SessionIndex;
+import org.opensaml.saml.saml2.core.StatusCode;
+import org.opensaml.saml.saml2.metadata.SingleLogoutService;
+import org.opensaml.xmlsec.encryption.support.DecryptionException;
 
 /**
  * WebSLO (Single Log Out) profile implementation.
@@ -47,7 +53,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
     }
 
     @Override
-    public LogoutRequest buildLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException {
+    public LogoutRequest buildLogoutRequest(MessageContext<SAMLObject> context, SAMLCredential credential) throws SAMLException {
 
         LogoutRequest request = build(LogoutRequest.DEFAULT_ELEMENT_NAME);
         request.setID(newUUID());
@@ -76,7 +82,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
     }
 
     @Override
-    public boolean processLogoutRequest(SAMLMessageContext context, SAMLCredential credential) throws SAMLException {
+    public boolean processLogoutRequest(MessageContext<SAMLObject> context, SAMLCredential credential) throws SAMLException {
 
         SAMLObject message = context.getInboundSAMLMessage();
 
@@ -137,7 +143,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
     }
 
     @Override
-    public void processLogoutResponse(SAMLMessageContext context) throws SAMLException {
+    public void processLogoutResponse(MessageContext<SAMLObject> context) throws SAMLException {
 
         SAMLObject message = context.getInboundSAMLMessage();
 
@@ -166,7 +172,7 @@ public class SLOProfileImpl extends AbstractSAMLProfile implements SLOProfile {
 
         // Verify status
         String statusCode = response.getStatus().getStatusCode().getValue();
-        if (!statusCode.equals(StatusCode.SUCCESS_URI) && !statusCode.equals(StatusCode.PARTIAL_LOGOUT_URI)) {
+        if (!statusCode.equals(StatusCode.SUCCESS) && !statusCode.equals(StatusCode.PARTIAL_LOGOUT)) {
             log.warn("Invalid status code " + statusCode + ": " + response.getStatus().getStatusMessage());
         }
     }
