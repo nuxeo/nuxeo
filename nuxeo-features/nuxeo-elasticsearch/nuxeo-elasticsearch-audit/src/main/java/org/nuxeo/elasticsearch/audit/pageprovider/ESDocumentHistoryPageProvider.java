@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.audit.pageprovider;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -79,6 +80,14 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
 
     @Override
     protected String getFixedPart() {
+        if (getDefinition().getWhereClause() != null) {
+            //if the pp definition contains a fixed part, use it
+            String fixedPart = getDefinition().getWhereClause().getFixedPart();
+            if (StringUtils.isNotEmpty(fixedPart)) {
+                return fixedPart;
+            }
+        }
+
         if (getParameters().length == 3) {
             return complexQuery;
         } else {

@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +47,9 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -212,6 +215,9 @@ public class TestESHistoryProvider {
         createdEntry.setEventDate(new Date());
         createdEntry.setDocPath(doc.getPathAsString());
         createdEntry.setRepositoryId("test");
+        Map<String, ExtendedInfo> extendedInfos = new HashMap<>();
+        extendedInfos.put("reason", new ExtendedInfoImpl.StringInfo("test"));
+        createdEntry.setExtendedInfos(extendedInfos);
 
         List<LogEntry> entries = new ArrayList<>();
         entries.add(createdEntry);
@@ -427,6 +433,29 @@ public class TestESHistoryProvider {
         pageProvider.setSearchDocumentModel(searchDoc);
         entries = pageProvider.getCurrentPage();
         assertEquals(5, entries.size());
+    }
+
+    @Test
+    public void testCustomFixedPartDocumentHistoryPageProvider() {
+        assertNotNull(pageProviderService.getPageProviderDefinition("FIXED_PART_DOCUMENT_HISTORY_PROVIDER"));
+        DocumentModel searchDoc = session.createDocumentModel("BasicAuditSearch");
+        searchDoc.setPathInfo("/", "auditsearch");
+        searchDoc = session.createDocument(searchDoc);
+
+        searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
+        searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
+        searchDoc.setPropertyValue("basicauditsearch:startDate", null);
+        searchDoc.setPropertyValue("basicauditsearch:endDate", null);
+
+        //test with doc
+        PageProvider<LogEntry> pageProvider = getPageProvider("FIXED_PART_DOCUMENT_HISTORY_PROVIDER", 30, 0, doc);
+        pageProvider.setSearchDocumentModel(searchDoc);
+        assertEquals(1, pageProvider.getCurrentPage().size());
+
+        //test with proxy to check that the doc uuid is correctly set in the fixed part
+        pageProvider = getPageProvider("FIXED_PART_DOCUMENT_HISTORY_PROVIDER", 30, 0, proxy);
+        pageProvider.setSearchDocumentModel(searchDoc);
+        assertTrue(pageProvider.getCurrentPage().isEmpty());
     }
 
     protected PageProvider<LogEntry> getPageProvider(String name, int pageSize, int currentPage, Object... parameters) {
