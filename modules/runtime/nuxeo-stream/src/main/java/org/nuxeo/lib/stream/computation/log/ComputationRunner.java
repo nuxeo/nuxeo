@@ -61,8 +61,6 @@ import net.jodah.failsafe.Failsafe;
 public class ComputationRunner implements Runnable, RebalanceListener {
     public static final Duration READ_TIMEOUT = Duration.ofMillis(25);
 
-    public static final Duration READ_TIMEOUT_SPARE = Duration.ofSeconds(1);
-
     protected static final long STARVING_TIMEOUT_MS = 1000;
 
     protected static final long INACTIVITY_BREAK_MS = 100;
@@ -111,7 +109,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     // Use the Nuxeo registry name without adding dependency on nuxeo-runtime
     public static final String NUXEO_METRICS_REGISTRY_NAME = "org.nuxeo.runtime.metrics.MetricsService";
 
-    public static final String GLOBAL_FAILURE_COUNT_REGISTRY_NAME = MetricRegistry.name("nuxeo", "stream", "failure")
+    public static final String GLOBAL_FAILURE_COUNT_REGISTRY_NAME = MetricRegistry.name("nuxeo", "streams", "failure")
                                                                                   .getKey();
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
@@ -231,15 +229,15 @@ public class ComputationRunner implements Runnable, RebalanceListener {
     protected void registerMetrics() {
         globalFailureCount = registry.counter(GLOBAL_FAILURE_COUNT_REGISTRY_NAME);
         runningCount = registry.counter(
-                MetricName.build("nuxeo.stream.computation.running").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.running").tagged("computation", metadata.name()));
         failureCount = registry.counter(
-                MetricName.build("nuxeo.stream.computation.failure").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.failure").tagged("computation", metadata.name()));
         recordSkippedCount = registry.counter(
-                MetricName.build("nuxeo.stream.computation.skippedRecord").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.skippedRecord").tagged("computation", metadata.name()));
         processRecordTimer = registry.timer(
-                MetricName.build("nuxeo.stream.computation.processRecord").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.processRecord").tagged("computation", metadata.name()));
         processTimerTimer = registry.timer(
-                MetricName.build("nuxeo.stream.computation.processTimer").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.processTimer").tagged("computation", metadata.name()));
     }
 
     protected void closeTailer() {

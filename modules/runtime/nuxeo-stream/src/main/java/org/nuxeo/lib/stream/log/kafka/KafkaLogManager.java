@@ -208,31 +208,34 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public synchronized List<LogLag> getLagPerPartition(String name, String group) {
+    public List<LogLag> getLagPerPartition(String name, String group) {
         Properties props = (Properties) consumerProperties.clone();
         props.put(ConsumerConfig.GROUP_ID_CONFIG, prefix + group);
         props.put(ConsumerConfig.CLIENT_ID_CONFIG, "lag");
-        try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
-            List<TopicPartition> topicPartitions = consumer.partitionsFor(ns.getTopicName(name))
-                                                           .stream()
-                                                           .map(meta -> new TopicPartition(meta.topic(),
-                                                                   meta.partition()))
-                                                           .collect(Collectors.toList());
-            LogLag[] ret = new LogLag[topicPartitions.size()];
-            Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
-            for (TopicPartition topicPartition : topicPartitions) {
-                long committedOffset = 0L;
-                OffsetAndMetadata committed = consumer.committed(topicPartition);
-                if (committed != null) {
-                    committedOffset = committed.offset();
+        // Prevents to create multiple consumers with the same client/group ids
+        synchronized(KafkaLogManager.class) {
+            try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
+                List<TopicPartition> topicPartitions = consumer.partitionsFor(ns.getTopicName(name))
+                        .stream()
+                        .map(meta -> new TopicPartition(meta.topic(),
+                                meta.partition()))
+                        .collect(Collectors.toList());
+                LogLag[] ret = new LogLag[topicPartitions.size()];
+                Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
+                for (TopicPartition topicPartition : topicPartitions) {
+                    long committedOffset = 0L;
+                    OffsetAndMetadata committed = consumer.committed(topicPartition);
+                    if (committed != null) {
+                        committedOffset = committed.offset();
+                    }
+                    Long endOffset = endOffsets.get(topicPartition);
+                    if (endOffset == null) {
+                        endOffset = 0L;
+                    }
+                    ret[topicPartition.partition()] = new LogLag(committedOffset, endOffset);
                 }
-                Long endOffset = endOffsets.get(topicPartition);
-                if (endOffset == null) {
-                    endOffset = 0L;
-                }
-                ret[topicPartition.partition()] = new LogLag(committedOffset, endOffset);
+                return Arrays.asList(ret);
             }
-            return Arrays.asList(ret);
         }
     }
 

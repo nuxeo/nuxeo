@@ -19,4 +19,13 @@
     <object class="org.nuxeo.runtime.stream.StreamProcessorDescriptor" />
   </extension-point>
 
+  <extension point="streamProcessor" target="org.nuxeo.runtime.stream.service">
+    <streamProcessor name="metrics" class="org.nuxeo.runtime.stream.StreamMetricsProcessor" logConfig="default"
+      enabled="${metrics.streams.enabled}">
+      <policy name="default" maxRetries="5" delay="1s" maxDelay="10s" continueOnFailure="false" />
+      <stream name="log_null" partitions="1" codec="avro" />
+      <computation name="streamMetrics" concurrency="1" />
+    </streamProcessor>
+  </extension>
+
 </component>

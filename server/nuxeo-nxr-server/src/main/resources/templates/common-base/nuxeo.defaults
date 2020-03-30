@@ -230,7 +230,10 @@ nuxeo.jwt.defaultTTL=3600
 
 # Metrics
 metrics.enabled=false
-## Instrumentations
+
+## Instrumentation
+metrics.streams.enabled=true
+metrics.streams.interval=60s
 metrics.jvm.enabled=true
 metrics.log4j.enabled=true
 metrics.tomcat.enabled=true
