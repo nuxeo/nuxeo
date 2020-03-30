@@ -128,6 +128,45 @@
       <maxPageSize>1000</maxPageSize>
     </genericPageProvider>
 
+    <genericPageProvider name="FIXED_PART_DOCUMENT_HISTORY_PROVIDER"
+                         class="org.nuxeo.elasticsearch.audit.pageprovider.ESDocumentHistoryPageProvider">
+      <whereClause docType="BasicAuditSearch">
+        <fixedPart>
+          {
+            "bool": {
+              "must": [{
+                  "term": {
+                    "docUUID": "?"
+                  }
+                },{
+                  "term": {
+                    "extended.reason": "test"
+                  }
+              }]
+            }
+          }
+        </fixedPart>
+        <predicate parameter="eventDate" operator="BETWEEN">
+          <field schema="basicauditsearch" name="startDate" />
+          <field schema="basicauditsearch" name="endDate" />
+        </predicate>
+        <predicate parameter="category" operator="IN">
+          <field schema="basicauditsearch" name="eventCategories" />
+        </predicate>
+        <predicate parameter="eventId" operator="IN">
+          <field schema="basicauditsearch" name="eventIds" />
+        </predicate>
+        <predicate parameter="principalName" operator="IN">
+          <field schema="basicauditsearch" name="principalNames" />
+        </predicate>
+      </whereClause>
+      <sort column="eventDate" ascending="false" />
+      <pageSize>10</pageSize>
+      <maxPageSize>1000</maxPageSize>
+    </genericPageProvider>
+
+
+
   </extension>
 
 </component>
