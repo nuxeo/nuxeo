@@ -87,7 +87,6 @@ public class AuthenticationTokensObject extends AbstractResource<ResourceTypeImp
             body = getTokens(applicationName).stream()
                                              .filter(item -> token.equals(item.getToken()))
                                              .findFirst()
-                                             // Erase AuthenticationToken type signature
                                              .map(at -> (Object) at)
                                              .orElse(body);
         }
