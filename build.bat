@@ -1,0 +1,1 @@
+mvn clean package -Dmaven.repo.local=C:\Users\sailing\.m2\repository
