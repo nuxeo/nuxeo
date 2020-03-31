@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -78,6 +79,29 @@ public class MoveToColdStorageTest extends AbstractTestColdStorageOperation {
         // with Administrator
         documentModel = createFileDocument(session, true);
         moveContentToColdStorage(session, documentModel);
+    }
+
+    @Test
+    public void shouldMoveDocsToColdStorage() throws OperationException, IOException {
+        // with regular user with "WriteColdStorage" permission
+        ACE[] aces = { new ACE("linda", SecurityConstants.READ, true), //
+                new ACE("linda", SecurityConstants.WRITE, true), //
+                new ACE("linda", SecurityConstants.WRITE_COLD_STORAGE, true) };
+
+        List<DocumentModel> documents = List.of(createFileDocument(session, true, aces), //
+                createFileDocument(session, true, aces), //
+                createFileDocument(session, true, aces));
+
+        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "linda")) {
+            moveContentToColdStorage(userSession, documents);
+        }
+
+        // with Administrator
+        documents = List.of(createFileDocument(session, true), //
+                createFileDocument(session, true), //
+                createFileDocument(session, true));
+
+        moveContentToColdStorage(session, documents);
     }
 
     @Test
