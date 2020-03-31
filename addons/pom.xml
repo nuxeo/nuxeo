@@ -72,25 +72,33 @@
     <module>nuxeo-platform-lang-ext</module>
     <module>nuxeo-platform-lang-ext-incomplete</module>
     <module>nuxeo-chemistry</module>
+	<!--remove
     <module>nuxeo-business-days-management</module>
     <module>nuxeo-core-binarymanager-sql</module>
     <module>nuxeo-http-client</module>
+	-->
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
     <module>nuxeo-platform-audio</module>
     <module>nuxeo-platform-video</module>
     <module>nuxeo-platform-user-registration</module>
+	<!--move
     <module>nuxeo-shell</module>
+	-->
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
+	<!--remove
     <module>nuxeo-activity</module>
+	-->
     <module>nuxeo-platform-suggestbox</module>
     <module>nuxeo-dam</module>
     <module>nuxeo-quota</module>
     <module>nuxeo-signature</module>
+	<!--remove
     <module>nuxeo-rating</module>
+	-->
     <module>nuxeo-multi-tenant</module>
     <module>nuxeo-core-binarymanager-cloud</module>
     <module>nuxeo-diff</module>
@@ -99,39 +107,68 @@
     <module>nuxeo-csv</module>
     <module>nuxeo-tree-snapshot</module>
     <module>nuxeo-drive-server</module>
+	<!--remove
     <module>nuxeo-resources-compat</module>
+	-->
     <module>nuxeo-dmk-adaptor</module>
     <module>nuxeo-style-guide</module>
+	<!--no
     <module>nuxeo-javaagent</module>
+	-->
+	<!--remove
     <module>nuxeo-session-inspector</module>
+	-->
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
     <module>nuxeo-duoweb-authentication</module>
+	<!--move
     <module>nuxeo-sample-project</module>
+	-->
+	<!--remove
     <module>nuxeo-logs-viewer</module>
+	-->
+	<!--
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>
+	-->
+	<!--move
     <module>nuxeo-media-publishing</module>
+	-->
     <module>nuxeo-datadog-reporter</module>
+	<!--remove
     <module>nuxeo-review-workflows-dashboards</module>
+	-->
     <module>nuxeo-shibboleth-invitation</module>
     <module>nuxeo-fsexporter</module>
+	<!--move
     <module>nuxeo-showcase-content-sample</module>
+	-->
     <module>nuxeo-platform-smart-search</module>
     <module>nuxeo-connect-tools</module>
     <module>nuxeo-platform-pdf-utils</module>
     <module>nuxeo-platform-3d</module>
+	<!--remove
     <module>nuxeo-agenda</module>
+	-->
     <module>nuxeo-target-platforms</module>
+	<!--move
     <module>nuxeo-web-ui</module>
+	-->
+	<!--remove
     <module>nuxeo-web-ui-itests</module>
+	-->
+	<!--no
     <module>nuxeo-api-playground</module>
+	-->
     <module>nuxeo-jsf-to-web-ui</module>
     <module>nuxeo-audit-storage-directory</module>
     <module>nuxeo-adobe-connector</module>
     <module>nuxeo-wopi</module>
+	<!--new in 11
+	<module>nuxeo-retention</module>
+	-->
   </modules>
 
   <dependencyManagement>
@@ -986,11 +1023,13 @@
       </dependency>
 
       <!-- Travel Expenses Sample -->
+      <!--remove
       <dependency>
         <groupId>org.nuxeo.sample</groupId>
         <artifactId>nuxeo-travel-expenses</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      -->
 
       <!-- Connect Tools -->
       <dependency>
@@ -1150,7 +1189,12 @@
     </dependencies>
   </dependencyManagement>
 
+  
   <repositories>
+    <repository>
+      <id>aliyun</id>
+	  <url>https://maven.aliyun.com/repository/public</url>
+    </repository>
     <repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
@@ -1175,6 +1219,10 @@
   </repositories>
 
   <pluginRepositories>
+    <pluginRepository>
+      <id>aliyun</id>
+	  <url>https://maven.aliyun.com/repository/public</url>
+    </pluginRepository>
     <pluginRepository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>

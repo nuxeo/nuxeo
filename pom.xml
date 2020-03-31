@@ -92,11 +92,18 @@
     <module>nuxeo-theme</module>
     <module>nuxeo-webengine</module>
     <module>nuxeo-dm</module>
+	<!--<module>addons-core</module>
+    <module>addons</module>
+    <module>nuxeo-distribution</module>-->
   </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <skipTests>true</skipTests>
+    <session.executionRootDirectory>.</session.executionRootDirectory>
+    <skipITs>true</skipITs>
+    <buildNumber>10.10</buildNumber>
 
     <!-- License Maven Plugin -->
     <license.excludedGroups>org\.nuxeo.*</license.excludedGroups>
@@ -120,10 +127,11 @@
 
     <nuxeo.connect.client.version>1.7.5</nuxeo.connect.client.version>
     <!-- nuxeo-distribution-tools is still used as a dependency -->
-    <nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>
+    <!--<nuxeo.distribution.tools.version>1.15</nuxeo.distribution.tools.version>-->
+    <nuxeo.distribution.tools.version>2.0</nuxeo.distribution.tools.version>
     <!-- ant-assembly-maven-plugin is only used as a plugin -->
     <ant.assembly.version>2.1.1</ant.assembly.version>
-    <nuxeo.ftest.version>1.8.7</nuxeo.ftest.version>
+    <nuxeo.ftest.version>1.8.8</nuxeo.ftest.version>
     <nuxeo.java.client.version>3.2.0</nuxeo.java.client.version>
 
     <jsf.version>2.2.6</jsf.version>
@@ -247,7 +255,7 @@
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-ecm</artifactId>
         <type>zip</type>
-        <classifier>tools</classifier>
+        <!--<classifier>tools</classifier>-->
         <version>${project.version}</version>
       </dependency>
       <!-- Nuxeo Common -->
@@ -1807,12 +1815,12 @@
         <artifactId>nuxeo-distribution-tools</artifactId>
         <version>${nuxeo.distribution.tools.version}</version>
       </dependency>
-      <dependency>
+     <!-- <dependency>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
         <version>${nuxeo.distribution.tools.version}</version>
         <classifier>all</classifier>
-      </dependency>
+      </dependency>-->
       <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-ftest</artifactId>
@@ -2271,6 +2279,11 @@
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-highlighter</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-sandbox</artifactId>
         <version>${lucene.version}</version>
       </dependency>
 
@@ -2860,7 +2873,7 @@
       <dependency>
         <groupId>com.phloc</groupId>
         <artifactId>phloc-css</artifactId>
-        <version>3.3.1</version>
+        <version>3.7.6</version>
       </dependency>
       <dependency>
         <groupId>com.sun.xsom</groupId>
@@ -3193,6 +3206,12 @@
             <artifactId>cglib</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock-testjar</artifactId>
+        <scope>compile</scope>
+        <version>2.8.4</version>
       </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
@@ -3891,6 +3910,11 @@
       </dependency>
       <dependency>
         <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-remote-driver</artifactId>
+        <version>${selenium.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
         <artifactId>selenium-firefox-driver</artifactId>
         <version>${selenium.version}</version>
       </dependency>
@@ -4331,7 +4355,7 @@
       <dependency>
         <groupId>net.oauth.core</groupId>
         <artifactId>oauth-httpclient3</artifactId>
-        <version>20090531</version>
+        <version>20090617</version>
       </dependency>
       <dependency>
         <groupId>net.oauth.core</groupId>
@@ -4366,6 +4390,33 @@
         <version>${metrics.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-jvm</artifactId>
+        <version>${metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-jmx</artifactId>
+        <version>${metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-graphite</artifactId>
+        <version>${metrics.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-log4j2</artifactId>
+        <version>${metrics.version}</version>
       </dependency>
 
       <dependency>
@@ -5024,39 +5075,42 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
+      <version>${org.apache.log4j.version}</version>
     </dependency>
 
     <!-- test scope -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
+      <version>${org.apache.log4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
+      <version>${org.apache.log4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${org.apache.log4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-1.2-api</artifactId>
+      <version>${org.apache.log4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -5074,6 +5128,7 @@
           </execution>
         </executions>
       </plugin>
+	  <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -5089,9 +5144,11 @@
           </execution>
         </executions>
       </plugin>
+	  -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -5108,22 +5165,36 @@
               ${project.build.directory}/cobertura/cobertura.ser
             </net.sourceforge.cobertura.datafile>
             <!-- Used by org.nuxeo.ecm.core.storage.sql.DatabaseHelper -->
+            <!--suppress UnresolvedMavenProperty -->
             <nuxeo.test.vcs.db>${nuxeo.test.vcs.db}</nuxeo.test.vcs.db>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.vcs.url>${nuxeo.test.vcs.url}</nuxeo.test.vcs.url>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.vcs.server>${nuxeo.test.vcs.server}</nuxeo.test.vcs.server>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.vcs.port>${nuxeo.test.vcs.port}</nuxeo.test.vcs.port>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.vcs.database>${nuxeo.test.vcs.database}</nuxeo.test.vcs.database>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.vcs.user>${nuxeo.test.vcs.user}</nuxeo.test.vcs.user>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.vcs.password>${nuxeo.test.vcs.password}</nuxeo.test.vcs.password>
             <!-- Used by org.nuxeo.ecm.core.test.StorageConfiguration -->
             <!-- (and org.nuxeo.runtime.mongodb.MongoDBFeature) -->
             <nuxeo.test.core>${nuxeo.test.core}</nuxeo.test.core>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.mongodb.server>${nuxeo.test.mongodb.server}</nuxeo.test.mongodb.server>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.mongodb.dbname>${nuxeo.test.mongodb.dbname}</nuxeo.test.mongodb.dbname>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.marklogic.host>${nuxeo.test.marklogic.host}</nuxeo.test.marklogic.host>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.marklogic.port>${nuxeo.test.marklogic.port}</nuxeo.test.marklogic.port>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.marklogic.dbname>${nuxeo.test.marklogic.dbname}</nuxeo.test.marklogic.dbname>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.marklogic.user>${nuxeo.test.marklogic.user}</nuxeo.test.marklogic.user>
+            <!--suppress UnresolvedMavenProperty-->
             <nuxeo.test.marklogic.password>${nuxeo.test.marklogic.password}</nuxeo.test.marklogic.password>
           </systemPropertyVariables>
           <includes>
@@ -5389,7 +5460,7 @@
                 <extraJvmArgs>-Xmx512M -Xms128M -Djava.io.tmpdir=${project.build.directory}</extraJvmArgs>
                 <warSourceDirectory>src/main/resources/web/nuxeo.war</warSourceDirectory>
                 <webappDirectory>${project.build.outputDirectory}/gwt-war</webappDirectory>
-                <treeLogger>true</treeLogger>
+                <!--<treeLogger>true</treeLogger>-->
                 <logLevel>WARN</logLevel>
                 <draftCompile>true</draftCompile>
                 <workDir>${project.build.directory}/gwork</workDir>
@@ -5548,10 +5619,12 @@
           <extensions>true</extensions>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>2.4</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-help-plugin</artifactId>
           <version>2.2</version>
         </plugin>
@@ -5722,6 +5795,7 @@
           <version>1.6-NX1</version>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jarsigner-plugin</artifactId>
           <version>1.3.1</version>
         </plugin>
@@ -5766,7 +5840,7 @@
           <artifactId>lifecycle-mapping</artifactId>
           <version>1.0.0</version>
           <configuration>
-            <lifecycleMappingMetadata>
+            <!--<lifecycleMappingMetadata>
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
@@ -5812,7 +5886,7 @@
                   </action>
                 </pluginExecution>
               </pluginExecutions>
-            </lifecycleMappingMetadata>
+            </lifecycleMappingMetadata>-->
           </configuration>
         </plugin>
         <plugin>
@@ -6039,7 +6113,8 @@
           <artifactId>gatling-maven-plugin</artifactId>
           <version>${gatling-plugin.version}</version>
           <configuration>
-            <skip>${skipITs}</skip>
+              <!--suppress UnresolvedMavenProperty -->
+              <skip>${skipITs}</skip>
           </configuration>
         </plugin>
         <plugin>
@@ -6116,12 +6191,12 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.6</version>
-        <configuration>
+       <!-- <configuration>
           <formats>
             <format>html</format>
             <format>xml</format>
           </formats>
-        </configuration>
+        </configuration>-->
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -6194,6 +6269,7 @@
             <inherited>true</inherited>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
+            <version>1.5.0</version>
             <executions>
               <execution>
                 <id>patch</id>
@@ -6258,6 +6334,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -6326,6 +6403,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
+            <version>2.2.1</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -6880,9 +6958,11 @@
               <systemPropertyVariables>
                 <!-- used by nuxeo-stream -->
                 <kafka>true</kafka>
+                <!--suppress UnresolvedMavenProperty -->
                 <kafka.bootstrap.servers>${kafka.bootstrap.servers}</kafka.bootstrap.servers>
                 <!-- used by unit tests from feature -->
                 <nuxeo.test.stream>kafka</nuxeo.test.stream>
+                <!--suppress UnresolvedMavenProperty -->
                 <nuxeo.test.kafka.servers>${kafka.bootstrap.servers}</nuxeo.test.kafka.servers>
               </systemPropertyVariables>
             </configuration>
@@ -6900,6 +6980,7 @@
             <configuration>
               <systemPropertyVariables>
                 <confluent>true</confluent>
+                <!--suppress UnresolvedMavenProperty -->
                 <confluent.schema.registry>${confluent.schema.registry}</confluent.schema.registry>
               </systemPropertyVariables>
             </configuration>
@@ -6964,6 +7045,10 @@
 
   <repositories>
     <repository>
+      <id>aliyun</id>
+	  <url>https://maven.aliyun.com/repository/public</url>
+    </repository>
+    <repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
@@ -6987,6 +7072,10 @@
   </repositories>
 
   <pluginRepositories>
+    <pluginRepository>
+      <id>aliyun</id>
+	  <url>https://maven.aliyun.com/repository/public</url>
+    </pluginRepository>
     <pluginRepository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>

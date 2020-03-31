@@ -81,6 +81,7 @@
     <dependency>
       <groupId>org.nuxeo</groupId>
       <artifactId>nuxeo-ecm</artifactId>
+	  <version>10.10</version>
       <type>zip</type>
       <classifier>tools</classifier>
       <scope>provided</scope>
@@ -122,9 +123,11 @@
           <plugin>
             <groupId>org.jboss.tattletale</groupId>
             <artifactId>tattletale-maven</artifactId>
+            <version>1.2.0.Beta2</version>
             <configuration>
               <source>${project.build.directory}/nuxeo-server-${project.version}-tomcat/nxserver/lib
               </source>
+              <destination/>
             </configuration>
           </plugin>
         </plugins>

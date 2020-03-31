@@ -80,6 +80,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.10</version>
           <configuration>
             <ignoredUnusedDeclaredDependencies combine.children="append">
               <artifact>org.nuxeo.common:nuxeo-common</artifact>
