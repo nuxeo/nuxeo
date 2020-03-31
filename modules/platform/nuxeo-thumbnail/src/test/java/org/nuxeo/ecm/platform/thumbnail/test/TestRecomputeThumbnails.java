@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.thumbnail.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -71,7 +73,7 @@ public class TestRecomputeThumbnails {
     protected ThumbnailService thumbnailService;
 
     @Test
-    public void testRecomputeThumbnails() throws Exception {
+    public void testRecomputeThumbnails() throws IOException, OperationException {
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-data/big_nuxeo_logo.jpg"), "image/jpeg",
                 StandardCharsets.UTF_8.name(), "big_nuxeo_logo.jpg");
@@ -118,7 +120,7 @@ public class TestRecomputeThumbnails {
     }
 
     @Test
-    public void testThumbnailsForTIFF() throws Exception {
+    public void testThumbnailsForTIFF() throws IOException {
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
         Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-data/at3_1m4_01.tif"), "image/tiff",

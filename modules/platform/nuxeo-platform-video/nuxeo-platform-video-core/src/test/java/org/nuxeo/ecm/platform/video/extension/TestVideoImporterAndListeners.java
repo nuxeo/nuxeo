@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.video.VideoConstants.DURATION_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.STORYBOARD_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.TRANSCODED_VIDEOS_PROPERTY;
+import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_TYPE;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,8 +94,6 @@ public class TestVideoImporterAndListeners {
     // http://www.elephantsdream.org/
     public static final String ELEPHANTS_DREAM = "elephantsdream-160-mpeg4-su-ac3.avi";
 
-    protected static final String VIDEO_TYPE = "Video";
-
     @Inject
     protected CoreSession session;
 
@@ -147,8 +148,8 @@ public class TestVideoImporterAndListeners {
 
         // no video blob so expecting null/empty values for info, storyboard and conversions
         assertNull(docModelResult.getPropertyValue(DURATION_PROPERTY));
-        assertEquals(Collections.emptyList(), docModel.getPropertyValue("vid:storyboard"));
-        assertEquals(Collections.emptyList(), docModel.getPropertyValue("vid:transcodedVideos"));
+        assertEquals(Collections.emptyList(), docModel.getPropertyValue(STORYBOARD_PROPERTY));
+        assertEquals(Collections.emptyList(), docModel.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY));
     }
 
     @Test
@@ -158,16 +159,14 @@ public class TestVideoImporterAndListeners {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        FileImporterContext context = FileImporterContext.builder(session, blob, "/")
-                                                         .overwrite(true)
-                                                         .build();
+        FileImporterContext context = FileImporterContext.builder(session, blob, "/").overwrite(true).build();
         DocumentModel docModel = fileManagerService.createOrUpdateDocument(context);
         assertNotNull(docModel);
 
         txFeature.nextTransaction();
         docModel = session.getDocument(docModel.getRef());
 
-        assertEquals("Video", docModel.getType());
+        assertEquals(VIDEO_TYPE, docModel.getType());
         assertEquals("sample.mpg", docModel.getTitle());
 
         assertNotNull(docModel.getProperty("file:content"));
@@ -185,7 +184,7 @@ public class TestVideoImporterAndListeners {
         }
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) docModel.getPropertyValue(
-                "vid:storyboard");
+                STORYBOARD_PROPERTY);
         assertNotNull(storyboard);
         assertEquals(0, storyboard.size());
 
@@ -211,7 +210,7 @@ public class TestVideoImporterAndListeners {
         // check storyboard
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) docModel.getPropertyValue(
-                "vid:storyboard");
+                STORYBOARD_PROPERTY);
         assertNotNull(storyboard);
         assertEquals(9, storyboard.size());
 
@@ -256,7 +255,7 @@ public class TestVideoImporterAndListeners {
 
         docModel = session.getDocument(docModel.getRef());
 
-        assertEquals(Collections.emptyList(), docModel.getPropertyValue("vid:storyboard"));
+        assertEquals(Collections.emptyList(), docModel.getPropertyValue(STORYBOARD_PROPERTY));
         assertEquals(Collections.emptyList(), docModel.getPropertyValue("picture:views"));
     }
 
@@ -268,15 +267,13 @@ public class TestVideoImporterAndListeners {
         assertNotNull(session);
         assertNotNull(fileManagerService);
 
-        FileImporterContext context = FileImporterContext.builder(session, blob, rootPath)
-                                                         .overwrite(true)
-                                                         .build();
+        FileImporterContext context = FileImporterContext.builder(session, blob, rootPath).overwrite(true).build();
         DocumentModel docModel = fileManagerService.createOrUpdateDocument(context);
 
         txFeature.nextTransaction();
         docModel = session.getDocument(docModel.getRef());
 
-        assertEquals("Video", docModel.getType());
+        assertEquals(VIDEO_TYPE, docModel.getType());
         assertEquals("sample.mpg", docModel.getTitle());
 
         VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
@@ -320,13 +317,13 @@ public class TestVideoImporterAndListeners {
         Double duration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
         assertEquals(0.0, duration, 0.0);
         List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(
-                "vid:storyboard");
+                STORYBOARD_PROPERTY);
         assertEquals(Collections.emptyList(), storyboard);
         List<Map<String, Serializable>> previews = (List<Map<String, Serializable>>) doc.getPropertyValue(
                 "picture:views");
         assertEquals(Collections.emptyList(), previews);
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
-                "vid:transcodedVideos");
+                TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(Collections.emptyList(), transcodedVideos);
 
         // update document with a video blob
@@ -340,11 +337,11 @@ public class TestVideoImporterAndListeners {
         // expecting info, storyboard and previews but no conversions since they are deactivated for the tests
         duration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
         assertTrue(duration > 0.0);
-        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:storyboard");
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
         assertNotEquals(Collections.emptyList(), storyboard);
         previews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
         assertNotEquals(Collections.emptyList(), previews);
-        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(Collections.emptyList(), transcodedVideos);
 
         // update document with a different video blob
@@ -360,7 +357,7 @@ public class TestVideoImporterAndListeners {
         Double updatedDuration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
         assertNotEquals(duration, updatedDuration);
         List<Map<String, Serializable>> updatedStoryboard = (List<Map<String, Serializable>>) doc.getPropertyValue(
-                "vid:storyboard");
+                STORYBOARD_PROPERTY);
         assertNotEquals(Collections.emptyList(), updatedStoryboard);
         assertNotEquals(((Blob) storyboard.get(0).get("content")).getLength(),
                 ((Blob) updatedStoryboard.get(0).get("content")).getLength());
@@ -380,7 +377,7 @@ public class TestVideoImporterAndListeners {
         // no video blob so expecting zero/empty values for info, storyboard and previews
         updatedDuration = (Double) doc.getPropertyValue(DURATION_PROPERTY);
         assertEquals(0.0, updatedDuration, 0.0);
-        updatedStoryboard = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:storyboard");
+        updatedStoryboard = (List<Map<String, Serializable>>) doc.getPropertyValue(STORYBOARD_PROPERTY);
         assertEquals(Collections.emptyList(), updatedStoryboard);
         updatedPreviews = (List<Map<String, Serializable>>) doc.getPropertyValue("picture:views");
         assertEquals(Collections.emptyList(), updatedPreviews);
@@ -409,7 +406,7 @@ public class TestVideoImporterAndListeners {
 
         // expecting video conversions since they are activated for this test
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
-                "vid:transcodedVideos");
+                TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
         Map<String, Serializable> conversion = transcodedVideos.get(0);
         assertEquals("MP4 480p", conversion.get("name"));
@@ -429,7 +426,7 @@ public class TestVideoImporterAndListeners {
 
         doc = session.getDocument(doc.getRef());
 
-        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
         assertEquals(2, transcodedVideos.size());
         assertEquals("MP4 480p", transcodedVideos.get(0).get("name"));
         assertEquals("WebM 480p", transcodedVideos.get(1).get("name"));
@@ -452,7 +449,7 @@ public class TestVideoImporterAndListeners {
         // check storyboard
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) docModel.getPropertyValue(
-                "vid:storyboard");
+                STORYBOARD_PROPERTY);
         assertNotNull(storyboard);
         assertEquals(2, storyboard.size());
     }
