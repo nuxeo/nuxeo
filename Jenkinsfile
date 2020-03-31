@@ -527,6 +527,32 @@ pipeline {
       }
     }
 
+    stage('Git tag and push') {
+      when {
+        not {
+          branch 'PR-*'
+        }
+      }
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Git tag and push
+          ----------------------------------------
+          """
+          sh """
+            #!/usr/bin/env bash -xe
+            # create the Git credentials
+            jx step git credentials
+            git config credential.helper store
+
+            # Git tag
+            jx step tag -v ${VERSION}
+          """
+        }
+      }
+    }
+
     stage('Deploy Docker images') {
       when {
         not {
@@ -602,32 +628,6 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'FAILURE')
-        }
-      }
-    }
-
-    stage('Git tag and push') {
-      when {
-        not {
-          branch 'PR-*'
-        }
-      }
-      steps {
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Git tag and push
-          ----------------------------------------
-          """
-          sh """
-            #!/usr/bin/env bash -xe
-            # create the Git credentials
-            jx step git credentials
-            git config credential.helper store
-
-            # Git tag
-            jx step tag -v ${VERSION}
-          """
         }
       }
     }
