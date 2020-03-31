@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_FACET;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class VideoChangedListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(VideoChangedListener.class);
+    private static final Logger log = LogManager.getLogger(VideoChangedListener.class);
 
     @Override
     public void handleEvent(Event event) {
@@ -81,7 +81,7 @@ public class VideoChangedListener implements EventListener {
     }
 
     protected void resetProperties(DocumentModel doc) throws IOException {
-        log.debug(String.format("Resetting video info, storyboard, previews and conversions of document %s.", doc));
+        log.debug("Resetting video info, storyboard, previews and conversions of document {}", doc);
         VideoHelper.updateVideoInfo(doc, null);
         VideoHelper.updateStoryboard(doc, null);
         VideoHelper.updatePreviews(doc, null);
@@ -91,7 +91,7 @@ public class VideoChangedListener implements EventListener {
     protected void scheduleAsyncProcessing(DocumentModel doc) {
         WorkManager workManager = Framework.getService(WorkManager.class);
         VideoInfoWork work = new VideoInfoWork(doc.getRepositoryName(), doc.getId());
-        log.debug(String.format("Scheduling work: video info of document %s.", doc));
+        log.debug("Scheduling work: video info of document {}.", doc);
         workManager.schedule(work, true);
     }
 
