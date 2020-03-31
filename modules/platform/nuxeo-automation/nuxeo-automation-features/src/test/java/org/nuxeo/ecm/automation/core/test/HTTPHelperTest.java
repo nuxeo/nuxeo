@@ -45,7 +45,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockserver.client.server.MockServerClient;
+import org.mockserver.client.MockServerClient;
 import org.mockserver.integration.ClientAndServer;
 import org.mockserver.matchers.Times;
 import org.mockserver.model.BinaryBody;
@@ -127,8 +127,7 @@ public class HTTPHelperTest {
 
     @Test
     public void testHTTPHelperGet() {
-        createMockServer("GET", SERVER_PATH, DEFAULT_HTTP_RESPONSE);
-        try {
+        try (var mockServerClient = createMockServer("GET", SERVER_PATH, DEFAULT_HTTP_RESPONSE)) {
             String expr = String.format(
                     "HTTP.get(\'%s\', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
                     serverURL);
@@ -147,8 +146,7 @@ public class HTTPHelperTest {
 
     @Test
     public void testHTTPHelperGetWithParams() {
-        createMockServer("GET", SERVER_PATH, DEFAULT_HTTP_RESPONSE);
-        try {
+        try (var mockServerClient = createMockServer("GET", SERVER_PATH, DEFAULT_HTTP_RESPONSE)) {
             String expr = String.format(
                     "HTTP.get(\'%s\', " + "{'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }, "
                             + "'params' : { 'param1' : [ 'value1' ] , 'param2' : [ 'value2' ] }})",
@@ -168,8 +166,7 @@ public class HTTPHelperTest {
 
     @Test
     public void testHTTPHelperGetWithHeaders() {
-        createMockServer("GET", SERVER_PATH, DEFAULT_HTTP_RESPONSE);
-        try {
+        try (var mockServerClient = createMockServer("GET", SERVER_PATH, DEFAULT_HTTP_RESPONSE)) {
             String expr = String.format(
                     "HTTP.get(\'%s\', " + "{'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }, "
                             + "'headers' : { 'Accept' : 'application/json' , 'User-Agent' : 'Mozilla/5.0' }})",
@@ -189,8 +186,7 @@ public class HTTPHelperTest {
 
     @Test
     public void testHTTPHelperPost() {
-        createMockServer("POST", SERVER_PATH, DEFAULT_HTTP_RESPONSE);
-        try {
+        try (var mockServerClient = createMockServer("POST", SERVER_PATH, DEFAULT_HTTP_RESPONSE)) {
             String expr = String.format(
                     "HTTP.post(\'%s\', 'Test', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
                     serverURL);
@@ -209,8 +205,7 @@ public class HTTPHelperTest {
 
     @Test
     public void testHTTPHelperPut() {
-        createMockServer("PUT", SERVER_PATH, DEFAULT_HTTP_RESPONSE);
-        try {
+        try (var mockServerClient = createMockServer("PUT", SERVER_PATH, DEFAULT_HTTP_RESPONSE)) {
             String expr = String.format(
                     "HTTP.put(\'%s\', 'Test', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
                     serverURL);
@@ -229,8 +224,7 @@ public class HTTPHelperTest {
 
     @Test
     public void testHTTPHelperDelete() {
-        createMockServer("DELETE", SERVER_PATH, DEFAULT_HTTP_RESPONSE);
-        try {
+        try (var mockServerClient = createMockServer("DELETE", SERVER_PATH, DEFAULT_HTTP_RESPONSE)) {
             String expr = String.format(
                     "HTTP.delete(\'%s\', 'Test', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
                     serverURL);
@@ -249,22 +243,24 @@ public class HTTPHelperTest {
 
     @Test
     public void testHTTPHelperGetDownloadFile() {
+        @SuppressWarnings("rawtypes")
+        Body responseBody = null;
         try {
             File file = org.nuxeo.common.utils.FileUtils.getResourceFileFromContext("test-data/sample.jpeg");
             byte[] answer = FileUtils.readFileToByteArray(file);
-            @SuppressWarnings("rawtypes")
-            Body responseBody = new BinaryBody(answer);
-            createMockServer("GET", SERVER_PATH + IMAGE_FILENAME, responseBody);
+            responseBody = new BinaryBody(answer);
         } catch (IOException e) {
             fail("Error reading the image file." + e.getMessage());
         }
 
-        String expr = String.format(
-                "HTTP.get(\'%s\', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
-                serverURL + IMAGE_FILENAME);
-        Blob httpResult = (Blob) Scripting.newExpression(expr).eval(ctx);
-        assertTrue(httpResult.getLength() > 0);
-        assertEquals(httpResult.getFilename(), IMAGE_FILENAME);
+        try (var mockServerClient = createMockServer("GET", SERVER_PATH + IMAGE_FILENAME, responseBody)) {
+            String expr = String.format(
+                    "HTTP.get(\'%s\', {'auth' : { 'method' : 'basic', 'username' : 'test', 'password' : 'test' }})",
+                    serverURL + IMAGE_FILENAME);
+            Blob httpResult = (Blob) Scripting.newExpression(expr).eval(ctx);
+            assertTrue(httpResult.getLength() > 0);
+            assertEquals(httpResult.getFilename(), IMAGE_FILENAME);
+        }
     }
 
     /**
@@ -274,7 +270,7 @@ public class HTTPHelperTest {
      * @param path the path of the requests
      * @param answer the body of the http response
      */
-    public void createMockServer(String method, String path, @SuppressWarnings("rawtypes") Body answer) {
+    public MockServerClient createMockServer(String method, String path, @SuppressWarnings("rawtypes") Body answer) {
         List<Header> requestHeaders = new ArrayList<>();
         requestHeaders.add(new Header(HttpHeaders.AUTHORIZATION, "Basic dGVzdDp0ZXN0"));
 
@@ -282,12 +278,13 @@ public class HTTPHelperTest {
         responseHeaders.add(new Header(HttpHeaders.CONTENT_TYPE, "application/json; charset=utf-8"));
         responseHeaders.add(new Header(HttpHeaders.CACHE_CONTROL, "public, max-age=86400"));
 
-        new MockServerClient(SERVER_HOST, serverPort).when(
-                request().withHeaders(requestHeaders).withMethod(method).withPath(path), Times.exactly(2))
-                                                     .respond(response().withStatusCode(200)
-                                                                        .withHeaders(responseHeaders)
-                                                                        .withBody(answer)
-                                                                        .withDelay(new Delay(TimeUnit.SECONDS, 1)));
+        MockServerClient mockServerClient = new MockServerClient(SERVER_HOST, serverPort);
+        mockServerClient.when(request().withHeaders(requestHeaders).withMethod(method).withPath(path), Times.exactly(2))
+                        .respond(response().withStatusCode(200)
+                                           .withHeaders(responseHeaders)
+                                           .withBody(answer.getRawBytes())
+                                           .withDelay(new Delay(TimeUnit.SECONDS, 1)));
+        return mockServerClient;
     }
 
     /**
