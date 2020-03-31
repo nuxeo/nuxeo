@@ -159,10 +159,10 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
             serverCredential = Subject.doAs(loginContext.getSubject(), getServerCredential);
             logger.debug("Successfully initialized Kerberos auth module");
         } catch (LoginException le) {
-            logger.error("Cannot create LoginContext, disabling Kerberos module", le);
+            logger.warn("Cannot create LoginContext, disabling Kerberos module", le);
             this.disabled = true;
         } catch (PrivilegedActionException pae) {
-            logger.error("Cannot get server credentials, disabling Kerberos module", pae);
+            logger.warn("Cannot get server credentials, disabling Kerberos module", pae);
             this.disabled = true;
         }
 

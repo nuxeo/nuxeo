@@ -95,11 +95,19 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     @Override
     public void start(ComponentContext context) {
-        registerInvalidator();
-
         discoveryURL = Framework.getProperty(WOPI_DISCOVERY_URL_PROPERTY);
+        if (!hasDiscoveryURL()) {
+            log.warn("No WOPI discovery URL configured, WOPI disabled. Please configure the '{}' property.",
+                    WOPI_DISCOVERY_URL_PROPERTY);
+            return;
+        }
 
+        registerInvalidator();
         loadDiscovery();
+    }
+
+    protected boolean hasDiscoveryURL() {
+        return StringUtils.isNotBlank(discoveryURL);
     }
 
     protected void registerInvalidator() {
@@ -118,10 +126,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     protected void loadDiscovery() {
         byte[] discoveryBytes = getDiscovery();
         if (ArrayUtils.isEmpty(discoveryBytes)) {
-            boolean refreshed = refreshDiscovery();
-            if (!refreshed) {
-                log.error("Cannot load WOPI discovery: WOPI disabled");
-            }
+            refreshDiscovery();
         } else {
             loadDiscovery(discoveryBytes);
             fireRefreshDiscovery();
@@ -241,6 +246,11 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
 
     @Override
     public boolean refreshDiscovery() {
+        if (!hasDiscoveryURL()) {
+            // no need to try refreshing
+            return false;
+        }
+
         byte[] discoveryBytes = fetchDiscovery();
         if (ArrayUtils.isEmpty(discoveryBytes)) {
             return false;
@@ -258,12 +268,6 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
     }
 
     protected byte[] fetchDiscovery() {
-        if (discoveryURL == null) {
-            log.warn("No WOPI discovery URL configured, cannot fetch discovery. Please configure the '{}' property.",
-                    WOPI_DISCOVERY_URL_PROPERTY);
-            return ArrayUtils.EMPTY_BYTE_ARRAY;
-        }
-
         log.debug("Fetching WOPI discovery from discovery URL {}", discoveryURL);
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
         HttpGet request = new HttpGet(discoveryURL);
