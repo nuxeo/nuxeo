@@ -72,12 +72,12 @@ from terminalsize import get_terminal_size
 
 PKG_RENAMINGS = {
     # Tomcat packages
-    "nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-%s.zip": "nuxeo-server-%s-tomcat"
+    "server/nuxeo-server-tomcat/target/nuxeo-server-tomcat-%s.zip": "nuxeo-server-%s-tomcat"
 }
 
 PKG_RENAMINGS_OPTIONALS = {
     # Tomcat packages
-    "nuxeo-distribution/nuxeo-server-tomcat/target/nuxeo-server-tomcat-%s-sdk.zip": "nuxeo-server-%s-tomcat-sdk"
+    "server/nuxeo-server-tomcat/target/nuxeo-server-tomcat-%s-sdk.zip": "nuxeo-server-%s-tomcat-sdk"
 }
 
 PKG_MP = {
