@@ -36,10 +36,7 @@ public class WOPIDiscoveryRefreshListener implements PostCommitEventListener {
     @Override
     public void handleEvent(EventBundle events) {
         log.debug("Refreshing WOPI discovery");
-        boolean refreshed = Framework.getService(WOPIService.class).refreshDiscovery();
-        if (!refreshed) {
-            log.error("Cannot refresh WOPI discovery");
-        }
+        Framework.getService(WOPIService.class).refreshDiscovery();
     }
 
 }
