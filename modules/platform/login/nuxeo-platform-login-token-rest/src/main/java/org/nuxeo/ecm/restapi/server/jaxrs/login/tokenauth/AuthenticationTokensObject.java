@@ -22,10 +22,10 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.tokenauth.io.AuthenticationToken;
+import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
 import org.nuxeo.ecm.webengine.model.impl.ResourceTypeImpl;
-import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.ws.rs.DELETE;
@@ -65,12 +65,33 @@ public class AuthenticationTokensObject extends AbstractResource<ResourceTypeImp
     }
 
     @POST
+    @Produces(MediaType.TEXT_PLAIN)
     public Response createToken(@QueryParam("application") String applicationName,
             @QueryParam("deviceId") String deviceId, @QueryParam("deviceDescription") String deviceDescription,
             @QueryParam("permission") String permission) {
         String username = getCurrentUser().getName();
         String token = service.acquireToken(username, applicationName, deviceId, deviceDescription, permission);
-        return Response.ok(token).status(Response.Status.CREATED).build();
+        return Response.ok(token).type(MediaType.TEXT_PLAIN_TYPE).status(Response.Status.CREATED).build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createJSONToken(@QueryParam("application") String applicationName,
+            @QueryParam("deviceId") String deviceId, @QueryParam("deviceDescription") String deviceDescription,
+            @QueryParam("permission") String permission, @QueryParam("detail") boolean detail) {
+        String username = getCurrentUser().getName();
+        String token = service.acquireToken(username, applicationName, deviceId, deviceDescription, permission);
+        Object body = String.format("\"%s\"", token);
+        if (detail) {
+            // Get the token from the service to populate additional fields like 'creationDate'
+            body = getTokens(applicationName).stream()
+                                             .filter(item -> token.equals(item.getToken()))
+                                             .findFirst()
+                                             // Erase AuthenticationToken type signature
+                                             .map(at -> (Object) at)
+                                             .orElse(body);
+        }
+        return Response.ok(body).type(MediaType.APPLICATION_JSON_TYPE).status(Response.Status.CREATED).build();
     }
 
     @DELETE
