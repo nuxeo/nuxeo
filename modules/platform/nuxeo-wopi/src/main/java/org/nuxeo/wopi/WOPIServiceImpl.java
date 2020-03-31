@@ -145,10 +145,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         }
 
         List<String> supportedAppNames = getSupportedAppNames();
-        netZone.getApps()
-               .stream()
-               .filter(app -> supportedAppNames.contains(app.getName()))
-               .forEach(this::registerApp);
+        netZone.getApps().stream().filter(app -> supportedAppNames.contains(app.getName())).forEach(this::registerApp);
         log.debug("Successfully loaded WOPI discovery: WOPI enabled");
 
         WOPIDiscovery.ProofKey pk = discovery.getProofKey();
@@ -248,7 +245,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
         if (ArrayUtils.isEmpty(discoveryBytes)) {
             return false;
         }
-        log.debug("Successfully fetched WOPI dicovery");
+        log.debug("Successfully fetched WOPI discovery");
 
         if (loadDiscovery(discoveryBytes)) {
             storeDiscovery(discoveryBytes);
@@ -267,7 +264,7 @@ public class WOPIServiceImpl extends DefaultComponent implements WOPIService {
             return ArrayUtils.EMPTY_BYTE_ARRAY;
         }
 
-        log.debug("Fetching WOPI dicovery from discovery URL {}", discoveryURL);
+        log.debug("Fetching WOPI discovery from discovery URL {}", discoveryURL);
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
         HttpGet request = new HttpGet(discoveryURL);
         try (CloseableHttpClient httpClient = httpClientBuilder.build();

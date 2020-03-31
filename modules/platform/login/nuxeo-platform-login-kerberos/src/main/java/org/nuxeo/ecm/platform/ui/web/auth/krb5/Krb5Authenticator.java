@@ -64,8 +64,6 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
 
     private static final GSSManager MANAGER = GSSManager.getInstance();
 
-    private LoginContext loginContext = null;
-
     private GSSCredential serverCredential = null;
 
     private boolean disabled = false;
@@ -109,16 +107,16 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
         }
 
         if (!authorization.startsWith(NEGOTIATE)) {
-            logger.warn("Received invalid Authorization header (expected: Negotiate then SPNEGO blob): "
-                    + authorization);
+            logger.warn(
+                    "Received invalid Authorization header (expected: Negotiate then SPNEGO blob): " + authorization);
             // ignore invalid authorization headers.
             return null;
         }
 
         byte[] token = Base64.decodeBase64(authorization.substring(NEGOTIATE.length() + 1));
-        byte[] respToken = null;
+        byte[] respToken;
 
-        GSSContext context = null;
+        GSSContext context;
 
         try {
             synchronized (this) {
@@ -155,7 +153,7 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
     public void initPlugin(Map<String, String> parameters) {
 
         try {
-            this.loginContext = new LoginContext("Nuxeo");
+            LoginContext loginContext = new LoginContext("Nuxeo");
             // note: we assume that all configuration is done in loginconfig, so there are NO parameters here
             loginContext.login();
             serverCredential = Subject.doAs(loginContext.getSubject(), getServerCredential);
@@ -175,17 +173,8 @@ public class Krb5Authenticator implements NuxeoAuthenticationPlugin {
         return !disabled && (req.getHeader(SKIP_KERBEROS) == null);
     }
 
-    private PrivilegedExceptionAction<GSSCredential> getServerCredential = new PrivilegedExceptionAction<GSSCredential>() {
-
-        @Override
-        public GSSCredential run() throws GSSException {
-            return MANAGER.createCredential(null, GSSCredential.DEFAULT_LIFETIME,
-                    new Oid[] { new Oid("1.3.6.1.5.5.2") /* Oid for Kerberos */, new Oid("1.2.840.113554.1.2.2") /*
-                                                                                                                  * Oid
-                                                                                                                  * for
-                                                                                                                  * SPNEGO
-                                                                                                                  */},
-                    GSSCredential.ACCEPT_ONLY);
-        }
-    };
+    private PrivilegedExceptionAction<GSSCredential> getServerCredential = () -> MANAGER.createCredential(null,
+            GSSCredential.DEFAULT_LIFETIME, new Oid[] { new Oid("1.3.6.1.5.5.2") /* Oid for Kerberos */,
+                    new Oid("1.2.840.113554.1.2.2") /* Oid for SPNEGO */ },
+            GSSCredential.ACCEPT_ONLY);
 }
