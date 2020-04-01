@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.pdf.operations;
 
 import java.io.IOException;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -67,7 +66,7 @@ public class PDFAddPageNumbersOperation {
     protected String password = null;
 
     @OperationMethod(collector = BlobCollector.class)
-    public Blob run(Blob inBlob) throws IOException, COSVisitorException {
+    public Blob run(Blob inBlob) throws IOException {
         PAGE_NUMBER_POSITION pos;
         switch (position.toLowerCase()) {
         case "bottom center":
