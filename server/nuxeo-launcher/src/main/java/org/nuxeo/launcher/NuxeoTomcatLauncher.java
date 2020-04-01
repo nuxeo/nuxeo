@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2019 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
  * Contributors:
  *     Julien Carsique
  *     Frantz Fischer <ffischer@nuxeo.com>
- *
- * $Id$
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
 package org.nuxeo.launcher;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -44,17 +42,16 @@ public class NuxeoTomcatLauncher extends NuxeoLauncher {
 
     @Override
     protected Collection<? extends String> getServerProperties() {
-        ArrayList<String> serverProperties = new ArrayList<>();
         File home = configurationGenerator.getNuxeoHome();
-        serverProperties.add("-Dcatalina.base=" + home.getPath());
-        serverProperties.add("-Dcatalina.home=" + home.getPath());
-        return serverProperties;
+        return List.of(formatPropertyToCommandLine("catalina.base", home.getPath()),
+                formatPropertyToCommandLine("catalina.home", home.getPath()));
     }
 
     protected String getBinJarName(File binDir, String pattern) {
         File[] binJarFiles = ConfigurationGenerator.getJarFilesFromPattern(binDir, pattern);
         if (binJarFiles.length != 1) {
-            throw new RuntimeException("There should be only 1 file but " + binJarFiles.length + " were found in " + binDir.getAbsolutePath() + " looking for " + pattern);
+            throw new RuntimeException("There should be only 1 file but " + binJarFiles.length + " were found in "
+                    + binDir.getAbsolutePath() + " looking for " + pattern);
         }
         return binDir.getName() + File.separator + binJarFiles[0].getName();
     }
