@@ -39,9 +39,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.SocketTimeoutException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +55,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import java.util.zip.GZIPOutputStream;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.JAXBContext;
@@ -82,7 +79,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.impl.SimpleLog;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -99,6 +95,7 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
+import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
 import org.nuxeo.launcher.connect.LauncherRestartException;
@@ -128,8 +125,9 @@ import com.sun.jersey.json.impl.writer.JsonXmlStreamWriter;
 /**
  * @author jcarsique
  * @since 5.4.2
+ * @implNote launcher only handles Tomcat and is no more abstract since 11.1
  */
-public abstract class NuxeoLauncher {
+public class NuxeoLauncher {
 
     /** @since 7.4 */
     protected static final String OUTPUT_UNSET_VALUE = "<unset>";
@@ -539,8 +537,6 @@ public abstract class NuxeoLauncher {
 
     private static final int PAGE_SIZE = 20;
 
-    public static final String CONNECT_TC_URL = "https://www.nuxeo.com/legal/nuxeo-trial-terms-conditions";
-
     protected ConfigurationGenerator configurationGenerator;
 
     public final ConfigurationGenerator getConfigurationGenerator() {
@@ -564,10 +560,6 @@ public abstract class NuxeoLauncher {
 
     protected String command;
 
-    public String getCommand() {
-        return command;
-    }
-
     /**
      * @since 7.4
      */
@@ -578,13 +570,6 @@ public abstract class NuxeoLauncher {
     public CommandSetInfo cset = new CommandSetInfo();
 
     private boolean useGui = false;
-
-    /**
-     * @since 5.5
-     */
-    public boolean isUsingGui() {
-        return useGui;
-    }
 
     private boolean reloadConfiguration = false;
 
@@ -615,14 +600,6 @@ public abstract class NuxeoLauncher {
     CommandLine cmdLine;
 
     private boolean ignoreMissing = false;
-
-    /**
-     * @since 5.5
-     * @return true if quiet mode is active
-     */
-    public boolean isQuiet() {
-        return quiet;
-    }
 
     private static Map<String, NuxeoLauncherGUI> guis;
 
@@ -662,7 +639,7 @@ public abstract class NuxeoLauncher {
         statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(Environment.SERVER_STATUS_KEY));
         processManager = getOSProcessManager();
         processRegex = "^(?!/bin/sh).*" + Pattern.quote(configurationGenerator.getNuxeoConf().getPath()) + ".*"
-                + Pattern.quote(getServerPrint()) + ".*$";
+                + Pattern.quote(TomcatConfigurator.STARTUP_CLASS) + ".*$";
         // Set OS-specific decorations
         if (SystemUtils.IS_OS_MAC) {
             System.setProperty("com.apple.mrj.application.apple.menu.about.name", "NuxeoCtl");
@@ -702,7 +679,8 @@ public abstract class NuxeoLauncher {
         if (strict) {
             startCommand.add("-Dnuxeo.start.strict=true");
         }
-        setServerStartCommand(startCommand);
+        startCommand.add(TomcatConfigurator.STARTUP_CLASS);
+        startCommand.add("start");
         startCommand.addAll(Arrays.asList(params));
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
         pb.directory(configurationGenerator.getNuxeoHome());
@@ -787,8 +765,6 @@ public abstract class NuxeoLauncher {
         return sgArray;
     }
 
-    protected abstract String getServerPrint();
-
     /**
      * Will wrap, if necessary, the command within a Shell command
      *
@@ -817,20 +793,34 @@ public abstract class NuxeoLauncher {
         return List.of("/bin/sh", "-c", linearizedCommand);
     }
 
-    protected abstract Collection<? extends String> getServerProperties();
-
-    protected abstract void setServerStartCommand(List<String> command);
+    protected Collection<? extends String> getServerProperties() {
+        File home = configurationGenerator.getNuxeoHome();
+        return List.of(formatPropertyToCommandLine("catalina.base", home.getPath()),
+                formatPropertyToCommandLine("catalina.home", home.getPath()));
+    }
 
     private File getJavaExecutable() {
         return Path.of(System.getProperty("java.home")).resolve("bin").resolve("java").toFile();
     }
 
-    protected abstract String getClassPath();
+    protected String getClassPath() {
+        File binDir = configurationGenerator.getNuxeoBinDir();
+        String cp = ".";
+        cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
+        cp = addToClassPath(cp, getBinJarName(binDir, ConfigurationGenerator.BOOTSTRAP_JAR_REGEX));
+        // Tomcat 7 needs tomcat-juli.jar for bootstrap as well
+        cp = addToClassPath(cp, getBinJarName(binDir, ConfigurationGenerator.JULI_JAR_REGEX));
+        return cp;
+    }
 
-    /**
-     * @since 5.6
-     */
-    protected abstract String getShutdownClassPath();
+    protected String getBinJarName(File binDir, String pattern) {
+        File[] binJarFiles = ConfigurationGenerator.getJarFilesFromPattern(binDir, pattern);
+        if (binJarFiles.length != 1) {
+            throw new RuntimeException("There should be only 1 file but " + binJarFiles.length + " were found in "
+                    + binDir.getAbsolutePath() + " looking for " + pattern);
+        }
+        return binDir.getName() + File.separator + binJarFiles[0].getName();
+    }
 
     protected Collection<String> getNuxeoProperties() {
         List<String> nuxeoProperties = new ArrayList<>();
@@ -1031,7 +1021,7 @@ public abstract class NuxeoLauncher {
             log.warn("--force and --strict have no impact, Nuxeo is started in strict mode by default.");
         }
         if (cmdLine.hasOption(OPTION_LENIENT)) {
-            setStrict(false);
+            relaxStrict();
         }
         return cmdLine;
     }
@@ -1210,31 +1200,6 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    protected static OutputStream openOutput(Path path, boolean gzip) throws IOException {
-        OutputStream output = Files.newOutputStream(path, StandardOpenOption.TRUNCATE_EXISTING,
-                StandardOpenOption.CREATE);
-        if (gzip) {
-            output = new GZIPOutputStream(output);
-        }
-        return output;
-    }
-
-    /**
-     * Prompts for a valid email address according to RFC 822 standards. The remote service may apply stricter
-     * constraints on email validation such as some black listed domains.
-     *
-     * @return the user input. Never null.
-     * @throws ConfigurationException If the user input is read from stdin and is {@code null} or does not match the
-     *             {@code regex}
-     * @since 8.3
-     */
-    public String promptEmail() throws IOException, ConfigurationException {
-        EmailValidator validator = EmailValidator.getInstance();
-        final String message = "Email Address: ";
-        final String error = "Invalid email address.";
-        return prompt(message, validator::isValid, error);
-    }
-
     /**
      * @since 8.3
      */
@@ -1285,23 +1250,6 @@ public abstract class NuxeoLauncher {
         } else { // try reading from stdin
             return IOUtils.toCharArray(System.in, UTF_8);
         }
-    }
-
-    /**
-     * @param confirmation if true, password is asked twice.
-     * @since 8.3
-     * @deprecated since 11.1
-     */
-    @Deprecated
-    public char[] promptPassword(boolean confirmation) throws IOException, ConfigurationException {
-        char[] pwd = promptPassword("Please enter your password: ");
-        if (confirmation) {
-            char[] pwdVerification = promptPassword("Please re-enter your password: ");
-            if (!Arrays.equals(pwd, pwdVerification)) {
-                throw new ConfigurationException("Passwords do not match.");
-            }
-        }
-        return pwd;
     }
 
     /**
@@ -2030,27 +1978,6 @@ public abstract class NuxeoLauncher {
         }
     }
 
-    /**
-     * @since 5.5
-     * @return classpath with all jar files in baseDir
-     */
-    protected String getClassPath(String classpath, File baseDir) {
-        File[] files = getFilename(baseDir, ".*");
-        StringBuilder sb = new StringBuilder(classpath);
-        for (File file : files) {
-            sb.append(System.getProperty("path.separator")).append(file.getPath());
-        }
-        return sb.toString();
-    }
-
-    /**
-     * @since 5.5
-     * @return filename matching filePattern in baseDir
-     */
-    protected File[] getFilename(File baseDir, final String filePattern) {
-        return baseDir.listFiles((basedir, filename) -> filename.matches(filePattern + "(-[0-9].*)?\\.jar"));
-    }
-
     protected class ShutdownThread extends Thread {
 
         private NuxeoLauncher launcher;
@@ -2099,10 +2026,11 @@ public abstract class NuxeoLauncher {
                 List<String> stopCommand = new ArrayList<>();
                 stopCommand.add(getJavaExecutable().getPath());
                 stopCommand.add("-cp");
-                stopCommand.add(getShutdownClassPath());
+                stopCommand.add(getClassPath());
                 stopCommand.addAll(getNuxeoProperties());
                 stopCommand.addAll(getServerProperties());
-                setServerStopCommand(stopCommand);
+                stopCommand.add(TomcatConfigurator.STARTUP_CLASS);
+                stopCommand.add("stop");
                 stopCommand.addAll(Arrays.asList(params));
                 ProcessBuilder pb = new ProcessBuilder(getOSCommand(stopCommand));
                 pb.directory(configurationGenerator.getNuxeoHome());
@@ -2167,8 +2095,6 @@ public abstract class NuxeoLauncher {
             log.error("Could not manage process!", e);
         }
     }
-
-    protected abstract void setServerStopCommand(List<String> command);
 
     private String getPid() throws IOException {
         pid = processManager.findPid(processRegex);
@@ -2253,14 +2179,7 @@ public abstract class NuxeoLauncher {
         if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
             cg.hideDeprecationWarnings(true);
         }
-        NuxeoLauncher launcher;
-        if (cg.isJetty) {
-            launcher = new NuxeoJettyLauncher(cg);
-        } else if (cg.isTomcat) {
-            launcher = new NuxeoTomcatLauncher(cg);
-        } else {
-            throw new ConfigurationException("Unknown server!");
-        }
+        NuxeoLauncher launcher = new NuxeoLauncher(cg);
         launcher.connectBroker = new ConnectBroker(launcher.configurationGenerator.getEnv());
         launcher.setArgs(cmdLine);
         launcher.initConnectBroker();
@@ -2350,13 +2269,12 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Sets the launcher strict option.
+     * Relax the launcher strict option (ie: lenient mode).
      *
-     * @since 7.4
-     * @see #OPTION_STRICT_DESC
+     * @since 11.1
      */
-    protected static void setStrict(boolean isStrict) {
-        strict = isStrict;
+    protected static void relaxStrict() {
+        NuxeoLauncher.strict = false;
     }
 
     protected void setXMLOutput() {
@@ -2435,13 +2353,6 @@ public abstract class NuxeoLauncher {
             isStarted = false;
         }
         return isStarted;
-    }
-
-    /**
-     * @return Server log file
-     */
-    public File getLogFile() {
-        return new File(configurationGenerator.getLogDir(), "server.log");
     }
 
     /**
