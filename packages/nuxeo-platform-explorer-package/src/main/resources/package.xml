@@ -1,0 +1,28 @@
+<package type="addon" name="platform-explorer" version="@VERSION@">
+  <title>Platform Explorer</title>
+  <description>The Platform Explorer addon provides a Web Interface and a Java API to browse any Nuxeo distribution: BundleGroups (Maven group or artificial grouping), Bundles, Components, Services, Extension Points, Operations and Contributions. It is the addon used behind http://explorer.nuxeo.com. It can be seen as an introspection tool to automatically generate documentation. It can be particularly useful if you are a software vendor that builds a solution on top of the Nuxeo Platform.
+  </description>
+  <home-page>http://doc.nuxeo.com/x/VoVH</home-page>
+  <platforms>
+    <platform>server-@DISTRIB_VERSION@</platform>
+    <platform>server-@DISTRIB_VERSION@-*</platform>
+  </platforms>
+  <dependencies>
+    <package>nuxeo-jsf-ui</package>
+  </dependencies>
+  <conflicts>
+    <package>nuxeo-quota</package>
+    <package>nuxeo-dam-compat</package>
+    <package>nuxeo-social-collaboration</package>
+  </conflicts>
+  <hotreload-support>false</hotreload-support>
+  <supported>true</supported>
+  <require-terms-and-conditions-acceptance>true
+  </require-terms-and-conditions-acceptance>
+  <production-state>production_ready</production-state>
+  <nuxeo-validation>nuxeo_certified</nuxeo-validation>
+  <vendor>Nuxeo</vendor>
+  <license>LGPL</license>
+  <license-url>http://www.gnu.org/licenses/lgpl-2.1.html</license-url>
+  <visibility>PUBLIC</visibility>
+</package>
