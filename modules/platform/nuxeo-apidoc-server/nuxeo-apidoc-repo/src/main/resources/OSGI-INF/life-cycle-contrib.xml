@@ -10,7 +10,6 @@
       <type name="NXService">default</type>
       <type name="NXExtensionPoint">default</type>
       <type name="NXContribution">default</type>
-      <type name="NXSeamComponent">default</type>
       <type name="NXOperation">default</type>
       <type name="NXDocumentation">default</type>
     </types>

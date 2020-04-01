@@ -53,7 +53,6 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
-import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
@@ -478,11 +477,6 @@ public class ApiBrowser extends DefaultObject {
         return wo;
     }
 
-    @Path("viewSeamComponent/{componentId}")
-    public Resource viewSeamComponent(@PathParam("componentId") String componentId) {
-        return ctx.newObject("seamComponent", componentId);
-    }
-
     @Path("viewOperation/{opId}")
     public Resource viewOperation(@PathParam("opId") String opId) {
         return ctx.newObject("operation", opId);
@@ -571,31 +565,6 @@ public class ApiBrowser extends DefaultObject {
 
     public String getLabel(String id) {
         return null;
-    }
-
-    @GET
-    @Produces("text/html")
-    @Path("listSeamComponents")
-    public Object listSeamComponents() {
-        return dolistSeamComponents("listSeamComponents", false);
-    }
-
-    @GET
-    @Produces("text/html")
-    @Path("listSeamComponentsSimple")
-    public Object listSeamComponentsSimple() {
-        return dolistSeamComponents("listSeamComponentsSimple", true);
-    }
-
-    protected Object dolistSeamComponents(String view, boolean hideNav) {
-
-        getSnapshotManager().initSeamContext(getContext().getRequest());
-
-        DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
-        List<SeamComponentInfo> seamComponents = snap.getSeamComponents();
-        return getView(view).arg("seamComponents", seamComponents)
-                            .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
-                            .arg("hideNav", Boolean.valueOf(hideNav));
     }
 
     @GET

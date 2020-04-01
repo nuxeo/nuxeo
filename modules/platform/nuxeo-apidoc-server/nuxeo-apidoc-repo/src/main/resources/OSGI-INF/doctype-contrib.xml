@@ -17,11 +17,9 @@
         <type>NXBundleGroup</type>
         <type>NXBundle</type>
         <type>NXOperation</type>
-        <type>NXSeamComponent</type>
         <type>Workspace</type>
       </subtypes>
     </doctype>
-
 
     <doctype name="NXBundleGroup" extends="Folder">
       <schema name="common" />
@@ -98,16 +96,6 @@
       <schema name="dublincore" />
       <schema name="file" />
       <schema name="nxservice" />
-
-      <facet name="Commentable" />
-      <facet name="Versionable" />
-    </doctype>
-
-    <doctype name="NXSeamComponent" extends="Document">
-      <schema name="common" />
-      <schema name="dublincore" />
-      <schema name="file" />
-      <schema name="nxseam" />
 
       <facet name="Commentable" />
       <facet name="Versionable" />

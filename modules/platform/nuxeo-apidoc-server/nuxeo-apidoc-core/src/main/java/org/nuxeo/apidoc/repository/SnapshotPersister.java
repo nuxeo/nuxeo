@@ -34,7 +34,6 @@ import org.nuxeo.apidoc.adapters.ComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionPointInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.OperationInfoDocAdapter;
-import org.nuxeo.apidoc.adapters.SeamComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -44,7 +43,6 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
-import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
 import org.nuxeo.apidoc.documentation.DocumentationService;
@@ -73,8 +71,6 @@ public class SnapshotPersister {
     public static final String Root_PATH = "/";
 
     public static final String Root_NAME = "nuxeo-distributions";
-
-    public static final String Seam_Root_NAME = "Seam";
 
     public static final String Operation_Root_NAME = "Automation";
 
@@ -183,9 +179,6 @@ public class SnapshotPersister {
             }
         }
 
-        DocumentModel seamContainer = getSubRoot(session, distribContainer.getDoc(), Seam_Root_NAME);
-        persistSeamComponents(snapshot, snapshot.getSeamComponents(), session, label, seamContainer, filter);
-
         DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
         persistOperations(snapshot, snapshot.getOperations(), session, label, opContainer, filter);
 
@@ -193,20 +186,6 @@ public class SnapshotPersister {
         session.save();
 
         return distribContainer;
-    }
-
-    public void persistSeamComponents(DistributionSnapshot snapshot, List<SeamComponentInfo> seamComponents,
-            CoreSession session, String label, DocumentModel parent, SnapshotFilter filter) {
-        for (SeamComponentInfo seamComponent : seamComponents) {
-            if (filter == null || filter.includeSeamComponent(seamComponent)) {
-                persistSeamComponent(snapshot, seamComponent, session, label, parent);
-            }
-        }
-    }
-
-    public void persistSeamComponent(DistributionSnapshot snapshot, SeamComponentInfo seamComponent,
-            CoreSession session, String label, DocumentModel parent) {
-        SeamComponentInfoDocAdapter.create(seamComponent, session, parent.getPathAsString());
     }
 
     public void persistOperations(DistributionSnapshot snapshot, List<OperationInfo> operations, CoreSession session,

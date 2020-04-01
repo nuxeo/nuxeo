@@ -111,14 +111,10 @@ public class Distribution extends ModuleRoot {
 
     public String getNavigationPoint() {
         String currentUrl = getContext().getURL();
-        String navPoint = "somewhere";
+        String navPoint = null;
 
         if (currentUrl.contains("/listBundles")) {
             navPoint = "listBundles";
-        } else if (currentUrl.contains("/listSeamComponents")) {
-            navPoint = "listSeamComponents";
-        } else if (currentUrl.contains("/viewSeamComponent")) {
-            navPoint = "viewSeamComponent";
         } else if (currentUrl.contains("/listComponents")) {
             navPoint = "listComponents";
         } else if (currentUrl.contains("/listServices")) {
@@ -557,10 +553,6 @@ public class Distribution extends ModuleRoot {
 
     public static boolean showCurrentDistribution() {
         return !(Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.current.distribution") || isSiteMode());
-    }
-
-    public static boolean showSeamComponent() {
-        return !(Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.seam.components") || isSiteMode());
     }
 
     public static boolean isSiteMode() {

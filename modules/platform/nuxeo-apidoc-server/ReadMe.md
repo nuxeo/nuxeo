@@ -29,11 +29,15 @@ In addition a DocumentationService is provided to be able to :
 ## Parameters
  - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design
  - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing
- - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection
+ - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)
 
 ## Modules
 
 This plugin is composed of 2 bundles :
 
- - nuxeo-apidoc-core : for the low level API
+ - nuxeo-apidoc-core : for the low level API on the live runtime
+ - nuxeo-apidoc-repo : for the persistence of exported content on the Nuxeo repository
  - nuxeo-apidoc-webengine : for JAX-RS API and Webview
+
+As of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,
+within the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.
