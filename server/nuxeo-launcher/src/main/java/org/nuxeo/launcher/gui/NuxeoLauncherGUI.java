@@ -48,8 +48,8 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 
-import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.launcher.NuxeoLauncher;
+import org.nuxeo.launcher.NuxeoLauncherException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.launcher.daemon.DaemonThreadFactory;
 import org.nuxeo.launcher.gui.logs.LogsHandler;
@@ -206,7 +206,7 @@ public class NuxeoLauncherGUI {
     }
 
     /**
-     * @see NuxeoLauncher#stop()
+     * @see NuxeoLauncher#doStop()
      */
     public void stop() {
         waitForFrameLoaded();
@@ -215,7 +215,7 @@ public class NuxeoLauncherGUI {
         nuxeoFrame.mainButton.setToolTipText(NuxeoLauncherGUI.getMessage("mainbutton.stop.tooltip"));
         nuxeoFrame.mainButton.setIcon(nuxeoFrame.stopIcon);
         executor.execute(() -> {
-            launcher.stop();
+            launcher.doStop();
             nuxeoFrame.stopping = false;
             updateServerStatus();
         });
@@ -261,10 +261,9 @@ public class NuxeoLauncherGUI {
         executor.execute(() -> {
             try {
                 launcher.doStartAndWait();
-            } catch (PackageException e) {
+            } catch (NuxeoLauncherException e) {
                 log.error("Could not initialize the packaging subsystem", e);
-                System.exit(launcher == null || launcher.getErrorValue() == NuxeoLauncher.EXIT_CODE_OK ? NuxeoLauncher.EXIT_CODE_INVALID
-                        : launcher.getErrorValue());
+                System.exit(e.getExitCode());
             }
             updateServerStatus();
         });

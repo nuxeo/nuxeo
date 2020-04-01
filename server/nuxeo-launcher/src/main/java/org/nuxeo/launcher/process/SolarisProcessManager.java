@@ -21,6 +21,7 @@ package org.nuxeo.launcher.process;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,7 +77,7 @@ public class SolarisProcessManager extends UnixProcessManager {
     }
 
     @Override
-    public String findPid(String regex) throws IOException {
+    public Optional<String> findPid(String regex) throws IOException {
         if (SOLARIS_11.equals(getSolarisVersion())) {
             Pattern commandPattern = Pattern.compile(regex);
             for (String line : execute(psCommand())) {
@@ -86,14 +87,14 @@ public class SolarisProcessManager extends UnixProcessManager {
                     String command = lineMatcher.group(2);
                     Matcher commandMatcher = commandPattern.matcher(command);
                     if (commandMatcher.find()) {
-                        return pid;
+                        return Optional.of(pid);
                     }
                 }
             }
         } else {
             throw new RuntimeException("Unsupported Solaris version: " + solarisVersion);
         }
-        return null;
+        return Optional.empty();
     }
 
 }

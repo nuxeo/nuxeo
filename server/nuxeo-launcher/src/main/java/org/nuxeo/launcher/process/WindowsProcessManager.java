@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +23,7 @@ public class WindowsProcessManager implements ProcessManager {
     private static final Pattern PROCESS_GET_LINE = Pattern.compile("^(.*?)\\s+(\\d+)\\s*$");
 
     @Override
-    public String findPid(String regex) throws IOException {
+    public Optional<String> findPid(String regex) throws IOException {
         Pattern commandPattern = Pattern.compile(regex);
         for (String line : execute("wmic", "process", "get", "CommandLine,ProcessId")) {
             Matcher lineMatcher = PROCESS_GET_LINE.matcher(line);
@@ -31,16 +32,16 @@ public class WindowsProcessManager implements ProcessManager {
                 String pid = lineMatcher.group(2);
                 Matcher commandMatcher = commandPattern.matcher(commandLine);
                 if (commandMatcher.find()) {
-                    return pid;
+                    return Optional.of(pid);
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public void kill(Process process, String pid) throws IOException {
-        execute("taskkill", "/t", "/f", "/pid", pid);
+    public void kill(ProcessHandle processHandle) throws IOException {
+        execute("taskkill", "/t", "/f", "/pid", String.valueOf(processHandle.pid()));
     }
 
     public boolean isUsable() {

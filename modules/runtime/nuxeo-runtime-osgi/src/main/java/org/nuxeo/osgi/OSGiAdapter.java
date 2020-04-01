@@ -223,9 +223,10 @@ public class OSGiAdapter {
                 ((FrameworkListener) listener).frameworkEvent(event);
                 log.debug("End execution of " + listener.getClass() + " listener");
             } catch (RuntimeException e) {
-                log.error("Error during Framework Listener execution : " + listener.getClass(), e);
                 if (Boolean.getBoolean("nuxeo.start.strict")) {
                     throw e;
+                } else {
+                    log.error("Error during Framework Listener execution: " + listener.getClass(), e);
                 }
             }
         }
