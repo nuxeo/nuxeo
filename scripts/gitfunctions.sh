@@ -250,7 +250,7 @@ For instance:  LIST_ADDONS=\"nuxeo-shell nuxeo-quota\"."
   shell_command $dir
   ret=$?; [[ $ret != 0 && "$failonerror" = true ]] && return $ret
   # Detect if we are at Nuxeo Platform repository's root
-  if [ -d "nuxeo-common" ]; then
+  if [ -d "modules/nuxeo-common" ]; then
     for dir in $(ls -d */); do
       dir=${dir%%/};
       ( cd "$dir"
