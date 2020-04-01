@@ -1,4 +1,0 @@
-<install>
- <copy file="${package.root}/nuxeo-apidoc-core-5.4.1.jar" todir="${env.bundles}" overwrite="true"/>
- <copy file="${package.root}/nuxeo-apidoc-webengine-5.4.1.jar" todir="${env.bundles}" overwrite="true"/>
-</install>
