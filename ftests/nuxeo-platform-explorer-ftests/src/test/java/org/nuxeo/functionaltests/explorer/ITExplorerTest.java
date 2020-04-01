@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2020 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,24 +13,31 @@
  *
  * Contributors:
  *     Nuxeo
+ *     Anahide Tchertchian
  */
-package org.nuxeo.functionaltests;
+package org.nuxeo.functionaltests.explorer;
+
+import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
 import org.junit.Test;
-import org.nuxeo.functionaltests.JavaScriptErrorCollector.JavaScriptErrorIgnoreRule;
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
-import org.nuxeo.functionaltests.pages.LoginPage;
 
 /**
- * Simple login, logout test.
+ * Test explorer main webengine pages.
+ *
+ * @since 11.1
  */
-public class ITLoginLogoutTest extends AbstractTest {
+public class ITExplorerTest extends AbstractTest {
 
+    /**
+     * Simple login, logout test, checking the home page is displayed without errors after login.
+     */
     @Test
     public void testLoginLogout() throws UserNotConnectedException {
-        login();
+        getLoginPage().login(ADMINISTRATOR, ADMINISTRATOR);
         open("/site/distribution");
-        get(NUXEO_URL + "/logout", LoginPage.class,
-                JavaScriptErrorIgnoreRule.startsWith("unreachable code after return statement"));
+        // logout avoiding JS error check
+        driver.get(NUXEO_URL + "/logout");
     }
 }

@@ -2093,6 +2093,12 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.packages</groupId>
+        <artifactId>nuxeo-platform-explorer-package</artifactId>
+        <version>${nuxeo.platform.version}</version>
+        <type>zip</type>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-quota-package</artifactId>
         <version>${nuxeo.platform.version}</version>
         <type>zip</type>
