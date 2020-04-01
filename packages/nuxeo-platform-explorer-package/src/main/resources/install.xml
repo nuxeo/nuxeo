@@ -1,0 +1,7 @@
+<!-- See documentation at http://doc.nuxeo.com/x/IgIz -->
+<install>
+  @BUNDLES@
+  @LIBS@
+  @PROPERTIES@
+  @TEMPLATES@
+</install>

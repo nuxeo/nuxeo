@@ -1,0 +1,26 @@
+<project name="sample-webdriver-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <!-- Base distribution (nuxeo-cap is the default value) -->
+  <!-- <property name="wizard.preset" value="nuxeo-cap" /> -->
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <!-- Instruction for installing the MP to be tested -->
+  <property name="mp.install" value="file:${out.dir}/nuxeo-marketplace-jsf-ui-${nuxeo.platform.version}.zip,
+    file:${out.dir}/explorer-marketplace-${maven.project.version}.zip" />
+  <!-- Override default prepare-environment target to make it download your MP -->
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
+    <copy todir="${out.dir}">
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-marketplace-jsf-ui::zip" />
+      <artifact:file key="org.nuxeo.ecm.distribution:explorer-marketplace::zip" />
+    </copy>
+  </target>
+
+</project>
