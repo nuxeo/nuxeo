@@ -23,12 +23,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.nuxeo.ecm.core.api.Blob;
@@ -105,12 +105,12 @@ public class PDFPageNumbering {
             if (StringUtils.isBlank(inFontName)) {
                 font = PDType1Font.HELVETICA;
             } else {
-                font = PDType1Font.getStandardFont(inFontName);
+                font = PDFUtils.getStandardType1Font(inFontName);
                 if (font == null) {
-                    font = new PDType1Font(inFontName);
+                    throw new NuxeoException("Not a standard font: " + inFontName);
                 }
             }
-            allPages = doc.getDocumentCatalog().getAllPages();
+            allPages = IteratorUtils.toList(doc.getDocumentCatalog().getPages().iterator());
             max = allPages.size();
             inStartAtPage = inStartAtPage > max ? 1 : inStartAtPage;
             for (int i = inStartAtPage; i <= max; i++) {
@@ -120,7 +120,7 @@ public class PDFPageNumbering {
                 PDPageContentStream footercontentStream = new PDPageContentStream(doc, page, true, true);
                 float stringWidth = font.getStringWidth(pageNumAsStr) * inFontSize / 1000f;
                 float stringHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() * inFontSize / 1000;
-                PDRectangle pageRect = page.findMediaBox();
+                PDRectangle pageRect = page.getMediaBox();
                 float xMoveAmount, yMoveAmount;
                 if (inPosition == null) {
                     inPosition = PAGE_NUMBER_POSITION.BOTTOM_RIGHT;
@@ -164,7 +164,7 @@ public class PDFPageNumbering {
             doc.save(tempFile);
             result = new FileBlob(tempFile);
             Framework.trackFile(tempFile, result);
-        } catch (IOException | COSVisitorException e) {
+        } catch (IOException e) {
             throw new NuxeoException("Failed to handle the pdf", e);
         }
         return result;

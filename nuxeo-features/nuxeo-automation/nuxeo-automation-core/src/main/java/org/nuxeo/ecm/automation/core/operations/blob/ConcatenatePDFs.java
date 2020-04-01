@@ -21,8 +21,7 @@ package org.nuxeo.ecm.automation.core.operations.blob;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.util.PDFMergerUtility;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -57,7 +56,7 @@ public class ConcatenatePDFs {
     protected String filename;
 
     @OperationMethod
-    public Blob run(Blob blob) throws OperationException, IOException, COSVisitorException {
+    public Blob run(Blob blob) throws OperationException, IOException {
         PDFMergerUtility ut = new PDFMergerUtility();
         checkPdf(blob);
         if (xpathBlobToAppend.isEmpty()) {
@@ -69,7 +68,7 @@ public class ConcatenatePDFs {
     }
 
     @OperationMethod
-    public Blob run(BlobList blobs) throws IOException, OperationException, COSVisitorException {
+    public Blob run(BlobList blobs) throws IOException, OperationException {
         PDFMergerUtility ut = new PDFMergerUtility();
         if (!xpathBlobToAppend.isEmpty()) {
             handleBlobToAppend(ut);
@@ -81,7 +80,7 @@ public class ConcatenatePDFs {
         return appendPDFs(ut);
     }
 
-    protected Blob appendPDFs(PDFMergerUtility ut) throws IOException, COSVisitorException {
+    protected Blob appendPDFs(PDFMergerUtility ut) throws IOException {
         File tempFile = Framework.createTempFile(filename, ".pdf");
         ut.setDestinationFileName(tempFile.getAbsolutePath());
         ut.mergeDocuments();

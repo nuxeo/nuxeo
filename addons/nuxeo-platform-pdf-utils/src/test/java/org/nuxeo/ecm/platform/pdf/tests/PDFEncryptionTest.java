@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +52,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
@@ -111,10 +112,8 @@ public class PDFEncryptionTest {
 
     private void checkIsReadOnly(Blob inBlob, String ownerPwd, String userPwd) throws Exception {
         // load the blob as a PDDocument and check permissions as a user
-        PDDocument pdfDoc = PDDocument.load(inBlob.getFile());
+        PDDocument pdfDoc = PDDocument.load(inBlob.getFile(), userPwd);
         assertTrue(pdfDoc.isEncrypted());
-        pdfDoc.openProtection(new StandardDecryptionMaterial(userPwd));
-        assertFalse(pdfDoc.isEncrypted());
         AccessPermission pdfPermissions = pdfDoc.getCurrentAccessPermission();
         assertTrue(pdfPermissions.canPrint());
         assertTrue(pdfPermissions.canExtractContent());
@@ -126,10 +125,8 @@ public class PDFEncryptionTest {
         assertFalse(pdfPermissions.canAssembleDocument());
         pdfDoc.close();
         // load the blob as a PDDocument and check permission as an owner
-        pdfDoc = PDDocument.load(inBlob.getFile());
+        pdfDoc = PDDocument.load(inBlob.getFile(), ownerPwd);
         assertTrue(pdfDoc.isEncrypted());
-        pdfDoc.openProtection(new StandardDecryptionMaterial(ownerPwd));
-        assertFalse(pdfDoc.isEncrypted());
         pdfPermissions = pdfDoc.getCurrentAccessPermission();
         assertTrue(pdfPermissions.canPrint());
         assertTrue(pdfPermissions.canExtractContent());
@@ -157,16 +154,19 @@ public class PDFEncryptionTest {
     public void testRemoveEncryption() throws Exception {
         // verify that a given PDF file is encrypted
         File f = FileUtils.getResourceFileFromContext(TestUtils.PDF_ENCRYPTED_PATH);
-        PDDocument pdfDoc = PDDocument.load(f);
-        assertTrue(pdfDoc.isEncrypted());
-        pdfDoc.close();
+        try {
+            PDDocument.load(f);
+            fail();
+        } catch (InvalidPasswordException e) {
+            // ok
+        }
         // decrypt that same PDF file and verify that the resulting PDF is now decrypted
         FileBlob fb = new FileBlob(f);
         PDFEncryption pdfe = new PDFEncryption(fb);
         pdfe.setOriginalOwnerPwd(TestUtils.PDF_ENCRYPTED_PASSWORD);
         Blob result = pdfe.removeEncryption();
         assertNotNull(result);
-        pdfDoc = PDDocument.load(result.getFile());
+        PDDocument pdfDoc = PDDocument.load(result.getFile());
         assertFalse(pdfDoc.isEncrypted());
         pdfDoc.close();
         // decrypt a non-encrypted PDF file (should not trigger an error)
@@ -194,10 +194,8 @@ public class PDFEncryptionTest {
         PDDocument originalPDF = PDDocument.load(pdfFileBlob.getFile());
         assertFalse(originalPDF.isEncrypted());
         originalPDF.close();
-        PDDocument encryptedPDF = PDDocument.load(result.getFile());
+        PDDocument encryptedPDF = PDDocument.load(result.getFile(), TestUtils.PDF_PROTECTED_USER_PASSWORD);
         assertTrue(encryptedPDF.isEncrypted());
-        encryptedPDF.openProtection(new StandardDecryptionMaterial(TestUtils.PDF_PROTECTED_USER_PASSWORD));
-        assertFalse(encryptedPDF.isEncrypted());
         assertFalse(encryptedPDF.getCurrentAccessPermission().canModify());
         assertFalse(encryptedPDF.getCurrentAccessPermission().canModifyAnnotations());
         assertFalse(encryptedPDF.getCurrentAccessPermission().canPrint());
@@ -233,10 +231,8 @@ public class PDFEncryptionTest {
         PDDocument originalPDF = PDDocument.load(pdfFileBlob.getFile());
         assertFalse(originalPDF.isEncrypted());
         originalPDF.close();
-        PDDocument encryptedPDF = PDDocument.load(result.getFile());
+        PDDocument encryptedPDF = PDDocument.load(result.getFile(), TestUtils.PDF_PROTECTED_USER_PASSWORD);
         assertTrue(encryptedPDF.isEncrypted());
-        encryptedPDF.openProtection(new StandardDecryptionMaterial(TestUtils.PDF_PROTECTED_USER_PASSWORD));
-        assertFalse(encryptedPDF.isEncrypted());
         assertTrue(encryptedPDF.getCurrentAccessPermission().canModify());
         assertTrue(encryptedPDF.getCurrentAccessPermission().canModifyAnnotations());
         assertFalse(encryptedPDF.getCurrentAccessPermission().canPrint());
@@ -258,9 +254,12 @@ public class PDFEncryptionTest {
             .set("ownerPwd", TestUtils.PDF_ENCRYPTED_PASSWORD);
         Blob result = (Blob) automationService.run(ctx, chain);
         assertNotNull(result);
-        PDDocument originalPDF = PDDocument.load(pdfEncryptedFileBlob.getFile());
-        assertTrue(originalPDF.isEncrypted());
-        originalPDF.close();
+        try {
+            PDDocument.load(pdfEncryptedFileBlob.getFile());
+            fail();
+        } catch (InvalidPasswordException e) {
+            // ok
+        }
         PDDocument decryptedPDF = PDDocument.load(result.getFile());
         assertFalse(decryptedPDF.isEncrypted());
         decryptedPDF.close();

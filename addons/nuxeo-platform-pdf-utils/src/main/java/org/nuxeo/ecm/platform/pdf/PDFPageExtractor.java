@@ -23,16 +23,16 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.multipdf.PageExtractor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.util.ImageIOUtil;
-import org.apache.pdfbox.util.PageExtractor;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -125,7 +125,7 @@ public class PDFPageExtractor {
             }
             result.setFilename(inFileName);
             extracted.close();
-        } catch (IOException | COSVisitorException e) {
+        } catch (IOException e) {
             throw new NuxeoException("Failed to extract the pages", e);
         }
         return result;
@@ -141,12 +141,13 @@ public class PDFPageExtractor {
         }
         try (PDDocument pdfDoc = PDFUtils.load(pdfBlob, password)) {
             // Get all PDF pages.
-            List pages = pdfDoc.getDocumentCatalog().getAllPages();
             // Convert each page to PNG.
-            for (Object pageObject : pages) {
-                PDPage page = (PDPage) pageObject;
-                resultFileName = inFileName + "-" + (pages.indexOf(page) + 1);
-                BufferedImage bim = page.convertToImage(BufferedImage.TYPE_INT_RGB, 300);
+            PDFRenderer pdfRenderer = new PDFRenderer(pdfDoc);
+            int pageno = 0;
+            for (PDPage page : pdfDoc.getDocumentCatalog().getPages()) {
+                pageno++;
+                resultFileName = inFileName + "-" + pageno;
+                BufferedImage bim = pdfRenderer.renderImageWithDPI(pageno - 1, 300, ImageType.RGB);
                 File resultFile = Framework.createTempFile(resultFileName, ".png");
                 FileOutputStream resultFileStream = new FileOutputStream(resultFile);
                 ImageIOUtil.writeImage(bim, "png", resultFileStream, 300);

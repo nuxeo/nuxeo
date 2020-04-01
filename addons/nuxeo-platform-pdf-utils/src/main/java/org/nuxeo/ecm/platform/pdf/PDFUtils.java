@@ -19,16 +19,34 @@
  */
 package org.nuxeo.ecm.platform.pdf;
 
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.COURIER;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.COURIER_BOLD;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.COURIER_BOLD_OBLIQUE;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.COURIER_OBLIQUE;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_BOLD_OBLIQUE;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.HELVETICA_OBLIQUE;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.SYMBOL;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.TIMES_BOLD;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.TIMES_BOLD_ITALIC;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.TIMES_ITALIC;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.TIMES_ROMAN;
+import static org.apache.pdfbox.pdmodel.font.PDType1Font.ZAPF_DINGBATS;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -42,6 +60,28 @@ import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 public class PDFUtils {
 
     public static final String DEFAULT_BLOB_XPATH = "file:content";
+
+    protected static final Map<String, PDType1Font> STANDARD_14;
+    static {
+        Map<String, PDType1Font> map = new HashMap<>();
+        for (PDType1Font font : Arrays.asList( //
+                TIMES_ROMAN, TIMES_BOLD, TIMES_ITALIC, TIMES_BOLD_ITALIC, //
+                HELVETICA, HELVETICA_BOLD, HELVETICA_OBLIQUE, HELVETICA_BOLD_OBLIQUE, //
+                COURIER, COURIER_BOLD, COURIER_OBLIQUE, COURIER_BOLD_OBLIQUE, //
+                SYMBOL, ZAPF_DINGBATS)) {
+            map.put(font.getBaseFont(), font);
+        }
+        STANDARD_14 = Collections.unmodifiableMap(map);
+    }
+
+    /**
+     * Gets one of the Standard 14 Type 1 Fonts.
+     *
+     * @since 11.1
+     */
+    public static PDType1Font getStandardType1Font(String name) {
+        return STANDARD_14.get(name);
+    }
 
     public static int[] hex255ToRGB(String inHex) {
         int[] result = { 0, 0, 0 };
@@ -66,14 +106,9 @@ public class PDFUtils {
     public static PDDocument load(Blob inBlob, String inPwd) throws NuxeoException {
         PDDocument pdfDoc;
         try {
-            pdfDoc = PDDocument.load(inBlob.getStream());
-            if (pdfDoc.isEncrypted()) {
-                pdfDoc.openProtection(new StandardDecryptionMaterial(inPwd));
-            }
+            pdfDoc = PDDocument.load(inBlob.getStream(), inPwd);
         } catch (IOException e) {
             throw new NuxeoException("Failed to load the PDF", e);
-        } catch (BadSecurityHandlerException | CryptographyException e) {
-            throw new NuxeoException("Failed to decrypt the PDF", e);
         }
         return pdfDoc;
     }
@@ -86,14 +121,12 @@ public class PDFUtils {
      * @param inPdfDoc Input PDF document.
      * @return FileBlob
      * @throws IOException
-     * @throws COSVisitorException
      */
-    public static FileBlob saveInTempFile(PDDocument inPdfDoc) throws IOException, COSVisitorException {
+    public static FileBlob saveInTempFile(PDDocument inPdfDoc) throws IOException {
         return saveInTempFile(inPdfDoc, null);
     }
 
-    public static FileBlob saveInTempFile(PDDocument inPdfDoc, String inFileName) throws IOException,
-        COSVisitorException {
+    public static FileBlob saveInTempFile(PDDocument inPdfDoc, String inFileName) throws IOException {
         Blob result = Blobs.createBlobWithExtension(".pdf");
         File resultFile = result.getFile();
         inPdfDoc.save(result.getFile());

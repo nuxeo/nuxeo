@@ -29,13 +29,13 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionLaunch;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionRemoteGoTo;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionLaunch;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionRemoteGoTo;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.util.PDFTextStripperByArea;
+import org.apache.pdfbox.text.PDFTextStripperByArea;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
@@ -99,8 +99,7 @@ public class PDFLinks {
         pdfDoc = PDFUtils.load(pdfBlob, password);
         try {
             stripper = new PDFTextStripperByArea();
-            for (Object pageObject : pdfDoc.getDocumentCatalog().getAllPages()) {
-                PDPage page = (PDPage) pageObject;
+            for (PDPage page : pdfDoc.getDocumentCatalog().getPages()) {
                 List pageAnnotations = page.getAnnotations();
                 for (Object annotationObject : pageAnnotations) {
                     PDAnnotation annot = (PDAnnotation) annotationObject;
@@ -112,9 +111,9 @@ public class PDFLinks {
                     // need to reposition link rectangle to match text space
                     float x = rect.getLowerLeftX(), y = rect.getUpperRightY();
                     float width = rect.getWidth(), height = rect.getHeight();
-                    int rotation = page.findRotation();
+                    int rotation = page.getRotation();
                     if (rotation == 0) {
-                        PDRectangle pageSize = page.findMediaBox();
+                        PDRectangle pageSize = page.getMediaBox();
                         y = pageSize.getHeight() - y;
                     }
                     Rectangle2D.Float awtRect = new Rectangle2D.Float(x, y, width, height);
@@ -165,9 +164,9 @@ public class PDFLinks {
         PDActionURI uri;
         PDFileSpecification fspec;
         List<LinkInfo> li = new ArrayList<>();
-        List allPages = pdfDoc.getDocumentCatalog().getAllPages();
-        for (Object pageObject : allPages) {
-            PDPage page = (PDPage) pageObject;
+        int pageno = 0;
+        for (PDPage page : pdfDoc.getDocumentCatalog().getPages()) {
+            pageno++;
             stripper.extractRegions(page);
             List<PDAnnotation> annotations = page.getAnnotations();
             for (PDAnnotation annot : annotations) {
@@ -199,7 +198,7 @@ public class PDFLinks {
                 // others...
                 }
                 if (StringUtils.isNotBlank(urlValue)) {
-                    li.add(new LinkInfo(allPages.indexOf(page) + 1, inSubType, urlText, urlValue));
+                    li.add(new LinkInfo(pageno, inSubType, urlText, urlValue));
                 }
             }
         }
