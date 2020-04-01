@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,20 @@
  *     Julien Carsique
  *     Florent Guillaume
  *     Ronan DANIELLOU
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.launcher;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toList;
 import static org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME;
+import static org.nuxeo.common.Environment.NUXEO_CONTEXT_PATH;
+import static org.nuxeo.common.Environment.NUXEO_DATA_DIR;
+import static org.nuxeo.common.Environment.NUXEO_HOME;
+import static org.nuxeo.common.Environment.NUXEO_LOG_DIR;
+import static org.nuxeo.common.Environment.NUXEO_MP_DIR;
+import static org.nuxeo.common.Environment.NUXEO_TMP_DIR;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
 
 import java.io.Console;
 import java.io.File;
@@ -47,7 +56,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPOutputStream;
 
@@ -123,93 +131,67 @@ import com.sun.jersey.json.impl.writer.JsonXmlStreamWriter;
  */
 public abstract class NuxeoLauncher {
 
-    /**
-     * @since 7.4
-     */
+    /** @since 7.4 */
     protected static final String OUTPUT_UNSET_VALUE = "<unset>";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_NODEPS = "nodeps";
 
     private static final String OPTION_NODEPS_DESC = "Ignore package dependencies and constraints.";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_GUI = "gui";
 
     private static final String OPTION_GUI_DESC = "Start graphical user interface (default is true on Windows and false on other platforms).";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_JSON = "json";
 
     private static final String OPTION_JSON_DESC = "Output JSON for mp-* commands.";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_XML = "xml";
 
     private static final String OPTION_XML_DESC = "Output XML for mp-* commands.";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_DEBUG = "debug";
 
     private static final String OPTION_DEBUG_DESC = "Activate debug messages.\n"
             + "<categories>: comma-separated Java categories to debug (default: \"org.nuxeo.launcher\").";
 
-    /**
-     * @since 7.4
-     */
+    /** @since 7.4 */
     private static final String OPTION_DEBUG_CATEGORY_ARG_NAME = "categories";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_DEBUG_CATEGORY = "dc";
 
     private static final String OPTION_DEBUG_CATEGORY_DESC = "Deprecated: see categories on '--debug' option.";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_QUIET = "quiet";
 
     private static final String OPTION_QUIET_DESC = "Suppress information messages.";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_HELP = "help";
 
     private static final String OPTION_HELP_DESC = "Show detailed help.";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_RELAX = "relax";
 
     private static final String OPTION_RELAX_DESC = "Allow relax constraint on current platform (default: "
             + ConnectBroker.OPTION_RELAX_DEFAULT + ").";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_ACCEPT = "accept";
 
     private static final String OPTION_ACCEPT_DESC = "Accept, refuse or ask confirmation for all changes (default: "
             + ConnectBroker.OPTION_ACCEPT_DEFAULT + ").\n"
             + "In non interactive mode, '--accept=true' also sets '--relax=true' if needed.";
 
-    /**
-     * @since 5.9.1
-     */
+    /** @since 5.9.1 */
     protected static final String OPTION_SNAPSHOT = "snapshot";
 
     private static final String OPTION_SNAPSHOT_DESC = "Allow use of SNAPSHOT Nuxeo Packages.\n"
@@ -217,70 +199,56 @@ public abstract class NuxeoLauncher {
             + "\t- on SNAPSHOT distributions (daily builds),\n"
             + "\t- if the command explicitly requests a SNAPSHOT package.";
 
-    /**
-     * @since 5.9.1
-     */
+    /** @since 5.9.1 */
     @Deprecated(since = "11.1")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     protected static final String OPTION_FORCE = "force";
 
     @Deprecated(since = "11.1")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     private static final String OPTION_FORCE_DESC = "Deprecated since 11.1: strict mode is the default.";
 
-    /**
-     * @since 7.4
-     */
+    /** @since 7.4 */
     @Deprecated(since = "11.1")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     protected static final String OPTION_STRICT = "strict";
 
     @Deprecated(since = "11.1")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     private static final String OPTION_STRICT_DESC = "Deprecated since 11.1: strict mode is the default.";
 
-    /**
-     * @since 11.1
-     */
+    /** @since 11.1 */
     protected static final String OPTION_LENIENT = "lenient";
 
     protected static final String OPTION_LENIENT_DESC = "Do not abort in error the start command when a component cannot "
             + "be activated or if a server is already running.";
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String OPTION_HIDE_DEPRECATION = "hide-deprecation-warnings";
 
     protected static final String OPTION_HIDE_DEPRECATION_DESC = "Hide deprecation warnings.";
 
-    /**
-     * @since 6.0
-     */
+    /** @since 6.0 */
     protected static final String OPTION_IGNORE_MISSING = "ignore-missing";
 
     protected static final String OPTION_IGNORE_MISSING_DESC = "Ignore unknown packages on mp-add, mp-install and mp-set commands.";
 
-    /**
-     * @since 6.0
-     */
+    /** @since 6.0 */
     protected static final String OPTION_CLID = "clid";
 
     private static final String OPTION_CLID_DESC = "Use the provided instance CLID file";
 
-    /**
-     * @since 10.3
-     */
+    /** @since 10.3 */
     protected static final String OPTION_OFFLINE = "offline";
 
     private static final String OPTION_OFFLINE_DESC = "Allow offline registration";
 
-    /**
-     * @since 8.10-HF15
-     */
+    /** @since 8.10-HF15 */
     protected static final String OPTION_RENEW = "renew";
 
     private static final String OPTION_RENEW_DESC = "Renew the current CLID";
 
-    /**
-     * @since 7.4
-     */
+    /** @since 7.4 */
     protected static final String OPTION_ENCRYPT = "encrypt";
 
     private static final String OPTION_ENCRYPT_ARG_NAME = "algorithm";
@@ -290,9 +258,7 @@ public abstract class NuxeoLauncher {
             + "Default value is \"%s\" (Advanced Encryption Standard, Electronic Cookbook Mode, PKCS5-style padding).",
             OPTION_ENCRYPT, Crypto.DEFAULT_ALGO);
 
-    /**
-     * @since 7.4
-     */
+    /** @since 7.4 */
     protected static final String OPTION_SET = "set";
 
     private static final String OPTION_SET_ARG_NAME = "template";
@@ -301,59 +267,47 @@ public abstract class NuxeoLauncher {
             + "The value is stored in {{%s}} by default unless a template name is provided; if so, it is then stored in the template's {{%s}} file.\n"
             + "If the value is empty (''), then the property is unset.\n"
             + "This option is implicit if no '--get' or '--get-regexp' option is used and there are exactly two parameters (key value).",
-            ConfigurationGenerator.NUXEO_CONF, ConfigurationGenerator.NUXEO_DEFAULT_CONF);
+            NUXEO_CONF, ConfigurationGenerator.NUXEO_DEFAULT_CONF);
 
-    /**
-     * @since 7.4
-     */
+    /** @since 7.4 */
     protected static final String OPTION_GET = "get";
 
     private static final String OPTION_GET_DESC = "Get the value for a given key. Returns error code 6 if the key was not found.\n"
             + "This option is implicit if '--set' option is not used and there are more or less than two parameters.";
 
-    /**
-     * @since 7.4
-     */
+    /** @since 7.4 */
     protected static final String OPTION_GET_REGEXP = "get-regexp";
 
     private static final String OPTION_GET_REGEXP_DESC = "Get the value for all keys matching the given regular expression(s).";
 
-    /**
-     * @since 8.3
-     */
+    /** @since 8.3 */
     protected static final String OPTION_GZIP_OUTPUT = "gzip";
 
     private static final String OPTION_GZIP_DESC = "Compress the output.";
 
-    /**
-     * @since 8.3
-     */
+    /** @since 8.3 */
     protected static final String OPTION_OUTPUT = "output";
 
     private static final String OPTION_OUTPUT_DESC = "Write output in specified file.";
 
-    /**
-     * @since 8.3
-     */
+    /** @since 8.3 */
     protected static final String OPTION_PRETTY_PRINT = "pretty-print";
 
     private static final String OPTION_PRETTY_PRINT_DESC = "Pretty print the output.";
 
     // Fallback to avoid an error when the log dir is not initialized
     static {
-        if (System.getProperty(Environment.NUXEO_LOG_DIR) == null) {
-            System.setProperty(Environment.NUXEO_LOG_DIR, ".");
+        if (System.getProperty(NUXEO_LOG_DIR) == null) {
+            System.setProperty(NUXEO_LOG_DIR, ".");
         }
     }
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     private static final String DEFAULT_NUXEO_CONTEXT_PATH = "/nuxeo";
 
     private static final Logger log = LogManager.getLogger(NuxeoLauncher.class);
 
-    private static Options options = initParserOptions();
+    private static final Options options = initParserOptions();
 
     private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
 
@@ -429,9 +383,7 @@ public abstract class NuxeoLauncher {
      */
     public static final int STATUS_CODE_UNKNOWN = 4;
 
-    /**
-     * @since 5.7
-     */
+    /** @since 5.7 */
     public static final int EXIT_CODE_OK = 0;
 
     /**
@@ -503,13 +455,11 @@ public abstract class NuxeoLauncher {
                     "        java [-D%s=\"JVM options\"] [-D%s=\"/path/to/nuxeo\"] [-D%s=\"/path/to/nuxeo.conf\"]"
                             + " [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\" \\\n"
                             + "        \t[options] <command> [command parameters]\n\n",
-                    JAVA_OPTS_PROPERTY, Environment.NUXEO_HOME, ConfigurationGenerator.NUXEO_CONF)
+                    JAVA_OPTS_PROPERTY, NUXEO_HOME, NUXEO_CONF)
             + String.format("        %s\tParameters for the server JVM (default are %s).\n", JAVA_OPTS_PROPERTY,
                     JAVA_OPTS_DEFAULT)
-            + String.format("        %s\t\tNuxeo server root path (default is parent of called script).\n",
-                    Environment.NUXEO_HOME)
-            + String.format("        %s\t\tPath to {{%1$s}} file (default is \"$NUXEO_HOME/bin/%1$s\").\n",
-                    ConfigurationGenerator.NUXEO_CONF)
+            + String.format("        %s\t\tNuxeo server root path (default is parent of called script).\n", NUXEO_HOME)
+            + String.format("        %s\t\tPath to {{%1$s}} file (default is \"$NUXEO_HOME/bin/%1$s\").\n", NUXEO_CONF)
             + "        jvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.\n";
 
     private static final String OPTION_HELP_DESC_COMMANDS = "\nCOMMANDS\n" //
@@ -605,7 +555,7 @@ public abstract class NuxeoLauncher {
 
     protected String pid;
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor(
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(
             new DaemonThreadFactory("NuxeoProcessThread", false));
 
     private ShutdownThread shutdownHook;
@@ -848,40 +798,23 @@ public abstract class NuxeoLauncher {
     private List<String> getOSCommand(List<String> roughCommand) {
         if (SystemUtils.IS_OS_UNIX) {
             return getUnixCommand(roughCommand);
-        }
-        if (SystemUtils.IS_OS_WINDOWS) {
+        } else if (SystemUtils.IS_OS_WINDOWS) {
             return getWindowsCommand(roughCommand);
         }
         throw new IllegalStateException("Unknown os, can't launch server");
     }
 
     private List<String> getWindowsCommand(List<String> roughCommand) {
-        ArrayList<String> osCommand = new ArrayList<>();
-        for (String commandToken : roughCommand) {
-            if (StringUtils.isBlank(commandToken)) {
-                continue;
-            }
-            osCommand.add("\"" + commandToken + "\"");
-        }
-        return osCommand;
+        return roughCommand.stream().filter(StringUtils::isNotBlank).map(s -> '"' + s + '"').collect(toList());
     }
 
     private List<String> getUnixCommand(List<String> roughCommand) {
-        ArrayList<String> osCommand = new ArrayList<>();
-        StringBuilder linearizedCommand = new StringBuilder("exec");
-        for (String commandToken : roughCommand) {
-            if (StringUtils.isBlank(commandToken)) {
-                continue;
-            }
-            if (commandToken.contains(" ")) {
-                commandToken = commandToken.replaceAll(" ", "\\\\ ");
-            }
-            linearizedCommand.append(' ').append(commandToken);
-        }
-        osCommand.add("/bin/sh");
-        osCommand.add("-c");
-        osCommand.add(linearizedCommand.toString());
-        return osCommand;
+        // linearize command
+        String linearizedCommand = roughCommand.stream()
+                                               .filter(StringUtils::isNotBlank)
+                                               .map(s -> s.replaceAll(" ", "\\\\ "))
+                                               .reduce("exec ", (s1, s2) -> s1 + ' ' + s2);
+        return List.of("/bin/sh", "-c", linearizedCommand);
     }
 
     protected abstract Collection<? extends String> getServerProperties();
@@ -889,7 +822,7 @@ public abstract class NuxeoLauncher {
     protected abstract void setServerStartCommand(List<String> command);
 
     private File getJavaExecutable() {
-        return new File(System.getProperty("java.home"), "bin" + File.separator + "java");
+        return Path.of(System.getProperty("java.home")).resolve("bin").resolve("java").toFile();
     }
 
     protected abstract String getClassPath();
@@ -900,28 +833,30 @@ public abstract class NuxeoLauncher {
     protected abstract String getShutdownClassPath();
 
     protected Collection<String> getNuxeoProperties() {
-        ArrayList<String> nuxeoProperties = new ArrayList<>();
-        nuxeoProperties.add(
-                String.format("-D%s=%s", Environment.NUXEO_HOME, configurationGenerator.getNuxeoHome().getPath()));
-        nuxeoProperties.add(String.format("-D%s=%s", ConfigurationGenerator.NUXEO_CONF,
-                configurationGenerator.getNuxeoConf().getPath()));
-        nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_LOG_DIR));
-        nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_DATA_DIR));
-        nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_TMP_DIR));
-        nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_MP_DIR));
+        List<String> nuxeoProperties = new ArrayList<>();
+        nuxeoProperties.add(formatPropertyToCommandLine(NUXEO_HOME, configurationGenerator.getNuxeoHome().getPath()));
+        nuxeoProperties.add(formatPropertyToCommandLine(NUXEO_CONF, configurationGenerator.getNuxeoConf().getPath()));
+        nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_LOG_DIR));
+        nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_DATA_DIR));
+        nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_TMP_DIR));
+        nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_MP_DIR));
         if (!DEFAULT_NUXEO_CONTEXT_PATH.equals(
-                configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_CONTEXT_PATH))) {
-            nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_CONTEXT_PATH));
+                configurationGenerator.getUserConfig().getProperty(NUXEO_CONTEXT_PATH))) {
+            nuxeoProperties.add(formatNuxeoPropertyToCommandLine(NUXEO_CONTEXT_PATH));
         }
         if (overrideJavaTmpDir) {
-            nuxeoProperties.add("-Djava.io.tmpdir="
-                    + configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
+            nuxeoProperties.add(formatPropertyToCommandLine("java.io.tmpdir",
+                    configurationGenerator.getUserConfig().getProperty(NUXEO_TMP_DIR)));
         }
         return nuxeoProperties;
     }
 
-    private String getNuxeoProperty(String property) {
-        return "-D" + property + "=" + configurationGenerator.getUserConfig().getProperty(property);
+    private String formatNuxeoPropertyToCommandLine(String property) {
+        return formatPropertyToCommandLine(property, configurationGenerator.getUserConfig().getProperty(property));
+    }
+
+    protected static String formatPropertyToCommandLine(String key, String value) {
+        return String.format("-D%s=%s", key, value);
     }
 
     protected String addToClassPath(String cp, String filename) {
@@ -1575,15 +1510,15 @@ public abstract class NuxeoLauncher {
             token = promptToken();
         }
         ConnectProject project;
-        List<ConnectProject> projs = getConnectRegistrationBroker().getAvailableProjects(username, token);
+        List<ConnectProject> projects = getConnectRegistrationBroker().getAvailableProjects(username, token);
         if (params.length > 1) {
             String projectName = params[1];
-            project = getConnectRegistrationBroker().getProjectByName(projectName, projs);
+            project = getConnectRegistrationBroker().getProjectByName(projectName, projects);
             if (project == null) {
                 throw new ConfigurationException("Unknown project: " + projectName);
             }
         } else {
-            project = promptProject(projs);
+            project = promptProject(projects);
         }
         NuxeoClientInstanceType type;
         String description;
@@ -1604,8 +1539,8 @@ public abstract class NuxeoLauncher {
     protected boolean registerRemoteInstance(String username, char[] token, ConnectProject project,
             NuxeoClientInstanceType type, String description) throws IOException, ConfigurationException {
         getConnectRegistrationBroker().registerRemote(username, token, project.getUuid(), type, description);
-        log.info(String.format("Server registered to {} for project {}\nType: {}\nDescription: {}", username, project,
-                type, description));
+        log.info("Server registered to {} for project {}\nType: {}\nDescription: {}", username, project, type,
+                description);
         return true;
     }
 
@@ -1623,6 +1558,7 @@ public abstract class NuxeoLauncher {
      *             https://connect.nuxeo.com/register
      */
     @Deprecated
+    @SuppressWarnings({ "DeprecatedIsStillUsed", "RedundantThrows" })
     public boolean registerTrial() throws IOException, ConfigurationException, PackageException {
         String msg = "This command is deprecated. To register for a free 30 day trial on Nuxeo Online Services,"
                 + " please visit https://connect.nuxeo.com/register";
@@ -1685,11 +1621,7 @@ public abstract class NuxeoLauncher {
             errorValue = EXIT_CODE_INVALID;
             return null;
         }
-        return Stream.of(values)
-                     .map(crypto::decrypt)
-                     .map(Crypto::getChars)
-                     .map(String::new)
-                     .collect(Collectors.toList());
+        return Stream.of(values).map(crypto::decrypt).map(Crypto::getChars).map(String::new).collect(toList());
     }
 
     /**
@@ -1733,7 +1665,7 @@ public abstract class NuxeoLauncher {
         boolean keyChecked = false; // Secret key is asked only once
         boolean raw = true;
         StringBuilder sb = new StringBuilder();
-        final String newLine = System.getProperty("line.separator");
+        final String newLine = System.lineSeparator();
         for (String key : keys) {
             String value = userConfig.getProperty(key, raw);
             if (value == null) {
@@ -1768,11 +1700,12 @@ public abstract class NuxeoLauncher {
         for (Iterator<String> iterator = Arrays.asList(params).iterator(); iterator.hasNext();) {
             String key = iterator.next();
             String value;
+            boolean isCryptKey = Environment.CRYPT_KEY.equals(key) || Environment.CRYPT_KEYSTORE_PASS.equals(key);
             if (iterator.hasNext()) {
                 value = iterator.next();
                 if (doEncrypt) {
                     value = crypto.encrypt(algorithm, value.getBytes());
-                } else if (Environment.CRYPT_KEY.equals(key) || Environment.CRYPT_KEYSTORE_PASS.equals(key)) {
+                } else if (isCryptKey) {
                     value = Base64.encodeBase64String(value.getBytes());
                 }
             } else {
@@ -1781,7 +1714,7 @@ public abstract class NuxeoLauncher {
                     final String fmt = "Please enter the value for %s: ";
                     if (doEncrypt) {
                         value = crypto.encrypt(algorithm, Crypto.getBytes(console.readPassword(fmt, key)));
-                    } else if (Environment.CRYPT_KEY.equals(key) || Environment.CRYPT_KEYSTORE_PASS.equals(key)) {
+                    } else if (isCryptKey) {
                         value = Base64.encodeBase64String(Crypto.getBytes(console.readPassword(fmt, key)));
                     } else {
                         value = console.readLine(fmt, key);
@@ -1790,7 +1723,7 @@ public abstract class NuxeoLauncher {
                     try {
                         if (doEncrypt) {
                             value = crypto.encrypt(algorithm, IOUtils.toByteArray(System.in));
-                        } else if (Environment.CRYPT_KEY.equals(key) || Environment.CRYPT_KEYSTORE_PASS.equals(key)) {
+                        } else if (isCryptKey) {
                             value = Base64.encodeBase64String(IOUtils.toByteArray(System.in));
                         } else {
                             value = IOUtils.toString(System.in, UTF_8);
@@ -2548,7 +2481,6 @@ public abstract class NuxeoLauncher {
 
     protected ConnectRegistrationBroker getConnectRegistrationBroker() {
         if (connectRegistrationBroker == null) {
-            getConnectBroker(); // Ensure ConnectBroker is instantiated too.
             connectRegistrationBroker = new ConnectRegistrationBroker();
         }
         return connectRegistrationBroker;

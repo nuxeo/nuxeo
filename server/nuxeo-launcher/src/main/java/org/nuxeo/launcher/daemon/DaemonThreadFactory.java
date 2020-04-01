@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  *
  * Contributors:
  *     Benoit Delbosc
- *     Julien Carsique
- *
+ *     Julien Carsique*     Kevin Leturc <kleturc@nuxeo.com>
  */
 
 package org.nuxeo.launcher.daemon;
@@ -34,9 +33,9 @@ public class DaemonThreadFactory implements ThreadFactory {
 
     private static final AtomicInteger count = new AtomicInteger(0);
 
-    private String basename;
+    private final  String basename;
 
-    private boolean isDaemon;
+    private final boolean daemon;
 
     /**
      * @param basename String to use in thread name
@@ -47,11 +46,11 @@ public class DaemonThreadFactory implements ThreadFactory {
 
     /**
      * @param basename String to use in thread name
-     * @param isDaemon Will created threads be set as daemon ?
+     * @param daemon Created threads will be set as daemon
      */
-    public DaemonThreadFactory(String basename, boolean isDaemon) {
+    public DaemonThreadFactory(String basename, boolean daemon) {
         this.basename = basename;
-        this.isDaemon = isDaemon;
+        this.daemon = daemon;
     }
 
     /**
@@ -60,7 +59,7 @@ public class DaemonThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(final Runnable runnable) {
         final Thread thread = new Thread(runnable, basename + "-" + count.getAndIncrement());
-        thread.setDaemon(isDaemon);
+        thread.setDaemon(daemon);
         return thread;
     }
 
