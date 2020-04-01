@@ -33,8 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -313,11 +311,6 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         writer.close();
 
         return session.getChildren(tmp.getRef()).get(0);
-    }
-
-    @Override
-    public void initSeamContext(HttpServletRequest request) {
-        ((RuntimeSnapshot) getRuntimeSnapshot()).initSeamComponents(request);
     }
 
     @Override

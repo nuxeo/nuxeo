@@ -30,12 +30,6 @@
     <a class="bundles" href="${Root.path}/${distId}/listBundles">Bundles</a>
   </li>
 
-  <#if Root.showSeamComponent() >
-    <li <#if navPoint=="listSeamComponents">class="selected"</#if> >
-    <a class="seam" href="${Root.path}/${distId}/listSeamComponents">Seam components</a>
-    </li>
-  </#if>
-
 </ul>
 </div>
 

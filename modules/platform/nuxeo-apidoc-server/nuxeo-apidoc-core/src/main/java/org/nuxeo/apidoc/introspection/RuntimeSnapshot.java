@@ -18,7 +18,6 @@
  */
 package org.nuxeo.apidoc.introspection;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,8 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -41,7 +38,6 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
-import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -82,10 +78,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected final List<BundleGroup> bundleGroups = new ArrayList<>();
 
-    protected boolean seamInitialized = false;
-
-    protected List<SeamComponentInfo> seamComponents = new ArrayList<>();
-
     protected boolean opsInitialized = false;
 
     protected final List<OperationInfo> operations = new ArrayList<>();
@@ -100,13 +92,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @JsonCreator
     private RuntimeSnapshot(@JsonProperty("serverInfo") ServerInfo serverInfo,
-            @JsonProperty("creationDate") Date created,
-            @JsonProperty("seamComponents") List<SeamComponentInfo> seamComponents,
-            @JsonProperty("operations") List<OperationInfo> operations) {
+            @JsonProperty("creationDate") Date created, @JsonProperty("operations") List<OperationInfo> operations) {
         this.serverInfo = serverInfo;
         this.created = created;
         index();
-        this.seamComponents.addAll(seamComponents);
         this.operations.addAll(operations);
     }
 
@@ -476,26 +465,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public void initSeamComponents(HttpServletRequest request) {
-        if (seamInitialized) {
-            return;
-        }
-        // use reflection to call SeamRuntimeIntrospector, if available
-        try {
-            // SeamRuntimeIntrospector.listNuxeoComponents(request);
-            Class<?> klass = Class.forName("org.nuxeo.apidoc.seam.SeamRuntimeIntrospector");
-            Method method = klass.getDeclaredMethod("listNuxeoComponents", HttpServletRequest.class);
-            seamComponents = (List<SeamComponentInfo>) method.invoke(null, request);
-        } catch (ReflectiveOperationException e) {
-            // ignore, no Seam
-        }
-        for (SeamComponentInfo seamComp : seamComponents) {
-            ((SeamComponentInfoImpl) seamComp).setVersion(getVersion());
-        }
-        seamInitialized = true;
-    }
-
     public void initOperations() {
         if (opsInitialized) {
             return;
@@ -516,36 +485,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                     op.getContributingComponent()));
         }
         opsInitialized = true;
-    }
-
-    @Override
-    public SeamComponentInfo getSeamComponent(String id) {
-        for (SeamComponentInfo sci : getSeamComponents()) {
-            if (sci.getId().equals(id)) {
-                return sci;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    @JsonIgnore
-    public List<String> getSeamComponentIds() {
-        List<String> ids = new ArrayList<>();
-        for (SeamComponentInfo sci : getSeamComponents()) {
-            ids.add(sci.getId());
-        }
-        return ids;
-    }
-
-    @Override
-    public List<SeamComponentInfo> getSeamComponents() {
-        return seamComponents;
-    }
-
-    @Override
-    public boolean containsSeamComponents() {
-        return getSeamComponentIds().size() > 0;
     }
 
     @Override

@@ -37,7 +37,6 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.QueryHelper;
-import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.introspection.ServerInfo;
@@ -348,42 +347,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public boolean isLive() {
         return false;
-    }
-
-    @Override
-    public SeamComponentInfo getSeamComponent(String id) {
-        String name = id.replace("seam:", "");
-        String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc()) + " AND "
-                + SeamComponentInfo.PROP_COMPONENT_NAME + " = " + NXQL.escapeString(name);
-        DocumentModelList docs = getCoreSession().query(query);
-        return docs.isEmpty() ? null : docs.get(0).getAdapter(SeamComponentInfo.class);
-    }
-
-    @Override
-    public List<String> getSeamComponentIds() {
-        List<String> result = new ArrayList<>();
-        String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc());
-        DocumentModelList docs = getCoreSession().query(query);
-        for (DocumentModel doc : docs) {
-            result.add(doc.getAdapter(SeamComponentInfo.class).getId());
-        }
-        return result;
-    }
-
-    @Override
-    public List<SeamComponentInfo> getSeamComponents() {
-        List<SeamComponentInfo> result = new ArrayList<>();
-        String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc());
-        DocumentModelList docs = getCoreSession().query(query);
-        for (DocumentModel doc : docs) {
-            result.add(doc.getAdapter(SeamComponentInfo.class));
-        }
-        return result;
-    }
-
-    @Override
-    public boolean containsSeamComponents() {
-        return getSeamComponentIds().size() > 0;
     }
 
     @Override

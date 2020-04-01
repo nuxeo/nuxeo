@@ -26,7 +26,6 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
-import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
@@ -96,12 +95,6 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
         }
 
-        if (adapterClassName.equals(SeamComponentInfo.class.getSimpleName())) {
-            if (doc.getType().equals(SeamComponentInfo.TYPE_NAME)) {
-                return new SeamComponentInfoDocAdapter(doc);
-            }
-        }
-
         if (adapterClassName.equals(OperationInfo.class.getSimpleName())) {
             if (doc.getType().equals(OperationInfo.TYPE_NAME)) {
                 return new OperationInfoDocAdapter(doc);
@@ -126,9 +119,6 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
             if (doc.getType().equals(BundleGroup.TYPE_NAME)) {
                 return new BundleGroupDocAdapter(doc);
-            }
-            if (doc.getType().equals(SeamComponentInfo.TYPE_NAME)) {
-                return new SeamComponentInfoDocAdapter(doc);
             }
             if (doc.getType().equals(OperationInfo.TYPE_NAME)) {
                 return new OperationInfoDocAdapter(doc);

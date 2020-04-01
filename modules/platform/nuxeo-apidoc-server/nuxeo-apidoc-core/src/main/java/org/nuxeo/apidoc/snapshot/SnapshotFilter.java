@@ -21,7 +21,6 @@ package org.nuxeo.apidoc.snapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 
 public class SnapshotFilter {
@@ -60,18 +59,6 @@ public class SnapshotFilter {
         for (String bprefix : bundlePrefixes) {
             if (bundleId.startsWith(bprefix)) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean includeSeamComponent(SeamComponentInfo seamComponent) {
-
-        for (String iface : seamComponent.getInterfaceNames()) {
-            for (String pprefix : packagesPrefixes) {
-                if (iface.startsWith(pprefix)) {
-                    return true;
-                }
             }
         }
         return false;

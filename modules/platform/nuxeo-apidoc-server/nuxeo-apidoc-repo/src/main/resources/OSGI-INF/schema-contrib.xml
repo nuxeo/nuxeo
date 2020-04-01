@@ -9,7 +9,6 @@
     <schema name="nxdistribution" src="schemas/nxdistribution.xsd" prefix="nxdistribution" />
     <schema name="nxextensionpoint" src="schemas/nxextensionpoint.xsd" prefix="nxextensionpoint" />
     <schema name="nxservice" src="schemas/nxservice.xsd" prefix="nxservice" />
-    <schema name="nxseam" src="schemas/nxseam.xsd" prefix="nxseam" />
     <schema name="nxoperation" src="schemas/nxoperation.xsd" prefix="nxop" />
 
     <schema name="nxdocumentation" src="schemas/nxdocumentation.xsd" prefix="nxdoc" />

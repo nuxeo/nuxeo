@@ -8,7 +8,6 @@
     <version>11.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-apidoc-webengine</artifactId>
   <name>Nuxeo Documentation Server Webengine Front End</name>
   <description>Documentation Web Server for Nuxeo API</description>

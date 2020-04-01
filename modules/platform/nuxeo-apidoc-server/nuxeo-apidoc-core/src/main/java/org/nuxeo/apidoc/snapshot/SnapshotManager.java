@@ -25,15 +25,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface SnapshotManager {
-
-    void initSeamContext(HttpServletRequest request);
 
     DistributionSnapshot getRuntimeSnapshot();
 

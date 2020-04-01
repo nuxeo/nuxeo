@@ -28,7 +28,6 @@ import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
-import org.nuxeo.apidoc.api.SeamComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
@@ -37,12 +36,10 @@ import org.nuxeo.apidoc.introspection.ComponentInfoImpl;
 import org.nuxeo.apidoc.introspection.ExtensionInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.apidoc.introspection.SeamComponentInfoImpl;
 import org.nuxeo.apidoc.introspection.ServerInfo;
 import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -127,15 +124,6 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     List<Class<?>> getSpi();
 
-    @JsonIgnore
-    List<String> getSeamComponentIds();
-
-    List<SeamComponentInfo> getSeamComponents();
-
-    SeamComponentInfo getSeamComponent(String id);
-
-    boolean containsSeamComponents();
-
     OperationInfo getOperation(String id);
 
     List<OperationInfo> getOperations();
@@ -187,7 +175,6 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
                                   .addAbstractTypeMapping(ComponentInfo.class, ComponentInfoImpl.class)
                                   .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
                                   .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
-                                  .addAbstractTypeMapping(SeamComponentInfo.class, SeamComponentInfoImpl.class)
                                   .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
                                   .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class));
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);
