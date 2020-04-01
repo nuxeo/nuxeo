@@ -19,18 +19,20 @@
 //
 package org.nuxeo.launcher.process;
 
+import java.util.Optional;
+
 public class PureJavaProcessManager implements ProcessManager {
 
     protected static final boolean PID_ENABLED = false;
 
     @Override
-    public String findPid(String regex) {
-        return null;
+    public Optional<String> findPid(String regex) {
+        return Optional.empty();
     }
 
     @Override
-    public void kill(Process process, String pid) {
-        process.destroy();
+    public void kill(ProcessHandle processHandle) {
+        processHandle.destroy();
     }
 
     @Override

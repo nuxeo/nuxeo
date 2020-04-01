@@ -33,7 +33,7 @@ public class DaemonThreadFactory implements ThreadFactory {
 
     private static final AtomicInteger count = new AtomicInteger(0);
 
-    private final  String basename;
+    private final String basename;
 
     private final boolean daemon;
 

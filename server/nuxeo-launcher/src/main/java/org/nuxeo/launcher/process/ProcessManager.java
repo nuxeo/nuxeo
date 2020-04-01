@@ -20,12 +20,14 @@
 package org.nuxeo.launcher.process;
 
 import java.io.IOException;
+import java.util.Optional;
 
+// log.debug("regexp: {} pid: {}", processRegex, pid);
 public interface ProcessManager {
 
-    void kill(Process process, String pid) throws IOException;
+    void kill(ProcessHandle processHandle) throws IOException;
 
-    String findPid(String regex) throws IOException;
+    Optional<String> findPid(String regex) throws IOException;
 
     boolean canFindPid();
 

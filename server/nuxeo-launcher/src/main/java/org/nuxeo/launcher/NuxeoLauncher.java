@@ -31,6 +31,7 @@ import static org.nuxeo.common.Environment.NUXEO_LOG_DIR;
 import static org.nuxeo.common.Environment.NUXEO_MP_DIR;
 import static org.nuxeo.common.Environment.NUXEO_TMP_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEFAULT_CONF;
 
 import java.io.Console;
 import java.io.File;
@@ -41,6 +42,8 @@ import java.io.OutputStreamWriter;
 import java.net.SocketTimeoutException;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -78,10 +81,12 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.impl.SimpleLog;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
+import org.apache.logging.log4j.ThreadContext;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -117,7 +122,6 @@ import org.nuxeo.launcher.process.SolarisProcessManager;
 import org.nuxeo.launcher.process.UnixProcessManager;
 import org.nuxeo.launcher.process.WindowsProcessManager;
 import org.nuxeo.log4j.Log4JHelper;
-import org.nuxeo.log4j.ThreadedStreamGobbler;
 
 import com.sun.jersey.api.json.JSONConfiguration;
 import com.sun.jersey.json.impl.writer.JsonXmlStreamWriter;
@@ -125,7 +129,8 @@ import com.sun.jersey.json.impl.writer.JsonXmlStreamWriter;
 /**
  * @author jcarsique
  * @since 5.4.2
- * @implNote launcher only handles Tomcat and is no more abstract since 11.1
+ * @implNote since 11.1, launcher only handles Tomcat and is no more abstract
+ * @implNote the launcher has a specific log4j configuration, check its log4j2.xml
  */
 public class NuxeoLauncher {
 
@@ -265,7 +270,7 @@ public class NuxeoLauncher {
             + "The value is stored in {{%s}} by default unless a template name is provided; if so, it is then stored in the template's {{%s}} file.\n"
             + "If the value is empty (''), then the property is unset.\n"
             + "This option is implicit if no '--get' or '--get-regexp' option is used and there are exactly two parameters (key value).",
-            NUXEO_CONF, ConfigurationGenerator.NUXEO_DEFAULT_CONF);
+            NUXEO_CONF, NUXEO_DEFAULT_CONF);
 
     /** @since 7.4 */
     protected static final String OPTION_GET = "get";
@@ -305,6 +310,8 @@ public class NuxeoLauncher {
 
     private static final Logger log = LogManager.getLogger(NuxeoLauncher.class);
 
+    private static final Marker NO_NEW_LINE = MarkerManager.getMarker("NO_NEW_LINE");
+
     private static final Options options = initParserOptions();
 
     private static final String JAVA_OPTS_PROPERTY = "launcher.java.opts";
@@ -328,15 +335,6 @@ public class NuxeoLauncher {
      * Default maximum time to wait for effective stop (in seconds)
      */
     private static final String STOP_MAX_WAIT_DEFAULT = "60";
-
-    /**
-     * Number of try to cleanly stop server before killing process
-     */
-    private static final int STOP_NB_TRY = 5;
-
-    private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
-
-    private static final long STREAM_MAX_WAIT = 3000;
 
     private static final String[] COMMANDS_NO_GUI = { "configure", "mp-purge", "mp-add", "mp-install", "mp-uninstall",
             "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall", "mp-update",
@@ -545,16 +543,10 @@ public class NuxeoLauncher {
 
     protected ProcessManager processManager;
 
-    protected Process nuxeoProcess;
-
     private String processRegex;
-
-    protected String pid;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor(
             new DaemonThreadFactory("NuxeoProcessThread", false));
-
-    private ShutdownThread shutdownHook;
 
     protected String[] params;
 
@@ -570,8 +562,6 @@ public class NuxeoLauncher {
     public CommandSetInfo cset = new CommandSetInfo();
 
     private boolean useGui = false;
-
-    private boolean reloadConfiguration = false;
 
     private int status = STATUS_CODE_UNKNOWN;
 
@@ -672,42 +662,19 @@ public class NuxeoLauncher {
     }
 
     /**
-     * Check if some server is already running (from another thread) and throw a Runtime exception if it finds one. That
-     * method will work where {@link #isRunning()} won't.
+     * Check if some server is already running (from another thread) and throw a Runtime exception if it finds one.
      *
      * @throws IllegalThreadStateException Thrown if a server is already running.
      */
     public void checkNoRunningServer() throws IllegalStateException {
         try {
-            String existingPid = getPid();
-            if (existingPid != null) {
+            processManager.findPid(processRegex).ifPresent(pid -> {
                 errorValue = EXIT_CODE_OK;
-                throw new IllegalStateException("A server is running with process ID " + existingPid);
-            }
+                throw new IllegalStateException("A server is running with process ID " + pid);
+            });
         } catch (IOException e) {
             log.warn("Could not check existing process: {}", e::getMessage);
         }
-    }
-
-    /**
-     * @return (since 5.5) Array list with created stream gobbler threads.
-     */
-    public ArrayList<ThreadedStreamGobbler> logProcessStreams(Process process, boolean logProcessOutput) {
-        ArrayList<ThreadedStreamGobbler> sgArray = new ArrayList<>();
-        ThreadedStreamGobbler inputSG;
-        ThreadedStreamGobbler errorSG;
-        if (logProcessOutput) {
-            inputSG = new ThreadedStreamGobbler(process.getInputStream(), System.out);
-            errorSG = new ThreadedStreamGobbler(process.getErrorStream(), System.err);
-        } else {
-            inputSG = new ThreadedStreamGobbler(process.getInputStream(), SimpleLog.LOG_LEVEL_OFF);
-            errorSG = new ThreadedStreamGobbler(process.getErrorStream(), SimpleLog.LOG_LEVEL_OFF);
-        }
-        inputSG.start();
-        errorSG.start();
-        sgArray.add(inputSG);
-        sgArray.add(errorSG);
-        return sgArray;
     }
 
     /**
@@ -753,7 +720,7 @@ public class NuxeoLauncher {
         String cp = ".";
         cp = addToClassPath(cp, "nxserver" + File.separator + "lib");
         cp = addToClassPath(cp, getBinJarName(binDir, ConfigurationGenerator.BOOTSTRAP_JAR_REGEX));
-        // Tomcat 7 needs tomcat-juli.jar for bootstrap as well
+        // since Tomcat 7, we need tomcat-juli.jar for bootstrap as well
         cp = addToClassPath(cp, getBinJarName(binDir, ConfigurationGenerator.JULI_JAR_REGEX));
         return cp;
     }
@@ -996,6 +963,10 @@ public class NuxeoLauncher {
             log.debug(e, e);
             System.exit(
                     launcher == null || launcher.errorValue == EXIT_CODE_OK ? EXIT_CODE_INVALID : launcher.errorValue);
+        } catch (NuxeoLauncherException e) {
+            log.error(e.getMessage());
+            log.debug(e, e);
+            System.exit(e.getExitCode());
         } catch (Exception e) {
             log.error("Cannot execute command. {}", e.getMessage(), e);
             log.debug(e, e);
@@ -1036,32 +1007,18 @@ public class NuxeoLauncher {
                 commandSucceeded = launcher.doStartAndWait();
             }
         } else if (launcher.commandIs("console")) {
-            launcher.executor.execute(() -> {
-                launcher.addShutdownHook();
-                try {
-                    if (!launcher.doStart(true)) {
-                        launcher.removeShutdownHook();
-                        System.exit(1);
-                    } else if (!quiet) {
-                        log.info("Go to {}", launcher::getURL);
-                    }
-                } catch (PackageException e) {
-                    log.error("Could not initialize the packaging subsystem", e);
-                    launcher.removeShutdownHook();
-                    System.exit(EXIT_CODE_ERROR);
-                }
-            });
+            launcher.executor.execute(launcher::doConsole);
         } else if (launcher.commandIs("stop")) {
             if (launcher.useGui) {
                 launcher.getGUI().stop();
             } else {
-                launcher.stop();
+                launcher.doStop();
             }
         } else if (launcher.commandIs("restartbg")) {
-            launcher.stop();
+            launcher.doStop();
             commandSucceeded = launcher.doStart();
         } else if (launcher.commandIs("restart")) {
-            launcher.stop();
+            launcher.doStop();
             commandSucceeded = launcher.doStartAndWait();
         } else if (launcher.commandIs("configure")) {
             launcher.configure();
@@ -1479,11 +1436,11 @@ public class NuxeoLauncher {
                     return;
                 }
             }
-            System.out.println(encryptedString);
+            log.info(encryptedString);
         } else {
             for (String strToEncrypt : params) {
                 String encryptedString = crypto.encrypt(algorithm, strToEncrypt.getBytes());
-                System.out.println(encryptedString);
+                log.info(encryptedString);
             }
         }
     }
@@ -1493,7 +1450,7 @@ public class NuxeoLauncher {
      */
     protected void decrypt() {
         Crypto crypto = configurationGenerator.getCrypto();
-        askCryptoKeyAndDecrypt(crypto, params).forEach(System.out::println);
+        askCryptoKeyAndDecrypt(crypto, params).forEach(log::info);
     }
 
     protected List<String> askCryptoKeyAndDecrypt(Crypto crypto, String... values) {
@@ -1579,7 +1536,7 @@ public class NuxeoLauncher {
                 sb.append(value).append(newLine);
             }
         }
-        System.out.print(sb.toString());
+        log.info(NO_NEW_LINE, sb.toString());
     }
 
     /**
@@ -1646,130 +1603,111 @@ public class NuxeoLauncher {
      * @see #doStart(boolean)
      * @return true if the server started successfully
      */
-    public boolean doStart() throws PackageException {
-        boolean started = doStart(false);
-        if (started && !quiet) {
-            log.info("Go to {}", this::getURL);
+    public boolean doStart() {
+        if (doStart(false).isAlive()) {
+            if (!quiet) {
+                log.info("Go to {}", this::getURL);
+            }
+            return true;
         }
-        return started;
+        return false;
     }
 
     /**
-     * @see #doStartAndWait(boolean)
-     */
-    public boolean doStartAndWait() throws PackageException {
-        boolean started = doStartAndWait(false);
-        if (started && !quiet) {
-            log.info("Go to {}", this::getURL);
-        }
-        return started;
-    }
-
-    /**
-     * Whereas {@link #doStart()} considers the server as started when the process is running, {@link #doStartAndWait()}
-     * waits for effective start by watching the logs
+     * Whereas {@link #doStart()} considers the server as started when the process is running, this method waits for
+     * effective start by calling {@link #statusServletClient}.
      *
-     * @param logProcessOutput Must process output stream must be logged or not.
      * @return true if the server started successfully
      */
-    public boolean doStartAndWait(boolean logProcessOutput) throws PackageException {
-        boolean commandSucceeded = false;
-        if (doStart(logProcessOutput)) {
-            addShutdownHook();
-            try {
-                if (waitForEffectiveStart()) {
-                    commandSucceeded = true;
+    public boolean doStartAndWait() {
+        var nuxeoProcess = doStart(false);
+        if (nuxeoProcess.isAlive()) {
+            // noinspection unused
+            try (var hook = new ShutdownHook(this)) {
+                waitForEffectiveStart(nuxeoProcess);
+                if (!quiet) {
+                    log.info("Go to {}", this::getURL);
                 }
-                removeShutdownHook();
+                return true;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new RuntimeException(e);
             }
         }
-        return commandSucceeded;
+        return false;
     }
 
-    protected void removeShutdownHook() {
+    /**
+     * @since 11.1
+     */
+    public void doConsole() {
+        var hook = new ShutdownHook(this); // NOSONAR don't close the hook because doStart is not blocking
         try {
-            Runtime.getRuntime().removeShutdownHook(shutdownHook);
-            log.debug("Removed shutdown hook");
-        } catch (IllegalStateException e) {
-            // the virtual machine is already in the process of shutting down
+            doStart(true).onExit().thenAccept(p -> {
+                hook.close();
+                // always terminate, nuxeo process is not supposed to exit
+                System.exit(EXIT_CODE_ERROR);
+            });
+        } catch (RuntimeException e) {
+            // for errors in doStart
+            hook.close();
+            throw e;
+        }
+        if (!quiet) {
+            log.info("Go to {}", this::getURL);
         }
     }
 
     /**
      * Starts the server in background.
      *
-     * @return true if server successfully started
+     * @return the nuxeo process
+     * @throws NuxeoLauncherException if an error occurred
      */
-    public boolean doStart(boolean logProcessOutput) throws PackageException {
+    protected Process doStart(boolean logProcessOutput) {
         errorValue = EXIT_CODE_OK;
-        boolean serverStarted = false;
         try {
-            if (reloadConfiguration) {
-                configurationGenerator = new ConfigurationGenerator(quiet, debug);
-                configurationGenerator.init();
-            } else {
-                // Ensure reload on next start
-                reloadConfiguration = true;
-            }
             configure();
             configurationGenerator.verifyInstallation();
 
             log.debug("Check if install in progress...");
-            if (configurationGenerator.isInstallInProgress()) {
+            int tries = 0;
+            while (configurationGenerator.isInstallInProgress()) {
+                tries++;
                 if (!getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
-                        ignoreMissing)) {
-                    errorValue = EXIT_CODE_ERROR;
-                    log.error(
-                            "Start interrupted due to failure on pending actions. You can resume with a new start;"
-                                    + " or you can restore the file '{}', optionally using the '--{}' option.",
-                            configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING);
-                    return false;
+                        ignoreMissing) || tries > 9) {
+                    throw new NuxeoLauncherException(String.format(
+                            "Start interrupted due to failure on pending actions. You can resume with a new start"
+                                    + " or you can restore the file '%s', optionally using the '--%s' option.",
+                            configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING), EXIT_CODE_ERROR);
                 }
-
-                return doStart(logProcessOutput);
+                // reload configuration
+                configurationGenerator = new ConfigurationGenerator(quiet, debug);
+                configurationGenerator.init();
+                configure();
+                configurationGenerator.verifyInstallation();
             }
-
-            start(logProcessOutput);
-            serverStarted = isRunning();
-            if (pid != null) {
-                File pidFile = new File(configurationGenerator.getPidDir(), "nuxeo.pid");
-                try (FileWriter writer = new FileWriter(pidFile)) {
-                    writer.write(pid);
-                }
-            }
+            return start(logProcessOutput);
         } catch (ConfigurationException e) {
-            errorValue = EXIT_CODE_NOT_CONFIGURED;
-            log.error("Could not run configuration: {}", e::getMessage);
-            log.debug(e, e);
+            throw new NuxeoLauncherException("Could not run configuration: " + e.getMessage(), EXIT_CODE_NOT_CONFIGURED,
+                    e);
         } catch (IOException e) {
-            errorValue = EXIT_CODE_ERROR;
-            log.error("Could not start process: {}", e::getMessage);
-            log.debug(e, e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
+            throw new NuxeoLauncherException("Could not start process: " + e.getMessage(), EXIT_CODE_ERROR, e);
         } catch (IllegalStateException e) {
-            if (strict) {
-                // assume program is not configured because of http port binding
-                // conflict
-                errorValue = EXIT_CODE_NOT_CONFIGURED;
-            }
-            log.error(e.getMessage());
+            // in strict mode assume program is not configured because of http port binding conflict for exit value
+            throw new NuxeoLauncherException("Could not start process: " + e.getMessage(),
+                    strict ? EXIT_CODE_NOT_CONFIGURED : EXIT_CODE_ERROR, e);
         }
-        return serverStarted;
     }
 
     /**
      * Do not directly call this method without a call to {@link #checkNoRunningServer()}
      *
      * @see #doStart()
-     * @throws IOException In case of issue with process.
-     * @throws InterruptedException If any thread has interrupted the current thread.
+     * @throws IOException in case of issue with process.
      */
-    protected void start(boolean logProcessOutput) throws IOException, InterruptedException {
+    protected Process start(boolean logProcessOutput) throws IOException {
+        // build command to start nuxeo
         List<String> startCommand = new ArrayList<>();
         startCommand.add(getJavaExecutable().getPath());
         startCommand.addAll(getJavaOptsProperty(Function.identity()));
@@ -1780,103 +1718,111 @@ public class NuxeoLauncher {
         if (strict) {
             startCommand.add("-Dnuxeo.start.strict=true");
         }
+
         startCommand.add(TomcatConfigurator.STARTUP_CLASS);
         startCommand.add("start");
         startCommand.addAll(Arrays.asList(params));
+
+        // build and start process
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
         pb.directory(configurationGenerator.getNuxeoHome());
+        if (logProcessOutput) {
+            // don't redirect input as we want a graceful shutdown
+            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT).redirectError(ProcessBuilder.Redirect.INHERIT);
+        }
         log.debug("Server command: {}", pb::command);
-        nuxeoProcess = pb.start();
-        Thread.sleep(1000);
-        boolean processExited = false;
-        // Check if process exited early
-        if (nuxeoProcess == null) {
-            log.error("Server start failed with command: {}", pb::command);
+        Process nuxeoProcess = pb.start();
+        nuxeoProcess.onExit().thenAccept(p -> {
             if (SystemUtils.IS_OS_WINDOWS && configurationGenerator.getNuxeoHome().getPath().contains(" ")) {
                 // NXP-17679
                 log.error("The server path must not contain spaces under Windows.");
             }
-            return;
-        }
-        try {
-            int exitValue = nuxeoProcess.exitValue();
+            int exitValue = p.exitValue();
             if (exitValue != 0) {
-                log.error("Server start failed ({}).", exitValue);
+                log.error("Server stopped with status: {}", exitValue);
             }
-            processExited = true;
-        } catch (IllegalThreadStateException e) {
-            // Normal case
+        });
+
+        // get pid and write it to the disk for later use
+        String pid;
+        try {
+            pid = String.valueOf(nuxeoProcess.pid());
+        } catch (UnsupportedOperationException e) {
+            log.warn("Unable to get process ID from process: {}, please report it to Nuxeo", nuxeoProcess);
+            // fallback on process manager
+            pid = processManager.findPid(processRegex)
+                    .orElseThrow(() -> new NuxeoLauncherException(
+                            "Sent server start command but could not get process ID.", EXIT_CODE_ERROR, e));
         }
-        logProcessStreams(nuxeoProcess, processExited || logProcessOutput);
-        if (!processExited) {
-            if (getPid() != null) {
-                log.warn("Server started with process ID {}.", pid);
-            } else {
-                log.warn("Sent server start command but could not get process ID.");
-            }
+        log.info("Server started with process ID: {}", pid);
+        File pidFile = new File(configurationGenerator.getPidDir(), "nuxeo.pid");
+        try (FileWriter writer = new FileWriter(pidFile)) {
+            writer.write(pid);
         }
+        return nuxeoProcess;
     }
 
-    /**
-     * @return true if Nuxeo is ready
-     */
-    protected boolean waitForEffectiveStart() throws InterruptedException {
-        long startTime = new Date().getTime();
+    protected void waitForEffectiveStart(Process nuxeoProcess) throws InterruptedException {
         int startMaxWait = Integer.parseInt(
-                configurationGenerator.getUserConfig().getProperty(START_MAX_WAIT_PARAM, getDefaultMaxWait()));
+                configurationGenerator.getUserConfig().getProperty(START_MAX_WAIT_PARAM, START_MAX_WAIT_DEFAULT));
+        var startTime = Instant.now();
+        var waitUntil = startTime.plusSeconds(startMaxWait);
         log.debug("Will wait for effective start during {} seconds.", startMaxWait);
         final StringBuilder startSummary = new StringBuilder();
-        final String newLine = System.getProperty("line.separator");
-        boolean isReady = false;
-        long deltaTime;
-        // Wait for status servlet ready
-        do {
+        // Wait for effective start reported from status servlet
+        boolean servletAvailable = false;
+        int n = 0;
+        while (Instant.now().isBefore(waitUntil) && nuxeoProcess.isAlive()) {
             try {
-                isReady = statusServletClient.init();
+                // delay will be 1s 10 times, then 2s 10 times... until reaching maximum of 1min
+                Thread.sleep(Math.min((++n / 10 + 1) * 1000, 60_000));
+                if (servletAvailable && statusServletClient.isStarted()) {
+                    if (!quiet) {
+                        log.info(".");
+                    }
+                    break;
+                } else {
+                    statusServletClient.init();
+                    servletAvailable = true;
+                    n = 0;
+                }
             } catch (SocketTimeoutException e) {
                 if (!quiet) {
-                    System.out.print(".");
+                    log.info(NO_NEW_LINE, ".");
                 }
             }
-            deltaTime = (new Date().getTime() - startTime) / 1000;
-        } while (!isReady && deltaTime < startMaxWait && isRunning());
-        // Wait for effective start reported from status servlet
-        do {
-            isReady = isStarted();
-            if (!isReady) {
-                if (!quiet) {
-                    System.out.print(".");
-                }
-                Thread.sleep(1000);
-            }
-            deltaTime = (new Date().getTime() - startTime) / 1000;
-        } while (!isReady && deltaTime < startMaxWait && isRunning());
-        if (isReady) {
-            startSummary.append(newLine).append(getStartupSummary());
-            long duration = (new Date().getTime() - startTime) / 1000;
-            startSummary.append(String.format("Started in %dmin%02ds", duration / 60, duration % 60));
-            if (wasStartupFine()) {
-                if (!quiet) {
-                    System.out.println(startSummary);
-                }
-            } else {
-                System.err.println(startSummary);
-                if (strict) {
-                    errorValue = EXIT_CODE_ERROR;
-                    log.error("Shutting down because of unstarted component in strict mode...");
-                    stop();
-                    return false;
-                }
-            }
-            return true;
-        } else if (deltaTime >= startMaxWait) {
-            if (!quiet) {
-                System.out.println();
-            }
-            log.error("Starting process is taking too long - giving up.");
         }
-        errorValue = EXIT_CODE_ERROR;
-        return false;
+
+        if (Instant.now().isAfter(waitUntil)) {
+            throw new NuxeoLauncherException("Starting process is taking too long - giving up.", EXIT_CODE_ERROR);
+        }
+        if (!nuxeoProcess.isAlive()) {
+            // Nuxeo has crashed - try to get its System.out
+            String logs;
+            try {
+                logs = IOUtils.toString(nuxeoProcess.getInputStream(), UTF_8);
+            } catch (IOException e) {
+                logs = "Unable to get process output, check server logs";
+            }
+            throw new NuxeoLauncherException("Nuxeo startup aborted, see startup logs:" + System.lineSeparator() + logs,
+                    EXIT_CODE_ERROR);
+        }
+
+        startSummary.append(getStartupSummary());
+        var duration = Duration.between(startTime, Instant.now());
+        startSummary.append(String.format("Started in %dmin%02ds", duration.toMinutes(), duration.toSeconds() % 60));
+        if (wasStartupFine()) {
+            if (!quiet) {
+                log.info(startSummary);
+            }
+        } else {
+            log.error(startSummary);
+            if (strict) {
+                doStop();
+                throw new NuxeoLauncherException("Shutting down because of unstarted component in strict mode...",
+                        EXIT_CODE_ERROR);
+            }
+        }
     }
 
     /**
@@ -1953,153 +1899,101 @@ public class NuxeoLauncher {
         return XMLOutputFactory.newInstance().createXMLStreamWriter(out);
     }
 
-    /**
-     * Stop stream gobblers contained in the given ArrayList
-     *
-     * @since 5.5
-     * @see #logProcessStreams(Process, boolean)
-     */
-    public void waitForProcessStreams(ArrayList<ThreadedStreamGobbler> sgArray) {
-        for (ThreadedStreamGobbler streamGobbler : sgArray) {
-            try {
-                streamGobbler.join(STREAM_MAX_WAIT);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                streamGobbler.interrupt();
-                throw new RuntimeException(e);
-            }
-        }
-    }
+    protected static class ShutdownHook extends Thread implements AutoCloseable {
 
-    protected class ShutdownThread extends Thread {
+        private final NuxeoLauncher launcher;
 
-        private NuxeoLauncher launcher;
-
-        public ShutdownThread(NuxeoLauncher launcher) {
+        public ShutdownHook(NuxeoLauncher launcher) {
             super();
+            log.debug("Add shutdown hook");
             this.launcher = launcher;
+            Runtime.getRuntime().addShutdownHook(this);
         }
 
         @Override
         public void run() {
-            log.debug("Shutting down...");
+            ThreadContext.put(ShutdownHook.class.getSimpleName(), "true");
+            log.info("Shutting down...");
             if (launcher.isRunning()) {
-                launcher.stop();
+                launcher.doStop();
             }
-            log.debug("Shutdown complete.");
+            log.info("Shutdown complete.");
         }
-    }
 
-    protected void addShutdownHook() {
-        log.debug("Add shutdown hook");
-        shutdownHook = new ShutdownThread(this);
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
-    }
-
-    /**
-     * @see #stop(boolean)
-     */
-    public void stop() {
-        stop(false);
+        @Override
+        public void close() {
+            try {
+                Runtime.getRuntime().removeShutdownHook(this);
+                log.debug("Removed shutdown hook");
+            } catch (IllegalStateException e) {
+                // the virtual machine is already in the process of shutting down
+            }
+        }
     }
 
     /**
      * Stops the server. Will try to call specific class for a clean stop, retry, waiting between each try, then kill
      * the process if still running.
      */
-    public void stop(boolean logProcessOutput) {
-        long startTime = new Date().getTime();
-        long deltaTime;
+    public void doStop() {
         try {
-            if (!isRunning()) {
+            var nuxeoProcessOpt = processManager.findPid(processRegex).map(Long::valueOf).flatMap(ProcessHandle::of);
+            if (nuxeoProcessOpt.isEmpty()) {
                 log.warn("Server is not running.");
                 return;
             }
             if (!quiet) {
-                System.out.print("\nStopping server...");
+                log.info(NO_NEW_LINE, "Stopping server...");
             }
-            int nbTry = 0;
-            boolean retry = false;
             int stopMaxWait = Integer.parseInt(
                     configurationGenerator.getUserConfig().getProperty(STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT));
-            do {
-                List<String> stopCommand = new ArrayList<>();
-                stopCommand.add(getJavaExecutable().getPath());
-                stopCommand.add("-cp");
-                stopCommand.add(getClassPath());
-                stopCommand.addAll(getNuxeoProperties());
-                stopCommand.addAll(getServerProperties());
-                stopCommand.add(TomcatConfigurator.STARTUP_CLASS);
-                stopCommand.add("stop");
-                stopCommand.addAll(Arrays.asList(params));
-                ProcessBuilder pb = new ProcessBuilder(getOSCommand(stopCommand));
-                pb.directory(configurationGenerator.getNuxeoHome());
-                log.debug("Server command: {}", pb::command);
-                try {
-                    Process stopProcess = pb.start();
-                    ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(stopProcess, logProcessOutput);
-                    stopProcess.waitFor();
-                    waitForProcessStreams(sgArray);
-                    boolean wait = true;
-                    while (wait) {
-                        try {
-                            if (stopProcess.exitValue() == 0) {
-                                // Successful call for server stop
-                                retry = false;
-                            } else {
-                                // Failed to call for server stop
-                                retry = ++nbTry < STOP_NB_TRY;
-                                if (!quiet) {
-                                    System.out.print(".");
-                                }
-                                Thread.sleep(STOP_SECONDS_BEFORE_NEXT_TRY * 1000);
-                            }
-                            wait = false;
-                        } catch (IllegalThreadStateException e) {
-                            // Stop call is still running
-                            wait = true;
-                            if (!quiet) {
-                                System.out.print(".");
-                            }
-                            Thread.sleep(1000);
-                        }
-                    }
-                    // Exit if there's no way to check for server stop
-                    if (!processManager.canFindPid()) {
-                        log.warn("Can't check server status on your OS.");
-                        return;
-                    }
-                    // Wait a few seconds for effective stop
-                    do {
-                        if (!quiet) {
-                            System.out.print(".");
-                        }
-                        Thread.sleep(1000);
-                        deltaTime = (new Date().getTime() - startTime) / 1000;
-                    } while (!retry && getPid() != null && deltaTime < stopMaxWait);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException(e);
+            var startTime = Instant.now();
+            var waitUntil = startTime.plusSeconds(stopMaxWait);
+            var nuxeoProcess = nuxeoProcessOpt.get();
+            while (Instant.now().isBefore(waitUntil) && nuxeoProcess.isAlive()) {
+                Process stopProcess = stop();
+                stopProcess.waitFor();
+                // at this point Tomcat has received and acknowledged the stop command
+                if (!quiet) {
+                    log.info(NO_NEW_LINE, ".");
                 }
-            } while (retry);
-            if (getPid() == null) {
-                log.warn("Server stopped.");
-            } else {
-                log.info("No answer from server, try to kill process {}...", pid);
-                processManager.kill(nuxeoProcess, pid);
-                if (getPid() == null) {
+                // don't send too many requests to Tomcat - we're going to re-try
+                Thread.sleep(1000);
+            }
+            log.info(".");
+            if (!nuxeoProcess.isAlive()) {
+                Duration duration = Duration.between(startTime, Instant.now());
+                log.info(String.format("Stopped in %dmin%02ds", duration.toMinutes(), duration.toSeconds() % 60));
+            } else if (Instant.now().isAfter(waitUntil)) {
+                log.info("No answer from server, try to kill process {}...", nuxeoProcess::pid);
+                processManager.kill(nuxeoProcess);
+                if (!nuxeoProcess.isAlive()) {
                     log.warn("Server forcibly stopped.");
                 }
             }
         } catch (IOException e) {
-            log.error("Could not manage process!", e);
+            throw new NuxeoLauncherException("Error during process execution: " + e.getMessage(), EXIT_CODE_ERROR, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
     }
 
-    private String getPid() throws IOException {
-        pid = processManager.findPid(processRegex);
-        log.debug("regexp: {} pid: {}", processRegex, pid);
-        return pid;
+    protected Process stop() throws IOException {
+        // build command to stop nuxeo
+        List<String> stopCommand = new ArrayList<>();
+        stopCommand.add(getJavaExecutable().getPath());
+        stopCommand.add("-cp");
+        stopCommand.add(getClassPath());
+        stopCommand.addAll(getNuxeoProperties());
+        stopCommand.addAll(getServerProperties());
+        stopCommand.add(TomcatConfigurator.STARTUP_CLASS);
+        stopCommand.add("stop");
+        stopCommand.addAll(Arrays.asList(params));
+        ProcessBuilder pb = new ProcessBuilder(getOSCommand(stopCommand));
+        pb.directory(configurationGenerator.getNuxeoHome());
+        log.debug("Server command: {}", pb::command);
+        return pb.start();
     }
 
     /**
@@ -2121,13 +2015,6 @@ public class NuxeoLauncher {
     }
 
     /**
-     * @return Default max wait depending on server (ie JBoss takes much more time than Tomcat)
-     */
-    private String getDefaultMaxWait() {
-        return START_MAX_WAIT_DEFAULT;
-    }
-
-    /**
      * Return process status (running or not) as String, depending on OS capability to manage processes. Set status
      * value following "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core- generic/iniscrptact.html"
      *
@@ -2139,12 +2026,13 @@ public class NuxeoLauncher {
                 status = STATUS_CODE_UNKNOWN;
                 return "Can't check server status on your OS.";
             }
-            if (getPid() == null) {
+            var pidOpt = processManager.findPid(processRegex);
+            if (pidOpt.isEmpty()) {
                 status = STATUS_CODE_OFF;
                 return "Server is not running.";
             } else {
                 status = STATUS_CODE_ON;
-                return "Server is running with process ID " + getPid() + ".";
+                return "Server is running with process ID " + pidOpt.get() + ".";
             }
         } catch (IOException e) {
             status = STATUS_CODE_UNKNOWN;
@@ -2157,14 +2045,6 @@ public class NuxeoLauncher {
      */
     public int getStatus() {
         return status;
-    }
-
-    /**
-     * Last error value set by any method. Exit code values are following the Linux Standard Base Core Specification
-     * 4.1.
-     */
-    public int getErrorValue() {
-        return errorValue;
     }
 
     /**
@@ -2269,7 +2149,7 @@ public class NuxeoLauncher {
     }
 
     /**
-     * Relax the launcher strict option (ie: lenient mode).
+     * Relaxes the launcher strict option (ie: lenient mode).
      *
      * @since 11.1
      */
@@ -2309,23 +2189,11 @@ public class NuxeoLauncher {
     }
 
     /**
-     * Work best with current nuxeoProcess. If nuxeoProcess is null or has exited, then will try to get process ID (so,
-     * result in that case depends on OS capabilities).
-     *
-     * @return true if current process is running or if a running PID is found
+     * @return true if a running PID is found
      */
     public boolean isRunning() {
-        if (nuxeoProcess != null) {
-            try {
-                nuxeoProcess.exitValue();
-                // Previous process has exited
-                nuxeoProcess = null;
-            } catch (IllegalThreadStateException exception) {
-                return true;
-            }
-        }
         try {
-            return (getPid() != null);
+            return processManager.findPid(processRegex).isPresent();
         } catch (IOException e) {
             log.error(e);
             return false;

@@ -23,6 +23,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +46,7 @@ public class UnixProcessManager implements ProcessManager {
     }
 
     @Override
-    public String findPid(String regex) throws IOException {
+    public Optional<String> findPid(String regex) throws IOException {
         Pattern commandPattern = Pattern.compile(regex);
         for (String line : execute(psCommand())) {
             Matcher lineMatcher = PS_OUTPUT_LINE.matcher(line);
@@ -53,16 +54,16 @@ public class UnixProcessManager implements ProcessManager {
                 String command = lineMatcher.group(2);
                 Matcher commandMatcher = commandPattern.matcher(command);
                 if (commandMatcher.find()) {
-                    return lineMatcher.group(1);
+                    return Optional.ofNullable(lineMatcher.group(1));
                 }
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
-    public void kill(Process process, String pid) throws IOException {
-        execute("/bin/kill", "-KILL", pid);
+    public void kill(ProcessHandle processHandle) throws IOException {
+        execute("/bin/kill", "-KILL", String.valueOf(processHandle.pid()));
     }
 
     protected List<String> execute(String... command) throws IOException {
