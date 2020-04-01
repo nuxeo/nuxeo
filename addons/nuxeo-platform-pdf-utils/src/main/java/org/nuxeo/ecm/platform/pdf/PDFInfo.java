@@ -28,10 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -39,8 +37,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.BadSecurityHandlerException;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -194,47 +190,34 @@ public class PDFInfo {
         fileName = pdfBlob.getFilename();
         File pdfFile = pdfBlob.getFile();
         fileSize = (pdfFile == null) ? -1 : pdfFile.length();
-        try (PDDocument pdfDoc = PDDocument.load(pdfBlob.getStream())) {
+        try (PDDocument pdfDoc = PDDocument.load(pdfBlob.getStream(), password)) {
             isEncrypted = pdfDoc.isEncrypted();
-            if (isEncrypted) {
-                pdfDoc.openProtection(new StandardDecryptionMaterial(password));
-            }
             numberOfPages = pdfDoc.getNumberOfPages();
             PDDocumentCatalog docCatalog = pdfDoc.getDocumentCatalog();
-            pageLayout = checkNotNull(docCatalog.getPageLayout());
+            pageLayout = docCatalog.getPageLayout().stringValue();
             pdfVersion = String.valueOf(pdfDoc.getDocument().getVersion());
             PDDocumentInformation docInfo = pdfDoc.getDocumentInformation();
             author = checkNotNull(docInfo.getAuthor());
             contentCreator = checkNotNull(docInfo.getCreator());
             keywords = checkNotNull(docInfo.getKeywords());
-            try {
-                creationDate = docInfo.getCreationDate();
-            } catch (IOException e) {
-                creationDate = null;
-            }
-            try {
-                modificationDate = docInfo.getModificationDate();
-            } catch (IOException e) {
-                modificationDate = null;
-            }
+            creationDate = docInfo.getCreationDate();
+            modificationDate = docInfo.getModificationDate();
             producer = checkNotNull(docInfo.getProducer());
             subject = checkNotNull(docInfo.getSubject());
             title = checkNotNull(docInfo.getTitle());
             permissions = pdfDoc.getCurrentAccessPermission();
             // Getting dimension is a bit tricky
             mediaBoxWidthInPoints = mediaBoxHeightInPoints = cropBoxWidthInPoints = cropBoxHeightInPoints = -1;
-            List allPages = docCatalog.getAllPages();
             boolean gotMediaBox = false, gotCropBox = false;
-            for (Object pageObject : allPages) {
-                PDPage page = (PDPage) pageObject;
+            for (PDPage page : docCatalog.getPages()) {
                 if (page != null) {
-                    PDRectangle r = page.findMediaBox();
+                    PDRectangle r = page.getMediaBox();
                     if (r != null) {
                         mediaBoxWidthInPoints = r.getWidth();
                         mediaBoxHeightInPoints = r.getHeight();
                         gotMediaBox = true;
                     }
-                    r = page.findCropBox();
+                    r = page.getCropBox();
                     if (r != null) {
                         cropBoxWidthInPoints = r.getWidth();
                         cropBoxHeightInPoints = r.getHeight();
@@ -263,7 +246,7 @@ public class PDFInfo {
                 }
             }
             alreadyParsed = true;
-        } catch (IOException | BadSecurityHandlerException | CryptographyException e) {
+        } catch (IOException e) {
             throw new NuxeoException(e);
         }
     }

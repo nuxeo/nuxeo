@@ -19,10 +19,11 @@
 package org.nuxeo.ecm.core.convert.plugins.tests;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Test;
 import org.nuxeo.ecm.core.convert.plugins.text.extractors.PDF2TextConverter;
 
@@ -34,10 +35,12 @@ public class PDFEncodingWarn {
     @Test
     public void extract() throws IOException {
         URL url = getClass().getResource("/test-docs/nutcracker.pdf");
-        PDDocument doc = PDDocument.load(url);
-        PDFTextStripper stripper = new PDF2TextConverter.PatchedPDFTextStripper();
-        stripper.getText(doc);
-        stripper.getText(doc);
+        try (InputStream is = url.openStream(); //
+                PDDocument doc = PDDocument.load(is)) {
+            PDFTextStripper stripper = new PDF2TextConverter.PatchedPDFTextStripper();
+            stripper.getText(doc);
+            stripper.getText(doc);
+        }
     }
 
 }

@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -142,7 +141,7 @@ public class PDFEncryption {
         try {
             StandardProtectionPolicy spp = new StandardProtectionPolicy(ownerPwd, userPwd, inPerm);
             spp.setEncryptionKeyLength(keyLength);
-            pdfDoc = PDDocument.load(pdfBlob.getFile());
+            pdfDoc = PDDocument.load(pdfBlob.getFile(), originalOwnerPwd);
             pdfDoc.protect(spp);
             Blob result = Blobs.createBlobWithExtension(".pdf");
             pdfDoc.save(result.getFile());
@@ -179,12 +178,11 @@ public class PDFEncryption {
     public Blob removeEncryption() {
         try {
             String password = (StringUtils.isBlank(originalOwnerPwd)) ? ownerPwd : originalOwnerPwd;
-            pdfDoc = PDDocument.load(pdfBlob.getFile());
+            pdfDoc = PDDocument.load(pdfBlob.getFile(), password);
             if (!pdfDoc.isEncrypted()) {
                 pdfDoc.close();
                 return pdfBlob;
             }
-            pdfDoc.openProtection(new StandardDecryptionMaterial(password));
             pdfDoc.setAllSecurityToBeRemoved(true);
             Blob result = Blobs.createBlobWithExtension(".pdf");
             pdfDoc.save(result.getFile());
