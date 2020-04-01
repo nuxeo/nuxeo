@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.pdf.operations;
 
 import java.io.IOException;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -131,7 +130,7 @@ public class PDFMergeDocumentsOperation {
         // Merge
         try {
             return inMergeTool.merge(fileName, pdfTitle, pdfSubject, pdfAuthor);
-        } catch (COSVisitorException | IOException e) {
+        } catch (IOException e) {
             throw new NuxeoException(e);
         }
     }

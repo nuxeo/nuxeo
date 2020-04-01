@@ -20,19 +20,19 @@
 package org.nuxeo.ecm.platform.pdf.tests;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
-import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
 
 class TestUtils {
 
@@ -98,17 +98,12 @@ class TestUtils {
 
     static boolean hasImageOnAllPages(Blob inBlob) {
         try (PDDocument doc = PDDocument.load(inBlob.getStream())) {
-            for (Object o : doc.getDocumentCatalog().getAllPages()) {
-                PDPage page = (PDPage) o;
+            for (PDPage page : doc.getDocumentCatalog().getPages()) {
                 PDResources pdResources = page.getResources();
-                Map<String, PDXObject> allXObjects = pdResources.getXObjects();
-                if(allXObjects==null) {
-                    return false;
-                }
                 boolean gotIt = false;
-                for (Map.Entry<String, PDXObject> entry : allXObjects.entrySet()) {
-                    PDXObject xobject = entry.getValue();
-                    if (xobject instanceof PDXObjectImage) {
+                for (COSName name : pdResources.getXObjectNames()) {
+                    PDXObject xobject = pdResources.getXObject(name);
+                    if (xobject instanceof PDImageXObject) {
                         gotIt = true;
                         break;
                     }
