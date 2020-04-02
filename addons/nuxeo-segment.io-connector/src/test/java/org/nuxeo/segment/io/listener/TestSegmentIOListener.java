@@ -22,8 +22,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -37,6 +42,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.WithFrameworkProperty;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOComponent;
 
@@ -52,19 +58,59 @@ public class TestSegmentIOListener {
     @Inject
     protected CoreSession session;
 
+    private List<Map<String, Object>> testData;
+
+    @Before
+    public void before() {
+        testData = ((SegmentIOComponent) service).getTestData();
+    }
+
+    @After
+    public void after() {
+        testData.clear();
+    }
+
     @Test
     public void ensureToHandleEveryEventsInABundle() {
         EventBundle eventBundle = new EventBundleImpl();
-        // Add event with ignored users
+        // Add events with ignored users
         eventBundle.push(new EventImpl("dummyEvent", buildCtx("MyAdministrator")));
         eventBundle.push(new EventImpl("dummyEvent", buildCtx("mysystem")));
-        // Add event with another user
+        // Add events with other users
+        eventBundle.push(new EventImpl("dummyEvent", buildCtx("johndoe")));
+        eventBundle.push(new EventImpl("dummyEvent", buildCtx("janedoe")));
+
+        SegmentIOAsyncListener listener = new SegmentIOAsyncListener();
+        listener.handleEvent(eventBundle);
+
+        assertEquals(2, testData.size());
+    }
+
+    @Test
+    public void ensureDefaultServerUrlIsPassed() {
+        EventBundle eventBundle = new EventBundleImpl();
+        // Add an event with nuxeo.url not set
         eventBundle.push(new EventImpl("dummyEvent", buildCtx("johndoe")));
 
         SegmentIOAsyncListener listener = new SegmentIOAsyncListener();
         listener.handleEvent(eventBundle);
 
-        assertEquals(1, ((SegmentIOComponent) service).getTestData().size());
+        assertEquals(1, testData.size());
+        assertEquals("unknown server url", testData.get(0).get("url"));
+    }
+
+    @Test
+    @WithFrameworkProperty(name = "nuxeo.url", value = "http://mytestserver.com")
+    public void ensureServerUrlIsPassed() {
+        EventBundle eventBundle = new EventBundleImpl();
+        // Add an event with nuxeo.url not set
+        eventBundle.push(new EventImpl("dummyEvent", buildCtx("johndoe")));
+
+        SegmentIOAsyncListener listener = new SegmentIOAsyncListener();
+        listener.handleEvent(eventBundle);
+
+        assertEquals(1, testData.size());
+        assertEquals("http://mytestserver.com", testData.get(0).get("url"));
     }
 
     protected EventContext buildCtx(String principalName) {

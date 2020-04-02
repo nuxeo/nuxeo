@@ -292,6 +292,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
         return testData;
     }
 
+    @Override
     public boolean mustTrackprincipal(String principalName) {
         SegmentIOUserFilter filter = getUserFilters();
         if (filter == null) {

@@ -101,6 +101,8 @@ public class SegmentIOAsyncListener implements PostCommitFilteringEventListener 
                 }
 
                 Map<String, Serializable> mapped = mapper.getMappedData(ctx);
+                // add server url
+                mapped.put("url", Framework.getProperty("nuxeo.url", "unknown server url"));
                 if (mapper.isIdentify()) {
                     service.identify(principal, mapped);
                 } else if (mapper.isPage()) {
