@@ -297,11 +297,11 @@ public class Model {
 
     public static final String FULLTEXT_FULLTEXT_KEY = "fulltext";
 
-    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:simpleText";
+    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:fulltextSimple";
 
     public static final String FULLTEXT_SIMPLETEXT_KEY = "simpletext";
 
-    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
+    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:fulltextBinary";
 
     public static final String FULLTEXT_BINARYTEXT_KEY = "binarytext";
 
