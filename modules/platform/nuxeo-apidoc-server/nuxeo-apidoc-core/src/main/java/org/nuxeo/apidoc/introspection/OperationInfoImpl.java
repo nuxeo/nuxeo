@@ -20,6 +20,7 @@ package org.nuxeo.apidoc.introspection;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -176,7 +177,7 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
     @Override
     @JsonIgnore
     public String getHierarchyPath() {
-        return "/";
+        return "/" + getId();
     }
 
     @Override

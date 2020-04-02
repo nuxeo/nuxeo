@@ -187,6 +187,9 @@ public class SnapshotPersister {
         DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
         persistOperations(snapshot, snapshot.getOperations(), session, label, opContainer, filter);
 
+        // needed for tests
+        session.save();
+
         return distribContainer;
     }
 
