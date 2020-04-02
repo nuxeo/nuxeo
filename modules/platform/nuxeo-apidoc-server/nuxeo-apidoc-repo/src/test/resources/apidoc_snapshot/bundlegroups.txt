@@ -1,0 +1,10 @@
+- org.nuxeo.ecm.automation (grp:org.nuxeo.ecm.automation) *** /grp:org.nuxeo.ecm.automation
+- org.nuxeo.ecm.core (grp:org.nuxeo.ecm.core) *** /grp:org.nuxeo.ecm.core
+- org.nuxeo.ecm.platform (grp:org.nuxeo.ecm.platform) *** /grp:org.nuxeo.ecm.platform
+  - org.nuxeo.ecm.directory (grp:org.nuxeo.ecm.directory) *** /grp:org.nuxeo.ecm.platform/grp:org.nuxeo.ecm.directory
+  - org.nuxeo.ecm.platform.query (grp:org.nuxeo.ecm.platform.query) *** /grp:org.nuxeo.ecm.platform/grp:org.nuxeo.ecm.platform.query
+  - org.nuxeo.ecm.platform.usermanager (grp:org.nuxeo.ecm.platform.usermanager) *** /grp:org.nuxeo.ecm.platform/grp:org.nuxeo.ecm.platform.usermanager
+- org.nuxeo.ecm.webengine (grp:org.nuxeo.ecm.webengine) *** /grp:org.nuxeo.ecm.webengine
+- org.nuxeo.elasticsearch (grp:org.nuxeo.elasticsearch) *** /grp:org.nuxeo.elasticsearch
+- org.nuxeo.misc (grp:org.nuxeo.misc) *** /grp:org.nuxeo.misc
+- org.nuxeo.runtime (grp:org.nuxeo.runtime) *** /grp:org.nuxeo.runtime

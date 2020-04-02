@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2016 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,39 +15,37 @@
  *
  * Contributors:
  *     Thierry Delprat
+ *     Anahide Tchertchian
  */
 package org.nuxeo.apidoc.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
-import org.nuxeo.apidoc.api.BundleInfo;
-import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.ExtensionInfo;
-import org.nuxeo.apidoc.api.ExtensionPointInfo;
-import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -55,7 +53,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features({ RuntimeSnaphotFeature.class })
 public class TestSnapshotPersist {
 
-    private static final Log log = LogFactory.getLog(TestSnapshotPersist.class);
+    // helper for quicker update when running tests locally
+    // public static final boolean UPDATE_REFERENCE_FILES_ON_FAILURE = true;
+    public static final boolean UPDATE_REFERENCE_FILES_ON_FAILURE = false;
 
     @Inject
     protected CoreSession session;
@@ -63,121 +63,171 @@ public class TestSnapshotPersist {
     @Inject
     protected SnapshotManager snapshotManager;
 
-    protected String dumpSnapshot(DistributionSnapshot snap) {
-        StringBuilder sb = new StringBuilder();
+    @Test
+    public void testSnapshot() throws IOException {
+        DistributionSnapshot snapshot = snapshotManager.getRuntimeSnapshot();
+        checkDistributionSnapshot(snapshot);
+    }
 
-        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(snap);
+    @Test
+    public void testPersist() throws IOException {
+        DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
+        assertNotNull(snapshot);
+        checkDistributionSnapshot(snapshot);
+
+        DistributionSnapshot persisted = snapshotManager.getSnapshot(snapshot.getKey(), session);
+        assertNotNull(persisted);
+        checkDistributionSnapshot(persisted);
+    }
+
+    protected void checkDistributionSnapshot(DistributionSnapshot snapshot) throws IOException {
+        checkBundleGroups(snapshot);
+        checkBundles(snapshot);
+        checkComponents(snapshot);
+        checkServices(snapshot);
+        checkExtensionPoints(snapshot);
+        checkContributions(snapshot);
+        checkOperations(snapshot);
+    }
+
+    protected void checkBundleGroups(DistributionSnapshot snapshot) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(snapshot);
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
         for (BundleGroupFlatTree info : tree) {
-            String pad = " ";
-            for (int i = 0; i <= info.getLevel(); i++) {
-                pad += " ";
-            }
-            sb.append(pad)
-            .append("- ")
-            .append(info.getGroup().getName())
-            .append("(")
-            .append(info.getGroup().getId())
-            .append(")");
-            sb.append(" *** ");
-            sb.append(info.getGroup().getHierarchyPath());
-            sb.append("\n");
+            sb.append(String.format("%s- %s (%s) *** %s\n", //
+                    StringUtils.repeat("  ", info.getLevel()), //
+                    info.getGroup().getName(), //
+                    info.getGroup().getId(), //
+                    info.getGroup().getHierarchyPath()) //
+            );
+        }
+        checkContentEquals("apidoc_snapshot/bundlegroups.txt", sb.toString());
+    }
+
+    protected String represent(NuxeoArtifact artifact) {
+        return String.format("%s: %s *** %s\n", //
+                artifact.getArtifactType(), //
+                artifact.getId(), //
+                artifact.getHierarchyPath() //
+        );
+    }
+
+    protected void checkBundles(DistributionSnapshot snapshot) throws IOException {
+        List<String> bids = snapshot.getBundleIds();
+        Collections.sort(bids);
+
+        StringBuilder sb = new StringBuilder();
+        for (String bid : bids) {
+            sb.append(represent(snapshot.getBundle(bid)));
         }
 
-        List<String> bids = snap.getBundleIds();
-        List<String> cids = snap.getComponentIds();
-        List<String> sids = snap.getServiceIds();
-        List<String> epids = snap.getExtensionPointIds();
-        List<String> exids = snap.getContributionIds();
+        checkContentEquals("apidoc_snapshot/bundles.txt", sb.toString());
+    }
 
-        Collections.sort(bids);
+    protected void checkComponents(DistributionSnapshot snapshot) throws IOException {
+        List<String> cids = snapshot.getComponentIds();
         Collections.sort(cids);
+
+        StringBuilder sb = new StringBuilder();
+        for (String cid : cids) {
+            sb.append(represent(snapshot.getComponent(cid)));
+        }
+
+        checkContentEquals("apidoc_snapshot/components.txt", sb.toString());
+    }
+
+    protected void checkServices(DistributionSnapshot snapshot) throws IOException {
+        List<String> sids = snapshot.getServiceIds();
         Collections.sort(sids);
+
+        StringBuilder sb = new StringBuilder();
+        for (String sid : sids) {
+            sb.append(represent(snapshot.getService(sid)));
+        }
+
+        checkContentEquals("apidoc_snapshot/services.txt", sb.toString());
+    }
+
+    protected void checkExtensionPoints(DistributionSnapshot snapshot) throws IOException {
+        List<String> epids = snapshot.getExtensionPointIds();
         Collections.sort(epids);
+
+        StringBuilder sb = new StringBuilder();
+        for (String epid : epids) {
+            sb.append(represent(snapshot.getExtensionPoint(epid)));
+        }
+
+        checkContentEquals("apidoc_snapshot/extensionpoints.txt", sb.toString());
+    }
+
+    protected void checkContributions(DistributionSnapshot snapshot) throws IOException {
+        List<String> exids = snapshot.getContributionIds();
         Collections.sort(exids);
 
-        for (String bid : bids) {
-            sb.append("bundle : ").append(bid);
-            BundleInfo bi = snap.getBundle(bid);
-            sb.append(" *** ");
-            sb.append(bi.getHierarchyPath());
-            sb.append("\n");
-        }
-
-        for (String cid : cids) {
-            sb.append("component : ").append(cid);
-            sb.append(" *** ");
-            ComponentInfo ci = snap.getComponent(cid);
-            sb.append(ci.getHierarchyPath());
-            sb.append("\n");
-        }
-
-        for (String sid : sids) {
-            sb.append("service : ").append(sid);
-            sb.append(" *** ");
-            ServiceInfo si = snap.getService(sid);
-            sb.append(si.getHierarchyPath());
-            sb.append("\n");
-        }
-
-        for (String epid : epids) {
-            sb.append("extensionPoint : ").append(epid);
-            sb.append(" *** ");
-            ExtensionPointInfo epi = snap.getExtensionPoint(epid);
-            sb.append(epi.getHierarchyPath());
-            sb.append("\n");
-        }
-
+        StringBuilder sb = new StringBuilder();
         for (String exid : exids) {
-            sb.append("contribution : ").append(exid);
-            sb.append(" *** ");
-            ExtensionInfo exi = snap.getContribution(exid);
-            sb.append(exi.getHierarchyPath());
-            sb.append("\n");
+            sb.append(represent(snapshot.getContribution(exid)));
         }
-        return sb.toString();
+
+        checkContentEquals("apidoc_snapshot/contributions.txt", sb.toString());
     }
 
-    @Test
-    public void testPersist() throws Exception {
-        DistributionSnapshot runtimeSnapshot = snapshotManager.getRuntimeSnapshot();
-        String rtDump = dumpSnapshot(runtimeSnapshot);
+    protected void checkOperations(DistributionSnapshot snapshot) throws IOException {
+        List<OperationInfo> ops = snapshot.getOperations();
+        Collections.sort(ops, new Comparator<OperationInfo>() {
+            @Override
+            public int compare(OperationInfo arg0, OperationInfo arg1) {
+                return arg0.getId().compareTo(arg1.getId());
+            }
+        });
 
-        DistributionSnapshot persistent = snapshotManager.persistRuntimeSnapshot(session);
-        assertNotNull(persistent);
-
-        persistent = snapshotManager.getSnapshot(runtimeSnapshot.getKey(), session);
-        assertNotNull(persistent);
-
-        // DocumentModelList docs = session.query("select * from NXBundle");
-        // for (DocumentModel doc : docs) {
-        // log.info("Bundle : " + doc.getTitle() + " --- " +
-        // doc.getPathAsString());
-        // }
-        String pDump = dumpSnapshot(persistent);
-
-        // String[] rtDumpLines = rtDump.trim().split("\n");
-        // String[] pDumpLines = pDump.trim().split("\n");
-        // assertEquals(rtDumpLines.length, pDumpLines.length);
-        // for (int i = 0; i < rtDumpLines.length; i++) {
-        // assertEquals(rtDumpLines[i], pDumpLines[i]);
-        // }
-        assertEquals(rtDump, pDump);
-
+        StringBuilder sb = new StringBuilder();
+        for (OperationInfo op : ops) {
+            sb.append(represent(op));
+        }
+        checkContentEquals("apidoc_snapshot/operations.txt", sb.toString());
     }
 
-    @Test
-    public void testExportImport() throws IOException {
-        DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
-        File tempFile = Framework.createTempFile("testExportImport", snapshot.getKey());
-        try (OutputStream out = new FileOutputStream(tempFile)) {
-            snapshotManager.exportSnapshot(session, snapshot.getKey(), out);
+    protected void checkContentEquals(String path, String actualContent) throws IOException {
+        String message = String.format("File '%s' content differs: ", path);
+        String expectedPath = getReferencePath(path);
+        String expectedContent = getReferenceContent(expectedPath);
+        if (actualContent != null) {
+            actualContent = actualContent.trim();
+            if (SystemUtils.IS_OS_WINDOWS) {
+                // replace end of lines while testing on windows
+                actualContent = actualContent.replaceAll("\r?\n", "\n");
+            }
         }
-        try (InputStream in = new FileInputStream(tempFile)) {
-            DocumentModel doc = snapshotManager.importTmpSnapshot(session, in);
-            assertNotNull(doc);
+        try {
+            assertEquals(message, expectedContent, actualContent);
+        } catch (ComparisonFailure e) {
+            // copy content locally to ease up updates when running tests locally
+            if (UPDATE_REFERENCE_FILES_ON_FAILURE) {
+                // ugly hack to get the actual resource file path:
+                // - bin/* are for Eclipse;
+                // - target/classes* for IntelliJ.
+                String resourcePath = expectedPath.replace("bin/test", "src/test/resources")
+                                                  .replace("bin/main", "src/main/resources")
+                                                  .replace("target/test-classes", "src/test/resources")
+                                                  .replace("target/classes", "src/main/resources");
+                org.apache.commons.io.FileUtils.copyInputStreamToFile(
+                        new ByteArrayInputStream(actualContent.getBytes()), new File(resourcePath));
+            }
+            throw e;
         }
-        tempFile.delete();
     }
 
+    public static String getReferencePath(String path) throws IOException {
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(path);
+        if (fileUrl == null) {
+            throw new IllegalStateException("File not found: " + path);
+        }
+        return FileUtils.getFilePathFromUrl(fileUrl);
+    }
+
+    public static String getReferenceContent(String refPath) throws IOException {
+        return org.apache.commons.io.FileUtils.readFileToString(new File(refPath), StandardCharsets.UTF_8).trim();
+    }
 }
