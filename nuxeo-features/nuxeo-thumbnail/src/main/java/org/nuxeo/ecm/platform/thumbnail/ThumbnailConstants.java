@@ -41,6 +41,9 @@ public class ThumbnailConstants {
 
     public static final String THUMBNAIL_DEFAULT_SIZE = "1000x1000";
 
+    /** @since 11.1 **/
+    public static final String DISABLE_THUMBNAIL_COMPUTATION = "disableThumbnailComputation";
+
     public enum EventNames {
         /**
          * Event sent after checking before updating document if the main blob has been updated

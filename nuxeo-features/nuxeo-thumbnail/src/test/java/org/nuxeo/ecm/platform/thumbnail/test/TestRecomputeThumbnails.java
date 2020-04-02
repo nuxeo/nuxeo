@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.thumbnail.test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailService;
+import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.ecm.platform.thumbnail.operation.RecomputeThumbnails;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -137,6 +139,21 @@ public class TestRecomputeThumbnails {
         doc = session.getDocument(doc.getRef());
         Blob thumbnail = thumbnailService.getThumbnail(doc, session);
         assertNotNull("the TIFF thumbnail is not generated", thumbnail);
+    }
+
+    @Test
+    public void testNoThumbnailWhenDisabled() throws IOException {
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("test-data/big_nuxeo_logo.jpg"), "image/jpeg",
+                StandardCharsets.UTF_8.name(), "big_nuxeo_logo.jpg");
+
+        DocumentModel fileWithoutThumbnail = session.createDocumentModel("/", "fileWithoutThumbnail", "File");
+        fileWithoutThumbnail.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true);
+        fileWithoutThumbnail.setPropertyValue("file:content", (Serializable) blob);
+        fileWithoutThumbnail = session.createDocument(fileWithoutThumbnail);
+
+        txFeature.nextTransaction();
+        fileWithoutThumbnail = session.getDocument(fileWithoutThumbnail.getRef());
+        assertNull(thumbnailService.getThumbnail(fileWithoutThumbnail, session));
     }
 
 }
