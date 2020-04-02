@@ -110,9 +110,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     public static final String FULLTEXT_JOBID_PROP = "ecm:fulltextJobId";
 
-    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:simpleText";
+    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:fulltextSimple";
 
-    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
+    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:fulltextBinary";
 
     public static final String IS_TRASHED_PROP = "ecm:isTrashed";
 
