@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,6 +56,9 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.7
  */
 public class UpdateThumbnailListener implements PostCommitEventListener {
+
+    /** @since 11.1 **/
+    private static final Logger log = LogManager.getLogger(UpdateThumbnailListener.class);
 
     public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
 
@@ -123,6 +128,11 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             }
             DocumentEventContext context = (DocumentEventContext) event.getContext();
             DocumentModel doc = context.getSourceDocument();
+            if (Boolean.TRUE.equals(context.getProperty(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION))) {
+                log.trace("Thumbnail computation is disabled for document {}", doc::getId);
+                continue;
+            }
+
             if (doc instanceof DeletedDocumentModel) {
                 continue;
             }
