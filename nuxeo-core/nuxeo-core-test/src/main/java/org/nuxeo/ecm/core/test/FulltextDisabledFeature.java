@@ -17,7 +17,7 @@
  *     Nuxeo
  */
 
-package org.nuxeo.elasticsearch.test;
+package org.nuxeo.ecm.core.test;
 
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
