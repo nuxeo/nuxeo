@@ -19,7 +19,13 @@
 //
 package org.nuxeo.launcher.process;
 
+import java.util.regex.Pattern;
+
 public class MacProcessManager extends UnixProcessManager {
+
+    protected MacProcessManager(Pattern processPattern) {
+        super(processPattern);
+    }
 
     @Override
     protected String[] psCommand() {

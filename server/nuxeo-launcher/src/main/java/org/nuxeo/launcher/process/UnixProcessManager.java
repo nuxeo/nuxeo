@@ -33,47 +33,52 @@ import org.apache.commons.io.IOUtils;
  * {@link ProcessManager} implementation for *nix systems. Uses the <tt>ps</tt> and <tt>kill</tt> commands.
  * <p>
  * Works for Linux. Works for Solaris too, except that the command line string returned by <tt>ps</tt> there is limited
- * to 80 characters and this affects {@link #findPid(String)}.
+ * to 80 characters and this affects {@link #findPid()}.
  */
-public class UnixProcessManager implements ProcessManager {
-
-    protected static final boolean PID_ENABLED = true;
+public class UnixProcessManager extends ProcessManager {
 
     private static final Pattern PS_OUTPUT_LINE = Pattern.compile("^\\s*(\\d+)\\s+(.*)$");
+
+    protected UnixProcessManager(Pattern processPattern) {
+        super(processPattern);
+    }
 
     protected String[] psCommand() {
         return new String[] { "/bin/ps", "-e", "-o", "pid,args" };
     }
 
     @Override
-    public Optional<String> findPid(String regex) throws IOException {
-        Pattern commandPattern = Pattern.compile(regex);
-        for (String line : execute(psCommand())) {
-            Matcher lineMatcher = PS_OUTPUT_LINE.matcher(line);
+    public Optional<Long> findPid() throws IOException {
+        for (String line : execute0(psCommand())) {
+            Matcher lineMatcher = lineMatcher(line);
             if (lineMatcher.matches()) {
                 String command = lineMatcher.group(2);
-                Matcher commandMatcher = commandPattern.matcher(command);
+                Matcher commandMatcher = processPattern.matcher(command);
                 if (commandMatcher.find()) {
-                    return Optional.ofNullable(lineMatcher.group(1));
+                    return Optional.ofNullable(lineMatcher.group(1)).map(Long::valueOf);
                 }
             }
         }
-        return Optional.empty();
+        return super.findPid();
+    }
+
+    protected Matcher lineMatcher(String line) {
+        return PS_OUTPUT_LINE.matcher(line);
     }
 
     @Override
     public void kill(ProcessHandle processHandle) throws IOException {
-        execute("/bin/kill", "-KILL", String.valueOf(processHandle.pid()));
+        execute0("/bin/kill", "-KILL", String.valueOf(processHandle.pid()));
     }
 
-    protected List<String> execute(String... command) throws IOException {
+    // non-static method to allow tests to mock it
+    protected List<String> execute0(String... command) throws IOException {
+        return execute(command);
+    }
+
+    protected static List<String> execute(String... command) throws IOException {
         Process process = new ProcessBuilder(command).start();
         return IOUtils.readLines(process.getInputStream(), UTF_8);
-    }
-
-    @Override
-    public boolean canFindPid() {
-        return PID_ENABLED;
     }
 
 }

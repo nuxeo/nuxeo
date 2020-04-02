@@ -29,11 +29,7 @@ public class SolarisProcessManager extends UnixProcessManager {
 
     protected static final String SOLARIS_11 = "5.11";
 
-    protected static final String SOLARIS_10 = "5.10";
-
     protected static final String[] SOLARIS_11_PS = { "/usr/bin/ps", "auxww" };
-
-    protected static final String[] SOLARIS_10_PS = { "/usr/ucb/ps", "auxww" };
 
     protected static final Pattern PS_OUTPUT_LINE = Pattern.compile("^" + "[^\\s]+\\s+" // USER
             + "([0-9]+)\\s+" // PID
@@ -47,54 +43,41 @@ public class SolarisProcessManager extends UnixProcessManager {
 
     protected String solarisVersion;
 
-    public String getSolarisVersion() {
-        if (solarisVersion == null) {
-            List<String> lines;
-            try {
-                lines = execute(new String[] { "/usr/bin/uname", "-r" });
-            } catch (IOException e) {
-                lines = Collections.emptyList();
-            }
-            if (lines.isEmpty()) {
-                solarisVersion = "?";
-            } else {
-                solarisVersion = lines.get(0).trim();
-            }
-        }
-        return solarisVersion;
+    protected SolarisProcessManager(Pattern processPattern, String solarisVersion) {
+        super(processPattern);
+        this.solarisVersion = solarisVersion;
     }
 
     @Override
     protected String[] psCommand() {
-        if (SOLARIS_11.equals(getSolarisVersion())) {
+        if (SOLARIS_11.equals(solarisVersion)) {
             return SOLARIS_11_PS;
         }
         return null;
     }
 
-    public Matcher getLineMatcher(String line) {
+    @Override
+    protected Matcher lineMatcher(String line) {
         return PS_OUTPUT_LINE.matcher(line);
     }
 
     @Override
-    public Optional<String> findPid(String regex) throws IOException {
-        if (SOLARIS_11.equals(getSolarisVersion())) {
-            Pattern commandPattern = Pattern.compile(regex);
-            for (String line : execute(psCommand())) {
-                Matcher lineMatcher = getLineMatcher(line);
-                if (lineMatcher.matches()) {
-                    String pid = lineMatcher.group(1);
-                    String command = lineMatcher.group(2);
-                    Matcher commandMatcher = commandPattern.matcher(command);
-                    if (commandMatcher.find()) {
-                        return Optional.of(pid);
-                    }
-                }
-            }
+    public Optional<Long> findPid() throws IOException {
+        if (SOLARIS_11.equals(solarisVersion)) {
+            return super.findPid();
         } else {
             throw new RuntimeException("Unsupported Solaris version: " + solarisVersion);
         }
-        return Optional.empty();
+    }
+
+    protected static String getSolarisVersion() {
+        List<String> lines;
+        try {
+            lines = execute("/usr/bin/uname", "-r");
+        } catch (IOException e) {
+            lines = Collections.emptyList();
+        }
+        return lines.isEmpty() ? "?" : lines.get(0).trim();
     }
 
 }
