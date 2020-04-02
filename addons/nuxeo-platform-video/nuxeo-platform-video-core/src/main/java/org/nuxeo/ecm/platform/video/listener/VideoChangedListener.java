@@ -52,14 +52,23 @@ public class VideoChangedListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(VideoChangedListener.class);
 
+    /** @since 11.1 **/
+    public static final String DISABLE_VIDEO_CONVERSIONS_GENERATION_LISTENER = "disableVideoConversionsGenerationListener";
+
     @Override
     public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
+
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
+        if (Boolean.TRUE.equals(ctx.getProperty(DISABLE_VIDEO_CONVERSIONS_GENERATION_LISTENER))) {
+            log.trace(String.format("Video conversions are disabled for document %s", doc.getId()));
+            return;
+        }
+
         String eventName = event.getName();
         if (shouldProcess(doc, eventName)) {
             if (BEFORE_DOC_UPDATE.equals(eventName)) {
