@@ -110,7 +110,7 @@ public class TestSegmentIOService {
         Assert.assertEquals(2, testData.size());
 
         Map<String, Object> data = testData.remove(0);
-        Assert.assertEquals(6, data.size());
+        Assert.assertEquals(7, data.size());
         Assert.assertEquals("identify", data.get("action"));
         // check metadata
         Assert.assertEquals("FakeAuth", data.get("plugin"));
