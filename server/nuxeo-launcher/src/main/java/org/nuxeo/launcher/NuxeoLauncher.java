@@ -426,6 +426,9 @@ public class NuxeoLauncher {
      */
     public static final int EXIT_CODE_NOT_RUNNING = 7;
 
+    /** @since 11.1 */
+    public static final int EXIT_CODE_CANNOT_EXECUTE = 126;
+
     /**
      * Launcher is changed.
      *
@@ -552,13 +555,9 @@ public class NuxeoLauncher {
         return StringUtils.equalsIgnoreCase(command, aCommand);
     }
 
-    public CommandSetInfo cset = new CommandSetInfo();
-
     private boolean useGui = false;
 
     private int status = STATUS_CODE_UNKNOWN;
-
-    private int errorValue = EXIT_CODE_OK;
 
     private StatusServletClient statusServletClient;
 
@@ -641,14 +640,12 @@ public class NuxeoLauncher {
 
     /**
      * Check if some server is already running (from another thread) and throw a Runtime exception if it finds one.
-     *
-     * @throws IllegalThreadStateException Thrown if a server is already running.
      */
     public void checkNoRunningServer() throws IllegalStateException {
         try {
             processManager.findPid().ifPresent(pid -> {
-                errorValue = EXIT_CODE_OK;
-                throw new IllegalStateException("A server is running with process ID " + pid);
+                throw new NuxeoLauncherException("Cannot execute command. A server is running with process ID " + pid,
+                        EXIT_CODE_CANNOT_EXECUTE);
             });
         } catch (IOException e) {
             log.warn("Could not check existing process: {}", e::getMessage);
@@ -667,7 +664,7 @@ public class NuxeoLauncher {
         } else if (SystemUtils.IS_OS_WINDOWS) {
             return getWindowsCommand(roughCommand);
         }
-        throw new IllegalStateException("Unknown os, can't launch server");
+        throw new NuxeoLauncherException("Unknown os, can't launch server", EXIT_CODE_CANNOT_EXECUTE);
     }
 
     private List<String> getWindowsCommand(List<String> roughCommand) {
@@ -931,16 +928,14 @@ public class NuxeoLauncher {
             log.info("Restarting launcher...");
             System.exit(EXIT_CODE_LAUNCHER_CHANGED);
         } catch (ParseException e) {
-            log.error("Invalid command line. {}", e::getMessage);
+            log.error("Invalid command line: {}", e::getMessage);
             log.debug(e, e);
             printShortHelp();
-            System.exit(
-                    launcher == null || launcher.errorValue == EXIT_CODE_OK ? EXIT_CODE_INVALID : launcher.errorValue);
+            System.exit(EXIT_CODE_INVALID);
         } catch (IOException | PackageException | ConfigurationException | GeneralSecurityException e) {
             log.error(e.getMessage());
             log.debug(e, e);
-            System.exit(
-                    launcher == null || launcher.errorValue == EXIT_CODE_OK ? EXIT_CODE_INVALID : launcher.errorValue);
+            System.exit(EXIT_CODE_INVALID);
         } catch (NuxeoLauncherException e) {
             log.error(e.getMessage());
             log.debug(e, e);
@@ -956,7 +951,7 @@ public class NuxeoLauncher {
      * @since 5.5
      */
     public static void launch(final NuxeoLauncher launcher)
-            throws IOException, PackageException, ConfigurationException, ParseException, GeneralSecurityException {
+            throws IOException, PackageException, ConfigurationException, GeneralSecurityException {
         boolean commandSucceeded = true;
         if (launcher.commandIs(null)) {
             return;
@@ -968,7 +963,6 @@ public class NuxeoLauncher {
             printLongHelp();
         } else if (launcher.commandIs("status")) {
             String statusMsg = launcher.status();
-            launcher.errorValue = launcher.getStatus();
             if (!quiet) {
                 log.warn(statusMsg);
                 if (launcher.isStarted()) {
@@ -976,6 +970,8 @@ public class NuxeoLauncher {
                     log.info(launcher.getStartupSummary());
                 }
             }
+            // only case where exit status is not for error
+            System.exit(launcher.getStatus());
         } else if (launcher.commandIs("startbg")) {
             commandSucceeded = launcher.doStart();
         } else if (launcher.commandIs("start")) {
@@ -1034,7 +1030,8 @@ public class NuxeoLauncher {
             }
         } else if (launcher.commandIs("mp-request")) {
             if (launcher.cmdLine.hasOption(OPTION_NODEPS)) {
-                throw new ParseException("The command mp-request is not available with the --nodeps option");
+                throw new NuxeoLauncherException("The command mp-request is not available with the --nodeps option",
+                        EXIT_CODE_INVALID);
             } else {
                 commandSucceeded = launcher.pkgCompoundRequest(Arrays.asList(launcher.params));
             }
@@ -1064,19 +1061,20 @@ public class NuxeoLauncher {
         } else if (launcher.commandIs("register-trial")) {
             commandSucceeded = launcher.registerTrial();
         } else {
-            log.error("Unknown command {}", launcher.command);
             printLongHelp();
-            launcher.errorValue = EXIT_CODE_INVALID;
+            throw new NuxeoLauncherException(
+                    "Unknown command: " + launcher.command + ", see help above or with nuxeoctl help",
+                    EXIT_CODE_INVALID);
         }
+        CommandSetInfo cset = launcher.connectBroker.getCommandSet();
         if (launcher.xmlOutput && launcher.command.startsWith("mp-")) {
-            launcher.printXMLOutput();
+            launcher.printXMLOutput(cset);
         }
-        commandSucceeded = commandSucceeded && launcher.errorValue == EXIT_CODE_OK;
         if (!commandSucceeded && !quiet || debug) {
-            launcher.cset.log(commandSucceeded);
+            cset.log(commandSucceeded);
         }
         if (!commandSucceeded) {
-            System.exit(launcher.errorValue);
+            System.exit(EXIT_CODE_ERROR);
         }
     }
 
@@ -1173,7 +1171,7 @@ public class NuxeoLauncher {
      * @since 8.3
      */
     public ConnectProject promptProject(@NotNull List<ConnectProject> projects)
-            throws ConfigurationException, IOException, PackageException {
+            throws ConfigurationException, IOException {
         if (projects.isEmpty()) {
             throw new ConfigurationException("You don't have access to any project.");
         }
@@ -1250,7 +1248,7 @@ public class NuxeoLauncher {
      * @return true if succeed
      * @since 8.3
      */
-    public boolean register() throws IOException, ConfigurationException, PackageException {
+    public boolean register() throws IOException, ConfigurationException {
         // register --renew
         if (cmdLine.hasOption(OPTION_RENEW)) {
             if (params.length != 0) {
@@ -1277,7 +1275,6 @@ public class NuxeoLauncher {
             getConnectRegistrationBroker().remoteRenewRegistration();
         } catch (RegistrationException e) {
             log.debug(e, e);
-            errorValue = EXIT_CODE_ERROR;
             return false;
         }
         log.info("Server registration renewed");
@@ -1318,7 +1315,7 @@ public class NuxeoLauncher {
         return true;
     }
 
-    protected boolean registerRemoteInstance() throws IOException, ConfigurationException, PackageException {
+    protected boolean registerRemoteInstance() throws IOException, ConfigurationException {
         // 0/1 param: [<username>]
         // 2/3 params: <username> <project> [token]
         // 4/5 params: <username> <project> <type> <description> [token]
@@ -1386,11 +1383,11 @@ public class NuxeoLauncher {
      *             https://connect.nuxeo.com/register
      */
     @Deprecated
-    @SuppressWarnings({ "DeprecatedIsStillUsed", "RedundantThrows" })
-    public boolean registerTrial() throws IOException, ConfigurationException, PackageException {
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    public boolean registerTrial() {
         String msg = "This command is deprecated. To register for a free 30 day trial on Nuxeo Online Services,"
                 + " please visit https://connect.nuxeo.com/register";
-        throw new UnsupportedOperationException(msg);
+        throw new NuxeoLauncherException(msg, EXIT_CODE_UNIMPLEMENTED);
     }
 
     /**
@@ -1409,9 +1406,7 @@ public class NuxeoLauncher {
                 try {
                     encryptedString = crypto.encrypt(algorithm, IOUtils.toByteArray(System.in));
                 } catch (IOException e) {
-                    log.debug(e, e);
-                    errorValue = EXIT_CODE_ERROR;
-                    return;
+                    throw new NuxeoLauncherException("Encrypt failed", EXIT_CODE_ERROR, e);
                 }
             }
             log.info(encryptedString);
@@ -1440,14 +1435,11 @@ public class NuxeoLauncher {
             try {
                 validKey = crypto.verifyKey(IOUtils.toByteArray(System.in));
             } catch (IOException e) {
-                log.debug(e, e);
-                errorValue = EXIT_CODE_ERROR;
-                return null;
+                throw new NuxeoLauncherException("Key verification failed", EXIT_CODE_ERROR, e);
             }
         }
         if (!validKey) {
-            errorValue = EXIT_CODE_INVALID;
-            return null;
+            throw new NuxeoLauncherException("The key is not valid", EXIT_CODE_INVALID);
         }
         return Stream.of(values).map(crypto::decrypt).map(Crypto::getChars).map(String::new).collect(toList());
     }
@@ -1482,9 +1474,6 @@ public class NuxeoLauncher {
                     }
                 }
             }
-            if (keys.isEmpty()) {
-                errorValue = EXIT_CODE_NOT_CONFIGURED;
-            }
         } else {
             keys = Arrays.asList(params);
         }
@@ -1497,7 +1486,8 @@ public class NuxeoLauncher {
         for (String key : keys) {
             String value = userConfig.getProperty(key, raw);
             if (value == null) {
-                errorValue = EXIT_CODE_NOT_CONFIGURED;
+                // TODO keep it ?
+                // errorValue = EXIT_CODE_NOT_CONFIGURED;
                 sb.append(OUTPUT_UNSET_VALUE).append(newLine);
             } else {
                 if (raw && !keyChecked && Crypto.isEncrypted(value)) {
@@ -1557,9 +1547,7 @@ public class NuxeoLauncher {
                             value = IOUtils.toString(System.in, UTF_8);
                         }
                     } catch (IOException e) {
-                        log.debug(e, e);
-                        errorValue = EXIT_CODE_ERROR;
-                        return;
+                        throw new NuxeoLauncherException("Reading from stdin failed", EXIT_CODE_ERROR, e);
                     }
                 }
             }
@@ -1643,7 +1631,6 @@ public class NuxeoLauncher {
      * @throws NuxeoLauncherException if an error occurred
      */
     protected Process doStart(boolean logProcessOutput) {
-        errorValue = EXIT_CODE_OK;
         try {
             configure();
             configurationGenerator.verifyInstallation();
@@ -1828,26 +1815,14 @@ public class NuxeoLauncher {
     /**
      * @since 5.6
      */
-    protected void printXMLOutput() {
+    protected void printXMLOutput(CommandSetInfo cset) {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(CommandSetInfo.class, CommandInfo.class,
                     PackageInfo.class, MessageInfo.class);
-            printXMLOutput(jaxbContext, cset);
-        } catch (JAXBException e) {
-            log.error("Output serialization failed: {}", e.getMessage(), e);
-            errorValue = EXIT_CODE_NOT_RUNNING;
-        }
-    }
-
-    /**
-     * @since 5.6
-     */
-    protected void printXMLOutput(JAXBContext jaxbContext, Object objectToOutput) {
-        try {
-            printXMLOutput(jaxbContext, objectToOutput, System.out);
+            printXMLOutput(jaxbContext, cset, System.out);
         } catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
-            log.error("Output serialization failed: {}", e.getMessage(), e);
-            errorValue = EXIT_CODE_NOT_RUNNING;
+            throw new NuxeoLauncherException("Output serialization failed: " + e.getMessage(), EXIT_CODE_NOT_RUNNING,
+                    e);
         }
     }
 
@@ -1975,10 +1950,8 @@ public class NuxeoLauncher {
 
     /**
      * Configure the server after checking installation
-     *
-     * @throws ConfigurationException If an installation error is detected or if configuration fails
      */
-    public void configure() throws ConfigurationException {
+    public void configure() {
         try {
             checkNoRunningServer();
             configurationGenerator.checkJavaVersion();
@@ -1986,8 +1959,8 @@ public class NuxeoLauncher {
             overrideJavaTmpDir = Boolean.parseBoolean(
                     configurationGenerator.getUserConfig().getProperty(OVERRIDE_JAVA_TMPDIR_PARAM, "true"));
         } catch (ConfigurationException e) {
-            errorValue = EXIT_CODE_NOT_CONFIGURED;
-            throw e;
+            throw new NuxeoLauncherException("Could not run configuration: " + e.getMessage(), EXIT_CODE_NOT_CONFIGURED,
+                    e);
         }
     }
 
@@ -2026,11 +1999,9 @@ public class NuxeoLauncher {
 
     /**
      * @return a NuxeoLauncher instance specific to current server ( Tomcat or Jetty).
-     * @throws ConfigurationException If server cannot be identified
      * @since 5.5
      */
-    public static NuxeoLauncher createLauncher(String[] args)
-            throws ConfigurationException, ParseException, IOException, PackageException {
+    public static NuxeoLauncher createLauncher(String[] args) throws ParseException, IOException, PackageException {
         CommandLine cmdLine = parseOptions(args);
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
         if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
@@ -2048,7 +2019,7 @@ public class NuxeoLauncher {
      *
      * @param cmdLine Program arguments; may be used by launcher implementation. Must not be null or empty.
      */
-    private void setArgs(CommandLine cmdLine) throws ConfigurationException {
+    private void setArgs(CommandLine cmdLine) {
         this.cmdLine = cmdLine;
         extractCommandAndParams(cmdLine.getArgs());
         // Use GUI?
@@ -2079,7 +2050,7 @@ public class NuxeoLauncher {
             try {
                 getConnectBroker().setCLID(cmdLine.getOptionValue(OPTION_CLID));
             } catch (NoCLID e) {
-                throw new ConfigurationException(e);
+                throw new NuxeoLauncherException("CLID is invalid", EXIT_CODE_UNAUTHORIZED, e);
             }
         }
         if (cmdLine.hasOption(OPTION_IGNORE_MISSING)) {
@@ -2217,12 +2188,10 @@ public class NuxeoLauncher {
         if (cmdLine.hasOption(OPTION_SNAPSHOT)) {
             connectBroker.setAllowSNAPSHOT(true);
         }
-        List<CommandInfo> csetCommands = cset.commands;
-        cset = connectBroker.getCommandSet();
-        cset.commands.addAll(0, csetCommands);
         try {
             clid = connectBroker.getCLID();
         } catch (NoCLID cause) {
+            // optional
         }
         info = configurationGenerator.getServerConfigurator().getInfo(clid, connectBroker.getPkgList());
         if (new Version(info.distribution.version).isSnapshot()) {
@@ -2261,11 +2230,7 @@ public class NuxeoLauncher {
     }
 
     protected boolean pkgAdd(String[] pkgNames) {
-        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames), ignoreMissing);
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
-        return cmdOK;
+        return getConnectBroker().pkgAdd(Arrays.asList(pkgNames), ignoreMissing);
     }
 
     protected boolean pkgInstall(String[] pkgIDs) {
@@ -2274,35 +2239,19 @@ public class NuxeoLauncher {
             cmdOK = getConnectBroker().executePending(configurationGenerator.getInstallFile(), true,
                     !cmdLine.hasOption(OPTION_NODEPS), ignoreMissing);
         }
-        cmdOK = cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs), ignoreMissing);
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
-        return cmdOK;
+        return cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs), ignoreMissing);
     }
 
     protected boolean pkgUninstall(String[] pkgIDs) {
-        boolean cmdOK = getConnectBroker().pkgUninstall(Arrays.asList(pkgIDs));
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
-        return cmdOK;
+        return getConnectBroker().pkgUninstall(Arrays.asList(pkgIDs));
     }
 
     protected boolean pkgRemove(String[] pkgIDs) {
-        boolean cmdOK = getConnectBroker().pkgRemove(Arrays.asList(pkgIDs));
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
-        return cmdOK;
+        return getConnectBroker().pkgRemove(Arrays.asList(pkgIDs));
     }
 
     protected boolean pkgReset() {
-        boolean cmdOK = getConnectBroker().pkgReset();
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
-        return cmdOK;
+        return getConnectBroker().pkgReset();
     }
 
     /**
@@ -2310,19 +2259,13 @@ public class NuxeoLauncher {
      */
     protected void printInstanceXMLOutput(InstanceInfo instance) {
         try {
-            printInstanceXMLOutput(instance, System.out);
+            JAXBContext jaxbContext = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
+                    PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
+            printXMLOutput(jaxbContext, instance, System.out);
         } catch (JAXBException | XMLStreamException | FactoryConfigurationError e) {
-            log.error("Output serialization failed: {}", e::getMessage);
-            log.debug(e, e);
-            errorValue = EXIT_CODE_NOT_RUNNING;
+            throw new NuxeoLauncherException("Output serialization failed: " + e.getMessage(), EXIT_CODE_NOT_RUNNING,
+                    e);
         }
-    }
-
-    protected void printInstanceXMLOutput(InstanceInfo instance, OutputStream out)
-            throws JAXBException, XMLStreamException, FactoryConfigurationError {
-        JAXBContext jaxbContext = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class, PackageInfo.class,
-                ConfigurationInfo.class, KeyValueInfo.class);
-        printXMLOutput(jaxbContext, instance, out);
     }
 
     /**
@@ -2380,12 +2323,8 @@ public class NuxeoLauncher {
             cmdOK = getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
                     ignoreMissing);
         }
-        cmdOK = cmdOK && getConnectBroker().pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true,
+        return cmdOK && getConnectBroker().pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true,
                 ignoreMissing);
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
-        return cmdOK;
     }
 
     /**
@@ -2470,9 +2409,6 @@ public class NuxeoLauncher {
         } else {
             cmdOK = getConnectBroker().pkgRequest(null, request, null, null, false, ignoreMissing);
         }
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
         return cmdOK;
     }
 
@@ -2484,10 +2420,6 @@ public class NuxeoLauncher {
      * @since 5.7
      */
     protected boolean pkgShow(String[] packages) {
-        boolean cmdOK = getConnectBroker().pkgShow(Arrays.asList(packages));
-        if (!cmdOK) {
-            errorValue = EXIT_CODE_ERROR;
-        }
-        return cmdOK;
+        return getConnectBroker().pkgShow(Arrays.asList(packages));
     }
 }
