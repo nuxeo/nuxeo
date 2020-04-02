@@ -58,7 +58,9 @@ import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.video.Stream;
 import org.nuxeo.ecm.platform.video.Video;
+import org.nuxeo.ecm.platform.video.VideoConstants;
 import org.nuxeo.ecm.platform.video.VideoDocument;
+import org.nuxeo.ecm.platform.video.listener.VideoChangedListener;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
@@ -451,6 +453,46 @@ public class TestVideoImporterAndListeners {
         List<Map<String, Serializable>> storyboard = (List<Map<String, Serializable>>) docModel.getPropertyValue(
                 STORYBOARD_PROPERTY);
         assertNotNull(storyboard);
+        assertEquals(2, storyboard.size());
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @Deploy("org.nuxeo.ecm.platform.video.core:test-video-listeners-contrib.xml")
+    @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
+    @SuppressWarnings("unchecked")
+    public void testNoVideoConversionWhenDisabled() throws IOException {
+        DocumentModel doc = session.createDocumentModel("/", "testVideoDoc", VideoConstants.VIDEO_TYPE);
+        Blob blobContent = getBlobFromPath("test-data/sample.mpg", "video/mpeg");
+        doc.setPropertyValue("file:content", (Serializable) blobContent);
+        // disable the conversions/storyboard
+        doc.putContextData(VideoChangedListener.DISABLE_VIDEO_CONVERSIONS_GENERATION_LISTENER, true);
+        doc = session.createDocument(doc);
+
+        KeyValueStore kvs = Framework.getService(KeyValueService.class).getKeyValueStore("default");
+        kvs.put(doc.getId(), 0L);
+        txFeature.nextTransaction();
+
+        // no conversion is done because we have disabled them
+        assertEquals(Long.valueOf(0), kvs.getLong(doc.getId()));
+        var transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                VideoConstants.TRANSCODED_VIDEOS_PROPERTY);
+        assertEquals(0, transcodedVideos.size());
+        var storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(VideoConstants.STORYBOARD_PROPERTY);
+        assertEquals(0, storyboard.size());
+
+        // re-enable the conversions/storyboard
+        doc.putContextData(VideoChangedListener.DISABLE_VIDEO_CONVERSIONS_GENERATION_LISTENER, false);
+        doc.setPropertyValue("file:content", (Serializable) blobContent);
+        doc = session.saveDocument(doc);
+        txFeature.nextTransaction();
+
+        // ensure that the conversions are done, once enabled
+        assertEquals(Long.valueOf(1), kvs.getLong(doc.getId()));
+        transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                VideoConstants.TRANSCODED_VIDEOS_PROPERTY);
+        assertEquals(2, transcodedVideos.size());
+        storyboard = (List<Map<String, Serializable>>) doc.getPropertyValue(VideoConstants.STORYBOARD_PROPERTY);
         assertEquals(2, storyboard.size());
     }
 
