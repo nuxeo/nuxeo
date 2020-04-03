@@ -18,6 +18,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
 import static org.nuxeo.ecm.core.model.Session.PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS;
 
 import java.io.IOException;
@@ -1496,7 +1497,7 @@ public class SessionImpl implements Session, XAResource {
         }
         RowId rowId = new RowId(Model.FULLTEXT_TABLE_NAME, id);
         Map<String, String> map = mapper.getBinaryFulltext(rowId);
-        String fulltext = map.get("binarytext");
+        String fulltext = map.get(BINARY_FULLTEXT_MAIN_KEY);
         if (fulltextDescriptor.getFulltextStoredInBlob() && fulltext != null) {
             // fulltext is actually the blob  key
             // now retrieve the actual fulltext from the blob content
@@ -1506,7 +1507,7 @@ public class SessionImpl implements Session, XAResource {
                 blobInfo.key = fulltext;
                 Blob blob = blobManager.readBlob(blobInfo, getRepositoryName());
                 fulltext = blob.getString();
-                map.put("binarytext", fulltext);
+                map.put(BINARY_FULLTEXT_MAIN_KEY, fulltext);
             } catch (IOException e) {
                 throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
             }
