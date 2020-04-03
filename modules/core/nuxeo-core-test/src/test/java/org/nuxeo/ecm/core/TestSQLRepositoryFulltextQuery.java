@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -1010,8 +1011,8 @@ public class TestSQLRepositoryFulltextQuery {
         DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'Drink'");
         assertTrue(!list.isEmpty());
         Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());
-        assertTrue(map.containsKey("binarytext"));
-        assertTrue(map.get("binarytext").contains("Drink"));
+        assertTrue(map.containsKey(BINARY_FULLTEXT_MAIN_KEY));
+        assertTrue(map.get(BINARY_FULLTEXT_MAIN_KEY).contains("Drink"));
     }
 
     @Test
@@ -1026,8 +1027,8 @@ public class TestSQLRepositoryFulltextQuery {
         DocumentModelList list = session.query("SELECT * FROM File WHERE ecm:fulltext = 'Drink' and ecm:isProxy = 1");
         assertTrue(!list.isEmpty());
         Map<String, String> map = session.getBinaryFulltext(list.get(0).getRef());
-        assertTrue(map.containsKey("binarytext"));
-        assertTrue(map.get("binarytext").contains("Drink"));
+        assertTrue(map.containsKey(BINARY_FULLTEXT_MAIN_KEY));
+        assertTrue(map.get(BINARY_FULLTEXT_MAIN_KEY).contains("Drink"));
     }
 
     @Test

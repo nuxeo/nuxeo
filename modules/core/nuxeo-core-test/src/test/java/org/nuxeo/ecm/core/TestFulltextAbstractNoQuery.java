@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -67,7 +68,7 @@ public abstract class TestFulltextAbstractNoQuery {
 
         // check whether or not we can get the binary text
         Map<String, String> map = session.getBinaryFulltext(doc.getRef());
-        String fulltext = map == null ? null : map.get("binarytext");
+        String fulltext = map == null ? null : map.get(BINARY_FULLTEXT_MAIN_KEY);
         if (expectBinaryText()) {
             assertEquals(BINARY_TEXT, fulltext);
         } else {

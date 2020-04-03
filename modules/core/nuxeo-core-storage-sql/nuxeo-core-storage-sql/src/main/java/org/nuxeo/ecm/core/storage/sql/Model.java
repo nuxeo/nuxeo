@@ -35,6 +35,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -479,6 +480,12 @@ public class Model {
     private final boolean supportsArrayColumns;
 
     public Model(ModelSetup modelSetup) {
+        // constant sanity check
+        if (!FULLTEXT_BINARYTEXT_KEY.equals(CoreSession.BINARY_FULLTEXT_MAIN_KEY)) {
+            // high-level code expects this
+            throw new IllegalStateException();
+        }
+
         repositoryDescriptor = modelSetup.repositoryDescriptor;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
         supportsArrayColumns = modelSetup.supportsArrayColumns;
