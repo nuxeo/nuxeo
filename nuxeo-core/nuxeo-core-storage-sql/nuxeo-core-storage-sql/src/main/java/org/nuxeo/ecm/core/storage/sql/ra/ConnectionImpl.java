@@ -436,6 +436,11 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
+    public boolean isFulltextStoredInBlob() {
+        return getSession().isFulltextStoredInBlob();
+    }
+
+    @Override
     public Map<String, String> getBinaryFulltext(Serializable id) {
         return getSession().getBinaryFulltext(id);
     }

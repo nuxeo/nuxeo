@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
@@ -630,6 +631,10 @@ public class MemRepository extends DBSRepositoryBase {
         if (state != null) {
             Serializable data = state.get(KEY_BLOB_DATA);
             markReferencedBinary(data, blobManager);
+            if (isFulltextStoredInBlob()) {
+                data = state.get(KEY_FULLTEXT_BINARY);
+                markReferencedBinary(data, blobManager);
+            }
         }
     }
 

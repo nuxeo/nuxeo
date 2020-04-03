@@ -70,6 +70,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_DESCRIPTION
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -100,12 +101,14 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
@@ -116,6 +119,7 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.Document;
@@ -168,6 +172,8 @@ public class DBSSession implements Session<QueryFilter> {
 
     protected final DBSTransactionState transaction;
 
+    protected final boolean fulltextStoredInBlob;
+
     protected final boolean fulltextSearchDisabled;
 
     protected final boolean changeTokenEnabled;
@@ -190,6 +196,7 @@ public class DBSSession implements Session<QueryFilter> {
         this.repository = repository;
         transaction = new DBSTransactionState(repository, this);
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
+        fulltextStoredInBlob = fulltextConfiguration != null && fulltextConfiguration.fulltextStoredInBlob;
         fulltextSearchDisabled = fulltextConfiguration == null || fulltextConfiguration.fulltextSearchDisabled;
         changeTokenEnabled = repository.isChangeTokenEnabled();
 
@@ -1531,9 +1538,27 @@ public class DBSSession implements Session<QueryFilter> {
     }
 
     @Override
+    public boolean isFulltextStoredInBlob() {
+        return fulltextStoredInBlob;
+    }
+
+    @Override
     public Map<String, String> getBinaryFulltext(String id) {
         State state = transaction.getStateForRead(id);
         String fulltext = (String) state.get(KEY_FULLTEXT_BINARY);
+        if (fulltextStoredInBlob && fulltext != null) {
+            // fulltext is actually the blob  key
+            // now retrieve the actual fulltext from the blob content
+            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+            try {
+                BlobInfo blobInfo = new BlobInfo();
+                blobInfo.key = fulltext;
+                Blob blob = blobManager.readBlob(blobInfo, getRepositoryName());
+                fulltext = blob.getString();
+            } catch (IOException e) {
+                throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
+            }
+        }
         return Collections.singletonMap("binarytext", fulltext);
     }
 

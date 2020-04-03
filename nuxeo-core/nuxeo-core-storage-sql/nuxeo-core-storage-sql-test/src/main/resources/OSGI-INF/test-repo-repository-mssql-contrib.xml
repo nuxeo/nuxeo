@@ -26,8 +26,10 @@
         <neverPerDocumentFacets>
           <facet>NotPerDocFacet</facet>
         </neverPerDocumentFacets>
-        <fulltext catalog="nuxeo" analyzer="French" disabled="${nuxeo.test.fulltext.disabled}"
-          searchDisabled="${nuxeo.test.fulltext.search.disabled}"/>
+        <fulltext catalog="nuxeo" analyzer="French"
+                  disabled="${nuxeo.test.fulltext.disabled}"
+                  storedInBlob="${nuxeo.test.fulltext.storedInBlob}"
+                  searchDisabled="${nuxeo.test.fulltext.search.disabled}"/>
       </indexing>
       <xa-datasource>${nuxeo.test.vcs.xadatasource}</xa-datasource>
       <property name="ServerName">${nuxeo.test.vcs.server}</property>

@@ -928,6 +928,11 @@ public class SQLSession implements Session<QueryFilter> {
     }
 
     @Override
+    public boolean isFulltextStoredInBlob() {
+        return session.isFulltextStoredInBlob();
+    }
+
+    @Override
     public Map<String, String> getBinaryFulltext(String id) {
         return session.getBinaryFulltext(idFromString(id));
     }

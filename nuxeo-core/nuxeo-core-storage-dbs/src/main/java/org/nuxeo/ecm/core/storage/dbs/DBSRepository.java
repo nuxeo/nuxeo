@@ -59,6 +59,14 @@ public interface DBSRepository extends Repository, LockManager {
     boolean isFulltextDisabled();
 
     /**
+     * Checks if fulltext is stored in a blob.
+     *
+     * @return {@code true} if fulltext is stored in a blob, {@code false} if it is stored as a regular string
+     * @since 11.1
+     */
+    boolean isFulltextStoredInBlob();
+
+    /**
      * Checks if fulltext search is disabled.
      *
      * @return {@code true} if fulltext search is disabled, {@code false} if it is enabled
