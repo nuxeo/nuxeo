@@ -1531,4 +1531,17 @@ public class TestSQLRepositoryProperties {
         }
     }
 
+    @Test
+    public void testSystemPropertyFulltextBinary() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        String fulltext = "hello world";
+        session.setDocumentSystemProp(docRef, "fulltextBinary", fulltext);
+        session.save();
+        Map<String, String> map = session.getBinaryFulltext(docRef);
+        String res = map.get("binarytext");
+        assertEquals(fulltext, res);
+    }
+
 }

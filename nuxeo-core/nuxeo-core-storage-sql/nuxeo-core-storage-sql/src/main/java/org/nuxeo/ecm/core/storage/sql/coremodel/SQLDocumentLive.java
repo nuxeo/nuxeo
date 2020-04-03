@@ -289,8 +289,19 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         String propertyName;
         if (name.startsWith(SIMPLE_TEXT_SYS_PROP)) {
             propertyName = name.replace(SIMPLE_TEXT_SYS_PROP, Model.FULLTEXT_SIMPLETEXT_PROP);
+            if (session.isFulltextStoredInBlob()) {
+                // if binary fulltext is stored in blob, there is no simple fulltext available
+                return;
+            }
         } else if (name.startsWith(BINARY_TEXT_SYS_PROP)) {
             propertyName = name.replace(BINARY_TEXT_SYS_PROP, Model.FULLTEXT_BINARYTEXT_PROP);
+            if (session.isFulltextStoredInBlob()) {
+                if (!(value instanceof String)) {
+                    throw new PropertyException("Property " + name + " must be a string");
+                }
+                setPropertyBlobData(propertyName, (String) value);
+                return;
+            }
         } else {
             propertyName = systemPropNameMap.get(name);
         }

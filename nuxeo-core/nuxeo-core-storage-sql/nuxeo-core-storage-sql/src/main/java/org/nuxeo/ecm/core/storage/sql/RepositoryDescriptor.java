@@ -336,6 +336,12 @@ public class RepositoryDescriptor {
         fulltextDescriptor.setFulltextDisabled(disabled);
     }
 
+    /** @since 11.1 */
+    @XNode("indexing/fulltext@storedInBlob")
+    public void setFulltextStoredInBlob(boolean storedInBlob) {
+        fulltextDescriptor.setFulltextStoredInBlob(storedInBlob);
+    }
+
     @XNode("indexing/fulltext@searchDisabled")
     public void setFulltextSearchDisabled(boolean disabled) {
         fulltextDescriptor.setFulltextSearchDisabled(disabled);

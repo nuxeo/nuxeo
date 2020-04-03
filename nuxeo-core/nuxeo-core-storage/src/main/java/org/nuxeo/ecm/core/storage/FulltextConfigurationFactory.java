@@ -62,6 +62,7 @@ public class FulltextConfigurationFactory {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         FulltextConfiguration ftc = new FulltextConfiguration();
         ftc.fulltextFieldSizeLimit = fulltextDescriptor.getFulltextFieldSizeLimit();
+        ftc.fulltextStoredInBlob = fulltextDescriptor.getFulltextStoredInBlob();
         ftc.fulltextSearchDisabled = fulltextDescriptor.getFulltextSearchDisabled();
 
         // find what paths we mean by "all"

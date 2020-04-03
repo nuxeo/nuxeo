@@ -333,8 +333,13 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     @Override
+    public boolean isFulltextStoredInBlob() {
+        return fulltextConfiguration != null && fulltextConfiguration.fulltextStoredInBlob;
+    }
+
+    @Override
     public boolean isFulltextSearchDisabled() {
-        return isFulltextDisabled() || fulltextConfiguration.fulltextSearchDisabled;
+        return isFulltextDisabled() || isFulltextStoredInBlob() || fulltextConfiguration.fulltextSearchDisabled;
     }
 
     @Override

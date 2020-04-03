@@ -45,6 +45,7 @@ nuxeo.vcs.blocking-timeout-millis=100
 nuxeo.vcs.idle-timeout-minutes=10
 nuxeo.vcs.active-timeout-minutes=0
 nuxeo.vcs.fulltext.disabled=false
+nuxeo.vcs.fulltext.storedInBlob=false
 nuxeo.vcs.fulltext.search.disabled=false
 nuxeo.vcs.noddl=false
 nuxeo.vcs.ddlmode=execute

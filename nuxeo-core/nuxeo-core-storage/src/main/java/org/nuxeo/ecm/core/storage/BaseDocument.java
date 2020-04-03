@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -683,6 +684,22 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             blobInfo.length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
         }
         setBlobInfo(state, blobInfo);
+    }
+
+    protected void setPropertyBlobData(String xpath, String string) {
+        String key;
+        if (string == null) {
+            key = null;
+        } else {
+            Blob blob = Blobs.createBlob(string);
+            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+            try {
+                key = blobManager.writeBlob(blob, this, xpath);
+            } catch (IOException e) {
+                throw new PropertyException("Cannot write binary for doc: " + getUUID(), e);
+            }
+        }
+        setPropertyValue(xpath, key);
     }
 
     /**
