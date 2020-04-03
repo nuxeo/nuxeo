@@ -73,6 +73,8 @@ public class FulltextConfiguration {
 
     public final Set<String> includedTypes = new HashSet<>();
 
+    public boolean fulltextStoredInBlob;
+
     public boolean fulltextSearchDisabled;
 
     public int fulltextFieldSizeLimit;

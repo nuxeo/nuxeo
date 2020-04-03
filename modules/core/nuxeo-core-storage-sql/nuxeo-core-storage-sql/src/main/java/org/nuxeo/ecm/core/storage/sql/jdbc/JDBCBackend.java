@@ -126,8 +126,9 @@ public class JDBCBackend implements RepositoryBackend {
         }
         if (log.isDebugEnabled()) {
             FulltextDescriptor fulltextDescriptor = repositoryDescriptor.getFulltextDescriptor();
-            log.debug(String.format("Database ready, fulltext: disabled=%b searchDisabled=%b.",
-                    fulltextDescriptor.getFulltextDisabled(), fulltextDescriptor.getFulltextSearchDisabled()));
+            log.debug(String.format("Database ready, fulltext: disabled=%b storedInBlob=%b searchDisabled=%b.",
+                    fulltextDescriptor.getFulltextDisabled(), fulltextDescriptor.getFulltextStoredInBlob(),
+                    fulltextDescriptor.getFulltextSearchDisabled()));
         }
 
         return model;

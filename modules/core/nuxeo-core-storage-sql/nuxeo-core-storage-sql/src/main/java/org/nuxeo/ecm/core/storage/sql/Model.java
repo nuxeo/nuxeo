@@ -1376,10 +1376,17 @@ public class Model {
                 addPropertyInfo(FULLTEXT_FULLTEXT_PROP + suffix, PropertyType.STRING, FULLTEXT_TABLE_NAME,
                         FULLTEXT_FULLTEXT_KEY + suffix, false, StringType.INSTANCE, ColumnType.FTINDEXED);
             }
-            addPropertyInfo(FULLTEXT_SIMPLETEXT_PROP + suffix, PropertyType.STRING, FULLTEXT_TABLE_NAME,
-                    FULLTEXT_SIMPLETEXT_KEY + suffix, false, StringType.INSTANCE, ColumnType.FTSTORED);
+            ColumnType binaryTextType;
+            if (fulltextConfiguration.fulltextStoredInBlob) {
+                // if binary fulltext is stored in blob, there is no simple fulltext available
+                binaryTextType = ColumnType.BLOBID;
+            } else {
+                addPropertyInfo(FULLTEXT_SIMPLETEXT_PROP + suffix, PropertyType.STRING, FULLTEXT_TABLE_NAME,
+                        FULLTEXT_SIMPLETEXT_KEY + suffix, false, StringType.INSTANCE, ColumnType.FTSTORED);
+                binaryTextType = ColumnType.FTSTORED;
+            }
             addPropertyInfo(FULLTEXT_BINARYTEXT_PROP + suffix, PropertyType.STRING, FULLTEXT_TABLE_NAME,
-                    FULLTEXT_BINARYTEXT_KEY + suffix, false, StringType.INSTANCE, ColumnType.FTSTORED);
+                    FULLTEXT_BINARYTEXT_KEY + suffix, false, StringType.INSTANCE, binaryTextType);
         }
     }
 

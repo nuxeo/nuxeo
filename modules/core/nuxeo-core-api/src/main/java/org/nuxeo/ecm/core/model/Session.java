@@ -259,6 +259,14 @@ public interface Session<T extends QueryFilter> {
     void updateReadACLs(Collection<String> docIds);
 
     /**
+     * Checks if fulltext extracted from the binary fields is internally stored as a blob.
+     *
+     * @return {@code true} if fulltext from binaries is store as a blob
+     * @since 11.1
+     */
+    boolean isFulltextStoredInBlob();
+
+    /**
      * Gets the fulltext extracted from the binary fields.
      *
      * @since 5.9.3

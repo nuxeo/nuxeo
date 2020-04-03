@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import static org.nuxeo.ecm.core.model.Session.PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -48,21 +49,26 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.FulltextExtractorWork;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.NodeInfo;
@@ -110,6 +116,8 @@ public class SessionImpl implements Session, XAResource {
 
     protected final boolean changeTokenEnabled;
 
+    protected final FulltextDescriptor fulltextDescriptor;
+
     private volatile boolean live;
 
     private boolean inTransaction;
@@ -144,6 +152,7 @@ public class SessionImpl implements Session, XAResource {
         this.model = model;
         context = new PersistenceContext(model, mapper, this);
         changeTokenEnabled = repository.isChangeTokenEnabled();
+        fulltextDescriptor = repository.getRepositoryDescriptor().getFulltextDescriptor();
         live = true;
         readAclsChanged = false;
 
@@ -328,7 +337,7 @@ public class SessionImpl implements Session, XAResource {
     protected void flush() {
         checkThread();
         List<Work> works;
-        if (!repository.getRepositoryDescriptor().getFulltextDescriptor().getFulltextDisabled()) {
+        if (!fulltextDescriptor.getFulltextDisabled()) {
             works = getFulltextWorks();
         } else {
             works = Collections.emptyList();
@@ -1476,12 +1485,33 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
+    public boolean isFulltextStoredInBlob() {
+        return fulltextDescriptor.getFulltextStoredInBlob();
+    }
+
+    @Override
     public Map<String, String> getBinaryFulltext(Serializable id) {
-        if (repository.getRepositoryDescriptor().getFulltextDescriptor().getFulltextDisabled()) {
+        if (fulltextDescriptor.getFulltextDisabled()) {
             return null;
         }
         RowId rowId = new RowId(Model.FULLTEXT_TABLE_NAME, id);
-        return mapper.getBinaryFulltext(rowId);
+        Map<String, String> map = mapper.getBinaryFulltext(rowId);
+        String fulltext = map.get("binarytext");
+        if (fulltextDescriptor.getFulltextStoredInBlob() && fulltext != null) {
+            // fulltext is actually the blob  key
+            // now retrieve the actual fulltext from the blob content
+            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+            try {
+                BlobInfo blobInfo = new BlobInfo();
+                blobInfo.key = fulltext;
+                Blob blob = blobManager.readBlob(blobInfo, getRepositoryName());
+                fulltext = blob.getString();
+                map.put("binarytext", fulltext);
+            } catch (IOException e) {
+                throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
+            }
+        }
+        return map;
     }
 
     @Override
