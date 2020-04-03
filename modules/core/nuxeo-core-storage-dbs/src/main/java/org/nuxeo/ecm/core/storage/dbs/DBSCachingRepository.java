@@ -218,6 +218,11 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
+    public boolean isFulltextStoredInBlob() {
+        return repository.isFulltextStoredInBlob();
+    }
+
+    @Override
     public boolean isFulltextSearchDisabled() {
         return repository.isFulltextSearchDisabled();
     }

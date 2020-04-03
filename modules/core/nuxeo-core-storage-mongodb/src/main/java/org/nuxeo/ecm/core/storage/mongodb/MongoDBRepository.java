@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 
 import java.util.ArrayList;
@@ -242,6 +243,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected void initBlobsPaths() {
         MongoDBBlobFinder finder = new MongoDBBlobFinder();
         finder.visit();
+        if (isFulltextStoredInBlob()) {
+            finder.recordBlobKey(KEY_FULLTEXT_BINARY);
+        }
         binaryKeys = Projections.fields(finder.binaryKeys);
     }
 
@@ -251,8 +255,12 @@ public class MongoDBRepository extends DBSRepositoryBase {
         @Override
         protected void recordBlobPath() {
             path.addLast(KEY_BLOB_DATA);
-            binaryKeys.add(Projections.include(StringUtils.join(path, ".")));
+            recordBlobKey(StringUtils.join(path, "."));
             path.removeLast();
+        }
+
+        protected void recordBlobKey(String key) {
+            binaryKeys.add(Projections.include(key));
         }
     }
 

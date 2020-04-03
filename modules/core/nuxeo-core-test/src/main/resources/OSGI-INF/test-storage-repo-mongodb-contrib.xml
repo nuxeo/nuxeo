@@ -16,7 +16,9 @@
       <nativeId>false</nativeId>
       -->
       <changeTokenEnabled>${nuxeo.test.changetoken.enabled}</changeTokenEnabled>
-      <fulltext disabled="${nuxeo.test.fulltext.disabled}" searchDisabled="${nuxeo.test.fulltext.search.disabled}">
+      <fulltext disabled="${nuxeo.test.fulltext.disabled}"
+                storedInBlob="${nuxeo.test.fulltext.storedInBlob}"
+                searchDisabled="${nuxeo.test.fulltext.search.disabled}">
         <index> <!-- name="default" implied -->
           <!-- all props implied -->
         </index>

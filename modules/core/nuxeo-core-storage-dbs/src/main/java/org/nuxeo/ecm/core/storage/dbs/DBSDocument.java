@@ -835,8 +835,19 @@ public class DBSDocument extends BaseDocument<State> {
         String propertyName;
         if (name.startsWith(SYSPROP_FULLTEXT_SIMPLE)) {
             propertyName = name.replace(SYSPROP_FULLTEXT_SIMPLE, KEY_FULLTEXT_SIMPLE);
+            if (session.fulltextStoredInBlob) {
+                // if binary fulltext is stored in blob, there is no simple fulltext available
+                return;
+            }
         } else if (name.startsWith(SYSPROP_FULLTEXT_BINARY)) {
             propertyName = name.replace(SYSPROP_FULLTEXT_BINARY, KEY_FULLTEXT_BINARY);
+            if (session.fulltextStoredInBlob) {
+                if (!(value instanceof String)) {
+                    throw new PropertyException("Property " + name + " must be a string");
+                }
+                setPropertyBlobData(propertyName, (String) value);
+                return;
+            }
         } else {
             propertyName = systemPropNameMap.get(name);
         }
