@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -1540,7 +1541,7 @@ public class TestSQLRepositoryProperties {
         session.setDocumentSystemProp(docRef, "fulltextBinary", fulltext);
         session.save();
         Map<String, String> map = session.getBinaryFulltext(docRef);
-        String res = map.get("binarytext");
+        String res = map.get(BINARY_FULLTEXT_MAIN_KEY);
         assertEquals(fulltext, res);
     }
 
