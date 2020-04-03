@@ -1586,6 +1586,14 @@ public interface CoreSession {
      */
     Map<String, String> getBinaryFulltext(DocumentRef ref);
 
+    /**
+     * The key in the map returned by {@link #getBinaryFulltext} that corresponds to the main binary fulltext
+     * extraction.
+     *
+     * @since 11.1
+     */
+    String BINARY_FULLTEXT_MAIN_KEY = "binarytext";
+
     /** @since 8.2 */
     enum CopyOption {
 

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.api.AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY;
+import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.FACETED_TAG_LABEL;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_BEGIN;
@@ -1559,7 +1560,7 @@ public class DBSSession implements Session<QueryFilter> {
                 throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
             }
         }
-        return Collections.singletonMap("binarytext", fulltext);
+        return Collections.singletonMap(BINARY_FULLTEXT_MAIN_KEY, fulltext);
     }
 
     @Override
