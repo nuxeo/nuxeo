@@ -18,32 +18,19 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
-import static java.lang.Boolean.FALSE;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.naming.NamingException;
 import javax.resource.spi.ConnectionManager;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
@@ -124,6 +111,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
      */
     protected boolean selfRegisteredLockManager = false;
+
+    protected final AtomicInteger sessionCount = new AtomicInteger();
 
     public DBSRepositoryBase(ConnectionManager cm, String repositoryName, DBSRepositoryDescriptor descriptor) {
         this.repositoryName = repositoryName;
@@ -331,7 +320,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public int getActiveSessionsCount() {
-        return transactionContexts.size();
+        return sessionCount.get();
     }
 
     @Override
@@ -340,185 +329,15 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     protected Session getSession(DBSRepository repository) {
-        Transaction transaction;
-        try {
-            transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            if (transaction == null) {
-                throw new NuxeoException("Missing transaction");
-            }
-            int status = transaction.getStatus();
-            if (status != Status.STATUS_ACTIVE && status != Status.STATUS_MARKED_ROLLBACK) {
-                throw new NuxeoException("Transaction in invalid state: " + status);
-            }
-        } catch (SystemException | NamingException e) {
-            throw new NuxeoException("Failed to get transaction", e);
-        }
-        TransactionContext context = transactionContexts.get(transaction);
-        if (context == null) {
-            context = new TransactionContext(transaction, newSession(repository));
-            context.init();
-        }
-        return context.newSession();
+        DBSSession session = new DBSSession(repository, this::sessionCloseCallback);
+        session.begin();
+        TransactionHelper.registerSynchronization(session);
+        sessionCount.incrementAndGet();
+        return session;
     }
 
-    protected DBSSession newSession(DBSRepository repository) {
-        return new DBSSession(repository);
-    }
-
-    public Map<Transaction, TransactionContext> transactionContexts = new ConcurrentHashMap<>();
-
-    /**
-     * Context maintained during a transaction, holding the base session used, and all session proxy handles that have
-     * been returned to callers.
-     */
-    public class TransactionContext implements Synchronization {
-
-        protected final Transaction transaction;
-
-        protected final DBSSession baseSession;
-
-        protected final Set<Session> proxies;
-
-        public TransactionContext(Transaction transaction, DBSSession baseSession) {
-            this.transaction = transaction;
-            this.baseSession = baseSession;
-            proxies = new HashSet<>();
-        }
-
-        public void init() {
-            transactionContexts.put(transaction, this);
-            begin();
-            // make sure it's closed (with handles) at transaction end
-            try {
-                transaction.registerSynchronization(this);
-            } catch (RollbackException | SystemException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public Session newSession() {
-            ClassLoader cl = getClass().getClassLoader();
-            DBSSessionInvoker invoker = new DBSSessionInvoker(this);
-            Session proxy = (Session) Proxy.newProxyInstance(cl, new Class[] { Session.class }, invoker);
-            add(proxy);
-            return proxy;
-        }
-
-        public void add(Session proxy) {
-            proxies.add(proxy);
-        }
-
-        public boolean remove(Object proxy) {
-            return proxies.remove(proxy);
-        }
-
-        public void begin() {
-            baseSession.begin();
-        }
-
-        @Override
-        public void beforeCompletion() {
-        }
-
-        @Override
-        public void afterCompletion(int status) {
-            if (status == Status.STATUS_COMMITTED) {
-                baseSession.commit();
-            } else if (status == Status.STATUS_ROLLEDBACK) {
-                baseSession.rollback();
-            } else {
-                log.error("Unexpected afterCompletion status: " + status);
-            }
-            baseSession.close();
-            removeTransaction();
-        }
-
-        protected void removeTransaction() {
-            for (Session proxy : proxies.toArray(new Session[0])) {
-                proxy.close(); // so that users of the session proxy see it's not live anymore
-            }
-            transactionContexts.remove(transaction);
-        }
-    }
-
-    /**
-     * An indirection to a base {@link DBSSession} intercepting {@code close()} to not close the base session until the
-     * transaction itself is closed.
-     */
-    public static class DBSSessionInvoker implements InvocationHandler {
-
-        private static final String METHOD_HASHCODE = "hashCode";
-
-        private static final String METHOD_EQUALS = "equals";
-
-        private static final String METHOD_CLOSE = "close";
-
-        private static final String METHOD_ISLIVE = "isLive";
-
-        protected final TransactionContext context;
-
-        protected boolean closed;
-
-        public DBSSessionInvoker(TransactionContext context) {
-            this.context = context;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            String methodName = method.getName();
-            if (methodName.equals(METHOD_HASHCODE)) {
-                return doHashCode();
-            }
-            if (methodName.equals(METHOD_EQUALS)) {
-                return doEquals(args);
-            }
-            if (methodName.equals(METHOD_CLOSE)) {
-                return doClose(proxy);
-            }
-            if (methodName.equals(METHOD_ISLIVE)) {
-                return doIsLive();
-            }
-
-            if (closed) {
-                throw new NuxeoException("Cannot use closed connection handle");
-            }
-
-            try {
-                return method.invoke(context.baseSession, args);
-            } catch (ReflectiveOperationException e) {
-                throw ExceptionUtils.unwrapInvoke(e);
-            }
-        }
-
-        protected Integer doHashCode() {
-            return Integer.valueOf(hashCode());
-        }
-
-        protected Boolean doEquals(Object[] args) {
-            if (args.length != 1 || args[0] == null) {
-                return FALSE;
-            }
-            Object other = args[0];
-            if (!(Proxy.isProxyClass(other.getClass()))) {
-                return FALSE;
-            }
-            InvocationHandler otherInvoker = Proxy.getInvocationHandler(other);
-            return Boolean.valueOf(equals(otherInvoker));
-        }
-
-        protected Object doClose(Object proxy) {
-            closed = true;
-            context.remove(proxy);
-            return null;
-        }
-
-        protected Boolean doIsLive() {
-            if (closed) {
-                return FALSE;
-            } else {
-                return Boolean.valueOf(context.baseSession.isLive());
-            }
-        }
+    protected void sessionCloseCallback() {
+        sessionCount.decrementAndGet();
     }
 
 }

@@ -98,6 +98,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -165,12 +168,14 @@ import io.dropwizard.metrics5.Timer;
  *
  * @since 5.9.4
  */
-public class DBSSession extends BaseSession {
+public class DBSSession extends BaseSession implements Synchronization {
 
     private static final Log log = LogFactory.getLog(DBSSession.class);
 
     protected static final Set<String> KEYS_RETENTION_HOLD_AND_PROXIES = new HashSet<>(Arrays.asList(KEY_RETAIN_UNTIL,
             KEY_HAS_LEGAL_HOLD, KEY_IS_RETENTION_ACTIVE, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS));
+
+    protected final Runnable closeCallback;
 
     protected final DBSTransactionState transaction;
 
@@ -194,8 +199,9 @@ public class DBSSession extends BaseSession {
 
     protected boolean isLatestVersionDisabled = false;
 
-    public DBSSession(DBSRepository repository) {
+    public DBSSession(DBSRepository repository, Runnable closeCallback) {
         super(repository);
+        this.closeCallback = closeCallback;
         transaction = new DBSTransactionState(repository, this);
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         fulltextStoredInBlob = fulltextConfiguration != null && fulltextConfiguration.fulltextStoredInBlob;
@@ -217,8 +223,11 @@ public class DBSSession extends BaseSession {
 
     @Override
     public void close() {
-        transaction.close();
-        closed = true;
+        if (!closed) {
+            closed = true;
+            transaction.close();
+            closeCallback.run();
+        }
     }
 
     @Override
@@ -242,6 +251,26 @@ public class DBSSession extends BaseSession {
 
     public void begin() {
         transaction.begin();
+    }
+
+    @Override
+    public void beforeCompletion() {
+        // nothing
+    }
+
+    @Override
+    public void afterCompletion(int status) {
+        try {
+            if (status == Status.STATUS_COMMITTED) {
+                commit();
+            } else if (status == Status.STATUS_ROLLEDBACK) {
+                rollback();
+            } else {
+                log.error("Unexpected afterCompletion status: " + status);
+            }
+        } finally {
+            close();
+        }
     }
 
     public void commit() {
