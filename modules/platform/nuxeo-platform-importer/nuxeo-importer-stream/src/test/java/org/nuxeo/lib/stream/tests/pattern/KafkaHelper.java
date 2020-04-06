@@ -16,29 +16,15 @@
  */
 package org.nuxeo.lib.stream.tests.pattern;
 
-import static org.junit.Assert.fail;
-
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.junit.Assume;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
 public class KafkaHelper {
 
     public static final String TOPIC_PREFIX = "nuxeo-test";
-
-    public static void assumeKafkaEnabled() {
-        if ("true".equals(System.getProperty("kafka")) // deprecated since 10.3
-                || "true".equals(System.getProperty("nuxeo.test.stream"))) {
-            if (!KafkaUtils.kafkaDetected()) {
-                fail("Kafka profile is enable, but no Kafka server found.");
-            }
-        } else {
-            Assume.assumeTrue("No kafka profile", false);
-        }
-    }
 
     public static String getPrefix() {
         return TOPIC_PREFIX + "-" + System.currentTimeMillis() + "-";
