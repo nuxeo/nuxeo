@@ -63,6 +63,7 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.codec.CodecService;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
@@ -206,7 +207,7 @@ public class StreamWorkManager extends WorkManagerImpl {
         }
         WorkSchedulePath.newInstance(work);
         // We don't need to set a codec because appender is initialized with proper codec during processor init
-        LogAppender<Record> appender = logManager.getAppender(queueId);
+        LogAppender<Record> appender = logManager.getAppender(Name.ofUrn(queueId));
         if (appender == null) {
             log.error(String.format("Not scheduled work, unknown category: %s, mapped to %s", work.getCategory(),
                     queueId));
@@ -507,7 +508,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     public WorkQueueMetrics getMetrics(String queueId) {
-        LogLag lag = logManager.getLag(queueId, queueId);
+        LogLag lag = logManager.getLag(Name.ofUrn(queueId), Name.ofUrn(queueId));
         long running = 0;
         if (lag.lag() > 0) {
             // we don't have the exact running metric

@@ -51,6 +51,7 @@ import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Misc Kafka Utils
@@ -142,7 +143,7 @@ public class KafkaUtils implements AutoCloseable {
             ret.add(assignments.get(String.valueOf(i))
                                .partitions()
                                .stream()
-                               .map(part -> new LogPartition(part.topic(), part.partition()))
+                               .map(part -> new LogPartition(Name.ofUrn(part.topic()), part.partition()))
                                .collect(Collectors.toList()));
         }
         return ret;

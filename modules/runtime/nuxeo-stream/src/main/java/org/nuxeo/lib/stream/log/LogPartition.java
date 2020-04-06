@@ -24,23 +24,23 @@ package org.nuxeo.lib.stream.log;
  * @since 9.3
  */
 public class LogPartition {
-    protected final String name;
+    protected final Name name;
 
     protected final int partition;
 
-    public LogPartition(String name, int partition) {
+    public LogPartition(Name name, int partition) {
         this.name = name;
         this.partition = partition;
     }
 
-    public static LogPartition of(String name, int partition) {
+    public static LogPartition of(Name name, int partition) {
         return new LogPartition(name, partition);
     }
 
     /**
      * Returns the Log's name
      */
-    public String name() {
+    public Name name() {
         return name;
     }
 
@@ -72,6 +72,6 @@ public class LogPartition {
 
     @Override
     public String toString() {
-        return String.format("%s-%02d", name, partition);
+        return String.format("%s-%02d", name.getId(), partition);
     }
 }

@@ -51,7 +51,7 @@ public abstract class AbstractComputation implements Computation {
     public static final String OUTPUT_4 = "o4";
 
     // @since 11.1 can be used as input for single producer pattern
-    public static final String INPUT_NULL = "log_null";
+    public static final String INPUT_NULL = "input/null";
 
     /**
      * Creates a computation with the requested number of input and output streams.<br/>

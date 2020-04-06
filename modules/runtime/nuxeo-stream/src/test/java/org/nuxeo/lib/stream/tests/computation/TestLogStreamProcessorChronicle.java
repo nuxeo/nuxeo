@@ -40,6 +40,7 @@ import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 
 import net.jodah.failsafe.RetryPolicy;
@@ -93,7 +94,7 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
             streamManager.append("input", Record.of("bar", null));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             // only the first record is skipped after failure
             assertEquals(lag.toString(), 1, lag.lag());
         }

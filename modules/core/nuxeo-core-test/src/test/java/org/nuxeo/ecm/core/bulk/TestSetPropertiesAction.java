@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -183,7 +184,7 @@ public class TestSetPropertiesAction {
         StreamService streamService = Framework.getService(StreamService.class);
         @SuppressWarnings("resource")
         LogManager logManager = streamService.getLogManager(BULK_LOG_MANAGER_NAME);
-        try (LogTailer<Record> tailer = logManager.createTailer("test", ACTION_NAME)) {
+        try (LogTailer<Record> tailer = logManager.createTailer(Name.ofUrn("test"), Name.ofUrn(ACTION_NAME))) {
             tailer.toLastCommitted();
 
             DocumentModel model = session.getDocument(new PathRef("/default-domain/workspaces/test"));

@@ -64,6 +64,7 @@ import org.nuxeo.ecm.core.work.api.WorkSchedulePath;
 import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.metrics.NuxeoMetricSet;
@@ -126,7 +127,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
      *
      * @since 11.1
      */
-    public static final String DEAD_LETTER_QUEUE = "dlq-work";
+    public static final Name DEAD_LETTER_QUEUE = Name.ofUrn("work/dlq");
 
     // @since 11.1
     public static final Codec<Record> DEAD_LETTER_QUEUE_CODEC = new AvroMessageCodec<>(Record.class);

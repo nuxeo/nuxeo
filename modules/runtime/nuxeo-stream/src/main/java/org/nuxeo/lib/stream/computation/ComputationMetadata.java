@@ -97,7 +97,7 @@ public class ComputationMetadata {
 
     @Override
     public String toString() {
-        return "ComputationMetadata{" + "name='" + name + '\'' + ", inputStreams=" + String.join(",", inputStreams)
-                + ", outputStreams=" + String.join(",", outputStreams) + '}';
+        return "ComputationMetadata{" + "name=" + name + ", inputStreams=" + inputStreams + ", outputStreams="
+                + outputStreams + '}';
     }
 }

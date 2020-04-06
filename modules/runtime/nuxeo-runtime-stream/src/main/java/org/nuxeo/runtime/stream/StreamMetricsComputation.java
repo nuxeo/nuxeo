@@ -36,6 +36,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 import org.nuxeo.runtime.api.Framework;
 
@@ -59,9 +60,9 @@ public class StreamMetricsComputation extends AbstractComputation {
 
     protected final List<String> inputStreams;
 
-    protected final List<String> streams = new ArrayList<>();
+    protected final List<Name> streams = new ArrayList<>();
 
-    protected final Set<String> invalidStreams = new HashSet<>();
+    protected final Set<Name> invalidStreams = new HashSet<>();
 
     protected final List<LogPartitionGroup> groups = new ArrayList<>();
 
@@ -126,13 +127,13 @@ public class StreamMetricsComputation extends AbstractComputation {
         }
     }
 
-    protected List<String> getStreams() {
+    protected List<Name> getStreams() {
         if (streams.isEmpty()) {
             if (inputStreams == null || inputStreams.isEmpty()) {
                 streams.addAll(getManager().listAll());
                 log.debug("Use all available streams: {}", streams);
             } else {
-                streams.addAll(inputStreams);
+                inputStreams.forEach(stream -> streams.add(Name.ofUrn(stream)));
                 log.debug("Use input streams: {}", streams);
             }
             if (!invalidStreams.isEmpty()) {
@@ -195,7 +196,9 @@ public class StreamMetricsComputation extends AbstractComputation {
         }
 
         protected MetricName getMetricName(String name) {
-            return MetricName.build(PREFIX + name).tagged("stream", consumer.name).tagged("group", consumer.group);
+            return MetricName.build(PREFIX + name)
+                             .tagged("stream", consumer.name.getId())
+                             .tagged("group", consumer.group.getId());
         }
 
         protected void registerMetrics() {
@@ -235,7 +238,7 @@ public class StreamMetricsComputation extends AbstractComputation {
             unregisterMetrics();
         }
 
-        public String getStream() {
+        public Name getStream() {
             return consumer.getLogPartition().name();
         }
 

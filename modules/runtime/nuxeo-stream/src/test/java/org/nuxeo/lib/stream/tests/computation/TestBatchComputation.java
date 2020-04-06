@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.tests.computation;
 
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -62,7 +63,7 @@ public class TestBatchComputation {
         Record aRecord = Record.of("foo", "bar".getBytes(StandardCharsets.UTF_8));
         comp.processRecord(context, "i1", aRecord);
         // no record send to output
-        assertEquals(0, context.getRecords("o1").size());
+        assertEquals(0, context.getRecords(OUTPUT_1).size());
         // assertion counter start
         assertEquals(0, comp.failureCounter);
         assertEquals(0, comp.processCounter);
@@ -90,7 +91,7 @@ public class TestBatchComputation {
         comp.processRecord(context, "i1", aRecord);
         assertEquals(0, comp.failureCounter);
         assertEquals(2, comp.processCounter);
-        assertEquals(0, context.getRecords("o1").size());
+        assertEquals(0, context.getRecords(OUTPUT_1).size());
 
         comp.processRecord(context, "i2", aRecord);
         assertEquals(1, context.getRecords("o1").size());

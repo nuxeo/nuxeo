@@ -30,6 +30,7 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Copy a Log to another
@@ -84,16 +85,15 @@ public class CopyCommand extends Command {
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) {
-        String src = cmd.getOptionValue("src");
-        String dest = cmd.getOptionValue("dest");
-        String group = cmd.getOptionValue("group", "tools");
+        Name src = Name.ofUrn(cmd.getOptionValue("src"));
+        Name dest = Name.ofUrn(cmd.getOptionValue("dest"));
+        Name group = Name.ofUrn(cmd.getOptionValue("group", "admin/tools"));
         String srcCodec = cmd.getOptionValue("srcCodec");
         String destCodec = cmd.getOptionValue("destCodec");
         return copy(manager, src, srcCodec, dest, destCodec, group);
     }
 
-    protected boolean copy(LogManager manager, String src, String srcCodec, String dest, String destCodec,
-            String group) {
+    protected boolean copy(LogManager manager, Name src, String srcCodec, Name dest, String destCodec, Name group) {
         log.info(String.format("# Copy %s to %s", src, dest));
         if (!manager.exists(src)) {
             log.error("source log not found: " + src);

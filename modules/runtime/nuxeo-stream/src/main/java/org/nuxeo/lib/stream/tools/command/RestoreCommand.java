@@ -24,7 +24,6 @@ import static org.nuxeo.lib.stream.tools.command.PositionCommand.READ_TIMEOUT;
 import static org.nuxeo.lib.stream.tools.command.PositionCommand.getTimestampFromDate;
 import static org.nuxeo.lib.stream.tools.command.TrackerCommand.ALL_LOGS;
 import static org.nuxeo.lib.stream.tools.command.TrackerCommand.DEFAULT_LATENCIES_LOG;
-import static org.nuxeo.lib.stream.tools.command.TrackerCommand.INTERNAL_LOG_PREFIX;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -46,6 +45,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 /**
@@ -58,13 +58,13 @@ public class RestoreCommand extends Command {
 
     protected static final String NAME = "restore";
 
-    protected static final String GROUP = "tools";
+    protected static final Name GROUP = Name.ofUrn("admin/tools");
 
     protected boolean verbose = false;
 
-    protected String input;
+    protected Name input;
 
-    protected List<String> logNames;
+    protected List<Name> logNames;
 
     protected long date;
 
@@ -113,7 +113,7 @@ public class RestoreCommand extends Command {
     @Override
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         logNames = getLogNames(manager, cmd.getOptionValue("log-name"));
-        input = cmd.getOptionValue("log-input", DEFAULT_LATENCIES_LOG);
+        input = Name.ofUrn(cmd.getOptionValue("log-input", DEFAULT_LATENCIES_LOG));
         date = getTimestampFromDate(cmd.getOptionValue("to-date"));
         verbose = cmd.hasOption("verbose");
         dryRun = cmd.hasOption("dry-run");
@@ -210,15 +210,12 @@ public class RestoreCommand extends Command {
         return Latency.fromJson(new String(data, StandardCharsets.UTF_8));
     }
 
-    protected List<String> getLogNames(LogManager manager, String names) {
+    protected List<Name> getLogNames(LogManager manager, String names) {
         if (ALL_LOGS.equalsIgnoreCase(names)) {
-            return manager.listAll()
-                          .stream()
-                          .filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX))
-                          .collect(Collectors.toList());
+            return manager.listAll();
         }
-        List<String> ret = Arrays.asList(names.split(","));
-        for (String name : ret) {
+        List<Name> ret = Arrays.stream(names.split(",")).map(Name::ofUrn).collect(Collectors.toList());
+        for (Name name : ret) {
             if (!manager.exists(name)) {
                 throw new IllegalArgumentException("Unknown log name: " + name);
             }

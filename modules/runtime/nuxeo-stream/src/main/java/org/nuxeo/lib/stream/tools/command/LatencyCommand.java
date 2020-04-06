@@ -33,6 +33,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Display the current latencies of consumers.
@@ -70,11 +71,11 @@ public class LatencyCommand extends Command {
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) {
-        String name = cmd.getOptionValue("log-name");
+        String logName = cmd.getOptionValue("log-name");
         Codec<Record> codec = getRecordCodec(cmd.getOptionValue("codec"));
         verbose = cmd.hasOption("verbose");
-        if (name != null) {
-            latency(manager, name, codec);
+        if (logName != null) {
+            latency(manager, Name.ofUrn(logName), codec);
         } else {
             latency(manager, codec);
         }
@@ -83,17 +84,17 @@ public class LatencyCommand extends Command {
 
     protected void latency(LogManager manager, Codec<Record> codec) {
         log.info("# " + manager);
-        for (String name : manager.listAll()) {
+        for (Name name : manager.listAll()) {
             latency(manager, name, codec);
         }
     }
 
-    protected void latency(LogManager manager, String name, Codec<Record> codec) {
+    protected void latency(LogManager manager, Name name, Codec<Record> codec) {
         log.info("## Log: " + name + " partitions: " + manager.size(name));
-        List<String> consumers = manager.listConsumerGroups(name);
+        List<Name> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions
-            consumers.add("tools");
+            consumers.add(Name.ofUrn("admin/tools"));
         }
         try {
             consumers.forEach(group -> renderLatency(group, manager.<Record> getLatencyPerPartition(name, group, codec,
@@ -104,7 +105,7 @@ public class LatencyCommand extends Command {
         }
     }
 
-    protected void renderLatency(String group, List<Latency> latencies) {
+    protected void renderLatency(Name group, List<Latency> latencies) {
         log.info(String.format("### Group: %s", group));
         log.info(
                 "| partition | lag | latencyMs | latency | posTimestamp | posDate | curDate | pos | end | posOffset | endOffset | posKey |\n"

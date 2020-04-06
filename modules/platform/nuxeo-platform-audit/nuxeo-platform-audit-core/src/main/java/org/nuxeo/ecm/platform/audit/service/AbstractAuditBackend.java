@@ -84,6 +84,7 @@ import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 
@@ -404,7 +405,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             LogManager logManager = service.getLogManager(DEFAULT_LOG_CONFIG);
             // when there is no lag between producer and consumer we are done
             long deadline = System.currentTimeMillis() + unit.toMillis(time);
-            while (logManager.getLag(STREAM_NAME, COMPUTATION_NAME).lag() > 0) {
+            while (logManager.getLag(Name.ofUrn(STREAM_NAME), Name.ofUrn(COMPUTATION_NAME)).lag() > 0) {
                 if (System.currentTimeMillis() > deadline) {
                     return false;
                 }

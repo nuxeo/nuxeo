@@ -43,6 +43,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 
 /**
@@ -125,7 +126,7 @@ public class TestRecordFilter {
             streamManager.append("input", Record.of("changeMeOnRead", null));
 
             assertTrue(processor.drainAndStop(Duration.ofMinutes(1)));
-            try (LogTailer<Record> tailer = manager.createTailer("test", "output")) {
+            try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test/group"), Name.ofUrn("output"))) {
                 LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
                 assertNotNull(logRecord);
                 assertEquals("keepMeLikeThis", logRecord.message().getKey());

@@ -18,11 +18,6 @@
  */
 package org.nuxeo.runtime.stream.tests;
 
-import io.dropwizard.metrics5.Gauge;
-import io.dropwizard.metrics5.MetricName;
-import io.dropwizard.metrics5.MetricRegistry;
-import io.dropwizard.metrics5.SharedMetricRegistries;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -49,6 +44,7 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.management.api.ProbeStatus;
 import org.nuxeo.runtime.stream.StreamMetricsComputation;
 import org.nuxeo.runtime.stream.StreamProbe;
@@ -57,6 +53,11 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+import io.dropwizard.metrics5.Gauge;
+import io.dropwizard.metrics5.MetricName;
+import io.dropwizard.metrics5.MetricRegistry;
+import io.dropwizard.metrics5.SharedMetricRegistries;
 
 /**
  * @since 9.3
@@ -100,8 +101,8 @@ public class TestStreamService {
         LogManager manager3 = service.getLogManager("default");
         assertNotNull(manager3);
 
-        manager3.exists("input");
-        assertEquals(1, manager3.size("input"));
+        manager3.exists(Name.ofUrn("input"));
+        assertEquals(1, manager3.size(Name.ofUrn("input")));
 
     }
 
@@ -109,14 +110,14 @@ public class TestStreamService {
     public void testBasicLogUsage() throws Exception {
         @SuppressWarnings("resource")
         LogManager manager = service.getLogManager("default");
-        String logName = "myLog";
+        Name logName = Name.ofUrn("myLog");
         String key = "a key";
         String value = "a value";
 
         LogAppender<Record> appender = manager.getAppender(logName);
         appender.append(key, Record.of(key, value.getBytes("UTF-8")));
 
-        try (LogTailer<Record> tailer = manager.createTailer("myGroup", logName)) {
+        try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("myGroup"), logName)) {
             LogRecord<Record> logRecord = tailer.read(Duration.ofSeconds(1));
             assertNotNull(logRecord);
             assertEquals(key, logRecord.message().getKey());
@@ -132,7 +133,7 @@ public class TestStreamService {
         StreamManager streamManager = service.getStreamManager("default");
 
         @SuppressWarnings("resource") // not ours to close
-        LogTailer<Record> tailer = manager.createTailer("counter", "output");
+        LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("counter"), Name.ofUrn("output"));
 
         // add an input message
         String key = "a key";
@@ -179,7 +180,7 @@ public class TestStreamService {
     public void testDefaultPartitions() throws Exception {
         @SuppressWarnings("resource")
         LogManager manager = service.getLogManager("default");
-        String streamName = "s1";
+        Name streamName = Name.ofUrn("s1");
         assertTrue(manager.exists(streamName));
         assertEquals(2, manager.size(streamName));
     }
@@ -188,16 +189,16 @@ public class TestStreamService {
     public void testRegisterAndExternalStream() throws Exception {
         // make sure the processor is initialized
         LogManager manager = service.getLogManager("default");
-        assertTrue(manager.exists("input3"));
-        assertTrue(manager.exists("output3"));
-        assertTrue(manager.exists("registerInput"));
-        assertFalse(manager.exists("externalOutput"));
+        assertTrue(manager.exists(Name.ofUrn("input3")));
+        assertTrue(manager.exists(Name.ofUrn("output3")));
+        assertTrue(manager.exists(Name.ofUrn("registerInput")));
+        assertFalse(manager.exists(Name.ofUrn("externalOutput")));
 
         // make sure the processor is not started
         @SuppressWarnings("resource")
         StreamManager streamManager = service.getStreamManager("default");
         streamManager.append("input3", Record.of("key", null));
-        LogTailer<Record> tailer = manager.createTailer("test", "output3");
+        LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test"), Name.ofUrn("output3"));
         assertNull(tailer.read(Duration.ofSeconds(1)));
 
         // We can get the processor

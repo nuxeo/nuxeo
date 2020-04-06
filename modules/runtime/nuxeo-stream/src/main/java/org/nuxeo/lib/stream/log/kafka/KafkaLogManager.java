@@ -36,6 +36,8 @@ import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
+import org.nuxeo.lib.stream.log.NameResolver;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.log.internals.AbstractLogManager;
 import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
@@ -56,13 +58,12 @@ public class KafkaLogManager extends AbstractLogManager {
 
     protected final Properties adminProperties;
 
-    protected final String prefix;
+    protected final NameResolver resolver;
 
     protected final short defaultReplicationFactor;
 
     protected final boolean disableSubscribe;
 
-    protected final KafkaNamespace ns;
 
     /**
      * @deprecated since 10.2, zookeeper is not needed anymore, you need to remove the zkServers parameter.
@@ -77,8 +78,7 @@ public class KafkaLogManager extends AbstractLogManager {
      * @since 10.2
      */
     public KafkaLogManager(String prefix, Properties producerProperties, Properties consumerProperties) {
-        this.prefix = (prefix != null) ? prefix : "";
-        this.ns = new KafkaNamespace(this.prefix);
+        this.resolver = new NameResolver(prefix);
         disableSubscribe = Boolean.valueOf(consumerProperties.getProperty(DISABLE_SUBSCRIBE_PROP, "false"));
         defaultReplicationFactor = Short.parseShort(
                 producerProperties.getProperty(DEFAULT_REPLICATION_FACTOR_PROP, "1"));
@@ -89,34 +89,35 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public void create(String name, int size) {
-        kUtils.createTopic(ns.getTopicName(name), size, defaultReplicationFactor);
+    public void create(Name name, int size) {
+        kUtils.createTopic(resolver.getId(name), size, defaultReplicationFactor);
     }
 
     @Override
-    protected int getSize(String name) {
-        return kUtils.partitions(ns.getTopicName(name));
+    protected int getSize(Name name) {
+        return kUtils.partitions(resolver.getId(name));
     }
 
     @Override
-    public boolean exists(String name) {
-        return kUtils.topicExists(ns.getTopicName(name));
+    public boolean exists(Name name) {
+        return kUtils.topicExists(resolver.getId(name));
     }
 
     @Override
-    public <M extends Externalizable> CloseableLogAppender<M> createAppender(String name, Codec<M> codec) {
-        return KafkaLogAppender.open(codec, ns, name, producerProperties, consumerProperties);
+    public <M extends Externalizable> CloseableLogAppender<M> createAppender(Name name, Codec<M> codec) {
+        return KafkaLogAppender.open(codec, resolver, name, producerProperties, consumerProperties);
     }
 
     @Override
-    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions, String group,
+    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions, Name group,
             Codec<M> codec) {
         partitions.forEach(this::checkValidPartition);
-        return KafkaLogTailer.createAndAssign(codec, ns, partitions, group, (Properties) consumerProperties.clone());
+        return KafkaLogTailer.createAndAssign(codec, resolver, partitions, group,
+                (Properties) consumerProperties.clone());
     }
 
     protected void checkValidPartition(LogPartition partition) {
-        int partitions = kUtils.getNumberOfPartitions(ns.getTopicName(partition.name()));
+        int partitions = kUtils.getNumberOfPartitions(resolver.getId(partition.name()));
         if (partition.partition() >= partitions) {
             throw new IllegalArgumentException("Partition out of bound " + partition + " max: " + partitions);
         }
@@ -148,9 +149,9 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    protected <M extends Externalizable> LogTailer<M> doSubscribe(String group, Collection<String> names,
+    protected <M extends Externalizable> LogTailer<M> doSubscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec) {
-        return KafkaLogTailer.createAndSubscribe(codec, ns, names, group, (Properties) consumerProperties.clone(),
+        return KafkaLogTailer.createAndSubscribe(codec, resolver, names, group, (Properties) consumerProperties.clone(),
                 listener);
     }
 
@@ -208,14 +209,14 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<LogLag> getLagPerPartition(String name, String group) {
+    public List<LogLag> getLagPerPartition(Name name, Name group) {
         Properties props = (Properties) consumerProperties.clone();
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, prefix + group);
-        props.put(ConsumerConfig.CLIENT_ID_CONFIG, "lag");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, resolver.getId(group));
+        props.put(ConsumerConfig.CLIENT_ID_CONFIG, resolver.getId(group) + "-lag");
         // Prevents to create multiple consumers with the same client/group ids
         synchronized(KafkaLogManager.class) {
             try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
-                List<TopicPartition> topicPartitions = consumer.partitionsFor(ns.getTopicName(name))
+                List<TopicPartition> topicPartitions = consumer.partitionsFor(resolver.getId(name))
                         .stream()
                         .map(meta -> new TopicPartition(meta.topic(),
                                 meta.partition()))
@@ -240,18 +241,19 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<String> listAll() {
+    public List<Name> listAll() {
         return kUtils.listTopics()
                      .stream()
-                     .filter(name -> name.startsWith(prefix))
-                     .map(ns::getLogName)
+                     .filter(name -> name.startsWith(resolver.getPrefix()))
+                     .map(resolver::getName)
                      .collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
         return "KafkaLogManager{" + "producerProperties=" + filterDisplayedProperties(producerProperties)
-                + ", consumerProperties=" + filterDisplayedProperties(consumerProperties) + ", prefix='" + prefix + '\''
+                + ", consumerProperties=" + filterDisplayedProperties(consumerProperties) + ", prefix='"
+                + resolver.getPrefix() + '\''
                 + '}';
     }
 
@@ -264,15 +266,15 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<String> listConsumerGroups(String name) {
-        String topic = ns.getTopicName(name);
+    public List<Name> listConsumerGroups(Name name) {
+        String topic = resolver.getId(name);
         if (!exists(name)) {
             throw new IllegalArgumentException("Unknown Log: " + name);
         }
         return kUtils.listConsumers(topic)
                      .stream()
-                     .filter(group -> group.startsWith(prefix))
-                     .map(ns::getGroup)
+                     .filter(group -> group.startsWith(resolver.getPrefix()))
+                     .map(resolver::getName)
                      .collect(Collectors.toList());
     }
 

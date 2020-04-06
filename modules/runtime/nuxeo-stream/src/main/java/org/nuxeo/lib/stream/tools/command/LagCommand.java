@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Display the current lags of consumers.
@@ -55,10 +56,10 @@ public class LagCommand extends Command {
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) {
-        String name = cmd.getOptionValue("log-name");
+        String logName = cmd.getOptionValue("log-name");
         verbose = cmd.hasOption("verbose");
-        if (name != null) {
-            lag(manager, name);
+        if (logName != null) {
+            lag(manager, Name.ofUrn(logName));
         } else {
             lag(manager);
         }
@@ -67,22 +68,22 @@ public class LagCommand extends Command {
 
     protected void lag(LogManager manager) {
         log.info("# " + manager);
-        for (String name : manager.listAll()) {
+        for (Name name : manager.listAll()) {
             lag(manager, name);
         }
     }
 
-    protected void lag(LogManager manager, String name) {
+    protected void lag(LogManager manager, Name name) {
         log.info("## Log: " + name + " partitions: " + manager.size(name));
-        List<String> consumers = manager.listConsumerGroups(name);
+        List<Name> consumers = manager.listConsumerGroups(name);
         if (verbose && consumers.isEmpty()) {
             // add a fake group to get info on end positions
-            consumers.add("tools");
+            consumers.add(Name.ofUrn("admin/tools"));
         }
         consumers.forEach(group -> renderLag(group, manager.getLagPerPartition(name, group)));
     }
 
-    protected void renderLag(String group, List<LogLag> lags) {
+    protected void renderLag(Name group, List<LogLag> lags) {
         log.info("### Group: " + group);
         log.info("| partition | lag | pos | end | posOffset | endOffset |\n"
                 + "| --- | ---: | ---: | ---: | ---: | ---: |");

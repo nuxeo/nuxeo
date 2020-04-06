@@ -19,24 +19,25 @@
 package org.nuxeo.lib.stream.log.internals;
 
 import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * @since 9.3
  */
 public class LogPartitionGroup {
-    public final String group;
+    public final Name group;
 
-    public final String name;
+    public final Name name;
 
     public final int partition;
 
-    public LogPartitionGroup(String group, LogPartition mqp) {
+    public LogPartitionGroup(Name group, LogPartition mqp) {
         this.group = group;
         this.name = mqp.name();
         this.partition = mqp.partition();
     }
 
-    public LogPartitionGroup(String group, String name, int partition) {
+    public LogPartitionGroup(Name group, Name name, int partition) {
         this.group = group;
         this.name = name;
         this.partition = partition;

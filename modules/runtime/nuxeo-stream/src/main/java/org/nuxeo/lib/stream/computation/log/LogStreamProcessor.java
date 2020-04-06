@@ -45,6 +45,7 @@ import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
 /**
@@ -176,7 +177,8 @@ public class LogStreamProcessor implements StreamProcessor {
                 comp -> topology.getMetadata(comp)
                                 .inputStreams()
                                 .forEach(stream -> latencies.add(
-                                        manager.getLatency(stream, comp, settings.getCodec(comp),
+                                        manager.getLatency(Name.ofUrn(stream), Name.ofUrn(comp),
+                                                settings.getCodec(comp),
                                                 (rec -> Watermark.ofValue(rec.getWatermark()).getTimestamp()),
                                                 (Record::getKey)))));
         return Latency.of(latencies);

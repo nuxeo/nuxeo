@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_LOG_MANAGER_NAME;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM;
+import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.io.Serializable;
@@ -51,6 +51,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -78,7 +79,7 @@ public class TestBulkProcessor {
     public void testEmptyQuery() throws InterruptedException {
         @SuppressWarnings("resource")
         LogManager logManager = stream.getLogManager(BULK_LOG_MANAGER_NAME);
-        try (LogTailer<Record> tailer = logManager.createTailer("test", DONE_STREAM)) {
+        try (LogTailer<Record> tailer = logManager.createTailer(Name.ofUrn("test"), DONE_STREAM_NAME)) {
             tailer.toLastCommitted();
 
             String nxql = "SELECT * from Document where ecm:parentId='nonExistentId'";
