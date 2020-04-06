@@ -40,7 +40,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeSnaphotFeature.class })
+@Features(RuntimeSnaphotFeature.class)
 public class TestExportImport {
 
     @Inject
