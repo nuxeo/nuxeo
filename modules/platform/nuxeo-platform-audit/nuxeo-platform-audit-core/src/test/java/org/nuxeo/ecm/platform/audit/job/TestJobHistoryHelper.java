@@ -45,7 +45,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestJobHistoryHelper {
 
     @Test
-    public void testLogger() throws Exception {
+    public void testLogger() {
         StringBuilder query = new StringBuilder("from LogEntry log where ");
         query.append(" log.category='");
         query.append("MyExport");

@@ -65,4 +65,8 @@ public class KafkaHelper {
         return props;
     }
 
+    private KafkaHelper() {
+        // helper class
+    }
+
 }
