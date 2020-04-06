@@ -89,9 +89,8 @@ public class MoveToColdStorageTest extends AbstractTestColdStorageOperation {
                 createFileDocument(session, true, aces), //
                 createFileDocument(session, true, aces));
 
-        try (CloseableCoreSession userSession = CoreInstance.openCoreSession(session.getRepositoryName(), "linda")) {
-            moveContentToColdStorage(userSession, documents);
-        }
+        CoreSession userSession = CoreInstance.getCoreSession(session.getRepositoryName(), "linda");
+        moveContentToColdStorage(userSession, documents);
 
         // with Administrator
         documents = List.of(createFileDocument(session, true), //
