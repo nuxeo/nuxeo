@@ -53,7 +53,6 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.NamingException;
-import javax.resource.ResourceException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
@@ -1033,8 +1032,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 } finally {
                     session.close();
                 }
-            } catch (ResourceException | XAException | IllegalStateException | RollbackException | SystemException
-                    | NamingException e) {
+            } catch (XAException | IllegalStateException | RollbackException | SystemException | NamingException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -1223,13 +1221,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             TransactionHelper.lookupTransactionManager()
                              .getTransaction()
-                             .enlistResource(((SessionImpl) session1).getXAResource());
+                             .enlistResource((SessionImpl) session1);
             node1.setSimpleProperty("tst:title", "t1");
             TransactionHelper.runWithoutTransaction(() -> {
                 try {
                     TransactionHelper.lookupTransactionManager()
                                      .getTransaction()
-                                     .enlistResource(((SessionImpl) session2).getXAResource());
+                                     .enlistResource((SessionImpl) session2);
                     foo2.getSimpleProperty("tst:title");
                 } catch (SystemException | RollbackException | NamingException e) {
                     throw new RuntimeException(e);
@@ -1671,7 +1669,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         };
 
         Session session = repository.getConnection();
-        XAResource xaresource = ((SessionImpl) session).getXAResource();
+        XAResource xaresource = (SessionImpl) session;
         Node root = session.getRootNode();
         Node nodea = session.addChildNode(root, "foo", null, "TestDoc", false);
         nodea.setSimpleProperty("tst:title", "old");
@@ -1728,7 +1726,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection(); // init
         session.save();
 
-        XAResource xaresource = ((SessionImpl) session).getXAResource();
+        XAResource xaresource = (SessionImpl) session;
 
         // first transaction
         TransactionHelper.startTransaction();
@@ -4178,11 +4176,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 throwable = t;
             } finally {
                 if (session != null) {
-                    try {
-                        session.close();
-                    } catch (ResourceException e) {
-                        e.printStackTrace();
-                    }
+                    session.close();
                 }
                 // error recovery
                 // still count down as main thread is awaiting us

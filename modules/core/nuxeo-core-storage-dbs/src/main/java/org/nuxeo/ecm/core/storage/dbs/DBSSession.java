@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
+import static javax.transaction.xa.XAException.XAER_RMERR;
 import static org.nuxeo.ecm.core.action.DeletionAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.api.AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY;
 import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
@@ -98,8 +99,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
+import javax.transaction.xa.XAException;
+import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -168,7 +170,7 @@ import io.dropwizard.metrics5.Timer;
  *
  * @since 5.9.4
  */
-public class DBSSession extends BaseSession implements Synchronization {
+public class DBSSession extends BaseSession {
 
     private static final Log log = LogFactory.getLog(DBSSession.class);
 
@@ -184,8 +186,6 @@ public class DBSSession extends BaseSession implements Synchronization {
     protected final boolean fulltextSearchDisabled;
 
     protected final boolean changeTokenEnabled;
-
-    protected boolean closed;
 
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
@@ -222,17 +222,9 @@ public class DBSSession extends BaseSession implements Synchronization {
     }
 
     @Override
-    public void close() {
-        if (!closed) {
-            closed = true;
-            transaction.close();
-            closeCallback.run();
-        }
-    }
-
-    @Override
-    public boolean isLive() {
-        return !closed;
+    public void destroy() {
+        transaction.close();
+        closeCallback.run();
     }
 
     @SuppressWarnings("resource") // timerContext closed by stop() in finally
@@ -247,38 +239,6 @@ public class DBSSession extends BaseSession implements Synchronization {
         } finally {
             timerContext.stop();
         }
-    }
-
-    public void begin() {
-        transaction.begin();
-    }
-
-    @Override
-    public void beforeCompletion() {
-        // nothing
-    }
-
-    @Override
-    public void afterCompletion(int status) {
-        try {
-            if (status == Status.STATUS_COMMITTED) {
-                commit();
-            } else if (status == Status.STATUS_ROLLEDBACK) {
-                rollback();
-            } else {
-                log.error("Unexpected afterCompletion status: " + status);
-            }
-        } finally {
-            close();
-        }
-    }
-
-    public void commit() {
-        transaction.commit();
-    }
-
-    public void rollback() {
-        transaction.rollback();
     }
 
     protected String getRootId() {
@@ -2181,6 +2141,77 @@ public class DBSSession extends BaseSession implements Synchronization {
         if (changeTokenEnabled) {
             transaction.markUserChange(id);
         }
+    }
+
+    /*
+     * ----- Transaction / XAResource -----
+     */
+
+    @Override
+    public void beforeCompletion() {
+        // nothing
+    }
+
+    @Override
+    public void start(Xid xid, int flags) throws XAException {
+        try {
+            transaction.begin();
+        } catch (RuntimeException e) {
+            throw (XAException) new XAException(XAER_RMERR).initCause(e);
+        }
+    }
+
+    @Override
+    public int prepare(Xid xid) {
+        return XA_OK;
+    }
+
+    @Override
+    public void commit(Xid xid, boolean onePhase) throws XAException {
+        try {
+            transaction.commit();
+        } catch (RuntimeException e) {
+            throw (XAException) new XAException(XAER_RMERR).initCause(e);
+        }
+    }
+
+    @Override
+    public void rollback(Xid xid) throws XAException {
+        try {
+            transaction.rollback();
+        } catch (RuntimeException e) {
+            throw (XAException) new XAException(XAER_RMERR).initCause(e);
+        }
+    }
+
+    @Override
+    public void end(Xid xid, int flags) {
+        // nothing
+    }
+
+    @Override
+    public boolean isSameRM(XAResource xaRes) {
+        return xaRes == this;
+    }
+
+    @Override
+    public void forget(Xid xid) throws XAException {
+        throw new XAException(XAER_RMERR);
+    }
+
+    @Override
+    public Xid[] recover(int flag) {
+        return new Xid[0];
+    }
+
+    @Override
+    public boolean setTransactionTimeout(int seconds) {
+        return false;
+    }
+
+    @Override
+    public int getTransactionTimeout() {
+        return 0;
     }
 
 }

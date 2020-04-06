@@ -32,6 +32,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
@@ -119,6 +120,15 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
         transactionMonitor = new DefaultTransactionMonitor();
         transactionMonitor.install();
+
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        GenericKeyedObjectPool<String, ?> pool = repositoryService.getPool();
+        repositoryService.getRepositoryNames().forEach(repositoryName -> {
+            String name = "repository/" + repositoryName;
+            ConnectionPoolMonitor monitor = new ObjectPoolMonitor(name, pool, repositoryName);
+            monitor.install();
+            poolConnectionMonitors.put(name, monitor);
+        });
 
         NuxeoContainer.addListener(cmUpdater);
     }

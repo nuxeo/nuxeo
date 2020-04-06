@@ -12,15 +12,11 @@
     </blobprovider>
   </extension>
 
-  <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
-    point="repository">
-    <repository name="import"
-      factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
-      <repository>
-        <indexing>
-          <fulltext disabled="true" />
-        </indexing>
-      </repository>
+  <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService" point="repository">
+    <repository name="import">
+      <indexing>
+        <fulltext disabled="true" />
+      </indexing>
     </repository>
   </extension>
 

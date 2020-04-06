@@ -269,9 +269,6 @@ public class DBSCachingRepository implements DBSRepository {
 
     @Override
     public Session getSession() {
-        if (repository instanceof DBSRepositoryBase) {
-            return ((DBSRepositoryBase) repository).getSession(this);
-        }
         return repository.getSession();
     }
 

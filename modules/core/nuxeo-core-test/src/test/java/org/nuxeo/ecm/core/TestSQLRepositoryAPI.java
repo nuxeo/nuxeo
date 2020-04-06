@@ -3822,33 +3822,6 @@ public class TestSQLRepositoryAPI {
         }
     }
 
-    @Test
-    public void testImportDuplicateIdNewSession() {
-        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
-        doc = session.createDocument(doc);
-        session.save();
-        nextTransaction();
-        reopenSession();
-
-        String docId = doc.getId();
-        String rootId = session.getRootDocument().getId();
-
-        // try to import another doc with the same id
-        // this is prevented by a unique index on the id field in the database
-        DocumentModel doc2 = new DocumentModelImpl("File", docId, new Path("/doc2"), null, new IdRef(rootId), null,
-                null, null, false, null, null, null);
-        session.importDocuments(Collections.singletonList(doc2));
-        try {
-            session.save();
-            fail();
-        } catch (ConcurrentUpdateException e) {
-            TransactionHelper.setTransactionRollbackOnly();
-            String message = e.getMessage();
-            assertTrue(message, message.startsWith("Failed to save session"));
-            assertTrue(message, message.endsWith("Concurrent update"));
-        }
-    }
-
     /**
      * Check that lifecycle and dc:issued can be updated on a version. (Fields defined in
      * SQLDocumentLive#VERSION_WRITABLE_PROPS).
@@ -4312,18 +4285,12 @@ public class TestSQLRepositoryAPI {
         TransactionHelper.setTransactionRollbackOnly();
 
         // attempt save in rollback-only state
-        session.save();
-
-        // more changes
-        file.setPropertyValue("dc:title", "gee");
-        session.saveDocument(file);
-        session.save();
-
-        nextTransaction();
-
-        // check what we now have file1 title unchanged
-        file = session.getDocument(file.getRef());
-        assertEquals("foo", file.getPropertyValue("dc:title"));
+        try {
+            session.save();
+            fail("should not allow save when marked rollback-only");
+        } catch (NuxeoException e) {
+            assertEquals("Cannot use a session when transaction is marked rollback-only", e.getMessage());
+        }
     }
 
     @Test
@@ -4368,22 +4335,7 @@ public class TestSQLRepositoryAPI {
             session.getDocument(new PathRef("/"));
             fail("should not allow use of session when marked rollback-only");
         } catch (NuxeoException e) {
-            assertEquals("Cannot reconnect a CoreSession when transaction is marked rollback-only", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testRollback5() {
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
-        // set rollback-only
-        TransactionHelper.setTransactionRollbackOnly();
-        // then create a session
-        try {
-            CoreSession session2 = CoreInstance.getCoreSession(coreFeature.getRepositoryName());
-            fail("should not allow creation of session when marked rollback-only");
-        } catch (NuxeoException e) {
-            assertEquals("Cannot create a CoreSession when transaction is marked rollback-only", e.getMessage());
+            assertEquals("Cannot use a session when transaction is marked rollback-only", e.getMessage());
         }
     }
 
@@ -5104,110 +5056,6 @@ public class TestSQLRepositoryAPI {
         String proxyToken3 = proxy.getChangeToken();
         if (isChangeTokenEnabled()) {
             assertEquals("1-0/1-0", proxyToken3);
-        }
-    }
-
-    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-29039")
-    @Test
-    public void testChangeTokenAfterExceptionDuringSave() throws Exception {
-        assumeTrue("H2 has subpar locking", !coreFeature.getStorageConfiguration().isVCSH2());
-
-        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "File");
-        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "File");
-        doc1 = session.createDocument(doc1);
-        doc2 = session.createDocument(doc2);
-        session.save();
-        nextTransaction();
-
-        String repositoryName = session.getRepositoryName();
-
-        CyclicBarrier barrier = new CyclicBarrier(2);
-        // update doc1 and doc2 in different orders in the two threads
-        UpdateDocsAndCheckChangeToken r1 = new UpdateDocsAndCheckChangeToken(repositoryName, doc1.getRef(),
-                doc2.getRef(), barrier, "r1");
-        UpdateDocsAndCheckChangeToken r2 = new UpdateDocsAndCheckChangeToken(repositoryName, doc2.getRef(),
-                doc1.getRef(), barrier, "r2");
-        Thread t1 = new Thread(r1);
-        Thread t2 = new Thread(r2);
-        t1.start();
-        t2.start();
-        t1.join();
-        t2.join();
-        if (r1.exception != null) {
-            throw new AssertionError(r1.exception);
-        }
-        if (r2.exception != null) {
-            throw new AssertionError(r2.exception);
-        }
-        if (coreFeature.getStorageConfiguration().isVCS()) {
-            assertTrue("Exception should have occurred",
-                    r1.hasConcurrentUpdateException || r2.hasConcurrentUpdateException);
-        }
-        assertTrue("Reading the change token should not fail", r1.canReadChangeToken && r2.canReadChangeToken);
-    }
-
-    protected static class UpdateDocsAndCheckChangeToken implements Runnable {
-
-        protected final String repositoryName;
-
-        protected final DocumentRef doc1Ref;
-
-        protected final DocumentRef doc2Ref;
-
-        protected final CyclicBarrier barrier;
-
-        protected final String value;
-
-        protected boolean hasConcurrentUpdateException;
-
-        protected boolean canReadChangeToken;
-
-        protected Exception exception;
-
-        protected UpdateDocsAndCheckChangeToken(String repositoryName, DocumentRef doc1Ref, DocumentRef doc2Ref,
-                CyclicBarrier barrier, String value) {
-            this.repositoryName = repositoryName;
-            this.doc1Ref = doc1Ref;
-            this.doc2Ref = doc2Ref;
-            this.barrier = barrier;
-            this.value = value;
-        }
-
-        @Override
-        public void run() {
-            try {
-                barrier.await(5, TimeUnit.SECONDS);
-                TransactionHelper.startTransaction();
-                try {
-                    CoreSession session = CoreInstance.getCoreSessionSystem(repositoryName);
-                    // update first doc
-                    barrier.await(5, TimeUnit.SECONDS);
-                    DocumentModel doc = session.getDocument(doc1Ref);
-                    doc.setPropertyValue("dc:title", value);
-                    session.saveDocument(doc);
-                    session.save();
-                    // update second doc
-                    barrier.await(5, TimeUnit.SECONDS);
-                    doc = session.getDocument(doc2Ref);
-                    doc.setPropertyValue("dc:title", value);
-                    session.saveDocument(doc);
-                    try {
-                        session.save(); // this will cause a ConcurrentUpdateException in one thread
-                    } catch (ConcurrentUpdateException e) {
-                        hasConcurrentUpdateException = true;
-                    }
-                    // now check that after this exception the change token is in a readable state
-                    doc.getChangeToken();
-                    canReadChangeToken = true;
-                } catch (Exception e) {
-                    exception = e;
-                    TransactionHelper.setTransactionRollbackOnly();
-                } finally {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
-            } catch (Exception e) {
-                exception = e;
-            }
         }
     }
 

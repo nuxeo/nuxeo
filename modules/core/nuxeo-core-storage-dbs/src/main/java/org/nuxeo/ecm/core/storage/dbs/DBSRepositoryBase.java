@@ -49,7 +49,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.FulltextConfigurationFactory;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
-import org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -155,8 +154,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         try {
             NuxeoContainer.disposeConnectionManager(cm);
         } catch (RuntimeException e) {
-            LogFactory.getLog(ConnectionFactoryImpl.class)
-                      .warn("cannot dispose connection manager of " + repositoryName);
+            log.warn("cannot dispose connection manager of " + repositoryName);
         }
         if (selfRegisteredLockManager) {
             LockManagerService lms = Framework.getService(LockManagerService.class);
@@ -325,15 +323,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public Session getSession() {
-        return getSession(this);
-    }
-
-    protected Session getSession(DBSRepository repository) {
-        DBSSession session = new DBSSession(repository, this::sessionCloseCallback);
-        session.begin();
-        TransactionHelper.registerSynchronization(session);
         sessionCount.incrementAndGet();
-        return session;
+        return new DBSSession(this, this::sessionCloseCallback);
     }
 
     protected void sessionCloseCallback() {

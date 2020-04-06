@@ -21,7 +21,6 @@ package org.nuxeo.ecm.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
 
@@ -31,9 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.storage.sql.ra.ConnectionImpl;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -52,13 +49,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     public static class LogFilter implements LogCaptureFeature.Filter {
         @Override
         public boolean accept(LogEvent event) {
-            if (!Level.WARN.equals(event.getLevel())) {
-                return false;
-            }
-            if (!ConnectionImpl.class.getName().equals(event.getLoggerName())) {
-                return false;
-            }
-            return ConnectionImpl.QueryResultContextException.class.isAssignableFrom(event.getThrown().getClass());
+            return Level.WARN.equals(event.getLevel());
         }
     }
 
@@ -74,20 +65,6 @@ public class QueryResultsAreAutomaticallyClosedTest {
             LogEvent event = logCaptureResults.getCaughtEvents().get(0);
             assertEquals(Level.WARN, event.getLevel());
             assertEquals(VCS_CLOSING_WARN, event.getMessage().getFormattedMessage());
-        }
-    }
-
-    @Test
-    public void testWithoutTransaction() throws Exception {
-        TransactionHelper.commitOrRollbackTransaction();
-        try {
-            coreFeature.getCoreSessionSystem();
-            fail("Should not allow creation of CoreSession outside a transaction");
-        } catch (NuxeoException e) {
-            String msg = e.getMessage();
-            assertTrue(msg, msg.contains("Cannot create a CoreSession outside a transaction"));
-        } finally {
-            TransactionHelper.startTransaction();
         }
     }
 

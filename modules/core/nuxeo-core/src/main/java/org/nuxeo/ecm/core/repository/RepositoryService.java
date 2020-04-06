@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,35 @@ package org.nuxeo.ecm.core.repository;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.naming.NamingException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.pool2.BaseKeyedPooledObjectFactory;
+import org.apache.commons.pool2.KeyedObjectPool;
+import org.apache.commons.pool2.PoolUtils;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
+import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.nuxeo.common.utils.DurationUtils;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
+import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -58,6 +77,11 @@ public class RepositoryService extends DefaultComponent {
 
     private final Map<String, Repository> repositories = new ConcurrentHashMap<>();
 
+    // for monitoring
+    protected GenericKeyedObjectPool<String, Session> basePool;
+
+    protected KeyedObjectPool<String, Session> pool;
+
     public void shutdown() {
         log.info("Shutting down repository manager");
         repositories.values().forEach(Repository::shutdown);
@@ -71,6 +95,7 @@ public class RepositoryService extends DefaultComponent {
 
     @Override
     public void start(ComponentContext context) {
+        initPool();
         TransactionHelper.runInTransaction(this::doCreateRepositories);
         Framework.getRuntime().getComponentManager().addListener(new ComponentManager.Listener() {
             @Override
@@ -88,6 +113,33 @@ public class RepositoryService extends DefaultComponent {
     @Override
     public void stop(ComponentContext context) {
         TransactionHelper.runInTransaction(this::shutdown);
+        shutdownPool();
+    }
+
+    protected void initPool() {
+        // TODO find descriptor from default repository
+        NuxeoConnectionManagerConfiguration ncmc = null;
+        if (ncmc == null) {
+            ncmc = new NuxeoConnectionManagerConfiguration();
+        }
+        GenericKeyedObjectPoolConfig<Session> config = new GenericKeyedObjectPoolConfig<>();
+        config.setMaxTotal(ncmc.getMaxPoolSize());
+        config.setMaxIdlePerKey(8); // default
+        config.setMinIdlePerKey(ncmc.getMinPoolSize());
+        config.setBlockWhenExhausted(true);
+        config.setMaxWaitMillis(ncmc.getBlockingTimeoutMillis());
+        basePool = new GenericKeyedObjectPool<>(new SessionFactory(), config);
+        // use an eroding pool to avoid keeping idle sessions too long
+        pool = PoolUtils.erodingPool(basePool);
+    }
+
+    protected void shutdownPool() {
+        pool.close();
+    }
+
+    // for monitoring
+    public GenericKeyedObjectPool<String, ?> getPool() {
+        return basePool;
     }
 
     /**
@@ -197,6 +249,133 @@ public class RepositoryService extends DefaultComponent {
 
     public int getActiveSessionsCount() {
         return repositories.values().stream().mapToInt(Repository::getActiveSessionsCount).sum();
+    }
+
+    /**
+     * Thread-local sessions allocated, per repository.
+     */
+    protected static final Map<String, ThreadLocal<Session>> SESSIONS = new ConcurrentHashMap<>(1);
+
+    /**
+     * Gets a session.
+     * <p>
+     * The session is first looked up in the current transaction, otherwise fetched from a pool.
+     *
+     * @param repositoryName the repository name
+     * @return the session
+     * @since 11.1
+     */
+    public Session getSession(String repositoryName) {
+        if (!TransactionHelper.isTransactionActive()) {
+            if (TransactionHelper.isTransactionMarkedRollback()) {
+                throw new NuxeoException("Cannot use a session when transaction is marked rollback-only");
+            } else {
+                throw new NuxeoException("Cannot use a session outside a transaction");
+            }
+        }
+        TransactionHelper.checkTransactionTimeout();
+        ThreadLocal<Session> threadSessions = SESSIONS.computeIfAbsent(repositoryName, r -> new ThreadLocal<>());
+        Session session = threadSessions.get();
+        if (session == null) {
+            session = getSessionFromPool(repositoryName, threadSessions::remove);
+            threadSessions.set(session);
+        }
+        return session;
+    }
+
+    protected Session getSessionFromPool(String repositoryName, Runnable cleanup) {
+        Session session;
+        try {
+            session = pool.borrowObject(repositoryName);
+        } catch (NoSuchElementException e) {
+            // TODO find descriptor from default repository
+            NuxeoConnectionManagerConfiguration ncmc = new NuxeoConnectionManagerConfiguration();
+            String err = String.format(
+                    "Connection pool is fully used,"
+                            + " consider increasing nuxeo.vcs.blocking-timeout-millis (currently %s)"
+                            + " or nuxeo.vcs.max-pool-size (currently %s)",
+                    ncmc.getBlockingTimeoutMillis(), ncmc.getMaxPoolSize());
+            throw new NuxeoException(err, e);
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            if (e instanceof InterruptedException) { // NOSONAR
+                Thread.currentThread().interrupt();
+            }
+            throw new NuxeoException(e);
+        }
+        // register session as XAResource with transaction
+        try {
+            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(session);
+        } catch (IllegalStateException | RollbackException | SystemException | NamingException e) {
+            throw new NuxeoException(e);
+        }
+        // register cleanup to return to pool and remove from thread-local at end of transaction
+        TransactionHelper.registerSynchronization(new SessionCleanup(session, cleanup));
+        return session;
+    }
+
+    /** @since 11.1 */
+    protected class SessionCleanup implements Synchronization {
+
+        protected final Session session;
+
+        protected final Runnable cleanup;
+
+        protected SessionCleanup(Session session, Runnable cleanup) {
+            this.session = session;
+            this.cleanup = cleanup;
+        }
+
+        @Override
+        public void beforeCompletion() {
+            session.beforeCompletion();
+        }
+
+        @Override
+        public void afterCompletion(int status) {
+            String repositoryName = session.getRepositoryName();
+            try {
+                if (status == Status.STATUS_COMMITTED) {
+                    pool.returnObject(repositoryName, session);
+                } else {
+                    pool.invalidateObject(repositoryName, session);
+                    if (status != Status.STATUS_ROLLEDBACK) {
+                        log.error("Unexpected afterCompletion status: " + status);
+                    }
+                }
+            } catch (Exception e) {
+                if (e instanceof InterruptedException) { // NOSONAR
+                    Thread.currentThread().interrupt();
+                }
+                log.error(e, e);
+            } finally {
+                cleanup.run();
+            }
+        }
+    }
+
+    /** @since 11.1 */
+    protected class SessionFactory extends BaseKeyedPooledObjectFactory<String, Session> {
+
+        @Override
+        public Session create(String repositoryName) throws Exception {
+            Repository repository = getRepository(repositoryName);
+            if (repository == null) {
+                throw new DocumentNotFoundException("No such repository: " + repositoryName);
+            }
+            return repository.getSession();
+        }
+
+        @Override
+        public PooledObject<Session> wrap(Session session) {
+            return new DefaultPooledObject<>(session);
+        }
+
+        @Override
+        public void destroyObject(String repositoryName, PooledObject<Session> p) throws Exception {
+            p.getObject().destroy();
+        }
     }
 
 }

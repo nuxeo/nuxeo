@@ -148,7 +148,7 @@ public class TestSQLRepositoryJTAJCA {
             fail("should throw");
         } catch (NuxeoException e) {
             String msg = e.getMessage();
-            assertTrue(msg, msg.contains("Cannot use a CoreSession outside a transaction"));
+            assertTrue(msg, msg.contains("Cannot use a session outside a transaction"));
         }
         TransactionHelper.startTransaction();
     }
@@ -277,7 +277,7 @@ public class TestSQLRepositoryJTAJCA {
             fail("should throw");
         } catch (NuxeoException e) {
             String msg = e.getMessage();
-            assertTrue(msg, msg.contains("Cannot use a CoreSession outside a transaction"));
+            assertTrue(msg, msg.contains("Cannot use a session outside a transaction"));
         } finally {
             TransactionHelper.startTransaction();
         }

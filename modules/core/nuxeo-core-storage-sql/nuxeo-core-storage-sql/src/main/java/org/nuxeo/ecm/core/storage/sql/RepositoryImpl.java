@@ -24,12 +24,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.naming.Reference;
-import javax.resource.ResourceException;
-import javax.resource.cci.ConnectionSpec;
-import javax.resource.cci.RecordFactory;
-import javax.resource.cci.ResourceAdapterMetaData;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -37,6 +31,7 @@ import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
@@ -53,9 +48,7 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
  *
  * @see RepositoryBackend
  */
-public class RepositoryImpl implements Repository {
-
-    private static final long serialVersionUID = 1L;
+public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
@@ -201,19 +194,9 @@ public class RepositoryImpl implements Repository {
         return repositoryDescriptor.isChangeTokenEnabled();
     }
 
-    /*
-     * ----- javax.resource.cci.ConnectionFactory -----
-     */
-
-    /**
-     * Gets a new connection.
-     *
-     * @param connectionSpec the parameters to use to connect (unused)
-     * @return the session
-     */
     @Override
-    public SessionImpl getConnection(ConnectionSpec connectionSpec) {
-        return getConnection();
+    public SQLSession getSession() {
+        return new SQLSession(getConnection(), this); // NOSONAR
     }
 
     /**
@@ -230,9 +213,16 @@ public class RepositoryImpl implements Repository {
         Mapper mapper = newMapper(pathResolver, true);
         SessionImpl session = newSession(model, mapper);
         pathResolver.setSession(session);
+
         sessions.add(session);
         sessionCount.inc();
         return session;
+    }
+
+    // callback by session at close time
+    protected void closeSession(SessionImpl session) {
+        sessions.remove(session);
+        sessionCount.dec();
     }
 
     /**
@@ -268,11 +258,9 @@ public class RepositoryImpl implements Repository {
     }
 
     protected void initRootNode() {
-        try {
-            // access a session once so that SessionImpl.computeRootNode can create the root node
-            getConnection().close();
-        } catch (ResourceException e) {
-            throw new RuntimeException(e);
+        // access a session once so that SessionImpl.computeRootNode can create the root node
+        try (SessionImpl session = getConnection()) {
+            // nothing
         }
     }
 
@@ -345,38 +333,13 @@ public class RepositoryImpl implements Repository {
     }
 
     /*
-     * -----
-     */
-
-    @Override
-    public ResourceAdapterMetaData getMetaData() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public RecordFactory getRecordFactory() {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * ----- javax.resource.Referenceable -----
-     */
-
-    private Reference reference;
-
-    @Override
-    public void setReference(Reference reference) {
-        this.reference = reference;
-    }
-
-    @Override
-    public Reference getReference() {
-        return reference;
-    }
-
-    /*
      * ----- Repository -----
      */
+
+    @Override
+    public void shutdown() {
+        close();
+    }
 
     @Override
     public synchronized void close() {
@@ -394,9 +357,6 @@ public class RepositoryImpl implements Repository {
 
     protected synchronized void closeAllSessions() {
         for (SessionImpl session : sessions) {
-            if (!session.isLive()) {
-                continue;
-            }
             session.closeSession();
         }
         sessions.clear();
@@ -474,15 +434,8 @@ public class RepositoryImpl implements Repository {
 
     @Override
     public void markReferencedBinaries() {
-        try {
-            SessionImpl conn = getConnection();
-            try {
-                conn.markReferencedBinaries();
-            } finally {
-                conn.close();
-            }
-        } catch (ResourceException e) {
-            throw new RuntimeException(e);
+        try (SessionImpl session = getConnection()) {
+            session.markReferencedBinaries();
         }
     }
 
@@ -491,31 +444,14 @@ public class RepositoryImpl implements Repository {
         if (!repositoryDescriptor.getSoftDeleteEnabled()) {
             return 0;
         }
-        try {
-            SessionImpl conn = getConnection();
-            try {
-                return conn.cleanupDeletedDocuments(max, beforeTime);
-            } finally {
-                conn.close();
-            }
-        } catch (ResourceException e) {
-            throw new RuntimeException(e);
+        try (SessionImpl session = getConnection()) {
+            return session.cleanupDeletedDocuments(max, beforeTime);
         }
     }
 
     @Override
     public FulltextConfiguration getFulltextConfiguration() {
         return model.getFulltextConfiguration();
-    }
-
-    /*
-     * ----- -----
-     */
-
-    // callback by session at close time
-    protected void closeSession(SessionImpl session) {
-        sessions.remove(session);
-        sessionCount.dec();
     }
 
 }
