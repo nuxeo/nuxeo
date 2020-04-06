@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -98,4 +99,75 @@ public class TestLogStreamProcessorChronicle extends TestStreamProcessor {
             assertEquals(lag.toString(), 1, lag.lag());
         }
     }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoOneRecordOneThreadOnePartition() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoOneRecordOneThreadMultiPartitions() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoFewRecordsOneThreadOnePartition() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoManyRecordsOneThread() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoOneRecord() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoFewRecords() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoManyRecords() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoManyRecordsOnePartition() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testComplexTopoManyRecordsOneThreadManyPartitions() throws Exception {
+        // override to ignore
+    }
+
+    @Override
+    @Ignore(value = "NXP-27559")
+    @Test
+    public void testStopAndResume() throws Exception {
+        // override to ignore
+    }
+
 }
