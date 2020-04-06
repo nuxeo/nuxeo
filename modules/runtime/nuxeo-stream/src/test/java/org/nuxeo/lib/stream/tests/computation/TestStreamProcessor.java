@@ -54,6 +54,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 
 import net.jodah.failsafe.RetryPolicy;
 
@@ -473,7 +474,7 @@ public abstract class TestStreamProcessor {
             // source computation will start on assignment, let them work a bit
             Thread.sleep(1000);
             assertTrue(processor.drainAndStop(Duration.ofSeconds(60)));
-            LogLag lag = manager.getLag("s1", "test");
+            LogLag lag = manager.getLag(Name.ofUrn("s1"), Name.ofUrn("test"));
             // without rebalancing we should have lag == nbRecords, but a rebalancing happens
             // so we can have up to concurrency * nbRecords
             assertTrue(lag.toString() + ", records: " + nbRecords, lag.lag() >= nbRecords);
@@ -484,11 +485,11 @@ public abstract class TestStreamProcessor {
     public void testInvalidProcessorWithMultipleInputCodec() throws Exception {
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationForward("C1", 2, 1),
-                                            Arrays.asList("i1:input-json", "i2:input-avro", "o1:output-avro"))
+                                            Arrays.asList("i1:inputJson", "i2:inputAvro", "o1:outputAvro"))
                                     .build();
-        Settings settings = new Settings(1, 1).setCodec("input-json", new AvroJsonCodec<>(Record.class))
-                                              .setCodec("input-java", new SerializableCodec<>())
-                                              .setCodec("output-avro", new AvroMessageCodec<>(Record.class));
+        Settings settings = new Settings(1, 1).setCodec("inputJson", new AvroJsonCodec<>(Record.class))
+                                              .setCodec("inputJava", new SerializableCodec<>())
+                                              .setCodec("outputAvro", new AvroMessageCodec<>(Record.class));
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
             try {
@@ -505,9 +506,9 @@ public abstract class TestStreamProcessor {
     public void testProcessorWithMultipleOutputCodec() throws Exception {
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationForward("C1", 1, 2),
-                                            Arrays.asList("i1:input", "o1:output-avro", "o2:output-json"))
+                                            Arrays.asList("i1:input", "o1:outputAvro", "o2:outputJson"))
                                     .build();
-        Settings settings = new Settings(1, 1, new AvroJsonCodec<>(Record.class)).setCodec("output-avro",
+        Settings settings = new Settings(1, 1, new AvroJsonCodec<>(Record.class)).setCodec("outputAvro",
                 new AvroMessageCodec<>(Record.class));
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
@@ -515,7 +516,7 @@ public abstract class TestStreamProcessor {
             processor.start();
             streamManager.append("input", Record.of("key", "bar".getBytes(StandardCharsets.UTF_8)));
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             assertEquals(lag.toString(), 0, lag.lag());
         }
     }
@@ -524,16 +525,16 @@ public abstract class TestStreamProcessor {
     public void testProcessorWithDifferentInputOutputCodec() throws Exception {
         Topology topology = Topology.builder()
                                     .addComputation(() -> new ComputationForward("C1", 1, 1),
-                                            Arrays.asList("i1:input-json", "o1:output-avro"))
+                                            Arrays.asList("i1:inputJson", "o1:outputAvro"))
                                     .build();
-        Settings settings = new Settings(1, 1).setCodec("input-json", new AvroJsonCodec<>(Record.class))
-                                              .setCodec("output-avro", new AvroMessageCodec<>(Record.class));
+        Settings settings = new Settings(1, 1).setCodec("inputJson", new AvroJsonCodec<>(Record.class))
+                                              .setCodec("outputAvro", new AvroMessageCodec<>(Record.class));
         try (LogManager manager = getLogManager()) {
             StreamManager streamManager = new LogStreamManager(manager);
             StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
             processor.start();
             // The processor init has already configured the codec for source stream
-            LogAppender<Record> appender = manager.getAppender("input-json");
+            LogAppender<Record> appender = manager.getAppender(Name.ofUrn("inputJson"));
             assertEquals("avroJson", appender.getCodec().getName());
 
             // write some input
@@ -541,7 +542,7 @@ public abstract class TestStreamProcessor {
             assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             assertTrue(processor.drainAndStop(Duration.ofSeconds(100)));
             // read output using avro codec
-            try (LogTailer<Record> tailer = manager.createTailer("test", "output-avro",
+            try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test"), Name.ofUrn("outputAvro"),
                     new AvroMessageCodec<>(Record.class))) {
                 assertEquals("avro", tailer.getCodec().getName());
                 assertNotNull(tailer.read(Duration.ofSeconds(1)));
@@ -568,7 +569,7 @@ public abstract class TestStreamProcessor {
             streamManager.append("input", Record.of("foo", null));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             // we expect a lag because the computation fails
             assertEquals(lag.toString(), 1, lag.lag());
         }
@@ -583,7 +584,7 @@ public abstract class TestStreamProcessor {
             processor.waitForAssignments(Duration.ofSeconds(10));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             // this times the after failure we have checkpoint so no lag expected
             assertEquals(lag.toString(), 0, lag.lag());
         }
@@ -601,7 +602,7 @@ public abstract class TestStreamProcessor {
             streamManager.append("input", Record.of("bar", null));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             // no lag because last retry is expected to work
             assertEquals(lag.toString(), 0, lag.lag());
         }
@@ -635,7 +636,7 @@ public abstract class TestStreamProcessor {
             streamManager.append("input", Record.of("foo", null));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             // wa expect a lag because the computation fails
             assertEquals(lag.toString(), 3, lag.lag());
         }
@@ -652,12 +653,12 @@ public abstract class TestStreamProcessor {
             Settings settings = new Settings(1, 1, policy);
             StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
             processor.start();
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             assertEquals(lag.toString(), 3, lag.lag());
             processor.waitForAssignments(Duration.ofSeconds(10));
             // wait
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
-            lag = manager.getLag("input", "C1");
+            lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             // this times the after failure we have checkpoint so no lag expected
             assertEquals(lag.toString(), 0, lag.lag());
         }
@@ -683,7 +684,7 @@ public abstract class TestStreamProcessor {
             assertTrue(processor.isTerminated());
             assertTrue(processor.drainAndStop(Duration.ofSeconds(1)));
             processor.shutdown();
-            LogLag lag = manager.getLag("input", "C1");
+            LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));
             // the record has not been processed
             assertEquals(lag.toString(), 1, lag.lag());
         }
@@ -692,7 +693,7 @@ public abstract class TestStreamProcessor {
     // ---------------------------------
     // helpers
     protected int readOutputCounter(LogManager manager) throws InterruptedException {
-        int partitions = manager.size(OUTPUT_STREAM);
+        int partitions = manager.size(Name.ofUrn(OUTPUT_STREAM));
         int ret = 0;
         for (int i = 0; i < partitions; i++) {
             ret += readCounterFromPartition(manager, OUTPUT_STREAM, i);
@@ -702,7 +703,8 @@ public abstract class TestStreamProcessor {
 
     protected int readCounterFromPartition(LogManager manager, String stream, int partition)
             throws InterruptedException {
-        LogTailer<Record> tailer = manager.createTailer("results", LogPartition.of(stream, partition), codec);
+        LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test/results"),
+                LogPartition.of(Name.ofUrn(stream), partition), codec);
         int result = 0;
         tailer.toStart();
         for (LogRecord<Record> logRecord = tailer.read(
@@ -715,14 +717,15 @@ public abstract class TestStreamProcessor {
 
     protected int countRecordIn(LogManager manager, String stream) throws Exception {
         int ret = 0;
-        for (int i = 0; i < manager.size(stream); i++) {
+        for (int i = 0; i < manager.size(Name.ofUrn(stream)); i++) {
             ret += countRecordInPartition(manager, stream, i);
         }
         return ret;
     }
 
     protected int countRecordInPartition(LogManager manager, String stream, int partition) throws Exception {
-        try (LogTailer<Record> tailer = manager.createTailer("results", LogPartition.of(stream, partition), codec)) {
+        try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test/results"),
+                LogPartition.of(Name.ofUrn(stream), partition), codec)) {
             int result = 0;
             tailer.toStart();
             for (LogRecord<Record> logRecord = tailer.read(

@@ -48,6 +48,7 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
@@ -58,7 +59,7 @@ public class TestLogKafka extends TestLog {
 
     public static final String TOPIC_PREFIX = "nuxeo-test";
 
-    private static final String GROUP = "defaultTest";
+    private static final Name GROUP = Name.ofUrn("test/defaultTest");
 
     protected String prefix;
 
@@ -175,7 +176,7 @@ public class TestLogKafka extends TestLog {
         final int NB_QUEUE = 3;
         final int NB_MSG = 200;
         final int NB_CONSUMER = 6;
-        final String group = "consumer";
+        final Name group = Name.ofUrn("test/consumer");
 
         manager.createIfNotExists(logName, NB_QUEUE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);

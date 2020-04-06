@@ -40,6 +40,7 @@ import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.tests.KeyValueMessage;
 
@@ -74,18 +75,18 @@ public class TestLogChronicle extends TestLog {
     @Test
     public void deleteInvalidPath() throws Exception {
         final int NB_QUEUES = 5;
-
+        Name fooLog = Name.ofUrn("test/foo");
         ChronicleLogManager manager = (ChronicleLogManager) createManager();
-        assertTrue(manager.createIfNotExists("foo", NB_QUEUES));
+        assertTrue(manager.createIfNotExists(fooLog, NB_QUEUES));
         String basePath = manager.getBasePath();
-        assertTrue(manager.delete("foo"));
+        assertTrue(manager.delete(fooLog));
 
         // recreate
-        assertTrue(manager.createIfNotExists("foo", NB_QUEUES));
+        assertTrue(manager.createIfNotExists(fooLog, NB_QUEUES));
         // add a file in the basePath
-        Files.createFile(Paths.get(basePath, "foo/foo.txt"));
+        Files.createFile(Paths.get(basePath, fooLog.getId(), "foo.txt"));
         try {
-            manager.delete("foo");
+            manager.delete(fooLog);
             fail("Cannot delete a Log with external data");
         } catch (IllegalArgumentException e) {
             // expected
@@ -99,7 +100,7 @@ public class TestLogChronicle extends TestLog {
         manager.createIfNotExists(logName, 1);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
 
-        Path queuePath = Paths.get(manager.getBasePath(), logName, "P-00");
+        Path queuePath = Paths.get(manager.getBasePath(), logName.getId(), "P-00");
         // there is an extra metadata.cq4t file
         assertEquals(1, Files.list(queuePath).count());
         appender.append(0, msg);
@@ -158,7 +159,7 @@ public class TestLogChronicle extends TestLog {
         executor.shutdown();
         assertTrue(executor.awaitTermination(60, TimeUnit.SECONDS));
         // here the retention has kept only 3 cycles each cycle has 1 message per appender
-        assertEquals(LogLag.of(NB_APPENDERS * RETENTION_CYCLES), manager.getLag(logName, "counter"));
+        assertEquals(LogLag.of(NB_APPENDERS * RETENTION_CYCLES), manager.getLag(logName, Name.ofUrn("test/counter")));
     }
 
     @Test
@@ -169,7 +170,7 @@ public class TestLogChronicle extends TestLog {
         manager.createIfNotExists(logName, 1);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
 
-        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("group", logName)) {
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/group"), logName)) {
             appender.append(0, msg1);
             assertEquals(msg1, tailer.read(Duration.ofSeconds(1)).message());
             tailer.commit();
@@ -180,7 +181,7 @@ public class TestLogChronicle extends TestLog {
             assertEquals(msg2, tailer.read(Duration.ofSeconds(1)).message());
         }
 
-        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("group", logName)) {
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/group"), logName)) {
             // check that we start on msg2 which is on the previous cycle
             assertEquals(msg2, tailer.read(Duration.ofSeconds(1)).message());
             assertEquals(msg3, tailer.read(Duration.ofSeconds(1)).message());
@@ -196,7 +197,7 @@ public class TestLogChronicle extends TestLog {
         manager.createIfNotExists(logName, 1);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
 
-        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("group", logName)) {
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/group"), logName)) {
             appender.append(0, msg1);
             assertEquals(msg1, tailer.read(Duration.ofSeconds(1)).message());
             tailer.commit();
@@ -208,7 +209,7 @@ public class TestLogChronicle extends TestLog {
         }
         resetManager();
         // Now the last committed message has been deleted by retention (3s)
-        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("group", logName)) {
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/group"), logName)) {
             // msg2 has been lost we should be on msg3
             assertEquals(msg3, tailer.read(Duration.ofSeconds(1)).message());
         }

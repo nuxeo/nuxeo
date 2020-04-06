@@ -44,6 +44,7 @@ import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 
@@ -89,7 +90,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
 
     protected final int blockSize;
 
-    protected final String name;
+    protected final Name name;
 
     // keep track of created tailers to make sure they are closed before the log
     protected final ConcurrentLinkedQueue<ChronicleLogTailer<M>> tailers = new ConcurrentLinkedQueue<>();
@@ -113,7 +114,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         Objects.requireNonNull(codec);
         this.codec = codec;
         this.basePath = basePath;
-        this.name = basePath.getName();
+        this.name = Name.ofId(basePath.getName());
 
         Path metadataPath = getMetadataPath();
         Properties metadata;
@@ -161,7 +162,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         Objects.requireNonNull(codec);
         this.nbPartitions = size;
         this.codec = codec;
-        this.name = basePath.getName();
+        this.name = Name.ofId(basePath.getName());
         this.basePath = basePath;
         this.retention = retention;
         this.partitions = new ArrayList<>(nbPartitions);
@@ -280,7 +281,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     }
 
     @Override
-    public String name() {
+    public Name name() {
         return name;
     }
 
@@ -310,7 +311,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         return ret;
     }
 
-    public LogTailer<M> createTailer(LogPartition partition, String group, Codec<M> codec) {
+    public LogTailer<M> createTailer(LogPartition partition, Name group, Codec<M> codec) {
         return addTailer(new ChronicleLogTailer<>(codec, basePath.toString(),
                 partitions.get(partition.partition()).createTailer(), partition, group, retention));
     }
@@ -347,7 +348,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     }
 
     @Override
-    public boolean waitFor(LogOffset offset, String group, Duration timeout) throws InterruptedException {
+    public boolean waitFor(LogOffset offset, Name group, Duration timeout) throws InterruptedException {
         boolean ret;
         long offsetPosition = offset.offset();
         int partition = offset.partition().partition();

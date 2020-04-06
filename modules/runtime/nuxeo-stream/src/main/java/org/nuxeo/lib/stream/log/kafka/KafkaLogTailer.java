@@ -53,6 +53,8 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
+import org.nuxeo.lib.stream.log.NameResolver;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
@@ -63,7 +65,7 @@ import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, ConsumerRebalanceListener {
     private static final Log log = LogFactory.getLog(KafkaLogTailer.class);
 
-    protected final String group;
+    protected final Name group;
 
     protected final Map<TopicPartition, Long> lastOffsets = new HashMap<>();
 
@@ -71,11 +73,11 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     protected final Queue<ConsumerRecord<String, Bytes>> records = new LinkedList<>();
 
-    protected final KafkaNamespace ns;
-
     protected final Codec<M> codec;
 
     protected final Codec<M> decodeCodec;
+
+    protected final NameResolver resolver;
 
     protected KafkaConsumer<String, Bytes> consumer;
 
@@ -88,7 +90,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     // keep track of all tailers on the same namespace index even from different mq
     protected boolean closed;
 
-    protected Collection<String> names;
+    protected Collection<Name> names;
 
     protected RebalanceListener listener;
 
@@ -98,57 +100,60 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     protected static final AtomicInteger CONSUMER_CLIENT_ID_SEQUENCE = new AtomicInteger(1);
 
-    protected KafkaLogTailer(Codec<M> codec, KafkaNamespace ns, String group, Properties consumerProps) {
+    protected KafkaLogTailer(Codec<M> codec, NameResolver resolver, Name group, Properties consumerProps) {
         this.codec = codec;
+        this.resolver = resolver;
         if (NO_CODEC.equals(codec)) {
             this.decodeCodec = new SerializableCodec<>();
         } else {
             this.decodeCodec = codec;
         }
         Objects.requireNonNull(group);
-        this.ns = ns;
         this.group = group;
-        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, ns.getKafkaGroup(group));
-        consumerProps.put(ConsumerConfig.CLIENT_ID_CONFIG, group + "-" + CONSUMER_CLIENT_ID_SEQUENCE.getAndIncrement());
+        consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, resolver.getId(group));
+        consumerProps.put(ConsumerConfig.CLIENT_ID_CONFIG,
+                resolver.getId(group) + "-" + CONSUMER_CLIENT_ID_SEQUENCE.getAndIncrement());
         this.consumer = new KafkaConsumer<>(consumerProps);
     }
 
     @SuppressWarnings("squid:S2095")
-    public static <M extends Externalizable> KafkaLogTailer<M> createAndAssign(Codec<M> codec, KafkaNamespace ns,
-            Collection<LogPartition> partitions, String group, Properties consumerProps) {
-        KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, ns, group, consumerProps);
+    public static <M extends Externalizable> KafkaLogTailer<M> createAndAssign(Codec<M> codec,
+            NameResolver resolver, Collection<LogPartition> partitions, Name group, Properties consumerProps) {
+        KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, resolver, group, consumerProps);
         ret.id = buildId(ret.group, partitions);
         ret.partitions = partitions;
         ret.topicPartitions = partitions.stream()
-                                        .map(partition -> new TopicPartition(ns.getTopicName(partition.name()),
+                                        .map(partition -> new TopicPartition(resolver.getId(partition.name()),
                                                 partition.partition()))
                                         .collect(Collectors.toList());
         ret.consumer.assign(ret.topicPartitions);
-        log.debug(String.format("Created tailer with assignments: %s using prefix: %s", ret.id, ns));
+        log.debug(String.format("Created tailer with assignments: %s", ret.id));
         return ret;
     }
 
     @SuppressWarnings("squid:S2095")
-    public static <M extends Externalizable> KafkaLogTailer<M> createAndSubscribe(Codec<M> codec, KafkaNamespace ns,
-            Collection<String> names, String group, Properties consumerProps, RebalanceListener listener) {
-        KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, ns, group, consumerProps);
+    public static <M extends Externalizable> KafkaLogTailer<M> createAndSubscribe(Codec<M> codec,
+            NameResolver resolver, Collection<Name> names, Name group, Properties consumerProps,
+            RebalanceListener listener) {
+        KafkaLogTailer<M> ret = new KafkaLogTailer<>(codec, resolver, group, consumerProps);
         ret.id = buildSubscribeId(ret.group, names);
         ret.names = names;
-        Collection<String> topics = names.stream().map(ns::getTopicName).collect(Collectors.toList());
+        Collection<String> topics = names.stream().map(resolver::getId).collect(Collectors.toList());
         ret.listener = listener;
         ret.consumer.subscribe(topics, ret);
         ret.partitions = Collections.emptyList();
         ret.topicPartitions = Collections.emptyList();
-        log.debug(String.format("Created tailer with subscription: %s using prefix: %s", ret.id, ns));
+        log.debug(String.format("Created tailer with subscription: %s", ret.id));
         return ret;
     }
 
-    protected static String buildId(String group, Collection<LogPartition> partitions) {
-        return group + ":" + partitions.stream().map(LogPartition::toString).collect(Collectors.joining("|"));
+    protected static String buildId(Name group, Collection<LogPartition> partitions) {
+        return group.getId() + ":" + partitions.stream().map(LogPartition::toString).collect(Collectors.joining("|"));
     }
 
-    protected static String buildSubscribeId(String group, Collection<String> names) {
-        return group + ":" + String.join("|", names);
+    protected static String buildSubscribeId(Name group, Collection<Name> names) {
+        return group.getId() + ":"
+                + names.stream().map(Name::getId).collect(Collectors.joining("|"));
     }
 
     @Override
@@ -173,7 +178,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         ConsumerRecord<String, Bytes> record = records.poll();
         lastOffsets.put(new TopicPartition(record.topic(), record.partition()), record.offset());
         M value = decodeCodec.decode(record.value().get());
-        LogPartition partition = LogPartition.of(ns.getLogName(record.topic()), record.partition());
+        LogPartition partition = LogPartition.of(resolver.getName(record.topic()), record.partition());
         LogOffset offset = new LogOffsetImpl(partition, record.offset());
         consumerMoved = false;
         if (log.isDebugEnabled()) {
@@ -187,7 +192,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         try {
             for (ConsumerRecord<String, Bytes> record : consumer.poll(timeout)) {
                 if (log.isDebugEnabled() && records.isEmpty()) {
-                    log.debug("Poll first record: " + ns.getLogName(record.topic()) + ":" + record.partition() + ":+"
+                    log.debug("Poll first record: " + resolver.getName(record.topic()).getUrn() + ":"
+                            + record.partition() + ":+"
                             + record.offset());
                 }
                 records.add(record);
@@ -236,7 +242,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
         String msg = consumer.assignment()
                              .stream()
-                             .map(tp -> String.format("%s-%02d:+%d", ns.getLogName(tp.topic()), tp.partition(),
+                             .map(tp -> String.format("%s-%02d:+%d", resolver.getName(tp.topic()).getUrn(),
+                                     tp.partition(),
                                      toLastCommitted(tp)))
                              .collect(Collectors.joining("|"));
         if (msg.length() > 0 && log.isInfoEnabled()) {
@@ -263,7 +270,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
         lastCommittedOffsets.put(topicPartition, offset);
         if (log.isDebugEnabled()) {
-            log.debug(String.format(" toLastCommitted: %s-%02d:+%d", ns.getLogName(topicPartition.topic()),
+            log.debug(String.format(" toLastCommitted: %s-%02d:+%d", resolver.getName(topicPartition.topic()).getUrn(),
                     topicPartition.partition(), offset));
         }
         return offset;
@@ -272,7 +279,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     @Override
     public void seek(LogOffset offset) {
         log.debug("Seek to: " + offset.offset() + " from tailer: " + id);
-        TopicPartition topicPartition = new TopicPartition(ns.getTopicName(offset.partition().name()),
+        TopicPartition topicPartition = new TopicPartition(resolver.getId(offset.partition().name()),
                 offset.partition().partition());
         consumer.seek(topicPartition, offset.offset());
         lastOffsets.remove(topicPartition);
@@ -296,7 +303,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     @Override
     public void reset(LogPartition partition) {
         log.info("Reset committed offset for partition: " + partition + " tailer: " + id);
-        TopicPartition topicPartition = new TopicPartition(ns.getTopicName(partition.name()), partition.partition());
+        TopicPartition topicPartition = new TopicPartition(resolver.getId(partition.name()), partition.partition());
         Map<TopicPartition, Long> beginningOffsets = consumer.beginningOffsets(Collections.singleton(topicPartition));
         Map<TopicPartition, OffsetAndMetadata> offsetToCommit = new HashMap<>();
         beginningOffsets.forEach((tp, offset) -> offsetToCommit.put(tp, new OffsetAndMetadata(offset)));
@@ -307,7 +314,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     @Override
     public LogOffset offsetForTimestamp(LogPartition partition, long timestamp) {
-        TopicPartition topicPartition = new TopicPartition(ns.getTopicName(partition.name()), partition.partition());
+        TopicPartition topicPartition = new TopicPartition(resolver.getId(partition.name()), partition.partition());
         Map<TopicPartition, OffsetAndTimestamp> offsetsForTimes = consumer.offsetsForTimes(
                 Collections.singletonMap(topicPartition, timestamp));
         if (offsetsForTimes.size() == 1) {
@@ -336,7 +343,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         if (log.isDebugEnabled()) {
             String msg = offsetToCommit.entrySet()
                                        .stream()
-                                       .map(entry -> String.format("%s-%02d:+%d", ns.getLogName(entry.getKey().topic()),
+                                       .map(entry -> String.format("%s-%02d:+%d",
+                                               resolver.getName(entry.getKey().topic()).getUrn(),
                                                entry.getKey().partition(), entry.getValue().offset()))
                                        .collect(Collectors.joining("|"));
             log.debug("Committed offsets  " + group + ":" + msg);
@@ -361,7 +369,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     @Override
     public LogOffset commit(LogPartition partition) {
-        TopicPartition topicPartition = new TopicPartition(ns.getTopicName(partition.name()), partition.partition());
+        TopicPartition topicPartition = new TopicPartition(resolver.getId(partition.name()), partition.partition());
         Long offset = lastOffsets.get(topicPartition);
         if (offset == null) {
             if (log.isDebugEnabled()) {
@@ -384,7 +392,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     }
 
     @Override
-    public String group() {
+    public Name group() {
         return group;
     }
 
@@ -425,13 +433,13 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     @Override
     public String toString() {
-        return "KafkaLogTailer{" + "ns='" + ns + '\'' + ", id=" + id + ", closed=" + closed + ", codec=" + codec + '}';
+        return "KafkaLogTailer{" + "id=" + id + ", closed=" + closed + ", codec=" + codec + '}';
     }
 
     @Override
     public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
         Collection<LogPartition> revoked = partitions.stream()
-                                                     .map(tp -> LogPartition.of(ns.getLogName(tp.topic()),
+                                                     .map(tp -> LogPartition.of(resolver.getName(tp.topic()),
                                                              tp.partition()))
                                                      .collect(Collectors.toList());
         log.info(String.format("Rebalance revoked: %s", revoked));
@@ -444,7 +452,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     @Override
     public void onPartitionsAssigned(Collection<TopicPartition> newPartitions) {
         partitions = newPartitions.stream()
-                                  .map(tp -> LogPartition.of(ns.getLogName(tp.topic()), tp.partition()))
+                                  .map(tp -> LogPartition.of(resolver.getName(tp.topic()), tp.partition()))
                                   .collect(Collectors.toList());
         topicPartitions = newPartitions;
         id = buildId(group, partitions);

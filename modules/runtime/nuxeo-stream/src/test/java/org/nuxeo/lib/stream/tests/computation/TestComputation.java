@@ -20,6 +20,10 @@ package org.nuxeo.lib.stream.tests.computation;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_1;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_2;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_3;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.OUTPUT_4;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -62,20 +66,20 @@ public class TestComputation {
         comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes(UTF_8)));
 
         // the record is forwarded to one output stream
-        assertEquals(1, context.getRecords("o1").size());
-        assertEquals(0, context.getRecords("o2").size());
-        assertEquals(0, context.getRecords("o3").size());
-        assertEquals(0, context.getRecords("o4").size());
+        assertEquals(1, context.getRecords(OUTPUT_1).size());
+        assertEquals(0, context.getRecords(OUTPUT_2).size());
+        assertEquals(0, context.getRecords(OUTPUT_3).size());
+        assertEquals(0, context.getRecords(OUTPUT_4).size());
 
-        assertEquals("foo", context.getRecords("o1").get(0).getKey());
-        assertEquals("bar", new String(context.getRecords("o1").get(0).getData(), UTF_8));
+        assertEquals("foo", context.getRecords(OUTPUT_1).get(0).getKey());
+        assertEquals("bar", new String(context.getRecords(OUTPUT_1).get(0).getData(), UTF_8));
 
         // ask to process another record
         comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes(UTF_8)));
         // the record is forwarded to the second output stream
-        assertEquals(1, context.getRecords("o2").size());
-        assertEquals(0, context.getRecords("o3").size());
-        assertEquals(0, context.getRecords("o4").size());
+        assertEquals(1, context.getRecords(OUTPUT_2).size());
+        assertEquals(0, context.getRecords(OUTPUT_3).size());
+        assertEquals(0, context.getRecords(OUTPUT_4).size());
 
         comp.destroy();
     }
@@ -90,7 +94,7 @@ public class TestComputation {
         Computation comp = new ComputationSource("foo", outputStreams, nbRecordsToGenerate, batchSize, t0);
         assertEquals("foo", comp.metadata().name());
         assertEquals(Collections.emptySet(), comp.metadata().inputStreams());
-        assertEquals(new HashSet<>(Arrays.asList("o1", "o2")), comp.metadata().outputStreams());
+        assertEquals(new HashSet<>(Arrays.asList(OUTPUT_1, OUTPUT_2)), comp.metadata().outputStreams());
 
         ComputationContextImpl context = new ComputationContextImpl(
                 new ComputationMetadataMapping(comp.metadata(), Collections.emptyMap()));
@@ -106,10 +110,10 @@ public class TestComputation {
         comp.processTimer(context, timerKey, 0);
 
         // this produces 10 record on each output stream
-        assertEquals(nbRecordsToGenerate, context.getRecords("o1").size());
-        assertEquals(nbRecordsToGenerate, context.getRecords("o2").size());
+        assertEquals(nbRecordsToGenerate, context.getRecords(OUTPUT_1).size());
+        assertEquals(nbRecordsToGenerate, context.getRecords(OUTPUT_2).size());
         // System.out.println(t0);
-        // context.getRecords("o1").stream().forEach(record -> System.out.println(Watermark.of(record.watermark)));
+        // context.getRecords(OUTPUT_1).stream().forEach(record -> System.out.println(Watermark.of(record.watermark)));
         // end up with the expected timestamp
         assertEquals(t0, Watermark.ofValue(context.getSourceLowWatermark()).getTimestamp());
 
@@ -134,14 +138,14 @@ public class TestComputation {
             comp.processRecord(context, "i1", Record.of("foo", "bar".getBytes(UTF_8)));
         }
         // nothing on output because the output is done by the timer
-        assertEquals(0, context.getRecords("o1").size());
+        assertEquals(0, context.getRecords(OUTPUT_1).size());
         // call the timer
         comp.processTimer(context, "sum", 0);
         // we have a response
-        assertEquals(1, context.getRecords("o1").size());
+        assertEquals(1, context.getRecords(OUTPUT_1).size());
 
         // the key contains the total
-        assertEquals("42", context.getRecords("o1").get(0).getKey());
+        assertEquals("42", context.getRecords(OUTPUT_1).get(0).getKey());
 
         // Add a new record
         comp.processRecord(context, "i2", Record.of("foo", null));
@@ -149,9 +153,9 @@ public class TestComputation {
         // call the timer
         comp.processTimer(context, "sum", 0);
         // we now have 2 counter results
-        assertEquals(2, context.getRecords("o1").size());
+        assertEquals(2, context.getRecords(OUTPUT_1).size());
         // the counter has been reset
-        assertEquals("1", context.getRecords("o1").get(1).getKey());
+        assertEquals("1", context.getRecords(OUTPUT_1).get(1).getKey());
     }
 
 }

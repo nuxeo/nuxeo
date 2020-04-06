@@ -32,6 +32,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.tools.renderer.Renderer;
 
 /**
@@ -99,9 +100,9 @@ public class TailCommand extends Command {
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         int lines = Integer.parseInt(cmd.getOptionValue("lines", "10"));
         int dataSize = Integer.parseInt(cmd.getOptionValue("data-size", "256"));
-        String name = cmd.getOptionValue("log-name");
+        Name name = Name.ofUrn(cmd.getOptionValue("log-name"));
         String render = cmd.getOptionValue("render", "default");
-        String group = cmd.getOptionValue("group", "tools");
+        Name group = Name.ofUrn(cmd.getOptionValue("group", "admin/tools"));
         String codec = cmd.getOptionValue("codec");
         String avroSchemaStorePath = cmd.getOptionValue("schema-store");
         if (avroSchemaStorePath == null && Paths.get(NUXEO_SCHEMA_STORE).toFile().exists()) {
@@ -116,7 +117,7 @@ public class TailCommand extends Command {
     }
 
     @SuppressWarnings("unchecked")
-    protected void tail(LogManager manager, String name, String group, int lines, Renderer render, String codec)
+    protected void tail(LogManager manager, Name name, Name group, int lines, Renderer render, String codec)
             throws InterruptedException {
         LogRecord<Record>[] records = new LogRecord[lines];
         render.header();
@@ -139,7 +140,7 @@ public class TailCommand extends Command {
         render.footer();
     }
 
-    protected void follow(LogManager manager, String name, String group, Renderer render, int timeout, String codec)
+    protected void follow(LogManager manager, Name name, Name group, Renderer render, int timeout, String codec)
             throws InterruptedException {
         try (LogTailer<Record> tailer = manager.createTailer(group, name, getRecordCodec(codec))) {
             tailer.toEnd();

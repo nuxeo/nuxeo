@@ -29,6 +29,7 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * A compound tailer to handle multiple partitions.
@@ -38,7 +39,7 @@ import org.nuxeo.lib.stream.log.LogTailer;
 public class ChronicleCompoundLogTailer<M extends Externalizable> implements LogTailer<M> {
     protected final List<ChronicleLogTailer<M>> tailers = new ArrayList<>();
 
-    protected final String group;
+    protected final Name group;
 
     protected final int size;
 
@@ -50,7 +51,7 @@ public class ChronicleCompoundLogTailer<M extends Externalizable> implements Log
 
     protected long counter;
 
-    public ChronicleCompoundLogTailer(Collection<ChronicleLogTailer<M>> tailers, String group) {
+    public ChronicleCompoundLogTailer(Collection<ChronicleLogTailer<M>> tailers, Name group) {
         // empty tailers is an accepted input
         this.tailers.addAll(tailers);
         this.group = group;
@@ -133,7 +134,7 @@ public class ChronicleCompoundLogTailer<M extends Externalizable> implements Log
     }
 
     @Override
-    public String group() {
+    public Name group() {
         return group;
     }
 

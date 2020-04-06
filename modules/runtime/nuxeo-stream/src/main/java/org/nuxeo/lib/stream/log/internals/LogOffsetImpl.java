@@ -20,6 +20,7 @@ package org.nuxeo.lib.stream.log.internals;
 
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * @since 9.3
@@ -30,11 +31,10 @@ public class LogOffsetImpl implements LogOffset {
     protected final long offset;
 
     public LogOffsetImpl(LogPartition partition, long offset) {
-        this.partition = partition;
-        this.offset = offset;
+        this(partition.name(), partition.partition(), offset);
     }
 
-    public LogOffsetImpl(String name, int partition, long offset) {
+    public LogOffsetImpl(Name name, int partition, long offset) {
         this.partition = LogPartition.of(name, partition);
         this.offset = offset;
     }

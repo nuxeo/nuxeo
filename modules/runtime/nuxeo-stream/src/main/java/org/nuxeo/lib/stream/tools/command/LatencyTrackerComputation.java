@@ -32,6 +32,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 /**
@@ -46,7 +47,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     protected final LogManager manager;
 
-    protected final List<String> logNames;
+    protected final List<Name> logNames;
 
     protected final int intervalMs;
 
@@ -62,7 +63,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
 
     protected int refreshGroupCounter;
 
-    public LatencyTrackerComputation(LogManager manager, List<String> logNames, String computationName,
+    public LatencyTrackerComputation(LogManager manager, List<Name> logNames, String computationName,
             int intervalSecond, int count, boolean verbose, Codec<Record> codec, int outputStream) {
         super(computationName, 1, outputStream);
         this.manager = manager;
@@ -128,7 +129,7 @@ public class LatencyTrackerComputation extends AbstractComputation {
         if (logGroups.isEmpty() || refreshGroup()) {
             logGroups.clear();
             logNames.forEach(name -> {
-                for (String group : manager.listConsumerGroups(name)) {
+                for (Name group : manager.listConsumerGroups(name)) {
                     logGroups.add(new LogPartitionGroup(group, name, 0));
                 }
             });
@@ -170,12 +171,12 @@ public class LatencyTrackerComputation extends AbstractComputation {
     }
 
     public static String encodeKey(LogPartitionGroup logGroup, int partition) {
-        return String.format("%s:%s:%s", logGroup.group, logGroup.name, partition);
+        return String.format("%s:%s:%s", logGroup.group.getId(), logGroup.name.getId(), partition);
     }
 
     public static LogPartitionGroup decodeKey(String key) {
         String[] parts = key.split(":");
-        return new LogPartitionGroup(parts[0], parts[1], Integer.parseInt(parts[2]));
+        return new LogPartitionGroup(Name.ofId(parts[0]), Name.ofId(parts[1]), Integer.parseInt(parts[2]));
     }
 
     @Override

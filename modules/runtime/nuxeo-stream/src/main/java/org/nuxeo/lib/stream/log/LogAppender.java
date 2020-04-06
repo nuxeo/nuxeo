@@ -34,7 +34,7 @@ public interface LogAppender<M extends Externalizable> {
     /**
      * Returns the Log's name.
      */
-    String name();
+    Name name();
 
     /**
      * Returns the number of partitions in the Log.
@@ -67,7 +67,7 @@ public interface LogAppender<M extends Externalizable> {
      * commits a greater or equals offset. Return {@code true} if the message has been consumed, {@code false} in case
      * of timeout.
      */
-    boolean waitFor(LogOffset offset, String group, Duration timeout) throws InterruptedException;
+    boolean waitFor(LogOffset offset, Name group, Duration timeout) throws InterruptedException;
 
     /**
      * Returns {@code true} if the appender has been closed by the manager.

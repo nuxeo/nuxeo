@@ -57,6 +57,7 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.tests.KeyValueMessage;
 
@@ -70,7 +71,7 @@ public abstract class TestLog {
     @Rule
     public TestName name = new TestName();
 
-    protected String logName = "logName";
+    protected Name logName = Name.ofUrn("test/logName");
 
     protected LogManager manager;
 
@@ -78,7 +79,7 @@ public abstract class TestLog {
 
     @Before
     public void initManager() throws Exception {
-        logName = name.getMethodName();
+        logName = Name.of("test", name.getMethodName());
         if (manager == null) {
             manager = createManager();
         }
@@ -129,7 +130,7 @@ public abstract class TestLog {
         assertNotNull(appender.append(0, KeyValueMessage.of("foo")));
 
         try {
-            manager.getAppender("unknown_log_name");
+            manager.getAppender(Name.ofUrn("unknown_log_name"));
             fail("Accessing an unknown log should have raise an exception");
         } catch (IllegalArgumentException e) {
             // expected
@@ -142,7 +143,8 @@ public abstract class TestLog {
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
         appender.append(0, KeyValueMessage.of("foo"));
-        LogTailer<KeyValueMessage> tailer = manager.createTailer("defaultTest", LogPartition.of(logName, 0));
+        LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/defaultTest"),
+                LogPartition.of(logName, 0));
         assertNotNull(tailer.read(DEF_TIMEOUT));
 
         resetManager();
@@ -171,7 +173,7 @@ public abstract class TestLog {
     @Test
     public void testCreateTailer() {
         final int LOG_SIZES = 5;
-        final String group = "defaultTest";
+        final Name group = Name.of("test", "consumer");
         final LogPartition partition = LogPartition.of(logName, 1);
 
         manager.createIfNotExists(logName, LOG_SIZES);
@@ -198,7 +200,7 @@ public abstract class TestLog {
         tailer.commit();
 
         try {
-            manager.createTailer(group, LogPartition.of("unknown_log_name", 1));
+            manager.createTailer(group, LogPartition.of(Name.ofUrn("unknown_log_name"), 1));
             fail("Accessing an unknown log should have raise an exception");
         } catch (IllegalArgumentException e) {
             // expected
@@ -217,7 +219,8 @@ public abstract class TestLog {
     public void canNotTailOnClosedTailer() throws Exception {
         final int LOG_SIZE = 1;
         manager.createIfNotExists(logName, LOG_SIZE);
-        LogTailer<KeyValueMessage> tailer = manager.createTailer("defaultTest", LogPartition.of(logName, 0));
+        LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/defaultTest"),
+                LogPartition.of(logName, 0));
         assertFalse(tailer.closed());
         tailer.close();
         assertTrue(tailer.closed());
@@ -235,23 +238,25 @@ public abstract class TestLog {
         final int LOG_SIZE = 1;
         manager.createIfNotExists(logName, LOG_SIZE);
 
-        LogTailer<KeyValueMessage> tailer = manager.createTailer("defaultTest", LogPartition.of(logName, 0));
-        assertEquals("defaultTest", tailer.group());
+        Name group = Name.ofUrn("test/defaultTest");
+        LogTailer<KeyValueMessage> tailer = manager.createTailer(group, LogPartition.of(logName, 0));
+        assertEquals(group, tailer.group());
         try {
-            manager.createTailer("defaultTest", LogPartition.of(logName, 0));
+            manager.createTailer(group, LogPartition.of(logName, 0));
             fail("Opening twice a tailer is not allowed");
         } catch (IllegalArgumentException e) {
             // expected
         }
         // using a different group is ok
-        LogTailer<KeyValueMessage> tailer2 = manager.createTailer("anotherGroup", LogPartition.of(logName, 0));
-        assertEquals("anotherGroup", tailer2.group());
+        LogTailer<KeyValueMessage> tailer2 = manager.createTailer(Name.ofUrn("test/anotherGroup"),
+                LogPartition.of(logName, 0));
+        assertEquals(Name.ofUrn("test/anotherGroup"), tailer2.group());
     }
 
     @Test
     public void basicAppendAndTail() throws Exception {
         final int LOG_SIZE = 5;
-        final String GROUP = "defaultTest";
+        final Name GROUP = Name.ofUrn("test/defaultTest");
 
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -295,7 +300,7 @@ public abstract class TestLog {
     @Test
     public void testCommitAndSeek() throws Exception {
         final int LOG_SIZE = 5;
-        final String GROUP = "defaultTest";
+        final Name GROUP = Name.ofUrn("test/defaultTest");
 
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -358,7 +363,7 @@ public abstract class TestLog {
     @Test
     public void testMoreCommit() throws Exception {
         final int LOG_SIZE = 5;
-        final String GROUP = "defaultTest";
+        final Name GROUP = Name.ofUrn("test/defaultTest");
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
 
@@ -405,9 +410,11 @@ public abstract class TestLog {
         for (int i = 0; i < 10; i++) {
             appender.append(0, KeyValueMessage.of("id" + i));
         }
+        Name groupA = Name.ofUrn("test/group-a");
+        Name groupB = Name.ofUrn("test/group-b");
         // each tailers have distinct commit offsets
-        try (LogTailer<KeyValueMessage> tailerA = manager.createTailer("group-a", LogPartition.of(logName, 0));
-                LogTailer<KeyValueMessage> tailerB = manager.createTailer("group-b", LogPartition.of(logName, 0))) {
+        try (LogTailer<KeyValueMessage> tailerA = manager.createTailer(groupA, LogPartition.of(logName, 0));
+                LogTailer<KeyValueMessage> tailerB = manager.createTailer(groupB, LogPartition.of(logName, 0))) {
 
             assertEquals("id0", tailerA.read(DEF_TIMEOUT).message().key());
             assertEquals("id1", tailerA.read(DEF_TIMEOUT).message().key());
@@ -433,15 +440,16 @@ public abstract class TestLog {
         // reopen
         resetManager();
 
-        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("defaultTest", LogPartition.of(logName, 0));
-                LogTailer<KeyValueMessage> tailerA = manager.createTailer("group-a", LogPartition.of(logName, 0));
-                LogTailer<KeyValueMessage> tailerB = manager.createTailer("group-b", LogPartition.of(logName, 0))) {
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/defaultTest"),
+                LogPartition.of(logName, 0));
+                LogTailer<KeyValueMessage> tailerA = manager.createTailer(groupA, LogPartition.of(logName, 0));
+                LogTailer<KeyValueMessage> tailerB = manager.createTailer(groupB, LogPartition.of(logName, 0))) {
             assertEquals("id0", tailer.read(DEF_TIMEOUT).message().key());
             assertEquals("id2", tailerA.read(DEF_TIMEOUT).message().key());
             assertEquals("id1", tailerB.read(DEF_TIMEOUT).message().key());
         }
-        assertEquals(LogLag.of(2, 10), manager.getLag(logName, "group-a"));
-        assertEquals(LogLag.of(1, 10), manager.getLag(logName, "group-b"));
+        assertEquals(LogLag.of(2, 10), manager.getLag(logName, groupA));
+        assertEquals(LogLag.of(1, 10), manager.getLag(logName, groupB));
     }
 
     @Test
@@ -453,8 +461,10 @@ public abstract class TestLog {
         for (int i = 0; i < 10; i++) {
             appender.append(0, KeyValueMessage.of("id" + i));
         }
-        LogTailer<KeyValueMessage> tailerA = manager.createTailer("group-a", LogPartition.of(logName, 0));
-        LogTailer<KeyValueMessage> tailerB = manager.createTailer("group-b", LogPartition.of(logName, 0));
+        LogTailer<KeyValueMessage> tailerA = manager.createTailer(Name.ofUrn("test/group-a"),
+                LogPartition.of(logName, 0));
+        LogTailer<KeyValueMessage> tailerB = manager.createTailer(Name.ofUrn("test/group-b"),
+                LogPartition.of(logName, 0));
 
         assertEquals("id0", tailerA.read(DEF_TIMEOUT).message().key());
         assertEquals("id0", tailerB.read(DEF_TIMEOUT).message().key());
@@ -481,8 +491,8 @@ public abstract class TestLog {
         tailerA.close();
         tailerB.close();
 
-        assertEquals(LogLag.of(2, 10), manager.getLag(logName, "group-a"));
-        assertEquals(LogLag.of(5, 10), manager.getLag(logName, "group-b"));
+        assertEquals(LogLag.of(2, 10), manager.getLag(logName, Name.ofUrn("test/group-a")));
+        assertEquals(LogLag.of(5, 10), manager.getLag(logName, Name.ofUrn("test/group-b")));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -505,11 +515,11 @@ public abstract class TestLog {
             }
         }
         // nothing committed
-        assertFalse(appender.waitFor(offset, "foo", SMALL_TIMEOUT));
-        assertFalse(appender.waitFor(offset0, "foo", SMALL_TIMEOUT));
-        assertFalse(appender.waitFor(offset5, "foo", SMALL_TIMEOUT));
+        assertFalse(appender.waitFor(offset, Name.ofUrn("test/foo"), SMALL_TIMEOUT));
+        assertFalse(appender.waitFor(offset0, Name.ofUrn("test/foo"), SMALL_TIMEOUT));
+        assertFalse(appender.waitFor(offset5, Name.ofUrn("test/foo"), SMALL_TIMEOUT));
 
-        String group = "defaultTest";
+        Name group = Name.ofUrn("test/defaultTest");
         try (LogTailer<KeyValueMessage> tailer = manager.createTailer(group, LogPartition.of(logName, 0))) {
             tailer.read(DEF_TIMEOUT);
             tailer.commit();
@@ -539,9 +549,9 @@ public abstract class TestLog {
     @Test
     public void testTailerOnMultiPartitions() throws Exception {
         final int LOG_SIZE = 2;
-        final String group = "defaultTest";
-        final String logName1 = logName + "1";
-        final String logName2 = logName + "2";
+        final Name group = Name.ofUrn("test/defaultTest");
+        final Name logName1 = Name.ofUrn(logName.getUrn() + "1");
+        final Name logName2 = Name.ofUrn(logName.getUrn() + "2");
         final Collection<LogPartition> partitions1 = new ArrayList<>();
         final Collection<LogPartition> partitions2 = new ArrayList<>();
         final KeyValueMessage msg1 = KeyValueMessage.of("id1");
@@ -607,7 +617,7 @@ public abstract class TestLog {
     public void testTailerOnMultiPartitionsUnbalanced() throws Exception {
         final int LOG_SIZE = 5;
         final int NB_MSG = 50;
-        final String group = "defaultTest";
+        final Name group = Name.ofUrn("test/defaultTest");
         final Collection<LogPartition> partitions = new ArrayList<>();
         final KeyValueMessage msg1 = KeyValueMessage.of("id1");
         // create log
@@ -642,22 +652,22 @@ public abstract class TestLog {
     @Test
     public void testLag() throws Exception {
         final int LOG_SIZE = 5;
-        final String GROUP = "defaultTest";
+        final Name GROUP = Name.ofUrn("test/defaultTest");
         KeyValueMessage msg1 = KeyValueMessage.of("id1");
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
 
-        assertEquals(LogLag.of(0), manager.getLag(logName, "unknown-group"));
+        assertEquals(LogLag.of(0), manager.getLag(logName, Name.ofUrn("unknownGroup")));
         appender.append(1, msg1);
 
-        assertEquals(LogLag.of(1), manager.getLag(logName, "unknown-group"));
+        assertEquals(LogLag.of(1), manager.getLag(logName, Name.ofUrn("unknownGroup")));
 
         try (LogTailer<KeyValueMessage> tailer = manager.createTailer(GROUP, LogPartition.of(logName, 1))) {
             assertEquals(msg1, tailer.read(DEF_TIMEOUT).message());
             assertEquals(LogLag.of(1), manager.getLag(logName, GROUP));
             tailer.commit();
         }
-        assertEquals(LogLag.of(1), manager.getLag(logName, "unknown-group"));
+        assertEquals(LogLag.of(1), manager.getLag(logName, Name.ofUrn("unknownGroup")));
         assertEquals(LogLag.of(0), manager.getLag(logName, GROUP));
     }
 
@@ -667,10 +677,10 @@ public abstract class TestLog {
         KeyValueMessage msg1 = KeyValueMessage.of("id1");
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
-        assertEquals(LogLag.of(0), manager.getLag(logName, "unknown-group"));
+        assertEquals(LogLag.of(0), manager.getLag(logName, Name.ofUrn("unknownGroup")));
         appender.append(0, msg1);
         for (int i = 0; i < 100; i++) {
-            assertEquals(LogLag.of(1), manager.getLag(logName, "unknown-group"));
+            assertEquals(LogLag.of(1), manager.getLag(logName, Name.ofUrn("unknownGroup")));
         }
     }
 
@@ -679,10 +689,10 @@ public abstract class TestLog {
         final int LOG_SIZES = 2;
 
         assertTrue(manager.createIfNotExists(logName, LOG_SIZES));
-        String logName2 = logName + "2";
+        Name logName2 = Name.ofUrn(logName.getUrn() + "2");
         assertTrue(manager.createIfNotExists(logName2, LOG_SIZES));
 
-        List<String> logs = manager.listAll();
+        List<Name> logs = manager.listAll();
         // System.out.println(logs);
         assertFalse(logs.isEmpty());
         assertTrue(logs.toString(), logs.contains(logName));
@@ -692,8 +702,8 @@ public abstract class TestLog {
     @Test
     public void testListConsumerGroups() throws Exception {
         final int LOG_SIZE = 1;
-        final String GROUP1 = "group1";
-        final String GROUP2 = "group2";
+        final Name GROUP1 = Name.ofUrn("test/group1");
+        final Name GROUP2 = Name.ofUrn("test/group2");
 
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -716,7 +726,7 @@ public abstract class TestLog {
             tailer.commit();
             assertEquals("id1", readKey(tailer2));
             tailer2.commit();
-            List<String> groups = manager.listConsumerGroups(logName);
+            List<Name> groups = manager.listConsumerGroups(logName);
             assertFalse(groups.isEmpty());
             assertTrue(groups.toString(), groups.contains(GROUP1));
             assertTrue(groups.toString(), groups.contains(GROUP2));
@@ -747,14 +757,14 @@ public abstract class TestLog {
         }
         executor.shutdown();
         assertTrue(executor.awaitTermination(60, TimeUnit.SECONDS));
-        assertEquals(LogLag.of(NB_APPENDERS * NB_MSG), manager.getLag(logName, "counter"));
+        assertEquals(LogLag.of(NB_APPENDERS * NB_MSG), manager.getLag(logName, Name.ofUrn("test/counter")));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testLatencies() throws Exception {
         final int LOG_SIZE = 5;
-        final String GROUP1 = "latGroup";
+        final Name GROUP1 = Name.ofUrn("test/latGroup");
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<Record> appender = manager.getAppender(logName);
         // try to check all possible positions in a partition
@@ -843,7 +853,7 @@ public abstract class TestLog {
 
     protected void testCodec(Codec<KeyValueMessage> codec) throws Exception {
         final int LOG_SIZE = 1;
-        final String GROUP = "defaultTest";
+        final Name GROUP = Name.ofUrn("test/defaultTest");
         manager.createIfNotExists(logName, LOG_SIZE);
 
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName, codec);
@@ -867,7 +877,7 @@ public abstract class TestLog {
     @Test
     public void testCodecCheck() throws Exception {
         final int LOG_SIZE = 1;
-        final String GROUP = "defaultTest";
+        final Name GROUP = Name.ofUrn("test/defaultTest");
         manager.createIfNotExists(logName, LOG_SIZE);
         KeyValueMessage msg1 = KeyValueMessage.of("1234567890", "0987654321".getBytes(UTF_8));
 
@@ -926,7 +936,7 @@ public abstract class TestLog {
         KeyValueMessage msg1 = KeyValueMessage.of("1234567890", "0987654321".getBytes(UTF_8));
         assertTrue(manager.createIfNotExists(logName, LOG_SIZE));
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
-        try (LogTailer<KeyValueMessage> tailer = manager.createTailer("someGroup", logName)) {
+        try (LogTailer<KeyValueMessage> tailer = manager.createTailer(Name.ofUrn("test/someGroup"), logName)) {
             LogOffset offset = appender.append("foo", msg1);
             LogRecord<KeyValueMessage> record = tailer.read(Duration.ofSeconds(1));
             assertEquals(offset, record.offset());

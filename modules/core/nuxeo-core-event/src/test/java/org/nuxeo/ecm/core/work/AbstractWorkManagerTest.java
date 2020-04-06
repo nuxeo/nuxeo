@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.core.work.api.WorkQueueMetrics;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
@@ -619,7 +620,7 @@ public abstract class AbstractWorkManagerTest {
         StreamService streamService = Framework.getService(StreamService.class);
         LogManager logManager = streamService.getLogManager(DEFAULT_LOG_MANAGER);
         assertTrue(logManager.exists(DEAD_LETTER_QUEUE));
-        LogLag lag = logManager.getLag(DEAD_LETTER_QUEUE, "testDeadLetter");
+        LogLag lag = logManager.getLag(DEAD_LETTER_QUEUE, Name.ofUrn("testDeadLetter"));
         assertEquals(LogLag.of(0), lag);
 
         // Run a failing work
@@ -629,7 +630,7 @@ public abstract class AbstractWorkManagerTest {
         tracker.assertDiff(0, 0, 1, 0);
 
         // Check that we have some dead letter
-        lag = logManager.getLag(DEAD_LETTER_QUEUE, "testDeadLetter");
+        lag = logManager.getLag(DEAD_LETTER_QUEUE, Name.ofUrn("testDeadLetter"));
         assertEquals(LogLag.of(1), lag);
 
         assertEquals(1, dlqCounter.getCount() - initialDlqCount);

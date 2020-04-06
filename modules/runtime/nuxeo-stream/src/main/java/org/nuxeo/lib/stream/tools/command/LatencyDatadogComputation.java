@@ -34,6 +34,7 @@ import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 /**
@@ -59,7 +60,7 @@ public class LatencyDatadogComputation extends LatencyTrackerComputation {
 
     protected HttpTransport transport;
 
-    public LatencyDatadogComputation(LogManager manager, List<String> logNames, String apiKey, List<String> tags,
+    public LatencyDatadogComputation(LogManager manager, List<Name> logNames, String apiKey, List<String> tags,
             String basePrefix, String computationName, int intervalSecond, int count, boolean partition,
             boolean verbose, Codec<Record> codec) {
         super(manager, logNames, computationName, intervalSecond, count, verbose, codec, 0);
@@ -96,7 +97,7 @@ public class LatencyDatadogComputation extends LatencyTrackerComputation {
         }
     }
 
-    protected void publishMetrics(Latency latency, String prefix, String partition, String stream, String group) {
+    protected void publishMetrics(Latency latency, String prefix, String partition, Name stream, Name group) {
         if (verbose) {
             log.info(latency.toString());
         }

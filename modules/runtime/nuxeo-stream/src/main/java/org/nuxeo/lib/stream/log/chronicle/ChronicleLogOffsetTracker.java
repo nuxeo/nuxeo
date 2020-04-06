@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.log.Name;
 
 import net.openhft.chronicle.queue.ExcerptAppender;
 import net.openhft.chronicle.queue.ExcerptTailer;
@@ -58,11 +59,11 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
 
     protected final ChronicleRetentionDuration retention;
 
-    public ChronicleLogOffsetTracker(String basePath, int partition, String group,
+    public ChronicleLogOffsetTracker(String basePath, int partition, Name group,
             ChronicleRetentionDuration retention) {
         this.partition = partition;
         this.retention = retention;
-        File offsetFile = new File(basePath, OFFSET_QUEUE_PREFIX + group);
+        File offsetFile = new File(basePath, OFFSET_QUEUE_PREFIX + group.getId());
         ChronicleRetentionListener listener = null;
         SingleChronicleQueueBuilder builder = binary(offsetFile).rollCycle(retention.getRollCycle())
                                                                 .blockSize(CQ_BLOCK_SIZE);
@@ -79,8 +80,8 @@ public class ChronicleLogOffsetTracker implements AutoCloseable {
         }
     }
 
-    public static boolean exists(Path basePath, String group) {
-        try (Stream<Path> paths = Files.list(basePath.resolve(OFFSET_QUEUE_PREFIX + group))) {
+    public static boolean exists(Path basePath, Name group) {
+        try (Stream<Path> paths = Files.list(basePath.resolve(OFFSET_QUEUE_PREFIX + group.getId()))) {
             return paths.count() > 0;
         } catch (IOException e) {
             return false;

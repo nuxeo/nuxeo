@@ -40,9 +40,8 @@ import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.Watermark;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -119,18 +118,23 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         if (entries.get().isEmpty()) {
             return;
         }
-        LogAppender<Record> appender = getLogManager().getAppender(STREAM_NAME);
-        entries.get().forEach(entry -> writeEntry(appender, entry));
+        StreamManager streamManager = getStreamManager();
+        for (LogEntry entry : entries.get()) {
+            if (entry != null) {
+                Record record = recordOf(entry);
+                streamManager.append(STREAM_NAME, record);
+            }
+        }
     }
 
-    protected void writeEntry(LogAppender<Record> appender, LogEntry entry) {
+    protected Record recordOf(LogEntry entry) {
         String json = asJson(entry);
         if (json == null) {
-            return;
+            return null;
         }
         long timestamp = getTimestampForEntry(entry);
-        appender.append(0, new Record(String.valueOf(entry.getId()), json.getBytes(UTF_8),
-                Watermark.ofTimestamp(timestamp).getValue()));
+        return new Record(String.valueOf(entry.getId()), json.getBytes(UTF_8),
+                Watermark.ofTimestamp(timestamp).getValue());
     }
 
     protected long getTimestampForEntry(LogEntry entry) {
@@ -172,9 +176,9 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
         }
     }
 
-    protected LogManager getLogManager() {
+    protected StreamManager getStreamManager() {
         StreamService service = Framework.getService(StreamService.class);
-        return service.getLogManager(getLogConfig());
+        return service.getStreamManager(getLogConfig());
     }
 
     protected String getLogConfig() {

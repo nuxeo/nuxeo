@@ -33,7 +33,7 @@ public interface LogTailer<M extends Externalizable> extends AutoCloseable {
     /**
      * Returns the consumer group.
      */
-    String group();
+    Name group();
 
     /**
      * Returns the list of Log name, partitions tuples currently assigned to this tailer. Assignments can change only if

@@ -37,6 +37,7 @@ import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.runtime.api.Framework;
@@ -140,7 +141,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         LogManager manager = getLogManager(config.getId());
         config.logs.forEach(l -> {
             log.info("Create if not exists stream: {} with manager: {}", l.getId(), config.getId());
-            manager.createIfNotExists(l.getId(), l.size);
+            manager.createIfNotExists(Name.ofUrn(l.getId()), l.size);
         });
     }
 
@@ -204,7 +205,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
                 settings.setCodec(streamDescriptor.name, codecService.getCodec(streamDescriptor.codec, Record.class));
             }
             streamDescriptor.filters.forEach(filter -> settings.addFilter(streamDescriptor.name, filter.getFilter()));
-            settings.setExternal(streamDescriptor.name,
+            settings.setExternal(Name.ofUrn(streamDescriptor.name),
                     streamDescriptor.external != null ? streamDescriptor.external : descriptor.defaultExternal);
         }
         return settings;

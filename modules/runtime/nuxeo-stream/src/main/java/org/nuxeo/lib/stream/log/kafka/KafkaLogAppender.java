@@ -44,6 +44,8 @@ import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.codec.SerializableCodec;
 import org.nuxeo.lib.stream.log.LogOffset;
+import org.nuxeo.lib.stream.log.Name;
+import org.nuxeo.lib.stream.log.NameResolver;
 import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 
@@ -66,13 +68,13 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
     // keep track of created tailers to make sure they are closed
     protected final ConcurrentLinkedQueue<KafkaLogTailer<M>> tailers = new ConcurrentLinkedQueue<>();
 
-    protected final String name;
-
-    protected final KafkaNamespace ns;
+    protected final Name name;
 
     protected final Codec<M> codec;
 
     protected final Codec<M> encodingCodec;
+
+    protected final NameResolver resolver;
 
     protected KafkaProducer<String, Bytes> producer;
 
@@ -80,36 +82,36 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
 
     protected static final AtomicInteger PRODUCER_CLIENT_ID_SEQUENCE = new AtomicInteger(1);
 
-    private KafkaLogAppender(Codec<M> codec, KafkaNamespace ns, String name, Properties producerProperties,
+    private KafkaLogAppender(Codec<M> codec, NameResolver resolver, Name name, Properties producerProperties,
             Properties consumerProperties) {
         Objects.requireNonNull(codec);
         this.codec = codec;
+        this.resolver = resolver;
         if (NO_CODEC.equals(codec)) {
             this.encodingCodec = new SerializableCodec<>();
         } else {
             this.encodingCodec = codec;
         }
-        this.ns = ns;
-        this.topic = ns.getTopicName(name);
         this.name = name;
+        this.topic = resolver.getId(name);
         this.producerProps = producerProperties;
         this.consumerProps = consumerProperties;
         producerProps.setProperty(ProducerConfig.CLIENT_ID_CONFIG,
-                name + "-" + PRODUCER_CLIENT_ID_SEQUENCE.getAndIncrement());
+                resolver.getId(this.name) + "-" + PRODUCER_CLIENT_ID_SEQUENCE.getAndIncrement());
         this.producer = new KafkaProducer<>(this.producerProps);
         this.size = producer.partitionsFor(topic).size();
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Created appender: %s on topic: %s with %d partitions", name, topic, size));
+            log.debug(String.format("Created appender: %s on topic: %s with %d partitions", this.name, topic, size));
         }
     }
 
-    public static <M extends Externalizable> KafkaLogAppender<M> open(Codec<M> codec, KafkaNamespace ns, String name,
+    public static <M extends Externalizable> KafkaLogAppender<M> open(Codec<M> codec, NameResolver resolver, Name name,
             Properties producerProperties, Properties consumerProperties) {
-        return new KafkaLogAppender<>(codec, ns, name, producerProperties, consumerProperties);
+        return new KafkaLogAppender<>(codec, resolver, name, producerProperties, consumerProperties);
     }
 
     @Override
-    public String name() {
+    public Name name() {
         return name;
     }
 
@@ -158,7 +160,7 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
     }
 
     @Override
-    public boolean waitFor(LogOffset offset, String group, Duration timeout) throws InterruptedException {
+    public boolean waitFor(LogOffset offset, Name group, Duration timeout) throws InterruptedException {
         boolean ret = false;
         if (!name.equals(offset.partition().name())) {
             throw new IllegalArgumentException(name + " can not wait for an offset with a different Log: " + offset);
@@ -191,7 +193,7 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
 
     @Override
     public String toString() {
-        return "KafkaLogAppender{" + "name='" + name + '\'' + ", size=" + size + ", ns=" + ns + ", closed=" + closed
+        return "KafkaLogAppender{" + "name='" + name + '\'' + ", size=" + size + ", closed=" + closed
                 + ", codec=" + codec + '}';
     }
 
@@ -200,11 +202,11 @@ public class KafkaLogAppender<M extends Externalizable> implements CloseableLogA
         return codec;
     }
 
-    protected boolean isProcessed(String group, TopicPartition topicPartition, long offset) {
+    protected boolean isProcessed(Name group, TopicPartition topicPartition, long offset) {
         // TODO: find a better way, this is expensive to create a consumer each time
         // but this is needed, an open consumer is not properly updated
         Properties props = (Properties) consumerProps.clone();
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, ns.getKafkaGroup(group));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, resolver.getId(group));
         try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
             consumer.assign(Collections.singletonList(topicPartition));
             long last = consumer.position(topicPartition);

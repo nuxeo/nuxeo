@@ -39,6 +39,7 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
@@ -71,7 +72,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     protected volatile boolean closed = false;
 
     public ChronicleLogTailer(Codec<M> codec, String basePath, ExcerptTailer cqTailer, LogPartition partition,
-            String group, ChronicleRetentionDuration retention) {
+                              Name group, ChronicleRetentionDuration retention) {
         Objects.requireNonNull(group);
         this.codec = codec;
         this.basePath = basePath;
@@ -236,7 +237,7 @@ public class ChronicleLogTailer<M extends Externalizable> implements LogTailer<M
     }
 
     @Override
-    public String group() {
+    public Name group() {
         return id.group;
     }
 

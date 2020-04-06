@@ -36,6 +36,7 @@ import org.nuxeo.lib.stream.StreamRuntimeException;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Appends records from a dump file into an a Log partition.
@@ -86,7 +87,7 @@ public class AppendCommand extends Command {
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) {
-        String name = cmd.getOptionValue("log-name");
+        Name name = Name.ofUrn(cmd.getOptionValue("log-name"));
         String codec = cmd.getOptionValue("codec");
         int partition = Integer.parseInt(cmd.getOptionValue("partition"));
         String input = cmd.getOptionValue("input");
@@ -94,7 +95,7 @@ public class AppendCommand extends Command {
         return true;
     }
 
-    protected void append(LogManager manager, String name, int partition, String codec, Path input) {
+    protected void append(LogManager manager, Name name, int partition, String codec, Path input) {
         log.info(String.format("Append records from %s to stream: %s, partition: %d", input, name, partition));
         Schema schema = ReflectData.get().getSchema(Record.class);
         DatumReader<Record> datumReader = new ReflectDatumReader<>(schema);

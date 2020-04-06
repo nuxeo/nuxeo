@@ -31,6 +31,7 @@ import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.log.LogStreamManager;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Track consumer positions so they can be restored in case of fail-over
@@ -41,7 +42,7 @@ public class TrackerCommand extends Command {
 
     public static final String COMPUTATION_NAME = "LatencyTracker";
 
-    public static final String INPUT_STREAM = "log_null";
+    public static final String INPUT_STREAM = "input/null";
 
     public static final String INTERNAL_LOG_PREFIX = "_";
 
@@ -59,7 +60,7 @@ public class TrackerCommand extends Command {
 
     protected String output;
 
-    protected List<String> logNames;
+    protected List<Name> logNames;
 
     protected int interval;
 
@@ -126,19 +127,16 @@ public class TrackerCommand extends Command {
         return runProcessor(manager);
     }
 
-    protected List<String> getLogNames(LogManager manager, String names) {
+    protected List<Name> getLogNames(LogManager manager, String names) {
         if (ALL_LOGS.equalsIgnoreCase(names)) {
-            return manager.listAll()
-                          .stream()
-                          .filter(name -> !name.startsWith(INTERNAL_LOG_PREFIX))
-                          .filter(name -> !name.startsWith(INPUT_STREAM))
+            return manager.listAll().stream().filter(name -> !INPUT_STREAM.equals(name.getName()))
                           .collect(Collectors.toList());
         }
-        List<String> ret = Arrays.asList(names.split(","));
+        List<Name> ret = Arrays.stream(names.split(",")).map(Name::ofUrn).collect(Collectors.toList());
         if (ret.isEmpty()) {
             throw new IllegalArgumentException("No log name provided or found.");
         }
-        for (String name : ret) {
+        for (Name name : ret) {
             if (!manager.exists(name)) {
                 throw new IllegalArgumentException("Unknown log name: " + name);
             }

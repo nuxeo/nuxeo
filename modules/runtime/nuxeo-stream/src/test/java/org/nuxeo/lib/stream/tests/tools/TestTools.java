@@ -42,6 +42,7 @@ import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.tests.KeyValueMessage;
 import org.nuxeo.lib.stream.tools.Main;
@@ -71,8 +72,10 @@ public abstract class TestTools {
             return;
         }
         try (LogManager manager = getManager()) {
-            manager.createIfNotExists(LOG_NAME, LOG_SIZE);
-            LogAppender<Record> appender = manager.getAppender(LOG_NAME);
+            Name logName = Name.ofUrn(LOG_NAME);
+            Name logName2 = Name.ofUrn(LOG_NAME_2);
+            manager.createIfNotExists(logName, LOG_SIZE);
+            LogAppender<Record> appender = manager.getAppender(logName);
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
@@ -85,22 +88,22 @@ public abstract class TestTools {
                 Thread.sleep(2);
             }
             // move some positions
-            try (LogTailer<Record> tailer = manager.createTailer("aGroup", LOG_NAME)) {
+            try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test/aGroup"), logName)) {
                 tailer.toStart();
                 tailer.read(DEF_TIMEOUT);
                 tailer.read(DEF_TIMEOUT);
                 tailer.commit();
             }
-            try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", LOG_NAME)) {
+            try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test/anotherGroup"), logName)) {
                 tailer.read(DEF_TIMEOUT);
                 tailer.commit();
             }
             // Create another log with non computation record and different encoding
-            manager.createIfNotExists(LOG_NAME_2, LOG_SIZE);
-            LogAppender<KeyValueMessage> appender2 = manager.getAppender(LOG_NAME_2,
+            manager.createIfNotExists(logName2, LOG_SIZE);
+            LogAppender<KeyValueMessage> appender2 = manager.getAppender(logName2,
                     new AvroBinaryCodec<>(KeyValueMessage.class));
             appender2.append(0, KeyValueMessage.of("foo", "bar".getBytes(UTF_8)));
-            try (LogTailer<Record> tailer = manager.createTailer("someGroup", LOG_NAME_2)) {
+            try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test/someGroup"), logName2)) {
                 tailer.read(DEF_TIMEOUT);
                 tailer.commit();
             }
@@ -151,27 +154,27 @@ public abstract class TestTools {
 
     @Test
     public void testPositionToEnd() {
-        run(String.format("position %s --to-end --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
-        LogLag lag = getManager().getLag(LOG_NAME, "anotherGroup");
+        run(String.format("position %s --to-end --log-name %s --group test/anotherGroup", getManagerOptions(), LOG_NAME));
+        LogLag lag = getManager().getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("test/anotherGroup"));
         assertEquals(lag.toString(), 0, lag.lag());
     }
 
     @Test
     public void testPositionReset() {
-        run(String.format("position %s --reset --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
-        LogLag lag = getManager().getLag(LOG_NAME, "anotherGroup");
+        run(String.format("position %s --reset --log-name %s --group test/anotherGroup", getManagerOptions(), LOG_NAME));
+        LogLag lag = getManager().getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("test/anotherGroup"));
         assertTrue(lag.toString(), lag.lag() > 0);
     }
 
     @Test
     public void testPositionOnPartition() {
         run(String.format("position %s --to-end --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
-        List<LogLag> lags = getManager().getLagPerPartition(LOG_NAME, "anotherGroup");
+        List<LogLag> lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
         assertEquals(0, lags.get(0).lag());
         // then reset a the first partition
         run(String.format("position %s --reset --log-name %s --partition 0 --group anotherGroup", getManagerOptions(),
                 LOG_NAME));
-        lags = getManager().getLagPerPartition(LOG_NAME, "anotherGroup");
+        lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
         assertTrue(lags.get(0).lag() > 0);
     }
 
@@ -181,21 +184,21 @@ public abstract class TestTools {
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
                 Instant.now().minus(30, ChronoUnit.DAYS), LOG_NAME));
         LogManager manager = getManager();
-        LogLag lag = manager.getLag(LOG_NAME, "anotherGroup");
+        LogLag lag = manager.getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
         assertTrue(lag.toString(), lag.lag() > 1);
 
         // move to the position to the last record,
         // consumer will process the last message of each partition so lag is equal to the number o partitions
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
                 Instant.now().plus(1, ChronoUnit.DAYS), LOG_NAME));
-        lag = manager.getLag(LOG_NAME, "anotherGroup");
+        lag = manager.getLag(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
         assertEquals(lag.toString(), LOG_SIZE, lag.lag());
 
         // move to the watermark of targetRecord, this work as expected because each record as a unique timestamp
         run(String.format("position %s --to-watermark %s --log-name %s --group anotherGroup", getManagerOptions(),
                 Instant.ofEpochMilli(Watermark.ofValue(targetRecord.getWatermark()).getTimestamp()), LOG_NAME));
         // open a tailer with the moved group we should be on the same record
-        try (LogTailer<Record> tailer = manager.createTailer("anotherGroup", LOG_NAME)) {
+        try (LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("anotherGroup"), Name.ofUrn(LOG_NAME))) {
             LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
             assertNotNull(rec);
             assertEquals(targetRecord, rec.message());
@@ -205,13 +208,13 @@ public abstract class TestTools {
     @Test
     public void testCopy() {
         run(String.format("copy %s --src %s --dest %s", getManagerOptions(), LOG_NAME,
-                LOG_NAME + "-" + System.currentTimeMillis()));
+                LOG_NAME + "_" + System.currentTimeMillis()));
     }
 
     @Test
     public void testTracker() {
         // run(String.format("tracker %s --verbose -l ALL -o %s-out -i 2 -c 3", getManagerOptions(), LOG_NAME));
-        run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 2 -c 3", getManagerOptions(), LOG_NAME,
+        run(String.format("tracker %s --verbose -l %s -o %s_latencies -i 2 -c 3", getManagerOptions(), LOG_NAME,
                 LOG_NAME));
     }
 
@@ -231,7 +234,7 @@ public abstract class TestTools {
     @Test
     public void testTrackerAndRestore() throws InterruptedException {
         // Set a consumer position
-        String group = "aGroup2Track";
+        Name group = Name.ofUrn("aGroup2Track");
         Record nextRecord;
         try (LogTailer<Record> tailer = getTailer(group)) {
             read(tailer);
@@ -245,14 +248,14 @@ public abstract class TestTools {
             // System.out.println("# nextRecord offset: " + nextLogRecord.offset() + " key: " + nextRecord.getKey());
         }
         // track the current latencies
-        run(String.format("tracker %s --verbose -l %s -o %s-latencies -i 1 -c 1", getManagerOptions(), LOG_NAME,
+        run(String.format("tracker %s --verbose -l %s -o %s_latencies -i 1 -c 1", getManagerOptions(), LOG_NAME,
                 LOG_NAME));
 
         // reset the position
-        run(String.format("position %s --reset --log-name %s --group %s", getManagerOptions(), LOG_NAME, group));
+        run(String.format("position %s --reset --log-name %s --group %s", getManagerOptions(), LOG_NAME, group.getUrn()));
 
         // restore position
-        run(String.format("restore %s --verbose --log-name %s -i %s-latencies", getManagerOptions(), LOG_NAME,
+        run(String.format("restore %s --verbose --log-name %s -i %s_latencies", getManagerOptions(), LOG_NAME,
                 LOG_NAME));
 
         // open a tailer we should be good
@@ -262,12 +265,12 @@ public abstract class TestTools {
         }
     }
 
-    protected LogTailer<Record> getTailer(String group) {
+    protected LogTailer<Record> getTailer(Name group) {
         LogManager manager = getManager();
         if (manager.supportSubscribe()) {
-            return manager.subscribe(group, Collections.singleton(LOG_NAME), null);
+            return manager.subscribe(group, Collections.singleton(Name.ofUrn(LOG_NAME)), null);
         }
-        return manager.createTailer(group, LOG_NAME);
+        return manager.createTailer(group, Name.ofUrn(LOG_NAME));
     }
 
     protected Record read(LogTailer<Record> tailer) throws InterruptedException {

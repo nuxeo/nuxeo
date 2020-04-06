@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.internals.RecordFilterChainImpl;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Settings defines stream's partitions and computation's concurrency and policy.
@@ -36,28 +37,28 @@ public class Settings {
     // streams
     protected final int defaultPartitions;
 
-    protected final Map<String, Integer> partitions = new HashMap<>();
+    protected final Map<Name, Integer> partitions = new HashMap<>();
 
     protected final Codec<Record> defaultCodec;
 
-    protected final Map<String, Codec<Record>> codecs = new HashMap<>();
+    protected final Map<Name, Codec<Record>> codecs = new HashMap<>();
 
     protected final RecordFilterChain defaultFilter;
 
-    protected final Map<String, RecordFilterChain> filters = new HashMap<>();
+    protected final Map<Name, RecordFilterChain> filters = new HashMap<>();
 
-    protected final Map<String, Boolean> externals = new HashMap<>();
+    protected final Map<Name, Boolean> externals = new HashMap<>();
 
     protected final boolean defaultExternal;
 
     // computations
     protected final int defaultConcurrency;
 
-    protected final Map<String, Integer> concurrencies = new HashMap<>();
+    protected final Map<Name, Integer> concurrencies = new HashMap<>();
 
     protected final ComputationPolicy defaultPolicy;
 
-    protected final Map<String, ComputationPolicy> policies = new HashMap<>();
+    protected final Map<Name, ComputationPolicy> policies = new HashMap<>();
 
     /**
      * Default concurrency and partition to use if not specified explicitly.
@@ -114,34 +115,50 @@ public class Settings {
      * Sets the computation thread pool size.
      */
     public Settings setConcurrency(String computationName, int concurrency) {
+        return setConcurrency(Name.ofUrn(computationName), concurrency);
+    }
+
+    public Settings setConcurrency(Name computationName, int concurrency) {
         concurrencies.put(computationName, concurrency);
         return this;
     }
 
     public int getConcurrency(String computationName) {
+        return getConcurrency(Name.ofUrn(computationName));
+    }
+
+    public int getConcurrency(Name computationName) {
         return concurrencies.getOrDefault(computationName, defaultConcurrency);
     }
 
     /**
      * Sets the number of partitions for a stream.
      */
-    public Settings setPartitions(String streamName, int partitions) {
+    public Settings setPartitions(Name streamName, int partitions) {
         this.partitions.put(streamName, partitions);
         return this;
     }
 
-    public int getPartitions(String streamName) {
+    public Settings setPartitions(String streamName, int partitions) {
+        return setPartitions(Name.ofUrn(streamName), partitions);
+    }
+
+    public int getPartitions(Name streamName) {
         return partitions.getOrDefault(streamName, defaultPartitions);
     }
 
+    public int getPartitions(String streamName) {
+        return getPartitions(Name.ofUrn(streamName));
+    }
+
     // @since 11.1
-    public Settings setExternal(String streamName, boolean external) {
+    public Settings setExternal(Name streamName, boolean external) {
         this.externals.put(streamName, external);
         return this;
     }
 
     // @since 11.1
-    public boolean isExternal(String streamName) {
+    public boolean isExternal(Name streamName) {
         return externals.getOrDefault(streamName, defaultExternal);
     }
 
@@ -150,10 +167,14 @@ public class Settings {
      *
      * @since 10.2
      */
-    public Settings setCodec(String streamName, Codec<Record> codec) {
+    public Settings setCodec(Name streamName, Codec<Record> codec) {
         Objects.requireNonNull(codec);
         codecs.put(streamName, codec);
         return this;
+    }
+
+    public Settings setCodec(String streamName, Codec<Record> codec) {
+        return setCodec(Name.ofUrn(streamName), codec);
     }
 
     /**
@@ -162,6 +183,10 @@ public class Settings {
      * @since 10.2
      */
     public Codec<Record> getCodec(String streamName) {
+        return getCodec(Name.ofUrn(streamName));
+    }
+
+    public Codec<Record> getCodec(Name streamName) {
         return codecs.getOrDefault(streamName, defaultCodec);
     }
 
@@ -171,7 +196,7 @@ public class Settings {
      *
      * @since 10.3
      */
-    public Settings setPolicy(String computationName, ComputationPolicy policy) {
+    public Settings setPolicy(Name computationName, ComputationPolicy policy) {
         if (policy == null) {
             policies.remove(computationName);
         } else {
@@ -180,13 +205,21 @@ public class Settings {
         return this;
     }
 
+    public Settings setPolicy(String computationName, ComputationPolicy policy) {
+        return setPolicy(Name.ofUrn(computationName), policy);
+    }
+
     /**
      * Gets the policy for a computation.
      *
      * @since 10.3
      */
-    public ComputationPolicy getPolicy(String computationName) {
+    public ComputationPolicy getPolicy(Name computationName) {
         return policies.getOrDefault(computationName, defaultPolicy);
+    }
+
+    public ComputationPolicy getPolicy(String computationName) {
+        return policies.getOrDefault(Name.ofUrn(computationName), defaultPolicy);
     }
 
     /**
@@ -194,7 +227,7 @@ public class Settings {
      *
      * @since 11.1
      */
-    public Settings addFilter(String streamName, RecordFilter filter) {
+    public Settings addFilter(Name streamName, RecordFilter filter) {
         if (filter == null) {
             filters.remove(streamName);
         } else {
@@ -204,13 +237,21 @@ public class Settings {
         return this;
     }
 
+    public Settings addFilter(String streamName, RecordFilter filter) {
+        return addFilter(Name.ofUrn(streamName), filter);
+    }
+
     /**
      * Gets the filter chain for a stream.
      *
      * @since 11.1
      */
-    public RecordFilterChain getFilterChain(String streamName) {
+    public RecordFilterChain getFilterChain(Name streamName) {
         return filters.getOrDefault(streamName, defaultFilter);
+    }
+
+    public RecordFilterChain getFilterChain(String streamName) {
+        return filters.getOrDefault(Name.ofUrn(streamName), defaultFilter);
     }
 
 }

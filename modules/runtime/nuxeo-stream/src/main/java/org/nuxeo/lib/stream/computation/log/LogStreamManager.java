@@ -37,6 +37,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.log.internals.LogOffsetImpl;
 
@@ -58,7 +59,7 @@ public class LogStreamManager implements StreamManager {
 
     protected final Map<String, Settings> settings = new HashMap<>();
 
-    protected final Map<String, RecordFilterChain> filters = new HashMap<>();
+    protected final Map<Name, RecordFilterChain> filters = new HashMap<>();
 
     @Override
     public void register(String processorName, Topology topology, Settings settings) {
@@ -85,7 +86,8 @@ public class LogStreamManager implements StreamManager {
     }
 
     @Override
-    public LogOffset append(String stream, Record record) {
+    public LogOffset append(String streamUrn, Record record) {
+        Name stream = Name.ofUrn(streamUrn);
         RecordFilterChain filter = filters.get(stream);
         if (filter == null) {
             throw new IllegalArgumentException("Unknown stream: " + stream);
@@ -103,12 +105,12 @@ public class LogStreamManager implements StreamManager {
         return logManager.supportSubscribe();
     }
 
-    public LogTailer<Record> subscribe(String computationName, Collection<String> streams, RebalanceListener listener) {
+    public LogTailer<Record> subscribe(Name computationName, Collection<Name> streams, RebalanceListener listener) {
         Codec<Record> codec = getCodec(streams);
         return logManager.subscribe(computationName, streams, listener, codec);
     }
 
-    public LogTailer<Record> createTailer(String computationName, Collection<LogPartition> streamPartitions) {
+    public LogTailer<Record> createTailer(Name computationName, Collection<LogPartition> streamPartitions) {
         if (streamPartitions.isEmpty()) {
             return logManager.createTailer(computationName, streamPartitions);
         }
@@ -116,13 +118,13 @@ public class LogStreamManager implements StreamManager {
         return logManager.createTailer(computationName, streamPartitions, codec);
     }
 
-    public RecordFilter getFilter(String stream) {
+    public RecordFilter getFilter(Name stream) {
         return filters.get(stream);
     }
 
-    protected Codec<Record> getCodec(Collection<String> streams) {
+    protected Codec<Record> getCodec(Collection<Name> streams) {
         Codec<Record> codec = null;
-        for (String stream : streams) {
+        for (Name stream : streams) {
             Codec<Record> sCodec = logManager.<Record> getAppender(stream).getCodec();
             if (codec == null) {
                 codec = sCodec;
@@ -135,7 +137,7 @@ public class LogStreamManager implements StreamManager {
 
     protected void initStreams(Topology topology, Settings settings) {
         log.debug("Initializing streams");
-        topology.streamsSet().forEach(streamName -> {
+        topology.streamsSet().stream().map(Name::ofUrn).forEach(streamName -> {
             if (settings.isExternal(streamName)) {
                 return;
             }
@@ -156,6 +158,7 @@ public class LogStreamManager implements StreamManager {
     protected void initAppenders(Topology topology, Settings settings) {
         log.debug("Initializing source appenders so we ensure they use codec defined in the processor");
         topology.streamsSet()
+                .stream().map(Name::ofUrn)
                 .forEach(stream -> {
                     if (!settings.isExternal(stream)) {
                         logManager.getAppender(stream, settings.getCodec(stream));
@@ -164,7 +167,7 @@ public class LogStreamManager implements StreamManager {
     }
 
     protected void registerFilters(Topology topology, Settings settings) {
-        topology.streamsSet().forEach(stream -> {
+        topology.streamsSet().stream().map(Name::ofUrn).forEach(stream -> {
             if (!settings.isExternal(stream)) {
                 filters.put(stream, settings.getFilterChain(stream));
             }

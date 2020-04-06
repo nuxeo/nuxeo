@@ -40,6 +40,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Dump records from a Log into an Avro file.
@@ -97,8 +98,8 @@ public class DumpCommand extends Command {
     @Override
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         int limit = Integer.parseInt(cmd.getOptionValue("count", "-1"));
-        String name = cmd.getOptionValue("log-name");
-        String group = cmd.getOptionValue("group", "tools");
+        Name name = Name.ofUrn(cmd.getOptionValue("log-name"));
+        Name group = Name.ofUrn(cmd.getOptionValue("group", "admin/tools"));
         String codec = cmd.getOptionValue("codec");
         int partition = Integer.parseInt(cmd.getOptionValue("partition", "-1"));
         String output = cmd.getOptionValue("output");
@@ -106,7 +107,7 @@ public class DumpCommand extends Command {
         return true;
     }
 
-    protected void dump(LogManager manager, String name, int partition, String group, int limit, String codec,
+    protected void dump(LogManager manager, Name name, int partition, Name group, int limit, String codec,
             Path output) throws InterruptedException {
         log.info("Dump record to file: " + output);
         Schema schema = ReflectData.get().getSchema(Record.class);
@@ -131,7 +132,7 @@ public class DumpCommand extends Command {
         log.info(String.format("%d record(s) dumped", count));
     }
 
-    protected LogTailer<Record> getTailer(LogManager manager, String name, int partition, String group, String codec) {
+    protected LogTailer<Record> getTailer(LogManager manager, Name name, int partition, Name group, String codec) {
         if (partition >= 0) {
             return manager.createTailer(group, new LogPartition(name, partition), getRecordCodec(codec));
         }

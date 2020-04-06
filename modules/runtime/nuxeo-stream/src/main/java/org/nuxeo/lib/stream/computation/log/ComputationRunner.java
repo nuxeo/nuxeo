@@ -41,6 +41,7 @@ import org.nuxeo.lib.stream.computation.internals.WatermarkMonotonicInterval;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 
@@ -144,12 +145,13 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             this.context = new ComputationContextImpl(streamManager, metadata, policy, false);
             assignmentLatch.countDown();
         } else if (streamManager.supportSubscribe()) {
-            this.tailer = streamManager.subscribe(metadata.name(), metadata.inputStreams(), this);
+            this.tailer = streamManager.subscribe(Name.ofUrn(metadata.name()),
+                    metadata.inputStreams().stream().map(Name::ofUrn).collect(Collectors.toList()), this);
             // create a spare context until the assignment is done
             this.context = new ComputationContextImpl(streamManager, metadata, policy, true);
         } else {
             this.context = new ComputationContextImpl(streamManager, metadata, policy,  defaultAssignment.isEmpty());
-            this.tailer = streamManager.createTailer(metadata.name(), defaultAssignment);
+            this.tailer = streamManager.createTailer(Name.ofUrn(metadata.name()), defaultAssignment);
             assignmentLatch.countDown();
         }
         this.defaultAssignment = defaultAssignment;
@@ -228,16 +230,17 @@ public class ComputationRunner implements Runnable, RebalanceListener {
 
     protected void registerMetrics() {
         globalFailureCount = registry.counter(GLOBAL_FAILURE_COUNT_REGISTRY_NAME);
+        String name = Name.ofUrn(metadata.name()).getId();
         runningCount = registry.counter(
-                MetricName.build("nuxeo.streams.computation.running").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.running").tagged("computation", name));
         failureCount = registry.counter(
-                MetricName.build("nuxeo.streams.computation.failure").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.failure").tagged("computation", name));
         recordSkippedCount = registry.counter(
-                MetricName.build("nuxeo.streams.computation.skippedRecord").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.skippedRecord").tagged("computation", name));
         processRecordTimer = registry.timer(
-                MetricName.build("nuxeo.streams.computation.processRecord").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.processRecord").tagged("computation", name));
         processTimerTimer = registry.timer(
-                MetricName.build("nuxeo.streams.computation.processTimer").tagged("computation", metadata.name()));
+                MetricName.build("nuxeo.streams.computation.processTimer").tagged("computation", name));
     }
 
     protected void closeTailer() {
@@ -344,7 +347,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
         Record record;
         if (logRecord != null) {
             record = logRecord.message();
-            String stream = logRecord.offset().partition().name();
+            Name stream = logRecord.offset().partition().name();
             Record filteredRecord = streamManager.getFilter(stream).afterRead(record, logRecord.offset());
             if (filteredRecord == null) {
                 if (log.isDebugEnabled()) {
@@ -359,7 +362,7 @@ public class ComputationRunner implements Runnable, RebalanceListener {
             inRecords++;
             lowWatermark.mark(record.getWatermark());
             context.setLastOffset(logRecord.offset());
-            String from = metadata.reverseMap(stream);
+            String from = metadata.reverseMap(stream.getUrn());
             processRecordWithRetry(from, record);
             checkRecordFlags(record);
             checkSourceLowWatermark();

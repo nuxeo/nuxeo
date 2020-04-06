@@ -32,6 +32,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.tests.TestKafkaUtils;
 
 /**
@@ -53,13 +54,14 @@ public class TestToolsKafka extends TestTools {
 
     @Test
     public void testPositionAfterDate() throws InterruptedException {
-        runShouldFail(String.format("position %s --log-name %s --group anotherGroup --after-date %s",
+        runShouldFail(String.format("position %s --log-name %s --group test/anotherGroup --after-date %s",
                 getManagerOptions(), LOG_NAME, Instant.now().plus(1, ChronoUnit.HOURS)));
         // move to target timestamp
-        run(String.format("position %s --log-name %s --group anotherGroup --after-date %s", getManagerOptions(),
+        run(String.format("position %s --log-name %s --group test/anotherGroup --after-date %s", getManagerOptions(),
                 LOG_NAME, Instant.ofEpochMilli(Watermark.ofValue(targetRecord.getWatermark()).getTimestamp())));
         // open a tailer with the moved group we should be on the same record
-        try (LogTailer<Record> tailer = getManager().createTailer("anotherGroup", LOG_NAME)) {
+        try (LogTailer<Record> tailer = getManager().createTailer(Name.ofUrn("test/anotherGroup"),
+                Name.ofUrn(LOG_NAME))) {
             LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
             assertNotNull(rec);
             assertEquals(targetRecord, rec.message());

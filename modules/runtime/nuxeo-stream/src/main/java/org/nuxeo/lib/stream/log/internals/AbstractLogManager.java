@@ -42,30 +42,35 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 
 public abstract class AbstractLogManager implements LogManager {
-    protected final Map<String, CloseableLogAppender> appenders = new ConcurrentHashMap<>();
+    protected static final Name ADMIN_GROUP = Name.of("admin", "tailer");
+
+    protected final Map<Name, CloseableLogAppender> appenders = new ConcurrentHashMap<>();
 
     protected final Map<LogPartitionGroup, LogTailer> tailersAssignments = new ConcurrentHashMap<>();
 
     // this define a concurrent set of tailers
     protected final Set<LogTailer> tailers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    protected abstract void create(String name, int size);
+    protected abstract void create(Name name, int size);
 
-    protected abstract int getSize(String name);
+    protected abstract int getSize(Name name);
 
-    protected abstract <M extends Externalizable> CloseableLogAppender<M> createAppender(String name, Codec<M> codec);
+    protected abstract <M extends Externalizable> CloseableLogAppender<M> createAppender(Name name, Codec<M> codec);
 
     protected abstract <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions,
-            String group, Codec<M> codec);
+            Name group, Codec<M> codec);
 
-    protected abstract <M extends Externalizable> LogTailer<M> doSubscribe(String group, Collection<String> names,
+    protected abstract <M extends Externalizable> LogTailer<M> doSubscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec);
 
+    public abstract List<LogLag> getLagPerPartition(Name name, Name group);
+
     @Override
-    public synchronized boolean createIfNotExists(String name, int size) {
+    public synchronized boolean createIfNotExists(Name name, int size) {
         if (!exists(name)) {
             create(name, size);
             return true;
@@ -74,12 +79,12 @@ public abstract class AbstractLogManager implements LogManager {
     }
 
     @Override
-    public boolean delete(String name) {
+    public boolean delete(Name name) {
         return false;
     }
 
     @Override
-    public int size(String name) {
+    public int size(Name name) {
         if (appenders.containsKey(name)) {
             return appenders.get(name).size();
         }
@@ -87,7 +92,7 @@ public abstract class AbstractLogManager implements LogManager {
     }
 
     @Override
-    public <M extends Externalizable> LogTailer<M> createTailer(String group, Collection<LogPartition> partitions,
+    public <M extends Externalizable> LogTailer<M> createTailer(Name group, Collection<LogPartition> partitions,
             Codec<M> codec) {
         Objects.requireNonNull(codec);
         partitions.forEach(partition -> checkInvalidAssignment(group, partition));
@@ -115,7 +120,7 @@ public abstract class AbstractLogManager implements LogManager {
     }
 
     @Override
-    public <M extends Externalizable> LogTailer<M> subscribe(String group, Collection<String> names,
+    public <M extends Externalizable> LogTailer<M> subscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec) {
         Objects.requireNonNull(codec);
         LogTailer<M> ret = doSubscribe(group, names, listener, codec);
@@ -123,7 +128,7 @@ public abstract class AbstractLogManager implements LogManager {
         return ret;
     }
 
-    protected void checkInvalidAssignment(String group, LogPartition partition) {
+    protected void checkInvalidAssignment(Name group, LogPartition partition) {
         LogPartitionGroup key = new LogPartitionGroup(group, partition);
         LogTailer<?> ret = tailersAssignments.get(key);
         if (ret != null && !ret.closed()) {
@@ -143,7 +148,7 @@ public abstract class AbstractLogManager implements LogManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <M extends Externalizable> LogAppender<M> getAppender(String name, Codec<M> codec) {
+    public <M extends Externalizable> LogAppender<M> getAppender(Name name, Codec<M> codec) {
         LogAppender<M> ret = appenders.computeIfAbsent(name, n -> {
             if (exists(n)) {
                 return createAppender(n, codec);
@@ -164,7 +169,7 @@ public abstract class AbstractLogManager implements LogManager {
     }
 
     @Override
-    public <M extends Externalizable> List<Latency> getLatencyPerPartition(String name, String group, Codec<M> codec,
+    public <M extends Externalizable> List<Latency> getLatencyPerPartition(Name name, Name group, Codec<M> codec,
             Function<M, Long> timestampExtractor, Function<M, String> keyExtractor) {
         long now = System.currentTimeMillis();
         List<LogLag> lags = getLagPerPartition(name, group);
@@ -180,7 +185,7 @@ public abstract class AbstractLogManager implements LogManager {
             // the committed offset point to the next record to process, here we want the last committed offset
             // which is the previous one
             LogOffset offset = new LogOffsetImpl(name, partition, lag.lowerOffset() - 1);
-            try (LogTailer<M> tailer = createTailer("tools", offset.partition(), codec)) {
+            try (LogTailer<M> tailer = createTailer(ADMIN_GROUP, offset.partition(), codec)) {
                 tailer.seek(offset);
                 LogRecord<M> record = tailer.read(Duration.ofSeconds(1));
                 if (record == null) {

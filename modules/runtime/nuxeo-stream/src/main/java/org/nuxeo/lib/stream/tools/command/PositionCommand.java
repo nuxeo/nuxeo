@@ -39,6 +39,7 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Manipulates the consumer position to the beginning, end or a specific timestamp
@@ -127,8 +128,8 @@ public class PositionCommand extends Command {
 
     @Override
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
-        String name = cmd.getOptionValue("log-name");
-        String group = cmd.getOptionValue("group", "tools");
+        Name name = Name.ofUrn(cmd.getOptionValue("log-name"));
+        Name group = Name.ofUrn(cmd.getOptionValue("group", "admin/tools"));
         int partition = Integer.parseInt(cmd.getOptionValue("partition", "-1"));
         if (cmd.hasOption(AFTER_DATE_OPT)) {
             long timestamp = getTimestampFromDate(cmd.getOptionValue(AFTER_DATE_OPT));
@@ -150,7 +151,7 @@ public class PositionCommand extends Command {
         return false;
     }
 
-    protected boolean toEnd(LogManager manager, String group, String name, int partition) {
+    protected boolean toEnd(LogManager manager, Name group, Name name, int partition) {
         LogLag lag = getLag(manager, group, name, partition);
         try (LogTailer<Externalizable> tailer = createTailer(manager, name, partition, group)) {
             tailer.toEnd();
@@ -165,11 +166,11 @@ public class PositionCommand extends Command {
         return partition >= 0 ? Integer.toString(partition) : "all";
     }
 
-    protected String labelFor(String name, int partition) {
-        return partition >= 0 ? name + ":" + labelFor(partition) : name;
+    protected String labelFor(Name name, int partition) {
+        return partition >= 0 ? name.getUrn() + ":" + labelFor(partition) : name.getUrn();
     }
 
-    protected LogLag getLag(LogManager manager, String group, String name, int partition) {
+    protected LogLag getLag(LogManager manager, Name group, Name name, int partition) {
         if (partition >= 0) {
             return manager.getLagPerPartition(name, group).get(partition);
         } else {
@@ -177,15 +178,15 @@ public class PositionCommand extends Command {
         }
     }
 
-    protected <T extends Externalizable> LogTailer<T> createTailer(LogManager manager, String name, int partition,
-            String group) {
+    protected <T extends Externalizable> LogTailer<T> createTailer(LogManager manager, Name name, int partition,
+            Name group) {
         if (partition >= 0) {
             return manager.createTailer(group, new LogPartition(name, partition));
         }
         return manager.createTailer(group, name);
     }
 
-    protected boolean reset(LogManager manager, String group, String name, int partition) {
+    protected boolean reset(LogManager manager, Name group, Name name, int partition) {
         LogLag lag = getLag(manager, group, name, partition);
         long pos = lag.lower();
         try (LogTailer<Externalizable> tailer = createTailer(manager, name, partition, group)) {
@@ -195,7 +196,7 @@ public class PositionCommand extends Command {
         return true;
     }
 
-    protected boolean positionAfterDate(LogManager manager, String group, String name, int partition, long timestamp) {
+    protected boolean positionAfterDate(LogManager manager, Name group, Name name, int partition, long timestamp) {
         try (LogTailer<Externalizable> tailer = manager.createTailer(group, name)) {
             boolean movedOffset = false;
             for (int part = 0; part < manager.size(name); part++) {
@@ -223,9 +224,9 @@ public class PositionCommand extends Command {
         return false;
     }
 
-    protected boolean positionToWatermark(LogManager manager, String group, String name, int partition, long timestamp)
+    protected boolean positionToWatermark(LogManager manager, Name group, Name name, int partition, long timestamp)
             throws InterruptedException {
-        String newGroup = "tools";
+        Name newGroup = Name.ofUrn("admin/tools");
         int size = manager.size(name);
         List<LogOffset> offsets = new ArrayList<>(size);
         List<LogLag> lags = manager.getLagPerPartition(name, newGroup);

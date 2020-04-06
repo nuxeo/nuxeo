@@ -28,6 +28,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.tools.renderer.Renderer;
 
 /**
@@ -85,9 +86,9 @@ public class CatCommand extends Command {
     public boolean run(LogManager manager, CommandLine cmd) throws InterruptedException {
         int limit = Integer.parseInt(cmd.getOptionValue("lines", "-1"));
         int dataSize = Integer.parseInt(cmd.getOptionValue("data-size", "256"));
-        String name = cmd.getOptionValue("log-name");
+        Name name = Name.ofUrn(cmd.getOptionValue("log-name"));
         String render = cmd.getOptionValue("render", "default");
-        String group = cmd.getOptionValue("group", "tools");
+        Name group = Name.ofUrn(cmd.getOptionValue("group", "admin/tools"));
         String codec = cmd.getOptionValue("codec");
         String avroSchemaStorePath = cmd.getOptionValue("schema-store");
         if (avroSchemaStorePath == null && Paths.get(NUXEO_SCHEMA_STORE).toFile().exists()) {
@@ -97,7 +98,7 @@ public class CatCommand extends Command {
         return true;
     }
 
-    protected void cat(LogManager manager, String name, String group, int limit, Renderer render, String codec)
+    protected void cat(LogManager manager, Name name, Name group, int limit, Renderer render, String codec)
             throws InterruptedException {
         render.header();
         try (LogTailer<Record> tailer = manager.createTailer(group, name, getRecordCodec(codec))) {

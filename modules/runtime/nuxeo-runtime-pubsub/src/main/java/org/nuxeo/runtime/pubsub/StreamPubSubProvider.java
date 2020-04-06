@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
@@ -32,6 +31,7 @@ import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.codec.CodecService;
@@ -45,7 +45,7 @@ import org.nuxeo.runtime.stream.StreamService;
 public class StreamPubSubProvider extends AbstractPubSubProvider {
     private static final Log log = LogFactory.getLog(StreamPubSubProvider.class);
 
-    public static final String GROUP_PREFIX = "pub-sub-node-";
+    public static final String GROUP_PREFIX = "pubsub/pubSub-";
 
     protected static final String LOG_CONFIG_OPT = "logConfig";
 
@@ -61,7 +61,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
 
     protected String logConfig;
 
-    protected String logName;
+    protected Name logName;
 
     protected LogAppender<Record> appender;
 
@@ -76,10 +76,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         log.debug("Initializing ");
         super.initialize(options, subscribers);
         logConfig = options.getOrDefault(LOG_CONFIG_OPT, DEFAULT_LOG_CONFIG);
-        logName = options.get(LOG_NAME_OPT);
-        if (StringUtils.isBlank(logName)) {
-            throw new IllegalArgumentException("Missing option logName in StreamPubSubProviderDescriptor");
-        }
+        logName = Name.ofUrn(options.get(LOG_NAME_OPT));
         String codecName = options.getOrDefault(CODEC_OPT, DEFAULT_CODEC);
         CodecService codecService = Framework.getService(CodecService.class);
         codec = codecService.getCodec(codecName, Record.class);
@@ -118,7 +115,7 @@ public class StreamPubSubProvider extends AbstractPubSubProvider {
         @Override
         public void run() {
             // using different group name enable fan out
-            String group = GROUP_PREFIX + nodeId;
+            Name group = Name.ofUrn(GROUP_PREFIX + nodeId);
             log.debug("Starting subscriber thread with group: " + group);
             try (LogTailer<Record> tailer = Framework.getService(StreamService.class)
                                                      .getLogManager(logConfig)

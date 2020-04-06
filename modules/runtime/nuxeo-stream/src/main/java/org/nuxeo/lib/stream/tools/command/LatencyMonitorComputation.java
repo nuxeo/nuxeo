@@ -28,6 +28,7 @@ import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.Latency;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.internals.LogPartitionGroup;
 
 import io.dropwizard.metrics5.graphite.Graphite;
@@ -56,16 +57,16 @@ public class LatencyMonitorComputation extends LatencyTrackerComputation {
     protected final boolean partition;
 
     @Deprecated
-    public LatencyMonitorComputation(LogManager manager, List<String> logNames, String host, int port, boolean udp,
+    public LatencyMonitorComputation(LogManager manager, List<Name> logNames, String host, int port, boolean udp,
             String basePrefix, String computationName, int intervalSecond, int count, boolean verbose,
             Codec<Record> codec) {
         this(manager, logNames, host, port, udp, basePrefix, computationName, intervalSecond, count, true, verbose,
                 codec);
     }
 
-    public LatencyMonitorComputation(LogManager manager, List<String> logNames, String host, int port, boolean udp,
-            String basePrefix, String computationName, int intervalSecond, int count, boolean partition,
-            boolean verbose, Codec<Record> codec) {
+    public LatencyMonitorComputation(LogManager manager, List<Name> logNames, String host, int port, boolean udp,
+                                     String basePrefix, String computationName, int intervalSecond, int count, boolean partition,
+                                     boolean verbose, Codec<Record> codec) {
         super(manager, logNames, computationName, intervalSecond, count, verbose, codec, 0);
         this.host = host;
         this.port = port;

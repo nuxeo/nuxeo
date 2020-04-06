@@ -38,6 +38,7 @@ import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.log.internals.AbstractLogManager;
 import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
@@ -101,8 +102,8 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    public boolean exists(String name) {
-        try (Stream<Path> paths = Files.list(basePath.resolve(name))) {
+    public boolean exists(Name name) {
+        try (Stream<Path> paths = Files.list(basePath.resolve(name.getId()))) {
             return paths.count() > 0;
         } catch (IOException e) {
             return false;
@@ -111,18 +112,18 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void create(String name, int size) {
-        ChronicleLogAppender.create(NO_CODEC, basePath.resolve(name).toFile(), size, retention).close();
+    public void create(Name name, int size) {
+        ChronicleLogAppender.create(NO_CODEC, basePath.resolve(name.getId()).toFile(), size, retention).close();
     }
 
     @Override
-    protected int getSize(String name) {
-        return ChronicleLogAppender.partitions(basePath.resolve(name));
+    protected int getSize(Name name) {
+        return ChronicleLogAppender.partitions(basePath.resolve(name.getId()));
     }
 
     @Override
-    public boolean delete(String name) {
-        Path path = basePath.resolve(name);
+    public boolean delete(Name name) {
+        Path path = basePath.resolve(name.getId());
         if (path.toFile().isDirectory()) {
             deleteQueueBasePath(path);
             return true;
@@ -131,9 +132,9 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @SuppressWarnings("unchecked")
-    protected LogLag getLagForPartition(String name, int partition, String group) {
+    protected LogLag getLagForPartition(Name name, int partition, Name group) {
         long pos;
-        Path path = basePath.resolve(name);
+        Path path = basePath.resolve(name.getId());
         if (!ChronicleLogOffsetTracker.exists(path, group)) {
             pos = 0;
         } else {
@@ -143,7 +144,7 @@ public class ChronicleLogManager extends AbstractLogManager {
             }
         }
         try (ChronicleLogAppender<Externalizable> appender = ChronicleLogAppender.open(NO_CODEC,
-                basePath.resolve(name).toFile())) {
+                basePath.resolve(name.getId()).toFile())) {
             // this trigger an acquire/release on cycle
             long end = appender.endOffset(partition);
             if (pos == 0) {
@@ -157,7 +158,7 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<LogLag> getLagPerPartition(String name, String group) {
+    public List<LogLag> getLagPerPartition(Name name, Name group) {
         int size = size(name);
         List<LogLag> ret = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
@@ -172,11 +173,12 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<String> listAll() {
+    public List<Name> listAll() {
         try (Stream<Path> paths = Files.list(basePath)) {
             return paths.filter(Files::isDirectory)
                         .map(Path::getFileName)
                         .map(Path::toString)
+                        .map(Name::ofId)
                         .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid base path: " + basePath, e);
@@ -184,8 +186,8 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<String> listConsumerGroups(String name) {
-        Path logRoot = basePath.resolve(name);
+    public List<Name> listConsumerGroups(Name name) {
+        Path logRoot = basePath.resolve(name.getId());
         if (!logRoot.toFile().exists()) {
             throw new IllegalArgumentException("Unknown Log: " + name);
         }
@@ -195,6 +197,7 @@ public class ChronicleLogManager extends AbstractLogManager {
                         .map(Path::toString)
                         .filter(ChronicleLogOffsetTracker::isOffsetTracker)
                         .map(ChronicleLogOffsetTracker::getGroupFromDirectory)
+                        .map(Name::ofId)
                         .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException("Cannot access Log: " + name, e);
@@ -202,13 +205,13 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    public <M extends Externalizable> CloseableLogAppender<M> createAppender(String name, Codec<M> codec) {
-        return ChronicleLogAppender.open(codec, basePath.resolve(name).toFile(), retention);
+    public <M extends Externalizable> CloseableLogAppender<M> createAppender(Name name, Codec<M> codec) {
+        return ChronicleLogAppender.open(codec, basePath.resolve(name.getId()).toFile(), retention);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions, String group,
+    protected <M extends Externalizable> LogTailer<M> doCreateTailer(Collection<LogPartition> partitions, Name group,
             Codec<M> codec) {
         Collection<ChronicleLogTailer<M>> pTailers = new ArrayList<>(partitions.size());
         partitions.forEach(partition -> pTailers.add(
@@ -221,7 +224,7 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    protected <M extends Externalizable> LogTailer<M> doSubscribe(String group, Collection<String> names,
+    protected <M extends Externalizable> LogTailer<M> doSubscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec) {
         throw new UnsupportedOperationException("subscribe is not supported by Chronicle implementation");
 
