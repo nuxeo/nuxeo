@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -242,6 +243,41 @@ public class TestColdStorage {
 
         // the others 'anyFile2' and 'anyFile3' are now available too
         checkAvailabilityOfDocuments(Arrays.asList(documents.get(1), documents.get(2)), downloadableUntil, 0);
+    }
+
+    @Test
+    public void shouldFailUpdateMainContentAlreadyInColdStorage() throws IOException {
+        // move the main content into the cold storage
+        DocumentModel documentModel = createFileDocument(DEFAULT_DOC_NAME, true);
+        moveAndVerifyContent(session, documentModel);
+
+        // we cannot update the main content as it is already in cold storage
+        documentModel.refresh();
+        documentModel.setPropertyValue(ColdStorageHelper.FILE_CONTENT_PROPERTY,
+                (Serializable) Blobs.createBlob(FILE_CONTENT));
+        try {
+            session.saveDocument(documentModel);
+            fail("Should fail because a main content document in cold storage cannot be updated.");
+        } catch (NuxeoException e) {
+            assertEquals(SC_FORBIDDEN, e.getStatusCode());
+            assertEquals(
+                    String.format("The main content of document: %s cannot be updated. It's already in cold storage.",
+                            documentModel),
+                    e.getMessage());
+        }
+
+        // but we should be able to update the other properties, even the attachments
+        documentModel.refresh();
+        documentModel.setPropertyValue("dc:title", "I update the title");
+        documentModel.setPropertyValue("dc:description", "I add a description");
+        var attachments = List.of(Map.of("file", Blobs.createBlob("bar", "text/plain")));
+        documentModel.setPropertyValue("files:files", (Serializable) attachments);
+
+        documentModel = session.saveDocument(documentModel);
+        assertEquals("I update the title", documentModel.getPropertyValue("dc:title"));
+        assertEquals("I add a description", documentModel.getPropertyValue("dc:description"));
+        var actualAttachments = (List<Map<String, Blob>>) documentModel.getPropertyValue("files:files");
+        assertTrue(CollectionUtils.isEqualCollection(attachments, actualAttachments));
     }
 
     protected void moveAndVerifyContent(CoreSession session, DocumentModel documentModel) throws IOException {

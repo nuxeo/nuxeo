@@ -14,6 +14,10 @@
               class="org.nuxeo.ecm.core.coldstorage.CheckColdStorageContentAvailabilityListener">
       <event>checkColdStorageContentAvailability</event>
     </listener>
+    <listener name="checkUpdateMainContentInColdStorage"
+              class="org.nuxeo.ecm.core.coldstorage.CheckUpdateMainContentInColdStorage">
+      <event>beforeDocumentModification</event>
+    </listener>
   </extension>
 
   <extension
