@@ -31,6 +31,7 @@ import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  *
@@ -48,6 +49,10 @@ public class CanStandbyAndResumeTest {
         MBeanServer server = Framework.getService(ServerLocator.class).lookupServer();
         StandbyMXBean bean = JMX.newMBeanProxy(server, ObjectNameFactory.getObjectName(StandbyCommand.class.getName()),
                 StandbyMXBean.class);
+
+        // commit transaction before standby, to release resources held in thread-locals
+        TransactionHelper.commitOrRollbackTransaction();
+
         Assertions.assertThat(bean.isStandby()).isFalse();
         bean.standby(10);
         Assertions.assertThat(bean.isStandby()).isTrue();
