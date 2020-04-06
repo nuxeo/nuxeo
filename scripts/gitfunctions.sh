@@ -175,7 +175,7 @@ For instance: LIST_ADDONS=\"nuxeo-shell nuxeo-quota\"."
   git_command $dir
   ret=$?; [[ $ret != 0 && "$failonerror" = true ]] && return $ret
   # Detect if we are at Nuxeo Platform repository's root
-  if [ -d "nuxeo-common" ]; then
+  if [ -d "modules/nuxeo-common" ]; then
     local dir
     for dir in $(ls -d */); do
       dir=${dir%%/};
