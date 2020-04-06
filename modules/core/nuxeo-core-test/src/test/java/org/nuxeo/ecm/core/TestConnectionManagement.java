@@ -254,9 +254,8 @@ public class TestConnectionManagement {
         JDBCConnection jdbc = new JDBCConnection();
         jdbc.connection = getConnection();
         try {
-            Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
             XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(jdbc);
-            transaction.enlistResource(xaresource);
+            TransactionHelper.enlistResource(xaresource);
             // use connection
             jdbc.connection.createStatement();
             // then commit

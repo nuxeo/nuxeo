@@ -52,10 +52,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
-import javax.naming.NamingException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -666,7 +662,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         protected void begin() throws Exception {
             TransactionHelper.startTransaction();
-            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource((SessionImpl) session);
+            TransactionHelper.enlistResource((SessionImpl) session);
         }
 
         protected void commit() {
@@ -1020,20 +1016,16 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         @Override
         public void run() {
+            session = repository.getConnection();
             try {
-                session = repository.getConnection();
+                begin();
                 try {
-                    begin();
-                    try {
-                        createDoc();
-                    } finally {
-                        commit();
-                    }
+                    createDoc();
                 } finally {
-                    session.close();
+                    commit();
                 }
-            } catch (XAException | IllegalStateException | RollbackException | SystemException | NamingException e) {
-                throw new RuntimeException(e);
+            } finally {
+                session.close();
             }
         }
 
@@ -1048,14 +1040,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
             session.updateReadAcls();
         }
 
-        protected void begin()
-                throws XAException, IllegalStateException, RollbackException, SystemException, NamingException {
+        protected void begin() {
             TransactionHelper.startTransaction();
-            SessionImpl xares = (SessionImpl) session;
-            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xares);
+            TransactionHelper.enlistResource((SessionImpl) session);
         }
 
-        protected void commit() throws XAException {
+        protected void commit() {
             TransactionHelper.commitOrRollbackTransaction();
         }
     }
@@ -1219,18 +1209,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         TransactionHelper.startTransaction();
         try {
-            TransactionHelper.lookupTransactionManager()
-                             .getTransaction()
-                             .enlistResource((SessionImpl) session1);
+            TransactionHelper.enlistResource((SessionImpl) session1);
             node1.setSimpleProperty("tst:title", "t1");
             TransactionHelper.runWithoutTransaction(() -> {
                 try {
-                    TransactionHelper.lookupTransactionManager()
-                                     .getTransaction()
-                                     .enlistResource((SessionImpl) session2);
+                    TransactionHelper.enlistResource((SessionImpl) session2);
                     foo2.getSimpleProperty("tst:title");
-                } catch (SystemException | RollbackException | NamingException e) {
-                    throw new RuntimeException(e);
                 } finally {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
@@ -1681,9 +1665,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
          */
         TransactionHelper.startTransaction();
         try {
-            Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-            tx.enlistResource(mockRes);
-            tx.enlistResource(xaresource);
+            TransactionHelper.enlistResource(mockRes);
+            TransactionHelper.enlistResource(xaresource);
             nodea = session.getNodeByPath("/foo", null);
             nodea.setSimpleProperty("tst:title", "new");
         } finally {
@@ -1702,9 +1685,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
          */
         TransactionHelper.startTransaction();
         try {
-            Transaction tx = TransactionHelper.lookupTransactionManager().getTransaction();
-            tx.enlistResource(mockRes);
-            tx.enlistResource(xaresource);
+            TransactionHelper.enlistResource(mockRes);
+            TransactionHelper.enlistResource(xaresource);
             nodea = session.getNodeByPath("/foo", null);
             nodea.setSimpleProperty("tst:title", "new");
             session.save();
@@ -1731,7 +1713,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // first transaction
         TransactionHelper.startTransaction();
         try {
-            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xaresource);
+            TransactionHelper.enlistResource(xaresource);
             Node root = session.getRootNode();
             assertNotNull(root);
             session.addChildNode(root, "foo", null, "TestDoc", false);
@@ -1746,7 +1728,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // second transaction
         TransactionHelper.startTransaction();
         try {
-            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(xaresource);
+            TransactionHelper.enlistResource(xaresource);
             Node foo = session.getNodeByPath("/foo", null);
             assertNotNull(foo);
         } finally {

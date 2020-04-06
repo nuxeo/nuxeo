@@ -25,11 +25,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.naming.NamingException;
-import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.Synchronization;
-import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,7 +47,6 @@ import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -309,11 +305,7 @@ public class RepositoryService extends DefaultComponent {
             throw new NuxeoException(e);
         }
         // register session as XAResource with transaction
-        try {
-            TransactionHelper.lookupTransactionManager().getTransaction().enlistResource(session);
-        } catch (IllegalStateException | RollbackException | SystemException | NamingException e) {
-            throw new NuxeoException(e);
-        }
+        TransactionHelper.enlistResource(session);
         // register cleanup to return to pool and remove from thread-local at end of transaction
         TransactionHelper.registerSynchronization(new SessionCleanup(session, cleanup));
         return session;
