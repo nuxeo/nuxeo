@@ -39,11 +39,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.resource.ResourceException;
-import javax.resource.cci.ConnectionMetaData;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.LocalTransaction;
-import javax.resource.cci.ResultSetInfo;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -121,17 +116,9 @@ public class SessionImpl implements Session, XAResource {
 
     protected final FulltextDescriptor fulltextDescriptor;
 
-    private volatile boolean live;
-
     private boolean inTransaction;
 
     private Serializable rootNodeId;
-
-    private long threadId;
-
-    private String threadName;
-
-    private Throwable threadStack;
 
     private boolean readAclsChanged;
 
@@ -156,7 +143,6 @@ public class SessionImpl implements Session, XAResource {
         context = new PersistenceContext(model, mapper, this);
         changeTokenEnabled = repository.isChangeTokenEnabled();
         fulltextDescriptor = repository.getRepositoryDescriptor().getFulltextDescriptor();
-        live = true;
         readAclsChanged = false;
 
         saveTimer = registry.timer(MetricName.build("nuxeo", "repositories", "repository", "save", "timer")
@@ -168,25 +154,10 @@ public class SessionImpl implements Session, XAResource {
         computeRootNode();
     }
 
-    public void checkLive() {
-        if (!live) {
-            throw new IllegalStateException("Session is not live");
-        }
-        checkThread();
-    }
-
     // called by NetServlet when forwarding remote NetMapper calls.
     @Override
     public Mapper getMapper() {
         return mapper;
-    }
-
-    /**
-     * Gets the XAResource. Called by the ManagedConnectionImpl, which actually wraps it in a connection-aware
-     * implementation.
-     */
-    public XAResource getXAResource() {
-        return this;
     }
 
     /**
@@ -197,7 +168,6 @@ public class SessionImpl implements Session, XAResource {
             // avoid potential multi-threaded access to active session
             return 0;
         }
-        checkThreadEnd();
         return context.clearCaches();
     }
 
@@ -207,35 +177,6 @@ public class SessionImpl implements Session, XAResource {
 
     protected void rollback() {
         context.clearCaches();
-    }
-
-    protected void checkThread() {
-        if (threadId == 0) {
-            return;
-        }
-        long currentThreadId = Thread.currentThread().getId();
-        if (threadId == currentThreadId) {
-            return;
-        }
-        String currentThreadName = Thread.currentThread().getName();
-        String msg = String.format(
-                "Concurrency Error: Session was started in thread %s (%s)" + " but is being used in thread %s (%s)",
-                threadId, threadName, currentThreadId, currentThreadName);
-        throw new IllegalStateException(msg, threadStack);
-    }
-
-    protected void checkThreadStart() {
-        threadId = Thread.currentThread().getId();
-        threadName = Thread.currentThread().getName();
-        if (log.isDebugEnabled()) {
-            threadStack = new Throwable("owner stack trace");
-        }
-    }
-
-    protected void checkThreadEnd() {
-        threadId = 0;
-        threadName = null;
-        threadStack = null;
     }
 
     /**
@@ -249,23 +190,16 @@ public class SessionImpl implements Session, XAResource {
         return context.isIdNew(id);
     }
 
-    /*
-     * ----- javax.resource.cci.Connection -----
-     */
-
     @Override
-    public void close() throws ResourceException {
+    public void close() {
         try {
-            checkLive();
             closeSession();
+        } finally {
             repository.closeSession(this);
-        } catch (Exception cause) {
-            throw new ResourceException(cause);
         }
     }
 
     protected void closeSession() {
-        live = false;
         context.clearCaches();
         // close the mapper and therefore the connection
         mapper.close();
@@ -273,34 +207,9 @@ public class SessionImpl implements Session, XAResource {
         // TODO this is getting destroyed, we can clean everything
     }
 
-    @Override
-    public Interaction createInteraction() throws ResourceException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LocalTransaction getLocalTransaction() throws ResourceException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ConnectionMetaData getMetaData() throws ResourceException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ResultSetInfo getResultSetInfo() throws ResourceException {
-        throw new UnsupportedOperationException();
-    }
-
     /*
      * ----- Session -----
      */
-
-    @Override
-    public boolean isLive() {
-        return live;
-    }
 
     @Override
     public String getRepositoryName() {
@@ -314,7 +223,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getRootNode() {
-        checkLive();
         return getNodeById(rootNodeId);
     }
 
@@ -323,7 +231,6 @@ public class SessionImpl implements Session, XAResource {
         @SuppressWarnings("resource")
         final Timer.Context timerContext = saveTimer.time();
         try {
-            checkLive();
             flush();
             if (!inTransaction) {
                 sendInvalidationsToOthers();
@@ -338,7 +245,6 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected void flush() {
-        checkThread();
         List<Work> works;
         if (!fulltextDescriptor.getFulltextDisabled()) {
             works = getFulltextWorks();
@@ -478,7 +384,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getNodeById(Serializable id) {
-        checkLive();
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
         }
@@ -627,13 +532,11 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public List<Node> getNodesByIds(Collection<Serializable> ids) {
-        checkLive();
         return getNodesByIds(ids, true);
     }
 
     @Override
     public Node getParentNode(Node node) {
-        checkLive();
         if (node == null) {
             throw new IllegalArgumentException("Illegal null node");
         }
@@ -643,7 +546,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public String getPath(Node node) {
-        checkLive();
         String path = node.getPath();
         if (path == null) {
             path = context.getPath(node.getHierFragment());
@@ -666,7 +568,6 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public Node getNodeByPath(String path, Node node) {
         // TODO optimize this to use a dedicated path-based table
-        checkLive();
         if (path == null) {
             throw new IllegalArgumentException("Illegal null path");
         }
@@ -798,7 +699,6 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName,
             boolean complexProp) {
-        checkLive();
         if (name == null) {
             throw new IllegalArgumentException("Illegal null name");
         }
@@ -875,7 +775,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public boolean hasChildNode(Node parent, String name, boolean complexProp) {
-        checkLive();
         // TODO could optimize further by not fetching the fragment at all
         SimpleFragment fragment = context.getChildHierByName(parent.getId(), normalize(name), complexProp);
         return fragment != null;
@@ -883,7 +782,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getChildNode(Node parent, String name, boolean complexProp) {
-        checkLive();
         if (name == null || name.contains("/") || name.equals(".") || name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
         }
@@ -894,7 +792,6 @@ public class SessionImpl implements Session, XAResource {
     // TODO optimize with dedicated backend call
     @Override
     public boolean hasChildren(Node parent, boolean complexProp) {
-        checkLive();
         List<SimpleFragment> children = context.getChildren(parent.getId(), null, complexProp);
         if (complexProp) {
             return !children.isEmpty();
@@ -932,7 +829,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public List<Node> getChildren(Node parent, String name, boolean complexProp) {
-        checkLive();
         List<SimpleFragment> fragments = context.getChildren(parent.getId(), name, complexProp);
         List<Node> nodes = new ArrayList<>(fragments.size());
         for (SimpleFragment fragment : fragments) {
@@ -949,13 +845,11 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void orderBefore(Node parent, Node source, Node dest) {
-        checkLive();
         context.orderBefore(parent.getId(), source.getId(), dest == null ? null : dest.getId());
     }
 
     @Override
     public Node move(Node source, Node parent, String name) {
-        checkLive();
         if (!parent.getId().equals(source.getParentId())) {
             flush(); // needed when doing many moves for circular stuff
         }
@@ -966,7 +860,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node copy(Node source, Node parent, String name, Consumer<Node> afterRecordCopy) {
-        checkLive();
         flush();
         Consumer<Serializable> afterRecordCopyWithId = afterRecordCopy == null ? null
                 : recId -> afterRecordCopy.accept(getNodeById(recId));
@@ -977,7 +870,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void removeNode(Node node, Consumer<Node> beforeRecordRemove) {
-        checkLive();
         flush();
         // remove the lock using the lock manager
         // TODO children locks?
@@ -1033,14 +925,12 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void removePropertyNode(Node node) {
-        checkLive();
         // no flush needed
         context.removePropertyNode(node.getHierFragment());
     }
 
     @Override
     public Node checkIn(Node node, String label, String checkinComment) {
-        checkLive();
         flush();
         Serializable id = context.checkIn(node, label, checkinComment);
         requireReadAclsUpdate();
@@ -1051,14 +941,12 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public void checkOut(Node node) {
-        checkLive();
         context.checkOut(node);
         requireReadAclsUpdate();
     }
 
     @Override
     public void restore(Node node, Node version) {
-        checkLive();
         // save done inside method
         context.restoreVersion(node, version);
         requireReadAclsUpdate();
@@ -1081,14 +969,12 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public Node getLastVersion(Serializable versionSeriesId) {
-        checkLive();
         List<Serializable> ids = context.getVersionIds(versionSeriesId);
         return ids.isEmpty() ? null : getNodeById(ids.get(ids.size() - 1));
     }
 
     @Override
     public List<Node> getVersions(Serializable versionSeriesId) {
-        checkLive();
         List<Serializable> ids = context.getVersionIds(versionSeriesId);
         List<Node> nodes = new ArrayList<>(ids.size());
         for (Serializable id : ids) {
@@ -1099,7 +985,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public List<Node> getProxies(Node document, Node parent) {
-        checkLive();
         if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
             return Collections.emptyList();
         }
@@ -1143,7 +1028,6 @@ public class SessionImpl implements Session, XAResource {
 
     @Override
     public List<Node> getProxies(Node document) {
-        checkLive();
         if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
             return Collections.emptyList();
         }
@@ -1204,6 +1088,44 @@ public class SessionImpl implements Session, XAResource {
         return countUpTo == -1 ? "count total results UNLIMITED" : "";
     }
 
+    protected static class QueryResultContext extends Exception {
+
+        private static final long serialVersionUID = 1L;
+
+        public final IterableQueryResult queryResult;
+
+        public QueryResultContext(IterableQueryResult queryResult) {
+            super("queryAndFetch call context");
+            this.queryResult = queryResult;
+        }
+    }
+
+    protected final Set<QueryResultContext> queryResults = new HashSet<>();
+
+    protected void noteQueryResult(IterableQueryResult result) {
+        queryResults.add(new QueryResultContext(result));
+    }
+
+    public void beforeCompletion() {
+        closeQueryResults();
+    }
+
+    protected void closeQueryResults() {
+        for (QueryResultContext ctx : queryResults) {
+            if (!ctx.queryResult.mustBeClosed()) {
+                continue;
+            }
+            try {
+                ctx.queryResult.close();
+            } catch (RuntimeException e) {
+                log.error("Cannot close query result", e);
+            } finally {
+                log.warn("Closing a query results for you, check stack trace for allocating point", ctx);
+            }
+        }
+        queryResults.clear();
+    }
+
     @Override
     public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
             Object... params) {
@@ -1216,7 +1138,9 @@ public class SessionImpl implements Session, XAResource {
             boolean distinctDocuments, Object... params) {
         final Timer.Context timerContext = queryTimer.time();
         try {
-            return mapper.queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
+            IterableQueryResult result = mapper.queryAndFetch(query, queryType, queryFilter, distinctDocuments, params);
+            noteQueryResult(result);
+            return result;
         } finally {
             long duration = timerContext.stop();
             if ((LOG_MIN_DURATION_NS >= 0) && (duration > LOG_MIN_DURATION_NS)) {
@@ -1318,27 +1242,11 @@ public class SessionImpl implements Session, XAResource {
         requireReadAclsUpdate();
     }
 
-    // public Node newNodeInstance() needed ?
-
-    public void checkPermission(String absPath, String actions) {
-        checkLive();
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
-
-    public boolean hasPendingChanges() {
-        checkLive();
-        // TODO Auto-generated method stub
-        throw new RuntimeException("Not implemented");
-    }
-
     public void markReferencedBinaries() {
-        checkLive();
         mapper.markReferencedBinaries();
     }
 
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
-        checkLive();
         if (!repository.getRepositoryDescriptor().getSoftDeleteEnabled()) {
             return 0;
         }
@@ -1366,7 +1274,6 @@ public class SessionImpl implements Session, XAResource {
         }
         mapper.start(xid, flags);
         inTransaction = true;
-        checkThreadStart();
     }
 
     @Override
@@ -1425,11 +1332,7 @@ public class SessionImpl implements Session, XAResource {
     protected void commitDone() throws XAException {
         inTransaction = false;
         try {
-            try {
-                sendInvalidationsToOthers();
-            } finally {
-                checkThreadEnd();
-            }
+            sendInvalidationsToOthers();
         } catch (NuxeoException e) {
             log.error("Could not send invalidations", e);
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
@@ -1447,7 +1350,6 @@ public class SessionImpl implements Session, XAResource {
         } finally {
             inTransaction = false;
             // no invalidations to send
-            checkThreadEnd();
         }
     }
 

@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.xa.XAResource;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -37,7 +39,7 @@ import org.nuxeo.ecm.core.api.query.QueryFilter;
 /**
  * Internal Session accessing the low-level storage.
  */
-public interface Session<T extends QueryFilter> {
+public interface Session<T extends QueryFilter> extends XAResource {
 
     // parameters for the session contexts
     String USER_NAME = "username";
@@ -107,16 +109,16 @@ public interface Session<T extends QueryFilter> {
     void save();
 
     /**
-     * Checks whether the session is alive.
+     * Called before this session is committed or rolled back.
      *
-     * @return true if the session is closed, false otherwise
+     * @since 11.1
      */
-    boolean isLive();
+    void beforeCompletion();
 
     /**
-     * Closes this session. Does not save.
+     * Destroys this session.
      */
-    void close();
+    void destroy();
 
     /**
      * Gets the document at the given path, if any.

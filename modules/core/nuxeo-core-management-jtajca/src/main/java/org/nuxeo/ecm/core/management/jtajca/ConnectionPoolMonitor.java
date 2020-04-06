@@ -20,13 +20,11 @@ package org.nuxeo.ecm.core.management.jtajca;
 
 import javax.management.MXBean;
 
-import org.apache.geronimo.connector.outbound.PoolingAttributes;
-
 /**
  * @author matic
  */
 @MXBean
-public interface ConnectionPoolMonitor extends PoolingAttributes, Monitor {
+public interface ConnectionPoolMonitor extends Monitor {
 
     String NAME = Defaults.instance.name(ConnectionPoolMonitor.class, "%s");
 
@@ -36,6 +34,14 @@ public interface ConnectionPoolMonitor extends PoolingAttributes, Monitor {
      * @since 8.4
      */
     String getName();
+
+    int getConnectionCount();
+
+    int getIdleConnectionCount();
+
+    int getBlockingTimeoutMilliseconds();
+
+    int getIdleTimeoutMinutes();
 
     /**
      *

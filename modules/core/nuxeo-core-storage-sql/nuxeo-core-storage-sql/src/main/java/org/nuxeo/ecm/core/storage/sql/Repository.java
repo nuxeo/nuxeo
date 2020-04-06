@@ -18,30 +18,17 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import javax.resource.cci.ConnectionFactory;
-import javax.resource.cci.ConnectionSpec;
-
 /**
  * Interface for the low-level VCS repository.
  */
-public interface Repository extends ConnectionFactory, RepositoryManagement {
+public interface Repository extends RepositoryManagement {
 
     /**
-     * Gets a new connection by logging in to the repository with default credentials.
+     * Gets a new session.
      *
      * @return the session
      */
-    @Override
     Session getConnection();
-
-    /**
-     * Gets a new connection by logging in to the repository with given connection information (credentials).
-     *
-     * @param connectionSpec the parameters to use to connnect
-     * @return the session
-     */
-    @Override
-    Session getConnection(ConnectionSpec connectionSpec);
 
     /**
      * Closes the repository and release all resources.

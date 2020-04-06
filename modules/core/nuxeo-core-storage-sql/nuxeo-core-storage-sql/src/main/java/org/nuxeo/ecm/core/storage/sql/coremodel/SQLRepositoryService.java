@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,7 @@ import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
+import org.nuxeo.ecm.core.storage.sql.VCSRepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -45,8 +44,6 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
 public class SQLRepositoryService extends DefaultComponent {
 
     private static final String XP_REPOSITORY = "repository";
-
-    protected static final String CONNECTIONFACTORYIMPL_CLASS = "org.nuxeo.ecm.core.storage.sql.ra.ConnectionFactoryImpl";
 
     protected RepositoryDescriptorRegistry registry = new RepositoryDescriptorRegistry();
 
@@ -136,7 +133,7 @@ public class SQLRepositoryService extends DefaultComponent {
         }
         // extract label, isDefault
         // and pass it to high-level registry
-        RepositoryFactory repositoryFactory = new PoolingRepositoryFactory(repositoryName);
+        RepositoryFactory repositoryFactory = new VCSRepositoryFactory(repositoryName);
         Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
                 descriptor.isHeadless(), repositoryFactory);
         repositoryManager.addRepository(repository);
@@ -178,23 +175,7 @@ public class SQLRepositoryService extends DefaultComponent {
     }
 
     public RepositoryImpl getRepositoryImpl(String repositoryName) {
-        RepositoryManagement repository = getRepository(repositoryName);
-        if (repository instanceof RepositoryImpl) {
-            return (RepositoryImpl) repository;
-        }
-        if (!CONNECTIONFACTORYIMPL_CLASS.equals(repository.getClass().getName())) {
-            throw new RuntimeException("Unknown repository class: " + repository.getClass());
-        }
-        try {
-            Field f1 = repository.getClass().getDeclaredField("managedConnectionFactory");
-            f1.setAccessible(true);
-            Object factory = f1.get(repository);
-            Field f2 = factory.getClass().getDeclaredField("repository");
-            f2.setAccessible(true);
-            return (RepositoryImpl) f2.get(factory);
-        } catch (SecurityException | NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return (RepositoryImpl) getRepository(repositoryName);
     }
 
     /**

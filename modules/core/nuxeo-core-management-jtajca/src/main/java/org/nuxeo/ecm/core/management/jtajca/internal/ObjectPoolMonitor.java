@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,13 @@
  * limitations under the License.
  *
  * Contributors:
- *     matic
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.management.jtajca.internal;
 
+import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
 import org.nuxeo.ecm.core.management.jtajca.internal.DefaultMonitorComponent.ServerInstance;
-import org.nuxeo.runtime.jtajca.NuxeoConnectionManager;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import io.dropwizard.metrics5.MetricName;
@@ -30,16 +29,17 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
 import io.dropwizard.metrics5.jvm.JmxAttributeGauge;
 
 /**
- * @author matic
+ * Connection pool monitor for an Apache Commons Pool.
  */
-public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
+public class ObjectPoolMonitor implements ConnectionPoolMonitor {
 
-    // @since 5.7.2
-    protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
+    protected static final MetricRegistry METRICS = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
 
     protected final String name;
 
-    protected NuxeoConnectionManager cm;
+    protected final GenericKeyedObjectPool<String, ?> pool;
+
+    protected final String key;
 
     protected MetricName countGauge;
 
@@ -47,16 +47,13 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
     protected MetricName killedGauge;
 
-    protected DefaultConnectionPoolMonitor(String mame, NuxeoConnectionManager cm) {
-        name = mame;
-        this.cm = cm;
+    protected ObjectPoolMonitor(String name, GenericKeyedObjectPool<String, ?> pool, String key) {
+        this.name = name;
+        this.pool = pool;
+        this.key = key;
     }
 
     protected ServerInstance self;
-
-    public NuxeoConnectionManager getManager() {
-        return cm;
-    }
 
     @Override
     public void install() {
@@ -67,17 +64,17 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
                               .tagged("repository", name);
         killedGauge = MetricName.build("nuxeo", "repositories", "repository", "connection", "killed")
                                 .tagged("repository", name);
-        registry.register(countGauge, new JmxAttributeGauge(self.name, "ConnectionCount"));
-        registry.register(idleGauge, new JmxAttributeGauge(self.name, "IdleConnectionCount"));
-        registry.register(killedGauge, new JmxAttributeGauge(self.name, "KilledActiveConnectionCount"));
+        METRICS.register(countGauge, new JmxAttributeGauge(self.name, "ConnectionCount"));
+        METRICS.register(idleGauge, new JmxAttributeGauge(self.name, "IdleConnectionCount"));
+        METRICS.register(killedGauge, new JmxAttributeGauge(self.name, "KilledActiveConnectionCount"));
     }
 
     @Override
     public void uninstall() {
         DefaultMonitorComponent.unbind(self);
-        registry.remove(countGauge);
-        registry.remove(idleGauge);
-        registry.remove(killedGauge);
+        METRICS.remove(countGauge);
+        METRICS.remove(idleGauge);
+        METRICS.remove(killedGauge);
         self = null;
     }
 
@@ -88,49 +85,42 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
 
     @Override
     public int getConnectionCount() {
-        return cm.getConnectionCount();
+        return pool.getNumActive(key) + pool.getNumIdle(key);
     }
 
     @Override
     public int getIdleConnectionCount() {
-        return cm.getIdleConnectionCount();
+        return pool.getNumIdle(key);
     }
 
     @Override
     public int getBlockingTimeoutMilliseconds() {
-        return cm.getBlockingTimeoutMilliseconds();
+        return (int) pool.getMaxWaitMillis();
     }
 
     @Override
     public int getIdleTimeoutMinutes() {
-        return cm.getIdleTimeoutMinutes();
+        return -1;
     }
 
     @Override
     public int getActiveTimeoutMinutes() {
-        return cm.getActiveTimeoutMinutes();
-    }
-
-    /**
-     * @since 5.8
-     */
-    public void handleNewConnectionManager(NuxeoConnectionManager cm) {
-        this.cm = cm;
+        return -1;
     }
 
     @Override
     public void reset() {
-        NuxeoContainer.resetConnectionManager(name);
+        pool.clear();
     }
 
     @Override
     public long getKilledActiveConnectionCount() {
-        return cm.getKilledConnectionCount();
+        return 0;
     }
 
     @Override
     public int killActiveTimedoutConnections() {
-        return cm.killActiveTimedoutConnections(System.currentTimeMillis()).size();
+        return 0;
     }
 
 }
