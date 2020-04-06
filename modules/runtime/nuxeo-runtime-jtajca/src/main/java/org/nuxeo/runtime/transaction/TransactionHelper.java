@@ -43,6 +43,7 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
+import javax.transaction.xa.XAResource;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.logging.Log;
@@ -523,6 +524,23 @@ public class TransactionHelper {
             NuxeoContainer.getTransactionManager().getTransaction().registerSynchronization(handler);
         } catch (IllegalStateException | RollbackException | SystemException cause) {
             throw new RuntimeException("Cannot register synch handler in current tx", cause);
+        }
+    }
+
+    /**
+     * Enlists a XA resource in the current transaction.
+     *
+     * @param xaRes the XA resource
+     * @since 11.1
+     */
+    public static void enlistResource(XAResource xaRes) {
+        if (!isTransactionActiveOrMarkedRollback()) {
+            throw new TransactionRuntimeException("Cannot enlist XA resource if transaction is not active");
+        }
+        try {
+            NuxeoContainer.getTransactionManager().getTransaction().enlistResource(xaRes);
+        } catch (IllegalStateException | RollbackException | SystemException cause) {
+            throw new RuntimeException("Cannot enlist XA resource in current tx", cause);
         }
     }
 
