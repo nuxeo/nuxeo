@@ -131,7 +131,6 @@ public class QueryResultsAreAutomaticallyClosedTest {
             assertTrue(runner.result.mustBeClosed());
             assertTrue(mainResults.mustBeClosed());
         }
-        assertTrue(mainResults.mustBeClosed());
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         assertFalse(mainResults.mustBeClosed());
