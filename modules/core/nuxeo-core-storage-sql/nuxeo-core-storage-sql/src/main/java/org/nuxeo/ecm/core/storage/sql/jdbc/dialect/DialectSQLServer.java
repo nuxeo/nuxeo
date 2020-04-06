@@ -72,6 +72,8 @@ public class DialectSQLServer extends Dialect {
      */
     public static final String CLUSTER_INDEX_COL = "_oid";
 
+    protected final boolean noRepositoryDescriptor;
+
     protected final String fulltextAnalyzer;
 
     protected final String fulltextCatalog;
@@ -97,6 +99,7 @@ public class DialectSQLServer extends Dialect {
 
     public DialectSQLServer(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
+        noRepositoryDescriptor = repositoryDescriptor == null;
         try {
             checkDatabaseConfiguration(metadata.getConnection());
             majorVersion = metadata.getDatabaseMajorVersion();
@@ -176,7 +179,10 @@ public class DialectSQLServer extends Dialect {
                 }
                 int on = rs.getInt(1);
                 if (on != 1) {
-                    throw new SQLException("Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
+                    // for directories we allow working without READ_COMMITTED_SNAPSHOT
+                    if (!noRepositoryDescriptor) {
+                        throw new SQLException("Incorrect database configuration, you must enable READ_COMMITTED_SNAPSHOT");
+                    }
                 }
             }
         }
