@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 
 public class TestPatternBoundedQueuingKafka extends TestPatternBoundedQueuing {
 
@@ -27,7 +28,7 @@ public class TestPatternBoundedQueuingKafka extends TestPatternBoundedQueuing {
 
     @BeforeClass
     public static void assumeKafkaEnabled() {
-        KafkaHelper.assumeKafkaEnabled();
+        RuntimeStreamFeature.assumeKafkaEnabled();
     }
 
     @Override

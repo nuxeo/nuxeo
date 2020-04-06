@@ -18,9 +18,13 @@
  */
 package org.nuxeo.runtime.stream;
 
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -37,6 +41,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  * {@link #STREAM_CHRONICLE chronicle} or {@link #STREAM_KAFKA kafka} in your system properties.
  * <p>
  * Once your tests use this feature, you can deploy new {@code logConfig} like below:
+ *
  * <pre>
  * {@code <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
  *     <logConfig name="MY_LOG_CONFIG_NAME" type="${nuxeo.test.stream}" />
@@ -68,6 +73,17 @@ public class RuntimeStreamFeature implements RunnerFeature {
     public static final String KAFKA_SERVERS_DEFAULT = "localhost:9092";
 
     protected String streamType;
+
+    public static void assumeKafkaEnabled() {
+        if ("true".equals(System.getProperty("kafka"))// deprecated since 10.3
+                || STREAM_KAFKA.equals(System.getProperty(STREAM_PROPERTY))) {
+            if (!KafkaUtils.kafkaDetected()) {
+                fail("Kafka is enabled, but no Kafka server found.");
+            }
+        } else {
+            assumeTrue("Kafka not enabled", false);
+        }
+    }
 
     protected static String defaultProperty(String name, String def) {
         String value = System.getProperty(name);

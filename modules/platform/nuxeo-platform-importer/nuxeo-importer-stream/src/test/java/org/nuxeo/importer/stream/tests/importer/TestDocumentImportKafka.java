@@ -21,9 +21,9 @@ package org.nuxeo.importer.stream.tests.importer;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
-import org.nuxeo.lib.stream.tests.pattern.KafkaHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -34,7 +34,7 @@ public class TestDocumentImportKafka extends TestDocumentImport {
 
     @BeforeClass
     public static void assumeKafkaEnabled() {
-        KafkaHelper.assumeKafkaEnabled();
+        RuntimeStreamFeature.assumeKafkaEnabled();
     }
 
     @Override

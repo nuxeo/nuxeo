@@ -21,7 +21,7 @@ package org.nuxeo.importer.stream.tests.importer;
 import java.util.Map;
 
 import org.junit.BeforeClass;
-import org.nuxeo.lib.stream.tests.pattern.KafkaHelper;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -32,7 +32,7 @@ public class TestAutomationKafkaNoSubscribe extends TestAutomation {
 
     @BeforeClass
     public static void assumeKafkaEnabled() {
-        KafkaHelper.assumeKafkaEnabled();
+        RuntimeStreamFeature.assumeKafkaEnabled();
     }
 
     @Override
