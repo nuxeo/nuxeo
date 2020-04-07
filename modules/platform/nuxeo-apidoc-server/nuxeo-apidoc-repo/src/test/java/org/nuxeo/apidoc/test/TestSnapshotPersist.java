@@ -46,6 +46,7 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -62,14 +63,23 @@ public class TestSnapshotPersist {
     @Inject
     protected SnapshotManager snapshotManager;
 
+    @Inject
+    protected CoreFeature coreFeature;
+
     @Test
     public void testSnapshot() throws IOException {
+        if (!coreFeature.getStorageConfiguration().isVCSH2()) {
+            return;
+        }
         DistributionSnapshot snapshot = snapshotManager.getRuntimeSnapshot();
         checkDistributionSnapshot(snapshot);
     }
 
     @Test
     public void testPersist() throws IOException {
+        if (!coreFeature.getStorageConfiguration().isVCSH2()) {
+            return;
+        }
         DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(snapshot);
         checkDistributionSnapshot(snapshot);
