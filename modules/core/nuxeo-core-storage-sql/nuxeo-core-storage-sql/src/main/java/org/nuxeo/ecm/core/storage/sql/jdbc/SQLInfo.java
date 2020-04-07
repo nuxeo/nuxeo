@@ -114,7 +114,7 @@ public class SQLInfo {
 
     private final Map<String, Column> copyIdColumnMap;
 
-    protected final Map<String, SQLInfoSelect> selectFragmentById;
+    public final Map<String, SQLInfoSelect> selectFragmentById;
 
     protected String createClusterNodeSql;
 

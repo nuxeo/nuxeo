@@ -25,6 +25,7 @@ import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 
 public abstract class MonitoredBackend implements RepositoryBackend {
@@ -48,6 +49,11 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     @Override
     public void setClusterInvalidator(VCSClusterInvalidator clusterInvalidator) {
         wrapped.setClusterInvalidator(clusterInvalidator);
+    }
+
+    @Override
+    public SQLInfo getSQLInfo() {
+        return wrapped.getSQLInfo();
     }
 
     @Override

@@ -153,6 +153,11 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     @Override
+    public SQLInfo getSQLInfo() {
+        return sqlInfo;
+    }
+
+    @Override
     public void shutdown() {
         if (clusterInvalidator != null) {
             clusterInvalidator.close();

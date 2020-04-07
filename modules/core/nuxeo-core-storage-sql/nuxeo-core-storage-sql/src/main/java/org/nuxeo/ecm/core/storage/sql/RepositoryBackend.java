@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 
 /**
  * Interface for the backend-specific initialization code of a {@link Repository}.
@@ -46,6 +47,13 @@ public interface RepositoryBackend {
      * @param useInvalidations whether this mapper participates in invalidation propagation
      */
     Mapper newMapper(PathResolver pathResolver, boolean useInvalidations);
+
+    /**
+     * Gets this backend's SQL info.
+     *
+     * @since 11.1
+     */
+    SQLInfo getSQLInfo();
 
     /**
      * Shuts down the backend.

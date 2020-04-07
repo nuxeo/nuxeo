@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,40 +18,39 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.nuxeo.ecm.core.storage.sql.Model.LOCK_CREATED_KEY;
+import static org.nuxeo.ecm.core.storage.sql.Model.LOCK_OWNER_KEY;
+import static org.nuxeo.ecm.core.storage.sql.Model.LOCK_TABLE_NAME;
+import static org.nuxeo.ecm.core.storage.sql.Model.MAIN_KEY;
+
 import java.io.Serializable;
 import java.sql.BatchUpdateException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.LockManager;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.cluster.ClusterService;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
+import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
 
 /**
- * Manager of locks that serializes access to them.
- * <p>
- * The public methods called by the session are {@link #setLock}, {@link #removeLock} and {@link #getLock}. Method
- * {@link #closeLockManager()} must be called when done with the lock manager.
- * <p>
- * In cluster mode, changes are executed in a begin/commit so that tests/updates can be atomic.
- * <p>
- * Transaction management can be done by hand because we're dealing with a low-level {@link Mapper} and not something
- * wrapped by a JCA pool.
+ * Manager of locks stored in the repository SQL database.
  */
 public class VCSLockManager implements LockManager {
 
-    private static final Log log = LogFactory.getLog(VCSLockManager.class);
+    private static final Logger log = LogManager.getLogger(VCSLockManager.class);
 
     public static final int LOCK_RETRIES = 10;
 
@@ -59,119 +58,37 @@ public class VCSLockManager implements LockManager {
 
     public static final long LOCK_SLEEP_INCREMENT = 50; // add 50 ms each time
 
-    protected final RepositoryImpl repository;
+    protected final String dataSourceName;
 
-    /**
-     * The mapper to use. In this mapper we only ever touch the lock table, so no need to deal with fulltext and complex
-     * saves, and we don't do prefetch.
-     */
-    protected Mapper mapper;
+    protected final Model model;
 
-    /**
-     * Lock serializing access to the mapper.
-     */
-    protected final ReentrantLock serializationLock;
-
-    protected static final Lock NULL_LOCK = new Lock(null, null);
-
-    protected final boolean caching;
-
-    /**
-     * A cache of locks, used only in non-cluster mode, when this lock manager is the only one dealing with locks.
-     * <p>
-     * Used under {@link #serializationLock}.
-     */
-    protected final LRUCache<Serializable, Lock> lockCache;
-
-    protected static final int CACHE_SIZE = 100;
-
-    protected static class LRUCache<K, V> extends LinkedHashMap<K, V> {
-        private static final long serialVersionUID = 1L;
-
-        private final int max;
-
-        public LRUCache(int max) {
-            super(max, 1.0f, true);
-            this.max = max;
-        }
-
-        @Override
-        protected boolean removeEldestEntry(Entry<K, V> eldest) {
-            return size() > max;
-        }
-    }
+    protected final SQLInfo sqlInfo;
 
     /**
      * Creates a lock manager for the given repository.
-     * <p>
-     * The mapper will from then on be only used and closed by the lock manager.
-     * <p>
-     * {@link #closeLockManager()} must be called when done with the lock manager.
-     */
-    public VCSLockManager(String repositoryName) {
-        this(Framework.getService(SQLRepositoryService.class).getRepositoryImpl(repositoryName));
-    }
-
-    /**
-     * Creates a lock manager for the given repository.
-     * <p>
-     * The mapper will from then on be only used and closed by the lock manager.
      * <p>
      * {@link #closeLockManager()} must be called when done with the lock manager.
      *
      * @since 9.3
      */
     public VCSLockManager(RepositoryImpl repository) {
-        this.repository = repository;
-        serializationLock = new ReentrantLock();
-        // we can cache things locally if there are no outside invalidations (due to clustering)
-        caching = !Framework.getService(ClusterService.class).isEnabled();
-        lockCache = caching ? new LRUCache<>(CACHE_SIZE) : null;
+        dataSourceName = "repository_" + repository.getName();
+        model = repository.getModel();
+        sqlInfo = repository.getSQLInfo();
     }
 
-    /**
-     * Delay mapper acquisition until the repository has been fully initialized.
-     */
-    protected Mapper getMapper() {
-        if (mapper == null) {
-            mapper = repository.newMapper(null, false);
-        }
-        return mapper;
+    protected Connection getConnection() throws SQLException {
+        // open connection in noSharing mode
+        return ConnectionHelper.getConnection(dataSourceName, true);
     }
 
     protected Serializable idFromString(String id) {
-        return repository.getModel().idFromString(id);
-    }
-
-    @Override
-    public void closeLockManager() {
-        serializationLock.lock();
-        try {
-            if (mapper != null) {
-                getMapper().close();
-            }
-        } finally {
-            serializationLock.unlock();
-        }
+        return model.idFromString(id);
     }
 
     @Override
     public Lock getLock(final String id) {
-        serializationLock.lock();
-        try {
-            Lock lock;
-            if (caching && (lock = lockCache.get(id)) != null) {
-                return lock == NULL_LOCK ? null : lock;
-            }
-            // no transaction needed, single operation
-            lock = getMapper().getLock(idFromString(id));
-            if (caching) {
-                lockCache.put(id, lock == null ? NULL_LOCK : lock);
-            }
-            return lock;
-        } finally {
-            serializationLock.unlock();
-        }
+        return readLock(idFromString(id));
     }
 
     @Override
@@ -183,10 +100,10 @@ public class VCSLockManager implements LockManager {
         long sleepDelay = LOCK_SLEEP_DELAY;
         for (int i = 0; i < LOCK_RETRIES; i++) {
             if (i > 0) {
-                log.debug("Retrying lock on " + id + ": try " + (i + 1));
+                log.debug("Retrying lock on {}: try {}", id, i + 1);
             }
             try {
-                return setLockInternal(id, lock);
+                return writeLock(idFromString(id), lock);
             } catch (NuxeoException e) {
                 suppressed.add(e);
                 if (shouldRetry(e)) {
@@ -215,6 +132,14 @@ public class VCSLockManager implements LockManager {
             exception.addSuppressed(t);
         }
         throw exception;
+    }
+
+    protected void checkConcurrentUpdate(Throwable e) {
+        if (sqlInfo.dialect.isConcurrentUpdateException(e)) {
+            log.debug(e, e);
+            // don't keep the original message, as it may reveal database-level info
+            throw new ConcurrentUpdateException("Concurrent update", e);
+        }
     }
 
     /**
@@ -255,72 +180,166 @@ public class VCSLockManager implements LockManager {
         return false;
     }
 
-    protected Lock setLockInternal(String id, Lock lock) {
-        serializationLock.lock();
-        try {
-            Lock oldLock;
-            if (caching && (oldLock = lockCache.get(id)) != null && oldLock != NULL_LOCK) {
-                return oldLock;
-            }
-            oldLock = getMapper().setLock(idFromString(id), lock);
-            if (caching && oldLock == null) {
-                lockCache.put(id, lock == null ? NULL_LOCK : lock);
-            }
-            return oldLock;
-        } finally {
-            serializationLock.unlock();
+    @Override
+    public Lock removeLock(String id, String owner) {
+        return deleteLock(idFromString(id), owner);
+    }
+
+    /*
+     * ----- JDBC -----
+     */
+
+    protected Lock readLock(Serializable id) {
+        try (Connection connection = getConnection()) {
+            return readLock0(connection, id);
+        } catch (SQLException e) {
+            checkConcurrentUpdate(e);
+            throw new NuxeoException(e);
         }
     }
 
-    @Override
-    public Lock removeLock(final String id, final String owner) {
-        serializationLock.lock();
-        try {
-            Lock oldLock = null;
-            if (caching && (oldLock = lockCache.get(id)) == NULL_LOCK) {
-                return null;
+    protected Lock readLock0(Connection connection, Serializable id) throws SQLException {
+        SQLInfoSelect select = sqlInfo.selectFragmentById.get(LOCK_TABLE_NAME);
+        try (PreparedStatement ps = connection.prepareStatement(select.sql)) {
+            for (Column column : select.whereColumns) {
+                String key = column.getKey();
+                if (MAIN_KEY.equals(key)) {
+                    column.setToPreparedStatement(ps, 1, id);
+                } else {
+                    throw new NuxeoException(key);
+                }
             }
-            if (oldLock != null && !LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
-                // existing mismatched lock, flag failure
-                oldLock = new Lock(oldLock, true);
-            } else {
+            log.trace("SQL: {} id={}", select.sql, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    log.trace("SQL:   -> null");
+                    return null;
+                }
+                String owner = null;
+                Calendar created = null;
+                int i = 1;
+                for (Column column : select.whatColumns) {
+                    String key = column.getKey();
+                    Serializable value = column.getFromResultSet(rs, i++);
+                    if (LOCK_OWNER_KEY.equals(key)) {
+                        owner = (String) value;
+                    } else if (LOCK_CREATED_KEY.equals(key)) {
+                        created = (Calendar) value;
+                    } else {
+                        throw new NuxeoException(key);
+                    }
+                }
+                log.trace("SQL:   -> {}", owner);
+                return new Lock(owner, created);
+            }
+        }
+    }
+
+    protected Lock writeLock(Serializable id, Lock lock) {
+        try (Connection connection = getConnection()) {
+            return writeLock(connection, id, lock);
+        } catch (SQLException e) {
+            checkConcurrentUpdate(e);
+            throw new NuxeoException(e);
+        }
+    }
+
+    protected Lock writeLock(Connection connection, Serializable id, Lock lock) throws SQLException {
+        try {
+            writeLock0(connection, id, lock);
+            return null;
+        } catch (SQLException e) {
+            if (!sqlInfo.dialect.isConcurrentUpdateException(e)) {
+                throw e;
+            }
+            log.trace("SQL:   -> duplicate");
+        }
+        // lock already exists, try to read it
+        Lock oldLock = readLock0(connection, id);
+        if (oldLock != null) {
+            // there indeed was another lock, return it
+            return oldLock;
+        }
+        // we attempted a write that failed, but when reading there's nothing
+        // because a concurrent transaction already removed it
+        // however we have to return an old lock per our contract
+        // retry at a higher level
+        throw new ConcurrentUpdateException("Concurrent update");
+    }
+
+    protected void writeLock0(Connection connection, Serializable id, Lock lock) throws SQLException {
+        String sql = sqlInfo.getInsertSql(LOCK_TABLE_NAME);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            int i = 1;
+            for (Column column : sqlInfo.getInsertColumns(LOCK_TABLE_NAME)) {
+                String key = column.getKey();
+                Serializable value;
+                if (MAIN_KEY.equals(key)) {
+                    value = id;
+                } else if (LOCK_OWNER_KEY.equals(key)) {
+                    value = lock.getOwner();
+                } else if (LOCK_CREATED_KEY.equals(key)) {
+                    value = lock.getCreated();
+                } else {
+                    throw new NuxeoException(key);
+                }
+                column.setToPreparedStatement(ps, i++, value);
+            }
+            log.trace("SQL: {} id={} owner={}", () -> sql, () -> id, lock::getOwner);
+            ps.execute();
+        }
+    }
+
+    protected Lock deleteLock(Serializable id, String owner) {
+        try (Connection connection = getConnection()) {
+            return deleteLock(connection, id, owner);
+        } catch (SQLException e) {
+            checkConcurrentUpdate(e);
+            throw new NuxeoException(e);
+        }
+    }
+
+    protected Lock deleteLock(Connection connection, Serializable id, String owner) throws SQLException {
+        log.trace("SQL: tx begin");
+        connection.setAutoCommit(false);
+        try {
+            Lock oldLock = readLock0(connection, id);
+            if (owner != null) {
                 if (oldLock == null) {
-                    oldLock = getMapper().removeLock(idFromString(id), owner, false);
-                } else {
-                    // we know the previous lock, we can force
-                    // no transaction needed, single operation
-                    getMapper().removeLock(idFromString(id), owner, true);
+                    // not locked, nothing to do
+                    return null;
+                }
+                if (!LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
+                    // existing mismatched lock, flag failure
+                    return new Lock(oldLock, true);
                 }
             }
-            if (caching) {
-                if (oldLock != null && oldLock.getFailed()) {
-                    // failed, but we now know the existing lock
-                    lockCache.put(id, new Lock(oldLock, false));
-                } else {
-                    lockCache.put(id, NULL_LOCK);
-                }
+            if (oldLock != null) {
+                deleteLock0(connection, id);
             }
             return oldLock;
         } finally {
-            serializationLock.unlock();
+            try {
+                log.trace("SQL: tx commit");
+                connection.commit();
+            } finally {
+                connection.setAutoCommit(true);
+            }
         }
     }
 
-    @Override
-    public void clearLockManagerCaches() {
-        serializationLock.lock();
-        try {
-            if (caching) {
-                lockCache.clear();
-            }
-        } finally {
-            serializationLock.unlock();
+    protected void deleteLock0(Connection connection, Serializable id) throws SQLException {
+        String sql = sqlInfo.getDeleteSql(LOCK_TABLE_NAME, 1);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            log.trace("SQL: {} id={}", sql, id);
+            sqlInfo.dialect.setId(ps, 1, id);
+            ps.executeUpdate();
         }
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + repository.getName() + ')';
+        return getClass().getSimpleName() + '(' + dataSourceName + ')';
     }
 
 }

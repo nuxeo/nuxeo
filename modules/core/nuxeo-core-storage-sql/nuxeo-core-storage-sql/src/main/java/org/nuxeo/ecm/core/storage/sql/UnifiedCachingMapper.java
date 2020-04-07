@@ -30,7 +30,6 @@ import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -160,21 +159,6 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     @Override
     public VCSInvalidations getClusterInvalidations(Serializable nodeId) {
         return mapper.getClusterInvalidations(nodeId);
-    }
-
-    @Override
-    public Lock getLock(Serializable id) {
-        return mapper.getLock(id);
-    }
-
-    @Override
-    public Lock setLock(Serializable id, Lock lock) {
-        return mapper.setLock(id, lock);
-    }
-
-    @Override
-    public Lock removeLock(Serializable id, String owner, boolean force) {
-        return mapper.removeLock(id, owner, force);
     }
 
     @Override
