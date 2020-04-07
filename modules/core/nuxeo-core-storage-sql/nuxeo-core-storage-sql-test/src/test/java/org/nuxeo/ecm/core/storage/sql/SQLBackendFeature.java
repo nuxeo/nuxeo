@@ -49,6 +49,7 @@ import org.osgi.framework.Bundle;
 @Deploy("org.nuxeo.ecm.core")
 @Deploy("org.nuxeo.ecm.core.schema")
 @Deploy("org.nuxeo.ecm.core.event")
+@Deploy("org.nuxeo.ecm.core.cache")
 @Deploy("org.nuxeo.ecm.core.storage")
 @Deploy("org.nuxeo.ecm.core.storage.sql")
 @Deploy("org.nuxeo.ecm.platform.el")

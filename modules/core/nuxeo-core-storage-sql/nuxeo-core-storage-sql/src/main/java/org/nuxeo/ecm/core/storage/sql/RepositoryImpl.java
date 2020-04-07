@@ -186,6 +186,11 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         return model;
     }
 
+    /** @since 11.1 */
+    public RepositoryBackend getBackend() {
+        return backend;
+    }
+
     public VCSInvalidationsPropagator getInvalidationsPropagator() {
         return invalidationsPropagator;
     }

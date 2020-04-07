@@ -61,13 +61,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.ScrollResultImpl;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
-import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
@@ -75,7 +73,6 @@ import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
-import org.nuxeo.ecm.core.storage.sql.Row;
 import org.nuxeo.ecm.core.storage.sql.RowId;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.VCSClusterInvalidator;
@@ -1228,62 +1225,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             throw new NuxeoException("Failed to rebuild read acls", e);
         }
         log.debug("rebuildReadAcls: done.");
-    }
-
-    /*
-     * ----- Locking -----
-     */
-
-    @Override
-    public Lock getLock(Serializable id) {
-        if (log.isDebugEnabled()) {
-            try {
-                log.debug("getLock " + id + " while autoCommit=" + connection.getAutoCommit());
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        RowId rowId = new RowId(Model.LOCK_TABLE_NAME, id);
-        Row row = readSimpleRow(rowId);
-        return row == null ? null
-                : new Lock((String) row.get(Model.LOCK_OWNER_KEY), (Calendar) row.get(Model.LOCK_CREATED_KEY));
-    }
-
-    @Override
-    public Lock setLock(final Serializable id, final Lock lock) {
-        if (log.isDebugEnabled()) {
-            log.debug("setLock " + id + " owner=" + lock.getOwner());
-        }
-        Lock oldLock = getLock(id);
-        if (oldLock == null) {
-            Row row = new Row(Model.LOCK_TABLE_NAME, id);
-            row.put(Model.LOCK_OWNER_KEY, lock.getOwner());
-            row.put(Model.LOCK_CREATED_KEY, lock.getCreated());
-            insertSimpleRows(Model.LOCK_TABLE_NAME, Collections.singletonList(row));
-        }
-        return oldLock;
-    }
-
-    @Override
-    public Lock removeLock(final Serializable id, final String owner, final boolean force) {
-        if (log.isDebugEnabled()) {
-            log.debug("removeLock " + id + " owner=" + owner + " force=" + force);
-        }
-        Lock oldLock = force ? null : getLock(id);
-        if (!force && owner != null) {
-            if (oldLock == null) {
-                // not locked, nothing to do
-                return null;
-            }
-            if (!LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
-                // existing mismatched lock, flag failure
-                return new Lock(oldLock, true);
-            }
-        }
-        if (force || oldLock != null) {
-            deleteRows(Model.LOCK_TABLE_NAME, Collections.singleton(id));
-        }
-        return oldLock;
     }
 
     @Override
