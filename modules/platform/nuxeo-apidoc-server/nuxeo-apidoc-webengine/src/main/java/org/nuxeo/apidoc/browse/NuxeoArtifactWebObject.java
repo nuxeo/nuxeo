@@ -241,8 +241,8 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
                     applicableVersions, false, renderingType);
         } else {
             DocumentModel doc = getContext().getCoreSession().getDocument(new IdRef(editId));
-            doc.setPropertyValue("dc:title", title);
-            doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob(content));
+            doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, title);
+            doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) Blobs.createBlob(content));
             DocumentationItem item = doc.getAdapter(DocumentationItem.class);
 
             ds.updateDocumentationItem(getContext().getCoreSession(), item);

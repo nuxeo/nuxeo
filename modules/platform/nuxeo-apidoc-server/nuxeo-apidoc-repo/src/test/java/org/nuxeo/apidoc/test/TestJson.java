@@ -42,14 +42,14 @@ public class TestJson {
     @Test
     public void canSerializeAndReadBack() throws IOException {
         try (ByteArrayOutputStream sink = new ByteArrayOutputStream()) {
-            DistributionSnapshot.jsonWriter().writeValue(sink, RuntimeSnapshot.build());
+            RuntimeSnapshot snap = RuntimeSnapshot.build();
+            snap.writeJson(sink);
             try (OutputStream file = Files.newOutputStream(Paths.get(FeaturesRunner.getBuildDirectory() + "/test.json"),
                     StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
                 file.write(sink.toByteArray());
             }
             try (ByteArrayInputStream source = new ByteArrayInputStream(sink.toByteArray())) {
-                DistributionSnapshot snapshot = DistributionSnapshot.jsonReader()
-                                                                    .<DistributionSnapshot> readValue(source);
+                DistributionSnapshot snapshot = snap.readJson(source);
                 Assertions.assertThat(snapshot).isNotNull();
                 Assertions.assertThat(snapshot.getBundle("org.nuxeo.apidoc.repo")).isNotNull();
             }

@@ -18,6 +18,8 @@
  */
 package org.nuxeo.apidoc.repository;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,7 +42,10 @@ import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.introspection.ServerInfo;
+import org.nuxeo.apidoc.plugin.Plugin;
+import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,6 +54,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter implements DistributionSnapshot {
 
@@ -77,11 +85,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
         doc.setPathInfo(containerPath, name);
         if (label == null) {
-            doc.setPropertyValue("dc:title", distrib.getKey());
+            doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, distrib.getKey());
             doc.setPropertyValue(PROP_KEY, distrib.getKey());
             doc.setPropertyValue(PROP_NAME, distrib.getName());
         } else {
-            doc.setPropertyValue("dc:title", label);
+            doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, label);
             doc.setPropertyValue(PROP_KEY, label + "-" + distrib.getVersion());
             doc.setPropertyValue(PROP_NAME, label);
         }
@@ -430,5 +438,28 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public ServerInfo getServerInfo() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ObjectMapper getJsonMapper() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void writeJson(OutputStream out) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DistributionSnapshot readJson(InputStream in) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<String, PluginSnapshot<?>> getPluginSnapshots() {
+        return Framework.getService(SnapshotManager.class)
+                        .getPlugins()
+                        .stream()
+                        .collect(Collectors.toMap(Plugin::getId, p -> p.getRepositorySnapshot(getDoc())));
     }
 }

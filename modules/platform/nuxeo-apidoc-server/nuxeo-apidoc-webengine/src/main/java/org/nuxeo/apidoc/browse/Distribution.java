@@ -57,6 +57,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.listener.AttributesExtractorStater;
+import org.nuxeo.apidoc.plugin.Plugin;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
@@ -110,41 +111,44 @@ public class Distribution extends ModuleRoot {
     }
 
     public String getNavigationPoint() {
-        String currentUrl = getContext().getURL();
-        String navPoint = null;
-
-        if (currentUrl.contains("/listBundles")) {
-            navPoint = "listBundles";
-        } else if (currentUrl.contains("/listComponents")) {
-            navPoint = "listComponents";
-        } else if (currentUrl.contains("/listServices")) {
-            navPoint = "listServices";
-        } else if (currentUrl.contains("/listExtensionPoints")) {
-            navPoint = "listExtensionPoints";
-        } else if (currentUrl.contains("/listContributions")) {
-            navPoint = "listContributions";
-        } else if (currentUrl.contains("/listBundleGroups")) {
-            navPoint = "listBundleGroups";
-        } else if (currentUrl.contains("/viewBundleGroup")) {
-            navPoint = "viewBundleGroup";
-        } else if (currentUrl.contains("/viewComponent")) {
-            navPoint = "viewComponent";
-        } else if (currentUrl.contains("/viewService")) {
-            navPoint = "viewService";
-        } else if (currentUrl.contains("/viewExtensionPoint")) {
-            navPoint = "viewExtensionPoint";
-        } else if (currentUrl.contains("/viewContribution")) {
-            navPoint = "viewContribution";
-        } else if (currentUrl.contains("/viewBundle")) {
-            navPoint = "viewBundle";
-        } else if (currentUrl.contains("/listOperations")) {
-            navPoint = "listOperations";
-        } else if (currentUrl.contains("/viewOperation")) {
-            navPoint = "viewOperation";
-        } else if (currentUrl.contains("/doc")) {
-            navPoint = "documentation";
+        String url = getContext().getURL();
+        String point = null;
+        if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_BUNDLEGROUPS)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_BUNDLEGROUP)) {
+            point = ApiBrowserConstants.LIST_BUNDLEGROUPS;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_BUNDLES)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_BUNDLE)) {
+            point = ApiBrowserConstants.LIST_BUNDLES;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_COMPONENTS)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_COMPONENT)) {
+            point = ApiBrowserConstants.LIST_COMPONENTS;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_SERVICES)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_SERVICE)) {
+            point = ApiBrowserConstants.LIST_SERVICES;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_EXTENSIONPOINTS)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_EXTENSIONPOINT)) {
+            point = ApiBrowserConstants.LIST_EXTENSIONPOINTS;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_CONTRIBUTIONS)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_CONTRIBUTION)) {
+            point = ApiBrowserConstants.LIST_CONTRIBUTIONS;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_OPERATIONS)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_OPERATION)) {
+            point = ApiBrowserConstants.LIST_OPERATIONS;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_DOCUMENTATION)) {
+            point = ApiBrowserConstants.VIEW_DOCUMENTATION;
         }
-        return navPoint;
+        if (point == null) {
+            // check plugins
+            List<Plugin<?>> plugins = getSnapshotManager().getPlugins();
+            for (Plugin<?> plugin : plugins) {
+                point = plugin.getView(url);
+                if (point != null) {
+                    break;
+                }
+            }
+        }
+
+        return point;
     }
 
     @GET
@@ -552,10 +556,21 @@ public class Distribution extends ModuleRoot {
     }
 
     public static boolean showCurrentDistribution() {
-        return !(Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.hide.current.distribution") || isSiteMode());
+        return !(Framework.isBooleanPropertyTrue(ApiBrowserConstants.PROPERTY_SITE_MODE) || isSiteMode());
     }
 
     public static boolean isSiteMode() {
-        return Framework.isBooleanPropertyTrue("org.nuxeo.apidoc.site.mode");
+        return Framework.isBooleanPropertyTrue(ApiBrowserConstants.PROPERTY_SITE_MODE);
     }
+
+    /**
+     * Generates the list of plugins that should be displayed in the menu.
+     */
+    public List<Plugin<?>> getPluginMenu() {
+        return getSnapshotManager().getPlugins()
+                                   .stream()
+                                   .filter(plugin -> !plugin.isHidden())
+                                   .collect(Collectors.toList());
+    }
+
 }

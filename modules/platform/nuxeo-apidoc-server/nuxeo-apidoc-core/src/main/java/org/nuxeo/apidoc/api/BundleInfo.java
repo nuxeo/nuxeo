@@ -40,6 +40,11 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String PROP_JAR_NAME = "nxbundle:jarName";
 
+    /**
+     * @since 11.1
+     */
+    String RUNTIME_CONFIG_BUNDLE = "org.nuxeo.ecm.config";
+
     @JsonIgnore
     Collection<ComponentInfo> getComponents();
 

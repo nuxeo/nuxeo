@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.apidoc.worker.ExtractXmlAttributesWorker;
@@ -99,13 +100,13 @@ public class TestExtractor {
         Assert.assertEquals(completed, workManager.getMetrics(ExtractXmlAttributesWorker.CATEGORY).completed);
 
         // Should be triggered
-        myDoc.setPropertyValue("file:content", getBlob());
+        myDoc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, getBlob());
         myDoc = session.saveDocument(myDoc);
         txFeature.nextTransaction();
         Assert.assertEquals(++completed, workManager.getMetrics(ExtractXmlAttributesWorker.CATEGORY).completed);
 
         // Should not be triggered
-        myDoc.setPropertyValue("file:content", null);
+        myDoc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
         session.saveDocument(myDoc);
         txFeature.nextTransaction();
         Assert.assertEquals(completed, workManager.getMetrics(ExtractXmlAttributesWorker.CATEGORY).completed);
@@ -125,7 +126,7 @@ public class TestExtractor {
     @Test
     public void testAttributesExtractedAtCreation() {
         DocumentModel myDoc = session.createDocumentModel("/", "mydoc", ExtensionInfo.TYPE_NAME);
-        myDoc.setPropertyValue("file:content", getBlob());
+        myDoc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, getBlob());
         myDoc = session.createDocument(myDoc);
         txFeature.nextTransaction();
 
@@ -141,7 +142,7 @@ public class TestExtractor {
         eventServiceAdmin.setListenerEnabledFlag(AttributesExtractorStater.class.getSimpleName(), false);
 
         DocumentModel myDoc = session.createDocumentModel("/", "mydoc", ExtensionInfo.TYPE_NAME);
-        myDoc.setPropertyValue("file:content", getBlob());
+        myDoc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, getBlob());
         myDoc = session.createDocument(myDoc);
         txFeature.nextTransaction();
 
@@ -154,7 +155,7 @@ public class TestExtractor {
         eventServiceAdmin.setListenerEnabledFlag(AttributesExtractorStater.class.getSimpleName(), true);
 
         // Change anything other than the blob
-        myDoc.setPropertyValue("dc:title", "modification");
+        myDoc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, "modification");
         myDoc = session.saveDocument(myDoc);
         txFeature.nextTransaction();
 

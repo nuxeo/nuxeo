@@ -27,6 +27,7 @@ import org.dom4j.DocumentException;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.ContributionItem;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
@@ -59,7 +60,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", id);
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, id);
 
         doc.setPropertyValue(PROP_CONTRIB_ID, id);
         doc.setPropertyValue(PROP_DOC, xi.getDocumentation());
@@ -67,7 +68,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         doc.setPropertyValue(PROP_TARGET_COMPONENT_NAME, xi.getTargetComponentName().getName());
 
         Blob xmlBlob = Blobs.createBlob(xi.getXml(), "text/xml", null, "contrib.xml"); // !!!!!
-        doc.setPropertyValue("file:content", (Serializable) xmlBlob);
+        doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) xmlBlob);
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -110,7 +111,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public String getXml() {
         try {
-            Blob xml = safeGet(Blob.class, "file:content", null);
+            Blob xml = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
             if (xml == null) {
                 return "";
             }

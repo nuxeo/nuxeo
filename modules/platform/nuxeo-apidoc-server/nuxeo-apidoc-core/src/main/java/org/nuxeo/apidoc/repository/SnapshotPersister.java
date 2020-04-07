@@ -50,6 +50,7 @@ import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
+import org.nuxeo.apidoc.plugin.Plugin;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.ecm.core.api.Blob;
@@ -59,11 +60,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.runtime.api.Framework;
 
 public class SnapshotPersister {
@@ -81,50 +77,6 @@ public class SnapshotPersister {
     public static final String Write_Grp = "members";
 
     protected static final Log log = LogFactory.getLog(SnapshotPersister.class);
-
-    class UnrestrictedRootCreator extends UnrestrictedSessionRunner {
-
-        protected DocumentRef rootRef;
-
-        protected final String parentPath;
-
-        protected final String name;
-
-        protected final boolean setAcl;
-
-        public UnrestrictedRootCreator(CoreSession session, String parentPath, String name, boolean setAcl) {
-            super(session);
-            this.name = name;
-            this.parentPath = parentPath;
-            this.setAcl = setAcl;
-        }
-
-        public DocumentRef getRootRef() {
-            return rootRef;
-        }
-
-        @Override
-        public void run() {
-
-            DocumentModel root = session.createDocumentModel(parentPath, name, "Workspace");
-            root.setProperty("dublincore", "title", name);
-            root = session.createDocument(root);
-
-            if (setAcl) {
-                ACL acl = new ACLImpl();
-                acl.add(new ACE(Write_Grp, "Write", true));
-                acl.add(new ACE(Read_Grp, "Read", true));
-                ACP acp = root.getACP();
-                acp.addACL(acl);
-                session.setACP(root.getRef(), acp, true);
-            }
-
-            rootRef = root.getRef();
-            // flush caches
-            session.save();
-        }
-
-    }
 
     public DocumentModel getSubRoot(CoreSession session, DocumentModel root, String name) {
 
@@ -152,7 +104,7 @@ public class SnapshotPersister {
     }
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label,
-            SnapshotFilter filter, Map<String, Serializable> properties) {
+            SnapshotFilter filter, Map<String, Serializable> properties, List<Plugin<?>> plugins) {
 
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(snapshot, session, label, properties);
 
@@ -181,6 +133,11 @@ public class SnapshotPersister {
 
         DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
         persistOperations(snapshot, snapshot.getOperations(), session, label, opContainer, filter);
+
+        // handle plugins persistence
+        for (Plugin<?> plugin : plugins) {
+            plugin.persist(snapshot, session, distribContainer.getDoc(), filter);
+        }
 
         // needed for tests
         session.save();
@@ -248,9 +205,11 @@ public class SnapshotPersister {
                 if (previousDocItem instanceof DocumentationItemDocAdapter) {
                     DocumentationItemDocAdapter existingDoc = (DocumentationItemDocAdapter) previousDocItem;
                     Blob blob = Blobs.createBlob(docItem.getContent());
-                    Blob oldBlob = (Blob) existingDoc.getDocumentModel().getPropertyValue("file:content");
+                    Blob oldBlob = (Blob) existingDoc.getDocumentModel()
+                                                     .getPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH);
                     blob.setFilename(oldBlob.getFilename());
-                    existingDoc.getDocumentModel().setPropertyValue("file:content", (Serializable) blob);
+                    existingDoc.getDocumentModel()
+                               .setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) blob);
                     ds.updateDocumentationItem(session, existingDoc);
                 }
 

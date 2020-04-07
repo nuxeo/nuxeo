@@ -292,7 +292,7 @@ public class ServerInfo {
     public static ServerInfo build(String name, String version) {
         RuntimeService runtime = Framework.getRuntime();
         ServerInfo server = new ServerInfo(name, version);
-        BundleInfoImpl configVirtualBundle = new BundleInfoImpl("org.nuxeo.ecm.config");
+        BundleInfoImpl configVirtualBundle = new BundleInfoImpl(BundleInfo.RUNTIME_CONFIG_BUNDLE);
         server.addBundle(configVirtualBundle);
 
         Map<String, ExtensionPointInfoImpl> xpRegistry = new HashMap<>();
