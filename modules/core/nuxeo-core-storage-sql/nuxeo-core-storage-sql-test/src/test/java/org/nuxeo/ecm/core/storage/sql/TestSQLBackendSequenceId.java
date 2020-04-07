@@ -36,8 +36,8 @@ public class TestSQLBackendSequenceId extends TestSQLBackend {
     }
 
     @Override
-    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
-        RepositoryDescriptor descriptor = super.newDescriptor(name, clusteringDelay);
+    protected RepositoryDescriptor newDescriptor(String name) {
+        RepositoryDescriptor descriptor = super.newDescriptor(name);
         descriptor.idType = "sequence";
         return descriptor;
     }

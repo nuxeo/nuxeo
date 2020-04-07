@@ -53,8 +53,6 @@ nuxeo.binarystores.root=${nuxeo.data.dir}
 # the following is defined for compatibility but is not used directly anymore
 repository.binary.store=${nuxeo.binarystores.root}/binaries
 nuxeo.transientstores.root=${nuxeo.binarystores.root}
-# For VCS with the old JDBCClusterInvalidator an invalidation delay can be specified (in milliseconds)
-repository.clustering.delay=1000
 
 nuxeo.plaintext_parsing_extensions=xml,properties,nx,html,js
 nuxeo.freemarker_parsing_extensions=nxftl

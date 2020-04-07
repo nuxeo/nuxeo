@@ -19,7 +19,6 @@
 package org.nuxeo.drive.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,13 +40,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.cluster.ClusterService;
 
 /**
  * Implementation of {@link FileSystemChangeFinder} using the {@link AuditReader}.
@@ -220,66 +216,6 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             return -1;
         }
         return entries.get(0).getId();
-    }
-
-    /**
-     * Returns the last available log id in the audit log table (primary key) considering events older than the last
-     * clustering invalidation date if clustering is enabled for at least one of the given repositories. This is to make
-     * sure the {@code DocumentModel} further fetched from the session using the audit entry doc id is fresh.
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public long getUpperBound(Set<String> repositoryNames) {
-        long clusteringDelay = getClusteringDelay(repositoryNames);
-        AuditReader auditService = Framework.getService(AuditReader.class);
-        Map<String, Object> params = new HashMap<>();
-        StringBuilder auditQuerySb = new StringBuilder("from LogEntry log");
-        if (clusteringDelay > -1) {
-            // Double the delay in case of overlapping, see https://jira.nuxeo.com/browse/NXP-14826
-            long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
-            params.put("lastClusteringInvalidationDate", new Date(lastClusteringInvalidationDate));
-            auditQuerySb.append(" where log.logDate < :lastClusteringInvalidationDate");
-        }
-        auditQuerySb.append(" order by log.id desc");
-        String auditQuery = auditQuerySb.toString();
-        log.debug("Querying audit log for greatest id: {} with params: {}", auditQuery, params);
-
-        List<LogEntry> entries = (List<LogEntry>) auditService.nativeQuery(auditQuery, params, 1, 1);
-        if (entries.isEmpty()) {
-            if (clusteringDelay > -1) {
-                // Check for existing entries without the clustering invalidation date filter to not return -1 in this
-                // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >=
-                // 0
-                List<LogEntry> allEntries = (List<LogEntry>) auditService.nativeQuery("from LogEntry", 1, 1);
-                if (!allEntries.isEmpty()) {
-                    log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
-                    return 0;
-                }
-            }
-            log.debug("Found no audit log entries, returning -1");
-            return -1;
-        }
-        return entries.get(0).getId();
-    }
-
-    /**
-     * Returns the longest clustering delay among the given repositories for which clustering is enabled.
-     */
-    protected long getClusteringDelay(Set<String> repositoryNames) {
-        if (!Framework.getService(ClusterService.class).isEnabled()) {
-            return -1;
-        }
-        long clusteringDelay = -1;
-        SQLRepositoryService repositoryService = Framework.getService(SQLRepositoryService.class);
-        for (String repositoryName : repositoryNames) {
-            RepositoryDescriptor repositoryDescriptor = repositoryService.getRepositoryDescriptor(repositoryName);
-            if (repositoryDescriptor == null) {
-                // Not a VCS repository`
-                continue;
-            }
-            clusteringDelay = Math.max(clusteringDelay, repositoryDescriptor.getClusteringDelay());
-        }
-        return clusteringDelay;
     }
 
     @SuppressWarnings("unchecked")

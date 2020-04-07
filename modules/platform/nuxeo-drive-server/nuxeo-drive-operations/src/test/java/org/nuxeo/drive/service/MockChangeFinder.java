@@ -123,9 +123,4 @@ public class MockChangeFinder implements FileSystemChangeFinder {
         return now - (now % 1000);
     }
 
-    @Override
-    public long getUpperBound(Set<String> repositoryName) {
-        return getUpperBound();
-    }
-
 }

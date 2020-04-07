@@ -58,18 +58,18 @@ public abstract class SQLBackendTestCase {
 
     @Before
     public void setUp() throws Exception {
-        repository = newRepository(-1);
+        repository = newRepository();
         SessionImpl session = repository.getConnection();
         rootAcl = session.getRootNode().getCollectionProperty(Model.ACL_PROP).getValue();
         session.close();
     }
 
-    protected RepositoryImpl newRepository(long clusteringDelay) {
-        return newRepository(null, clusteringDelay);
+    protected RepositoryImpl newRepository() {
+        return newRepository(null);
     }
 
-    protected RepositoryImpl newRepository(String name, long clusteringDelay) {
-        RepositoryDescriptor descriptor = newDescriptor(name, clusteringDelay);
+    protected RepositoryImpl newRepository(String name) {
+        RepositoryDescriptor descriptor = newDescriptor(name);
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
         sqlRepositoryService.registerContribution(descriptor, "repository", null);
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
@@ -78,13 +78,12 @@ public abstract class SQLBackendTestCase {
         return sqlRepositoryService.getRepositoryImpl(descriptor.name);
     }
 
-    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
+    protected RepositoryDescriptor newDescriptor(String name) {
         if (name == null) {
             name = REPOSITORY_NAME;
         }
         RepositoryDescriptor descriptor = DatabaseHelper.DATABASE.getRepositoryDescriptor();
         descriptor.name = name;
-        descriptor.setClusteringDelay(clusteringDelay);
         FieldDescriptor schemaField1 = new FieldDescriptor();
         schemaField1.field = "tst:bignote";
         schemaField1.type = Model.FIELD_TYPE_LARGETEXT;

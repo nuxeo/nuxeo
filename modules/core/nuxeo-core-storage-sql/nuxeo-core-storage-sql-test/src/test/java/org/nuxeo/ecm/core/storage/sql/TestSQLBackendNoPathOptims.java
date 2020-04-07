@@ -37,8 +37,8 @@ public class TestSQLBackendNoPathOptims extends TestSQLBackend {
     protected boolean pathOptimizationsEnabled;
 
     @Override
-    protected RepositoryDescriptor newDescriptor(String name, long clusteringDelay) {
-        RepositoryDescriptor descriptor = super.newDescriptor(name, clusteringDelay);
+    protected RepositoryDescriptor newDescriptor(String name) {
+        RepositoryDescriptor descriptor = super.newDescriptor(name);
         descriptor.setPathOptimizationsEnabled(pathOptimizationsEnabled);
         return descriptor;
     }
@@ -65,7 +65,7 @@ public class TestSQLBackendNoPathOptims extends TestSQLBackend {
         repository.close();
 
         pathOptimizationsEnabled  = true;
-        repository = newRepository(-1);
+        repository = newRepository();
         session = repository.getConnection();
         // this query will use nx_ancestors to bulk load the path
         nodes = session.getNodesByIds(ids);

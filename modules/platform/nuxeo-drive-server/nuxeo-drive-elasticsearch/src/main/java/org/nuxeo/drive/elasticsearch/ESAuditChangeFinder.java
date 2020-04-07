@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +44,6 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
@@ -227,25 +225,9 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
 
     @Override
     public long getUpperBound() {
-        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-        return getUpperBound(new HashSet<>(repositoryManager.getRepositoryNames()));
-    }
-
-    /**
-     * Returns the last available log id in the audit index considering events older than the last clustering
-     * invalidation date if clustering is enabled for at least one of the given repositories. This is to make sure the
-     * {@code DocumentModel} further fetched from the session using the audit entry doc id is fresh.
-     */
-    @Override
-    public long getUpperBound(Set<String> repositoryNames) {
         SearchRequest request = new SearchRequest(getESIndexName()).types(ElasticSearchConstants.ENTRY_TYPE)
                                                                    .searchType(SearchType.DFS_QUERY_THEN_FETCH);
         RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery("logDate");
-        long clusteringDelay = getClusteringDelay(repositoryNames);
-        if (clusteringDelay > -1) {
-            long lastClusteringInvalidationDate = System.currentTimeMillis() - 2 * clusteringDelay;
-            filterBuilder = filterBuilder.lt(lastClusteringInvalidationDate);
-        }
         SearchSourceBuilder source = new SearchSourceBuilder();
         source.sort("id", SortOrder.DESC).size(1);
         // scroll on previous days with a times 2 step up to 32
@@ -270,19 +252,6 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
                 } catch (IOException e) {
                     log.error("Error while reading Audit Entry from ES", e);
                 }
-            }
-        }
-        if (clusteringDelay > -1) {
-            // Check for existing entries without the clustering invalidation date filter to not return -1 in this
-            // case and make sure the lower bound of the next call to NuxeoDriveManager#getChangeSummary will be >= 0
-            source.query(QueryBuilders.matchAllQuery()).size(0);
-            request.source(source);
-            logSearchRequest(request);
-            SearchResponse searchResponse = esClient.search(request);
-            logSearchResponse(searchResponse);
-            if (searchResponse.getHits().getTotalHits() > 0) {
-                log.debug("Found no audit log entries matching the criterias but some exist, returning 0");
-                return 0;
             }
         }
         log.debug("Found no audit log entries, returning -1");

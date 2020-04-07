@@ -15,10 +15,7 @@ configuration options, for now the binaries storage is hardcoded to
 $JBOSS/server/default/data/NXRuntime/binaries.
 
 You can enable clustering using:
-  <clustering enabled="true" delay="1000" />
-The delay is in milliseconds, and specifies the delay before which a node
-doesn't check invalidations from other nodes. The default, 0, means checking
-invalidations for every transaction started, which is costly.
+  <clustering enabled="true" />
 
 You can configure the fulltext indexing analyzer using:
   <indexing>

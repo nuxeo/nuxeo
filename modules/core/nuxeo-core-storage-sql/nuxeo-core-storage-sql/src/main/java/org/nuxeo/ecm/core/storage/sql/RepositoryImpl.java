@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCClusterInvalidator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -308,7 +307,7 @@ public class RepositoryImpl implements Repository {
     protected VCSClusterInvalidator createClusterInvalidator() {
         Class<? extends VCSClusterInvalidator> klass = repositoryDescriptor.clusterInvalidatorClass;
         if (klass == null) {
-            klass = JDBCClusterInvalidator.class;
+            klass = VCSPubSubInvalidator.class;
         }
         try {
             return klass.getDeclaredConstructor().newInstance();

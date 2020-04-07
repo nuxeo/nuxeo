@@ -2,7 +2,6 @@
 <repository name="foo">
   <pool minPoolSize="1" maxPoolSize="2"
     blockingTimeoutMillis="3" idleTimeoutMinutes="4" />
-  <clustering delay="1234" />
   <sqlInitFile>file1</sqlInitFile>
   <sqlInitFile>file2</sqlInitFile>
   <schema>

@@ -19,7 +19,6 @@ package org.nuxeo.drive.mongodb;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.drive.fixtures.AbstractChangeFinderTestCase;
-import org.nuxeo.drive.fixtures.AuditChangeFinderClusteringEnabledTestSuite;
 import org.nuxeo.drive.fixtures.AuditChangeFinderTestSuite;
 import org.nuxeo.drive.fixtures.GroupChangesTestSuite;
 import org.nuxeo.drive.test.NuxeoDriveMongoDBAuditFeature;
@@ -33,8 +32,7 @@ import org.nuxeo.runtime.test.runner.Features;
  */
 @RunWith(ContributableFeaturesRunner.class)
 @Features(NuxeoDriveMongoDBAuditFeature.class)
-@SuiteClasses({ AuditChangeFinderTestSuite.class, AuditChangeFinderClusteringEnabledTestSuite.class,
-        GroupChangesTestSuite.class })
+@SuiteClasses({ AuditChangeFinderTestSuite.class, GroupChangesTestSuite.class })
 public class TestMongoDBAuditChangeFinder {
 
 }
