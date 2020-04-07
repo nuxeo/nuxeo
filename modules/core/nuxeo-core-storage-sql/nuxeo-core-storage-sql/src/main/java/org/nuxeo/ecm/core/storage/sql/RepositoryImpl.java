@@ -20,21 +20,35 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.model.LockManager;
+import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
+import org.nuxeo.ecm.core.storage.sql.Model.IdType;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapperConnector;
+import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
+import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
+import org.nuxeo.runtime.datasource.ConnectionHelper;
+import org.nuxeo.runtime.datasource.DataSourceHelper;
+import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import io.dropwizard.metrics5.Counter;
@@ -45,16 +59,12 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
 
 /**
  * {@link Repository} implementation, to be extended by backend-specific initialization code.
- *
- * @see RepositoryBackend
  */
 public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
     protected final RepositoryDescriptor repositoryDescriptor;
-
-    private RepositoryBackend backend;
 
     private final Collection<SessionImpl> sessions;
 
@@ -79,10 +89,9 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
 
     private Model model;
 
-    /**
-     * Transient id for this repository assigned by the server on first connection. This is not persisted.
-     */
-    public String repositoryId;
+    protected SQLInfo sqlInfo;
+
+    protected boolean isPooledDataSource;
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
@@ -135,18 +144,6 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         });
     }
 
-    protected RepositoryBackend createBackend() {
-        Class<? extends RepositoryBackend> backendClass = repositoryDescriptor.backendClass;
-        if (backendClass == null) {
-            backendClass = JDBCBackend.class;
-        }
-        try {
-            return backendClass.getDeclaredConstructor().newInstance();
-        } catch (ReflectiveOperationException e) {
-            throw new NuxeoException(e);
-        }
-    }
-
     protected Mapper createCachingMapper(Model model, Mapper mapper) {
         try {
             Class<? extends CachingMapper> cachingMapperClass = getCachingMapperClass();
@@ -187,8 +184,8 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
     }
 
     /** @since 11.1 */
-    public RepositoryBackend getBackend() {
-        return backend;
+    public SQLInfo getSQLInfo() {
+        return sqlInfo;
     }
 
     public VCSInvalidationsPropagator getInvalidationsPropagator() {
@@ -240,14 +237,87 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
      * @since 7.4
      */
     public Mapper newMapper(PathResolver pathResolver, boolean useInvalidations) {
-        return backend.newMapper(pathResolver, useInvalidations);
+        boolean noSharing = !useInvalidations;
+        VCSClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
+        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, this);
+        if (isPooledDataSource) {
+            mapper = JDBCMapperConnector.newConnector(mapper, noSharing);
+        } else {
+            mapper.connect(false);
+        }
+        return mapper;
     }
 
     protected void initRepository() {
         log.debug("Initializing");
-        backend = createBackend();
         prepareClusterInvalidator(); // sets requiresClusterSQL used by backend init
-        model = backend.initialize(this);
+
+        // check datasource
+        String dataSourceName = JDBCConnection.getDataSourceName(repositoryDescriptor.name);
+        try {
+            DataSource ds = DataSourceHelper.getDataSource(dataSourceName);
+            if (ds instanceof PooledDataSource) {
+                isPooledDataSource = true;
+            }
+        } catch (NamingException cause) {
+            throw new NuxeoException("Cannot acquire datasource: " + dataSourceName, cause);
+        }
+
+        // check connection and get dialect
+        Dialect dialect;
+        try (Connection connection = ConnectionHelper.getConnection(dataSourceName)) {
+            dialect = Dialect.createDialect(connection, repositoryDescriptor);
+        } catch (SQLException cause) {
+            throw new NuxeoException("Cannot get connection from datasource: " + dataSourceName, cause);
+        }
+
+        // model setup
+        ModelSetup modelSetup = new ModelSetup();
+        modelSetup.materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
+        modelSetup.supportsArrayColumns = dialect.supportsArrayColumns();
+        switch (dialect.getIdType()) {
+        case VARCHAR:
+        case UUID:
+            modelSetup.idType = IdType.STRING;
+            break;
+        case SEQUENCE:
+            modelSetup.idType = IdType.LONG;
+            break;
+        default:
+            throw new AssertionError(dialect.getIdType().toString());
+        }
+        modelSetup.repositoryDescriptor = repositoryDescriptor;
+
+        // Model and SQLInfo
+        model = new Model(modelSetup);
+        sqlInfo = new SQLInfo(model, dialect, requiresClusterSQL);
+
+        // DDL mode
+        String ddlMode = repositoryDescriptor.getDDLMode();
+        if (ddlMode == null) {
+            // compat
+            ddlMode = repositoryDescriptor.getNoDDL() ? RepositoryDescriptor.DDL_MODE_IGNORE
+                    : RepositoryDescriptor.DDL_MODE_EXECUTE;
+        }
+
+        // create database
+        if (ddlMode.equals(RepositoryDescriptor.DDL_MODE_IGNORE)) {
+            log.info("Skipping database creation");
+        } else {
+            Mapper mapper = newMapper(null, false);
+            try {
+                mapper.createDatabase(ddlMode);
+            } finally {
+                mapper.close();
+            }
+        }
+        if (log.isDebugEnabled()) {
+            FulltextDescriptor fulltextDescriptor = repositoryDescriptor.getFulltextDescriptor();
+            log.debug(String.format("Database ready, fulltext: disabled=%b storedInBlob=%b searchDisabled=%b.",
+                    fulltextDescriptor.getFulltextDisabled(), fulltextDescriptor.getFulltextStoredInBlob(),
+                    fulltextDescriptor.getFulltextSearchDisabled()));
+        }
+
         initLockManager();
         initClusterInvalidator();
 
@@ -313,7 +383,6 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         if (clusterInvalidator != null) {
             String nodeId = Framework.getService(ClusterService.class).getNodeId();
             clusterInvalidator.initialize(nodeId, this);
-            backend.setClusterInvalidator(clusterInvalidator);
         }
     }
 
@@ -350,7 +419,9 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
     public synchronized void close() {
         closeAllSessions();
         model = null;
-        backend.shutdown();
+        if (clusterInvalidator != null) {
+            clusterInvalidator.close();
+        }
 
         if (selfRegisteredLockManager) {
             LockManagerService lms = Framework.getService(LockManagerService.class);
