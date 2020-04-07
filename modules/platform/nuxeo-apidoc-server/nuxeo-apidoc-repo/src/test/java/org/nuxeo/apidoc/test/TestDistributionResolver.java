@@ -21,10 +21,13 @@ package org.nuxeo.apidoc.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -35,8 +38,11 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.ServerInfo;
+import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TestDistributionResolver {
 
@@ -206,6 +212,27 @@ public class TestDistributionResolver {
                 public ServerInfo getServerInfo() {
                     throw new UnsupportedOperationException();
                 }
+
+                @Override
+                public ObjectMapper getJsonMapper() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public void writeJson(OutputStream out) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public DistributionSnapshot readJson(InputStream in) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public Map<String, PluginSnapshot<?>> getPluginSnapshots() {
+                    throw new UnsupportedOperationException();
+                }
+
             };
             snaps.add(snap);
         }

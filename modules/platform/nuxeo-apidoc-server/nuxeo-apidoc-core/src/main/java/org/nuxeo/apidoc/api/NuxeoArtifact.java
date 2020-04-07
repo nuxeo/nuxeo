@@ -19,11 +19,22 @@
 package org.nuxeo.apidoc.api;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public interface NuxeoArtifact {
+
+    /**
+     * @since 11.1
+     */
+    public static String TITLE_PROPERTY_PATH = DublinCoreConstants.DUBLINCORE_TITLE_PROPERTY;
+
+    /**
+     * @since 11.1
+     */
+    public static String CONTENT_PROPERTY_PATH = "file:content";
 
     String getId();
 

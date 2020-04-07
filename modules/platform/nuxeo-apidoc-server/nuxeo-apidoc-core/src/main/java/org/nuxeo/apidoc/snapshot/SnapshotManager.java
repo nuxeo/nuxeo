@@ -25,11 +25,21 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.nuxeo.apidoc.api.NuxeoArtifact;
+import org.nuxeo.apidoc.plugin.Plugin;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface SnapshotManager {
+
+    /**
+     * Initializes the web context, as potentially needed by plugins.
+     *
+     * @since 11.1
+     */
+    void initWebContext(HttpServletRequest request);
 
     DistributionSnapshot getRuntimeSnapshot();
 
@@ -63,5 +73,19 @@ public interface SnapshotManager {
     void validateImportedSnapshot(CoreSession session, String name, String version, String pathSegment, String title);
 
     DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws IOException;
+
+    /**
+     * Returns all registered plugins.
+     *
+     * @since 11.1
+     */
+    List<Plugin<?>> getPlugins();
+
+    /**
+     * Returns the plugin with the given id.
+     *
+     * @since 11.1
+     */
+    Plugin<?> getPlugin(String id);
 
 }

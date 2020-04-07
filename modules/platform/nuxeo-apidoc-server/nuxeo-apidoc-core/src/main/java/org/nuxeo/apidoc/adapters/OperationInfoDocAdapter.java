@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
@@ -157,7 +158,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
             doc = session.createDocumentModel(TYPE_NAME);
             doc.setPathInfo(containerPath, name);
         }
-        doc.setPropertyValue("dc:title", oi.getName());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, oi.getName());
         doc.setPropertyValue(PROP_NAME, oi.getName());
         doc.setPropertyValue(PROP_ALIASES, oi.getAliases());
         doc.setPropertyValue(PROP_VERSION, oi.getVersion());

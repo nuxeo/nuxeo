@@ -27,11 +27,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,6 +48,8 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
+import org.nuxeo.apidoc.plugin.Plugin;
+import org.nuxeo.apidoc.plugin.PluginDescriptor;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -59,21 +65,32 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 
-    protected volatile DistributionSnapshot runtimeSnapshot;
+    private static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
+
+    /**
+     * Extension point for plugins.
+     *
+     * @since 11.1
+     */
+    public static final String XP_PLUGINS = "plugins";
 
     public static final String RUNTIME = "current";
 
     public static final String RUNTIME_ADM = "adm";
 
+    protected volatile DistributionSnapshot runtimeSnapshot;
+
     protected static final String IMPORT_TMP = "tmpImport";
 
-    protected static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
-
     protected final SnapshotPersister persister = new SnapshotPersister();
+
+    protected final Map<String, Plugin<?>> plugins = new LinkedHashMap<>();
 
     @Override
     public DistributionSnapshot getRuntimeSnapshot() {
@@ -160,7 +177,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name,
             Map<String, Serializable> properties, SnapshotFilter filter) {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter, properties);
+        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter, properties, getPlugins());
         addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }
@@ -273,7 +290,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             snapDoc.setPropertyValue("nxdistribution:name", name);
             snapDoc.setPropertyValue("nxdistribution:version", version);
             snapDoc.setPropertyValue("nxdistribution:key", name + "-" + version);
-            snapDoc.setPropertyValue("dc:title", title);
+            snapDoc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, title);
             snapDoc = session.saveDocument(snapDoc);
 
             DocumentModel targetContainer = session.getParentDocument(tmp.getRef());
@@ -295,7 +312,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             session.removeChildren(tmp.getRef());
         } else {
             tmp = session.createDocumentModel(container.getPathAsString(), IMPORT_TMP, "Workspace");
-            tmp.setPropertyValue("dc:title", "tmpImport");
+            tmp.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, "tmpImport");
             tmp = session.createDocument(tmp);
             session.save();
         }
@@ -311,6 +328,13 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         writer.close();
 
         return session.getChildren(tmp.getRef()).get(0);
+    }
+
+    @Override
+    public void initWebContext(HttpServletRequest request) {
+        for (Plugin<?> plugin : getPlugins()) {
+            plugin.initWebContext(getRuntimeSnapshot(), request);
+        }
     }
 
     @Override
@@ -330,6 +354,43 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         protected void beforeCreateDocument(DocumentModel doc) {
             doc.putContextData(CTX_MAP_KEY, TURN_OFF);
         }
+    }
+
+    @Override
+    public List<Plugin<?>> getPlugins() {
+        return Collections.unmodifiableList(new ArrayList<>(plugins.values()));
+    }
+
+    @Override
+    public Plugin<?> getPlugin(String id) {
+        return plugins.get(id);
+    }
+
+    @Override
+    public void start(ComponentContext context) {
+        super.start(context);
+        plugins.clear();
+        List<PluginDescriptor> descriptors = getDescriptors(XP_PLUGINS);
+        for (PluginDescriptor descriptor : descriptors) {
+            try {
+                Class<?> clazz = Class.forName(descriptor.getKlass());
+                Constructor<?> constructor = clazz.getConstructor(PluginDescriptor.class);
+                Plugin<?> plugin = (Plugin<?>) constructor.newInstance(descriptor);
+                plugins.put(descriptor.getId(), plugin);
+            } catch (ReflectiveOperationException e) {
+                String msg = String.format(
+                        "Failed to register plugin with id '%s' on '%s': error initializing class '%s' (%s).",
+                        descriptor.getId(), name, descriptor.getKlass(), e.toString());
+                log.error(msg, e);
+                Framework.getRuntime().getMessageHandler().addError(msg);
+            }
+        }
+    }
+
+    @Override
+    public void stop(ComponentContext context) throws InterruptedException {
+        super.stop(context);
+        plugins.clear();
     }
 
 }

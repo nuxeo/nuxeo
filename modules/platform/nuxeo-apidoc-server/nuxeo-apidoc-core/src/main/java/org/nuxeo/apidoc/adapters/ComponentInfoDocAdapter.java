@@ -29,6 +29,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
@@ -60,7 +61,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", componentInfo.getName());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, componentInfo.getName());
         doc.setPropertyValue(PROP_COMPONENT_ID, componentInfo.getId());
         doc.setPropertyValue(PROP_COMPONENT_NAME, componentInfo.getName());
         doc.setPropertyValue(PROP_COMPONENT_CLASS, componentInfo.getComponentClass());
@@ -70,7 +71,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
         Blob xmlBlob = Blobs.createBlob(componentInfo.getXmlFileContent(), "text/xml", null,
                 componentInfo.getXmlFileName());
-        doc.setPropertyValue("file:content", (Serializable) xmlBlob);
+        doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) xmlBlob);
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -153,7 +154,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public String getXmlFileContent() throws IOException {
         try {
-            Blob xml = safeGet(Blob.class, "file:content", null);
+            Blob xml = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
             if (xml.getEncoding() == null || "".equals(xml.getEncoding())) {
                 xml.setEncoding("utf-8");
             }
@@ -166,7 +167,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public String getXmlFileName() {
-        Blob xml = safeGet(Blob.class, "file:content", null);
+        Blob xml = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
         return xml == null ? "" : xml.getFilename() == null ? "" : xml.getFilename();
     }
 

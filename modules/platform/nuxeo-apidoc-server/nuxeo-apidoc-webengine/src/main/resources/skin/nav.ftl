@@ -30,6 +30,12 @@
     <a class="bundles" href="${Root.path}/${distId}/listBundles">Bundles</a>
   </li>
 
+  <#list Root.getPluginMenu() as plugin>
+    <li <#if navPoint==plugin.getHomeView()>class="selected"</#if> >
+      <a class="plugin ${plugin.getStyleClass()}" href="${Root.path}/${distId}/${plugin.getViewType()}/${plugin.getHomeView()}">${plugin.getLabel()}</a>
+    </li>
+  </#list>
+
 </ul>
 </div>
 

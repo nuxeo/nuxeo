@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -63,7 +64,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public String getContent() {
         String encoding = "unset";
         try {
-            Blob blob = (Blob) doc.getPropertyValue("file:content");
+            Blob blob = (Blob) doc.getPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH);
             if (blob == null) {
                 return "";
             }
@@ -147,7 +148,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     @Override
     public String getTitle() {
         try {
-            return (String) doc.getPropertyValue("dc:title");
+            return (String) doc.getPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH);
         } catch (PropertyException e) {
             log.error("Error while reading title", e);
             return "";

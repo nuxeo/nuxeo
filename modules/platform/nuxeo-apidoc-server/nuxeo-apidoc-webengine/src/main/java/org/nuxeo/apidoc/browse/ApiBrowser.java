@@ -128,13 +128,14 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path("listBundleGroups")
+    @Path(ApiBrowserConstants.LIST_BUNDLEGROUPS)
     public Object getMavenGroups() {
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(
                 getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()));
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
-        return getView("listBundleGroups").arg("tree", tree)
-                                          .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
+        return getView(ApiBrowserConstants.LIST_BUNDLEGROUPS).arg("tree", tree)
+                                                             .arg(Distribution.DIST_ID,
+                                                                     ctx.getProperty(Distribution.DIST_ID));
     }
 
     public Map<String, DocumentationItem> getDescriptions(String targetType) {
@@ -144,16 +145,17 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path("listBundles")
+    @Path(ApiBrowserConstants.LIST_BUNDLES)
     public Object getBundles() {
         List<String> bundleIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getBundleIds();
-        return getView("listBundles").arg("bundleIds", bundleIds)
-                                     .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
+        return getView(ApiBrowserConstants.LIST_BUNDLES).arg("bundleIds", bundleIds)
+                                                        .arg(Distribution.DIST_ID,
+                                                                ctx.getProperty(Distribution.DIST_ID));
     }
 
     @GET
     @Produces("text/html")
-    @Path("listComponents")
+    @Path(ApiBrowserConstants.LIST_COMPONENTS)
     public Object getComponents() {
         List<String> javaComponentIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
                                                             .getJavaComponentIds();
@@ -172,14 +174,15 @@ public class ApiBrowser extends DefaultObject {
         Collections.sort(javaLabels);
         Collections.sort(xmlLabels);
 
-        return getView("listComponents").arg("javaComponents", javaLabels)
-                                        .arg("xmlComponents", xmlLabels)
-                                        .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
+        return getView(ApiBrowserConstants.LIST_COMPONENTS).arg("javaComponents", javaLabels)
+                                                           .arg("xmlComponents", xmlLabels)
+                                                           .arg(Distribution.DIST_ID,
+                                                                   ctx.getProperty(Distribution.DIST_ID));
     }
 
     @GET
     @Produces("text/html")
-    @Path("listServices")
+    @Path(ApiBrowserConstants.LIST_SERVICES)
     public Object getServices() {
         List<String> serviceIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
                                                       .getServiceIds();
@@ -191,8 +194,9 @@ public class ApiBrowser extends DefaultObject {
         }
         Collections.sort(serviceLabels);
 
-        return getView("listServices").arg("services", serviceLabels)
-                                      .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
+        return getView(ApiBrowserConstants.LIST_SERVICES).arg("services", serviceLabels)
+                                                         .arg(Distribution.DIST_ID,
+                                                                 ctx.getProperty(Distribution.DIST_ID));
     }
 
     protected Map<String, String> getRenderedDescriptions(String type) {
@@ -228,7 +232,7 @@ public class ApiBrowser extends DefaultObject {
         List<String> serviceIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
                                                       .getServiceIds();
 
-        Map<String, String> descs = getRenderedDescriptions("NXService");
+        Map<String, String> descs = getRenderedDescriptions(ServiceInfo.TYPE_NAME);
 
         List<ArtifactLabel> serviceLabels = new ArrayList<>();
 
@@ -258,7 +262,7 @@ public class ApiBrowser extends DefaultObject {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
                                                  .getExtensionPointIds();
 
-        Map<String, String> descs = getRenderedDescriptions("NXExtensionPoint");
+        Map<String, String> descs = getRenderedDescriptions(ExtensionPointInfo.TYPE_NAME);
 
         List<ArtifactLabel> labels = new ArrayList<>();
 
@@ -284,16 +288,17 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path("listContributions")
+    @Path(ApiBrowserConstants.LIST_CONTRIBUTIONS)
     public Object getContributions() {
         DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
-        return getView("listContributions").arg("contributions", snapshot.getContributions())
-                                           .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
+        return getView(ApiBrowserConstants.LIST_CONTRIBUTIONS).arg("contributions", snapshot.getContributions())
+                                                              .arg(Distribution.DIST_ID,
+                                                                      ctx.getProperty(Distribution.DIST_ID));
     }
 
     @GET
     @Produces("text/html")
-    @Path("listExtensionPoints")
+    @Path(ApiBrowserConstants.LIST_EXTENSIONPOINTS)
     public Object getExtensionPoints() {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
                                                  .getExtensionPointIds();
@@ -303,8 +308,9 @@ public class ApiBrowser extends DefaultObject {
                                           .collect(Collectors.toList());
 
         Collections.sort(labels);
-        return getView("listExtensionPoints").arg("eps", labels)
-                                             .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
+        return getView(ApiBrowserConstants.LIST_EXTENSIONPOINTS).arg("eps", labels)
+                                                                .arg(Distribution.DIST_ID,
+                                                                        ctx.getProperty(Distribution.DIST_ID));
     }
 
     /**
@@ -328,10 +334,11 @@ public class ApiBrowser extends DefaultObject {
                 javaLabels.add(ArtifactLabel.createLabelFromComponent(ci.getId()));
             }
         }
-        return getView("listComponents").arg("javaComponents", javaLabels)
-                                        .arg("xmlComponents", xmlLabels)
-                                        .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
-                                        .arg("searchFilter", sanitize(fulltext));
+        return getView(ApiBrowserConstants.LIST_COMPONENTS).arg("javaComponents", javaLabels)
+                                                           .arg("xmlComponents", xmlLabels)
+                                                           .arg(Distribution.DIST_ID,
+                                                                   ctx.getProperty(Distribution.DIST_ID))
+                                                           .arg("searchFilter", sanitize(fulltext));
     }
 
     /**
@@ -347,9 +354,10 @@ public class ApiBrowser extends DefaultObject {
         for (NuxeoArtifact item : artifacts) {
             bundleIds.add(item.getId());
         }
-        return getView("listBundles").arg("bundleIds", bundleIds)
-                                     .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
-                                     .arg("searchFilter", sanitize(fulltext));
+        return getView(ApiBrowserConstants.LIST_BUNDLES).arg("bundleIds", bundleIds)
+                                                        .arg(Distribution.DIST_ID,
+                                                                ctx.getProperty(Distribution.DIST_ID))
+                                                        .arg("searchFilter", sanitize(fulltext));
     }
 
     /**
@@ -371,9 +379,10 @@ public class ApiBrowser extends DefaultObject {
         for (String id : serviceIds) {
             serviceLabels.add(ArtifactLabel.createLabelFromService(id));
         }
-        return getView("listServices").arg("services", serviceLabels)
-                                      .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
-                                      .arg("searchFilter", sanitize(fulltext));
+        return getView(ApiBrowserConstants.LIST_SERVICES).arg("services", serviceLabels)
+                                                         .arg(Distribution.DIST_ID,
+                                                                 ctx.getProperty(Distribution.DIST_ID))
+                                                         .arg("searchFilter", sanitize(fulltext));
     }
 
     @POST
@@ -386,9 +395,10 @@ public class ApiBrowser extends DefaultObject {
         List<ArtifactLabel> labels = eps.stream()
                                         .map(ArtifactLabel::createLabelFromExtensionPoint)
                                         .collect(Collectors.toList());
-        return getView("listExtensionPoints").arg("eps", labels)
-                                             .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
-                                             .arg("searchFilter", sanitize(fulltext));
+        return getView(ApiBrowserConstants.LIST_EXTENSIONPOINTS).arg("eps", labels)
+                                                                .arg(Distribution.DIST_ID,
+                                                                        ctx.getProperty(Distribution.DIST_ID))
+                                                                .arg("searchFilter", sanitize(fulltext));
     }
 
     @POST
@@ -397,14 +407,25 @@ public class ApiBrowser extends DefaultObject {
     public Object filterContributions(@FormParam("fulltext") String fulltext) {
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionInfo.TYPE_NAME, fulltext);
-        return getView("listContributions").arg("contributions", artifacts)
-                                           .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
-                                           .arg("searchFilter", sanitize(fulltext));
+        return getView(ApiBrowserConstants.LIST_CONTRIBUTIONS).arg("contributions", artifacts)
+                                                              .arg(Distribution.DIST_ID,
+                                                                      ctx.getProperty(Distribution.DIST_ID))
+                                                              .arg("searchFilter", sanitize(fulltext));
     }
 
     @Path("doc")
     public Resource viewDoc() {
-        return ctx.newObject("documentation");
+        return ctx.newObject(ApiBrowserConstants.VIEW_DOCUMENTATION);
+    }
+
+    /**
+     * Handles navigation to plugin view.
+     *
+     * @since 11.1
+     */
+    @Path("{pluginId}")
+    public Object plugin(@PathParam("pluginId") String pluginId) {
+        return ctx.newObject(pluginId, distributionId, embeddedMode);
     }
 
     @GET
@@ -423,7 +444,7 @@ public class ApiBrowser extends DefaultObject {
 
         org.nuxeo.common.utils.Path target = new org.nuxeo.common.utils.Path(getContext().getRoot().getName());
         target = target.append(distributionId);
-        target = target.append("viewBundle");
+        target = target.append(ApiBrowserConstants.VIEW_BUNDLE);
         target = target.append(bid).append("#Service.").append(serviceId);
         try {
             return Response.seeOther(new URI(target.toString())).build();
@@ -446,7 +467,7 @@ public class ApiBrowser extends DefaultObject {
 
         org.nuxeo.common.utils.Path target = new org.nuxeo.common.utils.Path(getContext().getRoot().getName());
         target = target.append(distributionId);
-        target = target.append("viewComponent");
+        target = target.append(ApiBrowserConstants.VIEW_COMPONENT);
         target = target.append(cid).append("#extensonPoint.").append(epId);
         try {
             return Response.seeOther(new URI(target.toString())).build();
@@ -455,7 +476,7 @@ public class ApiBrowser extends DefaultObject {
         }
     }
 
-    @Path("viewBundle/{bundleId}")
+    @Path(ApiBrowserConstants.VIEW_BUNDLE + "/{bundleId}")
     public Resource viewBundle(@PathParam("bundleId") String bundleId) {
         NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundle", bundleId);
         NuxeoArtifact nxItem = wo.getNxArtifact();
@@ -466,7 +487,7 @@ public class ApiBrowser extends DefaultObject {
         return wo;
     }
 
-    @Path("viewComponent/{componentId}")
+    @Path(ApiBrowserConstants.VIEW_COMPONENT + "/{componentId}")
     public Resource viewComponent(@PathParam("componentId") String componentId) {
         NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("component", componentId);
         NuxeoArtifact nxItem = wo.getNxArtifact();
@@ -477,12 +498,12 @@ public class ApiBrowser extends DefaultObject {
         return wo;
     }
 
-    @Path("viewOperation/{opId}")
+    @Path(ApiBrowserConstants.VIEW_OPERATION + "/{opId}")
     public Resource viewOperation(@PathParam("opId") String opId) {
         return ctx.newObject("operation", opId);
     }
 
-    @Path("viewService/{serviceId}")
+    @Path(ApiBrowserConstants.VIEW_SERVICE + "/{serviceId}")
     public Resource viewService(@PathParam("serviceId") String serviceId) {
         NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("service", serviceId);
         NuxeoArtifact nxItem = wo.getNxArtifact();
@@ -493,7 +514,7 @@ public class ApiBrowser extends DefaultObject {
         return wo;
     }
 
-    @Path("viewExtensionPoint/{epId}")
+    @Path(ApiBrowserConstants.VIEW_EXTENSIONPOINT + "/{epId}")
     public Resource viewExtensionPoint(@PathParam("epId") String epId) {
         NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("extensionPoint", epId);
         NuxeoArtifact nxItem = wo.getNxArtifact();
@@ -504,7 +525,7 @@ public class ApiBrowser extends DefaultObject {
         return wo;
     }
 
-    @Path("viewContribution/{cId}")
+    @Path(ApiBrowserConstants.VIEW_CONTRIBUTION + "/{cId}")
     public Resource viewContribution(@PathParam("cId") String cId) {
         NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("contribution", cId);
         NuxeoArtifact nxItem = wo.getNxArtifact();
@@ -515,7 +536,7 @@ public class ApiBrowser extends DefaultObject {
         return wo;
     }
 
-    @Path("viewBundleGroup/{gId}")
+    @Path(ApiBrowserConstants.VIEW_BUNDLEGROUP + "/{gId}")
     public Resource viewBundleGroup(@PathParam("gId") String gId) {
         NuxeoArtifactWebObject wo = (NuxeoArtifactWebObject) ctx.newObject("bundleGroup", gId);
         NuxeoArtifact nxItem = wo.getNxArtifact();
@@ -569,13 +590,14 @@ public class ApiBrowser extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path("listOperations")
+    @Path(ApiBrowserConstants.LIST_OPERATIONS)
     public Object listOperations() {
         DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
         List<OperationInfo> operations = snap.getOperations();
-        return getView("listOperations").arg("operations", operations)
-                                        .arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
-                                        .arg("hideNav", Boolean.valueOf(false));
+        return getView(ApiBrowserConstants.LIST_OPERATIONS).arg("operations", operations)
+                                                           .arg(Distribution.DIST_ID,
+                                                                   ctx.getProperty(Distribution.DIST_ID))
+                                                           .arg("hideNav", Boolean.valueOf(false));
     }
 
     protected String sanitize(String value) {

@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
@@ -48,7 +49,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", bundleInfo.getBundleId());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, bundleInfo.getBundleId());
         doc.setPropertyValue(PROP_ARTIFACT_GROUP_ID, bundleInfo.getGroupId());
         doc.setPropertyValue(PROP_ARTIFACT_ID, bundleInfo.getArtifactId());
         doc.setPropertyValue(PROP_ARTIFACT_VERSION, bundleInfo.getArtifactVersion());
@@ -58,7 +59,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         if (manifest != null) {
             Blob manifestBlob = Blobs.createBlob(manifest);
             manifestBlob.setFilename("MANIFEST.MF");
-            doc.setPropertyValue("file:content", (Serializable) manifestBlob);
+            doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) manifestBlob);
         }
 
         if (exist) {
@@ -115,7 +116,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public String getManifest() {
         try {
-            Blob mf = safeGet(Blob.class, "file:content", null);
+            Blob mf = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
             if (mf == null) {
                 return "No MANIFEST.MF";
             }

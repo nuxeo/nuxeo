@@ -26,6 +26,7 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
@@ -52,7 +53,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
             doc = session.getDocument(new PathRef(targetPath));
         }
         doc.setPathInfo(containerPath, name);
-        doc.setPropertyValue("dc:title", xpi.getId());
+        doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, xpi.getId());
 
         doc.setPropertyValue(PROP_NAME, xpi.getName());
         doc.setPropertyValue(PROP_EP_ID, xpi.getId());
