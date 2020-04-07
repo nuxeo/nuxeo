@@ -220,4 +220,13 @@ public class TestHtmlSanitizerServiceImpl {
 
         session.save();
     }
+
+    @Test
+    public void sanitizeStyle() {
+        String html = "<span style=\"color:red;invalid:removed\"></span>";
+        String expected = "<span style=\"color:red\"></span>";
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        String res = service.sanitizeString(html, null);
+        assertEquals(expected, res);
+    }
 }

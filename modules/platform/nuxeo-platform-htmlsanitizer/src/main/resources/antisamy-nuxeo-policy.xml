@@ -500,7 +500,6 @@
     <!-- Not valid in base, head, html, meta, param, script, style, and title
       elements. -->
     <attribute name="id" />
-    <attribute name="style" />
     <attribute name="title" />
     <attribute name="class" />
     <!-- Not valid in base, br, frame, frameset, hr, iframe, param, and script
