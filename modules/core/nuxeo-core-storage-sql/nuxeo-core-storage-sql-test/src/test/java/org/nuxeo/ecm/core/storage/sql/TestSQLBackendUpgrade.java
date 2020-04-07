@@ -77,7 +77,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         for (String p : TEST_PROPERTIES) {
             JDBCMapper.testProps.put(p, Boolean.valueOf(p.equals(prop)));
         }
-        repository = newRepository(-1);
+        repository = newRepository();
     }
 
     protected static boolean isLatestVersion(Node node) {

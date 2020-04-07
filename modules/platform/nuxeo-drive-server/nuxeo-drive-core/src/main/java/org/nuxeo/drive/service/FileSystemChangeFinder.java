@@ -66,11 +66,14 @@ public interface FileSystemChangeFinder {
     long getUpperBound();
 
     /**
-     * Returns the upper bound of the range clause in the change query taking into account the clustering delay if
-     * clustering is enabled for at least one of the given repositories.
+     * Returns the upper bound of the range clause in the change query.
      *
      * @since 8.2
+     * @deprecated since 11.3, use {@link #getUpperBound()} instead
      */
-    long getUpperBound(Set<String> repositoryNames);
+    @Deprecated
+    default long getUpperBound(Set<String> repositoryNames) {
+        return getUpperBound();
+    }
 
 }

@@ -46,7 +46,6 @@ mail.from=noreply@nuxeo.com
 
 # Clustering
 repository.clustering.enabled=false
-repository.clustering.delay=1000
 # If clustering is activated, set repository.binary.store=/path/to/some/shared/folder/for/binaries
 repository.binary.store=
 

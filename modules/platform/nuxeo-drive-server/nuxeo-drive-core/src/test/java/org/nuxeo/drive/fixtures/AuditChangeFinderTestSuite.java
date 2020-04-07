@@ -34,7 +34,6 @@ import static org.nuxeo.ecm.core.api.trash.TrashService.Feature.TRASHED_STATE_IS
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -47,7 +46,6 @@ import org.junit.Test;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
 import org.nuxeo.drive.service.FileSystemItemChange;
-import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -1578,13 +1576,4 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         }
     }
 
-    @Test
-    public void testGetUpperBoundsAreEqual() {
-        FileSystemChangeFinder changeFinder = nuxeoDriveManager.getChangeFinder();
-        long upperBound = changeFinder.getUpperBound();
-
-        Map<String, SynchronizationRoots> roots = nuxeoDriveManager.getSynchronizationRoots(session.getPrincipal());
-        long upperBoundForPrinicipal = changeFinder.getUpperBound(roots.keySet());
-        assertEquals(upperBoundForPrinicipal, upperBound);
-    }
 }

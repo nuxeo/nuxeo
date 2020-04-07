@@ -64,10 +64,9 @@ public class TestSQLBackendClustering extends SQLBackendTestCase {
 
         // get two clustered repositories
         repository.close();
-        long DELAY = 500; // ms
-        repository = newRepository(DELAY); // node 1 from XML config
+        repository = newRepository(); // node 1 from XML config
         setNodeId("2");
-        RepositoryImpl repository2 = newRepository(DELAY);
+        RepositoryImpl repository2 = newRepository();
 
         ClusterTestJob r1 = new ClusterTestJob(repository, repository2);
         ClusterTestJob r2 = new ClusterTestJob(repository, repository2);
@@ -195,10 +194,9 @@ public class TestSQLBackendClustering extends SQLBackendTestCase {
 
         // get two clustered repositories
         repository.close();
-        long DELAY = 50; // ms
-        repository = newRepository(DELAY);
+        repository = newRepository();
         setNodeId("2");
-        Repository repository2 = newRepository(DELAY);
+        Repository repository2 = newRepository();
 
         TestSQLBackend.runParallelLocking(nodeId, repository, repository2);
     }

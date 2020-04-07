@@ -58,7 +58,6 @@ public class TestRepositoryDescriptor {
     @Test
     public void testBasic() throws Exception {
         assertEquals("foo", desc.name);
-        assertEquals(1234, desc.getClusteringDelay());
     }
 
     @Test

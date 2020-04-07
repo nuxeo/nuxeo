@@ -243,17 +243,6 @@ public class RepositoryDescriptor {
     @XNode("idType")
     public String idType; // "varchar", "uuid", "sequence"
 
-    @XNode("clustering@delay")
-    private Long clusteringDelay;
-
-    public long getClusteringDelay() {
-        return clusteringDelay == null ? 0 : clusteringDelay.longValue();
-    }
-
-    protected void setClusteringDelay(long delay) {
-        clusteringDelay = Long.valueOf(delay);
-    }
-
     @XNodeList(value = "schema/field", type = ArrayList.class, componentType = FieldDescriptor.class)
     public List<FieldDescriptor> schemaFields = new ArrayList<>(0);
 
@@ -436,7 +425,6 @@ public class RepositoryDescriptor {
         childNameUniqueConstraintEnabled = other.childNameUniqueConstraintEnabled;
         collectionUniqueConstraintEnabled = other.collectionUniqueConstraintEnabled;
         idType = other.idType;
-        clusteringDelay = other.clusteringDelay;
         fulltextAnalyzer = other.fulltextAnalyzer;
         fulltextCatalog = other.fulltextCatalog;
         fulltextDescriptor = new FulltextDescriptor(other.fulltextDescriptor);
@@ -497,9 +485,6 @@ public class RepositoryDescriptor {
         }
         if (other.idType != null) {
             idType = other.idType;
-        }
-        if (other.clusteringDelay != null) {
-            clusteringDelay = other.clusteringDelay;
         }
         for (FieldDescriptor of : other.schemaFields) {
             boolean append = true;
