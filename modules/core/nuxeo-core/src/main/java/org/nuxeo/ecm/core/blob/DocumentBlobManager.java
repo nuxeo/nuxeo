@@ -39,10 +39,23 @@ public interface DocumentBlobManager {
      * Reads a {@link Blob} from storage.
      *
      * @param blobInfo the blob information
+     * @param doc the document to which this blob belongs
+     * @param xpath the xpath of the blob in the document
+     * @return a managed blob
+     * @since 11.1
+     */
+    Blob readBlob(BlobInfo blobInfo, Document doc, String xpath) throws IOException;
+
+    /**
+     * Reads a {@link Blob} from storage.
+     *
+     * @param blobInfo the blob information
      * @param repositoryName the repository to which this blob belongs
      * @return a managed blob
      * @since 7.2
+     * @deprecated since 11.1, use {@link #readBlob(BlobInfo, Document, String)} instead
      */
+    @Deprecated
     Blob readBlob(BlobInfo blobInfo, String repositoryName) throws IOException;
 
     /**

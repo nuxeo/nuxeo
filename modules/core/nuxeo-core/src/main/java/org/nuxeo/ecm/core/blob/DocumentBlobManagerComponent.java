@@ -130,7 +130,12 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
      * provider id.
      */
     @Override
-    public Blob readBlob(BlobInfo blobInfo, String repositoryName) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo, Document doc, String xpath) throws IOException {
+        return readBlob(blobInfo, doc, xpath, doc.getRepositoryName());
+    }
+
+    // helper used while deprecated signature below is kept
+    protected Blob readBlob(BlobInfo blobInfo, Document doc, String xpath, String repositoryName) throws IOException {
         String key = blobInfo.key;
         if (key == null) {
             return null;
@@ -139,7 +144,21 @@ public class DocumentBlobManagerComponent extends DefaultComponent implements Do
         if (blobProvider == null) {
             throw new NuxeoException("No registered blob provider for key: " + key);
         }
-        return blobProvider.readBlob(blobInfo);
+        return blobProvider.readBlob(new BlobInfoContext(blobInfo, doc, xpath));
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The {@link BlobInfo} (coming from the database) contains the blob key, which may or may not be prefixed by a blob
+     * provider id.
+     *
+     * @deprecated since 11.1, use {@link #readBlob(BlobInfo, Document, String)} instead
+     */
+    @Deprecated
+    @Override
+    public Blob readBlob(BlobInfo blobInfo, String repositoryName) throws IOException {
+        return readBlob(blobInfo, null, null, repositoryName);
     }
 
     protected BlobProvider getBlobProvider(String key, String repositoryName) {

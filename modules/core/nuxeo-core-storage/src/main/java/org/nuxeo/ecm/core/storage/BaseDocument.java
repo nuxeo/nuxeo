@@ -425,7 +425,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 parentType = (ComplexType) ((ListType) type).getFieldType();
                 if (i == segments.length - 1) {
                     // last segment
-                    return getValueComplex(state, parentType);
+                    return getValueComplex(state, parentType, xpath);
                 } else {
                     // not last segment
                     continue;
@@ -434,7 +434,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
             if (i == segments.length - 1) {
                 // last segment
-                return state == null ? null : getValueField(state, field);
+                return state == null ? null : getValueField(state, field, xpath);
             } else {
                 // not last segment
                 if (type.isSimpleType()) {
@@ -461,10 +461,11 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         throw new AssertionError("not reached");
     }
 
-    protected Object getValueField(T state, Field field) throws PropertyException {
+    protected Object getValueField(T state, Field field, String xpath) throws PropertyException {
         Type type = field.getType();
         String name = field.getName().getPrefixedName();
         name = internalName(name);
+        String xp = xpath == null ? name : xpath + '/' + name;
         if (type.isSimpleType()) {
             // scalar
             return state.getSingle(name);
@@ -474,7 +475,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             if (childState == null) {
                 return null;
             }
-            return getValueComplex(childState, (ComplexType) type);
+            return getValueComplex(childState, (ComplexType) type, xp);
         } else {
             // array or list
             Type fieldType = ((ListType) type).getFieldType();
@@ -485,8 +486,10 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 // complex list
                 List<T> childStates = getChildAsList(state, name);
                 List<Object> list = new ArrayList<>(childStates.size());
+                int i = 0;
                 for (T childState : childStates) {
-                    Object value = getValueComplex(childState, (ComplexType) fieldType);
+                    String xpi = xp + '/' + i++;
+                    Object value = getValueComplex(childState, (ComplexType) fieldType, xpi);
                     list.add(value);
                 }
                 return list;
@@ -494,24 +497,25 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
     }
 
-    protected Object getValueComplex(T state, ComplexType complexType) throws PropertyException {
+    protected Object getValueComplex(T state, ComplexType complexType, String xpath) throws PropertyException {
         if (TypeConstants.isContentType(complexType)) {
-            return getValueBlob(state);
+            return getValueBlob(state, xpath);
         }
         Map<String, Object> map = new HashMap<>();
         for (Field field : complexType.getFields()) {
             String name = field.getName().getPrefixedName();
-            Object value = getValueField(state, field);
+            String xp = xpath + '/' + name;
+            Object value = getValueField(state, field, xp);
             map.put(name, value);
         }
         return map;
     }
 
-    protected Blob getValueBlob(T state) throws PropertyException {
+    protected Blob getValueBlob(T state, String xpath) throws PropertyException {
         BlobInfo blobInfo = getBlobInfo(state);
         DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
         try {
-            return blobManager.readBlob(blobInfo, getRepositoryName());
+            return blobManager.readBlob(blobInfo, this, xpath);
         } catch (IOException e) {
             throw new BlobNotFoundException("Unable to find blob with key: " + blobInfo.key, e);
         }
@@ -706,18 +710,24 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      * Reads state into a complex property.
      */
     protected void readComplexProperty(T state, ComplexProperty complexProperty) throws PropertyException {
+        readComplexProperty(state, complexProperty, null);
+    }
+
+    protected void readComplexProperty(T state, ComplexProperty complexProperty, String xpath)
+            throws PropertyException {
         if (state == null) {
             complexProperty.init(null);
             return;
         }
         if (complexProperty instanceof BlobProperty) {
-            Blob blob = getValueBlob(state);
+            Blob blob = getValueBlob(state, xpath);
             complexProperty.init((Serializable) blob);
             return;
         }
         for (Property property : complexProperty) {
             String name = property.getField().getName().getPrefixedName();
             name = internalName(name);
+            String xp = xpath == null ? name : xpath + '/' + name;
             Type type = property.getType();
             if (type.isSimpleType()) {
                 // simple property
@@ -726,7 +736,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             } else if (type.isComplexType()) {
                 // complex property
                 T childState = getChild(state, name, type);
-                readComplexProperty(childState, (ComplexProperty) property);
+                readComplexProperty(childState, (ComplexProperty) property, xp);
                 ((ComplexProperty) property).removePhantomFlag();
             } else {
                 ListType listType = (ListType) type;
@@ -741,10 +751,12 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     List<T> childStates = getChildAsList(state, name);
                     // TODO property.init(null) if null children in DBS
                     List<Object> list = new ArrayList<>(childStates.size());
+                    int i = 0;
                     for (T childState : childStates) {
+                        String xpi = xp + '/' + i++;
                         ComplexProperty p = (ComplexProperty) complexProperty.getRoot()
                                                                              .createProperty(property, listField, 0);
-                        readComplexProperty(childState, p);
+                        readComplexProperty(childState, p, xpi);
                         list.add(p.getValue());
                     }
                     property.init((Serializable) list);
@@ -985,7 +997,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
         @Override
         public Blob getBlob() throws PropertyException {
-            return getValueBlob(state);
+            return getValueBlob(state, getXPath());
         }
 
         @Override
