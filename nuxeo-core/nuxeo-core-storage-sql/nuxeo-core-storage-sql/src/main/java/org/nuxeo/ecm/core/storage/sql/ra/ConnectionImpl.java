@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -438,6 +439,11 @@ public class ConnectionImpl implements Session {
     @Override
     public boolean isFulltextStoredInBlob() {
         return getSession().isFulltextStoredInBlob();
+    }
+
+    @Override
+    public Map<String, String> getBinaryFulltext(Serializable id, Document doc) {
+        return getSession().getBinaryFulltext(id, doc);
     }
 
     @Override

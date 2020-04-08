@@ -35,6 +35,8 @@ import org.nuxeo.ecm.core.api.Blob;
  */
 public class DummyBlobProvider extends AbstractBlobProvider {
 
+    protected static final String FROMDOC = "fromdoc";
+
     protected Map<String, byte[]> blobs;
 
     protected AtomicLong counter;
@@ -59,6 +61,35 @@ public class DummyBlobProvider extends AbstractBlobProvider {
     public void close() {
         blobs.clear();
         COUNTERS.remove(counter);
+    }
+
+    @Override
+    public Blob readBlob(BlobInfoContext blobInfoContext) throws IOException {
+        if (blobProviderId.equals(FROMDOC)) {
+            return readBlobFromDoc(blobInfoContext);
+        }
+        return readBlob(blobInfoContext.blobInfo);
+    }
+
+    // special blob provider using the document to resolve the blob
+    protected Blob readBlobFromDoc(BlobInfoContext blobInfoContext) throws IOException {
+        BlobInfo blobInfo = blobInfoContext.blobInfo;
+        String key = blobInfo.key;
+        int colon = key.indexOf(':');
+        String k = colon < 0 ? key : key.substring(colon + 1);
+        // this dummy implementation returns a property's content
+        String content = (String) blobInfoContext.doc.getPropertyValue(k);
+        if (content == null) {
+            throw new IOException("Unknown binary: " + key);
+        }
+        return new SimpleManagedBlob(blobProviderId, blobInfo) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public InputStream getStream() throws IOException {
+                return new ByteArrayInputStream(content.getBytes(UTF_8));
+            }
+        };
     }
 
     @Override

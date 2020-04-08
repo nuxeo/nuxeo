@@ -89,4 +89,9 @@ public class FulltextConfiguration {
         return false;
     }
 
+    /** @since 11.1 */
+    public boolean isFulltextStoredInBlob() {
+        return fulltextStoredInBlob;
+    }
+
 }
