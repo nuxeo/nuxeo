@@ -28,13 +28,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
+import org.nuxeo.lib.stream.log.LogConfig;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
@@ -49,9 +53,9 @@ import org.nuxeo.lib.stream.log.internals.CloseableLogAppender;
 public class ChronicleLogManager extends AbstractLogManager {
     private static final Log log = LogFactory.getLog(ChronicleLogManager.class);
 
-    protected final Path basePath;
+    protected final List<ChronicleLogConfig> configs;
 
-    protected final ChronicleRetentionDuration retention;
+    protected final ChronicleLogConfig defaultConfig;
 
     public ChronicleLogManager(Path basePath) {
         this(basePath, null);
@@ -67,8 +71,32 @@ public class ChronicleLogManager extends AbstractLogManager {
      *            in hours and 'd' in days)
      */
     public ChronicleLogManager(Path basePath, String retentionDuration) {
-        this.basePath = basePath;
-        this.retention = new ChronicleRetentionDuration(retentionDuration);
+        this(Collections.singletonList(
+                new ChronicleLogConfig(true, Collections.emptyList(), basePath, retentionDuration)));
+    }
+
+    public ChronicleLogManager(List<ChronicleLogConfig> configs) {
+        this.configs = configs;
+        this.defaultConfig = findDefaultConfig();
+    }
+
+    protected ChronicleLogConfig findDefaultConfig() {
+        List<ChronicleLogConfig> defaultConfigs = configs.stream()
+                                                         .filter(LogConfig::isDefault)
+                                                         .collect(Collectors.toList());
+        // use the last default config
+        if (defaultConfigs.isEmpty()) {
+            return configs.get(configs.size() - 1);
+        }
+        return defaultConfigs.get(defaultConfigs.size() - 1);
+    }
+
+    protected ChronicleLogConfig getConfig(Name name) {
+        return configs.stream().filter(config -> config.match(name)).findFirst().orElse(defaultConfig);
+    }
+
+    protected ChronicleLogConfig getConfig(Name name, Name group) {
+        return configs.stream().filter(config -> config.match(name, group)).findFirst().orElse(defaultConfig);
     }
 
     protected static void deleteQueueBasePath(Path basePath) {
@@ -98,12 +126,13 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     public String getBasePath() {
-        return basePath.toAbsolutePath().toString();
+        return defaultConfig.getBasePath().toAbsolutePath().toString();
     }
 
     @Override
     public boolean exists(Name name) {
-        try (Stream<Path> paths = Files.list(basePath.resolve(name.getId()))) {
+        ChronicleLogConfig config = getConfig(name);
+        try (Stream<Path> paths = Files.list(config.getBasePath().resolve(name.getId()))) {
             return paths.count() > 0;
         } catch (IOException e) {
             return false;
@@ -113,17 +142,20 @@ public class ChronicleLogManager extends AbstractLogManager {
     @SuppressWarnings("unchecked")
     @Override
     public void create(Name name, int size) {
-        ChronicleLogAppender.create(NO_CODEC, basePath.resolve(name.getId()).toFile(), size, retention).close();
+        ChronicleLogConfig config = getConfig(name);
+        ChronicleLogAppender.create(config, name, size, NO_CODEC).close();
     }
 
     @Override
     protected int getSize(Name name) {
-        return ChronicleLogAppender.partitions(basePath.resolve(name.getId()));
+        ChronicleLogConfig config = getConfig(name);
+        return ChronicleLogAppender.partitions(config.getBasePath().resolve(name.getId()));
     }
 
     @Override
     public boolean delete(Name name) {
-        Path path = basePath.resolve(name.getId());
+        ChronicleLogConfig config = getConfig(name);
+        Path path = config.getBasePath().resolve(name.getId());
         if (path.toFile().isDirectory()) {
             deleteQueueBasePath(path);
             return true;
@@ -133,18 +165,19 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @SuppressWarnings("unchecked")
     protected LogLag getLagForPartition(Name name, int partition, Name group) {
+        ChronicleLogConfig config = getConfig(name);
         long pos;
-        Path path = basePath.resolve(name.getId());
+        Path path = config.getBasePath().resolve(name.getId());
         if (!ChronicleLogOffsetTracker.exists(path, group)) {
             pos = 0;
         } else {
             try (ChronicleLogOffsetTracker offsetTracker = new ChronicleLogOffsetTracker(path.toString(), partition,
-                    group, ChronicleRetentionDuration.disableOf(retention))) {
+                    group, ChronicleRetentionDuration.disableOf(config.getRetention()))) {
                 pos = offsetTracker.readLastCommittedOffset();
             }
         }
-        try (ChronicleLogAppender<Externalizable> appender = ChronicleLogAppender.open(NO_CODEC,
-                basePath.resolve(name.getId()).toFile())) {
+        try (ChronicleLogAppender<Externalizable> appender = ChronicleLogAppender.openWithoutRetention(config, name,
+                NO_CODEC)) {
             // this trigger an acquire/release on cycle
             long end = appender.endOffset(partition);
             if (pos == 0) {
@@ -169,25 +202,32 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @Override
     public String toString() {
-        return "ChronicleLogManager{" + "basePath=" + basePath + ", retention='" + retention + '\'' + '}';
+        return "ChronicleLogManager{" + "configs=" + configs + ", defaultConfig=" + defaultConfig + '}';
     }
 
     @Override
     public List<Name> listAll() {
-        try (Stream<Path> paths = Files.list(basePath)) {
-            return paths.filter(Files::isDirectory)
+        Set<Name> names = new HashSet<>();
+        for (ChronicleLogConfig config : configs) {
+            try (Stream<Path> paths = Files.list(config.getBasePath())) {
+                paths.filter(Files::isDirectory)
                         .map(Path::getFileName)
                         .map(Path::toString)
-                        .map(Name::ofId)
-                        .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Invalid base path: " + basePath, e);
+                     .forEach(name -> names.add(Name.ofId(name)));
+            } catch (IOException e) {
+                log.info("Nothing to list in CQ config: " + config);
+            } catch (IllegalArgumentException e) {
+                log.error("Invalid log name in " + config.getBasePath(), e);
+                throw e;
+            }
         }
+        return new ArrayList<>(names);
     }
 
     @Override
     public List<Name> listConsumerGroups(Name name) {
-        Path logRoot = basePath.resolve(name.getId());
+        ChronicleLogConfig config = getConfig(name);
+        Path logRoot = config.getBasePath().resolve(name.getId());
         if (!logRoot.toFile().exists()) {
             throw new IllegalArgumentException("Unknown Log: " + name);
         }
@@ -206,7 +246,8 @@ public class ChronicleLogManager extends AbstractLogManager {
 
     @Override
     public <M extends Externalizable> CloseableLogAppender<M> createAppender(Name name, Codec<M> codec) {
-        return ChronicleLogAppender.open(codec, basePath.resolve(name.getId()).toFile(), retention);
+        ChronicleLogConfig config = getConfig(name);
+        return ChronicleLogAppender.open(config, name, codec);
     }
 
     @Override
@@ -227,7 +268,6 @@ public class ChronicleLogManager extends AbstractLogManager {
     protected <M extends Externalizable> LogTailer<M> doSubscribe(Name group, Collection<Name> names,
             RebalanceListener listener, Codec<M> codec) {
         throw new UnsupportedOperationException("subscribe is not supported by Chronicle implementation");
-
     }
 
 }

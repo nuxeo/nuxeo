@@ -104,36 +104,37 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     /**
      * Open an existing Log
      */
-    protected ChronicleLogAppender(Codec<M> codec, File basePath, ChronicleRetentionDuration retention) {
+    protected ChronicleLogAppender(ChronicleLogConfig config, Name name, Codec<M> codec, boolean withRetention) {
+        basePath = config.getBasePath().resolve(name.getId()).toFile();
         if (!exists(basePath)) {
-            throw new IllegalArgumentException("Cannot open Chronicle Queues, invalid path: " + basePath);
+            throw new IllegalArgumentException("Cannot open Chronicle Log, invalid path: " + basePath);
         }
         if (log.isDebugEnabled()) {
             log.debug("Opening: " + toString());
         }
         Objects.requireNonNull(codec);
         this.codec = codec;
-        this.basePath = basePath;
-        this.name = Name.ofId(basePath.getName());
+
+        this.name = name;
 
         Path metadataPath = getMetadataPath();
-        Properties metadata;
-        if (metadataPath.toFile().exists()) {
-            metadata = readMetadata(getMetadataPath());
-        } else {
-            // backward compatibility
-            metadata = guessMetadata(retention);
+
+        if (!metadataPath.toFile().exists()) {
+            throw new IllegalArgumentException(
+                    String.format("Cannot open Log %s: no metadata file %s", this.name, metadataPath));
         }
-        ChronicleRetentionDuration storedRetention = new ChronicleRetentionDuration(
-                metadata.getProperty(RETENTION_KEY));
-        if (retention.disable()) {
-            this.retention = ChronicleRetentionDuration.disableOf(storedRetention);
-        } else if (retention.getRollCycle() == storedRetention.getRollCycle()) {
-            this.retention = retention;
+        Properties metadata = readMetadata(getMetadataPath());
+        if (!withRetention) {
+            this.retention = ChronicleRetentionDuration.disableOf(config.getRetention());
         } else {
-            // we can change the number of retention cycles but not the roll cycle
-            throw new IllegalArgumentException(String.format("Cannot open Log %s: expecting retention: %s got: %s",
-                    name, storedRetention, retention));
+            ChronicleRetentionDuration storedRetention = new ChronicleRetentionDuration(
+                    metadata.getProperty(RETENTION_KEY));
+            if (config.getRetention().getRollCycle() != storedRetention.getRollCycle()) {
+                // we can change the number of retention cycles but not the roll cycle
+                throw new IllegalArgumentException(String.format("Cannot open Log %s: expecting retention: %s got: %s",
+                        this.name, storedRetention, config.getRetention()));
+            }
+            this.retention = config.getRetention();
         }
         this.nbPartitions = Integer.parseInt(metadata.getProperty(PARTITIONS_KEY));
         this.blockSize = Integer.parseInt(metadata.getProperty(BLOCK_SIZE_KEY));
@@ -144,10 +145,11 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     /**
      * Create a new Log
      */
-    protected ChronicleLogAppender(Codec<M> codec, File basePath, int size, ChronicleRetentionDuration retention) {
+    protected ChronicleLogAppender(ChronicleLogConfig config, Name name, int size, Codec<M> codec) {
         if (size <= 0) {
             throw new IllegalArgumentException("Number of partitions must be > 0");
         }
+        basePath = config.getBasePath().resolve(name.getId()).toFile();
         if (size > MAX_PARTITIONS) {
             throw new IllegalArgumentException(
                     String.format("Cannot create more than: %d partitions for log: %s, requested: %d", MAX_PARTITIONS,
@@ -162,10 +164,9 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         Objects.requireNonNull(codec);
         this.nbPartitions = size;
         this.codec = codec;
-        this.name = Name.ofId(basePath.getName());
-        this.basePath = basePath;
-        this.retention = retention;
+        this.retention = config.getRetention();
         this.partitions = new ArrayList<>(nbPartitions);
+        this.name = name;
         this.blockSize = CQ_BLOCK_SIZE;
         if (log.isDebugEnabled()) {
             log.debug("Creating: " + toString());
@@ -176,7 +177,7 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
 
     protected void initPartitions(boolean create) {
         for (int i = 0; i < nbPartitions; i++) {
-            Path partitionPath = Paths.get(getBasePath(), String.format("%s%02d", PARTITION_PREFIX, i));
+            Path partitionPath = basePath.toPath().resolve(String.format("%s%02d", PARTITION_PREFIX, i));
             if (create) {
                 try {
                     Files.createDirectories(partitionPath);
@@ -233,14 +234,6 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
         return props;
     }
 
-    protected Properties guessMetadata(ChronicleRetentionDuration retention) {
-        Properties props = new Properties();
-        props.setProperty(PARTITIONS_KEY, Integer.toString(discoverPartitions(basePath.toPath())));
-        props.setProperty(RETENTION_KEY, retention.getRetention());
-        props.setProperty(BLOCK_SIZE_KEY, Integer.toString(CQ_BLOCK_SIZE));
-        return props;
-    }
-
     protected static boolean exists(File basePath) {
         // noinspection ConstantConditions
         return basePath.isDirectory() && basePath.list().length > 0;
@@ -249,31 +242,22 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
     /**
      * Create a new log
      */
-    public static <M extends Externalizable> ChronicleLogAppender<M> create(Codec<M> codec, File basePath, int size,
-            ChronicleRetentionDuration retention) {
-        return new ChronicleLogAppender<>(codec, basePath, size, retention);
-    }
-
-    /**
-     * Create a new log.
-     */
-    public static <M extends Externalizable> ChronicleLogAppender<M> create(Codec<M> codec, File basePath, int size) {
-        return new ChronicleLogAppender<>(codec, basePath, size, ChronicleRetentionDuration.NONE);
+    public static <M extends Externalizable> ChronicleLogAppender<M> create(ChronicleLogConfig config, Name name,
+            int size, Codec<M> codec) {
+        return new ChronicleLogAppender<>(config, name, size, codec);
     }
 
     /**
      * Open an existing log.
      */
-    public static <M extends Externalizable> ChronicleLogAppender<M> open(Codec<M> codec, File basePath) {
-        return new ChronicleLogAppender<>(codec, basePath, ChronicleRetentionDuration.NONE);
+    public static <M extends Externalizable> ChronicleLogAppender<M> open(ChronicleLogConfig config, Name name,
+            Codec<M> codec) {
+        return new ChronicleLogAppender<>(config, name, codec, true);
     }
 
-    /**
-     * Open an existing log.
-     */
-    public static <M extends Externalizable> ChronicleLogAppender<M> open(Codec<M> codec, File basePath,
-            ChronicleRetentionDuration retention) {
-        return new ChronicleLogAppender<>(codec, basePath, retention);
+    public static <M extends Externalizable> ChronicleLogAppender<M> openWithoutRetention(ChronicleLogConfig config,
+            Name name, Codec<M> codec) {
+        return new ChronicleLogAppender<>(config, name, codec, false);
     }
 
     public String getBasePath() {
@@ -396,11 +380,10 @@ public class ChronicleLogAppender<M extends Externalizable> implements Closeable
 
     public static int partitions(Path basePath) {
         Path metadataPath = basePath.resolve(METADATA_FILE);
-        if (metadataPath.toFile().exists()) {
-            return Integer.parseInt(readMetadata(metadataPath).getProperty(PARTITIONS_KEY));
+        if (!metadataPath.toFile().exists()) {
+            throw new IllegalArgumentException("No CQ file on " + basePath);
         }
-        // backward compatibility before metadata file
-        return discoverPartitions(basePath);
+        return Integer.parseInt(readMetadata(metadataPath).getProperty(PARTITIONS_KEY));
     }
 
     public static int discoverPartitions(Path basePath) {
