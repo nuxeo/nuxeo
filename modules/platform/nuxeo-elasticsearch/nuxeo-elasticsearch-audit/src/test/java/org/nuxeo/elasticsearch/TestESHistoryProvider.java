@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.util.Calendar;
@@ -201,7 +202,7 @@ public class TestESHistoryProvider {
         createdEntry.setDocPath(doc.getPathAsString());
         createdEntry.setRepositoryId("test");
         Map<String, ExtendedInfo> extendedInfos = new HashMap<>();
-        extendedInfos.put("reason",new ExtendedInfoImpl.StringInfo("test"));
+        extendedInfos.put("reason", new ExtendedInfoImpl.StringInfo("test"));
         createdEntry.setExtendedInfos(extendedInfos);
 
         auditLogger.addLogEntries(List.of(createdEntry));
@@ -411,21 +412,20 @@ public class TestESHistoryProvider {
         searchDoc.setPathInfo("/", "auditsearch");
         searchDoc = session.createDocument(searchDoc);
 
-        PageProvider<LogEntry> pageProvider;
         searchDoc.setPropertyValue("basicauditsearch:eventIds", null);
         searchDoc.setPropertyValue("basicauditsearch:eventCategories", null);
         searchDoc.setPropertyValue("basicauditsearch:startDate", null);
         searchDoc.setPropertyValue("basicauditsearch:endDate", null);
 
-        //test with doc
-        pageProvider = getPageProvider("FIXED_PART_DOCUMENT_HISTORY_PROVIDER", 30, 0, doc);
+        // test with doc
+        PageProvider<LogEntry> pageProvider = getPageProvider("FIXED_PART_DOCUMENT_HISTORY_PROVIDER", 30, 0, doc);
         pageProvider.setSearchDocumentModel(searchDoc);
-        assertEquals(1,pageProvider.getCurrentPage().size());
+        assertEquals(1, pageProvider.getCurrentPage().size());
 
-        //test with proxy to check that the doc uuid is correctly set in the fixed part
+        // test with proxy to check that the doc uuid is correctly set in the fixed part
         pageProvider = getPageProvider("FIXED_PART_DOCUMENT_HISTORY_PROVIDER", 30, 0, proxy);
         pageProvider.setSearchDocumentModel(searchDoc);
-        assertEquals(0,pageProvider.getCurrentPage().size());
+        assertTrue(pageProvider.getCurrentPage().isEmpty());
     }
 
     protected PageProvider<LogEntry> getPageProvider(String name, int pageSize, int currentPage, Object... parameters) {
