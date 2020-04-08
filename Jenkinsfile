@@ -435,18 +435,19 @@ pipeline {
           ----------------------------------------
           Run "dev" functional tests
           ----------------------------------------"""
-          runFunctionalTests('ftests')
+          script {
+            try {
+              runFunctionalTests('ftests')
+              setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
+            } catch (err) {
+              setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
+            }
+          }
         }
       }
       post {
         always {
           junit testResults: '**/target/failsafe-reports/*.xml'
-        }
-        success {
-          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'FAILURE')
         }
       }
     }
