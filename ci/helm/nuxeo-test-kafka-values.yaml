@@ -1,0 +1,28 @@
+kafka:
+  podLabels:
+    branch: $BRANCH_NAME
+    resource: pod
+    team: platform
+    usage: utests
+  tolerations:
+    - key: team
+      operator: Equal
+      value: platform
+      effect: NoSchedule
+  nodeSelector:
+    team: platform
+  zookeeper:
+    podLabels:
+      branch: $BRANCH_NAME
+      resource: pod
+      team: platform
+      usage: utests
+    tolerations:
+      - key: team
+        operator: Equal
+        value: platform
+        effect: NoSchedule
+    nodeSelector:
+      team: platform
+tags:
+  kafka: true

@@ -1,5 +1,10 @@
 elasticsearch:
   client:
+    podLabels:
+      branch: $BRANCH_NAME
+      resource: pod
+      team: platform
+      usage: utests
     tolerations:
       - key: team
         operator: Equal
@@ -8,6 +13,11 @@ elasticsearch:
     nodeSelector:
       team: platform
   master:
+    podLabels:
+      branch: $BRANCH_NAME
+      resource: pod
+      team: platform
+      usage: utests
     tolerations:
       - key: team
         operator: Equal
@@ -16,6 +26,11 @@ elasticsearch:
     nodeSelector:
       team: platform
   data:
+    podLabels:
+      branch: $BRANCH_NAME
+      resource: pod
+      team: platform
+      usage: utests
     tolerations:
       - key: team
         operator: Equal
