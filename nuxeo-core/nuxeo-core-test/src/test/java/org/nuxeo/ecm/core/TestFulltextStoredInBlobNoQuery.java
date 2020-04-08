@@ -20,6 +20,8 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
@@ -34,6 +36,7 @@ import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.test.FulltextStoredInBlobFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -62,10 +65,13 @@ public class TestFulltextStoredInBlobNoQuery extends TestFulltextAbstractNoQuery
     public void testBinaryText() throws IOException {
         super.testBinaryText();
 
+        Document doc = mock(Document.class);
+        when(doc.getRepositoryName()).thenReturn(session.getRepositoryName());
+
         // check that there is a blob with the fulltext
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = FULLTEXT_BLOB_PROVIDER + ":" + BINARY_TEXT_MD5;
-        Blob blob = documentBlobManager.readBlob(blobInfo, session.getRepositoryName());
+        Blob blob = documentBlobManager.readBlob(blobInfo, doc, "ecm:fulltextBinary");
         assertEquals(BINARY_TEXT, blob.getString());
 
         // check that the blob is in its own blob provider
@@ -79,7 +85,7 @@ public class TestFulltextStoredInBlobNoQuery extends TestFulltextAbstractNoQuery
         BinaryManagerStatus status = documentBlobManager.garbageCollectBinaries(true);
         assertEquals(2, status.numBinaries); // main blob + fulltext blob
         assertEquals(0, status.numBinariesGC);
-        blob = documentBlobManager.readBlob(blobInfo, session.getRepositoryName());
+        blob = documentBlobManager.readBlob(blobInfo, doc, "ecm:fulltextBinary");
         assertEquals(BINARY_TEXT, blob.getString());
 
         // remove doc
@@ -93,7 +99,7 @@ public class TestFulltextStoredInBlobNoQuery extends TestFulltextAbstractNoQuery
         assertEquals(0, status.numBinaries);
         assertEquals(2, status.numBinariesGC);
         try {
-            blob = documentBlobManager.readBlob(blobInfo, session.getRepositoryName());
+            blob = documentBlobManager.readBlob(blobInfo, doc, "ecm:fulltextBinary");
             // for BlobStore-derived implementations an empty stream is returned
             assertNotNull(blob);
             assertEquals("", blob.getString());

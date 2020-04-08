@@ -145,6 +145,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
 import org.nuxeo.ecm.core.storage.State;
@@ -1548,16 +1549,23 @@ public class DBSSession implements Session<QueryFilter> {
         State state = transaction.getStateForRead(id);
         String fulltext = (String) state.get(KEY_FULLTEXT_BINARY);
         if (fulltextStoredInBlob && fulltext != null) {
-            // fulltext is actually the blob  key
-            // now retrieve the actual fulltext from the blob content
-            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-            try {
-                BlobInfo blobInfo = new BlobInfo();
-                blobInfo.key = fulltext;
-                Blob blob = blobManager.readBlob(blobInfo, getRepositoryName());
-                fulltext = blob.getString();
-            } catch (IOException e) {
-                throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
+            DBSDocument doc = getDocument(id);
+            if (doc == null) {
+                // could not find doc (shouldn't happen)
+                fulltext = null;
+            } else {
+                // fulltext is actually the blob key
+                // now retrieve the actual fulltext from the blob content
+                DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+                try {
+                    BlobInfo blobInfo = new BlobInfo();
+                    blobInfo.key = fulltext;
+                    String xpath = BaseDocument.FULLTEXT_BINARYTEXT_PROP;
+                    Blob blob = blobManager.readBlob(blobInfo, doc, xpath);
+                    fulltext = blob.getString();
+                } catch (IOException e) {
+                    throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
+                }
             }
         }
         return Collections.singletonMap(BINARY_FULLTEXT_MAIN_KEY, fulltext);

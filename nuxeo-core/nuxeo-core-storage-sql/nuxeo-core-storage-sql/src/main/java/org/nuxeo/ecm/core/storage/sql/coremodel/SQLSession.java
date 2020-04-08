@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
 import org.nuxeo.ecm.core.api.VersionModel;
+import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -934,7 +935,15 @@ public class SQLSession implements Session<QueryFilter> {
 
     @Override
     public Map<String, String> getBinaryFulltext(String id) {
-        return session.getBinaryFulltext(idFromString(id));
+        Document doc;
+        FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
+        if (fulltextConfiguration != null && fulltextConfiguration.isFulltextStoredInBlob()) {
+            // only in this case, the doc is needed to retrieve the blob
+            doc = getDocumentById(id);
+        } else {
+            doc = null;
+        }
+        return session.getBinaryFulltext(idFromString(id), doc);
     }
 
     @Override

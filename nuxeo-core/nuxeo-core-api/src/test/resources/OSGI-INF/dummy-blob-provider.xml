@@ -12,5 +12,8 @@
     <blobprovider name="dummy">
       <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
     </blobprovider>
+    <blobprovider name="fromdoc">
+      <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
+    </blobprovider>
   </extension>
 </component>

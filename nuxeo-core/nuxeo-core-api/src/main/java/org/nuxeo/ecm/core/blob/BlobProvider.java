@@ -101,6 +101,17 @@ public interface BlobProvider {
     /**
      * Reads a {@link Blob} from storage.
      *
+     * @param blobInfoContext the blob information context
+     * @return the blob
+     * @since 11.1
+     */
+    default Blob readBlob(BlobInfoContext blobInfoContext) throws IOException {
+        return readBlob(blobInfoContext.blobInfo);
+    }
+
+    /**
+     * Reads a {@link Blob} from storage.
+     *
      * @param blobInfo the blob information
      * @return the blob
      */
