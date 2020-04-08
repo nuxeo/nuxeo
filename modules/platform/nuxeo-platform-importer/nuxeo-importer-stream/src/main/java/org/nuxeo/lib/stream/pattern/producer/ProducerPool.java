@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.Message;
 import org.nuxeo.lib.stream.pattern.consumer.internals.AbstractCallablePool;
 import org.nuxeo.lib.stream.pattern.producer.internals.ProducerRunner;
@@ -75,7 +76,7 @@ public class ProducerPool<M extends Message> extends AbstractCallablePool<Produc
 
     @Override
     protected Callable<ProducerStatus> getCallable(int i) {
-        return new ProducerRunner<>(factory, manager.getAppender(logName, codec), i);
+        return new ProducerRunner<>(factory, manager.getAppender(Name.ofUrn(logName), codec), i);
     }
 
     @Override

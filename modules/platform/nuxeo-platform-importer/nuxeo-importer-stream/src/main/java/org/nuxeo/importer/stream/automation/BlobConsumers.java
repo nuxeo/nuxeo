@@ -43,6 +43,7 @@ import org.nuxeo.importer.stream.message.BlobInfoMessage;
 import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
@@ -138,11 +139,11 @@ public class BlobConsumers {
     protected BlobInfoWriter getBlobInfoWriter(LogManager managerBlobInfo) {
         initBlobInfoMQ(managerBlobInfo);
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
-        return new LogBlobInfoWriter(managerBlobInfo.getAppender(logBlobInfoName, blobInfoCodec));
+        return new LogBlobInfoWriter(managerBlobInfo.getAppender(Name.ofUrn(logBlobInfoName), blobInfoCodec));
     }
 
     protected void initBlobInfoMQ(LogManager manager) {
-        manager.createIfNotExists(logBlobInfoName, 1);
+        manager.createIfNotExists(Name.ofUrn(logBlobInfoName), 1);
     }
 
     protected short getNbThreads() {

@@ -21,10 +21,12 @@ package org.nuxeo.importer.stream.tests.importer;
 import java.util.Map;
 
 import org.junit.Before;
+import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
  * @since 9.2
  */
+@Deploy("org.nuxeo.importer.stream:test-stream-cq-contrib.xml")
 public class TestAutomationChronicle extends TestAutomation {
 
     protected final static String OS = System.getProperty("os.name").toLowerCase();

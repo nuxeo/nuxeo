@@ -40,6 +40,7 @@ import org.nuxeo.importer.stream.message.BlobMessage;
 import org.nuxeo.importer.stream.producer.FileBlobMessageProducerFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
@@ -83,7 +84,7 @@ public class FileBlobProducers {
     public void run() throws OperationException {
         checkAccess(ctx);
         LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
-        manager.createIfNotExists(logName, getLogSize());
+        manager.createIfNotExists(Name.ofUrn(logName), getLogSize());
         Codec<BlobMessage> codec = StreamImporters.getBlobCodec();
         try (ProducerPool<BlobMessage> producers = new ProducerPool<>(logName, manager, codec,
                 new FileBlobMessageProducerFactory(getListFile(), getBasePath(), getNbBlobs()),

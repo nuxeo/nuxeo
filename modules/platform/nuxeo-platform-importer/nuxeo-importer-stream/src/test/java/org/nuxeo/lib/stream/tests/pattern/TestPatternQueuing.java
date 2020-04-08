@@ -35,6 +35,7 @@ import org.junit.rules.TestName;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.KeyValueMessage;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
@@ -44,7 +45,7 @@ import org.nuxeo.lib.stream.tests.pattern.consumer.IdMessageFactory;
 public abstract class TestPatternQueuing {
     protected static final Log log = LogFactory.getLog(TestPatternQueuing.class);
 
-    protected String logName = "logName";
+    protected Name logName = Name.ofUrn("logName");
 
     @Rule
     public TestName name = new TestName();
@@ -55,7 +56,7 @@ public abstract class TestPatternQueuing {
 
     @Before
     public void initManager() throws Exception {
-        logName = name.getMethodName();
+        logName = Name.ofUrn(name.getMethodName());
         if (manager == null) {
             manager = createManager();
         }
@@ -80,7 +81,7 @@ public abstract class TestPatternQueuing {
 
         manager.createIfNotExists(logName, LOG_SIZE);
 
-        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName, manager, IdMessageFactory.NOOP,
+        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName.getUrn(), manager, IdMessageFactory.NOOP,
                 ConsumerPolicy.UNBOUNDED);
         // run the consumers pool
         CompletableFuture<List<ConsumerStatus>> consumersFuture = consumers.start();
@@ -107,7 +108,7 @@ public abstract class TestPatternQueuing {
     public void endWithPoisonPillCommitTheBatch() throws Exception {
         final int LOG_SIZE = 1;
         manager.createIfNotExists(logName, LOG_SIZE);
-        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName, manager, IdMessageFactory.NOOP,
+        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName.getUrn(), manager, IdMessageFactory.NOOP,
                 ConsumerPolicy.UNBOUNDED);
 
         // run the consumers pool
@@ -130,7 +131,7 @@ public abstract class TestPatternQueuing {
     public void killConsumers() throws Exception {
         final int LOG_SIZE = 2;
         manager.createIfNotExists(logName, LOG_SIZE);
-        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName, manager, IdMessageFactory.NOOP,
+        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName.getUrn(), manager, IdMessageFactory.NOOP,
                 ConsumerPolicy.UNBOUNDED);
         // run the consumers pool
         CompletableFuture<List<ConsumerStatus>> future = consumers.start();
@@ -166,7 +167,7 @@ public abstract class TestPatternQueuing {
         // reset manager
         resetManager();
 
-        consumers = new ConsumerPool<>(logName, manager, IdMessageFactory.NOOP, ConsumerPolicy.UNBOUNDED);
+        consumers = new ConsumerPool<>(logName.getUrn(), manager, IdMessageFactory.NOOP, ConsumerPolicy.UNBOUNDED);
         // run the consumers pool again
         future = consumers.start();
         appender = manager.getAppender(logName);
@@ -184,7 +185,7 @@ public abstract class TestPatternQueuing {
         final int LOG_SIZE = 2;
         manager.createIfNotExists(logName, LOG_SIZE);
 
-        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName, manager, IdMessageFactory.NOOP,
+        ConsumerPool<KeyValueMessage> consumers = new ConsumerPool<>(logName.getUrn(), manager, IdMessageFactory.NOOP,
                 ConsumerPolicy.UNBOUNDED);
         // run the consumers pool
         CompletableFuture<List<ConsumerStatus>> future = consumers.start();
@@ -220,7 +221,7 @@ public abstract class TestPatternQueuing {
         assertEquals(2, ret.stream().filter(r -> r.fail).count());
 
         // run the consumers pool again
-        consumers = new ConsumerPool<>(logName, manager, IdMessageFactory.NOOP, ConsumerPolicy.UNBOUNDED);
+        consumers = new ConsumerPool<>(logName.getUrn(), manager, IdMessageFactory.NOOP, ConsumerPolicy.UNBOUNDED);
         future = consumers.start();
         // terminate the consumers with pills
         // WARN: this will not work with subscribe if the partition are unbalanced

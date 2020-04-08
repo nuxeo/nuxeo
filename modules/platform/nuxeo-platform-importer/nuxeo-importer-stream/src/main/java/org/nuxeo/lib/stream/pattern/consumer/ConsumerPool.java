@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 import org.nuxeo.lib.stream.pattern.Message;
 import org.nuxeo.lib.stream.pattern.consumer.internals.AbstractCallablePool;
@@ -69,7 +70,7 @@ public class ConsumerPool<M extends Message> extends AbstractCallablePool<Consum
 
     public ConsumerPool(String logName, LogManager manager, Codec<M> codec, ConsumerFactory<M> factory,
             ConsumerPolicy policy) {
-        super(computeNbThreads((short) manager.getAppender(logName).size(), policy.getMaxThreads()));
+        super(computeNbThreads((short) manager.getAppender(Name.ofUrn(logName)).size(), policy.getMaxThreads()));
         this.logName = logName;
         this.manager = manager;
         this.codec = codec;
@@ -90,8 +91,8 @@ public class ConsumerPool<M extends Message> extends AbstractCallablePool<Consum
         return maxConcurrency;
     }
 
-    public String getConsumerGroupName() {
-        return policy.getName();
+    public Name getConsumerGroupName() {
+        return Name.ofUrn(policy.getName());
     }
 
     @Override
@@ -116,7 +117,8 @@ public class ConsumerPool<M extends Message> extends AbstractCallablePool<Consum
     }
 
     protected List<List<LogPartition>> getDefaultAssignments() {
-        Map<String, Integer> streams = Collections.singletonMap(logName, manager.getAppender(logName).size());
+        Map<String, Integer> streams = Collections.singletonMap(logName,
+                manager.getAppender(Name.ofUrn(logName)).size());
         return KafkaUtils.roundRobinAssignments(getNbThreads(), streams);
     }
 

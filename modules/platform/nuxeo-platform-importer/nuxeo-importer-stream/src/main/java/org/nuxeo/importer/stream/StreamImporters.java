@@ -21,11 +21,11 @@ public final class StreamImporters {
 
     public static final String DEFAULT_LOG_CONFIG = "default";
 
-    public static final String DEFAULT_LOG_BLOB_NAME = "import-blob";
+    public static final String DEFAULT_LOG_BLOB_NAME = "import/blob";
 
-    public static final String DEFAULT_LOG_BLOB_INFO_NAME = "import-blob-info";
+    public static final String DEFAULT_LOG_BLOB_INFO_NAME = "import/blob-info";
 
-    public static final String DEFAULT_LOG_DOC_NAME = "import-doc";
+    public static final String DEFAULT_LOG_DOC_NAME = "import/doc";
 
     public static Codec<BlobMessage> getBlobCodec() {
         return Framework.getService(CodecService.class).getCodec(DEFAULT_CODEC, BlobMessage.class);

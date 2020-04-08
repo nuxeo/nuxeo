@@ -30,6 +30,12 @@
         <property name="max.poll.records">25</property>
       </consumer>
     </kafkaConfig>
-
   </extension>
+
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig name="kafka" type="kafka" default="true">
+      <option name="config">default</option>
+    </logConfig>
+  </extension>
+
 </component>

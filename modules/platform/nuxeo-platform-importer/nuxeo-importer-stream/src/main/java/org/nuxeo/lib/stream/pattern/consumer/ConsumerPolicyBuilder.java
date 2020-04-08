@@ -108,7 +108,7 @@ public class ConsumerPolicyBuilder {
      * Consumer group name.
      */
     public ConsumerPolicyBuilder name(String name) {
-        this.name = name;
+        this.name = name.replace(".", "/");
         return this;
     }
 

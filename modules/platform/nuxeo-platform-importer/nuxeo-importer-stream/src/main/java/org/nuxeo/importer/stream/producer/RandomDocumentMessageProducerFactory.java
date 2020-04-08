@@ -27,6 +27,7 @@ import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.producer.ProducerFactory;
 import org.nuxeo.lib.stream.pattern.producer.ProducerIterator;
 
@@ -89,7 +90,7 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
             // read only on the first partition
             Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
             LogTailer<BlobInfoMessage> tailer = manager.createTailer(getGroupName(producerId),
-                    Collections.singleton(LogPartition.of(logName, 0)), blobInfoCodec);
+                    Collections.singleton(LogPartition.of(Name.ofUrn(logName), 0)), blobInfoCodec);
             fetcher = new RandomLogBlobInfoFetcher(tailer);
         }
         return new RandomDocumentMessageProducer(producerId, nbDocuments, lang, fetcher) // NOSONAR (factory)
@@ -98,8 +99,8 @@ public class RandomDocumentMessageProducerFactory implements ProducerFactory<Doc
                                                                                                  countFolderAsDocument);
     }
 
-    protected String getGroupName(int producerId) {
-        return "RandomDocumentMessageProducer." + producerId;
+    protected Name getGroupName(int producerId) {
+        return Name.ofUrn("importer/RandomDocumentMessageProducer-" + producerId);
     }
 
 }

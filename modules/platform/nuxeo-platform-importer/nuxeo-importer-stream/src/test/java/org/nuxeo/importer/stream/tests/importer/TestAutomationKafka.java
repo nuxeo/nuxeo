@@ -27,7 +27,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 /**
  * @since 9.2
  */
-@Deploy("org.nuxeo.importer.stream:test-kafka-config-contrib.xml")
+@Deploy("org.nuxeo.importer.stream:test-stream-kafka-contrib.xml")
 public class TestAutomationKafka extends TestAutomation {
 
     @BeforeClass

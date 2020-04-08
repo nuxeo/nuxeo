@@ -35,6 +35,7 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogPartition;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.log.RebalanceException;
 import org.nuxeo.lib.stream.log.RebalanceListener;
 import org.nuxeo.lib.stream.pattern.Message;
@@ -127,10 +128,10 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
     protected LogTailer<M> createTailer(LogManager manager, Codec<M> codec, List<LogPartition> defaultAssignments) {
         LogTailer<M> tailer;
         if (manager.supportSubscribe()) {
-            Set<String> names = defaultAssignments.stream().map(LogPartition::name).collect(Collectors.toSet());
-            tailer = manager.subscribe(policy.getName(), names, this, codec);
+            Set<Name> names = defaultAssignments.stream().map(LogPartition::name).collect(Collectors.toSet());
+            tailer = manager.subscribe(Name.ofUrn(policy.getName()), names, this, codec);
         } else {
-            tailer = manager.createTailer(policy.getName(), defaultAssignments, codec);
+            tailer = manager.createTailer(Name.ofUrn(policy.getName()), defaultAssignments, codec);
         }
         return tailer;
     }
