@@ -14,7 +14,7 @@
 //
 // Contributors:
 //     Florent Guillaume
-// v1.0
+// v1.1
 
 // This script attempts to create a unique index on ecm:id.
 // It will fail if the database has duplicates.
@@ -44,9 +44,10 @@ coll.getIndexes().forEach(function(idx) {
 // we don't want to remove the existing index if there are duplicates,
 // because it will be useful to de-duplicate
 print("Starting scan for duplicate ids...")
-var agg = coll.aggregate(
+var agg = coll.aggregate([
   {"$group": {"_id": "$ecm:id", "count": {"$sum": 1}}},
-	{"$match": {"count": {"$gt": 1}}})
+  {"$match": {"count": {"$gt": 1}}}],
+  {allowDiskUse: true})
 if (agg.hasNext()) {
   print("Collection has duplicates, the first one is ecm:id = " + agg.next()["_id"])
   print("Unique index not created")

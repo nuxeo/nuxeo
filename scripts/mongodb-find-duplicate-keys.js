@@ -14,7 +14,7 @@
 //
 // Contributors:
 //     Florent Guillaume
-// v1.0
+// v1.1
 
 // This script attempts to remove identical documents with duplicate ecm:id.
 
@@ -75,10 +75,11 @@ var nbDocumentsRemoved = 0
 var nbResolvedDupes = 0
 var firstUnresolvedShown = false
 print("Starting scan for duplicate ids...")
-var agg = coll.aggregate(
+var agg = coll.aggregate([
   {"$group": {"_id": "$ecm:id", "count": {"$sum": 1}, objectids: {$addToSet: "$_id"}}},
-	{"$match": {"count": {"$gt": 1}}},
-	{"$project": {"ecm:id": "$_id", "objectids": "$objectids", "_id": 0}})
+  {"$match": {"count": {"$gt": 1}}},
+  {"$project": {"ecm:id": "$_id", "objectids": "$objectids", "_id": 0}}],
+  {allowDiskUse: true})
 agg.forEach(function(group) {
     nbDupes++
     var docs = coll.find({"_id": {"$in": group.objectids}}).toArray()
