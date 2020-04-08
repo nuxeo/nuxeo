@@ -41,6 +41,12 @@ public class KafkaConfigDescriptor implements Descriptor {
         protected Properties properties = new Properties();
     }
 
+    @XObject("admin")
+    public static class AdminProperties {
+        @XNodeMap(value = "property", key = "@name", type = Properties.class, componentType = String.class)
+        protected Properties properties = new Properties();
+    }
+
     @XNode("@name")
     public String name;
 
@@ -58,6 +64,9 @@ public class KafkaConfigDescriptor implements Descriptor {
 
     @XNode("consumer")
     public ConsumerProperties consumerProperties = new ConsumerProperties();
+
+    @XNode("admin")
+    public AdminProperties adminProperties = new AdminProperties();
 
     @Override
     public String getId() {

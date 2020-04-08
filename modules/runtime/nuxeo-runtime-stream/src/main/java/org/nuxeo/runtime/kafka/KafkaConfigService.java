@@ -35,20 +35,12 @@ public interface KafkaConfigService {
     Set<String> listConfigNames();
 
     /**
-     * Returns the Zookeeper servers for a configuration.
-     *
-     * @deprecated since 10.2 NXP-24634: we don't want to depend anymore on Zookeeper
-     */
-    @Deprecated
-    String getZkServers(String configName);
-
-    /**
      * Returns the Kafka producer properties for a configuration.
      */
     Properties getProducerProperties(String configName);
 
     /**
-     * Returns the kafka consumer properties for a configuration.
+     * Returns the Kafka consumer properties for a configuration.
      */
     Properties getConsumerProperties(String configName);
 
@@ -56,4 +48,11 @@ public interface KafkaConfigService {
      * Returns the topic prefix to use for a configuration.
      */
     String getTopicPrefix(String configName);
+
+    /**
+     * Returns the Kafka admin properties for a configuration.
+     *
+     * @since 11.1
+     */
+    Properties getAdminProperties(String kafkaConfig);
 }

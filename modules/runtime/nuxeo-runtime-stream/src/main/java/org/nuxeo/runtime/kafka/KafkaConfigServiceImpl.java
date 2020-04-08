@@ -50,12 +50,6 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
                                               .collect(Collectors.toSet());
     }
 
-    @Deprecated
-    @Override
-    public String getZkServers(String configName) {
-        return getDescriptor(configName).zkServers;
-    }
-
     @Override
     public Properties getProducerProperties(String configName) {
         Properties ret = getDescriptor(configName).producerProperties.properties;
@@ -80,6 +74,15 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
         String ret = config.topicPrefix == null ? "" : config.topicPrefix;
         if (config.randomPrefix) {
             ret += System.currentTimeMillis() + "-";
+        }
+        return ret;
+    }
+
+    @Override
+    public Properties getAdminProperties(String configName) {
+        Properties ret = getDescriptor(configName).adminProperties.properties;
+        if (DEFAULT_BOOTSTRAP_SERVERS.equals(ret.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG))) {
+            ret.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
         }
         return ret;
     }

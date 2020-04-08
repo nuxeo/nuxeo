@@ -23,19 +23,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("logConfig")
 public class LogConfigDescriptor implements Descriptor {
 
+    public static final String SEP = ":";
+
     // @since 11.1
     @XNode("@enabled")
     protected boolean isEnabled = true;
+
+    // @since 11.1
+    @XNode("@default")
+    protected boolean isDefault = false;
 
     @XObject(value = "log")
     public static class LogDescriptor implements Descriptor {
@@ -54,6 +62,21 @@ public class LogConfigDescriptor implements Descriptor {
         }
     }
 
+    @XObject(value = "match")
+    public static class LogMatchDescriptor implements Descriptor {
+
+        @XNode("@name")
+        public String name;
+
+        @XNode("@group")
+        public String group;
+
+        @Override
+        public String getId() {
+            return (group != null && !group.isBlank()) ? name + SEP + group : name;
+        }
+    }
+
     @XNode("@name")
     public String name;
 
@@ -65,6 +88,9 @@ public class LogConfigDescriptor implements Descriptor {
 
     @XNodeList(value = "log", type = ArrayList.class, componentType = LogDescriptor.class)
     public List<LogDescriptor> logs = new ArrayList<>();
+
+    @XNodeList(value = "match", type = ArrayList.class, componentType = LogMatchDescriptor.class)
+    public List<LogMatchDescriptor> matches = new ArrayList<>();
 
     @Override
     public String getId() {
@@ -80,4 +106,14 @@ public class LogConfigDescriptor implements Descriptor {
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
+
+    // @since 11.1
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public List<String> getPatterns() {
+        return matches.stream().map(match -> match.getId()).collect(Collectors.toList());
+    }
+
 }

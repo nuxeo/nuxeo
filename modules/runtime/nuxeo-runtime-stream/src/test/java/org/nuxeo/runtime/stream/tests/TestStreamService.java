@@ -74,42 +74,21 @@ public class TestStreamService {
     @Test
     public void testLogManagerAccess() {
         assertNotNull(service);
-
-        @SuppressWarnings("resource") // not ours to close
-        LogManager manager = service.getLogManager("default");
+        LogManager manager = service.getLogManager();
         assertNotNull(manager);
-
-        @SuppressWarnings("resource") // not ours to close
-        LogManager manager2 = service.getLogManager("import");
-        assertNotNull(manager2);
-
-        try {
-            service.getLogManager("unknown");
-            fail("Expected exception");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
-
-        try {
-            service.getLogManager("customDisabled");
-            fail("Expected exception");
-        } catch (IllegalArgumentException e) {
-            // expected
-        }
-
-        @SuppressWarnings("resource") // not ours to close
-        LogManager manager3 = service.getLogManager("default");
-        assertNotNull(manager3);
-
-        manager3.exists(Name.ofUrn("input"));
-        assertEquals(1, manager3.size(Name.ofUrn("input")));
-
+        assertNotNull(service.getStreamManager());
+        assertTrue(manager.exists(Name.ofUrn("input")));
+        assertTrue(manager.exists(Name.ofUrn("output")));
+        assertTrue(manager.exists(Name.ofUrn("myLog")));
+        assertTrue(manager.exists(Name.ofUrn("cq/cq-foo")));
+        assertFalse(manager.exists(Name.ofUrn("aLogThatShouldNotBeCreated")));
+        assertFalse(manager.exists(Name.ofUrn("unexisting")));
     }
 
     @Test
     public void testBasicLogUsage() throws Exception {
         @SuppressWarnings("resource")
-        LogManager manager = service.getLogManager("default");
+        LogManager manager = service.getLogManager();
         Name logName = Name.ofUrn("myLog");
         String key = "a key";
         String value = "a value";
@@ -129,8 +108,8 @@ public class TestStreamService {
     @Test
     public void testStreamProcessor() throws Exception {
         @SuppressWarnings("resource")
-        LogManager manager = service.getLogManager("default");
-        StreamManager streamManager = service.getStreamManager("default");
+        LogManager manager = service.getLogManager();
+        StreamManager streamManager = service.getStreamManager();
 
         @SuppressWarnings("resource") // not ours to close
         LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("counter"), Name.ofUrn("output"));
@@ -159,7 +138,7 @@ public class TestStreamService {
     @Test
     public void testDisabledStreamProcessor() throws Exception {
         @SuppressWarnings("resource")
-        StreamManager streamManager = service.getStreamManager("default");
+        StreamManager streamManager = service.getStreamManager();
 
         try {
             streamManager.append("streamThatDoesNotExist", Record.of("key", null));
@@ -179,7 +158,7 @@ public class TestStreamService {
     @Test
     public void testDefaultPartitions() throws Exception {
         @SuppressWarnings("resource")
-        LogManager manager = service.getLogManager("default");
+        LogManager manager = service.getLogManager();
         Name streamName = Name.ofUrn("s1");
         assertTrue(manager.exists(streamName));
         assertEquals(2, manager.size(streamName));
@@ -188,7 +167,7 @@ public class TestStreamService {
     @Test
     public void testRegisterAndExternalStream() throws Exception {
         // make sure the processor is initialized
-        LogManager manager = service.getLogManager("default");
+        LogManager manager = service.getLogManager();
         assertTrue(manager.exists(Name.ofUrn("input3")));
         assertTrue(manager.exists(Name.ofUrn("output3")));
         assertTrue(manager.exists(Name.ofUrn("registerInput")));
@@ -196,7 +175,7 @@ public class TestStreamService {
 
         // make sure the processor is not started
         @SuppressWarnings("resource")
-        StreamManager streamManager = service.getStreamManager("default");
+        StreamManager streamManager = service.getStreamManager();
         streamManager.append("input3", Record.of("key", null));
         LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test"), Name.ofUrn("output3"));
         assertNull(tailer.read(Duration.ofSeconds(1)));
@@ -214,7 +193,7 @@ public class TestStreamService {
     @Test
     public void testProbe() throws Exception {
         @SuppressWarnings("resource")
-        StreamManager streamManager = service.getStreamManager("default");
+        StreamManager streamManager = service.getStreamManager();
         StreamProbe probe = new StreamProbe();
         probe.reset();
         ProbeStatus status = probe.run();
@@ -236,7 +215,7 @@ public class TestStreamService {
     }
 
     @Test
-    public void testStreamMetrics() throws Exception {
+    public void testStreamMetrics() {
         // before running the stream metrics computation no stream metrics are registered
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
         SortedMap<MetricName, Gauge> gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
@@ -254,7 +233,9 @@ public class TestStreamService {
         // we have a gauges per existing computations
         gauges = registry.getGauges((name, metric) -> name.getKey().startsWith("nuxeo.streams.global"));
         assertFalse(gauges.isEmpty());
-        Gauge gauge = gauges.get(MetricName.build("nuxeo.streams.global.stream.group.end").tagged("stream", "input").tagged("group", "myComputation"));
+        Gauge gauge = gauges.get(MetricName.build("nuxeo.streams.global.stream.group.end")
+                                           .tagged("stream", "input")
+                                           .tagged("group", "myComputation"));
         assertNotNull(gauge);
         assertNotNull(gauge.getValue());
 
