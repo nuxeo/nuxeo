@@ -64,11 +64,13 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.FulltextExtractorWork;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
@@ -1491,7 +1493,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(Serializable id) {
+    public Map<String, String> getBinaryFulltext(Serializable id, Document doc) {
         if (fulltextDescriptor.getFulltextDisabled()) {
             return null;
         }
@@ -1499,18 +1501,24 @@ public class SessionImpl implements Session, XAResource {
         Map<String, String> map = mapper.getBinaryFulltext(rowId);
         String fulltext = map.get(BINARY_FULLTEXT_MAIN_KEY);
         if (fulltextDescriptor.getFulltextStoredInBlob() && fulltext != null) {
-            // fulltext is actually the blob  key
-            // now retrieve the actual fulltext from the blob content
-            DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
-            try {
-                BlobInfo blobInfo = new BlobInfo();
-                blobInfo.key = fulltext;
-                Blob blob = blobManager.readBlob(blobInfo, getRepositoryName());
-                fulltext = blob.getString();
-                map.put(BINARY_FULLTEXT_MAIN_KEY, fulltext);
-            } catch (IOException e) {
-                throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
+            if (doc == null) {
+                // could not find doc (shouldn't happen)
+                fulltext = null;
+            } else {
+                // fulltext is actually the blob key
+                // now retrieve the actual fulltext from the blob content
+                DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
+                try {
+                    BlobInfo blobInfo = new BlobInfo();
+                    blobInfo.key = fulltext;
+                    String xpath = BaseDocument.FULLTEXT_BINARYTEXT_PROP;
+                    Blob blob = blobManager.readBlob(blobInfo, doc, xpath);
+                    fulltext = blob.getString();
+                } catch (IOException e) {
+                    throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
+                }
             }
+            map.put(BINARY_FULLTEXT_MAIN_KEY, fulltext);
         }
         return map;
     }

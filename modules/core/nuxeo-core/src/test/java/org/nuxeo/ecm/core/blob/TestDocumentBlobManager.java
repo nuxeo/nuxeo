@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class TestDocumentBlobManager {
 
         // read without prefix
         blobInfo.key = "1";
-        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, DUMMY);
+        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, doc, "somexpath");
         assertNotNull(blob);
         assertEquals(blobInfo.key, blob.getKey());
         assertEquals(blobInfo.mimeType, blob.getMimeType());
@@ -101,10 +101,11 @@ public class TestDocumentBlobManager {
         assertEquals(blobInfo.filename, blob.getFilename());
         assertEquals(blobInfo.length.intValue(), blob.getLength());
         assertEquals(blobInfo.digest, blob.getDigest());
+        assertEquals("foo", blob.getString());
 
         // read with prefix
         blobInfo.key = DUMMY + ":1";
-        blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, null);
+        blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, doc, "somexpath");
         assertNotNull(blob);
         assertEquals(blobInfo.key, blob.getKey());
         assertEquals(blobInfo.mimeType, blob.getMimeType());
@@ -112,6 +113,7 @@ public class TestDocumentBlobManager {
         assertEquals(blobInfo.filename, blob.getFilename());
         assertEquals(blobInfo.length.intValue(), blob.getLength());
         assertEquals(blobInfo.digest, blob.getDigest());
+        assertEquals("foo", blob.getString());
     }
 
     @Test
@@ -140,12 +142,12 @@ public class TestDocumentBlobManager {
         // read first one
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = "dummy:1";
-        blob = documentBlobManager.readBlob(blobInfo, null);
+        blob = documentBlobManager.readBlob(blobInfo, doc, "somexpath");
         assertEquals("foo", IOUtils.toString(blob.getStream(), UTF_8));
 
         // read second one
         blobInfo.key = "dummy2:1";
-        blob = documentBlobManager.readBlob(blobInfo, null);
+        blob = documentBlobManager.readBlob(blobInfo, doc, "somexpath");
         assertEquals("bar", IOUtils.toString(blob.getStream(), UTF_8));
     }
 
@@ -171,6 +173,30 @@ public class TestDocumentBlobManager {
         blob = Blobs.createBlob("bar", "text/plain");
         key = documentBlobManager.writeBlob(blob, doc, "files/0/file");
         assertEquals("dummy2:1", key);
+    }
+
+    @Test
+    public void testDocInContext() throws Exception {
+        Document doc = mockery.mock(Document.class);
+        mockery.checking(new Expectations() {
+            {
+                allowing(doc).getRepositoryName();
+                will(returnValue(DUMMY));
+                allowing(doc).getUUID();
+                will(returnValue("123"));
+                allowing(doc).getPropertyValue("myprop");
+                will(returnValue("bar"));
+
+            }
+        });
+
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = DummyBlobProvider.FROMDOC + ":myprop";
+
+        // special blob provider that uses doc content
+        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, doc, "somexpath");
+        assertNotNull(blob);
+        assertEquals("bar", blob.getString());
     }
 
 }

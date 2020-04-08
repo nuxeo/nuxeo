@@ -29,6 +29,7 @@ import javax.resource.cci.Connection;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
+import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
@@ -545,9 +546,20 @@ public interface Session extends Connection {
     /**
      * Gets the fulltext extracted from the binary fields.
      *
-     * @since 5.9.3
+     * @since 11.1
      */
-    Map<String, String> getBinaryFulltext(Serializable id);
+    Map<String, String> getBinaryFulltext(Serializable id, Document doc);
+
+    /**
+     * Gets the fulltext extracted from the binary fields.
+     *
+     * @since 5.9.3
+     * @deprecated since 11.1, use {@link #getBinaryFulltext(Serializable, Document)} instead
+     */
+    @Deprecated
+    default Map<String, String> getBinaryFulltext(Serializable id) {
+        return getBinaryFulltext(id, null);
+    }
 
     /**
      * Checks if change token management is enabled.
