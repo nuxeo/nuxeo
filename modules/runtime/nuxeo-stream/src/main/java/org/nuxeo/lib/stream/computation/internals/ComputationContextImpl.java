@@ -98,7 +98,7 @@ public class ComputationContextImpl implements ComputationContext {
     public void produceRecord(String streamName, Record record) {
         String targetStream = metadata.map(streamName);
         if (!metadata.outputStreams().contains(targetStream)) {
-            throw new IllegalArgumentException("Stream not registered as output: " + targetStream + ":" + streamName);
+            throw new IllegalArgumentException("Stream: " + targetStream + " not registered as output of: " + metadata);
         }
         streamRecords.computeIfAbsent(targetStream, key -> new ArrayList<>()).add(record);
     }
