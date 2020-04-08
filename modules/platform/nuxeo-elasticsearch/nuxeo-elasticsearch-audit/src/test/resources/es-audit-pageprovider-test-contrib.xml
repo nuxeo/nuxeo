@@ -164,9 +164,7 @@
       <pageSize>10</pageSize>
       <maxPageSize>1000</maxPageSize>
     </genericPageProvider>
-
-
-
+    
   </extension>
 
 </component>
