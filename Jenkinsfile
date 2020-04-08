@@ -167,11 +167,10 @@ def buildUnitTestStage(env) {
               helm repo add ${HELM_CHART_REPOSITORY_NAME} ${HELM_CHART_REPOSITORY_URL}
             """
             // prepare values to disable nuxeo and activate external services in the nuxeo Helm chart
-            sh 'envsubst < ci/helm/nuxeo-test-base-values.yaml > nuxeo-test-base-values.yaml'
-            def testValues = '--set-file=nuxeo-test-base-values.yaml'
+            def testValues = '--set-file=ci/helm/nuxeo-test-base-values.yaml~gen'
             if (!isDev) {
-              sh "envsubst < ci/helm/nuxeo-test-${env}-values.yaml > nuxeo-test-${env}-values.yaml"
-              testValues += " --set-file=nuxeo-test-${env}-values.yaml"
+              testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml~gen"
+              testValues += " --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen"
             }
             // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
             sh """
@@ -187,12 +186,6 @@ def buildUnitTestStage(env) {
                 --timeout=${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}
             """
             if (!isDev) {
-              // wait for Elasticsearch to be ready
-              sh """
-                kubectl rollout status deployment ${TEST_ELASTICSEARCH_RESOURCE} \
-                  --namespace=${testNamespace} \
-                  --timeout=${TEST_ELASTICSEARCH_ROLLOUT_STATUS_TIMEOUT}
-              """
               // wait for MongoDB or PostgreSQL to be ready
               def resourceType = env == 'mongodb' ? 'deployment' : 'statefulset'
               sh """
@@ -200,16 +193,31 @@ def buildUnitTestStage(env) {
                   --namespace=${testNamespace} \
                   --timeout=${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}
               """
+              // wait for Elasticsearch to be ready
+              sh """
+                kubectl rollout status deployment ${TEST_ELASTICSEARCH_RESOURCE} \
+                  --namespace=${testNamespace} \
+                  --timeout=${TEST_ELASTICSEARCH_ROLLOUT_STATUS_TIMEOUT}
+              """
             }
 
             echo "${env} unit tests: run Maven"
-            // prepare test framework system properties
-            sh """
-              CHART_RELEASE=${TEST_HELM_CHART_RELEASE} SERVICE=${env} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
-                envsubst < ci/mvn/nuxeo-test-${env}.properties > ${HOME}/nuxeo-test-${env}.properties
-            """
+            if (isDev) {
+              // empty file required by the read-project-properties goal of the properties-maven-plugin with the
+              // customEnvironment profile
+              sh "touch ${HOME}/nuxeo-test-${env}.properties"
+            } else {
+              // prepare test framework system properties
+              sh """
+                cat ci/mvn/nuxeo-test-${env}.properties \
+                  ci/mvn/nuxeo-test-elasticsearch.properties \
+                  > ci/mvn/nuxeo-test-${env}.properties~gen
+                CHART_RELEASE=${TEST_HELM_CHART_RELEASE} NAMESPACE=${testNamespace} DOMAIN=${TEST_SERVICE_DOMAIN_SUFFIX} \
+                  envsubst < ci/mvn/nuxeo-test-${env}.properties~gen > ${HOME}/nuxeo-test-${env}.properties
+              """
+            }
             // run unit tests:
-            // - in modules/core and dependent projects only (modules/runtime is run in dedicated stage)
+            // - in modules/core and dependent projects only (modules/runtime is run in a dedicated stage)
             // - for the given environment (see the customEnvironment profile in pom.xml):
             //   - in an alternative build directory
             //   - loading some test framework system properties
@@ -294,6 +302,12 @@ pipeline {
           echo "Set label 'branch: ${BRANCH_NAME}' on pod ${NODE_NAME}"
           sh """
             kubectl label pods ${NODE_NAME} branch=${BRANCH_NAME}
+          """
+          // set branch name in Helm chart values used for the unit tests
+          sh """
+            for valuesFile in ci/helm/*.yaml; do
+              envsubst < \$valuesFile > \$valuesFile~gen
+            done
           """
         }
       }
