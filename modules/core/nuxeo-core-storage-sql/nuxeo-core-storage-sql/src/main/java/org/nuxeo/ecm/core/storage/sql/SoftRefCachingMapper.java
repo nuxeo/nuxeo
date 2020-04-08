@@ -83,11 +83,6 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public void createDatabase(String ddlMode) {
-        mapper.createDatabase(ddlMode);
-    }
-
-    @Override
     public Serializable getRootId(String repositoryId) {
         return mapper.getRootId(repositoryId);
     }

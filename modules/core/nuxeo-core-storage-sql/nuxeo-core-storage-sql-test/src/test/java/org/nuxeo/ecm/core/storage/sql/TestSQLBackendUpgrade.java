@@ -39,7 +39,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.model.LockManager;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 import org.nuxeo.runtime.test.runner.HotDeployer;
 
 public class TestSQLBackendUpgrade extends SQLBackendTestCase {
@@ -58,24 +57,24 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         super.setUp();
         // we do the repository creation in setUpTestProp after setting up upgrade properties
         hotDeployer.deploy("org.nuxeo.ecm.core.storage.sql.test.tests:OSGI-INF/test-backend-core-types-contrib.xml");
-        JDBCMapper.testProps.put(JDBCMapper.TEST_UPGRADE, Boolean.TRUE);
+        RepositoryImpl.testProps.put(RepositoryImpl.TEST_UPGRADE, Boolean.TRUE);
     }
 
     @After
     @Override
     public void tearDown() throws Exception {
-        JDBCMapper.testProps.clear();
+        RepositoryImpl.testProps.clear();
         super.tearDown();
     }
 
     private static final List<String> TEST_PROPERTIES = Arrays.asList(
-            JDBCMapper.TEST_UPGRADE_VERSIONS,
-            JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR,
-            JDBCMapper.TEST_UPGRADE_LOCKS);
+            RepositoryImpl.TEST_UPGRADE_VERSIONS,
+            RepositoryImpl.TEST_UPGRADE_LAST_CONTRIBUTOR,
+            RepositoryImpl.TEST_UPGRADE_LOCKS);
 
     protected void setUpTestProp(String prop) {
         for (String p : TEST_PROPERTIES) {
-            JDBCMapper.testProps.put(p, Boolean.valueOf(p.equals(prop)));
+            RepositoryImpl.testProps.put(p, Boolean.valueOf(p.equals(prop)));
         }
         repository = newRepository();
     }
@@ -160,7 +159,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
 
     @Test
     public void testVersionsUpgrade() {
-        setUpTestProp(JDBCMapper.TEST_UPGRADE_VERSIONS);
+        setUpTestProp(RepositoryImpl.TEST_UPGRADE_VERSIONS);
 
         Node ver;
         Session session = repository.getConnection();
@@ -200,7 +199,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
 
     @Test
     public void testLastContributorUpgrade() {
-        setUpTestProp(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR);
+        setUpTestProp(RepositoryImpl.TEST_UPGRADE_LAST_CONTRIBUTOR);
 
         Node ver;
         Session session = repository.getConnection();
@@ -220,7 +219,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
 
     @Test
     public void testLocksUpgrade() {
-        setUpTestProp(JDBCMapper.TEST_UPGRADE_LOCKS);
+        setUpTestProp(RepositoryImpl.TEST_UPGRADE_LOCKS);
 
         Session session = repository.getConnection();
         LockManager lockManager = session.getLockManager();
