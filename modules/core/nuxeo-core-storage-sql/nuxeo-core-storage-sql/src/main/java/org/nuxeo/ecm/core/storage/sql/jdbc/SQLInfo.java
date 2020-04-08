@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowUpdate;
 import org.nuxeo.ecm.core.storage.sql.Selection;
 import org.nuxeo.ecm.core.storage.sql.SelectionType;
@@ -132,7 +133,7 @@ public class SQLInfo {
 
     protected Map<String, List<SQLStatement>> sqlStatements;
 
-    protected Map<String, Serializable> sqlStatementsProperties;
+    public Map<String, Serializable> sqlStatementsProperties;
 
     protected List<String> getBinariesSql;
 
@@ -181,7 +182,7 @@ public class SQLInfo {
         initSelections();
 
         try {
-            initSQLStatements(JDBCMapper.testProps, repositoryDescriptor.sqlInitFiles);
+            initSQLStatements(RepositoryImpl.testProps, repositoryDescriptor.sqlInitFiles);
         } catch (IOException e) {
             throw new NuxeoException(e);
         }

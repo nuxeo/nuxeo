@@ -19,12 +19,14 @@
  */
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.SQLStatement.ListCollector;
 
@@ -54,12 +56,18 @@ public class TableUpgrader {
 
     protected List<TableUpgrade> tableUpgrades = new ArrayList<>();
 
-    private JDBCMapper mapper;
+    private SQLInfo sqlInfo;
+
+    private Connection connection;
+
+    private JDBCLogger logger;
 
     private static final Log log = LogFactory.getLog(TableUpgrader.class);
 
-    public TableUpgrader(JDBCMapper mapper) {
-        this.mapper = mapper;
+    public TableUpgrader(SQLInfo sqlInfo, Connection connection, JDBCLogger logger) {
+        this.sqlInfo = sqlInfo;
+        this.connection = connection;
+        this.logger = logger;
     }
 
     /**
@@ -92,7 +100,7 @@ public class TableUpgrader {
             boolean doUpgrade;
             if (addedColumns == null) {
                 // table created
-                doUpgrade = mapper.testProps.containsKey(upgrade.testProp);
+                doUpgrade = RepositoryImpl.testProps.containsKey(upgrade.testProp);
             } else {
                 // columns added
                 doUpgrade = false;
@@ -105,8 +113,7 @@ public class TableUpgrader {
             }
             if (doUpgrade) {
                 log.info("Upgrading table: " + tableKey);
-                mapper.sqlInfo.executeSQLStatements(upgrade.sqlProcedure, ddlMode, mapper.connection, mapper.logger,
-                        ddlCollector);
+                sqlInfo.executeSQLStatements(upgrade.sqlProcedure, ddlMode, connection, logger, ddlCollector);
             }
         }
     }
