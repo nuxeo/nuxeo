@@ -38,4 +38,9 @@
     </kafkaConfig>
 
   </extension>
+
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig name="chronicle" />
+  </extension>
+
 </component>

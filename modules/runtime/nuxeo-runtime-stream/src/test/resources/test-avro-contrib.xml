@@ -3,4 +3,8 @@
   <extension target="org.nuxeo.runtime.avro" point="schema">
     <schema name="tutu" file="data/avro-schema-example.json" />
   </extension>
+
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig name="chronicle" />
+  </extension>
 </component>

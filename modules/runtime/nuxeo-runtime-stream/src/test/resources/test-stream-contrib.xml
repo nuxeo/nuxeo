@@ -3,31 +3,24 @@
 
   <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
 
-    <logConfig name="default">
+    <logConfig name="default" default="true">
       <log name="input" size="1" />
       <log name="output" size="1" />
       <log name="myLog" size="1" />
     </logConfig>
 
-    <logConfig name="import" />
-
-    <logConfig name="chronicle" />
-
-    <logConfig name="kafka" type="kafka">
-      <option name="config">default</option>
+    <logConfig name="import">
+      <option name="retention">2d</option>
+      <match name="imp-" />
     </logConfig>
 
-    <logConfig name="kafka-no-subscribe" type="kafka">
-      <option name="config">no-subscribe</option>
-    </logConfig>
-
-    <logConfig name="custom" type="chronicle">
-      <option name="directory">import</option>
-      <option name="basePath">/tmp</option>
-      <option name="retention">4d</option>
+    <logConfig name="chronicle">
+      <log name="cq/cq-foo" size="1" />
+      <match name="cq/cq-" />
     </logConfig>
 
     <logConfig name="customDisabled" type="chronicle" enabled="false">
+      <log name="aLogThatShouldNotBeCreated" size="1" />
       <option name="directory">disabled</option>
       <option name="basePath">/tmp</option>
       <option name="retention">4d</option>

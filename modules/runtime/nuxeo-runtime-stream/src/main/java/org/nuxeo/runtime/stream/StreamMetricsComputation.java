@@ -157,7 +157,7 @@ public class StreamMetricsComputation extends AbstractComputation {
 
     protected LogManager getManager() {
         if (manager == null) {
-            manager = Framework.getService(StreamService.class).getLogManager("default");
+            manager = Framework.getService(StreamService.class).getLogManager();
         }
         return manager;
     }

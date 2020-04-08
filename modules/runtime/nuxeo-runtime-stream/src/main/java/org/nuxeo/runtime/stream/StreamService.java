@@ -25,17 +25,26 @@ import org.nuxeo.lib.stream.log.LogManager;
  * @since 9.3
  */
 public interface StreamService {
+
+    LogManager getLogManager();
+
+    StreamManager getStreamManager();
+
     /**
-     * Gets a {@link LogManager} corresponding to the config name. The service takes care of closing the manager on shutdown you
-     * should not do it directly.
+     * Gets a {@link LogManager} corresponding to the config name. The service takes care of closing the manager on
+     * shutdown you should not do it directly.
+     *
+     * @deprecated since 11.1 just use {@link #getLogManager()}.
      */
+    @Deprecated
     LogManager getLogManager(String configName);
 
 
     /**
      * Gets a {@link StreamManager} that uses a LogManager matching the config name.
      *
-     * @since 11.1
+     * @deprecated since 11.1 just use {@link #getStreamManager()}.
      */
+    @Deprecated
     StreamManager getStreamManager(String configName);
 }
