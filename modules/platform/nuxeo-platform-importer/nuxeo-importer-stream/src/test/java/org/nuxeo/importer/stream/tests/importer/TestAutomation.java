@@ -53,7 +53,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.importer.stream")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.core.io")
-@Deploy("org.nuxeo.importer.stream:test-stream-contrib.xml")
 @Deploy("org.nuxeo.importer.stream:test-core-type-contrib.xml")
 public abstract class TestAutomation {
 
@@ -163,7 +162,7 @@ public abstract class TestAutomation {
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
-        params.put("logBlobInfo", "blob-info");
+        params.put("logBlobInfo", "import/blob-info");
         addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
 
@@ -171,7 +170,7 @@ public abstract class TestAutomation {
         params.clear();
         params.put("nbDocuments", nbDocuments);
         params.put("nbThreads", nbThreads);
-        params.put("logBlobInfo", "blob-info");
+        params.put("logBlobInfo", "import/blob-info");
         addExtraParams(params);
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 
@@ -223,7 +222,7 @@ public abstract class TestAutomation {
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
-        params.put("logBlobInfo", "blob-info");
+        params.put("logBlobInfo", "import/blob-info");
         addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
 
@@ -232,7 +231,7 @@ public abstract class TestAutomation {
         params.put("nbDocuments", nbDocuments);
         params.put("nbThreads", nbThreads);
         params.put("countFolderAsDocument", false);
-        params.put("logBlobInfo", "blob-info");
+        params.put("logBlobInfo", "import/blob-info");
         addExtraParams(params);
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 

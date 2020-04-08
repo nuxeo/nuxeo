@@ -42,6 +42,7 @@ import org.nuxeo.importer.stream.producer.FileBlobMessageProducerFactory;
 import org.nuxeo.importer.stream.producer.RandomStringBlobMessageProducerFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
@@ -72,7 +73,7 @@ public abstract class TestBlobImport {
         Codec<BlobMessage> blobCodec = StreamImporters.getBlobCodec();
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
         try (LogManager manager = getManager()) {
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_NAME, NB_QUEUE);
+            manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_NAME), NB_QUEUE);
 
             ProducerPool<BlobMessage> producers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     new RandomStringBlobMessageProducerFactory(NB_BLOBS, "en_US", 1, "1234"), NB_PRODUCERS);
@@ -82,9 +83,9 @@ public abstract class TestBlobImport {
 
             try (LogManager managerBlobInfo = getManager()) {
                 String blobProviderName = "test";
-                managerBlobInfo.createIfNotExists(DEFAULT_LOG_BLOB_INFO_NAME, 1);
+                managerBlobInfo.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), 1);
                 BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                        managerBlobInfo.getAppender(DEFAULT_LOG_BLOB_INFO_NAME, blobInfoCodec));
+                        managerBlobInfo.getAppender(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), blobInfoCodec));
                 ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                         new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
                         ConsumerPolicy.builder().batchPolicy(BatchPolicy.NO_BATCH).build());
@@ -104,7 +105,7 @@ public abstract class TestBlobImport {
         Codec<BlobMessage> blobCodec = StreamImporters.getBlobCodec();
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
         try (LogManager manager = getManager()) {
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_NAME, NB_QUEUE);
+            manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_NAME), NB_QUEUE);
 
             ProducerPool<BlobMessage> producers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"),
@@ -115,9 +116,9 @@ public abstract class TestBlobImport {
 
             try (LogManager managerBlobInfo = getManager()) {
                 String blobProviderName = "test";
-                managerBlobInfo.createIfNotExists(DEFAULT_LOG_BLOB_INFO_NAME, 1);
+                managerBlobInfo.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), 1);
                 BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                        managerBlobInfo.getAppender(DEFAULT_LOG_BLOB_INFO_NAME, blobInfoCodec));
+                        managerBlobInfo.getAppender(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), blobInfoCodec));
                 ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                         new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter),
                         ConsumerPolicy.builder().batchPolicy(BatchPolicy.NO_BATCH).build());

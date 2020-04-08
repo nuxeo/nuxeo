@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.KeyValueMessage;
 import org.nuxeo.lib.stream.pattern.consumer.BatchPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
@@ -78,7 +79,7 @@ public abstract class TestPatternBoundedQueuing {
         final int NB_DOCUMENTS = 1_000;
 
         // 1. Create a log and run the producers
-        manager.createIfNotExists(LOG_NAME, LOG_SIZE);
+        manager.createIfNotExists(Name.ofUrn(LOG_NAME), LOG_SIZE);
         ProducerPool<KeyValueMessage> producers = new ProducerPool<>(LOG_NAME, manager,
                 new RandomIdMessageProducerFactory(NB_DOCUMENTS), NB_PRODUCERS);
         List<ProducerStatus> pret = producers.start().get();
@@ -106,7 +107,7 @@ public abstract class TestPatternBoundedQueuing {
         final int NB_DOCUMENTS = 1000;
 
         // Create a log, producer and consumer pool
-        manager.createIfNotExists(LOG_NAME, LOG_SIZE);
+        manager.createIfNotExists(Name.ofUrn(LOG_NAME), LOG_SIZE);
 
         ProducerPool<KeyValueMessage> producers = new ProducerPool<>(LOG_NAME, manager,
                 new RandomIdMessageProducerFactory(NB_DOCUMENTS), NB_PRODUCERS);
@@ -132,7 +133,7 @@ public abstract class TestPatternBoundedQueuing {
         final int NB_DOCUMENTS = 127;
         final int BATCH_SIZE = 13;
 
-        manager.createIfNotExists(LOG_NAME, LOG_SIZE);
+        manager.createIfNotExists(Name.ofUrn(LOG_NAME), LOG_SIZE);
         ProducerPool<KeyValueMessage> producers = new ProducerPool<>(LOG_NAME, manager,
                 new RandomIdMessageProducerFactory(NB_DOCUMENTS, RandomIdMessageProducerFactory.ProducerType.ORDERED),
                 NB_PRODUCERS);
@@ -166,7 +167,7 @@ public abstract class TestPatternBoundedQueuing {
         final int NB_DOCUMENTS = 1;
         final int BATCH_SIZE = 1;
 
-        manager.createIfNotExists(LOG_NAME, LOG_SIZE);
+        manager.createIfNotExists(Name.ofUrn(LOG_NAME), LOG_SIZE);
         ProducerPool<KeyValueMessage> producers = new ProducerPool<>(LOG_NAME, manager,
                 new RandomIdMessageProducerFactory(NB_DOCUMENTS, RandomIdMessageProducerFactory.ProducerType.ORDERED),
                 NB_PRODUCERS);

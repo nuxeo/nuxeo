@@ -20,12 +20,10 @@ package org.nuxeo.lib.stream.tests.computation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.log.Name;
 
 /**
  * Computation that read from multiple inputs and round robin records on outputs. Request for checkpoint on each record

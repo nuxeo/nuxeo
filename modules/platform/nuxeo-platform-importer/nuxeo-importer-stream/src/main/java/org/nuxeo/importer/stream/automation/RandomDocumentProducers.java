@@ -37,6 +37,7 @@ import org.nuxeo.importer.stream.message.DocumentMessage;
 import org.nuxeo.importer.stream.producer.RandomDocumentMessageProducerFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.producer.ProducerPool;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamService;
@@ -84,7 +85,7 @@ public class RandomDocumentProducers {
     public void run() throws OperationException {
         RandomBlobProducers.checkAccess(ctx);
         LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
-        manager.createIfNotExists(logName, getLogSize());
+        manager.createIfNotExists(Name.ofUrn(logName), getLogSize());
         RandomDocumentMessageProducerFactory factory;
         if (logBlobInfoName != null) {
             factory = new RandomDocumentMessageProducerFactory(nbDocuments, lang, manager, logBlobInfoName,

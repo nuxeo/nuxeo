@@ -59,6 +59,7 @@ import org.nuxeo.importer.stream.producer.RandomDocumentMessageProducerFactory;
 import org.nuxeo.importer.stream.producer.RandomStringBlobMessageProducerFactory;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerFactory;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPolicy;
 import org.nuxeo.lib.stream.pattern.consumer.ConsumerPool;
@@ -84,6 +85,10 @@ public abstract class TestDocumentImport {
 
     public abstract LogManager getManager() throws Exception;
 
+    protected static final Name DEFAULT_LOG_DOC = Name.ofUrn(DEFAULT_LOG_DOC_NAME);
+
+    protected static final Name DEFAULT_LOG_BLOB = Name.ofUrn(DEFAULT_LOG_BLOB_NAME);
+
     @Inject
     CoreSession session;
 
@@ -98,7 +103,7 @@ public abstract class TestDocumentImport {
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         try (LogManager manager = getManager()) {
             // 1. generate documents with blobs
-            manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_DOC, NB_QUEUE);
             ProducerPool<DocumentMessage> producers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2), NB_PRODUCERS);
             List<ProducerStatus> ret = producers.start().get();
@@ -126,7 +131,7 @@ public abstract class TestDocumentImport {
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         try (LogManager manager = getManager()) {
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_BLOB, NB_QUEUE);
             // 1. generates blobs
             ProducerPool<BlobMessage> blobProducers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     new RandomStringBlobMessageProducerFactory(NB_BLOBS, "en_US", 2, "1234"), NB_PRODUCERS);
@@ -136,9 +141,9 @@ public abstract class TestDocumentImport {
 
             // 2. import blobs
             String blobProviderName = "test";
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_INFO_NAME, 1);
+            manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), 1);
             BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                    manager.getAppender(DEFAULT_LOG_BLOB_INFO_NAME, blobInfoCodec));
+                    manager.getAppender(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), blobInfoCodec));
             ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter);
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     blobFactory, ConsumerPolicy.BOUNDED);
@@ -146,7 +151,7 @@ public abstract class TestDocumentImport {
             assertEquals(NB_QUEUE, blobConsumersStatus.size());
             assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
-            manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_DOC, NB_QUEUE);
             // 3. generate documents using blob reference
             ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS,
                     "en_US", manager, DEFAULT_LOG_BLOB_INFO_NAME);
@@ -179,7 +184,7 @@ public abstract class TestDocumentImport {
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         try (LogManager manager = getManager()) {
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_BLOB, NB_QUEUE);
             // 1. generates blobs from files
             ProducerPool<BlobMessage> blobProducers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"),
@@ -191,9 +196,9 @@ public abstract class TestDocumentImport {
 
             // 2. import blobs
             String blobProviderName = "test";
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_INFO_NAME, 1);
+            manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), 1);
             BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                    manager.getAppender(DEFAULT_LOG_BLOB_INFO_NAME, blobInfoCodec));
+                    manager.getAppender(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), blobInfoCodec));
             ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(blobProviderName, blobInfoWriter,
                     "foobar");
             ConsumerPool<BlobMessage> blobConsumers = new ConsumerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
@@ -202,7 +207,7 @@ public abstract class TestDocumentImport {
             assertEquals(NB_QUEUE, blobConsumersStatus.size());
             // assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
-            manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_DOC, NB_QUEUE);
             // 3. generate documents using blob reference
             ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS,
                     "en_US", manager, DEFAULT_LOG_BLOB_INFO_NAME);
@@ -268,7 +273,7 @@ public abstract class TestDocumentImport {
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         try (LogManager manager = getManager()) {
             // 1. generate documents with blobs
-            manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_DOC, NB_QUEUE);
             ProducerPool<DocumentMessage> producers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2), NB_PRODUCERS);
             List<ProducerStatus> ret = producers.start().get();
@@ -287,7 +292,7 @@ public abstract class TestDocumentImport {
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         try (LogManager manager = getManager()) {
             // 1. generate documents with blobs
-            manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_DOC, NB_QUEUE);
             ProducerPool<DocumentMessage> producers = new ProducerPool<>(DEFAULT_LOG_DOC_NAME, manager, docCodec,
                     new RandomDocumentMessageProducerFactory(NB_DOCUMENTS, "en_US", 2, false), NB_PRODUCERS);
             List<ProducerStatus> ret = producers.start().get();
@@ -315,7 +320,7 @@ public abstract class TestDocumentImport {
         Codec<BlobInfoMessage> blobInfoCodec = StreamImporters.getBlobInfoCodec();
         Codec<DocumentMessage> docCodec = StreamImporters.getDocCodec();
         try (LogManager manager = getManager()) {
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_BLOB, NB_QUEUE);
             // 1. generates blobs from files
             ProducerPool<BlobMessage> blobProducers = new ProducerPool<>(DEFAULT_LOG_BLOB_NAME, manager, blobCodec,
                     new FileBlobMessageProducerFactory(getFileList("files/list.txt"), getBasePathList("files"),
@@ -325,9 +330,9 @@ public abstract class TestDocumentImport {
             assertEquals(NB_PRODUCERS, blobProducersStatus.size());
 
             // 2. import blobs
-            manager.createIfNotExists(DEFAULT_LOG_BLOB_INFO_NAME, 1);
+            manager.createIfNotExists(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), 1);
             BlobInfoWriter blobInfoWriter = new LogBlobInfoWriter(
-                    manager.getAppender(DEFAULT_LOG_BLOB_INFO_NAME, blobInfoCodec));
+                    manager.getAppender(Name.ofUrn(DEFAULT_LOG_BLOB_INFO_NAME), blobInfoCodec));
             // null blob provider don't import blobs into binarystore
             ConsumerFactory<BlobMessage> blobFactory = new BlobMessageConsumerFactory(null, blobInfoWriter, "foobar",
                     folder.newFolder().getAbsolutePath());
@@ -337,7 +342,7 @@ public abstract class TestDocumentImport {
             assertEquals(NB_QUEUE, blobConsumersStatus.size());
             // assertEquals(NB_PRODUCERS * NB_BLOBS, blobConsumersStatus.stream().mapToLong(r -> r.committed).sum());
 
-            manager.createIfNotExists(DEFAULT_LOG_DOC_NAME, NB_QUEUE);
+            manager.createIfNotExists(DEFAULT_LOG_DOC, NB_QUEUE);
             // 3. generate documents using blob reference
             ProducerFactory<DocumentMessage> randomDocFactory = new RandomDocumentMessageProducerFactory(NB_DOCUMENTS,
                     "en_US", manager, DEFAULT_LOG_BLOB_INFO_NAME);
