@@ -229,4 +229,19 @@ public class TestHtmlSanitizerServiceImpl {
         String res = service.sanitizeString(html, null);
         assertEquals(expected, res);
     }
+
+    @Test
+    public void sanitizeImageDataUri() {
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+
+        String html = "<img src=\"data:image/jpeg;base64,Zm9v\" />";
+        String expected = html;
+        String res = service.sanitizeString(html, null);
+        assertEquals(expected, res);
+
+        html = "<img src=\"data:text/plain;foo\">";
+        expected = "<img />";
+        res = service.sanitizeString(html, null);
+        assertEquals(expected, res);
+    }
 }
