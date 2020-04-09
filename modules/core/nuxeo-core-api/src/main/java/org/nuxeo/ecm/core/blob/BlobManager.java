@@ -95,22 +95,28 @@ public interface BlobManager {
     BlobProvider getBlobProvider(Blob blob);
 
     /**
-     * INTERNAL - Gets an {@link InputStream} for the data of a managed blob. Used by internal implementations, regular
-     * callers should call {@link Blob#getStream}.
+     * Gets an {@link InputStream} for the data of a managed blob.
+     * <p>
+     * If the blob is managed this is equivalent to {@link ManagedBlob#getStream()}, otherwise returns {@code null}.
      *
      * @param blob the blob
-     * @return the stream
+     * @return the stream, or {@code null} if the blob is not managed
+     * @deprecated since 11.1, use {@link Blob#getStream()} instead
      */
+    @Deprecated
     InputStream getStream(Blob blob) throws IOException;
 
     /**
-     * INTERNAL - Gets a {@link File} (if one exists) for the data of a managed blob. Used by internal implementations,
-     * regular callers should call {@link Blob#getFile}.
+     * Gets a {@link File} (if one exists) for the data of a managed blob.
+     * <p>
+     * If the blob is managed this is equivalent to {@link ManagedBlob#getFile()}, otherwise returns {@code null}.
      *
      * @param blob the blob
-     * @return the file, or {@code null} if no underlying file is available
+     * @return the file, or {@code null} if no underlying file is available or the blob is not managed
      * @since 11.1
+     * @deprecated since 11.1, use {@link Blob#getFile()} instead
      */
+    @Deprecated
     File getFile(Blob blob);
 
     /**

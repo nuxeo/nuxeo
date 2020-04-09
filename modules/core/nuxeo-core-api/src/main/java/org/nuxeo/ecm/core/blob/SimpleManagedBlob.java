@@ -18,12 +18,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple managed blob implementation holding just a key and delegating to its provider for implementation.
@@ -71,16 +66,6 @@ public class SimpleManagedBlob extends AbstractBlob implements ManagedBlob {
             throw new IllegalArgumentException("Invalid managed blob key: " + key);
         }
         return key.substring(0, colon);
-    }
-
-    @Override
-    public InputStream getStream() throws IOException {
-        return Framework.getService(BlobManager.class).getStream(this);
-    }
-
-    @Override
-    public File getFile() {
-        return Framework.getService(BlobManager.class).getFile(this);
     }
 
     @Override
