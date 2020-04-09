@@ -120,6 +120,7 @@ public class ApiBrowser extends DefaultObject {
             stats.put("xps", snap.getExtensionPointIds().size());
             stats.put("contribs", snap.getComponentIds().size());
             return getView("indexSimple").arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
+                                         .arg("bundleIds", snap.getBundleIds())
                                          .arg("stats", stats);
         } else {
             return getView("index").arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID));
