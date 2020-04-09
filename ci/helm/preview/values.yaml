@@ -21,9 +21,6 @@ cleanup:
 nuxeo:
   fullnameOverride: nuxeo-preview
   nuxeo:
-    customParams: |-
-      elasticsearch.restClient.socketTimeoutMs=300000
-      elasticsearch.restClient.connectionTimeoutMs=300000
     podLabels:
       branch: "$BRANCH_NAME"
       team: platform
