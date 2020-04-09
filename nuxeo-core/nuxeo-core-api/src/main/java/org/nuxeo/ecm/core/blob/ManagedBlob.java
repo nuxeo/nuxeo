@@ -18,7 +18,15 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Interface for {@link Blob}s created and managed by the {@link BlobManager}.
@@ -40,5 +48,33 @@ public interface ManagedBlob extends Blob {
      * @return the stored representation
      */
     String getKey();
+
+    @Override
+    default InputStream getStream() throws IOException {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        BlobProvider blobProvider = blobManager.getBlobProvider(this);
+        if (blobProvider == null) {
+            return null;
+        }
+        try {
+            return blobProvider.getStream(this);
+        } catch (IOException e) {
+            // we don't want to crash everything if the remote blob cannot be accessed
+            Logger log = LogManager.getLogger(ManagedBlob.class);
+            log.debug(e, e);
+            log.error("Failed to access file: {}", this::getKey);
+            return new ByteArrayInputStream(new byte[0]);
+        }
+    }
+
+    @Override
+    default File getFile() {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        BlobProvider blobProvider = blobManager.getBlobProvider(this);
+        if (blobProvider == null) {
+            return null;
+        }
+        return blobProvider.getFile(this);
+    }
 
 }

@@ -93,7 +93,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         BlobInfo blobInfo = newBlobInfo();
         blobInfo.key = PREFIX + ":" + USERID + ":" + JPEG_FILEID;
         Blob blob = new SimpleManagedBlob(blobInfo);
-        try (InputStream is = blobManager.getStream(blob)) {
+        try (InputStream is = blob.getStream()) {
             assertNotNull(is);
             byte[] bytes = IOUtils.toByteArray(is);
             assertEquals(JPEG_SIZE, bytes.length);
@@ -105,7 +105,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         BlobInfo blobInfo = newBlobInfo();
         blobInfo.key = PREFIX + ":" + USERID + ":" + JPEG_FILEID + ":" + JPEG_REVID;
         Blob blob = new SimpleManagedBlob(blobInfo);
-        try (InputStream is = blobManager.getStream(blob)) {
+        try (InputStream is = blob.getStream()) {
             assertNotNull(is);
             byte[] bytes = IOUtils.toByteArray(is);
             assertEquals(JPEG_REV_SIZE, bytes.length);
@@ -117,7 +117,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         BlobInfo blobInfo = newBlobInfo();
         blobInfo.key = PREFIX + ":" + USERID + ":" + GOOGLEDOC_FILEID;
         Blob blob = new SimpleManagedBlob(blobInfo);
-        try (InputStream is = blobManager.getStream(blob)) {
+        try (InputStream is = blob.getStream()) {
             assertNull(is);
         }
     }
@@ -127,7 +127,7 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         BlobInfo blobInfo = newBlobInfo();
         blobInfo.key = PREFIX + ":" + USERID + ":" + GOOGLEDOC_FILEID + ":" + GOOGLEDOC_REVID;
         Blob blob = new SimpleManagedBlob(blobInfo);
-        try (InputStream is = blobManager.getStream(blob)) {
+        try (InputStream is = blob.getStream()) {
             assertNull(is);
         }
     }
