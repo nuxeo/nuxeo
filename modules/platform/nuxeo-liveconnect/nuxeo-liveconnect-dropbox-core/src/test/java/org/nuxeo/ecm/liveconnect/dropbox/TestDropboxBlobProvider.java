@@ -60,7 +60,7 @@ public class TestDropboxBlobProvider extends DropboxTestCase {
         blobInfo.key = PREFIX + ":" + USERID + ":" + FILEID_JPEG;
         blobInfo.filename = FILEID_JPEG;
         Blob blob = new SimpleManagedBlob(blobInfo);
-        try (InputStream is = blobManager.getStream(blob)) {
+        try (InputStream is = blob.getStream()) {
             assertNotNull(is);
             byte[] bytes = IOUtils.toByteArray(is);
             assertEquals(SIZE, bytes.length);
@@ -73,7 +73,7 @@ public class TestDropboxBlobProvider extends DropboxTestCase {
         blobInfo.key = PREFIX + ":" + USERID + ":" + FILEID_DOC;
         blobInfo.filename = FILEID_DOC;
         Blob blob = new SimpleManagedBlob(blobInfo);
-        try (InputStream is = blobManager.getStream(blob)) {
+        try (InputStream is = blob.getStream()) {
             assertNull(is);
         }
     }
