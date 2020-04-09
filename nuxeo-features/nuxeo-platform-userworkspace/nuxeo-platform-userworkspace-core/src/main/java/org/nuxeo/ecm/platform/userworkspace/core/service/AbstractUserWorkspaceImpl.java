@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -261,17 +262,16 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     protected PathRef getExistingUserWorkspace(CoreSession session, PathRef rootref, Principal principal,
             String username) {
-        // try fetching a Principal for the session.hasPermission check
-        if (principal == null) {
-            principal = Framework.getService(UserManager.class).getPrincipal(username);
-        }
-
         PathRef freeRef = null;
         for (String name : getCandidateUserWorkspaceNames(username)) {
             PathRef ref = new PathRef(rootref, name);
-            if (session.exists(ref) && principal != null
-                    && session.hasPermission(principal, ref, SecurityConstants.EVERYTHING)) {
-                return ref;
+            if (session.exists(ref)
+                    && session.hasPermission(ref, SecurityConstants.EVERYTHING)) {
+                // make sure it's the username's user workspace
+                DocumentModel uw = session.getDocument(ref);
+                if (Access.GRANT == uw.getACP().getAccess(username, SecurityConstants.EVERYTHING)) {
+                    return ref;
+                }
             }
             @SuppressWarnings("boxing")
             boolean exists = CoreInstance.doPrivileged(session, (CoreSession s) -> s.exists(ref));
