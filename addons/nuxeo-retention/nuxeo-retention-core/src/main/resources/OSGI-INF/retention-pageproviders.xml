@@ -37,10 +37,10 @@
           AND ecm:mixinType != 'HiddenInNavigation'
         </fixedPart>
         <predicate parameter="ecm:fulltext" operator="FULLTEXT">
-          <field schema="rendition_search" name="ecm_fulltext" />
+          <field schema="retention_search" name="ecm_fulltext" />
         </predicate>
         <predicate parameter="dc:creator" operator="IN">
-          <field schema="rendition_search" name="dc_creator" />
+          <field schema="retention_search" name="dc_creator" />
         </predicate>
       </whereClause>
       <aggregates>
