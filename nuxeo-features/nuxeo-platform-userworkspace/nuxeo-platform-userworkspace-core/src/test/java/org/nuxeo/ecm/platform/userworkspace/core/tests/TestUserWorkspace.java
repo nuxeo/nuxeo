@@ -151,8 +151,6 @@ public class TestUserWorkspace {
 
     @Test
     public void testAnotherUserWorkspaceFinder() {
-        createUser("user1");
-
         DocumentModel context = session.getRootDocument();
         DocumentModel uw = uwm.getCurrentUserPersonalWorkspace("user1", context);
         session.save();
@@ -210,8 +208,6 @@ public class TestUserWorkspace {
 
     @Test
     public void testUserWorkspaceFinderCompat() {
-        createUser("John Von Verylonglastname");
-
         // Manually create the user workspace as if the old max size still stands
         DocumentModel context = session.getRootDocument();
         DocumentModel user1W = uwm.getCurrentUserPersonalWorkspace("user1", context);
@@ -403,27 +399,38 @@ public class TestUserWorkspace {
      */
     @Test
     public void testGetUserPersonalWorkspaceWithSameCandidateNames() {
-        // create a user a-b, candidate names will have "a-b"
-        createUser("a-b");
-        // create a user a_b, candidate names will have "a-b" also
-        createUser("a_b");
-
         try (CloseableCoreSession userSession = coreFeature.openCoreSession("toto")) {
             // use another user as #getUserPersonalWorkspace call is launching an UnrestrictedSessionRunner
             DocumentModel context = userSession.getRootDocument();
+            // user a-b, candidate names will have "a-b"
             // this will create the "a-b" user workspace
             DocumentModel uw = uwm.getUserPersonalWorkspace("a-b", context);
             assertEquals("a-b", uw.getName());
+            // user a_b, candidate names will have "a-b" also
             // "a-b" user workspace exists, but a_b user does not have permission on it
             uw = uwm.getUserPersonalWorkspace("a_b", context);
             assertEquals("a_b", uw.getName());
         }
     }
 
-    protected void createUser(String username) {
+    /**
+     * NXP-28841
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.userworkspace.core:test-security-policy.xml")
+    public void testGetUserPersonalWorkspaceFromPrivilegedSessionSecurityPolicy() {
+        // create foo user
         DocumentModel user = userManager.getBareUserModel();
-        user.setPropertyValue("username", username);
+        user.setPropertyValue("username", "foo");
         userManager.createUser(user);
+        // create foo user workspace
+        uwm.getUserPersonalWorkspace("foo", session.getRootDocument());
+
+        // fetch existing foo user workspace
+        // will pass through PrivilegedSessionSecurityPolicy that will call again #getUserPersonalWorkspace
+        DocumentModel uw = uwm.getUserPersonalWorkspace("foo", session.getRootDocument());
+        assertNotNull(uw);
+        assertEquals("foo", uw.getName());
     }
 
 }
