@@ -141,7 +141,7 @@
     <jaxb.version>2.2.11</jaxb.version>
     <jaxws-api.version>2.2.9</jaxws-api.version>
     <jaxws.version>2.2.8</jaxws.version>
-    <tomcat.version>8.5.53</tomcat.version>
+    <tomcat.version>8.5.54</tomcat.version>
     <lucene.version>6.6.1</lucene.version>
     <elasticsearch.version>5.6.3</elasticsearch.version>
     <elasticsearch.shield.version>2.3.5</elasticsearch.shield.version>
