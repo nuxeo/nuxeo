@@ -447,12 +447,12 @@ public class TestESHistoryProvider {
         searchDoc.setPropertyValue("basicauditsearch:startDate", null);
         searchDoc.setPropertyValue("basicauditsearch:endDate", null);
 
-        //test with doc
+        // test with doc
         PageProvider<LogEntry> pageProvider = getPageProvider("FIXED_PART_DOCUMENT_HISTORY_PROVIDER", 30, 0, doc);
         pageProvider.setSearchDocumentModel(searchDoc);
         assertEquals(1, pageProvider.getCurrentPage().size());
 
-        //test with proxy to check that the doc uuid is correctly set in the fixed part
+        // test with proxy to check that the doc uuid is correctly set in the fixed part
         pageProvider = getPageProvider("FIXED_PART_DOCUMENT_HISTORY_PROVIDER", 30, 0, proxy);
         pageProvider.setSearchDocumentModel(searchDoc);
         assertTrue(pageProvider.getCurrentPage().isEmpty());
