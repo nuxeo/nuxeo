@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.userworkspace.test.securitypolicy">
+
+  <extension point="policies" target="org.nuxeo.ecm.core.security.SecurityService">
+    <policy name="test" class="org.nuxeo.ecm.platform.userworkspace.core.tests.PrivilegedSessionSecurityPolicy" />
+  </extension>
+
+</component>
