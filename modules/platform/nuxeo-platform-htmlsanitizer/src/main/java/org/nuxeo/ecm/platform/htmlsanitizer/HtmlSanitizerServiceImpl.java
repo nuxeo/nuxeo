@@ -137,6 +137,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
 
     protected void initializeBuilder(HtmlPolicyBuilder builder) {
         builder.allowStandardUrlProtocols();
+        builder.allowUrlProtocols("data"); // still enforces regex matchers from policy
         builder.allowStyling();
         builder.disallowElements("script");
     }
