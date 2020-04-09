@@ -662,61 +662,6 @@ public class NuxeoLauncher {
     }
 
     /**
-     * Do not directly call this method without a call to {@link #checkNoRunningServer()}
-     *
-     * @see #doStart()
-     * @throws IOException In case of issue with process.
-     * @throws InterruptedException If any thread has interrupted the current thread.
-     */
-    protected void start(boolean logProcessOutput) throws IOException, InterruptedException {
-        List<String> startCommand = new ArrayList<>();
-        startCommand.add(getJavaExecutable().getPath());
-        startCommand.addAll(getJavaOptsProperty(Function.identity()));
-        startCommand.add("-cp");
-        startCommand.add(getClassPath());
-        startCommand.addAll(getNuxeoProperties());
-        startCommand.addAll(getServerProperties());
-        if (strict) {
-            startCommand.add("-Dnuxeo.start.strict=true");
-        }
-        startCommand.add(TomcatConfigurator.STARTUP_CLASS);
-        startCommand.add("start");
-        startCommand.addAll(Arrays.asList(params));
-        ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
-        pb.directory(configurationGenerator.getNuxeoHome());
-        log.debug("Server command: {}", pb::command);
-        nuxeoProcess = pb.start();
-        Thread.sleep(1000);
-        boolean processExited = false;
-        // Check if process exited early
-        if (nuxeoProcess == null) {
-            log.error("Server start failed with command: {}", pb::command);
-            if (SystemUtils.IS_OS_WINDOWS && configurationGenerator.getNuxeoHome().getPath().contains(" ")) {
-                // NXP-17679
-                log.error("The server path must not contain spaces under Windows.");
-            }
-            return;
-        }
-        try {
-            int exitValue = nuxeoProcess.exitValue();
-            if (exitValue != 0) {
-                log.error("Server start failed ({}).", exitValue);
-            }
-            processExited = true;
-        } catch (IllegalThreadStateException e) {
-            // Normal case
-        }
-        logProcessStreams(nuxeoProcess, processExited || logProcessOutput);
-        if (!processExited) {
-            if (getPid() != null) {
-                log.warn("Server started with process ID {}.", pid);
-            } else {
-                log.warn("Sent server start command but could not get process ID.");
-            }
-        }
-    }
-
-    /**
      * Gets the Java options defined in Nuxeo configuration files, e.g. <tt>bin/nuxeo.conf</tt> and
      * <tt>bin/nuxeoctl</tt>.
      *
@@ -1696,24 +1641,6 @@ public class NuxeoLauncher {
     }
 
     /**
-     * @see #doStartAndWait(boolean)
-     */
-    public boolean doStartAndWait() throws PackageException {
-        boolean started = doStartAndWait(false);
-        if (started && !quiet) {
-            log.info("Go to {}", this::getURL);
-        }
-        return started;
-    }
-
-    /**
-     * @see #stop(boolean)
-     */
-    public void stop() {
-        stop(false);
-    }
-
-    /**
      * Call {@link #doStart(boolean)} with false as parameter.
      *
      * @see #doStart(boolean)
@@ -1721,6 +1648,17 @@ public class NuxeoLauncher {
      */
     public boolean doStart() throws PackageException {
         boolean started = doStart(false);
+        if (started && !quiet) {
+            log.info("Go to {}", this::getURL);
+        }
+        return started;
+    }
+
+    /**
+     * @see #doStartAndWait(boolean)
+     */
+    public boolean doStartAndWait() throws PackageException {
+        boolean started = doStartAndWait(false);
         if (started && !quiet) {
             log.info("Go to {}", this::getURL);
         }
@@ -1757,6 +1695,125 @@ public class NuxeoLauncher {
             log.debug("Removed shutdown hook");
         } catch (IllegalStateException e) {
             // the virtual machine is already in the process of shutting down
+        }
+    }
+
+    /**
+     * Starts the server in background.
+     *
+     * @return true if server successfully started
+     */
+    public boolean doStart(boolean logProcessOutput) throws PackageException {
+        errorValue = EXIT_CODE_OK;
+        boolean serverStarted = false;
+        try {
+            if (reloadConfiguration) {
+                configurationGenerator = new ConfigurationGenerator(quiet, debug);
+                configurationGenerator.init();
+            } else {
+                // Ensure reload on next start
+                reloadConfiguration = true;
+            }
+            configure();
+            configurationGenerator.verifyInstallation();
+
+            log.debug("Check if install in progress...");
+            if (configurationGenerator.isInstallInProgress()) {
+                if (!getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
+                        ignoreMissing)) {
+                    errorValue = EXIT_CODE_ERROR;
+                    log.error(
+                            "Start interrupted due to failure on pending actions. You can resume with a new start;"
+                                    + " or you can restore the file '{}', optionally using the '--{}' option.",
+                            configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING);
+                    return false;
+                }
+
+                return doStart(logProcessOutput);
+            }
+
+            start(logProcessOutput);
+            serverStarted = isRunning();
+            if (pid != null) {
+                File pidFile = new File(configurationGenerator.getPidDir(), "nuxeo.pid");
+                try (FileWriter writer = new FileWriter(pidFile)) {
+                    writer.write(pid);
+                }
+            }
+        } catch (ConfigurationException e) {
+            errorValue = EXIT_CODE_NOT_CONFIGURED;
+            log.error("Could not run configuration: {}", e::getMessage);
+            log.debug(e, e);
+        } catch (IOException e) {
+            errorValue = EXIT_CODE_ERROR;
+            log.error("Could not start process: {}", e::getMessage);
+            log.debug(e, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } catch (IllegalStateException e) {
+            if (strict) {
+                // assume program is not configured because of http port binding
+                // conflict
+                errorValue = EXIT_CODE_NOT_CONFIGURED;
+            }
+            log.error(e.getMessage());
+        }
+        return serverStarted;
+    }
+
+    /**
+     * Do not directly call this method without a call to {@link #checkNoRunningServer()}
+     *
+     * @see #doStart()
+     * @throws IOException In case of issue with process.
+     * @throws InterruptedException If any thread has interrupted the current thread.
+     */
+    protected void start(boolean logProcessOutput) throws IOException, InterruptedException {
+        List<String> startCommand = new ArrayList<>();
+        startCommand.add(getJavaExecutable().getPath());
+        startCommand.addAll(getJavaOptsProperty(Function.identity()));
+        startCommand.add("-cp");
+        startCommand.add(getClassPath());
+        startCommand.addAll(getNuxeoProperties());
+        startCommand.addAll(getServerProperties());
+        if (strict) {
+            startCommand.add("-Dnuxeo.start.strict=true");
+        }
+        startCommand.add(TomcatConfigurator.STARTUP_CLASS);
+        startCommand.add("start");
+        startCommand.addAll(Arrays.asList(params));
+        ProcessBuilder pb = new ProcessBuilder(getOSCommand(startCommand));
+        pb.directory(configurationGenerator.getNuxeoHome());
+        log.debug("Server command: {}", pb::command);
+        nuxeoProcess = pb.start();
+        Thread.sleep(1000);
+        boolean processExited = false;
+        // Check if process exited early
+        if (nuxeoProcess == null) {
+            log.error("Server start failed with command: {}", pb::command);
+            if (SystemUtils.IS_OS_WINDOWS && configurationGenerator.getNuxeoHome().getPath().contains(" ")) {
+                // NXP-17679
+                log.error("The server path must not contain spaces under Windows.");
+            }
+            return;
+        }
+        try {
+            int exitValue = nuxeoProcess.exitValue();
+            if (exitValue != 0) {
+                log.error("Server start failed ({}).", exitValue);
+            }
+            processExited = true;
+        } catch (IllegalThreadStateException e) {
+            // Normal case
+        }
+        logProcessStreams(nuxeoProcess, processExited || logProcessOutput);
+        if (!processExited) {
+            if (getPid() != null) {
+                log.warn("Server started with process ID {}.", pid);
+            } else {
+                log.warn("Sent server start command but could not get process ID.");
+            }
         }
     }
 
@@ -1843,70 +1900,6 @@ public class NuxeoLauncher {
             log.warn("Failed to contact Nuxeo for getting startup summary", e);
             return "";
         }
-    }
-
-    /**
-     * Starts the server in background.
-     *
-     * @return true if server successfully started
-     */
-    public boolean doStart(boolean logProcessOutput) throws PackageException {
-        errorValue = EXIT_CODE_OK;
-        boolean serverStarted = false;
-        try {
-            if (reloadConfiguration) {
-                configurationGenerator = new ConfigurationGenerator(quiet, debug);
-                configurationGenerator.init();
-            } else {
-                // Ensure reload on next start
-                reloadConfiguration = true;
-            }
-            configure();
-            configurationGenerator.verifyInstallation();
-
-            log.debug("Check if install in progress...");
-            if (configurationGenerator.isInstallInProgress()) {
-                if (!getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true,
-                        ignoreMissing)) {
-                    errorValue = EXIT_CODE_ERROR;
-                    log.error(
-                            "Start interrupted due to failure on pending actions. You can resume with a new start;"
-                                    + " or you can restore the file '{}', optionally using the '--{}' option.",
-                            configurationGenerator.getInstallFile().getName(), OPTION_IGNORE_MISSING);
-                    return false;
-                }
-
-                return doStart(logProcessOutput);
-            }
-
-            start(logProcessOutput);
-            serverStarted = isRunning();
-            if (pid != null) {
-                File pidFile = new File(configurationGenerator.getPidDir(), "nuxeo.pid");
-                try (FileWriter writer = new FileWriter(pidFile)) {
-                    writer.write(pid);
-                }
-            }
-        } catch (ConfigurationException e) {
-            errorValue = EXIT_CODE_NOT_CONFIGURED;
-            log.error("Could not run configuration: {}", e::getMessage);
-            log.debug(e, e);
-        } catch (IOException e) {
-            errorValue = EXIT_CODE_ERROR;
-            log.error("Could not start process: {}", e::getMessage);
-            log.debug(e, e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        } catch (IllegalStateException e) {
-            if (strict) {
-                // assume program is not configured because of http port binding
-                // conflict
-                errorValue = EXIT_CODE_NOT_CONFIGURED;
-            }
-            log.error(e.getMessage());
-        }
-        return serverStarted;
     }
 
     /**
@@ -2001,6 +1994,13 @@ public class NuxeoLauncher {
         log.debug("Add shutdown hook");
         shutdownHook = new ShutdownThread(this);
         Runtime.getRuntime().addShutdownHook(shutdownHook);
+    }
+
+    /**
+     * @see #stop(boolean)
+     */
+    public void stop() {
+        stop(false);
     }
 
     /**
