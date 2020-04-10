@@ -18,8 +18,8 @@
       <th>Version</th>
       <th>Creation date</th>
       <th>Release date</th>
-      <th></th>
-      <th></th>
+      <th>Flags</th>
+      <th>Actions</th>
     </tr>
 
     <tr>
