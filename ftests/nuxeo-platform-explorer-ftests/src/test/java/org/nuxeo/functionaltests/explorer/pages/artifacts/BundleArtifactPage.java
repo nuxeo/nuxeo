@@ -18,13 +18,24 @@
  */
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @since 11.1
  */
 public class BundleArtifactPage extends ArtifactPage {
+
+    @Required
+    @FindBy(xpath = "//table[@class='listTable']")
+    public WebElement mavenDetails;
 
     public BundleArtifactPage(WebDriver driver) {
         super(driver);
@@ -33,6 +44,8 @@ public class BundleArtifactPage extends ArtifactPage {
     @Override
     public void check() {
         checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core", null);
+        checkGroupId("org.nuxeo.ecm.platform");
+        checkArtifactId("nuxeo-apidoc-core");
     }
 
     @Override
@@ -40,5 +53,18 @@ public class BundleArtifactPage extends ArtifactPage {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header.checkSelectedTab(header.bundles);
     }
+
+    public void checkGroupId(String id) {
+        WebElement groupId = mavenDetails.findElement(By.xpath(".//tr[2]//td"));
+        assertNotNull(groupId);
+        assertEquals(id, groupId.getText());
+    }
+
+    public void checkArtifactId(String id) {
+        WebElement artifactId = mavenDetails.findElement(By.xpath(".//tr[3]//td"));
+        assertNotNull(artifactId);
+        assertEquals(id, artifactId.getText());
+    }
+
 
 }

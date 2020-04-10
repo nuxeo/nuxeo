@@ -32,7 +32,7 @@
   <h2>Maven artifact</h2>
   <table class="listTable">
     <tr><th>file</th><td>${nxItem.fileName}</td></tr>
-    <tr><th>groupId</th><td>${nxItem.artifactGroupId}</td></tr>
+    <tr><th>groupId</th><td>${nxItem.groupId}</td></tr>
     <tr><th>artifactId</th><td>${nxItem.artifactId}</td></tr>
     <tr><th>version</th><td>${nxItem.artifactVersion}</td></tr>
   </table>
