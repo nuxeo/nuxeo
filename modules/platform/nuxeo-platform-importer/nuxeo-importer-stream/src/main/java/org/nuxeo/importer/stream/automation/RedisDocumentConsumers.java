@@ -76,9 +76,6 @@ public class RedisDocumentConsumers {
     @Param(name = "logName", required = false)
     protected String logName = DEFAULT_LOG_DOC_NAME;
 
-    @Param(name = "logConfig", required = false)
-    protected String logConfig = DEFAULT_LOG_CONFIG;
-
     @Param(name = "waitMessageTimeoutSeconds", required = false)
     protected Integer waitMessageTimeoutSeconds = 20;
 
@@ -94,7 +91,7 @@ public class RedisDocumentConsumers {
                                                       .waitMessageTimeout(Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                       .build();
         log.warn(String.format("Import documents into Redis from log: %s, with policy: %s", logName, consumerPolicy));
-        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        LogManager manager = Framework.getService(StreamService.class).getLogManager();
         Codec<DocumentMessage> codec = StreamImporters.getDocCodec();
         try (ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(logName, manager, codec,
                 new RedisDocumentMessageConsumerFactory(redisPrefix), consumerPolicy)) {

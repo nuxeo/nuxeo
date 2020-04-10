@@ -40,8 +40,7 @@
       event types are selected for auditing.
 
       <programlisting>
-        <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-                   point="event">
+        <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">
           <event name="documentCreated" />
           <event name="documentCreatedByCopy" />
           <event name="documentDuplicated" />
@@ -72,8 +71,7 @@
       regist:ering results into a map indexed by names.
     </documentation>
 
-    <object
-            class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
+    <object class="org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor" />
   </extension-point>
 
   <extension-point name="adapter">
@@ -112,8 +110,7 @@
     <object class="org.nuxeo.ecm.platform.audit.service.extension.AuditBulkerDescriptor" />
   </extension-point>
 
-  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-             point="event">
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">
     <documentation>
       Those default auditable events match Nuxeo core base events.
       <p />
@@ -153,8 +150,7 @@
     <event name="afterRemoveLegalHold" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService"
-             point="backend">
+  <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="backend">
 
     <backend class="org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend">
       <require>org.nuxeo.ecm.core.persistence.PersistenceComponent</require>
@@ -164,21 +160,16 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <listener name="auditLoggerListener" async="false" postCommit="false" priority="500"
-              class="org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener" />
-  </extension>
-
-  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <logConfig name="${nuxeo.stream.audit.log.config:=audit}" />
+      class="org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <streamProcessor name="auditLogWriter" logConfig="${nuxeo.stream.audit.log.config:=audit}"
-                     defaultConcurrency="1" defaultPartitions="1" defaultCodec="${nuxeo.stream.audit.log.codec:=legacy}"
-                     class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter"
-                     enabled="${nuxeo.stream.audit.enabled:=true}">
-      <policy name="AuditLogWriter" batchCapacity="${nuxeo.stream.audit.batch.size:=10}"
-              batchThreshold="${nuxeo.stream.audit.batch.threshold.ms:=50}ms"
-              maxRetries="20" delay="1s" maxDelay="60s" continueOnFailure="false" />
+    <streamProcessor name="auditWriter" defaultConcurrency="1" defaultPartitions="1"
+      defaultCodec="${nuxeo.stream.audit.log.codec:=legacy}" class="org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter"
+      enabled="${nuxeo.stream.audit.enabled:=true}">
+      <policy name="default" batchCapacity="${nuxeo.stream.audit.batch.size:=10}"
+        batchThreshold="${nuxeo.stream.audit.batch.threshold.ms:=50}ms" maxRetries="20" delay="1s" maxDelay="60s"
+        continueOnFailure="false" />
     </streamProcessor>
   </extension>
 

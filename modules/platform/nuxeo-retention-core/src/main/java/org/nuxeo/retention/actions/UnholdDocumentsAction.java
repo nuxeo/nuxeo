@@ -43,18 +43,20 @@ public class UnholdDocumentsAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "unholdDocumentsAction";
 
+    public static final String ACTION_FULL_NAME = "retention/" + ACTION_NAME;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(UnsetLegalHoldComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
     public static class UnsetLegalHoldComputation extends AbstractBulkComputation {
 
         public UnsetLegalHoldComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

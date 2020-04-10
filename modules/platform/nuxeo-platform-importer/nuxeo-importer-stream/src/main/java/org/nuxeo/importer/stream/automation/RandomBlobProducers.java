@@ -73,16 +73,13 @@ public class RandomBlobProducers {
     @Param(name = "logSize", required = false)
     protected Integer logSize;
 
-    @Param(name = "logConfig", required = false)
-    protected String logConfig = DEFAULT_LOG_CONFIG;
-
     @Param(name = "blobMarker", required = false)
     protected String blobMarker;
 
     @OperationMethod
     public void run() throws OperationException {
         checkAccess(ctx);
-        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        LogManager manager = Framework.getService(StreamService.class).getLogManager();
         manager.createIfNotExists(Name.ofUrn(logName), getLogSize());
         Codec<BlobMessage> codec = StreamImporters.getBlobCodec();
         try (ProducerPool<BlobMessage> producers = new ProducerPool<>(logName, manager, codec,

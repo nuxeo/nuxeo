@@ -48,13 +48,15 @@ public class RemoveProxyAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "removeProxy";
 
+    public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
+
     public static final String QUERY_TEMPLATE = "SELECT ecm:uuid FROM Document WHERE ecm:isProxy=1 AND ecm:uuid IN ('%s')";
 
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(RemoveProxyComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
                                        OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
@@ -62,7 +64,7 @@ public class RemoveProxyAction implements StreamProcessorTopology {
     public static class RemoveProxyComputation extends AbstractBulkComputation {
 
         public RemoveProxyComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

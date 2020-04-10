@@ -45,6 +45,11 @@ public interface BulkAdminService {
     String getDefaultScroller(String action);
 
     /**
+     * @since 11.1
+     */
+    String getInputStream(String action);
+
+    /**
      * Returns true if the action id is to be accessible through http API.
      *
      * @since 10.3

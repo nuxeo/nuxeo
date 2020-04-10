@@ -88,9 +88,6 @@ public class BlobConsumers {
     @Param(name = "logBlobInfo", required = false)
     protected String logBlobInfoName = DEFAULT_LOG_BLOB_INFO_NAME;
 
-    @Param(name = "logConfig", required = false)
-    protected String logConfig = DEFAULT_LOG_CONFIG;
-
     @Param(name = "waitMessageTimeoutSeconds", required = false)
     protected Integer waitMessageTimeoutSeconds = 20;
 
@@ -119,7 +116,7 @@ public class BlobConsumers {
                                                       .maxThreads(getNbThreads())
                                                       .waitMessageTimeout(Duration.ofSeconds(waitMessageTimeoutSeconds))
                                                       .build();
-        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        LogManager manager = Framework.getService(StreamService.class).getLogManager();
         Codec<BlobMessage> codec = StreamImporters.getBlobCodec();
         try (BlobInfoWriter blobInfoWriter = getBlobInfoWriter(manager)) {
             ConsumerPool<BlobMessage> consumers = new ConsumerPool<>(logName, manager, codec,

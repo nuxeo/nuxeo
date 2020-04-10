@@ -4,15 +4,15 @@
   <require>org.nuxeo.ecm.core.bulk</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="recomputeThumbnails" bucketSize="100" batchSize="10" httpEnabled="false"/>
+    <action name="recomputeThumbnails" inputStream="bulk/recomputeThumbnails" bucketSize="100" batchSize="10"
+      httpEnabled="false" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="recomputeThumbnails"
-      class="org.nuxeo.ecm.platform.thumbnail.action.RecomputeThumbnailsAction" logConfig="bulk" defaultConcurrency="2"
+      class="org.nuxeo.ecm.platform.thumbnail.action.RecomputeThumbnailsAction" defaultConcurrency="2"
       defaultPartitions="2">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
-      <option name="produceImmediate">false</option>
     </streamProcessor>
   </extension>
 

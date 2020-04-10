@@ -4,16 +4,14 @@
   <require>org.nuxeo.ecm.core.bulk</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="recomputeViews" bucketSize="100" batchSize="50" httpEnabled="false"
+    <action name="recomputeViews" inputStream="bulk/recomputeViews" bucketSize="100" batchSize="50" httpEnabled="false"
       validationClass="org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsActionValidation" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <streamProcessor name="recomputeViews"
-      class="org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction" logConfig="bulk" defaultConcurrency="2"
-      defaultPartitions="2">
+    <streamProcessor name="recomputeViews" class="org.nuxeo.ecm.platform.picture.recompute.RecomputeViewsAction"
+      defaultConcurrency="2" defaultPartitions="2">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
-      <option name="produceImmediate">false</option>
     </streamProcessor>
   </extension>
 

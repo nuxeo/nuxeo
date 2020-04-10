@@ -20,6 +20,7 @@
 package org.nuxeo.elasticsearch.bulk;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.bulk.IndexAction.ACTION_FULL_NAME;
 import static org.nuxeo.elasticsearch.bulk.IndexAction.ACTION_NAME;
 
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class IndexRequestComputation extends AbstractBulkComputation {
     protected String bucketKey;
 
     public IndexRequestComputation() {
-        super(ACTION_NAME, 1);
+        super(ACTION_FULL_NAME, 1);
     }
 
     @Override

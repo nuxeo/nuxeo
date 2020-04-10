@@ -68,7 +68,7 @@ public class LogPartitionGroup {
 
     @Override
     public String toString() {
-        return String.format("%s:%s-%02d", group, name, partition);
+        return String.format("%s:%s-%02d", group.getUrn(), name.getUrn(), partition);
     }
 
 }

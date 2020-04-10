@@ -43,7 +43,7 @@ public class IndexCompletionComputation extends AbstractComputation {
 
     private static final Logger log = LogManager.getLogger(IndexCompletionComputation.class);
 
-    public static final String NAME = "indexCompletion";
+    public static final String NAME = "bulk/indexCompletion";
 
     protected Codec<BulkStatus> codec;
 

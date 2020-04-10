@@ -58,19 +58,21 @@ public class BulkServiceImpl implements BulkService {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(BulkServiceImpl.class);
 
+    // log config is not needed anymore
+    @Deprecated
     public static final String BULK_LOG_MANAGER_NAME = "bulk";
 
     public static final String BULK_KV_STORE_NAME = "bulk";
 
-    public static final String COMMAND_STREAM = "command";
+    public static final String COMMAND_STREAM = "bulk/command";
 
     public static final Name COMMAND_STREAM_NAME = Name.ofUrn(COMMAND_STREAM);
 
-    public static final String STATUS_STREAM = "status";
+    public static final String STATUS_STREAM = "bulk/status";
 
     public static final Name STATUS_STREAM_NAME = Name.ofUrn(STATUS_STREAM);
 
-    public static final String DONE_STREAM = "done";
+    public static final String DONE_STREAM = "bulk/done";
 
     public static final Name DONE_STREAM_NAME = Name.ofUrn(DONE_STREAM);
 
@@ -156,7 +158,7 @@ public class BulkServiceImpl implements BulkService {
 
     @SuppressWarnings("resource") // LogManager not ours to close
     protected String submit(String shardKey, String key, byte[] bytes) {
-        LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
+        LogManager logManager = Framework.getService(StreamService.class).getLogManager();
         LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM_NAME,
                 Framework.getService(CodecService.class).getCodec(RECORD_CODEC, Record.class));
         Record record = Record.of(key, bytes);
@@ -229,7 +231,7 @@ public class BulkServiceImpl implements BulkService {
 
     @SuppressWarnings("resource") // LogManager not ours to close
     protected void abort(String key, byte[] bytes) {
-        LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
+        LogManager logManager = Framework.getService(StreamService.class).getLogManager();
         LogAppender<Record> logAppender = logManager.getAppender(STATUS_STREAM_NAME);
         logAppender.append(key, Record.of(key, bytes));
     }

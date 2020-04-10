@@ -75,16 +75,13 @@ public class RandomDocumentProducers {
     @Param(name = "logBlobInfo", required = false)
     protected String logBlobInfoName;
 
-    @Param(name = "logConfig", required = false)
-    protected String logConfig = DEFAULT_LOG_CONFIG;
-
     @Param(name = "countFolderAsDocument", required = false)
     protected Boolean countFolderAsDocument = true;
 
     @OperationMethod
     public void run() throws OperationException {
         RandomBlobProducers.checkAccess(ctx);
-        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        LogManager manager = Framework.getService(StreamService.class).getLogManager();
         manager.createIfNotExists(Name.ofUrn(logName), getLogSize());
         RandomDocumentMessageProducerFactory factory;
         if (logBlobInfoName != null) {

@@ -49,7 +49,7 @@ public class SortBlob extends AbstractTransientBlobComputation {
 
     private static final Logger log = LogManager.getLogger(SortBlob.class);
 
-    public static final String NAME = "sortBlob";
+    public static final String NAME = "bulk/sortBlob";
 
     public static final String SORT_PARAMETER = "sort";
 

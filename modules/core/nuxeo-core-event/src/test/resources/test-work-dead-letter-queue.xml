@@ -3,7 +3,7 @@
   <require>org.nuxeo.ecm.core.work.service</require>
 
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <logConfig name="default" />
+    <logConfig name="default" default="true" />
   </extension>
 
 </component>

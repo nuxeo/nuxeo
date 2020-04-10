@@ -13,24 +13,26 @@
   <require>org.nuxeo.ecm.core.bulk.config</require>
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">
-    <logConfig name="default" type="kafka">
+    <logConfig name="default" type="kafka" default="true">
       <option name="kafkaConfig">default</option>
     </logConfig>
     <logConfig name="bulk" type="kafka">
       <option name="kafkaConfig">bulk</option>
-      <log name="command" size="${nuxeo.core.bulk.scroller.concurrencyMax}" />
-      <log name="status" size="${nuxeo.core.bulk.status.concurrencyMax}" />
-      <log name="done" size="${nuxeo.core.bulk.done.concurrencyMax}" />
+      <log name="bulk/command" size="${nuxeo.core.bulk.scroller.concurrencyMax}" />
+      <log name="bulk/status" size="${nuxeo.core.bulk.status.concurrencyMax}" />
+      <log name="bulk/done" size="${nuxeo.core.bulk.done.concurrencyMax}" />
+      <match name="bulk/" />
     </logConfig>
   <#else>
-    <logConfig name="default" type="chronicle">
+    <logConfig name="default" type="chronicle" default="true">
       <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
     </logConfig>
     <logConfig name="bulk" type="chronicle">
       <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
-      <log name="command" size="${nuxeo.core.bulk.scroller.concurrencyMax}" />
-      <log name="status" size="${nuxeo.core.bulk.status.concurrencyMax}" />
-      <log name="done" size="${nuxeo.core.bulk.done.concurrencyMax}" />
+      <log name="bulk/command" size="${nuxeo.core.bulk.scroller.concurrencyMax}" />
+      <log name="bulk/status" size="${nuxeo.core.bulk.status.concurrencyMax}" />
+      <log name="bulk/done" size="${nuxeo.core.bulk.done.concurrencyMax}" />
+      <match name="bulk/" />
     </logConfig>
   </#if>
   </extension>
@@ -45,12 +47,14 @@
   </extension-point>
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">
-    <logConfig name="${nuxeo.stream.work.log.config}" type="kafka">
+    <logConfig name="work" type="kafka">
       <option name="kafkaConfig">default</option>
+      <match name="work/" />
     </logConfig>
   <#else>
-    <logConfig name="${nuxeo.stream.work.log.config}" type="chronicle">
+    <logConfig name="work" type="chronicle">
       <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+      <match name="work/" />
     </logConfig>
   </#if>
   </extension>
@@ -68,12 +72,14 @@
 <#if "${nuxeo.stream.audit.enabled}" == "true">
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">
-     <logConfig name="${nuxeo.stream.audit.log.config}" type="kafka">
+     <logConfig name="audit" type="kafka">
        <option name="kafkaConfig">default</option>
+       <match name="audit/" />
      </logConfig>
   <#else>
-     <logConfig name="${nuxeo.stream.audit.log.config}" type="chronicle">
+     <logConfig name="audit" type="chronicle">
        <option name="retention">${nuxeo.stream.chronicle.retention.duration}</option>
+       <match name="audit/" />
      </logConfig>
   </#if>
   </extension>
@@ -86,21 +92,22 @@
 <#if "${nuxeo.pubsub.provider}" == "stream">
  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
   <#if "${kafka.enabled}" == "true">
-     <logConfig name="${nuxeo.stream.pubsub.log.config}" type="kafka">
+     <logConfig name="pubsub" type="kafka">
        <option name="kafkaConfig">default</option>
-       <log name="${nuxeo.stream.pubsub.log.name}" size="1" />
+       <log name="pubsub/pubsub" size="1" />
+       <match name="pubsub/" />
      </logConfig>
   <#else>
-     <logConfig name="${nuxeo.stream.pubsub.log.config}" type="chronicle">
+     <logConfig name="pubsub" type="chronicle">
        <option name="retention">4h</option>
-       <log name="${nuxeo.stream.pubsub.log.name}" size="1" />
+       <log name="pubsub/pubsub" size="1" />
+       <match name="pubsub/" />
      </logConfig>
   </#if>
   </extension>
   <extension target="org.nuxeo.runtime.pubsub.PubSubService" point="configuration">
     <provider class="org.nuxeo.runtime.pubsub.StreamPubSubProvider">
-      <option name="logConfig">${nuxeo.stream.pubsub.log.config}</option>
-      <option name="logName">${nuxeo.stream.pubsub.log.name}</option>
+      <option name="logName">pubsub/pubsub</option>
       <option name="codec">${nuxeo.stream.pubsub.log.codec}</option>
     </provider>
   </extension>

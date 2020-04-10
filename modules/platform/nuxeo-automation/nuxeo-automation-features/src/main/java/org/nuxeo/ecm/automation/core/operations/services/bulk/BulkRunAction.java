@@ -22,6 +22,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -49,6 +51,8 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
  */
 @Operation(id = BulkRunAction.ID, category = Constants.CAT_SERVICES, label = "Run a bulk command", addToStudio = true, description = "Run a bulk action on a set of documents expressed by a NXQL.")
 public class BulkRunAction {
+
+    private static Logger log = LogManager.getLogger(BulkRunAction.class);
 
     public static final String ID = "Bulk.RunAction";
 

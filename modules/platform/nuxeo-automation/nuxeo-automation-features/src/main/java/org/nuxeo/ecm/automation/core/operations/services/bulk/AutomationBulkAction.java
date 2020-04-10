@@ -56,6 +56,8 @@ public class AutomationBulkAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "automation";
 
+    public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
+
     public static final String OPERATION_ID = "operationId";
 
     public static final String OPERATION_PARAMETERS = "parameters";
@@ -63,7 +65,7 @@ public class AutomationBulkAction implements StreamProcessorTopology {
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                       .addComputation(AutomationComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                       .addComputation(AutomationComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
                                OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
@@ -82,7 +84,7 @@ public class AutomationBulkAction implements StreamProcessorTopology {
         protected Map<String, ?> params;
 
         public AutomationComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

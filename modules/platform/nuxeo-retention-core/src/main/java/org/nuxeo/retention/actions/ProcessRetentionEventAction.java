@@ -54,11 +54,13 @@ public class ProcessRetentionEventAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "processRetentionEvent";
 
+    public static final String ACTION_FULL_NAME = "retention/" + ACTION_NAME;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(ProcessRetentionEventComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
@@ -71,7 +73,7 @@ public class ProcessRetentionEventAction implements StreamProcessorTopology {
         protected RetentionManager retentionManager;
 
         public ProcessRetentionEventComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

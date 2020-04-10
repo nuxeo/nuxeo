@@ -43,12 +43,14 @@ public class CSVExportAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "csvExport";
 
+    public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         boolean produceImmediate = getOptionAsBoolean(options, PRODUCE_IMMEDIATE_OPTION, false);
         return Topology.builder()
                        .addComputation(CSVProjectionComputation::new, //
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
                                        OUTPUT_1 + ":" + MakeBlob.NAME))
                        .addComputation(() -> new MakeBlob(produceImmediate), //
                                Arrays.asList(INPUT_1 + ":" + MakeBlob.NAME, //

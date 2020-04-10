@@ -87,6 +87,8 @@ public class BulkScrollerComputation extends AbstractComputation {
 
     protected int bucketSize;
 
+    protected String actionStream;
+
     /**
      * @param name the computation name
      * @param nbOutputStreams the number of registered bulk action streams
@@ -114,7 +116,7 @@ public class BulkScrollerComputation extends AbstractComputation {
         try {
             command = BulkCodecs.getCommandCodec().decode(record.getData());
             commandId = command.getId();
-            computeScrollAndBucketSize(command);
+            getCommandConfiguration(command);
             updateStatusAsScrolling(context, commandId);
 
             long documentCount = 0;
@@ -129,7 +131,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                     List<String> docIds = scroll.next();
                     documentIds.addAll(docIds);
                     while (documentIds.size() >= bucketSize) {
-                        produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
+                        produceBucket(context, commandId, bucketSize, bucketNumber++);
                     }
                     documentCount += docIds.size();
                 }
@@ -137,7 +139,7 @@ public class BulkScrollerComputation extends AbstractComputation {
             // send remaining document ids
             // there's at most one record because we loop while scrolling
             if (!documentIds.isEmpty()) {
-                produceBucket(context, command.getAction(), commandId, bucketSize, bucketNumber++);
+                produceBucket(context, commandId, bucketSize, bucketNumber++);
             }
             updateStatusAfterScroll(context, commandId, documentCount);
         } catch (IllegalArgumentException | QueryParseException | DocumentNotFoundException e) {
@@ -166,9 +168,10 @@ public class BulkScrollerComputation extends AbstractComputation {
         return service.scroll(request);
     }
 
-    protected void computeScrollAndBucketSize(BulkCommand command) {
+    protected void getCommandConfiguration(BulkCommand command) {
+        BulkAdminService actionService = Framework.getService(BulkAdminService.class);
         bucketSize = command.getBucketSize() > 0 ? command.getBucketSize()
-                : Framework.getService(BulkAdminService.class).getBucketSize(command.getAction());
+                : actionService.getBucketSize(command.getAction());
         scrollSize = scrollBatchSize;
         if (bucketSize > scrollSize) {
             if (bucketSize <= MAX_SCROLL_SIZE) {
@@ -179,6 +182,7 @@ public class BulkScrollerComputation extends AbstractComputation {
                 scrollSize = bucketSize = MAX_SCROLL_SIZE;
             }
         }
+        actionStream = actionService.getInputStream(command.getAction());
     }
 
     protected boolean isAbortedCommand(String commandId) {
@@ -224,16 +228,15 @@ public class BulkScrollerComputation extends AbstractComputation {
     /**
      * Produces a bucket as a record to appropriate bulk action stream.
      */
-    protected void produceBucket(ComputationContext context, String action, String commandId, int bucketSize,
-            long bucketNumber) {
+    protected void produceBucket(ComputationContext context, String commandId, int bucketSize, long bucketNumber) {
         List<String> ids = documentIds.subList(0, min(bucketSize, documentIds.size()));
         BulkBucket bucket = new BulkBucket(commandId, ids);
         String key = commandId + ":" + Long.toString(bucketNumber);
         Record record = Record.of(key, BulkCodecs.getBucketCodec().encode(bucket));
         if (produceImmediate) {
-            ((ComputationContextImpl) context).produceRecordImmediate(action, record);
+            ((ComputationContextImpl) context).produceRecordImmediate(actionStream, record);
         } else {
-            context.produceRecord(action, record);
+            context.produceRecord(actionStream, record);
         }
         ids.clear(); // this clear the documentIds part that has been sent
     }

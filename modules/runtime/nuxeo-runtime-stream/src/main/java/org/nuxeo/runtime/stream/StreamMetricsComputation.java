@@ -52,7 +52,7 @@ public class StreamMetricsComputation extends AbstractComputation {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(
             StreamMetricsComputation.class);
 
-    protected static final String NAME = "streamMetrics";
+    protected static final String NAME = "stream/metrics";
 
     protected MetricRegistry registry = SharedMetricRegistries.getOrCreate(NUXEO_METRICS_REGISTRY_NAME);
 

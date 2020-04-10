@@ -4,11 +4,11 @@
   <require>org.nuxeo.ecm.core.bulk</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="deletion" bucketSize="100" batchSize="50"/>
+    <action name="deletion" inputStream="bulk/deletion" bucketSize="100" batchSize="50"/>
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <streamProcessor name="deletion" class="org.nuxeo.ecm.core.action.DeletionAction" logConfig="bulk"
+    <streamProcessor name="deletion" class="org.nuxeo.ecm.core.action.DeletionAction"
       defaultConcurrency="2" defaultPartitions="2">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true"/>
     </streamProcessor>

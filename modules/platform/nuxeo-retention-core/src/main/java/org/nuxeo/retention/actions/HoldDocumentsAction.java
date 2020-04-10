@@ -43,13 +43,15 @@ public class HoldDocumentsAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "holdDocumentsAction";
 
+    public static final String ACTION_FULL_NAME = "retention/" + ACTION_NAME;
+
     public static final String PARAM_DESC = "description";
 
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(SetLegalHoldComputation::new,
-                               List.of(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                               List.of(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
@@ -58,7 +60,7 @@ public class HoldDocumentsAction implements StreamProcessorTopology {
         protected String description;
 
         public SetLegalHoldComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

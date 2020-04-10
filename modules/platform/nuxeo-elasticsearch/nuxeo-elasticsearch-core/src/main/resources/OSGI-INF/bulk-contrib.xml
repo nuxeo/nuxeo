@@ -4,18 +4,19 @@
   <require>org.nuxeo.ecm.core.bulk.config</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="index" bucketSize="1000" batchSize="25" enabled="${elasticsearch.enabled:=true}" />
+    <action name="index" inputStream="bulk/index" bucketSize="1000" batchSize="25"
+      enabled="${elasticsearch.enabled:=true}" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <streamProcessor name="reindex" class="org.nuxeo.elasticsearch.bulk.IndexAction" logConfig="bulk"
+    <streamProcessor name="indexAction" class="org.nuxeo.elasticsearch.bulk.IndexAction"
       defaultConcurrency="2" defaultPartitions="4" enabled="${elasticsearch.enabled:=true}">
       <policy name="default" maxRetries="20" delay="1s" maxDelay="60s" continueOnFailure="false" />
       <!-- concurrency to build indexing requests -->
-      <computation name="index" concurrency="2" />
+      <computation name="bulk/index" concurrency="2" />
       <!-- concurrency to execute indexing requests -->
-      <computation name="bulkIndex" concurrency="2" />
-      <computation name="indexCompletion" concurrency="1" />
+      <computation name="bulk/bulkIndex" concurrency="2" />
+      <computation name="bulk/indexCompletion" concurrency="1" />
       <!-- optimal size of the elasticsearch bulk request -->
       <option name="esBulkSizeBytes">5242880</option>
       <!-- max number of actions in the elasticsearch bulk request -->

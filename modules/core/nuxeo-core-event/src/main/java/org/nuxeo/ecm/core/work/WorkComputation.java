@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.services.config.ConfigurationService;
@@ -69,7 +70,8 @@ public class WorkComputation extends AbstractComputation {
     public WorkComputation(String name) {
         super(name, 1, 0);
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
-        workTimer = registry.timer(MetricName.build("nuxeo.works.queue.timer").tagged("queue", name));
+        workTimer = registry.timer(
+                MetricName.build("nuxeo.works.queue.timer").tagged("queue", Name.ofUrn(name).getName()));
         stateTTL = Framework.getService(ConfigurationService.class).getLong(STATETTL_KEY, STATETTL_DEFAULT_VALUE);
     }
 

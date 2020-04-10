@@ -23,7 +23,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_LOG_MANAGER_NAME;
 import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.DONE_STREAM_NAME;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
@@ -44,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -78,7 +78,7 @@ public class TestBulkProcessor {
     @Test
     public void testEmptyQuery() throws InterruptedException {
         @SuppressWarnings("resource")
-        LogManager logManager = stream.getLogManager(BULK_LOG_MANAGER_NAME);
+        LogManager logManager = stream.getLogManager();
         try (LogTailer<Record> tailer = logManager.createTailer(Name.ofUrn("test"), DONE_STREAM_NAME)) {
             tailer.toLastCommitted();
 
@@ -86,7 +86,8 @@ public class TestBulkProcessor {
             assertEquals(0, session.query(nxql).size());
 
             String commandId = service.submit(
-                    new BulkCommand.Builder("setProperties", nxql, session.getPrincipal().getName()).repository(
+                    new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql,
+                            session.getPrincipal().getName()).repository(
                             session.getRepositoryName()).build());
             assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
 
@@ -107,7 +108,7 @@ public class TestBulkProcessor {
     public void testInvalidQuery() throws InterruptedException {
         // null query
         try {
-            service.submit(new BulkCommand.Builder("setProperties", null, "user").build());
+            service.submit(new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, null, "user").build());
             fail("null query should raise error");
         } catch (IllegalArgumentException e) {
             // expected
@@ -115,7 +116,8 @@ public class TestBulkProcessor {
 
         // invalid query
         String nxql = "DROP DATABASE is not a valid NXQL command";
-        String commandId = service.submit(new BulkCommand.Builder("setProperties", nxql, "user").build());
+        String commandId = service.submit(
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         BulkStatus status = service.getStatus(commandId);
         assertEquals(commandId, status.getId());
@@ -125,7 +127,7 @@ public class TestBulkProcessor {
 
         // query with error
         nxql = "SELECT * FROM Document WHERE ecm:path = 'non/existing/path'";
-        commandId = service.submit(new BulkCommand.Builder("setProperties", nxql, "user").build());
+        commandId = service.submit(new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         status = service.getStatus(commandId);
         assertEquals(commandId, status.getId());
@@ -164,25 +166,30 @@ public class TestBulkProcessor {
     public void testInvalidOptionalParam() {
         String nxql = "SELECT * FROM Document";
         try {
-            service.submit(new BulkCommand.Builder("setProperties", nxql, "user").repository("UnknownRepo").build());
+            service.submit(
+                    new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").repository("UnknownRepo")
+                                                                                          .build());
             fail("unknown repo should raise error");
         } catch (IllegalArgumentException e) {
             // expected
         }
         try {
-            service.submit(new BulkCommand.Builder("setProperties", nxql, "user").batch(-1).bucket(-1).build());
+            service.submit(new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").batch(-1)
+                                                                                                 .bucket(-1)
+                                                                                                 .build());
             fail("negative batch size should raise error");
         } catch (IllegalArgumentException e) {
             // expected
         }
         try {
-            service.submit(new BulkCommand.Builder("setProperties", nxql, "user").batch(10).bucket(1).build());
+            service.submit(
+                    new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").batch(10).bucket(1).build());
             fail("batch must be smaller or equals to bucket");
         } catch (IllegalArgumentException e) {
             // expected
         }
         try {
-            new BulkCommand.Builder("setProperties", nxql, "user").param(null, "foo").build();
+            new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").param(null, "foo").build();
             fail("param key cannot be null");
         } catch (IllegalArgumentException e) {
             // expected
@@ -190,7 +197,7 @@ public class TestBulkProcessor {
         Map<String, Serializable> params = new HashMap<>();
         params.put(null, "foo");
         try {
-            new BulkCommand.Builder("setProperties", nxql, "user").params(params).build();
+            new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").params(params).build();
             fail("param key cannot be null");
         } catch (IllegalArgumentException e) {
             // expected
@@ -256,7 +263,7 @@ public class TestBulkProcessor {
         // use the default scroller, everything ok
         String nxql = "SELECT * FROM Document";
         String commandId = service.submit(
-                new BulkCommand.Builder("setProperties", nxql, "user").build());
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         BulkStatus status = service.getStatus(commandId);
         assertEquals(COMPLETED, status.getState());
@@ -266,7 +273,7 @@ public class TestBulkProcessor {
         // explicit use of the repository scroller, everything ok
         nxql = "SELECT * FROM Document";
         commandId = service.submit(
-                new BulkCommand.Builder("setProperties", nxql, "user").scroller("repository").build());
+                new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, nxql, "user").scroller("repository").build());
         assertTrue("Bulk action didn't finish", service.await(Duration.ofSeconds(10)));
         status = service.getStatus(commandId);
         assertEquals(COMPLETED, status.getState());
@@ -276,7 +283,10 @@ public class TestBulkProcessor {
         // use an unknown scroller, error expected
         try {
             service.submit(
-                    new BulkCommand.Builder("setProperties", "whatever query", "user").scroller("unknown").build());
+                    new BulkCommand.Builder(SetPropertiesAction.ACTION_NAME, "whatever query", "user")
+                                                                                                      .scroller(
+                                                                                                              "unknown")
+                                                                                                      .build());
             fail("unknown scroller should raise error");
         } catch (IllegalArgumentException e) {
             // expected

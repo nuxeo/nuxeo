@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ExposeBlob extends AbstractTransientBlobComputation {
 
-    public static final String NAME = "exposeBlob";
+    public static final String NAME = "bulk/exposeBlob";
 
     public ExposeBlob() {
         super(NAME);
