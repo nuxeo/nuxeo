@@ -26,14 +26,11 @@ import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * DTO for an {@link OperationInfo}, used for the runtime implementation.
  */
-@JsonIgnoreType
 public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInfo {
 
     protected final String name;
@@ -108,9 +105,8 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
     }
 
     @Override
-    @JsonIgnore
     public String getId() {
-        return ARTIFACT_PREFIX + name;
+        return ARTIFACT_PREFIX + getName();
     }
 
     @Override
@@ -164,13 +160,11 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
     }
 
     @Override
-    @JsonIgnore
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
     @Override
-    @JsonIgnore
     public String getHierarchyPath() {
         return "/" + getId();
     }

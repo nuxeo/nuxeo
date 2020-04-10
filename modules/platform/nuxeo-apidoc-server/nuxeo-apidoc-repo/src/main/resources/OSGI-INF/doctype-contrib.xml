@@ -21,7 +21,7 @@
       </subtypes>
     </doctype>
 
-    <doctype name="NXBundleGroup" extends="Folder">
+    <doctype name="NXBundleGroup" extends="OrderedFolder">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="file" />

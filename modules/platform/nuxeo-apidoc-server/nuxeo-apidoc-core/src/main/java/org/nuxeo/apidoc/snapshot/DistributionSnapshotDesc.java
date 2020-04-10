@@ -20,6 +20,8 @@ package org.nuxeo.apidoc.snapshot;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public interface DistributionSnapshotDesc {
 
     String getVersion();
@@ -30,6 +32,7 @@ public interface DistributionSnapshotDesc {
 
     Date getReleaseDate();
 
+    @JsonIgnore
     boolean isLive();
 
 }

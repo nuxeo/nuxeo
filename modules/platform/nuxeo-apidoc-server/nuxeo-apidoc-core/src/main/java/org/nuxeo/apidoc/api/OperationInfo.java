@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Information about an operation
  */
@@ -71,6 +73,10 @@ public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> 
     String PROP_CONTRIBUTING_COMPONENT = "contributingComponent";
 
     String BUILT_IN = "BuiltIn";
+
+    @Override
+    @JsonIgnore
+    String getId();
 
     /**
      * Actual operation id. ({@link #getId} is prefixed with {@link #ARTIFACT_PREFIX})

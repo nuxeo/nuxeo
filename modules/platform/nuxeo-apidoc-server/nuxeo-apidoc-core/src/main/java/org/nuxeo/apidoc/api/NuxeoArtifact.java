@@ -18,12 +18,30 @@
  */
 package org.nuxeo.apidoc.api;
 
+import org.nuxeo.apidoc.introspection.BundleGroupImpl;
+import org.nuxeo.apidoc.introspection.BundleInfoImpl;
+import org.nuxeo.apidoc.introspection.ComponentInfoImpl;
+import org.nuxeo.apidoc.introspection.ExtensionInfoImpl;
+import org.nuxeo.apidoc.introspection.ExtensionPointInfoImpl;
+import org.nuxeo.apidoc.introspection.OperationInfoImpl;
+import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+@JsonSubTypes({ //
+        @JsonSubTypes.Type(value = BundleGroupImpl.class, name = BundleGroup.TYPE_NAME),
+        @JsonSubTypes.Type(value = BundleInfoImpl.class, name = BundleInfo.TYPE_NAME),
+        @JsonSubTypes.Type(value = ComponentInfoImpl.class, name = ComponentInfo.TYPE_NAME),
+        @JsonSubTypes.Type(value = ServiceInfoImpl.class, name = ServiceInfo.TYPE_NAME),
+        @JsonSubTypes.Type(value = ExtensionPointInfoImpl.class, name = ExtensionPointInfo.TYPE_NAME),
+        @JsonSubTypes.Type(value = ExtensionInfoImpl.class, name = ExtensionInfo.TYPE_NAME),
+        @JsonSubTypes.Type(value = OperationInfoImpl.class, name = OperationInfo.TYPE_NAME), //
+})
 public interface NuxeoArtifact {
 
     /**
@@ -42,6 +60,7 @@ public interface NuxeoArtifact {
 
     String getVersion();
 
+    @JsonIgnore // already held by type, see annotation on class
     String getArtifactType();
 
     String getHierarchyPath();

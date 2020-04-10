@@ -23,9 +23,9 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreType
 public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
     protected final String serviceClassName;
@@ -34,8 +34,10 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
 
     protected final boolean overriden;
 
-    public ServiceInfoImpl(String serviceClassName, boolean overriden, ComponentInfo component) {
-        this.serviceClassName = serviceClassName;
+    @JsonCreator
+    public ServiceInfoImpl(@JsonProperty("id") String id, @JsonProperty("overriden") boolean overriden,
+            @JsonProperty("component") ComponentInfo component) {
+        this.serviceClassName = id;
         this.overriden = overriden;
         this.component = component;
     }
@@ -48,6 +50,11 @@ public class ServiceInfoImpl extends BaseNuxeoArtifact implements ServiceInfo {
     @Override
     public String getArtifactType() {
         return TYPE_NAME;
+    }
+
+    @Override
+    public ComponentInfo getComponent() {
+        return component;
     }
 
     @Override

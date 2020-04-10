@@ -19,7 +19,6 @@
 package org.nuxeo.apidoc.adapters;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -95,7 +94,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
     }
 
     @Override
-    public Collection<ExtensionInfo> getExtensions() {
+    public List<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> result = new ArrayList<>();
         // find root doc for distribution
         DocumentModel dist = doc;

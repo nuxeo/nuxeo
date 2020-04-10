@@ -26,10 +26,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -46,21 +44,26 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.Path;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInfo {
 
     protected final BundleInfo bundle;
 
     protected final String name;
 
-    protected final Map<String, ExtensionPointInfo> extensionPoints;
-
-    protected final Collection<ExtensionInfo> extensions;
+    protected final List<ExtensionPointInfo> extensionPoints = new ArrayList<>();
 
     protected final List<String> serviceNames = new ArrayList<>();
 
     protected final List<ServiceInfo> services = new ArrayList<>();
 
+    protected final List<ExtensionInfo> extensions = new ArrayList<>();
+
     protected URL xmlFileUrl;
+
+    protected String xmlFileContent;
 
     protected String componentClass;
 
@@ -71,8 +74,18 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     public ComponentInfoImpl(BundleInfo bundleInfo, String name) {
         bundle = bundleInfo;
         this.name = name;
-        extensionPoints = new HashMap<>();
-        extensions = new ArrayList<>();
+    }
+
+    @JsonCreator
+    private ComponentInfoImpl(@JsonProperty("bundle") BundleInfo bundle, @JsonProperty("name") String name,
+            @JsonProperty("componentClass") String componentClass, @JsonProperty("documentation") String documentation,
+            @JsonProperty("xmlFileContent") String xmlFileContent) {
+        this.bundle = bundle;
+        this.name = name;
+        this.componentClass = componentClass;
+        this.documentation = documentation;
+        this.xmlFileContent = xmlFileContent;
+        // services, extensions and extension points will be handled by json managed reference
     }
 
     @Override
@@ -86,22 +99,17 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     }
 
     @Override
-    public Collection<ExtensionPointInfo> getExtensionPoints() {
-        return extensionPoints.values();
+    public List<ExtensionPointInfo> getExtensionPoints() {
+        return Collections.unmodifiableList(extensionPoints);
     }
 
     @Override
-    public Collection<ExtensionInfo> getExtensions() {
-        return extensions;
+    public List<ExtensionInfo> getExtensions() {
+        return Collections.unmodifiableList(extensions);
     }
 
     public void addExtensionPoint(ExtensionPointInfoImpl xp) {
-        extensionPoints.put(xp.getId(), xp);
-    }
-
-    @Override
-    public ExtensionPointInfo getExtensionPoint(String name) {
-        return extensionPoints.get(name);
+        extensionPoints.add(xp);
     }
 
     public void addExtension(ExtensionInfoImpl xt) {
@@ -172,8 +180,12 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     @Override
     public String getXmlFileContent() {
+        if (xmlFileContent != null) {
+            return xmlFileContent;
+        }
         if (xmlFileUrl == null) {
-            return "";
+            xmlFileContent = "";
+            return xmlFileContent;
         }
         String path = xmlFileUrl.getPath();
         String[] parts = path.split("!");
@@ -201,16 +213,17 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
                     xml = IOUtils.toString(jarArchive.getInputStream(entry), StandardCharsets.UTF_8);
                 }
             }
-            return DocumentationHelper.secureXML(xml);
+            xmlFileContent = DocumentationHelper.secureXML(xml);
         } catch (IOException e) {
             log.error("Error while getting XML file", e);
-            return "";
+            xmlFileContent = "";
         }
+        return xmlFileContent;
     }
 
     @Override
     public String getId() {
-        return name;
+        return getName();
     }
 
     @Override
@@ -225,7 +238,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     @Override
     public List<ServiceInfo> getServices() {
-        return services;
+        return Collections.unmodifiableList(services);
     }
 
     @Override

@@ -31,7 +31,6 @@ import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
@@ -71,7 +70,6 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
         parentIds.add(bgId);
     }
 
-    @JsonIgnore
     public String getKey() {
         return key;
     }
@@ -115,13 +113,11 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
     }
 
     @Override
-    @JsonIgnore
     public String getArtifactType() {
         return TYPE_NAME;
     }
 
     @Override
-    @JsonIgnore
     public String getHierarchyPath() {
         String path = "";
         for (String parentId : parentIds) {

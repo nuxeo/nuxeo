@@ -20,6 +20,7 @@ package org.nuxeo.apidoc.browse;
 
 import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_RELEASED;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -196,7 +197,6 @@ public class Distribution extends ModuleRoot {
         if ("adm".equals(distributionId)) {
             embeddedMode = Boolean.TRUE;
         } else {
-
             snaps.add(getSnapshotManager().getRuntimeSnapshot());
             distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
         }
@@ -371,6 +371,23 @@ public class Distribution extends ModuleRoot {
             tx.commit();
         }
         return getView("saved");
+    }
+
+    /**
+     * Returns the runtime snapshot json export.
+     *
+     * @since 11.1
+     */
+    @GET
+    @Path("json")
+    @Produces("application/json")
+    public Object getJson() throws IOException {
+        // init potential resources depending on request
+        getSnapshotManager().initWebContext(getContext().getRequest());
+        DistributionSnapshot snap = getSnapshotManager().getRuntimeSnapshot();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        snap.writeJson(out);
+        return out.toString();
     }
 
     public String getDocumentationInfo() {
