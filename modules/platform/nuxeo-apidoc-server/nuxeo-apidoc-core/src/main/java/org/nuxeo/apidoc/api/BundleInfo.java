@@ -19,12 +19,12 @@
  */
 package org.nuxeo.apidoc.api;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public interface BundleInfo extends NuxeoArtifact {
 
@@ -45,8 +45,8 @@ public interface BundleInfo extends NuxeoArtifact {
      */
     String RUNTIME_CONFIG_BUNDLE = "org.nuxeo.ecm.config";
 
-    @JsonIgnore
-    Collection<ComponentInfo> getComponents();
+    @JsonManagedReference("bundle")
+    List<ComponentInfo> getComponents();
 
     String getFileName();
 

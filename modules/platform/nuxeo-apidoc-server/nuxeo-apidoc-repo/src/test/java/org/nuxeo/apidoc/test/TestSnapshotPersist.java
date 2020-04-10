@@ -28,8 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -125,7 +123,6 @@ public class TestSnapshotPersist {
 
     protected void checkBundles(DistributionSnapshot snapshot) throws IOException {
         List<String> bids = snapshot.getBundleIds();
-        Collections.sort(bids);
 
         StringBuilder sb = new StringBuilder();
         bids.forEach(bid -> sb.append(represent(snapshot.getBundle(bid))));
@@ -135,7 +132,6 @@ public class TestSnapshotPersist {
 
     protected void checkComponents(DistributionSnapshot snapshot) throws IOException {
         List<String> cids = snapshot.getComponentIds();
-        Collections.sort(cids);
 
         StringBuilder sb = new StringBuilder();
         cids.forEach(cid -> sb.append(represent(snapshot.getComponent(cid))));
@@ -145,7 +141,6 @@ public class TestSnapshotPersist {
 
     protected void checkServices(DistributionSnapshot snapshot) throws IOException {
         List<String> sids = snapshot.getServiceIds();
-        Collections.sort(sids);
 
         StringBuilder sb = new StringBuilder();
         sids.forEach(sid -> sb.append(represent(snapshot.getService(sid))));
@@ -155,7 +150,6 @@ public class TestSnapshotPersist {
 
     protected void checkExtensionPoints(DistributionSnapshot snapshot) throws IOException {
         List<String> epids = snapshot.getExtensionPointIds();
-        Collections.sort(epids);
 
         StringBuilder sb = new StringBuilder();
         epids.forEach(epid -> sb.append(represent(snapshot.getExtensionPoint(epid))));
@@ -165,7 +159,6 @@ public class TestSnapshotPersist {
 
     protected void checkContributions(DistributionSnapshot snapshot) throws IOException {
         List<String> exids = snapshot.getContributionIds();
-        Collections.sort(exids);
 
         StringBuilder sb = new StringBuilder();
         exids.forEach(exid -> sb.append(represent(snapshot.getContribution(exid))));
@@ -175,7 +168,6 @@ public class TestSnapshotPersist {
 
     protected void checkOperations(DistributionSnapshot snapshot) throws IOException {
         List<OperationInfo> ops = snapshot.getOperations();
-        Collections.sort(ops, Comparator.comparing(OperationInfo::getId));
 
         StringBuilder sb = new StringBuilder();
         ops.forEach(op -> sb.append(represent(op)));

@@ -16,6 +16,13 @@
  */
 package org.nuxeo.apidoc.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,12 +30,23 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
-import org.assertj.core.api.Assertions;
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -39,10 +57,33 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(RuntimeSnaphotFeature.class)
 public class TestJson {
 
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected SnapshotManager snapshotManager;
+
     @Test
-    public void canSerializeAndReadBack() throws IOException {
+    public void canSerializeRuntimeAndReadBack() throws IOException {
+        DistributionSnapshot snapshot = RuntimeSnapshot.build();
+        assertNotNull(snapshot);
+        canSerializeAndReadBack(snapshot);
+    }
+
+    @Test
+    public void cannotSerializeRepositoryAndReadBack() throws IOException {
+        DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
+        assertNotNull(snapshot);
+        try {
+            canSerializeAndReadBack(snapshot);
+            fail("should have thrown UnsupportedOperationException");
+        } catch (UnsupportedOperationException e) {
+            // ok
+        }
+    }
+
+    protected void canSerializeAndReadBack(DistributionSnapshot snap) throws IOException {
         try (ByteArrayOutputStream sink = new ByteArrayOutputStream()) {
-            RuntimeSnapshot snap = RuntimeSnapshot.build();
             snap.writeJson(sink);
             try (OutputStream file = Files.newOutputStream(Paths.get(FeaturesRunner.getBuildDirectory() + "/test.json"),
                     StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
@@ -50,10 +91,222 @@ public class TestJson {
             }
             try (ByteArrayInputStream source = new ByteArrayInputStream(sink.toByteArray())) {
                 DistributionSnapshot snapshot = snap.readJson(source);
-                Assertions.assertThat(snapshot).isNotNull();
-                Assertions.assertThat(snapshot.getBundle("org.nuxeo.apidoc.repo")).isNotNull();
+                assertNotNull(snapshot);
+                assertNotNull(snapshot.getBundle("org.nuxeo.apidoc.repo"));
             }
         }
+    }
+
+    /**
+     * Reads a reference export kept in tests, to detect potential compatibility changes.
+     *
+     * @since 11.1
+     */
+    @Test
+    public void canReadLegacy() throws IOException {
+        RuntimeSnapshot runtimeSnapshot = RuntimeSnapshot.build();
+        String export = TestSnapshotPersist.getReferenceContent(
+                TestSnapshotPersist.getReferencePath("test-export.json"));
+        try (ByteArrayInputStream source = new ByteArrayInputStream(export.getBytes())) {
+            DistributionSnapshot snapshot = runtimeSnapshot.readJson(source);
+            checkSnapshot(snapshot, true);
+        }
+    }
+
+    protected void checkSnapshot(DistributionSnapshot snapshot, boolean legacy) throws IOException {
+        assertNotNull(snapshot);
+        assertEquals("Nuxeo", snapshot.getName());
+        assertEquals("unknown", snapshot.getVersion());
+        assertNotNull(snapshot.getCreationDate());
+        assertEquals("Nuxeo-unknown", snapshot.getKey());
+
+        BundleInfo bundle = snapshot.getBundle("org.nuxeo.apidoc.repo");
+        assertNotNull(bundle);
+        assertEquals("nuxeo-apidoc-repo", bundle.getArtifactId());
+        assertEquals(BundleInfo.TYPE_NAME, bundle.getArtifactType());
+
+        String version = "11.1-SNAPSHOT";
+        if (legacy) {
+            assertEquals(version, bundle.getArtifactVersion());
+        } else {
+            version = bundle.getArtifactVersion();
+            assertNotNull(version);
+            assertTrue(version.trim().length() > 0);
+        }
+
+        assertEquals("org.nuxeo.apidoc.repo", bundle.getBundleId());
+        assertEquals("org.nuxeo.ecm.platform", bundle.getGroupId());
+        assertEquals("/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo", bundle.getHierarchyPath());
+        assertEquals("org.nuxeo.apidoc.repo", bundle.getId());
+        assertNull(bundle.getLiveDoc());
+        assertEquals("Manifest-Version: 1.0\n" //
+                + "Bundle-ManifestVersion: 1\n" //
+                + "Bundle-Name: nuxeo api documentation repository\n" //
+                + "Bundle-SymbolicName: org.nuxeo.apidoc.repo;singleton:=true\n" //
+                + "Bundle-Version: 0.0.1\n" //
+                + "Bundle-Vendor: Nuxeo\n" //
+                + "Nuxeo-Component: OSGI-INF/schema-contrib.xml,\n" //
+                + "  OSGI-INF/doctype-contrib.xml,\n" + "  OSGI-INF/life-cycle-contrib.xml,\n" //
+                + "  OSGI-INF/snapshot-service-framework.xml,\n" //
+                + "  OSGI-INF/documentation-service-framework.xml,\n" //
+                + "  OSGI-INF/adapter-contrib.xml,\n" //
+                + "  OSGI-INF/directories-contrib.xml,\n" //
+                + "  OSGI-INF/listener-contrib.xml\n"//
+                + "", bundle.getManifest());
+        assertNull(bundle.getParentLiveDoc());
+        assertNull(bundle.getRequirements());
+        assertEquals(version, bundle.getVersion());
+
+        // check components
+        List<ComponentInfo> components = bundle.getComponents();
+        assertNotNull(components);
+        assertEquals(9, components.size());
+        ComponentInfo smcomp = snapshot.getComponent("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
+        assertNotNull(smcomp);
+        assertEquals(ComponentInfo.TYPE_NAME, smcomp.getArtifactType());
+        assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getComponentClass());
+        assertNull(smcomp.getDocumentation());
+        assertEquals("", smcomp.getDocumentationHtml());
+        assertEquals(
+                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
+                smcomp.getHierarchyPath());
+        assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getId());
+        assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getName());
+        assertEquals(version, smcomp.getVersion());
+        assertFalse(smcomp.isXmlPureComponent());
+        String xml = "<?xml version=\"1.0\"?>\n" //
+                + "<component name=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n" //
+                + "  <implementation class=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" />\n\n" //
+                + "  <service>\n" //
+                + "    <provide interface=\"org.nuxeo.apidoc.snapshot.SnapshotManager\" />\n" //
+                + "  </service>\n\n" //
+                + "  <extension-point name=\"plugins\">\n" //
+                + "    <documentation>\n" //
+                + "      <p>\n" //
+                + "        A plugin can introspect and persist information related to the current runtime environment.\n" //
+                + "      </p>\n" //
+                + "      <p>\n" //
+                + "        Sample contribution:\n" //
+                + "        <code>\n" //
+                + "          <extension target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" point=\"plugins\">\n" //
+                + "            <plugin id=\"seam\" class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n" //
+                + "              snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n" //
+                + "              <ui>\n" //
+                + "                <label>Seam Components</label>\n" //
+                + "                <viewType>seam</viewType>\n" //
+                + "                <homeView>listSeamComponents</homeView>\n" //
+                + "                <styleClass>seam</styleClass>\n" //
+                + "              </ui>\n" //
+                + "            </plugin>\n" //
+                + "          </extension>\n" //
+                + "        </code>\n" //
+                + "      </p>\n" //
+                + "      <p>\n" //
+                + "        The class should implement the\n" //
+                + "        <b>org.nuxeo.apidoc.plugin.Plugin</b>\n" //
+                + "        interface.\n" //
+                + "      </p>\n" //
+                + "      <p>\n" //
+                + "        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\n" //
+                + "        and\n" //
+                + "        the module holding this resource should be contributed to the main webengine module as a fragment using:\n" //
+                + "        <code>\n" //
+                + "          Fragment-Host: org.nuxeo.apidoc.webengine\n" //
+                + "        </code>\n" //
+                + "      </p>\n" //
+                + "    </documentation>\n" //
+                + "    <object class=\"org.nuxeo.apidoc.plugin.PluginDescriptor\" />\n" //
+                + "  </extension-point>\n\n" //
+                + "</component>\n" //
+                + "";
+        assertEquals(xml, smcomp.getXmlFileContent());
+
+        // check json back reference
+        assertNotNull(smcomp.getBundle());
+        assertEquals("org.nuxeo.apidoc.repo", smcomp.getBundle().getId());
+
+        // check services
+        assertNotNull(smcomp.getServices());
+        assertEquals(1, smcomp.getServices().size());
+        ServiceInfo service = smcomp.getServices().get(0);
+        assertEquals(ServiceInfo.TYPE_NAME, service.getArtifactType());
+        assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", service.getComponentId());
+        assertEquals(
+                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager",
+                service.getHierarchyPath());
+        assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManager", service.getId());
+        assertEquals(version, service.getVersion());
+        assertFalse(service.isOverriden());
+        // check json back reference
+        assertNotNull(service.getComponent());
+
+        // check extension points
+        assertNotNull(smcomp.getExtensionPoints());
+        assertEquals(1, smcomp.getExtensionPoints().size());
+        ExtensionPointInfo xp = smcomp.getExtensionPoints().get(0);
+        assertEquals(ExtensionPointInfo.TYPE_NAME, xp.getArtifactType());
+        assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", xp.getComponentId());
+        assertNotNull(xp.getDocumentation());
+        assertNotNull(xp.getDocumentationHtml());
+        assertEquals(
+                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/ExtensionPoints/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
+                xp.getHierarchyPath());
+        assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins", xp.getId());
+        assertEquals("plugins (org.nuxeo.apidoc.snapshot.SnapshotManagerComponent)", xp.getLabel());
+        assertEquals("plugins", xp.getName());
+        assertEquals(version, xp.getVersion());
+        assertNotNull(xp.getDescriptors());
+        assertEquals(1, xp.getDescriptors().length);
+        assertEquals("org.nuxeo.apidoc.plugin.PluginDescriptor", xp.getDescriptors()[0]);
+        // check json back reference
+        assertNotNull(xp.getComponent());
+
+        // check extensions
+        assertNotNull(smcomp.getExtensions());
+        assertEquals(0, smcomp.getExtensions().size());
+
+        // check another component with contributions
+        ComponentInfo smcont = snapshot.getComponent("org.nuxeo.apidoc.doctypeContrib");
+        assertNotNull(smcont);
+        assertNotNull(smcont.getExtensions());
+        assertEquals(1, smcont.getExtensions().size());
+        ExtensionInfo ext = smcont.getExtensions().get(0);
+        assertEquals(ExtensionInfo.TYPE_NAME, ext.getArtifactType());
+        assertNotNull(ext.getContributionItems());
+        assertEquals(9, ext.getContributionItems().size());
+        assertEquals("NXDistribution", ext.getContributionItems().get(0).getId());
+        assertEquals("doctype NXDistribution", ext.getContributionItems().get(0).getLabel());
+        assertNotNull(ext.getContributionItems().get(0).getXml());
+        assertNotNull(ext.getContributionItems().get(0).getRawXml());
+        assertEquals("org.nuxeo.ecm.core.schema.TypeService--doctype", ext.getExtensionPoint());
+        assertEquals(
+                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype",
+                ext.getHierarchyPath());
+        assertEquals(new ComponentName("service:org.nuxeo.ecm.core.schema.TypeService"), ext.getTargetComponentName());
+        assertEquals(version, ext.getVersion());
+        // check json back reference
+        assertNotNull(ext.getComponent());
+
+        // check operations
+        List<OperationInfo> operations = snapshot.getOperations();
+        assertNotNull(operations);
+        assertEquals(2, operations.size());
+        OperationInfo op = operations.get(0);
+        assertNotNull(op);
+        assertEquals(OperationInfo.TYPE_NAME, op.getArtifactType());
+        assertEquals("Services", op.getCategory());
+        assertEquals("org.nuxeo.ecm.core.automation.features.operations", op.getContributingComponent());
+        assertEquals(
+                "Retrieve list of available actions for a given category. Action context is built based on the Operation context "
+                        + "(currentDocument will be fetched from Context if not provided as input). If this operation is executed in a chain"
+                        + " that initialized the Seam context, it will be used for Action context",
+                op.getDescription());
+        assertEquals("/op:Actions.GET", op.getHierarchyPath());
+        assertEquals("op:Actions.GET", op.getId());
+        assertEquals("List available actions", op.getLabel());
+        assertEquals("Actions.GET", op.getName());
+        assertNotNull(op.getParams());
+        assertEquals(2, op.getParams().size());
     }
 
 }

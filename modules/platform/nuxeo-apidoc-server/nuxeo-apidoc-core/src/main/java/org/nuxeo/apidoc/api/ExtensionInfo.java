@@ -24,7 +24,7 @@ import java.util.List;
 import org.nuxeo.apidoc.documentation.ContributionItem;
 import org.nuxeo.runtime.model.ComponentName;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 public interface ExtensionInfo extends NuxeoArtifact {
 
@@ -38,6 +38,9 @@ public interface ExtensionInfo extends NuxeoArtifact {
 
     String PROP_TARGET_COMPONENT_NAME = "nxcontribution:targetComponentName";
 
+    /**
+     * Returns a key combining the target component name and the extension point name.
+     */
     String getExtensionPoint();
 
     String getDocumentation();
@@ -50,7 +53,7 @@ public interface ExtensionInfo extends NuxeoArtifact {
 
     List<ContributionItem> getContributionItems();
 
-    @JsonManagedReference("extension")
+    @JsonBackReference("extension")
     ComponentInfo getComponent();
 
 }

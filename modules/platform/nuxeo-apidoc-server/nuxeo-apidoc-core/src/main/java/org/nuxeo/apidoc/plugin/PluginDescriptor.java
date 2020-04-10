@@ -36,6 +36,9 @@ public class PluginDescriptor implements Descriptor {
     @XNode("@class")
     String klass;
 
+    @XNode("@snapshotClass")
+    String snapshotClass;
+
     @XNode("ui/viewType")
     String viewType;
 
@@ -55,6 +58,10 @@ public class PluginDescriptor implements Descriptor {
 
     public String getKlass() {
         return klass;
+    }
+
+    public String getSnapshotClass() {
+        return snapshotClass;
     }
 
     public String getLabel() {

@@ -18,33 +18,22 @@
  */
 package org.nuxeo.apidoc.plugin;
 
-import java.util.List;
-
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
-
 /**
- * Snapshot managed by a plugin
- *
  * @since 11.1
  */
-@JsonTypeResolver(PluginSnapshotResolver.class)
-@JsonTypeIdResolver(PluginSnapshotIdResolver.class)
-@JsonTypeInfo(use = JsonTypeInfo.Id.CUSTOM, include = JsonTypeInfo.As.PROPERTY, property = "@type")
-public interface PluginSnapshot<T extends NuxeoArtifact> {
+public abstract class AbstractPluginSnapshot<T extends NuxeoArtifact> implements PluginSnapshot<T> {
 
-    @JsonIgnore // already mapped to "@type"
-    String getPluginId();
+    protected final String pluginId;
 
-    @JsonIgnore
-    List<String> getItemIds();
+    public AbstractPluginSnapshot(String pluginId) {
+        this.pluginId = pluginId;
+    }
 
-    List<T> getItems();
-
-    T getItem(String id);
+    @Override
+    public String getPluginId() {
+        return pluginId;
+    }
 
 }

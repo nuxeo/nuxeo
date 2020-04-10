@@ -1,0 +1,34 @@
+{
+  "key": "Nuxeo-unknown",
+  "pluginSnapshots": {
+    "testPlugin": {
+      "@type": "testPlugin",
+      "items": [
+        {
+          "@type": "FakeNuxeoArtifact",
+          "id": "org.nuxeo.apidoc.core",
+          "version": "11.1-SNAPSHOT",
+          "type": "NXBundle"
+        },
+        {
+          "@type": "FakeNuxeoArtifact",
+          "id": "org.nuxeo.apidoc.adapterContrib",
+          "version": "11.1-SNAPSHOT",
+          "type": "NXComponent"
+        },
+        {
+          "@type": "FakeNuxeoArtifact",
+          "id": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
+          "version": "11.1-SNAPSHOT",
+          "type": "NXExtensionPoint"
+        }
+      ]
+    }
+  },
+  "bundles": [],
+  "operations": [],
+  "name": "Nuxeo",
+  "version": "11.1-SNAPSHOT",
+  "creationDate": 1587050016835,
+  "releaseDate": null
+}

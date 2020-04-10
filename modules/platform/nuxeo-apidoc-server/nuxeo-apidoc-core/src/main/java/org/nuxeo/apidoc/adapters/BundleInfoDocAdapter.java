@@ -21,7 +21,6 @@ package org.nuxeo.apidoc.adapters;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +85,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     @Override
-    public Collection<ComponentInfo> getComponents() {
+    public List<ComponentInfo> getComponents() {
         List<ComponentInfo> components = new ArrayList<>();
         List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
         for (DocumentModel child : children) {
@@ -157,12 +156,12 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public Map<String, ResourceDocumentationItem> getLiveDoc() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public Map<String, ResourceDocumentationItem> getParentLiveDoc() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
 }

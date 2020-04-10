@@ -36,6 +36,9 @@
             <input type="button" value="Save Partial Snapshot"
               onclick="$('#extendedSave').css('display','block');$('#saveBtn').css('display','none')">
           </form>
+          <form method="GET" action="${Root.path}/json">
+            <input type="submit" value="Export as Json" />
+          </form>
         </div>
         <div style="display:none" id="stdSave">
           <form method="POST" action="${Root.path}/save">

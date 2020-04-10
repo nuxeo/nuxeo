@@ -2,7 +2,8 @@
 <component name="org.nuxeo.apidoc.test.plugin" version="1.0">
 
   <extension target="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" point="plugins">
-    <plugin id="testPlugin" class="org.nuxeo.apidoc.test.FakePlugin">
+    <plugin id="testPlugin" class="org.nuxeo.apidoc.test.FakePlugin"
+      snapshotClass="org.nuxeo.apidoc.test.FakePluginRuntimeSnapshot">
       <ui>
         <viewType>myType</viewType>
         <label>My snapshot plugin</label>

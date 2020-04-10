@@ -34,17 +34,17 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.apidoc.documentation.XMLContributionParser;
 import org.nuxeo.runtime.model.ComponentName;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreType
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInfo {
 
     protected static final Log log = LogFactory.getLog(ExtensionInfoImpl.class);
 
     protected final String id;
 
-    protected final ComponentInfoImpl component;
+    protected final ComponentInfo component;
 
     protected final String extensionPoint;
 
@@ -56,14 +56,29 @@ public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInf
 
     protected Object[] contribution;
 
-    public ExtensionInfoImpl(ComponentInfoImpl component, String xpoint, int index) {
-        String idd = component.getId() + "--" + xpoint;
+    public ExtensionInfoImpl(ComponentInfo component, String extensionPoint, int index) {
+        String id = component.getId() + "--" + extensionPoint;
         if (index > 0) {
-            idd += index;
+            id += index;
         }
-        id = idd;
+        this.id = id;
         this.component = component;
-        extensionPoint = xpoint;
+        this.extensionPoint = extensionPoint;
+    }
+
+    @JsonCreator
+    private ExtensionInfoImpl(@JsonProperty("id") String id, @JsonProperty("extensionPoint") String extensionPoint,
+            @JsonProperty("documentation") String documentation, @JsonProperty("xml") String xml,
+            @JsonProperty("targetComponentName") ComponentName targetComponentName) {
+        this.id = id;
+        this.component = null; // will be handled by json back reference
+        if (extensionPoint != null) {
+            extensionPoint = extensionPoint.substring(extensionPoint.lastIndexOf("--") + 2);
+        }
+        this.extensionPoint = extensionPoint;
+        this.documentation = documentation;
+        this.xml = xml;
+        this.targetComponentName = targetComponentName;
     }
 
     @Override

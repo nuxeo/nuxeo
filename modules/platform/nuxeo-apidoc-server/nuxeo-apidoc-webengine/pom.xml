@@ -93,25 +93,6 @@
       <artifactId>nuxeo-apidoc-core</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.nuxeo.build</groupId>
-      <artifactId>nuxeo-webengine-apt</artifactId>
-      <scope>compile</scope>
-      <!-- workaround for Mac OS X -->
-      <exclusions>
-        <exclusion>
-          <groupId>sun.jdk</groupId>
-          <artifactId>tools</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
 </project>

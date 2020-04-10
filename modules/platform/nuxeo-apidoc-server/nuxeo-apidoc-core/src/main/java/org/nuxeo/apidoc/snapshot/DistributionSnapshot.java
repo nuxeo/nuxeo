@@ -18,7 +18,6 @@
  */
 package org.nuxeo.apidoc.snapshot;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -37,21 +36,18 @@ import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.ComponentInfoImpl;
 import org.nuxeo.apidoc.introspection.ExtensionInfoImpl;
+import org.nuxeo.apidoc.introspection.ExtensionPointInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
-import org.nuxeo.apidoc.introspection.ServerInfo;
 import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.runtime.model.ComponentName;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public interface DistributionSnapshot extends DistributionSnapshotDesc {
@@ -91,43 +87,62 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     String PROP_RELEASED = "nxdistribution:released";
 
+    /**
+     * Returns a key, combining {@link #getName()} and {@link #getVersion()}.
+     */
     String getKey();
 
     void cleanPreviousArtifacts();
 
+    /**
+     * Returns the map of bundles by id.
+     * <p>
+     * This extra getter is particularly useful for json export/import.
+     *
+     * @since 11.1
+     */
+    List<BundleInfo> getBundles();
+
+    @JsonIgnore
     List<BundleGroup> getBundleGroups();
 
     BundleGroup getBundleGroup(String groupId);
 
+    @JsonIgnore
     List<String> getBundleIds();
 
     BundleInfo getBundle(String id);
 
+    @JsonIgnore
     List<String> getComponentIds();
 
+    @JsonIgnore
     List<String> getJavaComponentIds();
 
+    @JsonIgnore
     List<String> getXmlComponentIds();
 
     ComponentInfo getComponent(String id);
 
+    @JsonIgnore
     List<String> getServiceIds();
 
     ServiceInfo getService(String id);
 
+    @JsonIgnore
     List<String> getExtensionPointIds();
 
     ExtensionPointInfo getExtensionPoint(String id);
 
+    @JsonIgnore
     List<String> getContributionIds();
 
+    @JsonIgnore
     List<ExtensionInfo> getContributions();
 
     ExtensionInfo getContribution(String id);
 
     List<String> getBundleGroupChildren(String groupId);
-
-    List<Class<?>> getSpi();
 
     OperationInfo getOperation(String id);
 
@@ -136,27 +151,26 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
     /**
      * @since 8.3
      */
+    @JsonIgnore
     boolean isLatestFT();
 
     /**
      * @since 8.3
      */
+    @JsonIgnore
     boolean isLatestLTS();
 
     /**
      * @since 8.3
      */
+    @JsonIgnore
     List<String> getAliases();
 
     /**
      * @since 8.3
      */
+    @JsonIgnore
     boolean isHidden();
-
-    /**
-     * @since 8.3
-     */
-    ServerInfo getServerInfo();
 
     /**
      * Returns the Json mapper for reading/writing the snapshot in json format.
@@ -187,39 +201,19 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     Map<String, PluginSnapshot<?>> getPluginSnapshots();
 
-    /**
-     * @deprecated since 11.1, use non-static @link #getJsonMapper()} to get the non-static writer handling plugins.
-     */
-    @Deprecated
-    static ObjectWriter jsonWriter() throws IOException {
-        return jsonMapper().writerFor(DistributionSnapshot.class)
-                           .withoutRootName()
-                           .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)
-                           .without(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
-    }
-
-    /**
-     * @deprecated since 11.1, use non-static @link #getJsonMapper()} to get the non-static reader handling plugins.
-     */
-    @Deprecated
-    static ObjectReader jsonReader() throws IOException {
-        return jsonMapper().readerFor(DistributionSnapshot.class)
-                           .withoutRootName()
-                           .without(JsonParser.Feature.AUTO_CLOSE_SOURCE)
-                           .with(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
-    }
-
     static ObjectMapper jsonMapper() {
         final ObjectMapper mapper = new ObjectMapper().registerModule(
                 new SimpleModule().addAbstractTypeMapping(DistributionSnapshot.class, RuntimeSnapshot.class)
                                   .addAbstractTypeMapping(BundleInfo.class, BundleInfoImpl.class)
                                   .addAbstractTypeMapping(BundleGroup.class, BundleGroupImpl.class)
                                   .addAbstractTypeMapping(ComponentInfo.class, ComponentInfoImpl.class)
+                                  .addAbstractTypeMapping(ExtensionPointInfo.class, ExtensionPointInfoImpl.class)
                                   .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
                                   .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
                                   .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
                                   .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class));
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);
+        mapper.addMixIn(ComponentName.class, ComponentNameMixin.class);
         return mapper;
     }
 
@@ -227,4 +221,9 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
         abstract @JsonProperty("isRequired") String isRequired();
     }
 
+    static abstract class ComponentNameMixin {
+        @JsonCreator
+        public ComponentNameMixin(@JsonProperty("rawName") String rawName) {
+        }
+    }
 }

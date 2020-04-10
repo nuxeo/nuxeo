@@ -19,6 +19,7 @@
 package org.nuxeo.apidoc.adapters;
 
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
@@ -85,6 +86,11 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
         log.error("Unable to determine version for Service " + getId());
         return "?";
+    }
+
+    @Override
+    public ComponentInfo getComponent() {
+        return getParentNuxeoArtifact(ComponentInfo.class);
     }
 
     @Override

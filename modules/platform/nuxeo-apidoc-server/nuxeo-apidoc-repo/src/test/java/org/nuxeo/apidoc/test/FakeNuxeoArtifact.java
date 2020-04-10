@@ -22,6 +22,10 @@ import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.core.api.CoreSession;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class FakeNuxeoArtifact implements NuxeoArtifact {
 
     public final String id;
@@ -34,6 +38,14 @@ public class FakeNuxeoArtifact implements NuxeoArtifact {
         id = artifact.getId();
         version = artifact.getVersion();
         type = artifact.getArtifactType();
+    }
+
+    @JsonCreator
+    private FakeNuxeoArtifact(@JsonProperty("id") String id, @JsonProperty("version") String version,
+            @JsonProperty("type") String type) {
+        this.id = id;
+        this.version = version;
+        this.type = type;
     }
 
     @Override
@@ -52,11 +64,13 @@ public class FakeNuxeoArtifact implements NuxeoArtifact {
     }
 
     @Override
+    @JsonIgnore
     public String getArtifactType() {
         return type;
     }
 
     @Override
+    @JsonIgnore
     public String getHierarchyPath() {
         return null;
     }

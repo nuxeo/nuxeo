@@ -20,25 +20,27 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
+import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreType
 public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements ExtensionPointInfo {
 
-    protected final ComponentInfoImpl component;
+    protected final ComponentInfo component;
+
+    protected final String componentId;
 
     protected final String name;
 
-    protected final Collection<ExtensionInfo> extensions = new ArrayList<>();
+    protected final List<ExtensionInfo> extensions = new ArrayList<>();
 
     protected final List<Class<?>> spi = new ArrayList<>();
 
@@ -47,18 +49,29 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
     protected String documentation;
 
     public ExtensionPointInfoImpl(ComponentInfoImpl component, String name) {
-        this.name = name;
         this.component = component;
+        this.componentId = component.getId();
+        this.name = name;
+    }
+
+    @JsonCreator
+    private ExtensionPointInfoImpl(@JsonProperty("componentId") String componentId, @JsonProperty("name") String name,
+            @JsonProperty("descriptors") String[] descriptors, @JsonProperty("documentation") String documentation) {
+        this.component = null; // will be handled by json back reference
+        this.componentId = componentId; // kept here to ensure id resolution during json deserialization
+        this.name = name;
+        this.descriptors = descriptors;
+        this.documentation = documentation;
     }
 
     @Override
-    public ComponentInfoImpl getComponent() {
+    public ComponentInfo getComponent() {
         return component;
     }
 
     @Override
     public String getComponentId() {
-        return component.getId();
+        return componentId;
     }
 
     @Override
@@ -76,7 +89,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
     }
 
     @Override
-    public Collection<ExtensionInfo> getExtensions() {
+    public List<ExtensionInfo> getExtensions() {
         return extensions;
     }
 
@@ -104,7 +117,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
 
     @Override
     public String getId() {
-        return component.getId() + "--" + name;
+        return getComponentId() + "--" + getName();
     }
 
     @Override
@@ -119,7 +132,7 @@ public class ExtensionPointInfoImpl extends BaseNuxeoArtifact implements Extensi
 
     @Override
     public String getLabel() {
-        return name + " (" + component.getId() + ")";
+        return getName() + " (" + getComponentId() + ")";
     }
 
     @Override

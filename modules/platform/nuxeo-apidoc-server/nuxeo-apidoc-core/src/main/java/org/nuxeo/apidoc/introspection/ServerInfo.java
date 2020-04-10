@@ -32,6 +32,8 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -160,15 +162,18 @@ public class ServerInfo {
         return version;
     }
 
-    public Collection<BundleInfo> getBundles() {
-        return bundles.values();
+    public List<BundleInfo> getBundles() {
+        List<BundleInfo> res = new ArrayList<>(bundles.values());
+        // order by name for deterministic processing
+        res.sort(Comparator.comparing(BundleInfo::getId));
+        return res;
     }
 
     public void addBundle(BundleInfo bundle) {
         bundles.put(bundle.getId(), bundle);
     }
 
-    public void addBundle(Collection<BundleInfo> someBundles) {
+    public void addBundle(List<BundleInfo> someBundles) {
         for (BundleInfo bundle : someBundles) {
             bundles.put(bundle.getId(), bundle);
         }
@@ -299,7 +304,6 @@ public class ServerInfo {
         List<ExtensionInfoImpl> contribRegistry = new ArrayList<>();
 
         Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
-
         for (RegistrationInfo ri : registrations) {
             String cname = ri.getName().getName();
             Bundle bundle = ri.getContext().getBundle();

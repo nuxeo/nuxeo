@@ -37,7 +37,6 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.introspection.ServerInfo;
 import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
@@ -85,11 +84,6 @@ public class TestDistributionResolver {
 
                 @Override
                 public List<String> getXmlComponentIds() {
-                    return null;
-                }
-
-                @Override
-                public List<Class<?>> getSpi() {
                     return null;
                 }
 
@@ -189,6 +183,11 @@ public class TestDistributionResolver {
                 }
 
                 @Override
+                public List<BundleInfo> getBundles() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
                 public List<BundleGroup> getBundleGroups() {
                     return null;
                 }
@@ -206,11 +205,6 @@ public class TestDistributionResolver {
                 @Override
                 public BundleInfo getBundle(String id) {
                     return null;
-                }
-
-                @Override
-                public ServerInfo getServerInfo() {
-                    throw new UnsupportedOperationException();
                 }
 
                 @Override
