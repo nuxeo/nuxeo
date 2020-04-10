@@ -4,15 +4,15 @@
   <require>org.nuxeo.ecm.core.bulk.config</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="automation" bucketSize="100" batchSize="10" httpEnabled="true"
-      validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation"/>
+    <action name="automation" inputStream="bulk/automation" bucketSize="100" batchSize="10" httpEnabled="true"
+      validationClass="org.nuxeo.ecm.automation.core.operations.services.bulk.validation.AutomationBulkValidation" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <streamProcessor name="automation"
-      class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction" logConfig="bulk"
-      defaultConcurrency="2" defaultPartitions="2">
-      <policy name="automation" maxRetries="3" delay="1s" continueOnFailure="true" />
+      class="org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction" defaultConcurrency="2"
+      defaultPartitions="2">
+      <policy name="default" maxRetries="3" delay="1s" continueOnFailure="true" />
     </streamProcessor>
   </extension>
 

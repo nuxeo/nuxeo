@@ -13,7 +13,9 @@
   </extension-point>
 
   <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <logConfig name="work" />
+    <logConfig name="work">
+      <match name="work/" />
+    </logConfig>
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

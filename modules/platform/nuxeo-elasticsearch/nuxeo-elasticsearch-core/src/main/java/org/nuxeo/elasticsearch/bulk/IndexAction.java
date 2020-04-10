@@ -39,6 +39,8 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
 public class IndexAction implements StreamProcessorTopology {
     public static final String ACTION_NAME = "index";
 
+    public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
+
     public static final String ES_BULK_SIZE_OPTION = "esBulkSizeBytes";
 
     public static final int ES_BULK_SIZE_DEFAULT = 5_242_880;
@@ -61,7 +63,7 @@ public class IndexAction implements StreamProcessorTopology {
         int esBulkActions = getOptionAsInteger(options, ES_BULK_ACTION_OPTION, ES_BULK_ACTION_DEFAULT);
         int esBulkFlushInterval = getOptionAsInteger(options, BULK_FLUSH_INTERVAL_OPTION, BULK_FLUSH_INTERVAL_DEFAULT);
         return Topology.builder()
-                       .addComputation(IndexRequestComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                       .addComputation(IndexRequestComputation::new, Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
                                OUTPUT_1 + ":" + BulkIndexComputation.NAME))
                        .addComputation(() -> new BulkIndexComputation(esBulkSize, esBulkActions, esBulkFlushInterval),
                                Arrays.asList(INPUT_1 + ":" + BulkIndexComputation.NAME, //

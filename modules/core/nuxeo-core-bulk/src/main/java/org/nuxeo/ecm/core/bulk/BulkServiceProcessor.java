@@ -52,10 +52,11 @@ public class BulkServiceProcessor implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         List<String> mapping = new ArrayList<>();
         mapping.add(INPUT_1 + ":" + COMMAND_STREAM);
-        List<String> actions = Framework.getService(BulkAdminService.class).getActions();
+        BulkAdminService actionService = Framework.getService(BulkAdminService.class);
+        List<String> actions = actionService.getActions();
         int i = 1;
         for (String action : actions) {
-            mapping.add(String.format("o%s:%s", i, action));
+            mapping.add(String.format("o%s:%s", i, actionService.getInputStream(action)));
             i++;
         }
         mapping.add(String.format("o%s:%s", i, STATUS_STREAM));

@@ -74,7 +74,7 @@ public class CSVProjectionComputation extends AbstractBulkComputation {
     protected RenderingContext renderingCtx;
 
     public CSVProjectionComputation() {
-        super(CSVExportAction.ACTION_NAME);
+        super(CSVExportAction.ACTION_FULL_NAME);
     }
 
     @Override

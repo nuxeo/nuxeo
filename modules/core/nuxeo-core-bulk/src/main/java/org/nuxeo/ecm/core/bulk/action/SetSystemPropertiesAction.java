@@ -49,11 +49,13 @@ public class SetSystemPropertiesAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "setSystemProperties";
 
+    public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(SetSystemPropertyComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
                                        OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
@@ -63,7 +65,7 @@ public class SetSystemPropertiesAction implements StreamProcessorTopology {
         private static final Logger log = LogManager.getLogger(SetSystemPropertyComputation.class);
 
         public SetSystemPropertyComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

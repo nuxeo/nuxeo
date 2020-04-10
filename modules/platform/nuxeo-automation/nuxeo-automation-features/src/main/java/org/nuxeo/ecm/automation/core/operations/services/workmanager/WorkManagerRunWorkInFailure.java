@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.automation.core.operations.services.workmanager;
 
 import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEAD_LETTER_QUEUE;
-import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEFAULT_LOG_MANAGER;
 import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 
 import java.io.IOException;
@@ -79,7 +78,7 @@ public class WorkManagerRunWorkInFailure {
 
     @OperationMethod
     public Blob run() throws IOException, InterruptedException, TimeoutException {
-        StreamManager streamManager = Framework.getService(StreamService.class).getStreamManager(DEFAULT_LOG_MANAGER);
+        StreamManager streamManager = Framework.getService(StreamService.class).getStreamManager();
         Settings settings = new Settings(1, 1, WorkManagerImpl.DEAD_LETTER_QUEUE_CODEC, getComputationPolicy());
         StreamProcessor processor = streamManager.registerAndCreateProcessor("RunWorkInFailure", getTopology(),
                 settings);
@@ -117,7 +116,7 @@ public class WorkManagerRunWorkInFailure {
     protected Topology getTopology() {
         return Topology.builder()
                        .addComputation(WorkFailureComputation::new,
-                               Collections.singletonList(INPUT_1 + ":" + DEAD_LETTER_QUEUE))
+                               Collections.singletonList(INPUT_1 + ":" + DEAD_LETTER_QUEUE.getUrn()))
                        .build();
     }
 

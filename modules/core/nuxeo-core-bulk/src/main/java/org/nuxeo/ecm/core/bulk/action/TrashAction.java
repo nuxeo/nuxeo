@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.core.bulk.action;
 
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
-import static org.nuxeo.ecm.core.api.event.CoreEventConstants.SESSION_ID;
 import static org.nuxeo.ecm.core.api.event.DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_TRASHED;
 import static org.nuxeo.ecm.core.api.trash.TrashService.DOCUMENT_UNTRASHED;
@@ -55,7 +54,6 @@ import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
@@ -67,6 +65,8 @@ public class TrashAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "trash";
 
+    public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
+
     public static final String PARAM_NAME = "value";
 
     public static final String PROXY_QUERY_TEMPLATE = "SELECT ecm:uuid FROM Document WHERE ecm:isProxy=1 AND ecm:uuid IN ('%s')";
@@ -77,7 +77,7 @@ public class TrashAction implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(TrashComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
@@ -86,7 +86,7 @@ public class TrashAction implements StreamProcessorTopology {
         private static final Logger log = LogManager.getLogger(TrashComputation.class);
 
         public TrashComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

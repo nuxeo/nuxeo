@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.core.bulk;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -40,6 +42,9 @@ public class BulkActionDescriptor implements Descriptor {
 
     @XNode("@name")
     public String name;
+
+    @XNode("@inputStream")
+    public String inputStream;
 
     @XNode("@bucketSize")
     public Integer bucketSize = DEFAULT_BUCKET_SIZE;
@@ -98,4 +103,10 @@ public class BulkActionDescriptor implements Descriptor {
     public String getDefaultScroller() {
         return defaultScroller;
     }
+
+    // @since 11.1
+    public String getInputStream() {
+        return defaultIfBlank(inputStream, name);
+    }
+
 }

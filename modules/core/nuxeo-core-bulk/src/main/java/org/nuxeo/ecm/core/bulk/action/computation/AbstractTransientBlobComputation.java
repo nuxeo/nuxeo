@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
+import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -40,13 +41,16 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
 
     private static final Logger log = LogManager.getLogger(AbstractTransientBlobComputation.class);
 
-    private Path temp;
+    protected Path temp;
+
+    protected String id;
 
     @Override
     public void init(ComputationContext context) {
         super.init(context);
+        id = Name.idOfUrn(metadata.name());
         try {
-            temp = Files.createTempDirectory(metadata().name());
+            temp = Files.createTempDirectory(id);
             Framework.trackFile(temp.toFile(), temp);
         } catch (IOException e) {
             throw new IllegalStateException("Cannot create temp directory for " + this);
@@ -63,7 +67,7 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
 
 
     protected String getTransientStoreKey(String commandId) {
-        return metadata.name() + commandId;
+        return id + commandId;
     }
 
     public Blob getBlob(String key, String storeName) {
@@ -71,7 +75,7 @@ public abstract class AbstractTransientBlobComputation extends AbstractComputati
         List<Blob> blobs = store.getBlobs(key);
         Blob blob = blobs == null || blobs.isEmpty() ? null : blobs.get(0);
         if (blob == null) {
-            log.error("[{}] Could not retrieve blob for key {}", metadata.name(), key);
+            log.error("[{}] Could not retrieve blob for key {}", id, key);
         }
         return blob;
     }

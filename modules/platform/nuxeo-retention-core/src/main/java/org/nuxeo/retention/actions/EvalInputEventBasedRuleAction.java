@@ -52,11 +52,13 @@ public class EvalInputEventBasedRuleAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "evalInputEventBasedRule";
 
+    public static final String ACTION_FULL_NAME = "retention/" + ACTION_NAME;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(EvalInputEventBasedRuleComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
@@ -69,7 +71,7 @@ public class EvalInputEventBasedRuleAction implements StreamProcessorTopology {
         protected RetentionManager retentionManager;
 
         public EvalInputEventBasedRuleComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

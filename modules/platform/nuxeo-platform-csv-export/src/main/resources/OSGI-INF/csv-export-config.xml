@@ -4,13 +4,14 @@
   <require>org.nuxeo.ecm.core.bulk</require>
 
   <extension target="org.nuxeo.ecm.core.bulk" point="actions">
-    <action name="csvExport" bucketSize="100" batchSize="50" httpEnabled="true" defaultScroller="${nuxeo.core.bulk.csvExport.scroller:=default}"
-      validationClass="org.nuxeo.ecm.platform.csv.export.validation.CSVExportValidation"/>
+    <action name="csvExport" inputStream="bulk/csvExport" bucketSize="100" batchSize="50" httpEnabled="true"
+      defaultScroller="${nuxeo.core.bulk.csvExport.scroller:=default}"
+      validationClass="org.nuxeo.ecm.platform.csv.export.validation.CSVExportValidation" />
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
     <!-- CSV exporter processor -->
-    <streamProcessor name="csvExport" class="org.nuxeo.ecm.platform.csv.export.action.CSVExportAction" logConfig="bulk"
+    <streamProcessor name="csvExport" class="org.nuxeo.ecm.platform.csv.export.action.CSVExportAction"
       defaultConcurrency="2" defaultPartitions="2">
       <policy name="default" maxRetries="3" delay="1s" maxDelay="10s" continueOnFailure="true" />
       <option name="produceImmediate">false</option>

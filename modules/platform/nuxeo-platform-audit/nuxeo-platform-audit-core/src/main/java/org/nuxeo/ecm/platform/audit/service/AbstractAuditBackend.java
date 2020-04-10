@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_EVENT_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_ID;
 import static org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData.LOG_REPOSITORY_ID;
 import static org.nuxeo.ecm.platform.audit.impl.StreamAuditWriter.COMPUTATION_NAME;
-import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.DEFAULT_LOG_CONFIG;
 import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_AUDIT_ENABLED_PROP;
 import static org.nuxeo.ecm.platform.audit.listener.StreamAuditEventListener.STREAM_NAME;
 
@@ -402,7 +401,7 @@ public abstract class AbstractAuditBackend implements AuditBackend, AuditStorage
             return component.bulker.await(time, unit);
         } else {
             StreamService service = Framework.getService(StreamService.class);
-            LogManager logManager = service.getLogManager(DEFAULT_LOG_CONFIG);
+            LogManager logManager = service.getLogManager();
             // when there is no lag between producer and consumer we are done
             long deadline = System.currentTimeMillis() + unit.toMillis(time);
             while (logManager.getLag(Name.ofUrn(STREAM_NAME), Name.ofUrn(COMPUTATION_NAME)).lag() > 0) {

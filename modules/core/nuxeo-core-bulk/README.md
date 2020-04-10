@@ -112,7 +112,7 @@ You need to register a couple action / stream processor :
 
 ```xml
 <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-  <streamProcessor name="myAction" class="org.nuxeo.ecm.core.bulk.action.MyActionProcessor" logConfig="bulk"
+  <streamProcessor name="myAction" class="org.nuxeo.ecm.core.bulk.action.MyActionProcessor"
       defaultConcurrency="2" defaultPartitions="4" />
 </extension>
 ```

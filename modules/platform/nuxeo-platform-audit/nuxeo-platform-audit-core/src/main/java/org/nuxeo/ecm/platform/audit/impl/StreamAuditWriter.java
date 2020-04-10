@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class StreamAuditWriter implements StreamProcessorTopology {
     private static final Log log = LogFactory.getLog(StreamAuditWriter.class);
 
-    public static final String COMPUTATION_NAME = "AuditLogWriter";
+    public static final String COMPUTATION_NAME = "audit/writer";
 
     @Override
     public Topology getTopology(Map<String, String> options) {

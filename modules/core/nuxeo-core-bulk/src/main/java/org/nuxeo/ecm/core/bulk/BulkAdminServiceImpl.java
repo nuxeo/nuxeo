@@ -18,8 +18,6 @@
  */
 package org.nuxeo.ecm.core.bulk;
 
-import static org.nuxeo.ecm.core.bulk.BulkServiceImpl.BULK_LOG_MANAGER_NAME;
-
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +35,9 @@ import org.nuxeo.runtime.stream.StreamService;
  */
 public class BulkAdminServiceImpl implements BulkAdminService {
 
-    public static final String SCROLLER_NAME = "scroller";
+    public static final String SCROLLER_NAME = "bulk/scroller";
 
-    public static final String STATUS_NAME = "status";
+    public static final String STATUS_NAME = "bulk/status";
 
     public static final String BULK_SERVICE_PROCESSOR_NAME = "bulkServiceProcessor";
 
@@ -95,6 +93,11 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     }
 
     @Override
+    public String getInputStream(String action) {
+        return descriptors.get(action).getInputStream();
+    }
+
+    @Override
     public boolean isHttpEnabled(String actionId) {
         return descriptors.get(actionId).httpEnabled;
     }
@@ -110,7 +113,7 @@ public class BulkAdminServiceImpl implements BulkAdminService {
     }
 
     public void afterStart() {
-        StreamManager manager = Framework.getService(StreamService.class).getStreamManager(BULK_LOG_MANAGER_NAME);
+        StreamManager manager = Framework.getService(StreamService.class).getStreamManager();
         streamProcessor = manager.createStreamProcessor(BULK_SERVICE_PROCESSOR_NAME);
         streamProcessor.start();
     }

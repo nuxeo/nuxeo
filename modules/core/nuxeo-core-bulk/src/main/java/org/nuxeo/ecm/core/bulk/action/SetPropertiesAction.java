@@ -48,6 +48,8 @@ public class SetPropertiesAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "setProperties";
 
+    public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
+
     // duplicated from NXAuditEventsService.DISABLE_AUDIT_LOGGER
     public static final String PARAM_DISABLE_AUDIT = "disableAuditLogger";
 
@@ -57,7 +59,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(SetPropertyComputation::new,
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, //
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, //
                                        OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
@@ -71,7 +73,7 @@ public class SetPropertiesAction implements StreamProcessorTopology {
         protected boolean disableAudit;
 
         public SetPropertyComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

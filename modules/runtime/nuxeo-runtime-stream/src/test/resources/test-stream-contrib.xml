@@ -31,7 +31,7 @@
   <extension point="streamProcessor" target="org.nuxeo.runtime.stream.service">
 
     <streamProcessor name="myStreamProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor"
-      defaultConcurrency="4" defaultPartitions="2" logConfig="default">
+      defaultConcurrency="4" defaultPartitions="2">
       <policy name="default" maxRetries="2" delay="200ms" maxDelay="2s" continueOnFailure="false" />
       <policy name="myComputation" maxRetries="2" delay="200ms" maxDelay="2s" continueOnFailure="false" />
       <policy name="myComputation2" class="org.nuxeo.runtime.stream.tests.MyPolicy" />
@@ -52,17 +52,17 @@
     </streamProcessor>
 
     <streamProcessor name="disabledStreamProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor2"
-      defaultConcurrency="4" defaultPartitions="2" logConfig="default" enabled="false">
+      defaultConcurrency="4" defaultPartitions="2" enabled="false">
       <stream name="input2" partitions="1" codec="avro" />
     </streamProcessor>
 
     <streamProcessor name="failureProcessor" class="org.nuxeo.runtime.stream.tests.FailureStreamProcessor"
-      defaultConcurrency="1" defaultPartitions="1" logConfig="default">
+      defaultConcurrency="1" defaultPartitions="1">
       <policy name="default" maxRetries="0" continueOnFailure="false" />
     </streamProcessor>
 
     <streamProcessor name="registerProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor3"
-      defaultConcurrency="1" defaultPartitions="1" logConfig="default" start="false" >
+      defaultConcurrency="1" defaultPartitions="1" start="false" >
       <policy name="default" maxRetries="0" continueOnFailure="false" />
       <stream name="registerInput" />
       <stream name="externalOutput" partitions="1" external="true" />

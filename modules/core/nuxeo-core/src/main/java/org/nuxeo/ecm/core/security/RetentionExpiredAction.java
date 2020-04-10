@@ -58,11 +58,13 @@ public class RetentionExpiredAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "retentionExpired";
 
+    public static final String ACTION_FULL_NAME = "retention/" + ACTION_NAME;
+
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(RetentionExpiredComputation::new, //
-                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                               Arrays.asList(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
@@ -71,7 +73,7 @@ public class RetentionExpiredAction implements StreamProcessorTopology {
         private static final Logger log = LogManager.getLogger(RetentionExpiredComputation.class);
 
         public RetentionExpiredComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

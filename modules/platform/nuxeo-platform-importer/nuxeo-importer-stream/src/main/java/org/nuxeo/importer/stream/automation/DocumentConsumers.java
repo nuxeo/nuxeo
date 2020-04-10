@@ -84,9 +84,6 @@ public class DocumentConsumers {
     @Param(name = "logName", required = false)
     protected String logName = DEFAULT_LOG_DOC_NAME;
 
-    @Param(name = "logConfig", required = false)
-    protected String logConfig = DEFAULT_LOG_CONFIG;
-
     @Param(name = "blockIndexing", required = false)
     protected Boolean blockIndexing = false;
 
@@ -131,7 +128,7 @@ public class DocumentConsumers {
                                                               .build();
         log.warn(String.format("Import documents from log: %s into: %s/%s, with policy: %s", logName, repositoryName,
                 rootFolder, consumerPolicy));
-        LogManager manager = Framework.getService(StreamService.class).getLogManager(logConfig);
+        LogManager manager = Framework.getService(StreamService.class).getLogManager();
         Codec<DocumentMessage> codec = StreamImporters.getDocCodec();
         try (DocumentConsumerPool<DocumentMessage> consumers = new DocumentConsumerPool<>(logName, manager, codec,
                 new DocumentMessageConsumerFactory(repositoryName, rootFolder), consumerPolicy)) {

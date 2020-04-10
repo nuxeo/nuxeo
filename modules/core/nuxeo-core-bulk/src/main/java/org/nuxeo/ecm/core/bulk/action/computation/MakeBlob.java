@@ -53,7 +53,7 @@ public class MakeBlob extends AbstractTransientBlobComputation {
 
     private static final Logger log = LogManager.getLogger(MakeBlob.class);
 
-    public static final String NAME = "makeBlob";
+    public static final String NAME = "bulk/makeBlob";
 
     protected static final long CHECK_DELAY_MS = 1000;
 

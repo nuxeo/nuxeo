@@ -61,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
 public class BulkIndexComputation extends AbstractComputation implements BulkProcessor.Listener {
     private static final Log log = LogFactory.getLog(BulkIndexComputation.class);
 
-    public static final String NAME = "bulkIndex";
+    public static final String NAME = "bulk/bulkIndex";
 
     protected final int esBulkSize;
 

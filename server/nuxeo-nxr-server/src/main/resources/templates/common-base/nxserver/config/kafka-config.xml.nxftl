@@ -55,7 +55,7 @@
 </#if>
       </consumer>
     </kafkaConfig>
-    <kafkaConfig name="bulk" topicPrefix="${kafka.topicPrefix}bulk-">
+    <kafkaConfig name="bulk" topicPrefix="${kafka.topicPrefix}">
       <producer>
         <property name="bootstrap.servers">${kafka.bootstrap.servers}</property>
         <property name="default.replication.factor">${kafka.default.replication.factor}</property>

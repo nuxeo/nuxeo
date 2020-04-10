@@ -6,7 +6,8 @@
   <!-- make sure scrolling is concurrent -->
   <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
     <logConfig name="bulk">
-      <log name="command" size="3" />
+      <log name="bulk/command" size="3" />
+      <match name="bulk/" />
     </logConfig>
   </extension>
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
@@ -21,11 +22,11 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-    <streamProcessor name="dummySequential" class="org.nuxeo.ecm.core.bulk.DummyAction" logConfig="bulk"
+    <streamProcessor name="dummySequential" class="org.nuxeo.ecm.core.bulk.DummyAction"
       defaultConcurrency="1" defaultPartitions="1">
       <option name="actionName">dummySequential</option>
     </streamProcessor>
-    <streamProcessor name="dummyConcurrent" class="org.nuxeo.ecm.core.bulk.DummyAction" logConfig="bulk"
+    <streamProcessor name="dummyConcurrent" class="org.nuxeo.ecm.core.bulk.DummyAction"
       defaultConcurrency="2" defaultPartitions="2">
       <option name="actionName">dummyConcurrent</option>
     </streamProcessor>

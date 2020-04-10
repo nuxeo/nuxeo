@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.STORE_NAME_OPTION
 import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.STORE_TTL_OPTION;
 import static org.nuxeo.ecm.core.work.BaseOverflowRecordFilter.THRESHOLD_SIZE_OPTION;
 import static org.nuxeo.ecm.core.work.api.WorkManager.Scheduling.CANCEL_SCHEDULED;
+import static org.nuxeo.lib.stream.computation.AbstractComputation.INPUT_1;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -59,7 +60,6 @@ import org.nuxeo.lib.stream.computation.StreamManager;
 import org.nuxeo.lib.stream.computation.StreamProcessor;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.lib.stream.computation.internals.RecordFilterChainImpl;
-import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogOffset;
@@ -106,6 +106,8 @@ public class StreamWorkManager extends WorkManagerImpl {
     protected long lastMetricTime;
 
     protected long CACHE_LAST_METRIC_DURATION_MS = 1000;
+
+    public static final String NAMESPACE_PREFIX = "work/";
 
     /**
      * @since 10.2
@@ -206,15 +208,15 @@ public class StreamWorkManager extends WorkManagerImpl {
             return;
         }
         WorkSchedulePath.newInstance(work);
-        // We don't need to set a codec because appender is initialized with proper codec during processor init
-        LogAppender<Record> appender = logManager.getAppender(Name.ofUrn(queueId));
-        if (appender == null) {
+        String key = work.getPartitionKey();
+        LogOffset offset;
+        try {
+            offset = streamManager.append(NAMESPACE_PREFIX + queueId, Record.of(key, WorkComputation.serialize(work)));
+        } catch (IllegalArgumentException e) {
             log.error(String.format("Not scheduled work, unknown category: %s, mapped to %s", work.getCategory(),
-                    queueId));
+                    NAMESPACE_PREFIX + queueId));
             return;
         }
-        String key = work.getPartitionKey();
-        LogOffset offset = streamManager.append(queueId, Record.of(key, WorkComputation.serialize(work)));
         if (work.isCoalescing()) {
             WorkStateHelper.setLastOffset(work.getId(), offset.offset(), stateTTL);
         }
@@ -339,12 +341,12 @@ public class StreamWorkManager extends WorkManagerImpl {
         String config = getLogConfig();
         log.info("Init StreamWorkManager with Log configuration: " + config);
         StreamService service = Framework.getService(StreamService.class);
-        return service.getLogManager(getLogConfig());
+        return service.getLogManager();
     }
 
     protected StreamManager getStreamManager() {
         StreamService service = Framework.getService(StreamService.class);
-        return service.getStreamManager(getLogConfig());
+        return service.getStreamManager();
     }
 
     protected String getLogConfig() {
@@ -362,14 +364,15 @@ public class StreamWorkManager extends WorkManagerImpl {
         // create the single topology with one root per work pool
         Topology.Builder builder = Topology.builder();
         descriptors.stream().filter(WorkQueueDescriptor::isProcessingEnabled).forEach(d -> builder.addComputation(
-                () -> new WorkComputation(d.getId()), Collections.singletonList("i1:" + d.getId())));
+                           () -> new WorkComputation(NAMESPACE_PREFIX + d.getId()),
+                           Collections.singletonList(INPUT_1 + ":" + NAMESPACE_PREFIX + d.getId())));
         topology = builder.build();
         // create a topology for the disabled work pools in order to init their input streams
         Topology.Builder builderDisabled = Topology.builder();
         descriptors.stream()
                    .filter(Predicate.not(WorkQueueDescriptor::isProcessingEnabled))
                    .forEach(d -> builderDisabled.addComputation(() -> new WorkComputation(d.getId()),
-                           Collections.singletonList("i1:" + d.getId())));
+                           Collections.singletonList(INPUT_1 + ":" + NAMESPACE_PREFIX + d.getId())));
         topologyDisabled = builderDisabled.build();
         // The retry policy is handled at AbstractWork level, but we want to skip failure
         ComputationPolicy policy = new ComputationPolicyBuilder().continueOnFailure(true).build();
@@ -508,7 +511,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     @Override
     public WorkQueueMetrics getMetrics(String queueId) {
-        LogLag lag = logManager.getLag(Name.ofUrn(queueId), Name.ofUrn(queueId));
+        LogLag lag = logManager.getLag(Name.ofUrn(NAMESPACE_PREFIX + queueId), Name.ofUrn(NAMESPACE_PREFIX + queueId));
         long running = 0;
         if (lag.lag() > 0) {
             // we don't have the exact running metric

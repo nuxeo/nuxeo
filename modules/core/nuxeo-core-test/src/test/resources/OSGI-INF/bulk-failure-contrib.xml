@@ -8,7 +8,7 @@
   </extension>
 
   <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
-      <streamProcessor name="fail" class="org.nuxeo.ecm.core.bulk.FailAction" logConfig="bulk"
+      <streamProcessor name="fail" class="org.nuxeo.ecm.core.bulk.FailAction"
       defaultConcurrency="2" defaultPartitions="2">
       <policy name="default" maxRetries="2" delay="100ms" maxDelay="10s" continueOnFailure="true" />
     </streamProcessor>

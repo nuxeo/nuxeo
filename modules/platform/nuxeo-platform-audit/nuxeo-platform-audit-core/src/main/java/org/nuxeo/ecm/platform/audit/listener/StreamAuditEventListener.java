@@ -60,11 +60,7 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
 
     public static final String STREAM_AUDIT_ENABLED_PROP = "nuxeo.stream.audit.enabled";
 
-    public static final String AUDIT_LOG_CONFIG_PROP = "nuxeo.stream.audit.log.config";
-
-    public static final String DEFAULT_LOG_CONFIG = "audit";
-
-    public static final String STREAM_NAME = "audit";
+    public static final String STREAM_NAME = "audit/audit";
 
     @Override
     public void handleEvent(Event event) {
@@ -178,10 +174,6 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
 
     protected StreamManager getStreamManager() {
         StreamService service = Framework.getService(StreamService.class);
-        return service.getStreamManager(getLogConfig());
-    }
-
-    protected String getLogConfig() {
-        return Framework.getProperty(AUDIT_LOG_CONFIG_PROP, DEFAULT_LOG_CONFIG);
+        return service.getStreamManager();
     }
 }

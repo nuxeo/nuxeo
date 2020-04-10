@@ -37,7 +37,6 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRand
 | `logName` | `import/doc` | The name of the Log. |
 | `logSize` | `$nbThreads` |The number of partitions in the Log which will fix the maximum number of consumer threads |
 | `logBlobInfo` |  | A Log name containing blob information to use, see section below for use case |
-| `logConfig` | `default` | The Log configuration registered in Nuxeo |
 
 2. Run consumers of document messages creating Nuxeo documents, the concurrency will match the previous nbThreads producers parameters
   ```
@@ -55,7 +54,6 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runDocu
 | `retryMax` | `3` | Number of time a consumer retry to import in case of failure |
 | `retryDelayS` | `2` | Delay between retries |
 | `logName` | `import/doc` | The name of the Log to tail |
-| `logConfig` | `default` | The Log configuration registered in Nuxeo |
 | `useBulkMode` | `false` | Process asynchronous listeners in bulk mode |
 | `blockIndexing` | `false` | Do not index created document with Elasticsearch |
 | `blockAsyncListeners` | `false` | Do not process any asynchronous listeners |
@@ -78,7 +76,6 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runRand
 | `lang` | `en_US` | The locale used for the generated content, can be "fr_FR" or "en_US" |
 | `logName` | `import/blob` |  The name of the Log to append blobs. |
 | `logSize` | `$nbThreads`| The number of partitions in the Log which will fix the maximum number of consumer threads |
-| `logConfig` | `default` | The Log configuration registered in Nuxeo |
 
 2. Run consumers of blob messages importing into the Nuxeo binary store, saving blob information into a new Log.
   ```
@@ -94,7 +91,6 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runBlob
 | `nbThreads` | `$logSize` | The number of concurrent consumer, should not be greater than the number of partitions in the Log |
 | `retryMax` | `3` | Number of time a consumer retry to import in case of failure |
 | `retryDelayS` | `2` | Delay between retries |
-| `logConfig` | `default` | The Log configuration registered in Nuxeo |
 
 3. Run producers of random Nuxeo document messages which use produced blobs created in step 2
   ```
@@ -129,7 +125,6 @@ curl -X POST 'http://localhost:8080/nuxeo/site/automation/StreamImporter.runFile
 | `nbThreads` | `1` | The number of concurrent producer to run |
 | `logName` | `import/blob` |  The name of the Log to append blobs. |
 | `logSize` | `$nbThreads`| The number of partitions in the Log which will fix the maximum number of consumer threads |
-| `logConfig` | `default` | The Log configuration registered in Nuxeo |
 
 
 The you can use the 3 others steps describes the above section to import blobs with 4 threads and create documents.

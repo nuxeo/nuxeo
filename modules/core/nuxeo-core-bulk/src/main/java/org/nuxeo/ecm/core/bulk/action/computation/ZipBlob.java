@@ -39,7 +39,7 @@ public class ZipBlob extends AbstractTransientBlobComputation {
 
     private static final Logger log = LogManager.getLogger(ZipBlob.class);
 
-    public static final String NAME = "zipBlob";
+    public static final String NAME = "bulk/zipBlob";
 
     public static final String ZIP_PARAMETER = "zip";
 

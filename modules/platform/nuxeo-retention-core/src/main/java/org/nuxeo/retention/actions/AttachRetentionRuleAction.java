@@ -47,13 +47,15 @@ public class AttachRetentionRuleAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "attachRetentionRule";
 
+    public static final String ACTION_FULL_NAME = "retention/" + ACTION_NAME;
+
     public static final String PARAM_RULE_ID = "ruleId";
 
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
                        .addComputation(EvaluateRuleComputation::new,
-                               List.of(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                               List.of(INPUT_1 + ":" + ACTION_FULL_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
                        .build();
     }
 
@@ -66,7 +68,7 @@ public class AttachRetentionRuleAction implements StreamProcessorTopology {
         protected String ruleId;
 
         public EvaluateRuleComputation() {
-            super(ACTION_NAME);
+            super(ACTION_FULL_NAME);
         }
 
         @Override

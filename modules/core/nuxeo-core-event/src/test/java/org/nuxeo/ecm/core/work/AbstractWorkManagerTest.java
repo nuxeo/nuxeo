@@ -618,10 +618,9 @@ public abstract class AbstractWorkManagerTest {
 
         // Ensure the dead letter queue stream exists and it is empty
         StreamService streamService = Framework.getService(StreamService.class);
-        LogManager logManager = streamService.getLogManager(DEFAULT_LOG_MANAGER);
+        LogManager logManager = streamService.getLogManager();
         assertTrue(logManager.exists(DEAD_LETTER_QUEUE));
-        LogLag lag = logManager.getLag(DEAD_LETTER_QUEUE, Name.ofUrn("testDeadLetter"));
-        assertEquals(LogLag.of(0), lag);
+        LogLag initialLag = logManager.getLag(DEAD_LETTER_QUEUE, Name.ofUrn("testDeadLetter"));
 
         // Run a failing work
         SleepWork work = new SleepAndFailWork(200);
@@ -630,8 +629,8 @@ public abstract class AbstractWorkManagerTest {
         tracker.assertDiff(0, 0, 1, 0);
 
         // Check that we have some dead letter
-        lag = logManager.getLag(DEAD_LETTER_QUEUE, Name.ofUrn("testDeadLetter"));
-        assertEquals(LogLag.of(1), lag);
+        LogLag lag = logManager.getLag(DEAD_LETTER_QUEUE, Name.ofUrn("testDeadLetter"));
+        assertEquals(LogLag.of(initialLag.lag() + 1), lag);
 
         assertEquals(1, dlqCounter.getCount() - initialDlqCount);
     }
