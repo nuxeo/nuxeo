@@ -71,7 +71,7 @@ else # nuxeoctl command found
     echo "ENTRYPOINT: Write NUXEO_CLID environment variable to /var/lib/nuxeo/instance.clid"
     # Replace -- by a carriage return
     NUXEO_CLID="${NUXEO_CLID/--/\\n}"
-    printf "%b\n" "$NUXEO_CLID" >> /var/lib/nuxeo/instance.clid
+    echo "$NUXEO_CLID" > /var/lib/nuxeo/instance.clid
   fi
 
 fi
