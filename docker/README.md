@@ -258,7 +258,7 @@ Later on, with [NXP-28191](https://jira.nuxeo.com/browse/NXP-28191), we should b
 
 #### JAVA_OPTS
 
-If provided when running a container, the value of `JAVA_OPTS` is appended to the `JAVA_OPTS` property defined in `nuxeo.conf` at startup.
+The value of `JAVA_OPTS` is appended to the `JAVA_OPTS` property defined in `nuxeo.conf` at startup.
 
 For instance, to make the Nuxeo Launcher display the JVM settings in the console, run:
 
@@ -268,12 +268,10 @@ docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/slim:11.1-SNAPS
 
 #### NUXEO_CLID
 
-If provided when running a container, the value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/instance.clid` at startup.
+The value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/instance.clid` at startup.
 
-For instance, running:
+For instance, to run a container with a registered Nuxeo instance:
 
 ```bash
 docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:11.1-SNAPSHOT
 ```
-
-allows to run a container with a registered Nuxeo instance.
