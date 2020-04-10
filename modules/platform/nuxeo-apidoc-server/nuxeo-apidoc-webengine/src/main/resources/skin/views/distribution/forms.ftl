@@ -23,7 +23,7 @@
     </tr>
 
     <tr>
-      <td><a class="button" href="${Root.path}/current/listBundles/">${rtSnap.name}</a></td>
+      <td><a class="button" href="${Root.path}/current/">${rtSnap.name}</a></td>
       <td>${rtSnap.version}</td>
       <td>${rtSnap.creationDate?datetime}</td>
       <td>-</td>
@@ -89,7 +89,7 @@
 
     <#list snapList as distrib>
       <tr>
-        <td><a class="button" href="${Root.path}/${distrib.key}/listBundles/">${distrib.name}</a></td>
+        <td><a class="button" href="${Root.path}/${distrib.key}/">${distrib.name}</a></td>
         <td>${distrib.version}</td>
         <td>${distrib.creationDate?datetime}</td>
         <td>${distrib.releaseDate?datetime}</td>

@@ -50,8 +50,10 @@
       <div class="timebox">
         <div class="box-title">
           <div>
-            <span class="number">${rtSnap.name}</span>
-            <span class="detail">${rtSnap.version}</span>
+            <a class="distrib" href="${Root.path}/current/">
+              <span class="number">${rtSnap.name}</span>
+              <span class="detail">${rtSnap.version}</span>
+            </a>
           </div>
         </div>
         <div class="flex-ctn">
@@ -82,8 +84,10 @@
       <div class="timebox">
         <div class="box-title">
           <div>
-            <span class="number">${distrib.name}</span>
-            <span class="detail">${distrib.version}</span>
+            <a class="distrib" href="${Root.path}/${distrib.key}/">
+              <span class="number">${distrib.name}</span>
+              <span class="detail">${distrib.version}</span>
+            </a>
           </div>
         </div>
         <div class="flex-ctn">
