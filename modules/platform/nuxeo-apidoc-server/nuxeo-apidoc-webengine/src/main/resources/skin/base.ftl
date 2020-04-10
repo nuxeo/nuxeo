@@ -58,7 +58,7 @@
         <span>Platform Explorer</span>
       </a>
       <span>
-        / ${Root.currentDistribution.name} ${Root.currentDistribution.version}
+        / <a href="/nuxeo/site/distribution/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
       </span>
       <div class="login">
         <#include "nxlogin.ftl">
