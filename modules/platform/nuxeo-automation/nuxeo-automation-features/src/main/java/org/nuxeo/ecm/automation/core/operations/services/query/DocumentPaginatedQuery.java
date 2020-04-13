@@ -70,7 +70,7 @@ public class DocumentPaginatedQuery {
     @Param(name = "pageSize", required = false, description = "Entries number per page.")
     protected Integer pageSize;
 
-    @Param(name = "queryParams", required = false, description = "Ordered query parameters.")
+    @Param(name = "queryParams", alias = "searchTerm", required = false, description = "Ordered query parameters.")
     protected StringList strParameters;
 
     @Param(name = "sortBy", required = false, description = "Sort by properties (separated by comma)")
@@ -90,18 +90,31 @@ public class DocumentPaginatedQuery {
     @Param(name = "maxResults", required = false)
     protected Integer maxResults;
 
+    /**
+     * @since 11,1
+     */
+    @Param(name = "quotePatternParameters", required = false)
+    protected Boolean quotePatternParameters = true;
+
+    /**
+     * @since 11.1
+     */
+    @Param(name = "escapePatternParameters", required = false)
+    protected Boolean escapePatternParameters = true;
+
     @SuppressWarnings("unchecked")
     @OperationMethod
     public DocumentModelList run() throws OperationException {
         if (query == null) {
-            // provide a defaut query
+            // provide a default query
             query = "SELECT * from Document";
         }
         Map<String, String> properties = null;
         if (maxResults != null) {
             properties = Collections.singletonMap("maxResults", maxResults.toString());
         }
-        PageProviderDefinition def = PageProviderHelper.getQueryPageProviderDefinition(query, properties);
+        PageProviderDefinition def = PageProviderHelper.getQueryPageProviderDefinition(query, properties,
+                escapePatternParameters, quotePatternParameters);
 
         Long targetPage = currentPageIndex != null ? currentPageIndex.longValue() : null;
         Long targetPageSize = pageSize != null ? pageSize.longValue() : null;
