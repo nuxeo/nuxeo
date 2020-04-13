@@ -138,9 +138,6 @@
       } else {
         temp.query = params.query;
       }
-      if (typeof temp.quotePatternParameters === "undefined") {
-        temp.quotePatternParameters = false;
-      }
     } else {
       // custom operation, pass at least the query term
       temp.searchTerm = query.term;

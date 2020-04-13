@@ -124,9 +124,19 @@ public class PageProviderHelper {
     }
 
     public static PageProviderDefinition getQueryPageProviderDefinition(String query, Map<String, String> properties) {
+        return getQueryPageProviderDefinition(query, properties, true, true);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public static PageProviderDefinition getQueryPageProviderDefinition(String query, Map<String, String> properties,
+                                                                        boolean escapeParameters, boolean quoteParameters) {
         CoreQueryPageProviderDescriptor desc = new CoreQueryPageProviderDescriptor();
         desc.setName(StringUtils.EMPTY);
         desc.setPattern(query);
+        desc.setEscapePatternParameters(escapeParameters);
+        desc.setQuotePatternParameters(quoteParameters);
         if (properties != null) {
             // set the maxResults to avoid slowing down queries
             desc.getProperties().putAll(properties);
