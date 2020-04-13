@@ -76,6 +76,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.ByteRange;
 import org.nuxeo.ecm.core.blob.LocalBlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
@@ -805,7 +806,11 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             if (byteRange == null) {
                 IOUtils.copy(in, out);
             } else {
-                IOUtils.copyLarge(in, out, byteRange.getStart(), byteRange.getLength());
+                @SuppressWarnings("resource") // closing the original stream is enough
+                InputStream substream = byteRange.forStream(in);
+                // don't use IOUtils.copyLarge because it uses a skip method that reads
+                // all intervening bytes, which is inefficient for skippable streams
+                IOUtils.copy(substream, out);
             }
             out.flush();
         } catch (IOException e) {

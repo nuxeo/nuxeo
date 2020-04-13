@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.AsyncBlob;
+import org.nuxeo.ecm.core.blob.ByteRange;
 
 /**
  * This service allows the download of blobs to a HTTP response.
@@ -96,30 +97,6 @@ public interface DownloadService {
      * @since 11.1
      */
     String REQUEST_ATTR_DOWNLOAD_RENDITION = "nuxeo.download.rendition";
-
-    class ByteRange {
-
-        private final long start;
-
-        private final long end;
-
-        public ByteRange(long start, long end) {
-            this.start = start;
-            this.end = end;
-        }
-
-        public long getStart() {
-            return start;
-        }
-
-        public long getEnd() {
-            return end;
-        }
-
-        public long getLength() {
-            return end - start + 1;
-        }
-    }
 
     /**
      * Download context.
