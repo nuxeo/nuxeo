@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.blob;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -57,15 +59,27 @@ public class InMemoryBlobStore extends AbstractBlobStore {
     // used by unit tests to emulate presence of a local file, to test copy
     protected final boolean emulateLocalFile;
 
+    protected final boolean allowByteRange;
+
     public InMemoryBlobStore(String name, KeyStrategy keyStrategy) {
-        this(name, keyStrategy, false, false);
+        this(name, null, keyStrategy, false, false);
+    }
+
+    public InMemoryBlobStore(String name, PropertyBasedConfiguration config, KeyStrategy keyStrategy) {
+        this(name, config, keyStrategy, false, false);
     }
 
     protected InMemoryBlobStore(String name, KeyStrategy keyStrategy, boolean emulateNoStream,
             boolean emulateLocalFile) {
+        this(name, null, keyStrategy, emulateNoStream, emulateLocalFile);
+    }
+
+    protected InMemoryBlobStore(String name, PropertyBasedConfiguration config, KeyStrategy keyStrategy,
+            boolean emulateNoStream, boolean emulateLocalFile) {
         super(name, keyStrategy);
         this.emulateNoStream = emulateNoStream;
         this.emulateLocalFile = emulateLocalFile;
+        allowByteRange = config != null && config.getBooleanProperty(ALLOW_BYTE_RANGE);
     }
 
     @Override
@@ -136,19 +150,38 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         }
     }
 
+    protected ByteArrayInputStream getStreamInternal(String key) {
+        ByteRange byteRange;
+        if (allowByteRange) {
+            MutableObject<String> keyHolder = new MutableObject<>(key);
+            byteRange = getByteRangeFromKey(keyHolder);
+            key = keyHolder.getValue();
+        } else {
+            byteRange = null;
+        }
+        byte[] bytes = map.get(key);
+        if (bytes == null) {
+            return null;
+        } else if (byteRange == null) {
+            return new ByteArrayInputStream(bytes);
+        } else {
+            return new ByteArrayInputStream(bytes, (int) byteRange.getStart(), (int) byteRange.getLength());
+        }
+    }
+
     @Override
     public OptionalOrUnknown<Path> getFile(String key) {
         if (!emulateLocalFile) {
             return OptionalOrUnknown.unknown();
         }
-        byte[] bytes = map.get(key);
-        if (bytes == null) {
+        InputStream stream = getStreamInternal(key);
+        if (stream == null) {
             return OptionalOrUnknown.missing();
         }
         try {
             Path tmp = Files.createTempFile("tmp_", ".tmp");
             Framework.trackFile(tmp.toFile(), tmp);
-            FileUtils.copyToFile(new ByteArrayInputStream(bytes), tmp.toFile());
+            FileUtils.copyToFile(stream, tmp.toFile());
             return OptionalOrUnknown.of(tmp);
         } catch (IOException e) {
             throw new UnsupportedOperationException();
@@ -160,20 +193,20 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         if (emulateNoStream) {
             return OptionalOrUnknown.unknown();
         }
-        byte[] bytes = map.get(key);
-        if (bytes == null) {
+        InputStream stream = getStreamInternal(key);
+        if (stream == null) {
             return OptionalOrUnknown.missing();
         }
-        return OptionalOrUnknown.of(new ByteArrayInputStream(bytes));
+        return OptionalOrUnknown.of(stream);
     }
 
     @Override
     public boolean readBlob(String key, Path dest) throws IOException {
-        byte[] bytes = map.get(key);
-        if (bytes == null) {
+        InputStream stream = getStreamInternal(key);
+        if (stream == null) {
             return false;
         }
-        Files.copy(new ByteArrayInputStream(bytes), dest, REPLACE_EXISTING);
+        Files.copy(stream, dest, REPLACE_EXISTING);
         return true;
     }
 

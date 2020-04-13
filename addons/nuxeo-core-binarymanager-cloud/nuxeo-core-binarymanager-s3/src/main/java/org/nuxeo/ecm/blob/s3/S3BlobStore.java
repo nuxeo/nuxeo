@@ -20,6 +20,7 @@ package org.nuxeo.ecm.blob.s3;
 
 import static org.apache.commons.io.output.NullOutputStream.NULL_OUTPUT_STREAM;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.nuxeo.ecm.core.blob.BlobProviderDescriptor.ALLOW_BYTE_RANGE;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.utils.RFC2231;
@@ -51,6 +53,7 @@ import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.BlobStore;
 import org.nuxeo.ecm.core.blob.BlobUpdateContext;
 import org.nuxeo.ecm.core.blob.BlobWriteContext;
+import org.nuxeo.ecm.core.blob.ByteRange;
 import org.nuxeo.ecm.core.blob.KeyStrategy;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
@@ -107,6 +110,8 @@ public class S3BlobStore extends AbstractBlobStore {
 
     protected final String bucketPrefix;
 
+    protected final boolean allowByteRange;
+
     // note, we may choose to not use versions even in a versioned bucket
     // if we want the bucket to record and keep old versions for us
     /** If true, include the object version in the key. */
@@ -123,6 +128,7 @@ public class S3BlobStore extends AbstractBlobStore {
         amazonS3 = config.amazonS3;
         bucketName = config.bucketName;
         bucketPrefix = config.bucketPrefix;
+        allowByteRange = config.getBooleanProperty(ALLOW_BYTE_RANGE);
         useVersion = isBucketVersioningEnabled() && !keyStrategy.useDeDuplication();
         gc = new S3BlobGarbageCollector();
     }
@@ -368,15 +374,23 @@ public class S3BlobStore extends AbstractBlobStore {
 
     @Override
     public boolean readBlob(String key, Path dest) throws IOException {
+        ByteRange byteRange;
+        if (allowByteRange) {
+            MutableObject<String> keyHolder = new MutableObject<>(key);
+            byteRange = getByteRangeFromKey(keyHolder);
+            key = keyHolder.getValue();
+        } else {
+            byteRange = null;
+        }
         String objectKey;
         String versionId;
-        int seppos = key.indexOf(VER_SEP);
-        if (seppos < 0) {
-            objectKey = key;
-            versionId = null;
-        } else {
+        int seppos;
+        if (useVersion && (seppos = key.indexOf(VER_SEP)) > 0) {
             objectKey = key.substring(0, seppos);
             versionId = key.substring(seppos + 1);
+        } else {
+            objectKey = key;
+            versionId = null;
         }
         String bucketKey = bucketPrefix + objectKey;
         long t0 = 0;
@@ -386,6 +400,9 @@ public class S3BlobStore extends AbstractBlobStore {
         }
         try {
             GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketKey, versionId);
+            if (byteRange != null) {
+                getObjectRequest.setRange(byteRange.getStart(), byteRange.getEnd());
+            }
             Download download = config.transferManager.download(getObjectRequest, dest.toFile());
             download.waitForCompletion();
             logTrace("<-", "read " + Files.size(dest) + " bytes");
@@ -396,6 +413,10 @@ public class S3BlobStore extends AbstractBlobStore {
             }
             if (config.useClientSideEncryption) {
                 // can't efficiently check the decrypted digest
+                return true;
+            }
+            if (byteRange != null) {
+                // can't check digest if we have a byte range
                 return true;
             }
             String expectedDigest = getKeyStrategy().getDigestFromKey(objectKey);

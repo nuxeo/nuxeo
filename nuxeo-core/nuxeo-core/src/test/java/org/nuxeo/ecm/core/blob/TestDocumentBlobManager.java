@@ -55,6 +55,9 @@ public class TestDocumentBlobManager {
     protected Mockery mockery = new JUnit4Mockery();
 
     @Inject
+    protected BlobManager blobManager;
+
+    @Inject
     protected DocumentBlobManager documentBlobManager;
 
     @Mock
@@ -197,6 +200,42 @@ public class TestDocumentBlobManager {
         ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, doc, "somexpath");
         assertNotNull(blob);
         assertEquals("bar", blob.getString());
+    }
+
+    @Test
+    public void testDocInContextWithByteRange() throws Exception {
+        // prepare a blob in the in-memory blob provider that allows byte ranges in keys
+        Blob b = Blobs.createBlob("abcde1234567890fghij", "text/plain");
+        BlobProvider membp = blobManager.getBlobProvider(DummyBlobProvider.MEMWITHBYTERANGE);
+        String key = membp.writeBlob(b);
+        Long rangeStart = 5L;
+        Long rangeEnd = 14L;
+
+        Document doc = mockery.mock(Document.class);
+        mockery.checking(new Expectations() {
+            {
+                allowing(doc).getRepositoryName();
+                will(returnValue(DUMMY));
+                allowing(doc).getUUID();
+                will(returnValue("123"));
+                allowing(doc).getPropertyValue("key");
+                will(returnValue(key));
+                allowing(doc).getPropertyValue("rangeStart");
+                will(returnValue(rangeStart));
+                allowing(doc).getPropertyValue("rangeEnd");
+                will(returnValue(rangeEnd));
+
+            }
+        });
+
+        BlobInfo blobInfo = new BlobInfo();
+        // only the blob provider is important, this implementation doesn't use the key value
+        blobInfo.key = DummyBlobProvider.FROMDOC2 + ":unused";
+
+        // resolving the blob will use the doc properties to get a byte range of another blob
+        ManagedBlob blob = (ManagedBlob) documentBlobManager.readBlob(blobInfo, doc, "somexpath");
+        assertNotNull(blob);
+        assertEquals("1234567890", blob.getString());
     }
 
 }

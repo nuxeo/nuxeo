@@ -72,6 +72,13 @@ public class BlobProviderDescriptor {
     public static final String TRANSACTIONAL = "transactional";
 
     /**
+     * Flags this blob provider as allowing internal queries with keys containing a byte range.
+     *
+     * @since 11.1
+     */
+    public static final String ALLOW_BYTE_RANGE = "allowByteRange";
+
+    /**
      * A comma-separated list of users that can create blobs in this blob provider based only on a key.
      *
      * @since 10.2

@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Dummy storage in memory.
@@ -36,6 +37,10 @@ import org.nuxeo.ecm.core.api.Blob;
 public class DummyBlobProvider extends AbstractBlobProvider {
 
     protected static final String FROMDOC = "fromdoc";
+
+    protected static final String FROMDOC2 = "fromdoc2";
+
+    protected static final String MEMWITHBYTERANGE = "memwithbyterange";
 
     protected Map<String, byte[]> blobs;
 
@@ -68,6 +73,9 @@ public class DummyBlobProvider extends AbstractBlobProvider {
         if (blobProviderId.equals(FROMDOC)) {
             return readBlobFromDoc(blobInfoContext);
         }
+        if (blobProviderId.equals(FROMDOC2)) {
+            return readBlobFromDoc2(blobInfoContext);
+        }
         return readBlob(blobInfoContext.blobInfo);
     }
 
@@ -88,6 +96,44 @@ public class DummyBlobProvider extends AbstractBlobProvider {
             @Override
             public InputStream getStream() throws IOException {
                 return new ByteArrayInputStream(content.getBytes(UTF_8));
+            }
+        };
+    }
+
+    // special blob provider using the document to resolve the blob
+    // and also uses range requests
+    protected Blob readBlobFromDoc2(BlobInfoContext blobInfoContext) throws IOException {
+        BlobInfo dbBlobInfo = blobInfoContext.blobInfo;
+        // in this dummy implementation we don't care about the blob key
+        // as all info is derived from the document
+
+        String subkey = (String) blobInfoContext.doc.getPropertyValue("key");
+        long start = (Long) blobInfoContext.doc.getPropertyValue("rangeStart");
+        long end = (Long) blobInfoContext.doc.getPropertyValue("rangeEnd");
+        ByteRange byteRange = ByteRange.inclusive(start, end);
+
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = dbBlobInfo.key; // this must be the same
+        // the following may be computed according to business logic
+        blobInfo.mimeType = "test/type";
+        blobInfo.filename = "extracted-" + start + "-" + end + ".ext";
+        blobInfo.length = Long.valueOf(end - start + 1);
+        blobInfo.digest = "dead0000cafe";
+        return new SimpleManagedBlob(blobProviderId , blobInfo) {
+            private static final long serialVersionUID = 1L;
+
+            /*
+             * This contains the actual business logic to return a dynamically-computed stream.
+             */
+            @Override
+            public InputStream getStream() throws IOException {
+                BlobManager blobManager = Framework.getService(BlobManager.class);
+                // use another blob provider from which we can extract byte ranges
+                BlobProvider blobProvider = blobManager.getBlobProvider(MEMWITHBYTERANGE);
+                InputStream stream = blobProvider.getStream(subkey, byteRange);
+                // we could compute other streams and assemble/transform them
+                // before returning a result
+                return stream;
             }
         };
     }

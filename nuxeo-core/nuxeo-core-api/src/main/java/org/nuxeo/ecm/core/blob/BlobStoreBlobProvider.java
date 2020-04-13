@@ -105,11 +105,23 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
 
     @Override
     public InputStream getStream(ManagedBlob blob) throws IOException {
-        String key = stripBlobKeyPrefix(blob.getKey());
+        String blobKey = blob.getKey();
+        return getStream(blobKey, null);
+    }
+
+    @Override
+    public InputStream getStream(String blobKey, ByteRange byteRange) throws IOException {
+        String key = stripBlobKeyPrefix(blobKey);
+        if (byteRange != null) {
+            if (!allowByteRange()) {
+                throw new UnsupportedOperationException("Cannot use byte ranges in keys");
+            }
+            key = AbstractBlobStore.setByteRangeInKey(key, byteRange);
+        }
         OptionalOrUnknown<InputStream> streamOpt = store.getStream(key);
         if (streamOpt.isKnown()) {
             if (!streamOpt.isPresent()) {
-                throw new IOException("Missing blob: " + blob.getKey());
+                throw new IOException("Missing blob: " + key);
             }
             return streamOpt.get();
         } else {
@@ -120,7 +132,7 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
             try {
                 boolean found = store.readBlob(key, tmp);
                 if (!found) {
-                    throw new IOException("Missing blob: " + blob.getKey());
+                    throw new IOException("Missing blob: " + key);
                 }
                 AutoDeleteFileInputStream stream = new AutoDeleteFileInputStream(tmp);
                 returned = true;
