@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.tags.schemas">
+
+    <require>org.nuxeo.ecm.core.CoreExtensions</require>
+
+    <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+
+        <schema name="facetedTag" src="schema/facetedTag.xsd" prefix="nxtag" />
+
+    </extension>
+
+    <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+
+        <facet name="NXTag">
+            <schema name="facetedTag" />
+        </facet>
+
+        <doctype name="Folder" append="true">
+            <facet name="NXTag" />
+        </doctype>
+
+        <doctype name="File" append="true">
+            <facet name="NXTag" />
+        </doctype>
+
+        <doctype name="Note" append="true">
+            <facet name="NXTag" />
+        </doctype>
+
+        <doctype name="Collection" append="true">
+            <facet name="NXTag" />
+        </doctype>
+
+    </extension>
+
+</component>
