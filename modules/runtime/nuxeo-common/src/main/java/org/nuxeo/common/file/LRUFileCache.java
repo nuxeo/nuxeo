@@ -53,7 +53,7 @@ public class LRUFileCache implements FileCache {
     private static final Log log = LogFactory.getLog(LRUFileCache.class);
 
     /** Allowed key pattern, used as file path. */
-    public static final Pattern SIMPLE_ASCII = Pattern.compile("[-_.@a-zA-Z0-9]+");
+    public static final Pattern SIMPLE_ASCII = Pattern.compile("[-_.@;a-zA-Z0-9]+");
 
     private static final String TMP_PREFIX = "nxbin_";
 

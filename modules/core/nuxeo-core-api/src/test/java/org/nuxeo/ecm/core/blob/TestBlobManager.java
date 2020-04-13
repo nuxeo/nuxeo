@@ -55,7 +55,7 @@ public class TestBlobManager {
     @Test
     public void testGetBlobProviders() throws Exception {
         Map<String, BlobProvider> providers = blobManager.getBlobProviders();
-        assertEquals(4, providers.size());
+        assertEquals(6, providers.size());
     }
 
     @Test

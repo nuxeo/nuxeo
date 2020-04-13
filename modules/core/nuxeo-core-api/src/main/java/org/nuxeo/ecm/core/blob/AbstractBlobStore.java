@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -37,6 +38,13 @@ import org.nuxeo.ecm.core.blob.KeyStrategy.WriteObserver;
  * @since 11.1
  */
 public abstract class AbstractBlobStore implements BlobStore {
+
+    /**
+     * Separator between key and byte range (start/end, specified at end of key).
+     * <p>
+     * Used when the blob provider is configured to allow byte ranges.
+     */
+    public static final char BYTE_RANGE_SEP = ';';
 
     private static final Logger log = LogManager.getLogger(AbstractBlobStore.class);
 
@@ -124,6 +132,28 @@ public abstract class AbstractBlobStore implements BlobStore {
             key = key.substring(colon + 1);
         }
         return key;
+    }
+
+    public static String setByteRangeInKey(String key, ByteRange byteRange) {
+        return key + String.valueOf(BYTE_RANGE_SEP) + byteRange.getStart() + String.valueOf(BYTE_RANGE_SEP)
+                + byteRange.getEnd();
+    }
+
+    public static ByteRange getByteRangeFromKey(MutableObject<String> keyHolder) {
+        String key = keyHolder.getValue();
+        int j = key.lastIndexOf(BYTE_RANGE_SEP);
+        int i = key.lastIndexOf(BYTE_RANGE_SEP, j - 1);
+        if (j > 0) {
+            try {
+                long start = Long.parseLong(key.substring(i + 1, j));
+                long end = Long.parseLong(key.substring(j + 1));
+                keyHolder.setValue(key.substring(0, i));
+                return ByteRange.inclusive(start, end);
+            } catch (NumberFormatException e) {
+                log.debug("Cannot parse byte range in key: {}", key, e);
+            }
+        }
+        return null;
     }
 
     /** Returns a random string suitable as a key. */

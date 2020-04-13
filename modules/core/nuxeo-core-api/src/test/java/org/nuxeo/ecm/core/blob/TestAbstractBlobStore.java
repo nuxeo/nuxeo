@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -231,6 +232,16 @@ public abstract class TestAbstractBlobStore {
             // check deleted
             assertNoBlob(key2);
         }
+    }
+
+    @Test
+    public void testByteRange() throws IOException {
+        assumeTrue(bp.allowByteRange());
+
+        // store blob
+        String key = bs.writeBlob(blobContext(ID1, "abcd1234efgh"));
+        // get a byte range
+        assertBlob(key + ";4;7", "1234");
     }
 
     @Test
