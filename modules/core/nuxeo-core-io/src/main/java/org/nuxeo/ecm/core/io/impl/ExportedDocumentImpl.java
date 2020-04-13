@@ -310,7 +310,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
     protected final void readBlob(Element element, ComplexType ctype, Blob blob, boolean inlineBlobs)
             throws IOException {
-        String blobPath = Integer.toHexString(RANDOM.nextInt()) + ".blob";
+        String blobPath = blob.getFilename() != null ? blob.getFilename() : Integer.toHexString(RANDOM.nextInt()) + ".blob";
         element.addElement(ExportConstants.BLOB_ENCODING).addText(blob.getEncoding() != null ? blob.getEncoding() : "");
         element.addElement(ExportConstants.BLOB_MIME_TYPE)
                .addText(blob.getMimeType() != null ? blob.getMimeType() : "");
