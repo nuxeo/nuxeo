@@ -21,6 +21,7 @@ package org.nuxeo.ecm.automation.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -174,22 +175,53 @@ public class CoreProviderTest {
     @Test
     public void testDirectNXQL() throws Exception {
 
+        PaginableDocumentModelListImpl result;
+
         try (OperationContext ctx = new OperationContext(session)) {
-
+            // get paginated results
             Map<String, Object> params = new HashMap<>();
-
             params.put("query", "select * from Document");
             params.put("pageSize", 2);
 
-            OperationChain chain = new OperationChain("fakeChain");
-            OperationParameters oparams = new OperationParameters(DocumentPaginatedQuery.ID, params);
-            chain.add(oparams);
+            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPaginatedQuery.ID, params);
 
-            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, chain);
-
-            // test page size
             assertEquals(2, result.getPageSize());
             assertEquals(2, result.getNumberOfPages());
+
+            params.clear();
+
+            // params are quoted by default
+            params.put("query", "select * from Document where dc:title = ?");
+            params.put("queryParams", "WS1");
+
+            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPaginatedQuery.ID, params);
+
+            assertEquals(1, result.size());
+
+            params.clear();
+
+            // unquote params fail to parse
+            params.put("query", "select * from Document where dc:title = ?");
+            params.put("queryParams", "WS1");
+            params.put("quotePatternParameters", false);
+
+            assertThrows(OperationException.class, () -> service.run(ctx, DocumentPaginatedQuery.ID, params));
+
+            params.clear();
+
+            // params are escaped by default
+            params.put("query", "select * from Document where dc:title = ?");
+            params.put("quotePatternParameters", false);
+            params.put("queryParams", "'WS1'");
+
+            assertThrows(OperationException.class, () -> service.run(ctx, DocumentPaginatedQuery.ID, params));
+
+            // we can toggle escaping of parameters off
+            params.put("escapePatternParameters", false);
+
+            result = (PaginableDocumentModelListImpl) service.run(ctx, DocumentPaginatedQuery.ID, params);
+
+            assertEquals(1, result.size());
         }
 
     }
