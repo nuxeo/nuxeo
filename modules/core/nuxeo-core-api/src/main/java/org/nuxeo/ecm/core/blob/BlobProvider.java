@@ -99,6 +99,15 @@ public interface BlobProvider {
     }
 
     /**
+     * Checks whether this blob provider allows byte ranges in keys.
+     *
+     * @since 11.1
+     */
+    default boolean allowByteRange() {
+        return false;
+    }
+
+    /**
      * Reads a {@link Blob} from storage.
      *
      * @param blobInfoContext the blob information context
@@ -194,6 +203,18 @@ public interface BlobProvider {
      */
     default boolean supportsSync() {
         return supportsUserUpdate() && getBinaryManager() != null;
+    }
+
+    /**
+     * Gets an {@link InputStream} for a byte range of a managed blob.
+     *
+     * @param blobKey the blob key
+     * @param byteRange the byte range
+     * @return the stream
+     * @since 11.1
+     */
+    default InputStream getStream(String blobKey, ByteRange byteRange) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     /**

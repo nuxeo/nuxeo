@@ -15,5 +15,12 @@
     <blobprovider name="fromdoc">
       <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
     </blobprovider>
+    <blobprovider name="fromdoc2">
+      <class>org.nuxeo.ecm.core.blob.DummyBlobProvider</class>
+    </blobprovider>
+    <blobprovider name="memwithbyterange">
+      <class>org.nuxeo.ecm.core.blob.InMemoryBlobProvider</class>
+      <property name="allowByteRange">true</property>
+    </blobprovider>
   </extension>
 </component>
