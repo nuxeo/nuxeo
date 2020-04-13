@@ -50,6 +50,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.directory.SuggestDirectoryEntries;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.core.operations.users.SuggestUserEntries;
 import org.nuxeo.ecm.automation.features.SuggestConstants;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
@@ -170,7 +171,8 @@ public class Select2ActionsBean implements Serializable {
     public String encodeParameters(final Widget widget, final Map<String, Serializable> resolvedWidgetProperties) {
         Map<String, String> params = getDefaultFormattersMap(Select2Common.DOC_DEFAULT_SUGGESTION_FORMATTER,
                 Select2Common.DOC_DEFAULT_SELECTION_FORMATTER);
-        params.put(Select2Common.OPERATION_ID, DocumentPageProviderOperation.ID);
+        params.put(Select2Common.OPERATION_ID, resolvedWidgetProperties.containsKey("query") ? DocumentPaginatedQuery.ID
+                : DocumentPageProviderOperation.ID);
         return encodeParameters(widget, params, resolvedWidgetProperties);
     }
 
