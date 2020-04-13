@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.nuxeo.ecm.core.io.download.DownloadService.ByteRange;
+import org.nuxeo.ecm.core.blob.ByteRange;
 
 public class TestDownloadHelper {
 
