@@ -35,7 +35,7 @@ public class InMemoryBlobProvider extends BlobStoreBlobProvider {
         digestConfiguration = new DigestConfiguration(null, properties);
         PropertyBasedConfiguration config = new PropertyBasedConfiguration(null, properties);
         KeyStrategy keyStrategy = getKeyStrategy();
-        BlobStore store = new InMemoryBlobStore("mem", keyStrategy);
+        BlobStore store = new InMemoryBlobStore("mem", config, keyStrategy);
         if (isTransactional()) {
             BlobStore transientStore = new InMemoryBlobStore("mem_tmp", keyStrategy);
             store = new TransactionalBlobStore(store, transientStore);

@@ -3,6 +3,7 @@
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="test">
       <class>org.nuxeo.ecm.core.blob.InMemoryBlobProvider</class>
+      <property name="allowByteRange">true</property>
     </blobprovider>
     <blobprovider name="other">
       <class>org.nuxeo.ecm.core.blob.InMemoryBlobProvider</class>
