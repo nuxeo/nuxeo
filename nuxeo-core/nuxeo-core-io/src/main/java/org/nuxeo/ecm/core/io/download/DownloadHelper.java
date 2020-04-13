@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.io.download.DownloadService.ByteRange;
+import org.nuxeo.ecm.core.blob.ByteRange;
 
 /**
  * Helper class related to the download service.
@@ -88,7 +88,7 @@ public class DownloadHelper {
             if (rangeStart > rangeEnd) {
                 return null;
             }
-            return new ByteRange(rangeStart, rangeEnd);
+            return ByteRange.inclusive(rangeStart, rangeEnd);
         } catch (NumberFormatException e) {
             return null;
         }
