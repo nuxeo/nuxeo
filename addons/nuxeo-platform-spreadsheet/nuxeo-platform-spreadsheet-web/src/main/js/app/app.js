@@ -141,8 +141,8 @@ function run(baseURL = '/nuxeo', username = null, password = null) {
       var namedParameters = {};
       for (var k in cv.searchDocument.properties) {
         var v = cv.searchDocument.properties[k];
-        // skip empty values
-        if ((typeof(v.length) !== 'undefined') && (v.length === 0)) {
+        // skip null or empty values
+        if (v == null || ((typeof(v.length) !== 'undefined') && (v.length === 0))) {
           continue;
         }
         namedParameters[k] = (typeof v === 'string') ? v : JSON.stringify(v);
