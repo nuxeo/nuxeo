@@ -504,6 +504,7 @@ public abstract class TestStreamProcessor {
             StreamManager streamManager = new LogStreamManager(manager);
             StreamProcessor processor = streamManager.registerAndCreateProcessor("processor", topology, settings);
             processor.start();
+            assertTrue(processor.waitForAssignments(Duration.ofSeconds(10)));
             streamManager.append("input", Record.of("key", "bar".getBytes(StandardCharsets.UTF_8)));
             assertTrue(processor.drainAndStop(Duration.ofSeconds(20)));
             LogLag lag = manager.getLag(Name.ofUrn("input"), Name.ofUrn("C1"));

@@ -81,15 +81,16 @@ public class TestLogKafka extends TestLog {
     public static Properties getConsumerProps() {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
-        props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
+        props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30_000);
+        props.put(ConsumerConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, 30_000);
         // consumer are removed from a group if there more than this interval between poll
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20000);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 120_000);
         // session timeout, consumer is removed from a group if there is no heartbeat on this interval
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10_000);
         // short ht interval so that rebalance don't take for ever
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 400);
         // keep number low to reduce time interval between poll
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 5);
         return props;
     }
 
@@ -177,6 +178,8 @@ public class TestLogKafka extends TestLog {
         final int NB_MSG = 200;
         final int NB_CONSUMER = 6;
         final Name group = Name.ofUrn("test/consumer");
+        // must be greater than group.initial.rebalance.delay.ms which is 3s by default in the Kafka Helm chart
+        final Duration READ_TIMEOUT = Duration.ofSeconds(4);
 
         manager.createIfNotExists(logName, NB_QUEUE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
@@ -193,7 +196,7 @@ public class TestLogKafka extends TestLog {
         assertTrue(tailer1.assignments().isEmpty());
         LogRecord<KeyValueMessage> record;
         try {
-            tailer1.read(Duration.ofSeconds(2));
+            tailer1.read(READ_TIMEOUT);
             fail("Should have raise a rebalance exception");
         } catch (RebalanceException e) {
             // expected
@@ -203,7 +206,7 @@ public class TestLogKafka extends TestLog {
         assertEquals(NB_QUEUE, tailer1.assignments().size());
         // read NB_QUEUE msg and commit
         for (int i = 0; i < NB_QUEUE; i++) {
-            record = tailer1.read(Duration.ofSeconds(1));
+            record = tailer1.read(READ_TIMEOUT);
             assertNotNull(record);
             assertEquals(msg1, record.message());
         }
@@ -217,7 +220,7 @@ public class TestLogKafka extends TestLog {
             LogRecord<KeyValueMessage> consumerRecord;
             while (true) {
                 try {
-                    consumerRecord = consumerTailer.read(Duration.ofSeconds(2));
+                    consumerRecord = consumerTailer.read(READ_TIMEOUT);
                     if (consumerRecord != null) {
                         count++;
                         consumerTailer.commit();
