@@ -175,6 +175,8 @@ public class TestLogKafka extends TestLog {
         final int NB_QUEUE = 3;
         final int NB_MSG = 200;
         final int NB_CONSUMER = 6;
+        // must be greater than group.initial.rebalance.delay.ms which is 3s by default in the Kafka Helm chart
+        final Duration READ_TIMEOUT = Duration.ofSeconds(4);
         final String group = "consumer";
 
         manager.createIfNotExists(logName, NB_QUEUE);
@@ -192,7 +194,7 @@ public class TestLogKafka extends TestLog {
         assertTrue(tailer1.assignments().isEmpty());
         LogRecord<KeyValueMessage> record;
         try {
-            tailer1.read(Duration.ofSeconds(2));
+            tailer1.read(READ_TIMEOUT);
             fail("Should have raise a rebalance exception");
         } catch (RebalanceException e) {
             // expected
@@ -202,7 +204,7 @@ public class TestLogKafka extends TestLog {
         assertEquals(NB_QUEUE, tailer1.assignments().size());
         // read NB_QUEUE msg and commit
         for (int i = 0; i < NB_QUEUE; i++) {
-            record = tailer1.read(Duration.ofSeconds(1));
+            record = tailer1.read(READ_TIMEOUT);
             assertNotNull(record);
             assertEquals(msg1, record.message());
         }
@@ -216,7 +218,7 @@ public class TestLogKafka extends TestLog {
             LogRecord<KeyValueMessage> consumerRecord;
             while (true) {
                 try {
-                    consumerRecord = consumerTailer.read(Duration.ofSeconds(2));
+                    consumerRecord = consumerTailer.read(READ_TIMEOUT);
                     if (consumerRecord != null) {
                         count++;
                         consumerTailer.commit();
