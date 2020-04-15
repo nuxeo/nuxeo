@@ -64,7 +64,7 @@ String getReleaseVersion() {
 
   // find the latest tag if any
   sh "git fetch origin 'refs/tags/v${noSnapshot}*:refs/tags/v${noSnapshot}*'"
-  def tag = sh(returnStdout: true, script: "git tag --sort=committerdate --list 'v${noSnapshot}*' | tail -1 | tr -d '\n'")
+  def tag = sh(returnStdout: true, script: "git tag --sort=taggerdate --list 'v${noSnapshot}*' | tail -1 | tr -d '\n'")
   if (tag) {
     container('maven') {
       version = sh(returnStdout: true, script: "semver bump patch ${tag} | tr -d '\n'")
