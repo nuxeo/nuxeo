@@ -145,11 +145,41 @@ void skaffoldBuild(String yaml) {
   """
 }
 
+def rolloutStatus(kind, name, timeout, namespace) {
+  sh """
+    kubectl rollout status ${kind} ${name} \
+      --timeout=${timeout} \
+      --namespace=${namespace}
+  """
+}
+
+def rolloutStatusRedis(namespace) {
+  rolloutStatus('statefulset', "${TEST_REDIS_K8S_OBJECT}", "${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}", namespace)
+}
+
+def rolloutStatusMongoDB(namespace) {
+  rolloutStatus('deployment', "${TEST_MONGODB_K8S_OBJECT}", "${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}", namespace)
+}
+
+def rolloutStatusPostgreSQL(namespace) {
+  rolloutStatus('statefulset', "${TEST_POSTGRESQL_K8S_OBJECT}", "${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}", namespace)
+}
+
+def rolloutStatusElasticsearch(namespace) {
+  rolloutStatus('statefulset', "${TEST_ELASTICSEARCH_DATA_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
+  rolloutStatus('statefulset', "${TEST_ELASTICSEARCH_MASTER_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
+  rolloutStatus('deployment', "${TEST_ELASTICSEARCH_CLIENT_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
+}
+
+def rolloutStatusKafka(namespace) {
+  rolloutStatus('statefulset', "${TEST_KAFKA_K8S_OBJECT}", "${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}", namespace)
+}
+
 def buildUnitTestStage(env) {
   def isDev = env == 'dev'
   def testNamespace = "${TEST_NAMESPACE_PREFIX}-${env}"
-  def redisHost = "${TEST_REDIS_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
-  def kafkaHost = "${TEST_KAFKA_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
+  def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
+  def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
   return {
     stage("Run ${env} unit tests") {
       container("maven-${env}") {
@@ -181,32 +211,16 @@ def buildUnitTestStage(env) {
                 --namespace=${testNamespace} \
                 ${testValues}
             """
-            // wait for Redis to be ready
-            sh """
-              kubectl rollout status statefulset ${TEST_REDIS_RESOURCE} \
-                --namespace=${testNamespace} \
-                --timeout=${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}
-            """
+            // wait for external services to be ready
+            rolloutStatusRedis(testNamespace)
             if (!isDev) {
-              // wait for MongoDB or PostgreSQL to be ready
-              def resourceType = env == 'mongodb' ? 'deployment' : 'statefulset'
-              sh """
-                kubectl rollout status ${resourceType} ${TEST_HELM_CHART_RELEASE}-${env} \
-                  --namespace=${testNamespace} \
-                  --timeout=${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}
-              """
-              // wait for Elasticsearch to be ready
-              sh """
-                kubectl rollout status deployment ${TEST_ELASTICSEARCH_RESOURCE} \
-                  --namespace=${testNamespace} \
-                  --timeout=${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}
-              """
-              // wait for Kafka to be ready
-              sh """
-                kubectl rollout status statefulset ${TEST_KAFKA_RESOURCE} \
-                  --namespace=${testNamespace} \
-                  --timeout=${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}
-              """
+              if (env == 'mongodb') {
+                rolloutStatusMongoDB(testNamespace)
+              } else {
+                rolloutStatusPostgreSQL(testNamespace)
+              }
+              rolloutStatusElasticsearch(testNamespace)
+              rolloutStatusKafka(testNamespace)
             }
 
             echo "${env} unit tests: run Maven"
@@ -287,18 +301,20 @@ pipeline {
     TEST_HELM_CHART_RELEASE = 'test-release'
     TEST_NAMESPACE_PREFIX = "nuxeo-unit-tests-$BRANCH_NAME-$BUILD_NUMBER".toLowerCase()
     TEST_SERVICE_DOMAIN_SUFFIX = 'svc.cluster.local'
-    TEST_REDIS_RESOURCE = "${TEST_HELM_CHART_RELEASE}-redis-master"
-    TEST_ELASTICSEARCH_RESOURCE = "${TEST_HELM_CHART_RELEASE}-elasticsearch-client"
-    TEST_KAFKA_RESOURCE = "${TEST_HELM_CHART_RELEASE}-kafka"
+    TEST_REDIS_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-redis-master"
+    TEST_MONGODB_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-mongodb"
+    TEST_POSTGRESQL_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-postgresql"
+    TEST_ELASTICSEARCH_DATA_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-elasticsearch-data"
+    TEST_ELASTICSEARCH_MASTER_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-elasticsearch-master"
+    TEST_ELASTICSEARCH_CLIENT_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-elasticsearch-client"
+    TEST_KAFKA_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-kafka"
     TEST_KAFKA_PORT = '9092'
-    TEST_KAFKA_POD_NAME = "${TEST_KAFKA_RESOURCE}-0"
+    TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
     TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT = '1m'
     // Elasticsearch might take longer
     TEST_ELASTICSEARCH_ROLLOUT_STATUS_TIMEOUT = '3m'
     // Elasticsearch and Kafka might take longer
     TEST_LONG_ROLLOUT_STATUS_TIMEOUT = '3m'
-    BUILDER_IMAGE_NAME = 'builder'
-    BASE_IMAGE_NAME = 'base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
@@ -410,8 +426,8 @@ pipeline {
           script {
             setGitHubBuildStatus('platform/utests/runtime', 'Unit tests - runtime', 'PENDING')
             def testNamespace = "${TEST_NAMESPACE_PREFIX}-runtime"
-            def redisHost = "${TEST_REDIS_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
-            def kafkaHost = "${TEST_KAFKA_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
+            def redisHost = "${TEST_REDIS_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
+            def kafkaHost = "${TEST_KAFKA_K8S_OBJECT}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
             try {
               echo """
               ----------------------------------------
@@ -432,18 +448,9 @@ pipeline {
                   --set-file=ci/helm/nuxeo-test-base-values.yaml~gen \
                   --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen
               """
-              // wait for Redis to be ready
-              sh """
-                kubectl rollout status statefulset ${TEST_REDIS_RESOURCE} \
-                  --namespace=${testNamespace} \
-                  --timeout=${TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT}
-              """
-              // wait for Kafka to be ready
-              sh """
-                kubectl rollout status statefulset ${TEST_KAFKA_RESOURCE} \
-                  --namespace=${testNamespace} \
-                  --timeout=${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}
-              """
+              // wait for external services to be ready
+              rolloutStatusRedis(testNamespace)
+              rolloutStatusKafka(testNamespace)
 
               echo "runtime unit tests: run Maven"
               // run unit tests
