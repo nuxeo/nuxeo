@@ -124,11 +124,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         if (!config.isEnabled() || config.logs.isEmpty()) {
             return;
         }
-        @SuppressWarnings("resource") // not ours to close
-        LogManager manager = getLogManager(config.getId());
         config.logs.forEach(l -> {
             log.info("Create if not exists stream: {} with manager: {}", l.getId(), config.getId());
-            manager.createIfNotExists(Name.ofUrn(l.getId()), l.size);
+            logManager.createIfNotExists(Name.ofUrn(l.getId()), l.size);
         });
     }
 
@@ -149,7 +147,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         List<LogConfigDescriptor> logDescs = getDescriptors(XP_LOG_CONFIG);
         List<LogConfig> ret = new ArrayList<>(logDescs.size());
         for (LogConfigDescriptor desc : logDescs) {
-            if (!desc.isEnabled()) {
+            if (!desc.isEnabled() || desc.onlyLogDeclaration()) {
                 continue;
             }
             if ("kafka".equalsIgnoreCase(desc.type)) {
