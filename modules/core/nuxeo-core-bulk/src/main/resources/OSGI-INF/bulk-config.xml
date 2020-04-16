@@ -8,14 +8,13 @@
 
   <!-- Initialize bulk service streams before action processors -->
   <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
-    <logConfig name="bulk">
+    <logConfig>
       <!-- command stream size sets the maximum concurrency for the scroller computation in the Nuxeo cluster -->
       <log name="bulk/command" size="2" />
       <!-- status stream size sets the maximum concurrency for the status computation in the Nuxeo cluster -->
       <log name="bulk/status" size="1" />
       <!-- done stream size sets the maximum concurrency for the triggers computations -->
       <log name="bulk/done" size="1" />
-      <match name="bulk/" />
     </logConfig>
   </extension>
 

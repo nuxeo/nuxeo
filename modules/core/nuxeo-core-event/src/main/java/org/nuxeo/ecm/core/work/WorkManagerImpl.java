@@ -116,13 +116,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     public static final String WORKMANAGER_PROCESSING_DISABLE = "nuxeo.work.processing.disable";
 
     /**
-     * The Log Manager name to use for accessing the dead letter queue stream.
-     *
-     * @since 11.1
-     */
-    public static final String DEFAULT_LOG_MANAGER = "default";
-
-    /**
      * The dead letter queue stream name.
      *
      * @since 11.1
@@ -374,7 +367,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             return;
         }
         try {
-            org.nuxeo.lib.stream.log.LogManager logManager = service.getLogManager(DEFAULT_LOG_MANAGER);
+            org.nuxeo.lib.stream.log.LogManager logManager = service.getLogManager();
             if (!logManager.exists(DEAD_LETTER_QUEUE)) {
                 log.info("Initializing dead letter queue to store Work in failure");
                 logManager.createIfNotExists(DEAD_LETTER_QUEUE, 1);

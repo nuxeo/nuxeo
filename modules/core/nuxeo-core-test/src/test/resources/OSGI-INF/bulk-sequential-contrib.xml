@@ -5,9 +5,8 @@
 
   <!-- make sure scrolling is concurrent -->
   <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
-    <logConfig name="bulk">
+    <logConfig>
       <log name="bulk/command" size="3" />
-      <match name="bulk/" />
     </logConfig>
   </extension>
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

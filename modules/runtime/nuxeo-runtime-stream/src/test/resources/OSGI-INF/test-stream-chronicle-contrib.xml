@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.stream.tests.service.contrib">
+
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+
+    <logConfig name="test-chronicle" default="true" />
+
+  </extension>
+</component>

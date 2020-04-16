@@ -57,7 +57,6 @@ import org.skyscreamer.jsonassert.JSONAssert;
 @Features({ RuntimeStreamFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.automation.features")
-@Deploy("org.nuxeo.ecm.core.event:test-work-dead-letter-queue.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestWorkManagerRunWorkInFailure {
 

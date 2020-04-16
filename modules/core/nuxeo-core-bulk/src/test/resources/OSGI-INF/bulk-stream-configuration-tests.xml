@@ -5,8 +5,4 @@
     <store name="bulk" class="org.nuxeo.runtime.kv.MemKeyValueStore" />
   </extension>
 
-  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <logConfig name="bulk" type="${nuxeo.test.stream}" />
-  </extension>
-
 </component>

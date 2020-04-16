@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
@@ -162,7 +161,8 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     protected LogConfig createKafkaLogConfig(LogConfigDescriptor desc) {
         String kafkaConfig = desc.options.getOrDefault("kafkaConfig", "default");
         KafkaConfigService service = Framework.getService(KafkaConfigService.class);
-        return new KafkaLogConfig(desc.isDefault(), desc.getPatterns(), service.getTopicPrefix(kafkaConfig),
+        return new KafkaLogConfig(desc.getId(), desc.isDefault(), desc.getPatterns(),
+                service.getTopicPrefix(kafkaConfig),
                 service.getAdminProperties(kafkaConfig), service.getProducerProperties(kafkaConfig),
                 service.getConsumerProperties(kafkaConfig));
     }
@@ -171,7 +171,7 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         String basePath = desc.options.getOrDefault("basePath", null);
         Path path = getChroniclePath(basePath);
         String retention = getChronicleRetention(desc.options.getOrDefault("retention", null));
-        return new ChronicleLogConfig(desc.isDefault(), desc.getPatterns(), path, retention);
+        return new ChronicleLogConfig(desc.getId(), desc.isDefault(), desc.getPatterns(), path, retention);
     }
 
     protected void initProcessor(StreamProcessorDescriptor descriptor) {

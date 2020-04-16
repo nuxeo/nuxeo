@@ -72,7 +72,7 @@ public class ChronicleLogManager extends AbstractLogManager {
      */
     public ChronicleLogManager(Path basePath, String retentionDuration) {
         this(Collections.singletonList(
-                new ChronicleLogConfig(true, Collections.emptyList(), basePath, retentionDuration)));
+                new ChronicleLogConfig("unknown", true, Collections.emptyList(), basePath, retentionDuration)));
     }
 
     public ChronicleLogManager(List<ChronicleLogConfig> configs) {

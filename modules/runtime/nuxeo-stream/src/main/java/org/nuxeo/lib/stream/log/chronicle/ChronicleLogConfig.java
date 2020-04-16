@@ -28,12 +28,16 @@ import org.nuxeo.lib.stream.log.AbstractLogConfig;
  */
 public class ChronicleLogConfig extends AbstractLogConfig {
 
+    protected final String name;
+
     protected final Path basePath;
 
     protected final ChronicleRetentionDuration retention;
 
-    public ChronicleLogConfig(boolean defaultConfig, List<String> patterns, Path basePath, String retention) {
+    public ChronicleLogConfig(String name, boolean defaultConfig, List<String> patterns, Path basePath,
+            String retention) {
         super(defaultConfig, patterns);
+        this.name = name;
         this.basePath = basePath;
         this.retention = new ChronicleRetentionDuration(retention);
     }
@@ -48,8 +52,7 @@ public class ChronicleLogConfig extends AbstractLogConfig {
 
     @Override
     public String toString() {
-        return "ChronicleLogConfig{" + "basePath=" + basePath + ", retention=" + retention + ", patterns=" + patterns
+        return "ChronicleLogConfig{" + "name='" + name + '\'' + ", basePath=" + basePath + ", retention=" + retention
                 + '}';
     }
-
 }

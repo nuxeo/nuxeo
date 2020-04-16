@@ -1,13 +1,9 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.runtime.stream.tests.service.contrib">
+<component name="org.nuxeo.runtime.stream.tests.service.more.contrib">
+
+  <require>org.nuxeo.runtime.stream.tests.service.contrib</require>
 
   <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
-
-    <logConfig name="default" default="true">
-      <log name="input" size="1" />
-      <log name="output" size="1" />
-      <log name="myLog" size="1" />
-    </logConfig>
 
     <logConfig name="import">
       <option name="retention">2d</option>
@@ -15,6 +11,7 @@
     </logConfig>
 
     <logConfig name="chronicle">
+      <log name="myLog" size="1" />
       <log name="cq/cq-foo" size="1" />
       <match name="cq/cq-" />
     </logConfig>
@@ -62,7 +59,7 @@
     </streamProcessor>
 
     <streamProcessor name="registerProcessor" class="org.nuxeo.runtime.stream.tests.MyStreamProcessor3"
-      defaultConcurrency="1" defaultPartitions="1" start="false" >
+      defaultConcurrency="1" defaultPartitions="1" start="false">
       <policy name="default" maxRetries="0" continueOnFailure="false" />
       <stream name="registerInput" />
       <stream name="externalOutput" partitions="1" external="true" />

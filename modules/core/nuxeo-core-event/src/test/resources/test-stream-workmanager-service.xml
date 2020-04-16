@@ -12,12 +12,6 @@
     <object class="org.nuxeo.ecm.core.work.api.WorkQueueDescriptor" />
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.stream.service" point="logConfig">
-    <logConfig name="work">
-      <match name="work/" />
-    </logConfig>
-  </extension>
-
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <!--  this enables the state storage in StreamWorkManager so tests are run in the most complete way -->
     <property name="nuxeo.stream.work.storestate.enabled">true</property>
