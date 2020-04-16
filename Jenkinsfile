@@ -149,6 +149,7 @@ def buildUnitTestStage(env) {
   def isDev = env == 'dev'
   def testNamespace = "${TEST_NAMESPACE_PREFIX}-${env}"
   def redisHost = "${TEST_REDIS_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}"
+  def kafkaHost = "${TEST_KAFKA_RESOURCE}.${testNamespace}.${TEST_SERVICE_DOMAIN_SUFFIX}:${TEST_KAFKA_PORT}"
   return {
     stage("Run ${env} unit tests") {
       container("maven-${env}") {
@@ -171,6 +172,7 @@ def buildUnitTestStage(env) {
             if (!isDev) {
               testValues += " --set-file=ci/helm/nuxeo-test-${env}-values.yaml~gen"
               testValues += " --set-file=ci/helm/nuxeo-test-elasticsearch-values.yaml~gen"
+              testValues += " --set-file=ci/helm/nuxeo-test-kafka-values.yaml~gen"
             }
             // install the nuxeo Helm chart into a dedicated namespace that will be cleaned up afterwards
             sh """
@@ -199,6 +201,12 @@ def buildUnitTestStage(env) {
                   --namespace=${testNamespace} \
                   --timeout=${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}
               """
+              // wait for Kafka to be ready
+              sh """
+                kubectl rollout status statefulset ${TEST_KAFKA_RESOURCE} \
+                  --namespace=${testNamespace} \
+                  --timeout=${TEST_LONG_ROLLOUT_STATUS_TIMEOUT}
+              """
             }
 
             echo "${env} unit tests: run Maven"
@@ -222,12 +230,14 @@ def buildUnitTestStage(env) {
             //   - in an alternative build directory
             //   - loading some test framework system properties
             def testCore = env == 'mongodb' ? 'mongodb' : 'vcs'
+            def kafkaOptions = isDev ? '' : "-Pkafka -Dkafka.bootstrap.servers=${kafkaHost}"
             sh """
               mvn ${MAVEN_ARGS} -rf :nuxeo-core-parent \
                 -Dcustom.environment=${env} \
                 -Dcustom.environment.log.dir=target-${env} \
                 -Dnuxeo.test.core=${testCore} \
                 -Dnuxeo.test.redis.host=${redisHost} \
+                ${kafkaOptions} \
                 test
             """
 
@@ -238,6 +248,9 @@ def buildUnitTestStage(env) {
           } finally {
             try {
               junit testResults: "**/target-${env}/surefire-reports/*.xml"
+              if (!isDev) {
+                archiveKafkaLogs(testNamespace, "${env}-kafka.log")
+              }
             } finally {
               echo "${env} unit tests: clean up test namespace"
               // uninstall the nuxeo Helm chart
