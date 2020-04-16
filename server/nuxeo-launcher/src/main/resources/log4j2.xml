@@ -1,25 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration shutdownHook="disable">
-  <!--
-    Nuxeo Launcher log4j2 configuration file (aka nuxeoctl).
-    In addition to the appender on stdout, we need an appender on stderr because stdout is closed when nuxeoctl received
-    an interrupted signal and we want to print to user stop in progress messages.
-    The CONSOLE_ERR appender has a ContextMapFilter in order to print only logs coming from the shutdown thread, because
-    we don't want to print errors caused by interruption from main thread as it is expected.
-  -->
   <Appenders>
     <Console name="CONSOLE" target="SYSTEM_OUT">
       <ThresholdFilter level="DEBUG" onMatch="ACCEPT" />
-      <PatternLayout>
-        <MarkerPatternSelector defaultPattern="%m%n">
-          <PatternMatch key="NO_NEW_LINE" pattern="%m"/>
-        </MarkerPatternSelector>
-      </PatternLayout>
-    </Console>
-    <Console name="CONSOLE_ERR" target="SYSTEM_ERR">
-      <ContextMapFilter onMatch="ACCEPT">
-        <KeyValuePair key="ShutdownHook" value="true"/>
-      </ContextMapFilter>
       <PatternLayout>
         <MarkerPatternSelector defaultPattern="%m%n">
           <PatternMatch key="NO_NEW_LINE" pattern="%m"/>
@@ -48,7 +31,6 @@
     <Logger name="org.apache.commons.vfs2.impl.StandardFileSystemManager" level="warn" />
     <Root level="warn">
       <AppenderRef ref="CONSOLE" />
-      <AppenderRef ref="CONSOLE_ERR" />
       <AppenderRef ref="FILE" />
     </Root>
   </Loggers>
