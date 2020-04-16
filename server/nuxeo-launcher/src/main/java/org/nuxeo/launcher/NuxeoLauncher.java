@@ -86,7 +86,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
-import org.apache.logging.log4j.ThreadContext;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
 import org.nuxeo.common.codec.CryptoProperties;
@@ -1864,7 +1863,6 @@ public class NuxeoLauncher {
 
         @Override
         public void run() {
-            ThreadContext.put(ShutdownHook.class.getSimpleName(), "true");
             log.info("Shutting down...");
             if (launcher.isRunning()) {
                 launcher.doStop();
