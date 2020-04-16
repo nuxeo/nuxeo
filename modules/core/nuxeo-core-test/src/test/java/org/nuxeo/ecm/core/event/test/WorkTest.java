@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.event.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.inject.Inject;
 
 import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -41,6 +43,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.ecm.core.work.WorkManagerFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
@@ -55,10 +58,19 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class WorkTest {
 
     @Inject
+    protected WorkManagerFeature workManagerFeature;
+
+    @Inject
     protected EventService eventService;
 
     @Inject
     protected CoreSession session;
+
+    @Before
+    public void checkNotStream() {
+        assumeFalse("cannot be run with streams as we can't guarantee parallelism of works",
+                workManagerFeature.isStream());
+    }
 
     protected void waitForAsyncCompletion() {
         nextTransaction();
