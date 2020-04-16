@@ -29,7 +29,6 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("logConfig")
@@ -110,6 +109,11 @@ public class LogConfigDescriptor implements Descriptor {
     // @since 11.1
     public boolean isDefault() {
         return isDefault;
+    }
+
+    // @since 11.1
+    public boolean onlyLogDeclaration() {
+        return name == null && type == null;
     }
 
     public List<String> getPatterns() {
