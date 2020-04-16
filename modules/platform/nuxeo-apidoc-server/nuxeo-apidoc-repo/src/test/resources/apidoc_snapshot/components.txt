@@ -202,5 +202,6 @@ NXComponent: org.nuxeo.runtime.started *** /grp:org.nuxeo.runtime/org.nuxeo.runt
 NXComponent: org.nuxeo.runtime.stream.kafka.service *** /grp:org.nuxeo.runtime/org.nuxeo.runtime.stream/org.nuxeo.runtime.stream.kafka.service
 NXComponent: org.nuxeo.runtime.stream.service *** /grp:org.nuxeo.runtime/org.nuxeo.runtime.stream/org.nuxeo.runtime.stream.service
 NXComponent: org.nuxeo.runtime.stream.service.managment.contrib *** /grp:org.nuxeo.runtime/org.nuxeo.runtime.stream/org.nuxeo.runtime.stream.service.managment.contrib
+NXComponent: org.nuxeo.runtime.stream.tests.service.contrib *** /grp:org.nuxeo.runtime/org.nuxeo.runtime.stream.test/org.nuxeo.runtime.stream.tests.service.contrib
 NXComponent: org.nuxeo.runtime.trackers.files *** /grp:org.nuxeo.runtime/org.nuxeo.runtime/org.nuxeo.runtime.trackers.files *** [org.nuxeo.runtime.EventService]
 NXComponent: org.nuxeo.runtime.trackers.files.threadstracking.config *** /grp:org.nuxeo.runtime/org.nuxeo.runtime/org.nuxeo.runtime.trackers.files.threadstracking.config
