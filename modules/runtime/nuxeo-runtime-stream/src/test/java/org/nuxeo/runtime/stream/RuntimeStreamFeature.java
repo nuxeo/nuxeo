@@ -89,7 +89,7 @@ public class RuntimeStreamFeature implements RunnerFeature {
             log.info(msg);
             switch (streamType) {
             case STREAM_CHRONICLE:
-                // nothing to do
+                initChronicle(harness);
                 break;
             case STREAM_KAFKA:
                 initKafka(harness);
@@ -100,6 +100,10 @@ public class RuntimeStreamFeature implements RunnerFeature {
         } catch (Exception e) {
             throw new RuntimeServiceException("Unable to configure the stream implementation", e);
         }
+    }
+
+    protected void initChronicle(RuntimeHarness harness) throws Exception {
+        harness.deployContrib(BUNDLE_TEST_NAME, "OSGI-INF/test-stream-chronicle-contrib.xml");
     }
 
     protected void initKafka(RuntimeHarness harness) throws Exception {

@@ -2,32 +2,22 @@
 <component name="org.nuxeo.runtime.stream.tests.kafka.contrib">
 
   <extension point="kafkaConfig" target="org.nuxeo.runtime.stream.kafka.service">
-    <kafkaConfig name="default" randomPrefix="true" topicPrefix="nuxeo-test-">
+    <kafkaConfig name="config1" randomPrefix="true" topicPrefix="nuxeo-test-">
       <producer>
-        <property name="bootstrap.servers">localhost:9092</property>
-      </producer>
-      <consumer>
-        <property name="bootstrap.servers">localhost:9092</property>
-        <property name="request.timeout.ms">30000</property>
-        <property name="max.poll.interval.ms">20000</property>
-        <property name="session.timeout.ms">10000</property>
-        <property name="heartbeat.interval.ms">400</property>
-        <property name="max.poll.records">25</property>
-      </consumer>
-    </kafkaConfig>
-
-    <kafkaConfig name="no-subscribe" randomPrefix="true" topicPrefix="nuxeo-test-">
-      <producer>
-        <property name="bootstrap.servers">localhost:9092</property>
+        <property name="bootstrap.servers">kafka-broker-1:9092,kafka-broker-2:9092</property>
+        <property name="delivery.timeout.ms">30000</property>
+        <property name="ack">1</property>
       </producer>
       <consumer>
         <property name="subscribe.disable">true</property>
         <property name="bootstrap.servers">localhost:9092</property>
         <property name="request.timeout.ms">30000</property>
-        <property name="max.poll.interval.ms">20000</property>
+        <property name="default.api.timeout.ms">30000</property>
+        <property name="max.poll.interval.ms">60000</property>
         <property name="session.timeout.ms">10000</property>
-        <property name="heartbeat.interval.ms">400</property>
-        <property name="max.poll.records">25</property>
+        <property name="heartbeat.interval.ms">2000</property>
+        <property name="max.poll.records">5</property>
+        <property name="group.initial.rebalance.delay.ms">100</property>
       </consumer>
     </kafkaConfig>
 
@@ -37,10 +27,6 @@
       </producer>
     </kafkaConfig>
 
-  </extension>
-
-  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
-    <logConfig name="chronicle" />
   </extension>
 
 </component>

@@ -62,7 +62,7 @@ public class KafkaLogManager extends AbstractLogManager {
      * @since 10.2
      */
     public KafkaLogManager(String prefix, Properties producerProperties, Properties consumerProperties) {
-        this(Collections.singletonList(new KafkaLogConfig(true, Collections.emptyList(), prefix, null,
+        this(Collections.singletonList(new KafkaLogConfig("unknown", true, Collections.emptyList(), prefix, null,
                 producerProperties, consumerProperties)));
     }
 

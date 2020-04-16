@@ -22,23 +22,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.kafka.KafkaConfigService;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.runtime.stream")
+@Features(RuntimeStreamFeature.class)
 @Deploy("org.nuxeo.runtime.stream:test-kafka-config-contrib.xml")
 public class TestKafkaConfigService {
 
@@ -49,12 +49,15 @@ public class TestKafkaConfigService {
     public void testService() {
         assertNotNull(service);
         assertFalse(service.listConfigNames().isEmpty());
-        assertEquals(3, service.listConfigNames().size());
+        // when using -Pkafka there are 3 config else 2
+        assertTrue(service.listConfigNames().toString(), service.listConfigNames().size() >= 2);
 
-        String config1 = "default";
+        String config1 = "config1";
+        assertNotNull(service.getAdminProperties(config1));
         assertNotNull(service.getConsumerProperties(config1));
         assertNotNull(service.getProducerProperties(config1));
-        assertEquals("localhost:9092", service.getProducerProperties(config1).getProperty("bootstrap.servers"));
+        assertEquals("kafka-broker-1:9092,kafka-broker-2:9092",
+                service.getProducerProperties(config1).getProperty("bootstrap.servers"));
         assertNotEquals("RANDOM()", service.getTopicPrefix(config1));
 
         String config2 = "config2";

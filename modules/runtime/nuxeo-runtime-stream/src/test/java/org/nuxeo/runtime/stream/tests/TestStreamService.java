@@ -46,13 +46,13 @@ import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.Name;
 import org.nuxeo.runtime.management.api.ProbeStatus;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.stream.StreamMetricsComputation;
 import org.nuxeo.runtime.stream.StreamProbe;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import io.dropwizard.metrics5.Gauge;
 import io.dropwizard.metrics5.MetricName;
@@ -63,8 +63,7 @@ import io.dropwizard.metrics5.SharedMetricRegistries;
  * @since 9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
-@Deploy("org.nuxeo.runtime.stream")
+@Features(RuntimeStreamFeature.class)
 @Deploy("org.nuxeo.runtime.stream:test-stream-contrib.xml")
 public class TestStreamService {
 
@@ -186,6 +185,7 @@ public class TestStreamService {
 
         // and manage it
         processor.start();
+        processor.waitForAssignments(Duration.ofSeconds(10));
         processor.drainAndStop(Duration.ofSeconds(5));
         assertEquals("key", tailer.read(Duration.ofSeconds(1)).message().getKey());
     }

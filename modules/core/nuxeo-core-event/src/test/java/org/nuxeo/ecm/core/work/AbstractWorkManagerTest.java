@@ -25,7 +25,6 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.work.AbstractWork.GLOBAL_DLQ_COUNT_REGISTRY_NAME;
 import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEAD_LETTER_QUEUE;
-import static org.nuxeo.ecm.core.work.WorkManagerImpl.DEFAULT_LOG_MANAGER;
 import static org.nuxeo.ecm.core.work.api.Work.State.RUNNING;
 import static org.nuxeo.ecm.core.work.api.Work.State.SCHEDULED;
 import static org.nuxeo.ecm.core.work.api.Work.State.UNKNOWN;
@@ -59,6 +58,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
 import org.nuxeo.runtime.kv.KeyValueStore;
 import org.nuxeo.runtime.metrics.MetricsService;
+import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -72,7 +72,7 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.dropwizard.metrics5.SharedMetricRegistries;
 
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, FileEventsTrackingFeature.class })
+@Features({ RuntimeStreamFeature.class, FileEventsTrackingFeature.class })
 @Deploy("org.nuxeo.runtime.kv")
 @Deploy("org.nuxeo.ecm.core.event")
 @Deploy("org.nuxeo.ecm.core.event.test:OSGI-INF/test-default-workmanager-config.xml")
@@ -609,8 +609,6 @@ public abstract class AbstractWorkManagerTest {
     }
 
     @Test
-    @Deploy("org.nuxeo.runtime.stream")
-    @Deploy("org.nuxeo.ecm.core.event:test-work-dead-letter-queue.xml")
     public void testWorkInDeadLetterQueue() throws InterruptedException {
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
         Counter dlqCounter = registry.counter(GLOBAL_DLQ_COUNT_REGISTRY_NAME);

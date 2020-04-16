@@ -52,7 +52,7 @@ public class UnifiedLogManager implements LogManager {
 
     public UnifiedLogManager(List<LogConfig> configs) {
         if (configs == null || configs.isEmpty()) {
-            throw new IllegalArgumentException("No config provided");
+            throw new IllegalArgumentException("No LogConfig provided");
         }
         this.configs = configs;
         createCQLogManager();

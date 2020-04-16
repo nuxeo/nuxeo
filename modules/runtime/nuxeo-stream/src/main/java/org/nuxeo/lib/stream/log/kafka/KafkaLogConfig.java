@@ -48,9 +48,13 @@ public class KafkaLogConfig extends AbstractLogConfig {
 
     protected final NameResolver resolver;
 
-    public KafkaLogConfig(boolean defaultConfig, List<String> patterns, String prefix, Properties adminProperties,
+    protected final String name;
+
+    public KafkaLogConfig(String name, boolean defaultConfig, List<String> patterns, String prefix,
+            Properties adminProperties,
             Properties producerProperties, Properties consumerProperties) {
         super(defaultConfig, patterns);
+        this.name = name;
         resolver = new NameResolver(prefix);
         this.producerProperties = normalizeProducerProperties(producerProperties);
         this.consumerProperties = normalizeConsumerProperties(consumerProperties);
@@ -148,7 +152,7 @@ public class KafkaLogConfig extends AbstractLogConfig {
 
     @Override
     public String toString() {
-        return "KafkaLogConfig{" + "resolver='" + resolver + '\'' + ", adminProperties="
+        return "KafkaLogConfig{name='" + name + "', resolver='" + resolver + '\'' + ", adminProperties="
                 + filterDisplayedProperties(adminProperties) + ", producerProperties="
                 + filterDisplayedProperties(producerProperties) + ", consumerProperties="
                 + filterDisplayedProperties(consumerProperties) + ", defaultReplicationFactor="
