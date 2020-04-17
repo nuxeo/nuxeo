@@ -1900,7 +1900,7 @@ public class NuxeoLauncher {
             var startTime = Instant.now();
             var waitUntil = startTime.plusSeconds(stopMaxWait);
             var nuxeoProcess = nuxeoProcessOpt.get();
-            while (Instant.now().isBefore(waitUntil) && nuxeoProcess.isAlive()) {
+            while (Instant.now().isBefore(waitUntil) && isAliveAndNotZombie(nuxeoProcess)) {
                 Process stopProcess = stop();
                 stopProcess.waitFor();
                 // at this point Tomcat has received and acknowledged the stop command
@@ -1911,12 +1911,13 @@ public class NuxeoLauncher {
                 Thread.sleep(1000);
             }
             log.info(".");
-            if (!nuxeoProcess.isAlive()) {
+            if (!isAliveAndNotZombie(nuxeoProcess)) {
                 Duration duration = Duration.between(startTime, Instant.now());
                 log.info(String.format("Stopped in %dmin%02ds", duration.toMinutes(), duration.toSeconds() % 60));
             } else if (Instant.now().isAfter(waitUntil)) {
                 log.info("No answer from server, try to kill process {}...", nuxeoProcess::pid);
                 processManager.kill(nuxeoProcess);
+                // don't check zombie - kill should have done the work
                 if (!nuxeoProcess.isAlive()) {
                     log.warn("Server forcibly stopped.");
                 }
@@ -1927,6 +1928,12 @@ public class NuxeoLauncher {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
+    }
+
+    protected boolean isAliveAndNotZombie(ProcessHandle process) {
+        // nuxeo process could become a defunct process (aka zombie) due to nuxeoctl not reading its exit code
+        // defunct processes lose their command because system just wants to save exit code
+        return process.isAlive() && process.info().command().isPresent();
     }
 
     protected Process stop() throws IOException {
