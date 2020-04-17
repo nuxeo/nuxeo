@@ -31,9 +31,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -229,8 +231,14 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                 throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
 
-            // if output has a "url" key assume it's a redirect url
+            // if output is a map let's return as json when requested
+            // or redirect in case there's a "url" key
             if (output instanceof Map) {
+                if (MediaType.APPLICATION_JSON.equals(request.getHeader(HttpHeaders.ACCEPT))) {
+                    String json = new ObjectMapper().writeValueAsString(output);
+                    return Response.status(HttpServletResponse.SC_OK).entity(json).build();
+                }
+                // if output has a "url" key assume it's a redirect url
                 Object url = ((Map<?, ?>) output).get(RESULT_URL_KEY);
                 if (url instanceof String) {
                     String baseUrl = VirtualHostHelper.getBaseURL(ctx.getRequest());
