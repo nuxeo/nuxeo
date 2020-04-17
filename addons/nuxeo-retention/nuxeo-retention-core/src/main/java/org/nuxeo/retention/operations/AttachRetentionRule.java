@@ -18,7 +18,6 @@
  */
 package org.nuxeo.retention.operations;
 
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -34,7 +33,7 @@ import org.nuxeo.retention.service.RetentionManager;
 /**
  * @since 11.1
  */
-@Operation(id = AttachRetentionRule.ID, category = Constants.CAT_DOCUMENT, label = "Attach Retation Rule", description = "Attach the given retation rule to the input document.")
+@Operation(id = AttachRetentionRule.ID, category = RetentionConstants.RETENTION_CATEGORY, label = "Attach Retention Rule", description = "Attach the given retention rule to the input document. The document becomes a record and the main blob cannot be updated")
 public class AttachRetentionRule {
 
     public static final String ID = "Retention.AttachRule";
