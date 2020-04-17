@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -33,8 +34,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.junit.Before;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,20 +68,19 @@ public class TestSnapshotPersist {
     @Inject
     protected CoreFeature coreFeature;
 
+    @Before
+    public void checkIsVCSH2() {
+        assumeTrue(coreFeature.getStorageConfiguration().isVCSH2());
+    }
+
     @Test
     public void testSnapshot() throws IOException {
-        if (!coreFeature.getStorageConfiguration().isVCSH2()) {
-            return;
-        }
         DistributionSnapshot snapshot = snapshotManager.getRuntimeSnapshot();
         checkDistributionSnapshot(snapshot);
     }
 
     @Test
     public void testPersist() throws IOException {
-        if (!coreFeature.getStorageConfiguration().isVCSH2()) {
-            return;
-        }
         DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(snapshot);
         checkDistributionSnapshot(snapshot);
