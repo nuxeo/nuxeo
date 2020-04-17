@@ -34,17 +34,17 @@
   -->
   <Resource name="jdbc/nxsqldirectory" auth="Container" type="javax.sql.DataSource"
             maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:nxsqldirectory;create=true"/>
+            driverClassName="org.h2.Driver"
+            url="jdbc:h2:nxsqldirectory;DB_CLOSE_ON_EXIT=false"/>
 
   <Resource name="jdbc/nxrelations-default-jena" auth="Container" type="javax.sql.DataSource"
             maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:nxrelations-default-jena;create=true"/>
+            driverClassName="org.h2.Driver"
+            url="jdbc:h2:nxrelations-default-jena;DB_CLOSE_ON_EXIT=false"/>
 
   <Resource name="jdbc/comment-relations" auth="Container" type="javax.sql.DataSource"
             maxActive="100" maxIdle="30" maxWait="10000"
-            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-            url="jdbc:derby:comment-relations;create=true"/>
+            driverClassName="org.h2.Driver"
+            url="jdbc:h2:comment-relations;DB_CLOSE_ON_EXIT=false"/>
 
 </Context>

@@ -3,7 +3,7 @@ How to start nuxeo inside tomcat
 
 1. put nuxeo-runtime-tomcat-adapter.jar into tomcat lib dir.
 
-2. put derby.jar into tomcat lib dir. (or any other database jars you use)
+2. put the database driver JAR file into tomcat lib dir.
 
 3. create a WAR and put a META-INF/context.xml by copying the content from the
    context.xml-template file.

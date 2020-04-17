@@ -56,8 +56,6 @@ public class RepositoryLightElasticSearchFeature implements RunnerFeature {
 
     @Override
     public void initialize(FeaturesRunner runner) {
-        // Uncomment to use Derby when h2 lucene lib is not aligned with ES
-        // DatabaseHelper.setDatabaseForTests(DatabaseDerby.class.getCanonicalName());
         runner.getFeature(TransactionalFeature.class).addWaiter(RepositoryLightElasticSearchFeature::await);
     }
 

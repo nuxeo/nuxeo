@@ -47,7 +47,6 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
     @BeforeClass
     public static void checkAssumptions() {
         assumeTrue(!"sequence".equals(DatabaseHelper.DEF_ID_TYPE));
-        assumeTrue(!(DatabaseHelper.DATABASE instanceof DatabaseDerby));
     }
 
     @Inject

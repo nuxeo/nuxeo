@@ -76,14 +76,6 @@ public class TomcatConfigurator extends ServerConfigurator {
         String message = String.format("NXP-5370, NXP-5460. " + "Please rename 'vcsh2repo' directory from %s to %s",
                 oldPath, new File(generator.getDataDir(), "h2" + File.separator + "nuxeo"));
         checkPath(oldPath, message);
-
-        oldPath = new File(getRuntimeHome(), "data" + File.separator + "derby" + File.separator + "nxsqldirectory");
-        message = "NXP-5370, NXP-5460. " + "It is not possible to migrate Derby data."
-                + System.getProperty("line.separator") + "Please remove 'nx*' directories from " + oldPath.getParent()
-                + System.getProperty("line.separator") + "or edit templates/default/" + getTomcatConfig()
-                + System.getProperty("line.separator")
-                + "following https://github.com/nuxeo/nuxeo-distribution/blob/release-5.3.2/nuxeo-distribution-resources/src/main/resources/templates-tomcat/default/conf/Catalina/localhost/nuxeo.xml";
-        checkPath(oldPath, message);
     }
 
     @Override

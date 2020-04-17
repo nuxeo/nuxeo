@@ -10,9 +10,9 @@ nuxeo.server.jvmRoute=nuxeo
 nuxeo.db.name=nuxeo
 nuxeo.db.user=sa
 nuxeo.db.password=
-nuxeo.db.jdbc.url=jdbc:derby:${nuxeo.data.dir}/derby/${nuxeo.db.name};create=true
-nuxeo.db.validationQuery=
-nuxeo.db.driver=org.apache.derby.jdbc.EmbeddedDriver
+nuxeo.db.jdbc.url=jdbc:h2:${nuxeo.data.dir}/h2/${nuxeo.db.name};DB_CLOSE_ON_EXIT=false
+nuxeo.db.driver=org.h2.Driver
+nuxeo.db.xadatasource=org.h2.jdbcx.JdbcDataSource
 nuxeo.db.commonds=jdbc/nuxeo
 
 org.nuxeo.ecm.instance.description=Nuxeo ECM server

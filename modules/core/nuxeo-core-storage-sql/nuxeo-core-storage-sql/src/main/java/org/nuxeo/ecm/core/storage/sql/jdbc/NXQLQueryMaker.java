@@ -714,8 +714,6 @@ public class NXQLQueryMaker implements QueryMaker {
                 selectWhat = "DISTINCT " + selectWhat;
             }
             select.setWhat(selectWhat);
-            // note that Derby has bizarre restrictions on parentheses placement
-            // around UNION, see http://issues.apache.org/jira/browse/DERBY-2374
             String subselect;
             if (withSelects.isEmpty()) {
                 subselect = StringUtils.join(statements, " UNION ALL ");
@@ -2484,7 +2482,7 @@ public class NXQLQueryMaker implements QueryMaker {
                             "Cannot use array index " + arrayElementIndex + " for non-array column " + column);
                 }
             }
-            // some databases (Derby) can't do comparisons on CLOB
+            // some databases can't do comparisons on CLOB
             if (column.getJdbcType() == Types.CLOB) {
                 String colFmt = dialect.getClobCast(inOrderBy);
                 if (colFmt != null) {

@@ -38,13 +38,11 @@ See http://msdn.microsoft.com/en-us/library/ms187317(SQL.90).aspx
 3. Datasource configuration
 
 Install the appropriate JDBC driver in $JBOSS/server/default/lib, for instance
-derby-10.4.1.3.jar, or postgresql-8.2-507.jdbc3.jar.
+h2-1.4.177-NX01.jar, or postgresql-8.2-507.jdbc3.jar.
 
 Create the datasource file in
 $JBOSS/server/default/deploy/nuxeo.ear/datasources/default-repository-ds.xml,
 (its name is arbitrary but it has to end in ...-ds.xml)
-
-- for Derby, adapt the file doc/examples/repository-derby-ds.xml.
 
 - for PostgreSQL, adapt the file doc/examples/repository-postgresql-ds.xml.
 

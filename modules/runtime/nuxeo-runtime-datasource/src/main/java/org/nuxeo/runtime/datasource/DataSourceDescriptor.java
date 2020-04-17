@@ -72,7 +72,7 @@ import org.w3c.dom.Node;
  * For a non-XA datasource, you must specify at least a <b>url</b>:
  *
  * <pre>
- *   &lt;property name=&quot;url&quot;&gt;jdbc:derby:foo/bar&lt;/property&gt;
+ *   &lt;property name=&quot;url&quot;&gt;jdbc:h2:foo/bar&lt;/property&gt;
  *   &lt;property name=&quot;username&quot;&gt;nuxeo&lt;/property&gt;
  *   &lt;property name=&quot;password&quot;&gt;nuxeo&lt;/property&gt;
  * </pre>

@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Functions used as stored procedures for Derby and H2.
+ * Functions used as stored procedures for H2.
  *
  * @author Florent Guillaume
  */

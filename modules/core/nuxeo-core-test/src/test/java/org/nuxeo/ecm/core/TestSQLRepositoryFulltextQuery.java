@@ -476,7 +476,6 @@ public class TestSQLRepositoryFulltextQuery {
         // prefix in phrase search
         // not in H2 (with Lucene default parser)
         // not in MySQL
-        // not in Derby
         if (storageConfiguration.isVCSPostgreSQL() //
                 || storageConfiguration.isVCSOracle() //
                 || storageConfiguration.isVCSSQLServer()) {
@@ -573,8 +572,6 @@ public class TestSQLRepositoryFulltextQuery {
 
     @Test
     public void testFulltextExpressionSyntax() {
-        assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
-
         createDocs();
         waitForFulltextIndexing();
         String query;
@@ -688,8 +685,6 @@ public class TestSQLRepositoryFulltextQuery {
     // don't use small words, they are eliminated by some fulltext engines
     @Test
     public void testFulltextExpressionPhrase() {
-        assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
-
         String query;
 
         DocumentModel file1 = session.createDocumentModel("/", "testfile1", "File");

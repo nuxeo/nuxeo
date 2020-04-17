@@ -105,7 +105,6 @@ public abstract class Dialect {
         DIALECTS.put("Oracle", DialectOracle.class);
         DIALECTS.put("PostgreSQL", DialectPostgreSQL.class);
         DIALECTS.put("Microsoft SQL Server", DialectSQLServer.class);
-        DIALECTS.put("Apache Derby", DialectDerby.class);
         DIALECTS.put("DB2", DialectDB2.class);
     }
 
@@ -798,7 +797,7 @@ public abstract class Dialect {
     /**
      * When using a CLOB field in an expression, is some casting required and with what pattern?
      * <p>
-     * Needed for Derby and H2.
+     * Needed for H2.
      *
      * @param inOrderBy {@code true} if the expression is for an ORDER BY column
      * @return a pattern for String.format with one parameter for the column name and one for the width, or {@code null}
