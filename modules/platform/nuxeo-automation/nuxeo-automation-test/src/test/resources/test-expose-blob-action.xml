@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.automation.server.test.actions-expose-blob" version="1.0.0">
+
+  <require>org.nuxeo.ecm.core.bulk</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="dummyExposeBlob"/>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="dummyExposeBlob" class="org.nuxeo.ecm.automation.server.test.actions.DummyExposeBlobAction"
+                     logConfig="bulk" defaultConcurrency="1" defaultPartitions="1"/>
+  </extension>
+
+</component>
