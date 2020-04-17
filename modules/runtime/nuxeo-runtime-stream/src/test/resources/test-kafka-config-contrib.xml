@@ -6,7 +6,7 @@
       <producer>
         <property name="bootstrap.servers">kafka-broker-1:9092,kafka-broker-2:9092</property>
         <property name="delivery.timeout.ms">30000</property>
-        <property name="ack">1</property>
+        <property name="acks">1</property>
       </producer>
       <consumer>
         <property name="subscribe.disable">true</property>
@@ -17,7 +17,6 @@
         <property name="session.timeout.ms">10000</property>
         <property name="heartbeat.interval.ms">2000</property>
         <property name="max.poll.records">5</property>
-        <property name="group.initial.rebalance.delay.ms">100</property>
       </consumer>
     </kafkaConfig>
 

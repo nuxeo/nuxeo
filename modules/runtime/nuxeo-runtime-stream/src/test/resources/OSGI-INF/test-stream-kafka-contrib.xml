@@ -6,22 +6,20 @@
       <admin>
         <property name="bootstrap.servers">${nuxeo.test.kafka.servers}</property>
         <property name="request.timeout.ms">10000</property>
-        <property name="default.api.timeout.ms">10000</property>
       </admin>
       <producer>
         <property name="bootstrap.servers">${nuxeo.test.kafka.servers}</property>
         <property name="delivery.timeout.ms">30000</property>
-        <property name="ack">1</property>
+        <property name="acks">1</property>
       </producer>
       <consumer>
         <property name="bootstrap.servers">${nuxeo.test.kafka.servers}</property>
         <property name="request.timeout.ms">30000</property>
         <property name="default.api.timeout.ms">30000</property>
-        <property name="max.poll.interval.ms">60000</property>
+        <property name="max.poll.interval.ms">120000</property>
         <property name="session.timeout.ms">10000</property>
         <property name="heartbeat.interval.ms">2000</property>
         <property name="max.poll.records">5</property>
-        <property name="group.initial.rebalance.delay.ms">100</property>
       </consumer>
     </kafkaConfig>
   </extension>

@@ -29,14 +29,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.job.JobHistoryHelper;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.stream.RuntimeStreamFeature;
+import org.nuxeo.runtime.stream.IgnoreChronicle;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -44,13 +44,9 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(AuditFeature.class)
 public class TestJobHistoryHelper {
 
-    @BeforeClass
-    public static void assumeKafkaEnabled() {
-        RuntimeStreamFeature.assumeKafkaEnabled();
-    }
-
     @Test
-    public void testLogger() throws Exception {
+    @ConditionalIgnoreRule.Ignore(cause = "NXP-27559", condition = IgnoreChronicle.class)
+    public void testLogger() {
         StringBuilder query = new StringBuilder("from LogEntry log where ");
         query.append(" log.category='");
         query.append("MyExport");
@@ -73,6 +69,7 @@ public class TestJobHistoryHelper {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(cause = "NXP-27559", condition = IgnoreChronicle.class)
     public void testLoggerHelper() throws Exception {
         JobHistoryHelper helper = new JobHistoryHelper("MyExport2");
 

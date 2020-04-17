@@ -33,15 +33,16 @@ public class KafkaHelper {
     public static Properties getProducerProps() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
+        props.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, 10_000);
         return props;
     }
 
     public static Properties getConsumerProps() {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
-        props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
+        props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30_000);
         // consumer are removed from a group if there more than this interval between poll
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20000);
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 120_000);
         // session timeout, consumer is removed from a group if there is no heartbeat on this interval
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
         // short ht interval so that rebalance don't take for ever

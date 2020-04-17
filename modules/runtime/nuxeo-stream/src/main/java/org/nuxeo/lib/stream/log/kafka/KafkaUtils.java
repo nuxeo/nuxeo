@@ -86,6 +86,7 @@ public class KafkaUtils implements AutoCloseable {
     public static Properties getDefaultAdminProperties() {
         Properties ret = new Properties();
         ret.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, getBootstrapServers());
+        ret.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 10_000);
         return ret;
     }
 
