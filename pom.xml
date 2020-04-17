@@ -1952,13 +1952,6 @@
         <type>zip</type>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-server-tomcat</artifactId>
-        <version>${nuxeo.platform.version}</version>
-        <type>zip</type>
-        <classifier>sdk</classifier>
-      </dependency>
-      <dependency>
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-launcher</artifactId>
         <version>${nuxeo.platform.version}</version>

@@ -88,11 +88,6 @@
       </activation>
     </profile>
     <profile>
-      <id>sdk</id>
-      <!-- profile for building SDK distributions (they are always built
-        when release profile is activated) -->
-    </profile>
-    <profile>
       <id>release</id>
       <build>
         <plugins>

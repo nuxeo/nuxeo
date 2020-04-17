@@ -75,11 +75,6 @@ PKG_RENAMINGS = {
     "server/nuxeo-server-tomcat/target/nuxeo-server-tomcat-%s.zip": "nuxeo-server-%s-tomcat"
 }
 
-PKG_RENAMINGS_OPTIONALS = {
-    # Tomcat packages
-    "server/nuxeo-server-tomcat/target/nuxeo-server-tomcat-%s-sdk.zip": "nuxeo-server-%s-tomcat-sdk"
-}
-
 PKG_MP = {
     "nuxeo-jsf-ui/packages/nuxeo-marketplace-jsf-ui/target/nuxeo-marketplace-jsf-ui-%s.zip": "nuxeo-jsf-ui-%s.zip"
 }
@@ -540,9 +535,6 @@ class Release(object):
         # Default packages
         for old, new in PKG_RENAMINGS.items():
             self.package(old % version, new % version)
-        # Tomcat SDK packages
-        for old, new in PKG_RENAMINGS_OPTIONALS.items():
-            self.package(old % version, new % version, False)
         # MP
         for old, new in PKG_MP.items():
             self.package_mp(old % version, new % version, False)
