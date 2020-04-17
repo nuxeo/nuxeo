@@ -22,7 +22,12 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
+import org.nuxeo.runtime.stream.IgnoreChronicle;
+import org.nuxeo.runtime.stream.IgnoreKafka;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+
+import static org.junit.Assume.assumeTrue;
 
 /**
  * @since 9.2
@@ -32,7 +37,7 @@ public class TestPatternQueuingKafka extends TestPatternQueuing {
 
     @BeforeClass
     public static void assumeKafkaEnabled() {
-        RuntimeStreamFeature.assumeKafkaEnabled();
+        assumeTrue("Kafka not enabled", new IgnoreKafka().shouldIgnore());
     }
 
     @Override

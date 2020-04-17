@@ -16,6 +16,8 @@
  */
 package org.nuxeo.lib.stream.tests.pattern;
 
+import static org.junit.Assume.assumeFalse;
+
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -33,7 +35,7 @@ public class TestPatternBoundedQueuingChronicle extends TestPatternBoundedQueuin
 
     @Before
     public void skipWindowsThatDontCleanTempFolder() {
-        org.junit.Assume.assumeFalse(TestPatternQueuingChronicle.IS_WIN);
+        assumeFalse(TestPatternQueuingChronicle.IS_WIN);
     }
 
     @Rule
