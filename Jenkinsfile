@@ -441,6 +441,7 @@ pipeline {
       post {
         always {
           junit testResults: '**/target/failsafe-reports/*.xml'
+          findText regexp: ".*ERROR.*", fileSet: "ftests/**/log/server.log", unstableIfFound: true
         }
         success {
           setGitHubBuildStatus('platform/ftests/dev', 'Functional tests - dev environment', 'SUCCESS')
