@@ -49,12 +49,11 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.runtime.stream")
 @Deploy("org.nuxeo.importer.stream")
 @Deploy("org.nuxeo.ecm.automation.core")
 @Deploy("org.nuxeo.ecm.core.io")
 @Deploy("org.nuxeo.importer.stream:test-core-type-contrib.xml")
-public abstract class TestAutomation {
+public class TestAutomation {
 
     @Inject
     CoreSession session;
@@ -77,8 +76,6 @@ public abstract class TestAutomation {
         ctx.close();
     }
 
-    public abstract void addExtraParams(Map<String, Object> params);
-
     @Test
     public void testRandomBlobImport() throws Exception {
         final int nbThreads = 4;
@@ -87,13 +84,11 @@ public abstract class TestAutomation {
         params.put("nbBlobs", 100);
         params.put("nbThreads", nbThreads);
         params.put("logSize", 2 * nbThreads);
-        addExtraParams(params);
         automationService.run(ctx, RandomBlobProducers.ID, params);
 
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
-        addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
     }
 
@@ -107,14 +102,12 @@ public abstract class TestAutomation {
         params.put("logSize", nbThreads);
         params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
         params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
-        addExtraParams(params);
         automationService.run(ctx, FileBlobProducers.ID, params);
 
         params.clear();
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
         params.put("watermark", "foo");
-        addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
     }
 
@@ -127,12 +120,10 @@ public abstract class TestAutomation {
         Map<String, Object> params = new HashMap<>();
         params.put("nbDocuments", nbDocuments);
         params.put("nbThreads", nbThreads);
-        addExtraParams(params);
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 
         params.clear();
         params.put("rootFolder", "/");
-        addExtraParams(params);
         automationService.run(ctx, DocumentConsumers.ID, params);
 
         // start a new transaction to prevent db isolation to hide our new documents
@@ -155,7 +146,6 @@ public abstract class TestAutomation {
         params.put("nbBlobs", nbBlobs);
         params.put("nbThreads", nbThreads);
         params.put("marker", marker);
-        addExtraParams(params);
         automationService.run(ctx, RandomBlobProducers.ID, params);
 
         // 2. import blobs into the binarystore, saving blob info into csv
@@ -163,7 +153,6 @@ public abstract class TestAutomation {
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
         params.put("logBlobInfo", "import/blob-info");
-        addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
 
         // 3. generates random document messages with blob references
@@ -171,7 +160,6 @@ public abstract class TestAutomation {
         params.put("nbDocuments", nbDocuments);
         params.put("nbThreads", nbThreads);
         params.put("logBlobInfo", "import/blob-info");
-        addExtraParams(params);
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 
         // 4. import document into the repository
@@ -183,7 +171,6 @@ public abstract class TestAutomation {
         params.put("blockPostCommitListeners", true);
         params.put("blockAsyncListeners", true);
         params.put("blockIndexing", true);
-        addExtraParams(params);
         automationService.run(ctx, DocumentConsumers.ID, params);
 
         // WorkManager service = Framework.getService(WorkManager.class);
@@ -215,7 +202,6 @@ public abstract class TestAutomation {
         params.put("nbThreads", nbThreads);
         params.put("basePath", this.getClass().getClassLoader().getResource("files").getPath());
         params.put("listFile", this.getClass().getClassLoader().getResource("files/list.txt").getPath());
-        addExtraParams(params);
         automationService.run(ctx, FileBlobProducers.ID, params);
 
         // 2. import blobs into the binarystore, saving blob info into a log
@@ -223,7 +209,6 @@ public abstract class TestAutomation {
         params.put("blobProviderName", "test");
         params.put("nbThreads", nbThreads);
         params.put("logBlobInfo", "import/blob-info");
-        addExtraParams(params);
         automationService.run(ctx, BlobConsumers.ID, params);
 
         // 3. generates random document messages with blob references
@@ -232,7 +217,6 @@ public abstract class TestAutomation {
         params.put("nbThreads", nbThreads);
         params.put("countFolderAsDocument", false);
         params.put("logBlobInfo", "import/blob-info");
-        addExtraParams(params);
         automationService.run(ctx, RandomDocumentProducers.ID, params);
 
         // 4. import document into the repository
@@ -244,7 +228,6 @@ public abstract class TestAutomation {
         params.put("blockPostCommitListeners", true);
         params.put("blockAsyncListeners", true);
         params.put("blockIndexing", true);
-        addExtraParams(params);
         automationService.run(ctx, DocumentConsumers.ID, params);
 
         // WorkManager service = Framework.getService(WorkManager.class);
