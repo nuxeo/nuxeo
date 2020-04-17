@@ -19,9 +19,9 @@
 
       <code>
         <datasource name="jdbc/foo"
-          driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+          driverClassName="org.h2.Driver"
           maxPoolSize="20" minPoolSize="5" blockingTimeoutMillis="10000">
-          <property name="url">jdbc:derby:/home/db;create=true
+          <property name="url">jdbc:h2:/home/db;DB_CLOSE_ON_EXIT=false
           </property>
           <property name="username">nuxeo</property>
           <property name="password">nuxeo</property>
@@ -32,7 +32,7 @@
 
       <code>
         <datasource name="jdbc/foo"
-          xaDataSource="org.apache.derby.jdbc.EmbeddedXADataSource"
+          xaDataSource="org.h2.jdbcx.JdbcDataSource"
           maxPoolSize="20" minPoolSize="5" blockingTimeoutMillis="10000">
           <property name="databaseName">/home/db</property>
           <property name="createDatabase">create</property>

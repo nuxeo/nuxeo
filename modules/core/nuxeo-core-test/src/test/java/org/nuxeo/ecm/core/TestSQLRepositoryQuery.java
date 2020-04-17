@@ -385,9 +385,6 @@ public class TestSQLRepositoryQuery {
 
     @Test
     public void testQueryBasic2() {
-        // ?
-        assumeTrue(!coreFeature.getStorageConfiguration().isVCSDerby());
-
         createDocs();
         DocumentModelList dml;
 
@@ -1194,25 +1191,20 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM Document WHERE dc:created BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
         assertEquals(1, dml.size());
 
-        if (!coreFeature.getStorageConfiguration().isVCSDerby()) {
-            // Derby 10.5.3.0 has bugs with LEFT JOIN and NOT BETWEEN
-            // http://issues.apache.org/jira/browse/DERBY-4388
+        // Documents without creation date don't match any DATE query
+        // 2 documents with creation date
 
-            // Documents without creation date don't match any DATE query
-            // 2 documents with creation date
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
+        assertEquals(0, dml.size()); // 2 Documents match the BETWEEN query
 
-            dml = session.query(
-                    "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
-            assertEquals(0, dml.size()); // 2 Documents match the BETWEEN query
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
+        assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
 
-            dml = session.query(
-                    "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
-            assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
-
-            dml = session.query(
-                    "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
-            assertEquals(2, dml.size()); // 0 Document matches the BETWEEN query
-        }
+        dml = session.query(
+                "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
+        assertEquals(2, dml.size()); // 0 Document matches the BETWEEN query
     }
 
     // new-style date comparisons (casting to native DATE type)

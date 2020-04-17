@@ -166,7 +166,6 @@
       </fileset>
       <!-- provided through templates -->
       <fileset dir="${distribution.dir}/nxserver/lib">
-        <include name="derby-*" />
         <include name="h2-*" />
         <include name="mongo-java-driver-*" />
         <include name="mysql-connector-java-*" />

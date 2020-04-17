@@ -1,4 +1,4 @@
-This jar contains extension functions for H2 and Derby (and maybe
+This jar contains extension functions for H2 (and maybe
 in the future other databases) to implement some stored procedures
 needed for Nuxeo.
 

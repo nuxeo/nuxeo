@@ -46,9 +46,6 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
  */
 public class SQLStatement {
 
-    // for derby...
-    public static final String DIALECT_WITH_NO_SEMICOLON = "noSemicolon";
-
     /** Category pseudo-tag */
     public static final String CATEGORY = "#CATEGORY:";
 
@@ -334,11 +331,6 @@ public class SQLStatement {
                     String msg = sql.substring("LOG.FATAL".length()).trim();
                     logger.error(msg);
                     throw new SQLException("Fatal error: " + msg);
-                }
-
-                if (sql.endsWith(";") && properties.containsKey(DIALECT_WITH_NO_SEMICOLON)) {
-                    // derby at least doesn't allow a terminating semicolon
-                    sql = sql.substring(0, sql.length() - 1);
                 }
 
                 try {

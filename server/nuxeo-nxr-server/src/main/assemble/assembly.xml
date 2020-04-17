@@ -45,9 +45,6 @@
 
     <!-- Database JARs in templates -->
     <copy todir="${nxr}/templates/default/nxserver/lib">
-      <artifact:file artifactId="derby" />
-    </copy>
-    <copy todir="${nxr}/templates/default/nxserver/lib">
       <artifact:file artifactId="h2" />
     </copy>
     <copy todir="${nxr}/templates/mssql/lib">

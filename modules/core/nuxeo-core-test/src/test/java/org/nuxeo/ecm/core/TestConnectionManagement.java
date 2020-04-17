@@ -57,7 +57,7 @@ public class TestConnectionManagement {
      */
     protected boolean canUseTwoConnections() {
         StorageConfiguration database = coreFeature.getStorageConfiguration();
-        return !(database.isVCSH2() || database.isVCSDerby());
+        return !database.isVCSH2();
     }
 
     protected String getValidationQuery(Connection connection) {

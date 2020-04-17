@@ -76,7 +76,6 @@ them in nuxeo.conf of each server.
 Default Nuxeo configuration.
 Designed for development or test purpose.
 Repository backend: H2
-Services backend: Derby
 
 2.2) postgresql
 

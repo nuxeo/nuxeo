@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.dbs.DBSHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseDB2;
-import org.nuxeo.ecm.core.storage.sql.DatabaseDerby;
 import org.nuxeo.ecm.core.storage.sql.DatabaseH2;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
@@ -180,10 +179,6 @@ public class StorageConfiguration {
 
     public boolean isVCSH2() {
         return isVCS && databaseHelper instanceof DatabaseH2;
-    }
-
-    public boolean isVCSDerby() {
-        return isVCS && databaseHelper instanceof DatabaseDerby;
     }
 
     public boolean isVCSPostgreSQL() {
