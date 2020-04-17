@@ -20,7 +20,6 @@ package org.nuxeo.retention.operations;
 
 import java.util.Calendar;
 
-import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -29,11 +28,12 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.retention.RetentionConstants;
 
 /**
  * @since 11.1
  */
-@Operation(id = RetainDocument.ID, category = Constants.CAT_DOCUMENT, label = "Retain", description = "Turn the input document into a record and retain it until the until date. Returns back the retained document.")
+@Operation(id = RetainDocument.ID, category = RetentionConstants.RETENTION_CATEGORY, label = "Set as Record and Retain Until", description = "Turn the input document into a record and retain it until the until date. Returns back the retained document.")
 public class RetainDocument {
 
     public static final String ID = "Document.Retain";
