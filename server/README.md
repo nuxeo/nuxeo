@@ -47,7 +47,6 @@ Ant usage: `ant package`
 
 ### Available Maven profiles
 
- * sdk: build SDK distributions for use in Nuxeo IDE
  * qa, nightly: for internal use at Nuxeo (daily, internal, nightly builds)
  * tomcat, pgsql, mssql, oracle10g, oracle11g, oracle12c, oracle18c, monitor, mongodb, bench, perf: for internal use at Nuxeo (testing)
 
@@ -75,7 +74,6 @@ Ant usage: `ant package`
    * Transitional Package for Advanced Document Management (DM)
  * Tomcat packages
    * Server
-   * SDK
 
 ## Understanding Maven phases and options
 

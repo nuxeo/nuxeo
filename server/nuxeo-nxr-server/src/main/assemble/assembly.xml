@@ -6,8 +6,8 @@
     <echo level="info">Building Nuxeo Server NXR</echo>
     <property name="outdir" value="${maven.project.build.directory}" />
     <artifact:nuxeo-expand includeTestScope="true" />
-    <artifact:print output="${outdir}/artifacts-server.properties" mode="sdk" />
-    <artifact:print output="${outdir}/test-artifacts-server.properties" mode="sdk" scopes="test" />
+    <artifact:print output="${outdir}/artifacts-server.properties" />
+    <artifact:print output="${outdir}/test-artifacts-server.properties" scopes="test" />
     <artifact:print output="${outdir}/dependency-tree.log" />
 
     <property name="nxr" value="${outdir}/nxr" />

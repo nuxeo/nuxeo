@@ -4,27 +4,17 @@
 
   <target name="init" unless="init.done">
     <tstamp />
-    <condition property="build.sdk">
-      <or>
-        <isset property="maven.profile.release" />
-        <isset property="maven.profile.sdk" />
-        <isset property="maven.profile.nightly" />
-      </or>
-    </condition>
 
     <property name="outdir" value="${maven.project.build.directory}" />
     <property name="tomcat" value="${outdir}/tomcat" />
     <property name="distribution.dir" value="${outdir}/${maven.project.artifactId}-${maven.project.version}" />
     <property name="distribution.zip" value="${distribution.dir}.zip" />
-    <property name="distribution.sdk.dir" value="${distribution.dir}-sdk" />
-    <property name="distribution.sdk.zip" value="${distribution.sdk.dir}.zip" />
     <antcall target="expand" />
     <property name="init.done" value="true" />
   </target>
 
   <target name="expand" unless="no.build">
     <artifact:nuxeo-expand />
-    <artifact:print output="${outdir}/artifacts-tomcat.properties" mode="sdk" />
     <artifact:print output="${outdir}/dependency-tree.log" />
   </target>
 
@@ -36,7 +26,6 @@
     <!-- cleanups -->
     <delete dir="${tomcat}" failonerror="false" />
     <delete dir="${distribution.dir}" failonerror="false" />
-    <delete dir="${distribution.sdk.dir}" failonerror="false" />
   </target>
 
   <target name="prepare-tomcat">
@@ -115,7 +104,6 @@
 
     <antcall target="reorganize-libs" />
     <antcall target="build-server" />
-    <antcall target="build-sdk" />
   </target>
 
   <target name="build-server">
@@ -207,43 +195,6 @@ org.nuxeo.distribution.server=tomcat
 org.nuxeo.distribution.version=${maven.project.version}
 org.nuxeo.distribution.date=${DSTAMP}${TSTAMP}
 org.nuxeo.distribution.package=zip</echo>
-  </target>
-
-  <target name="build-sdk" if="build.sdk">
-    <property name="sdk.dir" value="${distribution.sdk.dir}/sdk" />
-    <delete dir="${distribution.sdk.dir}" failonerror="false" />
-    <copy todir="${distribution.sdk.dir}">
-      <fileset dir="${distribution.dir}"/>
-    </copy>
-    <copy file="${distribution.sdk.dir}/templates/common/config/distribution.properties" todir="${sdk.dir}" />
-    <copy file="${outdir}/artifacts-tomcat.properties" todir="${sdk.dir}" />
-    <move todir="${sdk.dir}">
-      <fileset dir="${distribution.sdk.dir}/nxserver/">
-        <filename name="*artifacts-*.properties" />
-      </fileset>
-    </move>
-    <artifact:printMgt output="${sdk.dir}/artifacts-nuxeo.properties"
-                       key="org.nuxeo:nuxeo-addons-parent:${maven.project.version}:pom"
-                       scopes="compile,provided,runtime" />
-    <artifact:printMgt output="${sdk.dir}/test-artifacts-nuxeo.properties"
-                       key="org.nuxeo:nuxeo-addons-parent:${maven.project.version}:pom"
-                       scopes="test,provided" />
-
-    <copy todir="${sdk.dir}/sources">
-      <artifact:resolveFiles source="${sdk.dir}/artifacts*.properties" classifier="sources" />
-      <artifact:resolveFiles source="${sdk.dir}/test-artifacts*.properties" classifier="sources" />
-    </copy>
-    <copy todir="${sdk.dir}/tests">
-      <artifact:resolveFiles source="${sdk.dir}/test-artifacts*.properties" />
-    </copy>
-
-    <unzip dest="${sdk.dir}/tools">
-      <artifact:file key="org.nuxeo:nuxeo-ecm::zip:tools" />
-    </unzip>
-
-    <zip destfile="${distribution.sdk.zip}" basedir="${outdir}"
-         includes="${maven.project.artifactId}-${maven.project.version}-sdk/**" />
-    <artifact:attach file="${distribution.sdk.zip}" classifier="sdk" type="zip" />
   </target>
 
 </project>
