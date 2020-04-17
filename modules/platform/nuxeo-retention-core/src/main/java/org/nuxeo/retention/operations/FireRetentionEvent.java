@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @since 11.1
  */
-@Operation(id = FireRetentionEvent.ID, category = Constants.CAT_NOTIFICATION, label = "Fire Retention Event", description = "Fire a retention business related event.")
+@Operation(id = FireRetentionEvent.ID, category = Constants.RETENTION_CATEGORY, label = "Fire Retention Event", description = "Fire a retention business related event. The record needs to be attached to a event based retention rule")
 public class FireRetentionEvent {
 
     public static final String ID = "Retention.FireEvent";

@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * @since 11.1
  */
-@Operation(id = UnholdDocument.ID, category = Constants.CAT_DOCUMENT, label = "Unhold", description = "Remove a legal hold on the input document. Returns back the unhold document.")
+@Operation(id = UnholdDocument.ID, category = Constants.CAT_DOCUMENT, label = "Remove Legal Hold", description = "Remove a legal hold on the input document. Returns back the unhold document.")
 public class UnholdDocument {
 
     public static final String ID = "Document.Unhold";

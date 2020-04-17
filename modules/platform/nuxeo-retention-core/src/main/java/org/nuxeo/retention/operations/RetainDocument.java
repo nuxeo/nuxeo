@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * @since 11.1
  */
-@Operation(id = RetainDocument.ID, category = Constants.CAT_DOCUMENT, label = "Retain", description = "Turn the input document into a record and retain it until the until date. Returns back the retained document.")
+@Operation(id = RetainDocument.ID, category = Constants.RETENTION_CATEGORY, label = "Set as Record and Retain Until", description = "Turn the input document into a record and retain it until the until date. Returns back the retained document.")
 public class RetainDocument {
 
     public static final String ID = "Document.Retain";
