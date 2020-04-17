@@ -191,6 +191,20 @@ limitations under the License.
          */
         document: Object,
       },
+
+      validate: function() {
+        var years = this.shadowRoot.querySelector('nuxeo-input[name="years"]');
+        var months = this.shadowRoot.querySelector('nuxeo-input[name="months"]');
+        var days = this.shadowRoot.querySelector('nuxeo-input[name="days"]');
+        // One of them must greater than zero. The other validations (e.g. NaN, negative) are handled natively
+        if (parseInt(years.value, 10) === 0 && parseInt(months.value, 10) === 0 && parseInt(days.value, 10) === 0) {
+          years.invalid = true;
+          months.invalid = true;
+          days.invalid = true;
+          return false;
+        }
+        return true;
+      },
     });
   </script>
 
