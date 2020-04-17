@@ -34,6 +34,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +71,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -104,6 +106,8 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     protected static final String RUNNING_STATUS= "RUNNING";
 
     protected static final String RESULT_URL_KEY= "url";
+
+    protected static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Context
     protected AutomationService service;
@@ -204,12 +208,14 @@ public class AsyncOperationAdapter extends DefaultAdapter {
             String resURL = String.format("%s/%s", getPath(), executionId);
             return redirect(resURL);
         } else {
-            Object result = RUNNING_STATUS;
             if (isAsync(executionId)) {
                 Serializable taskId = getTaskId(executionId);
-                result = getAsyncService(executionId).getStatus(taskId);
+                Object result = getAsyncService(executionId).getStatus(taskId);
+                return ResponseHelper.getResponse(result, request, HttpServletResponse.SC_OK);
+            } else {
+                return Response.status(HttpServletResponse.SC_OK).entity(RUNNING_STATUS).build();
             }
-            return ResponseHelper.getResponse(result, request, HttpServletResponse.SC_OK);
+
         }
     }
 
@@ -229,14 +235,24 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                 throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
 
-            // if output has a "url" key assume it's a redirect url
+            // if output is a map let's return as json
             if (output instanceof Map) {
+                Map map = (Map) output;
+                // if output has a "url" key make it absolute
                 Object url = ((Map<?, ?>) output).get(RESULT_URL_KEY);
                 if (url instanceof String) {
-                    String baseUrl = VirtualHostHelper.getBaseURL(ctx.getRequest());
-                    return redirect(baseUrl + url);
+                    map = new HashMap(map);
+                    try {
+                        boolean isAbsolute = new URI((String) url).isAbsolute();
+                        String baseUrl = VirtualHostHelper.getBaseURL(ctx.getRequest());
+                        map.put(RESULT_URL_KEY, isAbsolute ? url : baseUrl + url);
+                    } catch (URISyntaxException e) {
+                        log.error("Failed to parse result url {}", url);
+                    }
                 }
+                return Response.status(HttpServletResponse.SC_OK).entity(MAPPER.writeValueAsString(map)).build();
             }
+
             return ResponseHelper.getResponse(output, request, HttpServletResponse.SC_OK);
         }
 

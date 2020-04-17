@@ -26,6 +26,7 @@ import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADMINISTRATOR;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.services.bulk.AutomationBulkAction;
 import org.nuxeo.ecm.automation.core.operations.services.bulk.BulkRunAction;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
+import org.nuxeo.ecm.automation.server.test.actions.DummyExposeBlobAction;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.automation.test.HttpAutomationClient;
 import org.nuxeo.ecm.automation.test.HttpAutomationSession;
@@ -67,6 +69,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Deploy("org.nuxeo.ecm.automation.test:operation-contrib.xml")
 @Deploy("org.nuxeo.ecm.automation.test:test-bindings.xml")
 @Deploy("org.nuxeo.ecm.automation.test.test:test-page-provider.xml")
+@Deploy("org.nuxeo.ecm.automation.test.test:test-expose-blob-action.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class AsyncOperationAdapterTest {
 
@@ -217,6 +220,20 @@ public class AsyncOperationAdapterTest {
                                  .executeReturningDocument();
 
         assertEquals("foo", getTitle(folder));
+    }
+
+    /**
+     * @since 11.1
+     */
+    @Test
+    public void testAsyncExposeBlob() throws Exception {
+        JsonNode r = async.newRequest(BulkRunAction.ID)
+                .set("action", DummyExposeBlobAction.ACTION_NAME)
+                .set("query", "SELECT * FROM Folder")
+                .execute();
+        assertNotNull(r);
+        assertNotNull(r.get("url"));
+        assertTrue(new URI(r.get("url").asText()).isAbsolute());
     }
 
     /**
