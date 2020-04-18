@@ -123,13 +123,12 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
                 key = blobWriteContext.getKey(); // may depend on write observer, for example for digests
             }
             try {
-                checkConcurrentUpdate(key);
+                putTransientKey(key, transientKey);
             } catch (ConcurrentUpdateException e) {
                 // delete transient store file
                 transientStore.deleteBlob(transientKey);
                 throw e;
             }
-            putTransientKey(key, transientKey);
             logTrace("rnote over Nuxeo: " + key);
             logTrace("end");
             return key;
@@ -209,7 +208,6 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
     public void writeBlobProperties(BlobUpdateContext blobUpdateContext) throws IOException {
         if (TransactionHelper.isTransactionActive()) {
             String key = blobUpdateContext.key;
-            checkConcurrentUpdate(key);
             putTransientUpdate(key, blobUpdateContext);
         } else {
             store.writeBlobProperties(blobUpdateContext);
@@ -219,28 +217,9 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
     @Override
     public void deleteBlob(String key) {
         if (TransactionHelper.isTransactionActive()) {
-            checkConcurrentUpdate(key);
             putTransientKey(key, DELETE_MARKER);
         } else {
             store.deleteBlob(key);
-        }
-    }
-
-    // called when we know a transaction is already active
-    // checks for concurrent update before writing to key
-    protected void checkConcurrentUpdate(String key) {
-        Transaction tx = getTransaction();
-        Transaction otherTx = keysInActiveTransactions.putIfAbsent(key, tx);
-        if (otherTx != null) {
-            if (otherTx != tx) {
-                throw new ConcurrentUpdateException(key);
-            }
-            // there may be a previous transient file
-            // it's now unneeded as we're about to overwrite it
-            String otherTransientKey = getTransientKey(key);
-            if (otherTransientKey != null && !isDeleteMarker(otherTransientKey)) {
-                transientStore.deleteBlob(otherTransientKey);
-            }
         }
     }
 
@@ -265,6 +244,21 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
     }
 
     protected void putTransientKey(String key, String transientKey) {
+        // check concurrent update
+        Transaction tx = getTransaction();
+        Transaction otherTx = keysInActiveTransactions.putIfAbsent(key, tx);
+        if (otherTx != null) {
+            if (otherTx != tx) {
+                throw new ConcurrentUpdateException(key);
+            }
+            // there may be a previous transient file
+            // it's now unneeded as we're about to overwrite it
+            String otherTransientKey = getTransientKey(key);
+            if (otherTransientKey != null && !isDeleteMarker(otherTransientKey)) {
+                transientStore.deleteBlob(otherTransientKey);
+            }
+        }
+        // put transient key
         TransientInfo info = getTransientInfo(key);
         info.transientKey = transientKey;
     }
@@ -304,40 +298,36 @@ public class TransactionalBlobStore extends AbstractBlobStore implements Synchro
                 for (Entry<String, TransientInfo> en : map.entrySet()) {
                     String key = en.getKey();
                     TransientInfo info = en.getValue();
+                    // apply create/delete
                     String transientKey = info.transientKey;
-                    boolean applyUpdates = false;
                     if (transientKey != null) {
                         if (isDeleteMarker(transientKey)) {
                             store.deleteBlob(key);
                         } else {
-                            if (hasVersioning()) {
-                                // with versioning, the blob already has its final key
-                                applyUpdates = true;
-                            } else {
-                                // without versioning, atomically move to permanent store
+                            // with versioning, the blob already has its final key
+                            // without versioning, atomically move to permanent store
+                            if (!hasVersioning()) {
                                 try {
                                     boolean found = store.copyBlob(key, transientStore, transientKey, true);
-                                    if (found) {
-                                        applyUpdates = true;
-                                    } else {
+                                    if (!found) {
                                         log.error("Missing blob from transient blob store: " + transientKey
                                                 + ", failed to commit creation of file: " + key);
+                                        continue;
                                     }
                                 } catch (IOException e) {
                                     log.error("Failed to commit creation of blob: " + key, e);
+                                    continue;
                                 }
                             }
                         }
                     }
                     // apply updates
-                    if (applyUpdates) {
-                        BlobUpdateContext blobUpdateContext = info.blobUpdateContext;
-                        if (blobUpdateContext != null) {
-                            try {
-                                store.writeBlobProperties(blobUpdateContext);
-                            } catch (IOException e) {
-                                log.error("Failed to commit update of blob: " + key, e);
-                            }
+                    BlobUpdateContext blobUpdateContext = info.blobUpdateContext;
+                    if (blobUpdateContext != null) {
+                        try {
+                            store.writeBlobProperties(blobUpdateContext);
+                        } catch (IOException e) {
+                            log.error("Failed to commit update of blob: " + key, e);
                         }
                     }
                 }

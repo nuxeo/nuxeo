@@ -37,7 +37,13 @@ public class InMemoryBlobProvider extends BlobStoreBlobProvider {
         KeyStrategy keyStrategy = getKeyStrategy();
         BlobStore store = new InMemoryBlobStore("mem", config, keyStrategy);
         if (isTransactional()) {
-            BlobStore transientStore = new InMemoryBlobStore("mem_tmp", keyStrategy);
+            BlobStore transientStore;
+            if (store.hasVersioning()) {
+                // if versioning is used, we don't need a separate transient store for transactions
+                transientStore = store;
+            } else {
+                transientStore = new InMemoryBlobStore("mem_tmp", keyStrategy);
+            }
             store = new TransactionalBlobStore(store, transientStore);
         }
         if (config.getBooleanProperty("test-caching")) { // for tests
