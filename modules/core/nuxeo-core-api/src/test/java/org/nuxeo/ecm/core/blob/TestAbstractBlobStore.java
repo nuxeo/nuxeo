@@ -149,6 +149,10 @@ public abstract class TestAbstractBlobStore {
         return bs.getKeyStrategy().useDeDuplication();
     }
 
+    public boolean hasVersioning() {
+        return bs.hasVersioning();
+    }
+
     protected BlobContext blobContext(String id, String value) {
         return new BlobContext(value == null ? null : new StringBlob(value), id, XPATH);
     }
@@ -180,7 +184,7 @@ public abstract class TestAbstractBlobStore {
     protected void assertKey(String expected, String actual) {
         if (!useDeDuplication()) {
             if (bs.hasVersioning()) {
-                assertTrue(actual + " does not start with " + expected, actual.startsWith(expected + '@'));
+                assertTrue(actual + " does not start with " + expected + '@', actual.startsWith(expected + '@'));
             } else {
                 assertEquals(expected, actual);
             }

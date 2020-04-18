@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
@@ -49,7 +50,11 @@ public class InMemoryBlobStore extends AbstractBlobStore {
 
     private static final Logger log = LogManager.getLogger(InMemoryBlobStore.class);
 
+    protected static final Random RANDOM = new Random(); // NOSONAR (doesn't need cryptographic strength)
+
     protected Map<String, byte[]> map = new ConcurrentHashMap<>();
+
+    protected Map<String, Boolean> legalHold = new ConcurrentHashMap<>();
 
     protected final InMemoryBlobGarbageCollector gc = new InMemoryBlobGarbageCollector();
 
@@ -58,6 +63,9 @@ public class InMemoryBlobStore extends AbstractBlobStore {
 
     // used by unit tests to emulate presence of a local file, to test copy
     protected final boolean emulateLocalFile;
+
+    // used by unit tests to emulate versioning
+    protected final boolean emulateVersioning;
 
     protected final boolean allowByteRange;
 
@@ -79,7 +87,13 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         super(name, keyStrategy);
         this.emulateNoStream = emulateNoStream;
         this.emulateLocalFile = emulateLocalFile;
+        emulateVersioning = config != null && config.getBooleanProperty("emulateVersioning");
         allowByteRange = config != null && config.getBooleanProperty(ALLOW_BYTE_RANGE);
+    }
+
+    @Override
+    public boolean hasVersioning() {
+        return emulateVersioning;
     }
 
     @Override
@@ -87,8 +101,21 @@ public class InMemoryBlobStore extends AbstractBlobStore {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         transfer(blobWriteContext, baos);
         String key = blobWriteContext.getKey(); // may depend on WriteObserver, for example for digests
+        if (hasVersioning()) {
+            key += "@" + RANDOM.nextLong();
+        }
         map.put(key, baos.toByteArray());
         return key;
+    }
+
+    @Override
+    public void writeBlobProperties(BlobUpdateContext blobUpdateContext) throws IOException {
+        String key = blobUpdateContext.key;
+        if (blobUpdateContext.updateLegalHold != null) {
+            boolean hold = blobUpdateContext.updateLegalHold.hold;
+            legalHold.put(key, hold);
+        }
+        // other updates not implemented for in-memory blob store
     }
 
     @Override
@@ -213,6 +240,7 @@ public class InMemoryBlobStore extends AbstractBlobStore {
     @Override
     public void deleteBlob(String key) {
         map.remove(key);
+        legalHold.remove(key);
     }
 
     @Override
@@ -241,6 +269,7 @@ public class InMemoryBlobStore extends AbstractBlobStore {
                     status.numBinariesGC++;
                     if (delete) {
                         it.remove();
+                        legalHold.remove(key);
                     }
                 }
             }

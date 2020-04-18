@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,13 @@
 package org.nuxeo.ecm.core.blob;
 
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.TransactionalConfig;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
-@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blob-provider-inmemory-record.xml")
-public class TestInMemoryBlobStoreRecord extends TestAbstractBlobStore {
+@Features(TransactionalFeature.class)
+@TransactionalConfig(autoStart = false)
+@Deploy("org.nuxeo.ecm.core.api.tests:OSGI-INF/test-blob-provider-inmemory-tx.xml")
+public class TestInMemoryBlobStoreTxDigest extends TestInMemoryBlobStoreTxAbstract {
 
 }
