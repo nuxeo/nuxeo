@@ -83,7 +83,15 @@ String getDockerTagFrom(String version) {
 
 void runFunctionalTests(String baseDir) {
   try {
-    sh "mvn ${MAVEN_ARGS} -f ${baseDir}/pom.xml verify"
+    //Test Nexus Configuration
+    def DEBUG_OPTIONS= """
+                         -Dorg.slf4j.simpleLogger.log.org.apache.maven.wagon.providers.http.httpclient=DEBUG \
+                         -Dorg.slf4j.simpleLogger.log.org.apache.maven.wagon.providers.http.httpclient.wire=ERROR \
+                         -Dorg.slf4j.simpleLogger.log.org.apache.maven.wagon.providers.http.httpclient.impl.conn=DEBUG \
+                         -Dorg.slf4j.simpleLogger.log.org.apache.maven.wagon.providers.http.httpclient.impl.client=DEBUG \
+                         -Dorg.slf4j.simpleLogger.log.org.apache.maven.wagon.providers.http.httpclient.client=DEBUG
+                      """
+    sh "mvn ${MAVEN_ARGS} ${DEBUG_OPTIONS} -f ${baseDir}/pom.xml verify"
   } finally {
     try {
       archiveArtifacts allowEmptyArchive: true, artifacts: "${baseDir}/**/target/failsafe-reports/*, ${baseDir}/**/target/**/*.log, ${baseDir}/**/target/*.png, ${baseDir}/**/target/**/distribution.properties, ${baseDir}/**/target/**/configuration.properties"
@@ -368,6 +376,11 @@ pipeline {
     }
 
     stage('Run runtime unit tests') {
+      when {
+        expression {
+            return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/utests/runtime/dev', 'Unit tests - runtime', 'PENDING')
         container('maven') {
@@ -394,6 +407,11 @@ pipeline {
     }
 
     stage('Run unit tests') {
+      when {
+        expression {
+            return false
+        }
+      }
       steps {
         script {
           def stages = [:]
@@ -453,6 +471,11 @@ pipeline {
     }
 
     stage('Build Docker images') {
+      when {
+        expression {
+            return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/docker/build', 'Build Docker images', 'PENDING')
         container('maven') {
@@ -479,6 +502,11 @@ pipeline {
     }
 
     stage('Test Docker images') {
+      when {
+        expression {
+            return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/docker/test', 'Test Docker images', 'PENDING')
         container('maven') {
@@ -587,6 +615,11 @@ pipeline {
     }
 
     stage('Deploy Maven artifacts') {
+      when {
+        expression {
+            return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
         container('maven') {
@@ -608,6 +641,11 @@ pipeline {
     }
 
     stage('Upload Nuxeo Packages') {
+      when {
+        expression {
+            return false
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'PENDING')
         container('maven') {
@@ -693,8 +731,7 @@ pipeline {
     stage('JSF pipeline') {
       when {
         expression {
-          // only trigger JSF pipeline if the target branch is master or a maintenance branch
-          return CHANGE_TARGET ==~ 'master|\\d+\\.\\d+'
+            return false
         }
       }
       steps {
