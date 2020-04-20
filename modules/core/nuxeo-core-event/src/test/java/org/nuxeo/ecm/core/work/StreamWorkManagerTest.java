@@ -86,20 +86,26 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
 
     @Test
     public void testWorkIdempotent() throws InterruptedException {
-        SleepWork work = new SleepWork(getDurationMillis());
+        long durationMs = 1_000;
+        SleepWork work = new SleepWork(durationMs);
         assertTrue(work.isIdempotent());
+
         service.schedule(work);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 5L, TimeUnit.MILLISECONDS));
+        assertTrue(service.awaitCompletion(60, TimeUnit.SECONDS));
         tracker.assertDiff(0, 0, 1, 0);
 
-        // schedule again the exact same work 3 times
-        service.schedule(work);
-        service.schedule(work);
-        service.schedule(work);
+        // schedule again the exact same work many times
+        for (int i=0; i<10; i++) {
+            service.schedule(work);
+        }
 
-        // works with the same id are skipped immediately and marked as completed, we don't have to wait 5s
-        assertTrue(service.awaitCompletion(getDurationMillis() / 2, TimeUnit.MILLISECONDS));
-        tracker.assertDiff(0, 0, 4, 0);
+        long start = System.currentTimeMillis();
+        assertTrue(service.awaitCompletion(60, TimeUnit.SECONDS));
+        long elapsed = System.currentTimeMillis() - start;
+        tracker.assertDiff(0, 0, 11, 0);
+
+        // works with the same id are skipped immediately and marked as completed
+        assertTrue(String.valueOf(elapsed), elapsed <= 4_000);
     }
 
     /**
@@ -158,23 +164,23 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
     public void onlyLastCoalescingWorkShouldBeExecuted() throws InterruptedException {
         log.debug("StreamWorkManagerTest.onlyLastCoalescingWorkShouldBeExecuted() beginning");
         // long work, to serve as a filler
-        SleepWork longWork = createCoalescing(getDurationMillis() * 100L);
+        int longDurationMs = 20_000;
+        int shortDurationMs = 1_000;
+        SleepWork longWork = createCoalescing(longDurationMs);
         // short work the only to be actually computed
-        SleepWork shortWork = createCoalescing(getDurationMillis());
+        SleepWork shortWork = createCoalescing(shortDurationMs);
 
-        // we have to let the service warm up as the first offset is falsely set to 0
         service.schedule(shortWork);
-        assertTrue(service.awaitCompletion(getDurationMillis() * 2L, TimeUnit.MILLISECONDS));
-        tracker.assertDiff(0, 0, 1, 0);
-
-        // a work will actually be executed only if handled before the next one is scheduled
-        // it's not the case here and the long works will be skipped
         service.schedule(longWork);
         service.schedule(longWork);
-        // only the last, short work, will actually be computed and waiting for it's execution time is enough
+        // only the last, short work, will actually be computed and waiting less than a long work is enough
         service.schedule(shortWork);
-        assertTrue(service.awaitCompletion(getDurationMillis(), TimeUnit.MILLISECONDS));
+
+        long start = System.currentTimeMillis();
+        assertTrue(service.awaitCompletion(60, TimeUnit.SECONDS));
+        long elapsed = System.currentTimeMillis() - start;
         tracker.assertDiff(0, 0, 4, 0);
+        assertTrue(String.valueOf(elapsed), elapsed < longDurationMs);
         log.debug("StreamWorkManagerTest.onlyLastCoalescingWorkShouldBeExecuted() ending");
     }
 
