@@ -3,6 +3,39 @@
 
  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
   point="actions">
+
+    <action id="selectDocumentToBeAddedToEasyshare" order="0"
+            label="label.addToCollection.selectDocToBeAddedToCollection"
+            type="fancybox" icon="/icons/add_to_collection.png" accessKey="u">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>canSelectedToBeAddedToCollection</filter-id>
+      <filter id="easyShareFolderFilter">
+        <rule grant="true">
+          <type>EasyShareFolder</type>
+        </rule>
+      </filter>
+      <properties>
+        <property name="include">/incl/select_doc_to_be_added_to_easyshare.xhtml</property>
+      </properties>
+      <filter-id>not_transient_user</filter-id>
+    </action>
+
+    <action id="selectDocumentToBeAddedToCollection" order="0"
+            label="label.addToCollection.selectDocToBeAddedToCollection"
+            type="fancybox" icon="/icons/add_to_collection.png" accessKey="u">
+      <category>DOCUMENT_UPPER_ACTION</category>
+      <filter-id>canSelectedToBeAddedToCollection</filter-id>
+      <filter id="regularCollectionFilter">
+        <rule grant="false">
+          <type>EasyShareFolder</type>
+        </rule>
+      </filter>
+      <properties>
+        <property name="include">/incl/select_doc_to_be_added_to_collection.xhtml</property>
+      </properties>
+      <filter-id>not_transient_user</filter-id>
+    </action>
+
   <action id="showEasyShareURL" order="20" label="label.eshare.permalink" type="fancybox"
           icon="/icons/contextual_menu/share.png" accessKey="k">
    <category>DOCUMENT_UPPER_ACTION</category>
@@ -600,4 +633,22 @@
 
 
  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
+    <coreQueryPageProvider name="easyshare_collection_candidate">
+      <property name="maxResults">PAGE_SIZE</property>
+      <pattern quoteParameters="false" escapeParameters="true">
+        SELECT * FROM Document
+          WHERE /*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */ dc:title ILIKE '?%'
+          AND ecm:mixinType != 'SystemDocument'
+          AND ecm:mixinType != 'NotCollectionMember'
+          AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:isVersion = 0
+          AND ecm:isTrashed = 0
+      </pattern>
+      <sort column="dc:title" ascending="true"/>
+      <pageSize>50</pageSize>
+    </coreQueryPageProvider>
+  </extension>
+
 </component>
