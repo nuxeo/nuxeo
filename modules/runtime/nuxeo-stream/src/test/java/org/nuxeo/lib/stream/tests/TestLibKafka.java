@@ -70,15 +70,21 @@ public class TestLibKafka {
 
     final static short DEFAULT_REPLICATION = 1;
 
+    protected String prefix;
+
     @BeforeClass
     public static void assumeKafkaEnabled() {
         TestKafkaUtils.assumeKafkaEnabled();
     }
 
+    public String getPrefixedTopic(String topic) {
+        return "nuxeo-testlib-" + System.currentTimeMillis() + "-" + topic;
+    }
+
     @SuppressWarnings("FutureReturnValueIgnored")
     @Test
     public void testSendMessage() {
-        String topic = "test-message-topic";
+        String topic = getPrefixedTopic("test-message-topic");
         int partitions = 5;
         createTopic(topic, partitions);
         Properties props = getProducerProperties();
@@ -91,13 +97,18 @@ public class TestLibKafka {
             producer.send(data, callback);
         }
         producer.close();
-
+        deleteTopic(topic);
     }
 
     @Test
     public void testSendMessageInBatch() {
-        String topic = "test-message-topic";
+        String topic = getPrefixedTopic("test-message-topic");
         createTopic(topic, 5);
+        sendMessageInBatch(topic);
+        deleteTopic(topic);
+    }
+
+    protected void sendMessageInBatch(String topic) {
         Properties props = getProducerProperties();
         Producer<String, String> producer = new KafkaProducer<>(props);
         List<Future<RecordMetadata>> results = new ArrayList<>();
@@ -121,7 +132,7 @@ public class TestLibKafka {
 
     @Test
     public void testConsumer() {
-        String topic = "test-message-topic";
+        String topic = getPrefixedTopic("test-message-topic");
         int partitions = 5;
         createTopic(topic, partitions);
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(getConsumerProperties());
@@ -133,7 +144,7 @@ public class TestLibKafka {
         consumer.seekToEnd(consumer.assignment());
         consumer.seekToBeginning(consumer.assignment());
 
-        testSendMessageInBatch();
+        sendMessageInBatch(topic);
 
         assertEquals(5, consumer.assignment().size());
         int count = 0;
@@ -142,7 +153,8 @@ public class TestLibKafka {
             count += 1;
         }
         consumer.close();
-        assertTrue(count > 100);
+        deleteTopic(topic);
+        assertTrue(String.valueOf(count), count >= 100);
     }
 
     @Test
@@ -236,6 +248,12 @@ public class TestLibKafka {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
             throw new RuntimeException("Unable to create topics " + topic + " within the timeout", e);
+        }
+    }
+
+    protected void deleteTopic(String topic) {
+        try (AdminClient adminClient = AdminClient.create(getAdminProperties())) {
+            adminClient.deleteTopics(Collections.singleton(topic));
         }
     }
 

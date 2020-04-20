@@ -104,6 +104,9 @@ public class TestLogKafka extends TestLog {
 
     @After
     public void resetPrefix() {
+        if (manager != null) {
+            manager.listAll().forEach(manager::delete);
+        }
         prefix = null;
     }
 
@@ -266,4 +269,11 @@ public class TestLogKafka extends TestLog {
         assertEquals(NB_MSG - NB_QUEUE, total);
     }
 
+    @Test
+    public void testDeleteTopic() throws Exception {
+        manager.createIfNotExists(logName, 1);
+        assertTrue(manager.exists(logName));
+        manager.delete(logName);
+        assertFalse(manager.exists(logName));
+    }
 }
