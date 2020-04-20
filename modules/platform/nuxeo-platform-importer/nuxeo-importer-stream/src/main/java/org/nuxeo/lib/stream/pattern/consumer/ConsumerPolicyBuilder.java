@@ -32,7 +32,7 @@ public class ConsumerPolicyBuilder {
 
     protected boolean skipFailure = false;
 
-    protected Duration waitMessageTimeout = Duration.ofSeconds(2);
+    protected Duration waitMessageTimeout = Duration.ofSeconds(10);
 
     protected ConsumerPolicy.StartOffset startOffset = ConsumerPolicy.StartOffset.LAST_COMMITTED;
 
@@ -113,7 +113,17 @@ public class ConsumerPolicyBuilder {
     }
 
     public ConsumerPolicy build() {
+        if (batchPolicy.getTimeThreshold().compareTo(waitMessageTimeout) > 0) {
+            // Prevent failure in commit on last message because of rebalancing
+            throw new IllegalArgumentException("Batch threshold must be lower than waitMessageTimeout: " + this);
+        }
         return new ConsumerPolicy(this);
     }
 
+    @Override
+    public String toString() {
+        return "ConsumerPolicyBuilder{" + "batchPolicy=" + batchPolicy + ", retryPolicy=" + retryPolicy
+                + ", skipFailure=" + skipFailure + ", waitMessageTimeout=" + waitMessageTimeout + ", startOffset="
+                + startOffset + ", salted=" + salted + ", name='" + name + '\'' + ", maxThreads=" + maxThreads + '}';
+    }
 }
