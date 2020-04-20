@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -54,6 +56,8 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  * @since 11.1
  */
 public class RecomputeViewsAction implements StreamProcessorTopology {
+
+    private static final Logger log = LogManager.getLogger(RecomputeViewsAction.class);
 
     public static final String ACTION_NAME = "recomputeViews";
 
@@ -85,10 +89,11 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-
+            log.debug("Compute action: {} for doc ids: {}", ACTION_NAME , ids);
             for (String docId : ids) {
 
                 if (!session.exists(new IdRef(docId))) {
+                    log.debug("Doc id doesn't exist: {}", docId);
                     continue;
                 }
 
@@ -97,12 +102,14 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
                 Blob blob = (Blob) fileProp.getValue();
                 if (blob == null) {
                     // do nothing
+                    log.debug("No blob for doc: {}", workingDocument);
                     continue;
                 }
 
                 String title = workingDocument.getTitle();
                 try {
                     PictureResourceAdapter picture = workingDocument.getAdapter(PictureResourceAdapter.class);
+                    log.debug("Fill picture views for doc: {}", workingDocument);
                     picture.fillPictureViews(blob, blob.getFilename(), title, null);
                 } catch (DocumentNotFoundException e) {
                     // a parent of the document may have been deleted.
