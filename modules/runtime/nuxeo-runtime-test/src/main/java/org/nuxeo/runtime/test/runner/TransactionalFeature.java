@@ -25,8 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.runtime.management.jvm.ThreadDeadlocksDetector;
 import org.nuxeo.runtime.test.runner.HotDeployer.ActionHandler;
@@ -44,7 +44,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(RuntimeFeature.class)
 public class TransactionalFeature implements RunnerFeature {
 
-    private static final Log log = LogFactory.getLog(TransactionalFeature.class);
+    private static final Logger log = LogManager.getLogger(TransactionalFeature.class);
 
     protected boolean autoStartTransaction;
 
@@ -96,7 +96,9 @@ public class TransactionalFeature implements RunnerFeature {
         }
         try {
             Duration remainingDuration = duration;
+            log.trace("Waiter providers: {}", waiters);
             for (Waiter provider : waiters) {
+                log.trace("Wait for provider: {}", provider);
                 long start = System.currentTimeMillis();
                 try {
                     await(provider, remainingDuration);
