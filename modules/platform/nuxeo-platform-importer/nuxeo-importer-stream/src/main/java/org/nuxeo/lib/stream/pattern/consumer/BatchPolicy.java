@@ -54,7 +54,7 @@ public class BatchPolicy {
     public static class Builder {
         protected int capacity = 10;
 
-        protected Duration threshold = Duration.ofSeconds(10);
+        protected Duration threshold = Duration.ofSeconds(2);
 
         protected Builder() {
 

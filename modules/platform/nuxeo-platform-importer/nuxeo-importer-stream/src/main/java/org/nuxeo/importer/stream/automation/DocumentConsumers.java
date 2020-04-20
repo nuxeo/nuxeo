@@ -73,7 +73,7 @@ public class DocumentConsumers {
     protected Integer batchSize = 10;
 
     @Param(name = "batchThresholdS", required = false)
-    protected Integer batchThresholdS = 20;
+    protected Integer batchThresholdS = 5;
 
     @Param(name = "retryMax", required = false)
     protected Integer retryMax = 3;
