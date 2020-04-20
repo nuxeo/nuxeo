@@ -1,0 +1,52 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:a4j="http://richfaces.org/a4j"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:c="http://java.sun.com/jstl/core"
+     xmlns:nxh="http://nuxeo.org/nxweb/html"
+     xmlns:nxl="http://nuxeo.org/nxforms/layout"
+     xmlns:nxwt="http://nuxeo.org/nxforms/runtime/widgettype"
+     xmlns:nxd="http://nuxeo.org/nxweb/document">
+
+  <h3>
+    <h:outputText value="#{messages['label.addToCollection.title']}" />
+  </h3>
+
+  <h:form id="#{fancyboxFormId}">
+
+    <div class="content">
+
+      <table class="dataInput fullWidth">
+        <tbody>
+        <tr>
+          <td class="labelColumn required">
+            #{messages['label.addToCollection.documents']}</td>
+          <td class="fieldColumn">
+            <nxwt:multipleDocumentsSuggestion mode="edit"
+                                              value="#{collectionActions}" field="docUidsToBeAdded"
+                                              required="true" width="100%" translated="true"
+                                              placeholder="label.addDocToCollection.docs.placeHolder"
+                                              ajaxReRender="#{fancyboxFormId}_buttons"
+                                              pageProviderName="easyshare_collection_candidate"
+                                              documentSchemas="dublincore,common" />
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <a4j:outputPanel id="#{fancyboxFormId}_buttons" layout="block">
+      <div class="buttonsGadget">
+        <nxh:commandButton value="#{messages['label.addToCollection']}"
+                           action="#{collectionActions.addDocUidsToBeAddedToCurrentCollection()}"
+                           disabled="#{not empty docUidsToBeAdded}" styleClass="button" />
+        <nxh:commandButton value="#{messages['command.cancel']}"
+                           immediate="true" action="#{collectionActions.cancel()}"
+                           styleClass="button" />
+      </div>
+    </a4j:outputPanel>
+  </h:form>
+
+</div>
