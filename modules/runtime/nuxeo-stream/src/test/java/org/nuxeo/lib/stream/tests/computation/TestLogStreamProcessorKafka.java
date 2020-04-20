@@ -20,6 +20,7 @@ package org.nuxeo.lib.stream.tests.computation;
 
 import java.util.Properties;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestName;
@@ -63,4 +64,10 @@ public class TestLogStreamProcessorKafka extends TestStreamProcessor {
         return TestLogKafka.getConsumerProps();
     }
 
+    @After
+    public void resetPrefix() {
+        LogManager manager = getSameLogManager();
+        manager.listAll().forEach(manager::delete);
+        prefix = null;
+    }
 }

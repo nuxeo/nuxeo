@@ -38,6 +38,7 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.ConsumerGroupListing;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
+import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
@@ -282,4 +283,9 @@ public class KafkaUtils implements AutoCloseable {
         log.debug("Closed.");
     }
 
+    public boolean delete(String topic) {
+        log.info("Deleting topic: " + topic);
+        DeleteTopicsResult result = adminClient.deleteTopics(Collections.singleton(topic));
+        return result.values().get(topic).isDone();
+    }
 }

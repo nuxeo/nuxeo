@@ -154,13 +154,12 @@ public abstract class TestLog {
     }
 
     @Test
-    public void canNotAppendOnClosedAppender() {
+    public void canNotAppendOnClosedAppender() throws Exception {
         final int LOG_SIZE = 1;
         manager.createIfNotExists(logName, LOG_SIZE);
         LogAppender<KeyValueMessage> appender = manager.getAppender(logName);
         assertFalse(appender.closed());
-
-        manager.close();
+        resetManager();
         assertTrue(appender.closed());
         try {
             appender.append(0, KeyValueMessage.of("foo"));
@@ -168,6 +167,7 @@ public abstract class TestLog {
         } catch (IndexOutOfBoundsException | NullPointerException e) {
             // expected
         }
+
     }
 
     @Test

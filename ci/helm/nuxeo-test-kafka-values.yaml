@@ -12,8 +12,9 @@ kafka:
   nodeSelector:
     team: platform
   configurationOverrides:
+    auto.create.topics.enable: false
     offsets.topic.num.partitions: 5
-    group.initial.rebalance.delay.ms: 10
+    group.initial.rebalance.delay.ms: 100
   zookeeper:
     podLabels:
       branch: $BRANCH_NAME

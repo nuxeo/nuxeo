@@ -19,6 +19,7 @@
 package org.nuxeo.lib.stream.tests.pattern;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
@@ -50,6 +51,9 @@ public class TestPatternQueuingKafka extends TestPatternQueuing {
 
     @After
     public void resetPrefix() {
+        if (manager != null) {
+            manager.listAll().forEach(manager::delete);
+        }
         prefix = null;
     }
 

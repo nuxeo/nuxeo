@@ -240,4 +240,9 @@ public class KafkaLogManager extends AbstractLogManager {
                      .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean delete(Name name) {
+        KafkaLogConfig config = getConfig(name);
+        return kUtils.get(config).delete(config.getResolver().getId(name));
+    }
 }

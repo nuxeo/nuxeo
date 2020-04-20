@@ -37,6 +37,8 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
 
     protected static final String DEFAULT_BOOTSTRAP_SERVERS = "DEFAULT_TEST";
 
+    protected static final long START_STAMP = System.currentTimeMillis();
+
     @Override
     public int getApplicationStartedOrder() {
         // since there is no dependencies, let's start before main nuxeo core services
@@ -73,7 +75,7 @@ public class KafkaConfigServiceImpl extends DefaultComponent implements KafkaCon
         KafkaConfigDescriptor config = getDescriptor(configName);
         String ret = config.topicPrefix == null ? "" : config.topicPrefix;
         if (config.randomPrefix) {
-            ret += System.currentTimeMillis() + "-";
+            ret += START_STAMP + "-";
         }
         return ret;
     }

@@ -172,11 +172,13 @@ public class TestStreamService {
         assertTrue(manager.exists(Name.ofUrn("registerInput")));
         assertFalse(manager.exists(Name.ofUrn("externalOutput")));
 
+        LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test"), Name.ofUrn("output3"));
+        tailer.toEnd();
+
         // make sure the processor is not started
         @SuppressWarnings("resource")
         StreamManager streamManager = service.getStreamManager();
         streamManager.append("input3", Record.of("key", null));
-        LogTailer<Record> tailer = manager.createTailer(Name.ofUrn("test"), Name.ofUrn("output3"));
         assertNull(tailer.read(Duration.ofSeconds(1)));
 
         // We can get the processor

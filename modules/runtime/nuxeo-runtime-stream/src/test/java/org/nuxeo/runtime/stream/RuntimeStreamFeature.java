@@ -21,6 +21,7 @@ package org.nuxeo.runtime.stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -62,6 +63,8 @@ public class RuntimeStreamFeature implements RunnerFeature {
 
     protected String streamType;
 
+    private boolean cleanupTopics;
+
     protected static String defaultProperty(String name, String def) {
         String value = System.getProperty(name);
         if (value == null || value.isEmpty() || value.equals("${" + name + "}")) {
@@ -96,14 +99,28 @@ public class RuntimeStreamFeature implements RunnerFeature {
     }
 
     protected void initChronicle(RuntimeHarness harness) throws Exception {
+        log.debug("Deploy Chronicle config");
         harness.deployContrib(BUNDLE_TEST_NAME, "OSGI-INF/test-stream-chronicle-contrib.xml");
     }
 
     protected void initKafka(RuntimeHarness harness) throws Exception {
         // no need to re-init kafka as we use a random prefix
+        log.debug("Deploy Kafka config");
         defaultProperty(KAFKA_SERVERS_PROPERTY, KAFKA_SERVERS_DEFAULT);
         // deploy component
         harness.deployContrib(BUNDLE_TEST_NAME, "OSGI-INF/test-stream-kafka-contrib.xml");
+        cleanupTopics = true;
+    }
+
+    @Override
+    public void stop(FeaturesRunner runner) throws Exception {
+        if (!cleanupTopics) {
+            return;
+        }
+        log.debug("Clean Kafka topics");
+        LogManager manager = Framework.getService(StreamService.class).getLogManager();
+        manager.listAll().forEach(manager::delete);
+        cleanupTopics = false;
     }
 
 }
