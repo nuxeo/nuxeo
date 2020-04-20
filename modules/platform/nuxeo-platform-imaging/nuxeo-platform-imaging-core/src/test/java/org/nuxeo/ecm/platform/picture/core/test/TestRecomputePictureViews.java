@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.picture.operation.RecomputePictureViews;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RandomBug;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
@@ -71,6 +72,7 @@ public class TestRecomputePictureViews {
 
     @Test
     @SuppressWarnings("unchecked")
+    @RandomBug.Repeat(issue = "NXP-28873: randomly failing in postgresql mode", onFailure = 10, onSuccess = 30)
     public void testRecomputePictureViews() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "pictureDoc", "Picture");
         Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg",
