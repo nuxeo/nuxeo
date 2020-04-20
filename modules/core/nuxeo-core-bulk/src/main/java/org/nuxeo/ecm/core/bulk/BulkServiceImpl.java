@@ -143,6 +143,7 @@ public class BulkServiceImpl implements BulkService {
             shardKey = command.getId();
         }
         // send command to bulk processor
+        log.debug("Submit action with command: {}", command);
         return submit(shardKey, command.getId(), commandAsBytes);
     }
 
@@ -151,7 +152,9 @@ public class BulkServiceImpl implements BulkService {
         LogManager logManager = Framework.getService(StreamService.class).getLogManager(BULK_LOG_MANAGER_NAME);
         LogAppender<Record> logAppender = logManager.getAppender(COMMAND_STREAM,
                 Framework.getService(CodecService.class).getCodec(RECORD_CODEC, Record.class));
-        logAppender.append(shardKey, Record.of(key, bytes));
+        Record record = Record.of(key, bytes);
+        log.debug("Append shardKey: {}, record: {}", shardKey, record);
+        logAppender.append(shardKey, record);
         return key;
     }
 
@@ -271,12 +274,16 @@ public class BulkServiceImpl implements BulkService {
         Set<String> commandIds = kv.keyStream(STATUS_PREFIX)
                                    .map(k -> k.replaceFirst(STATUS_PREFIX, ""))
                                    .collect(Collectors.toSet());
+        log.debug("Wait for command ids: {}", commandIds);
         // nanoTime is always monotonous
         long deadline = System.nanoTime() + duration.toNanos();
         for (String commandId : commandIds) {
+            log.debug("Wait for command id: {}", commandId);
             for (;;) {
                 BulkStatus status = getStatus(commandId);
+                log.debug("Status of command: {} = {}", commandId, status);
                 BulkStatus.State state = status.getState();
+                log.debug("State of command: {} = {}", commandId, state);
                 if (state == COMPLETED || state == ABORTED || state == UNKNOWN) {
                     break;
                 }
