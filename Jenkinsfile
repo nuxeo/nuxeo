@@ -33,12 +33,14 @@ properties([
 ])
 
 void setGitHubBuildStatus(String context, String message, String state) {
-  step([
-    $class: 'GitHubCommitStatusSetter',
-    reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
-    contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
-    statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
-  ])
+  if (env.DRY_RUN != "true") {
+    step([
+      $class: 'GitHubCommitStatusSetter',
+      reposSource: [$class: 'ManuallyEnteredRepositorySource', url: repositoryUrl],
+      contextSource: [$class: 'ManuallyEnteredCommitContextSource', context: context],
+      statusResultSource: [$class: 'ConditionalStatusResultSource', results: [[$class: 'AnyBuildResult', message: message, state: state]]],
+    ])
+  }
 }
 
 String getMavenArgs() {
@@ -326,8 +328,13 @@ pipeline {
 
     stage('Git commit') {
       when {
-        not {
-          branch 'PR-*'
+        allOf {
+          not {
+            branch 'PR-*'
+          }
+          not {
+            environment name: 'DRY_RUN', value: 'true'
+          }
         }
       }
       steps {
@@ -532,8 +539,13 @@ pipeline {
 
     stage('Git tag and push') {
       when {
-        not {
-          branch 'PR-*'
+        allOf {
+          not {
+            branch 'PR-*'
+          }
+          not {
+            environment name: 'DRY_RUN', value: 'true'
+          }
         }
       }
       steps {
@@ -552,36 +564,6 @@ pipeline {
             # Git tag
             jx step tag -v ${VERSION}
           """
-        }
-      }
-    }
-
-    stage('Deploy Docker images') {
-      when {
-        not {
-          branch 'PR-*'
-        }
-      }
-      steps {
-        setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Deploy Docker images
-          ----------------------------------------
-          Image tag: ${VERSION}
-          """
-          echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
-          dockerDeploy("${SLIM_IMAGE_NAME}")
-          dockerDeploy("${NUXEO_IMAGE_NAME}")
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'FAILURE')
         }
       }
     }
@@ -608,6 +590,16 @@ pipeline {
     }
 
     stage('Upload Nuxeo Packages') {
+      when {
+        allOf {
+          not {
+            branch 'PR-*'
+          }
+          not {
+            environment name: 'DRY_RUN', value: 'true'
+          }
+        }
+      }
       steps {
         setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'PENDING')
         container('maven') {
@@ -631,6 +623,41 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('platform/upload/packages', 'Upload Nuxeo Packages', 'FAILURE')
+        }
+      }
+    }
+
+    stage('Deploy Docker images') {
+      when {
+        allOf {
+          not {
+            branch 'PR-*'
+          }
+          not {
+            environment name: 'DRY_RUN', value: 'true'
+          }
+        }
+      }
+      steps {
+        setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Deploy Docker images
+          ----------------------------------------
+          Image tag: ${VERSION}
+          """
+          echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
+          dockerDeploy("${SLIM_IMAGE_NAME}")
+          dockerDeploy("${NUXEO_IMAGE_NAME}")
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/docker/deploy', 'Deploy Docker images', 'FAILURE')
         }
       }
     }
@@ -725,6 +752,13 @@ pipeline {
         if (!isPullRequest()) {
           // update JIRA issue
           step([$class: 'JiraIssueUpdater', issueSelector: [$class: 'DefaultIssueSelector'], scm: scm])
+        }
+      }
+    }
+    success {
+      script {
+        if (!isPullRequest() && env.DRY_RUN != "true") {
+          currentBuild.description = "Build ${VERSION}"
         }
       }
     }
