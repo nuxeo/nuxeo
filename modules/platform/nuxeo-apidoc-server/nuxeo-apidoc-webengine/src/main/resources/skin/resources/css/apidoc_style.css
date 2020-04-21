@@ -1099,6 +1099,10 @@ a.button.primary:hover {
   margin-bottom: 1em !important;
 }
 
+input.searchFilter {
+  width: 85%; /* adapt to tablesorter header and potential submit button */
+}
+
 /* Google Search Frame styles */
 
 .gsc-above-wrapper-area,
