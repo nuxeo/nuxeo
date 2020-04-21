@@ -13,25 +13,6 @@
   <p><a href="${This.path}/createForm" class="button"> Add new documentation </a></p>
   </#if>
 
-  <#--
-  <h2> Index </h2>
-  <#if Root.isEditor()>
-  </#if>
-  <ul>
-  <#list docsByCat?keys as category>
-   <li>${category}
-   <ul>
-   <#list docsByCat[category] as docItem>
-      <li><A href="#${docItem.id}">${docItem.title}</A> </li>
-   </#list>
-   </ul>
-   </li>
-  </#list>
-  </ul>
-
-  <hr>
-  -->
-
   <#list docsByCat?keys as category>
    <h2>${category}</h2>
 

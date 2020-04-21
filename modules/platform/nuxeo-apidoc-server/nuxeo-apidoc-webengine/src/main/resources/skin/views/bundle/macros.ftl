@@ -10,27 +10,23 @@
     <a name="Bundle.${bundleItem.id}"> </a>
     <div class="blocTitle bTitle${nestedLevel}" id="Bundle.${bundleItem.id}">
       <img src="${skinPath}/images/${bundleDesc.targetType}.png" alt="Bundle"/>
-      <!-- <span id="${bundleDesc.getEditId()}_doctitle">${bundleDesc.title}</span> -->
       Bundle <span class="componentTitle">${bundleItem.id}</span>
-      <!-- <@quickEditorLinks docItem=bundleDesc/> -->
       <#if This.nxArtifact.id != bundleItem.id>
         &nbsp;&nbsp;
         <a href="${Root.path}/${distId}/viewBundle/${bundleItem.id}">
           <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
         </a>
       </#if>
-  </div>
+    </div>
 
-  <div class="foldablePanel">
+    <div class="foldablePanel">
+      <@viewBundleArtifact bundleItem/>
+      <@viewSecDescriptions docsByCat=bundleDocs.getDocumentationItems(Context.getCoreSession()) title=true/>
+      <@viewSecManifest bundleItem/>
+      <@viewSecComponents bundleItem.components/>
+      <@viewAdditionalDoc docsByCat=bundleDocs.getDocumentationItems(Context.getCoreSession())/>
+    </div>
 
-    <@viewBundleArtifact bundleItem/>
-    <@viewSecDescriptions docsByCat=bundleDocs.getDocumentationItems(Context.getCoreSession()) title=true/>
-    <@viewSecManifest bundleItem/>
-    <@viewSecComponents bundleItem.components/>
-
-
-  <@viewAdditionalDoc docsByCat=bundleDocs.getDocumentationItems(Context.getCoreSession())/>
-  </div>
   </div>
 
   <#assign nestedLevel=nestedLevel-1/>

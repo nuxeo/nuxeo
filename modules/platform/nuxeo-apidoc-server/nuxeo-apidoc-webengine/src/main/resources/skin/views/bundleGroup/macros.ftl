@@ -7,7 +7,6 @@
   <#assign bundleGroupDesc=bundleGroupDocs.getDescription(Context.getCoreSession())/>
   <#assign bundles=bundleGroupWO.getBundles()/>
   <#assign subGroups=bundleGroupWO.getSubGroups()/>
-
   <#assign quickEditId=bundleGroupDesc.getEditId()/>
 
   <div id="BundleGroup.${bundleGroupItem.id}_frame" class="blocFrame" style="margin-left:${nestedLevel*6}px">
