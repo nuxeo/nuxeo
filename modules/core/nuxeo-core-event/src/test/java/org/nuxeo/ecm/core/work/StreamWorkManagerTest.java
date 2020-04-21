@@ -210,4 +210,9 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         return work;
     }
 
+    @Override
+    @Ignore("NXP-28728: randomly failing in dev mode")
+    public void transientFilesWorkAreCleaned() throws InterruptedException {
+        super.transientFilesWorkAreCleaned();
+    }
 }
