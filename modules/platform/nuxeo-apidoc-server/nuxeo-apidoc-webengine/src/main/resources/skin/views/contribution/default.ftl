@@ -27,24 +27,24 @@
   <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.targetComponentName.name}">${nxItem.targetComponentName.name?replace(".*\\.","","r")}</a>.
 
   <h2>Contributed items</h2>
-    <form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override">
-      <input id="overrideStart" type="button" value="Generate Override" onclick="showOverrideForm()"/>
-      <ul class="block-list">
-      <#list nxItem.contributionItems as contributionItem>
-        <li>
-          <div>
-            <pre><code>${contributionItem.xml}</code></pre>
-          </div>
-          <div class="block-title">
-            <input id="${contributionItem.id}" type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
-            <label for="${contributionItem.id}">${contributionItem.label}</label>
-            <span>${contributionItem.documentation}</span>
-          </div>
-        </li>
-      </#list>
-      </ul>
-      <input class="button primary" id="overrideGen" type="submit" value="Generate XML file" style="display:none"/>
-    </form>
+  <form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override">
+    <input id="overrideStart" type="button" value="Generate Override" onclick="showOverrideForm()"/>
+    <ul class="block-list">
+    <#list nxItem.contributionItems as contributionItem>
+      <li>
+        <div>
+          <pre><code>${contributionItem.xml}</code></pre>
+        </div>
+        <div class="block-title">
+          <input id="${contributionItem.id}" type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
+          <label for="${contributionItem.id}">${contributionItem.label}</label>
+          <span>${contributionItem.documentation}</span>
+        </div>
+      </li>
+    </#list>
+    </ul>
+    <input class="button primary" id="overrideGen" type="submit" value="Generate XML file" style="display:none"/>
+  </form>
   <script>
   function showOverrideForm(event) {
     $('#overrideStart').css("display", "none");
@@ -53,6 +53,7 @@
     return false;
   }
   </script>
+
   <h2>XML source</h2>
   <div>
     <pre><code>${nxItem.xml?html}</code></pre>

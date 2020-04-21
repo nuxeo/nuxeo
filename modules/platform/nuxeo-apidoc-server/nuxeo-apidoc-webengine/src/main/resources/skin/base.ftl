@@ -12,44 +12,44 @@
   <link rel="shortcut icon" href="${skinPath}/images/favicon.png" />
   <link rel="stylesheet" href="${skinPath}/css/apidoc_style.css" media="screen" charset="utf-8" />
   <link rel="stylesheet" href="${skinPath}/css/code.css" media="screen" charset="utf-8" />
-  <link rel="stylesheet" href="${skinPath}/script/jquery//treeview/jquery.treeview.css" media="screen" charset="utf-8">
+  <link rel="stylesheet" href="${skinPath}/script/jquery/treeview/jquery.treeview.css" media="screen" charset="utf-8">
   <link rel="stylesheet" href="${skinPath}/css/jquery.magnific.min.css" media="screen" charset="utf-8">
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=PT+Sans+Caption:400,700">
-
   <@block name="stylesheets" />
-   <script type="text/javascript">
-     var skinPath = '${skinPath}';
 
-     function fixJavaDocPaths(javaDocDiv, javaDocBaseUrl) {
-       return function(data) {
-         var $data = $(data);
-         // URLs come with a local href; fix them to target javadoc website instead
-         $data.find('a[href^="../../../../../"]').each(function() {
-           this.href = $(this).attr('href').replace('../../../../../', javaDocBaseUrl + '/javadoc/');
-         });
+  <script type="text/javascript">
+    var skinPath = '${skinPath}';
 
-         $(javaDocDiv).html($data);
-       };
-     }
-   </script>
-   <script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
-   <script src="${skinPath}/script/jquery/cookie.js"></script>
-   <script src="${skinPath}/script/highlight.js"></script>
-   <script src="${skinPath}/script/java.js"></script>
-   <script src="${skinPath}/script/html-xml.js"></script>
-   <script src="${skinPath}/script/manifest.js"></script>
+    function fixJavaDocPaths(javaDocDiv, javaDocBaseUrl) {
+      return function(data) {
+        var $data = $(data);
+        // URLs come with a local href; fix them to target javadoc website instead
+        $data.find('a[href^="../../../../../"]').each(function() {
+          this.href = $(this).attr('href').replace('../../../../../', javaDocBaseUrl + '/javadoc/');
+        });
 
-   <script src="${skinPath}/script/jquery//treeview/jquery.treeview.js"></script>
-   <script src="${skinPath}/script/jquery//treeview/jquery.treeview.async.js"></script>
+        $(javaDocDiv).html($data);
+      };
+    }
+  </script>
+  <script src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="${skinPath}/script/jquery/cookie.js"></script>
+  <script src="${skinPath}/script/highlight.js"></script>
+  <script src="${skinPath}/script/java.js"></script>
+  <script src="${skinPath}/script/html-xml.js"></script>
+  <script src="${skinPath}/script/manifest.js"></script>
+  <script src="${skinPath}/script/jquery/treeview/jquery.treeview.js"></script>
+  <script src="${skinPath}/script/jquery/treeview/jquery.treeview.async.js"></script>
   <script src="${skinPath}/script/jquery.magnific.min.js"></script>
-   <script src="${skinPath}/script/quickEditor.js"></script>
-   <script src="${skinPath}/script/jquery.highlight-3.js"></script>
-   <@block name="header_scripts" />
+  <script src="${skinPath}/script/quickEditor.js"></script>
+  <script src="${skinPath}/script/jquery.highlight-3.js"></script>
+  <@block name="header_scripts" />
 
 </head>
 
 <body>
-  <#if !Root.isEmbeddedMode()>
+
+<#if !Root.isEmbeddedMode()>
   <header role="banner">
     <@block name="header">
     <div class="top-banner">
@@ -74,43 +74,40 @@
       </nav>
     </#if>
   </header>
-  </#if>
+</#if>
 
-  <div class="container content">
-      <@block name="middle">
-         <section>
-           <article role="contentinfo">
-             <#if false && onArtifact?? && Root.canAddDocumentation()>
-               <div class="tabsbutton">
-                 <a class="button" href="${This.path}/doc">Manage Documentation</a>
-               </div>
-             </#if>
-             <#if onArtifact??>
-               <@googleSearchFrame This.searchCriterion />
-             </#if>
-             <@block name="right">
-               Content
-             </@block>
-           </article>
-         </section>
-      </@block>
-  </div>
+<div class="container content">
+  <@block name="middle">
+    <section>
+      <article role="contentinfo">
+        <#if false && onArtifact?? && Root.canAddDocumentation()>
+          <div class="tabsbutton">
+            <a class="button" href="${This.path}/doc">Manage Documentation</a>
+          </div>
+        </#if>
+        <#if onArtifact??>
+          <@googleSearchFrame This.searchCriterion />
+        </#if>
+        <@block name="right">
+          Content
+        </@block>
+      </article>
+    </section>
+  </@block>
+</div>
 <script type="text/javascript">
+  hljs.initHighlightingOnLoad();
 
-    hljs.initHighlightingOnLoad();
-
-    var lastDisplayedDoc;
-    function showAddDoc(docId) {
-      if (lastDisplayedDoc) {
-       if (lastDisplayedDoc!=docId) {
-         $('#' + lastDisplayedDoc).toggle();
-       }
+  var lastDisplayedDoc;
+  function showAddDoc(docId) {
+    if (lastDisplayedDoc) {
+      if (lastDisplayedDoc!=docId) {
+        $('#' + lastDisplayedDoc).toggle();
       }
-      $('#' + docId).toggle();
-      lastDisplayedDoc=docId;
     }
-
-
+    $('#' + docId).toggle();
+    lastDisplayedDoc=docId;
+  }
 </script>
 
 <@block name="footer_scripts" />

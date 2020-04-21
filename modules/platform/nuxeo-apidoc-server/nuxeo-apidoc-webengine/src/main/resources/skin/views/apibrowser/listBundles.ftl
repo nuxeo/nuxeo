@@ -37,7 +37,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#bundlesTable" "[0,0]" />
+  <@tableSortFilterScript "#bundlesTable" "[0,0]" />
 </@block>
 
 </@extends>

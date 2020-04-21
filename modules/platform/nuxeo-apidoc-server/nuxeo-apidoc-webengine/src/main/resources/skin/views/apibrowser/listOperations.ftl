@@ -48,7 +48,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#operationsTable" "[0,0]" />
+  <@tableSortFilterScript "#operationsTable" "[0,0]" />
 </@block>
 
 </@extends>

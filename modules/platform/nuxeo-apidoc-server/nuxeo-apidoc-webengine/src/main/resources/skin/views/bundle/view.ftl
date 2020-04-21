@@ -1,12 +1,5 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-</@block>
-
-
-<@block name="header_scripts">
-</@block>
-
 <@block name="right">
 <#include "/views/bundle/macros.ftl">
 <#assign nestedLevel=0/>
@@ -28,7 +21,7 @@
   <#else>
   <ul>
   <#list components as component>
-      <li><A href="${Root.path}/${distId}/viewComponent/${component.name}"> ${component.name} </A></li>
+    <li><a href="${Root.path}/${distId}/viewComponent/${component.name}">${component.name}</a></li>
   </#list>
   </ul>
   </#if>
@@ -36,8 +29,5 @@
 </div>
 
 </@block>
-
-
-
 
 </@extends>
