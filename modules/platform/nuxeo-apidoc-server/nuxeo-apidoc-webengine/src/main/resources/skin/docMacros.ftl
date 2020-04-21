@@ -111,7 +111,7 @@
   -->
   </#if>
   <form id="fulltext" method="POST" action="${Root.path}/${distId}/${action}">
-    <input name="fulltext" id="fulltext-box" size="30" type="search"
+    <input name="fulltext" id="fulltext-box" type="search" class="searchFilter"
     placeholder="Find in ${name}"<#if searchFilter??> value="${searchFilter}"</#if>/>
     <input id="filter-submit-button" type="submit" value="Search"/>
   </form>
@@ -124,7 +124,7 @@
    - name: Displayed name in the placeholder
   -->
   </#if>
-  <input name="fulltext" id="filter-box" size="30" type="search" placeholder="Filter ${name}"/>
+  <input name="fulltext" id="filter-box" type="search" placeholder="Filter ${name}" class="searchFilter" />
 </#macro>
 
 
