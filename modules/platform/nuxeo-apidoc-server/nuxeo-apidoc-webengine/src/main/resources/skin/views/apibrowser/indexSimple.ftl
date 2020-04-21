@@ -9,7 +9,7 @@
   </@block>
 
   <@block name="right">
-  <h1> Your current Nuxeo EP distribution is ${Root.currentDistribution.key} </h1>
+  <h1> Your current Nuxeo Distribution is '${Root.currentDistribution.key}' </h1>
 
   <div class="tabscontent">
 
@@ -19,19 +19,19 @@
 
     <table>
       <tr>
-        <td> Number of bundles</td>
+        <td> Number of Bundles</td>
         <td> ${stats.bundles}</td>
       </tr>
       <tr>
-        <td> Number of java components</td>
+        <td> Number of Java Components</td>
         <td> ${stats.jComponents}</td>
       </tr>
       <tr>
-        <td> Number of Xml components</td>
+        <td> Number of XML Components</td>
         <td> ${stats.xComponents}</td>
       </tr>
       <tr>
-        <td> Number of services</td>
+        <td> Number of Services</td>
         <td> ${stats.services}</td>
       </tr>
       <tr>
