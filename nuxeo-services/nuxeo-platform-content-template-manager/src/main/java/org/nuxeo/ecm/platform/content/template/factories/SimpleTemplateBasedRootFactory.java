@@ -37,11 +37,11 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
     public void createContentStructure(DocumentModel eventDoc) {
         initSession(eventDoc);
 
-        if (!shouldCreateContent(eventDoc)) {
-            return;
-        }
-
         for (TemplateItemDescriptor item : template) {
+            if (!shouldCreateDocument(eventDoc.getId(), item.getId(), item.getTypeName())) {
+                continue;
+            }
+
             String itemPath = eventDoc.getPathAsString();
             if (item.getPath() != null) {
                 itemPath += "/" + item.getPath();
@@ -52,30 +52,26 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
             setProperties(item.getProperties(), newChild);
             newChild = session.createDocument(newChild);
             setAcl(item.getAcl(), newChild.getRef());
+            session.save();
         }
         // init root ACL if really empty
         setAcl(acl, eventDoc.getRef());
     }
 
     /**
-     * Returns {@code false} if the type of one of the children documents matches a template item type, {@code true}
-     * otherwise.
+     * @return {@code true} if we should create the document with the given {@code parentId}, {@code childName} and
+     *         {@code childType}, {@code false} otherwise
      */
-    protected boolean shouldCreateContent(DocumentModel eventDoc) {
-        for (TemplateItemDescriptor item : template) {
-            // don't use getChildren, which can be costly
-            // if the folder has a huge number of children
-            String query = "SELECT ecm:uuid FROM Document WHERE ecm:parentId = '%s' AND ecm:primaryType = '%s'";
-            query = String.format(query, eventDoc.getId(), item.getTypeName());
-            IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL);
-            try {
-                if (it.iterator().hasNext()) {
-                    return false;
-                }
-            } finally {
-                it.close();
-            }
+    protected boolean shouldCreateDocument(String parentId, String childName, String childType) {
+        String query = String.format("SELECT %s FROM Document WHERE %s = '%s' AND %s = '%s' AND %s = '%s'",
+                NXQL.ECM_UUID, //
+                NXQL.ECM_PARENTID, parentId, //
+                NXQL.ECM_NAME, childName, //
+                NXQL.ECM_PRIMARYTYPE, childType);
+
+        try (IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL)) {
+            return !it.iterator().hasNext();
         }
-        return true;
     }
+
 }
