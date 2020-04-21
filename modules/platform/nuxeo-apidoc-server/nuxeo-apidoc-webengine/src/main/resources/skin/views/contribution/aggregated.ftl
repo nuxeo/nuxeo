@@ -8,7 +8,7 @@
 <h1> View Contribution <span class="componentTitle">${nxItem.id}</span></h1>
 
 <div class="tabscontent">
-  <#include "/views/contribution/contributionMacros.ftl">
+  <#include "/views/contribution/macros.ftl">
   <@viewContribution contributionWO=This />
 </div>
 

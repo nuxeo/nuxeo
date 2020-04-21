@@ -1,7 +1,7 @@
 <#include "/docMacros.ftl">
 <#include "/views/service/macros.ftl">
 <#include "/views/extensionPoint/macros.ftl">
-<#include "/views/contribution/contributionMacros.ftl">
+<#include "/views/contribution/macros.ftl">
 <#macro viewComponent componentWO >
 
   <#assign nestedLevel=nestedLevel+1/>
