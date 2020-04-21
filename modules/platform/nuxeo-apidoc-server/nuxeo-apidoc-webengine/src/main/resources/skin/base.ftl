@@ -85,7 +85,7 @@
             <a class="button" href="${This.path}/doc">Manage Documentation</a>
           </div>
         </#if>
-        <#if onArtifact??>
+        <#if onArtifact?? && !Root.isRunningFunctionalTests()>
           <@block name="googleSearchFrame">
             <@googleSearchFrame This.searchCriterion />
           </@block>

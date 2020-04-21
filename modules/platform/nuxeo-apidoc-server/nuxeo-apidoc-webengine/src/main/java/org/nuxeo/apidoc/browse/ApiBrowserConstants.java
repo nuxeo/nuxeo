@@ -27,6 +27,8 @@ public class ApiBrowserConstants {
 
     public static final String PROPERTY_HIDE_CURRENT_DISTRIBUTION = "org.nuxeo.apidoc.hide.current.distribution";
 
+    public static final String PROPERTY_TESTER_NAME = "org.nuxeo.ecm.tester.name";
+
     public static final String LIST_BUNDLEGROUPS = "listBundleGroups";
 
     public static final String VIEW_BUNDLEGROUP = "viewBundleGroup";

@@ -580,6 +580,10 @@ public class Distribution extends ModuleRoot {
         return Framework.isBooleanPropertyTrue(ApiBrowserConstants.PROPERTY_SITE_MODE);
     }
 
+    public static boolean isRunningFunctionalTests() {
+        return !StringUtils.isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
+    }
+
     /**
      * Generates the list of plugins that should be displayed in the menu.
      */
