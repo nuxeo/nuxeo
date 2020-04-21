@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="title">All extension points</@block>
+<@block name="title">All Extension Points</@block>
 <@block name="header_scripts">
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
@@ -13,7 +13,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>${eps?size} extension points</h1>
+<h1>${eps?size} Extension Points</h1>
 <div class="tabscontent">
   <table id="extensionPointsTable" class="tablesorter">
   <thead>

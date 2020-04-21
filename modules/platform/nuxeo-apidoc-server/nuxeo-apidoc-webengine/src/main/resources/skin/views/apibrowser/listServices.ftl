@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="title">All services</@block>
+<@block name="title">All Services</@block>
 <@block name="header_scripts">
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>${services?size} services</h1>
+<h1>${services?size} Services</h1>
 <div class="tabscontent">
 
   <table id="servicesTable" class="tablesorter">

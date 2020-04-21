@@ -1,13 +1,13 @@
 <@extends src="base.ftl">
 
 <@block name="right">
-<h1> Browsing ${Root.currentDistribution.key} distribution </h1>
+<h1> Browsing Distribution '${Root.currentDistribution.key}' </h1>
 
 <div class="tabscontent">
 
   <ul class="apibrowser">
-    <li class="bundles">
-      <a href="${Root.path}/${distId}/listBundleGroups">Bundle groups</a>
+    <li class="bundlestree">
+      <a href="${Root.path}/${distId}/listBundleGroups">Bundle Groups</a>
       <ul>
         <li class="bundletree">
           <a href="${Root.path}/${distId}/listBundles">Bundles</a>
@@ -18,8 +18,8 @@
                 <li class="servicetree">
                   <a href="${Root.path}/${distId}/listServices">Services</a>
                 </li>
-                <li class="extension">
-                  <a href="${Root.path}/${distId}/listExtensionPoints">Extension points</a>
+                <li class="extensiontree">
+                  <a href="${Root.path}/${distId}/listExtensionPoints">Extension Points</a>
                 </li>
                 <li class="contributiontree">
                   <a href="${Root.path}/${distId}/listContributions">Contributions</a>
