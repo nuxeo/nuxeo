@@ -13,7 +13,13 @@
   <table id="contributionsTable" class="tablesorter">
   <thead>
     <tr>
-      <th><@fulltextFilter "contribution" "filterContributions"/></th>
+      <th>
+        <#if isLive>
+          <@tableFilterArea "contribution"/>
+        <#else>
+          <@fulltextFilter "contribution" "filterContributions"/>
+        </#if>
+      </th>
     </tr>
   </thead>
   <tbody>

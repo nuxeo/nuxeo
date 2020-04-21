@@ -292,6 +292,7 @@ public class ApiBrowser extends DefaultObject {
     public Object getContributions() {
         DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
         return getView(ApiBrowserConstants.LIST_CONTRIBUTIONS).arg("contributions", snapshot.getContributions())
+                                                              .arg("isLive", snapshot.isLive())
                                                               .arg(Distribution.DIST_ID,
                                                                       ctx.getProperty(Distribution.DIST_ID));
     }
