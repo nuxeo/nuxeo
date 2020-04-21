@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="title">All bundles</@block>
+<@block name="title">All Bundles</@block>
 <@block name="header_scripts">
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>${bundleIds?size} bundles</h1>
+<h1>${bundleIds?size} Bundles</h1>
 
 <div class="tabscontent">
 

@@ -1,5 +1,5 @@
 <@extends src="base.ftl">
-<@block name="title">All components</@block>
+<@block name="title">All Components</@block>
 <@block name="header_scripts">
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
   <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>${javaComponents?size + xmlComponents?size} components</h1>
+<h1>${javaComponents?size + xmlComponents?size} Components</h1>
 
 <div class="tabscontent">
 

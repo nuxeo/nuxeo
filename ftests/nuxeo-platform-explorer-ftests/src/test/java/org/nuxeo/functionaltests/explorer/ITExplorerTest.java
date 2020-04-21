@@ -81,15 +81,13 @@ public class ITExplorerTest extends AbstractTest {
         assertEquals("Running Platform".toUpperCase(), home.currentPlatform.getText());
 
         ArtifactHomePage ahome = home.navigateTo(home.currentExtensionPoints);
-        assertEquals("All extension points", ahome.getTitle());
+        assertEquals("All Extension Points", ahome.getTitle());
         ahome = goHome().navigateTo(home.currentContributions);
-        assertEquals("All contributions", ahome.getTitle());
-        ahome = goHome().navigateTo(home.currentExtensionPoints);
-        assertEquals("All extension points", ahome.getTitle());
+        assertEquals("All Contributions", ahome.getTitle());
         ahome = goHome().navigateTo(home.currentOperations);
-        assertEquals("All operations", ahome.getTitle());
+        assertEquals("All Operations", ahome.getTitle());
         ahome = goHome().navigateTo(home.currentServices);
-        assertEquals("All services", ahome.getTitle());
+        assertEquals("All Services", ahome.getTitle());
     }
 
     @Test
