@@ -34,6 +34,7 @@ import java.security.cert.Certificate;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,7 +55,13 @@ import com.amazonaws.services.s3.AmazonS3Builder;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
+import com.amazonaws.services.s3.model.DefaultRetention;
 import com.amazonaws.services.s3.model.EncryptionMaterials;
+import com.amazonaws.services.s3.model.GetObjectLockConfigurationRequest;
+import com.amazonaws.services.s3.model.GetObjectLockConfigurationResult;
+import com.amazonaws.services.s3.model.ObjectLockConfiguration;
+import com.amazonaws.services.s3.model.ObjectLockRetentionMode;
+import com.amazonaws.services.s3.model.ObjectLockRule;
 import com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
@@ -138,6 +145,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
      */
     public static final String DISABLE_PROXY_PROPERTY = "nuxeo.s3.proxy.disabled";
 
+    public static final ObjectLockRetentionMode DEFAULT_RETENTION_MODE = ObjectLockRetentionMode.GOVERNANCE;
+
     public final CloudFrontConfiguration cloudFront;
 
     public final AmazonS3 amazonS3;
@@ -155,6 +164,8 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
     public final boolean useClientSideEncryption;
 
     public final boolean metadataAddUsername;
+
+    public final ObjectLockRetentionMode retentionMode;
 
     public S3BlobStoreConfiguration(Map<String, String> properties) throws IOException {
         super(SYSTEM_PROPERTY_PREFIX, properties);
@@ -202,6 +213,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         abortOldUploads();
 
         metadataAddUsername = getBooleanProperty(METADATA_ADD_USERNAME_PROPERTY);
+        retentionMode = getRetentionMode();
     }
 
     /**
@@ -399,6 +411,22 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
                                      .withMultipartCopyThreshold(Long.valueOf(multipartCopyThreshold))
                                      .withMultipartCopyPartSize(Long.valueOf(multipartCopyPartSize))
                                      .build();
+    }
+
+    protected ObjectLockRetentionMode getRetentionMode() {
+        GetObjectLockConfigurationRequest request = new GetObjectLockConfigurationRequest().withBucketName(bucketName);
+        GetObjectLockConfigurationResult result;
+        try {
+            result = amazonS3.getObjectLockConfiguration(request);
+        } catch (AmazonServiceException e) {
+            return DEFAULT_RETENTION_MODE;
+        }
+        return Optional.ofNullable(result.getObjectLockConfiguration())
+                       .map(ObjectLockConfiguration::getRule)
+                       .map(ObjectLockRule::getDefaultRetention)
+                       .map(DefaultRetention::getMode)
+                       .map(ObjectLockRetentionMode::valueOf)
+                       .orElse(DEFAULT_RETENTION_MODE);
     }
 
     /**

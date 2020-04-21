@@ -72,7 +72,6 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectLockLegalHold;
 import com.amazonaws.services.s3.model.ObjectLockLegalHoldStatus;
 import com.amazonaws.services.s3.model.ObjectLockRetention;
-import com.amazonaws.services.s3.model.ObjectLockRetentionMode;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.RestoreObjectRequest;
@@ -116,9 +115,6 @@ public class S3BlobStore extends AbstractBlobStore {
     // if we want the bucket to record and keep old versions for us
     /** If true, include the object version in the key. */
     protected final boolean useVersion;
-
-    // TODO configure
-    protected ObjectLockRetentionMode objectLockRetentionMode = ObjectLockRetentionMode.GOVERNANCE;
 
     protected final BinaryGarbageCollector gc;
 
@@ -670,7 +666,7 @@ public class S3BlobStore extends AbstractBlobStore {
                 Calendar retainUntil = blobUpdateContext.updateRetainUntil.retainUntil;
                 Date retainUntilDate = retainUntil == null ? null : retainUntil.getTime();
                 ObjectLockRetention retention = new ObjectLockRetention();
-                retention.withMode(objectLockRetentionMode) //
+                retention.withMode(config.retentionMode) //
                          .withRetainUntilDate(retainUntilDate);
                 SetObjectRetentionRequest request = new SetObjectRetentionRequest();
                 request.withBucketName(bucketName) //
