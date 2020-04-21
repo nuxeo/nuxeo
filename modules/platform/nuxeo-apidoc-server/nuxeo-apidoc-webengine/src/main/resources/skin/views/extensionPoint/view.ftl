@@ -1,8 +1,5 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets"></@block>
-<@block name="header_scripts"></@block>
-
 <#if Root.isEmbeddedMode()>
   <#assign hideNav=true/>
 </#if>

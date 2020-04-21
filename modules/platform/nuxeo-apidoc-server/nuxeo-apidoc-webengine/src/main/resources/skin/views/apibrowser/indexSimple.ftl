@@ -1,11 +1,8 @@
 <@extends src="base.ftl">
 
-  <@block name="stylesheets">
-  </@block>
-
   <@block name="header_scripts">
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
-  <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter.js"></script>
+    <script type="text/javascript" src="${skinPath}/script/jquery.tablesorter_filter.js"></script>
   </@block>
 
   <@block name="left">
@@ -47,10 +44,10 @@
       </tr>
     </table>
 
-      <#include "/docMacros.ftl">
+    <#include "/docMacros.ftl">
 
     <h2>${bundleIds?size} bundles</h2>
-      <@tableFilterArea "bundle"/>
+    <@tableFilterArea "bundle"/>
     <table id="bundlesTable" class="tablesorter">
       <thead>
       <tr>
@@ -61,7 +58,7 @@
       </thead>
       <tbody>
         <#list bundleIds as bundleId>
-          <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
+        <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
         <tr class="${rowCss}">
           <td>
             <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>

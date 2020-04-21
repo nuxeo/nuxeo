@@ -12,40 +12,41 @@
   <img src="${skinPath}/images/${contributionDesc.targetType}.png" alt="Contribution"/>
   <span id="${contributionDesc.getEditId()}_doctitle"> ${contributionDesc.title}</span>
 
-<@quickEditorLinks docItem=contributionDesc/>
+  <@quickEditorLinks docItem=contributionDesc />
 
-<#if This.nxArtifact.id!=contributionItem.id>
-&nbsp;&nbsp;
+  <#if This.nxArtifact.id!=contributionItem.id>
+    &nbsp;&nbsp;
     <a href="${Root.path}/${distId}/viewContribution/${contributionItem.id}/">
-    <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
+      <img src="${skinPath}/images/zoom_in.png" alt="Zoom"/>
     </a>
-</#if>
+  </#if>
 
   </div>
 
   <div class="foldablePanel">
 
+    <span class="componentId">Contribution Id : ${contributionItem.id}</span> <br/>
 
-  <span class="componentId">Contribution Id : ${contributionItem.id}</span> <br/>
+    <p><@docContent docItem=contributionDesc /></p>
 
-  <p><@docContent docItem=contributionDesc /></p>
+    <div>
+<pre>
+<code>
+${contributionItem.xml?html}
+</code>
+</pre>
+    </div>
 
-  <div>
-  <pre>
-  <code>
-  ${contributionItem.xml?html}
-  </code>
-   </pre>
-  </div>
-  <br/>
-  <br/>
-  <b> target ExtensionPoint </b>
-  <a href="${Root.path}/${distId}/viewExtensionPoint/${contributionItem.extensionPoint}">
-  ${contributionItem.extensionPoint}
-  </a>
+    <br/>
+    <br/>
 
-  <@viewAdditionalDoc docsByCat=contributionDocs.getDocumentationItems(Context.getCoreSession())/>
-  </div>
+    <b> target ExtensionPoint </b>
+    <a href="${Root.path}/${distId}/viewExtensionPoint/${contributionItem.extensionPoint}">
+      ${contributionItem.extensionPoint}
+    </a>
+
+    <@viewAdditionalDoc docsByCat=contributionDocs.getDocumentationItems(Context.getCoreSession())/>
+
   </div>
 
   <#assign nestedLevel=nestedLevel-1/>

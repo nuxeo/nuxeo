@@ -20,9 +20,7 @@
       <#else>
         <img src="${skinPath}/images/${componentDesc.targetType}-java.png" alt="Java Component"/>
       </#if>
-      <!-- <span id="${componentDesc.getEditId()}_doctitle">${componentDesc.title}</span> -->
       Component <span class="componentTitle">${componentItem.id}</span>
-      <!-- <@quickEditorLinks docItem=componentDesc/> -->
       <#if This.nxArtifact.id!=componentItem.id>
         &nbsp;&nbsp;
         <a href="${Root.path}/${distId}/viewComponent/${componentItem.id}">

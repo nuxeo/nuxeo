@@ -43,7 +43,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#extensionPointsTable" "[0,0]" />
+  <@tableSortFilterScript "#extensionPointsTable" "[0,0]" />
 </@block>
 
 </@extends>

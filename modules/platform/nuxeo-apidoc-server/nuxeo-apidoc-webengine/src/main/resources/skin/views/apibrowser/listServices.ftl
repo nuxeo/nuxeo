@@ -37,7 +37,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#servicesTable" "[0,0]" />
+  <@tableSortFilterScript "#servicesTable" "[0,0]" />
 </@block>
 
 </@extends>

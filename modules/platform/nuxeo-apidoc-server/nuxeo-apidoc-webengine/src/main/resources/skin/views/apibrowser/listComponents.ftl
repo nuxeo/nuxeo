@@ -49,7 +49,7 @@
 </@block>
 
 <@block name="footer_scripts">
-<@tableSortFilterScript "#componentsTable" "[0,0]" />
+  <@tableSortFilterScript "#componentsTable" "[0,0]" />
 </@block>
 
 </@extends>
