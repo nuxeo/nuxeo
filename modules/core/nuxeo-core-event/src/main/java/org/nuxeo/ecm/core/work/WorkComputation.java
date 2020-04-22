@@ -94,9 +94,15 @@ public class WorkComputation extends AbstractComputation {
                 boolean storeState = Framework.getService(ConfigurationService.class).isBooleanTrue(STORESTATE_KEY);
                 if (storeState) {
                     if (WorkStateHelper.getState(work.getId()) != Work.State.SCHEDULED) {
-                        log.warn("work has been canceled, saving and returning");
-                        context.askForCheckpoint();
-                        return;
+                        // try to avoid a race condition where state is not yet written in the kv
+                        Thread.sleep(200);
+                        if (WorkStateHelper.getState(work.getId()) != Work.State.SCHEDULED) {
+                            log.warn("work has been canceled, saving and returning");
+                            context.askForCheckpoint();
+                            return;
+                        } else {
+                            log.warn("Race condition avoided on " + work.getId());
+                        }
                     }
                     WorkStateHelper.setState(work.getId(), Work.State.RUNNING, stateTTL);
                 }
