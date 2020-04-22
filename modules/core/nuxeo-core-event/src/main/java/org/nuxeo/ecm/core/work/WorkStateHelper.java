@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.work;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.kv.KeyValueService;
@@ -29,6 +31,7 @@ import org.nuxeo.runtime.kv.KeyValueStore;
  * @since 10.2
  */
 public class WorkStateHelper {
+    private static final Logger log = LogManager.getLogger(WorkStateHelper.class);
 
     protected static final String KV_NAME = "workManager";
 
@@ -65,6 +68,9 @@ public class WorkStateHelper {
 
     protected static Work.State getState(String workId) {
         String stringState = getKeyValueStore().getString(getStateKey(workId));
+        if (stringState == null || CANCELED.equals(stringState)) {
+            log.debug("getState work: {}, state: {}", workId, stringState);
+        }
         return stringState == null || CANCELED.equals(stringState) ? null : Work.State.valueOf(stringState);
     }
 
@@ -81,6 +87,7 @@ public class WorkStateHelper {
     }
 
     protected static void setCanceled(String workId) {
+        log.debug("Canceling work: {}", workId);
         getKeyValueStore().put(getStateKey(workId), CANCELED, 0);
     }
 
@@ -89,6 +96,7 @@ public class WorkStateHelper {
     }
 
     protected static void setState(String workId, Work.State state, long ttl) {
+        log.debug("setState work: {}, state: {}, ttl: {}", workId, state, ttl);
         getKeyValueStore().put(getStateKey(workId), state == null ? null : state.toString(), ttl);
     }
 
