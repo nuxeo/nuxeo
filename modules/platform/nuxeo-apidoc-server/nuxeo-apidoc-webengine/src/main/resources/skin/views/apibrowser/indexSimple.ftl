@@ -48,7 +48,7 @@
 
     <h2>${bundleIds?size} bundles</h2>
     <@tableFilterArea "bundle"/>
-    <table id="bundlesTable" class="tablesorter">
+    <table id="contentTable" class="tablesorter">
       <thead>
       <tr>
         <th>
@@ -61,7 +61,7 @@
         <#assign rowCss = (bundleId_index % 2 == 0)?string("even","odd")/>
         <tr class="${rowCss}">
           <td>
-            <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>
+            <a href="${Root.path}/${distId}/viewBundle/${bundleId}" class="itemLink">${bundleId}</a>
           </td>
         </tr>
         </#list>
@@ -73,7 +73,7 @@
   </@block>
 
   <@block name="footer_scripts">
-    <@tableSortFilterScript "#bundlesTable" "[0,0]" />
+    <@tableSortFilterScript "#contentTable" "[0,0]" />
   </@block>
 
 </@extends>

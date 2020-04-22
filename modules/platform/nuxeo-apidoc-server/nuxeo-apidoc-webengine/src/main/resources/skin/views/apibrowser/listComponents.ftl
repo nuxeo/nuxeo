@@ -12,7 +12,7 @@
 
 <div class="tabscontent">
 
-  <table id="componentsTable" class="tablesorter">
+  <table id="contentTable" class="tablesorter">
   <thead>
     <tr>
       <th>
@@ -25,9 +25,11 @@
     <tr>
       <td>
         <div>
-          <h4><a title="Component Label" href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a></h4>
-          <span title="Component Type" class="sticker">Java</span>
-          <span title="Component ID">${component.id}</span>
+          <h4><a title="Component Label" href="${Root.path}/${distId}/viewComponent/${component.id}" class="itemLink">${component.label}</a></h4>
+          <div class="itemDetail">
+            <span title="Component Type" class="sticker">Java</span>
+            <span title="Component ID">${component.id}</span>
+          </div>
       </td>
     </tr>
     </#list>
@@ -35,9 +37,11 @@
     <tr>
       <td>
         <div>
-          <h4><a href="${Root.path}/${distId}/viewComponent/${component.id}">${component.label}</a></h4>
-          <span title="Component Type" class="sticker">XML</span>
-          <span title="Component ID">${component.id}</span>
+          <h4><a href="${Root.path}/${distId}/viewComponent/${component.id}" class="itemLink">${component.label}</a></h4>
+          <div class="itemDetail">
+            <span title="Component Type" class="sticker">XML</span>
+            <span title="Component ID">${component.id}</span>
+          </div>
         </div>
       </td>
     </tr>
@@ -49,7 +53,7 @@
 </@block>
 
 <@block name="footer_scripts">
-  <@tableSortFilterScript "#componentsTable" "[0,0]" />
+  <@tableSortFilterScript "#contentTable" "[0,0]" />
 </@block>
 
 </@extends>

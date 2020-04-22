@@ -16,29 +16,29 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.functionaltests.explorer.pages;
+package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
-import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
 
 /**
- * Page representing a selected artifact.
- *
  * @since 11.1
  */
-public class ArtifactPage extends ArtifactHomePage {
+public class OperationArtifactPage extends ArtifactPage {
 
-    @Required
-    @FindBy(xpath = "//section/article[@role='contentinfo']/h1")
-    public WebElement header;
-
-    @FindBy(xpath = "//section/article[@role='contentinfo']/div[contains(@class, 'include-in')]")
-    public WebElement description;
-
-    public ArtifactPage(WebDriver driver) {
+    public OperationArtifactPage(WebDriver driver) {
         super(driver);
+    }
+
+    @Override
+    public void check() {
+        checkCommon("Operation acceptComment", "Operation acceptComment", "acceptComment");
+    }
+
+    @Override
+    public void checkSelectedTab() {
+        DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
+        header.checkSelectedTab(header.operations);
     }
 
 }

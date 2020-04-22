@@ -10,7 +10,7 @@
 
 <h1>${contributions?size} Contributions</h1>
 <div class="tabscontent">
-  <table id="contributionsTable" class="tablesorter">
+  <table id="contentTable" class="tablesorter">
   <thead>
     <tr>
       <th>
@@ -27,9 +27,11 @@
     <tr>
       <td>
         <div>
-          <h4><a title="Contribution" href="${Root.path}/${distId}/viewContribution/${contrib.id}">${contrib.id}</a></h4>
-          <span title="Target Extension Point">${contrib.extensionPoint?split("--")[1]}</span> -
-          <span title="Target Component Name">${contrib.targetComponentName.name}</<span>
+          <h4><a title="Contribution" href="${Root.path}/${distId}/viewContribution/${contrib.id}" class="itemLink">${contrib.id}</a></h4>
+          <div class="itemDetail">
+            <span title="Target Extension Point">${contrib.extensionPoint?split("--")[1]}</span> -
+            <span title="Target Component Name">${contrib.targetComponentName.name}</<span>
+          </div>
         </div>
       </td>
     </tr>
@@ -41,7 +43,7 @@
 </@block>
 
 <@block name="footer_scripts">
-  <@tableSortFilterScript "#contributionsTable" "[0,0]" />
+  <@tableSortFilterScript "#contentTable" "[0,0]" />
 </@block>
 
 </@extends>

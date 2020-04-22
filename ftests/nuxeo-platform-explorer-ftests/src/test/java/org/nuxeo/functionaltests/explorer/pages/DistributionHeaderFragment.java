@@ -18,6 +18,9 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -29,7 +32,7 @@ import org.openqa.selenium.support.FindBy;
  *
  * @since 11.1
  */
-public class ArtifactHomePage extends AbstractExplorerPage {
+public class DistributionHeaderFragment extends AbstractExplorerPage {
 
     @Required
     @FindBy(linkText = "Extension points")
@@ -55,17 +58,36 @@ public class ArtifactHomePage extends AbstractExplorerPage {
     @FindBy(linkText = "Bundles")
     public WebElement bundles;
 
-    public ArtifactHomePage(WebDriver driver) {
+    public DistributionHeaderFragment(WebDriver driver) {
         super(driver);
     }
 
-    public WebElement getFirstListingElement() {
-        return driver.findElement(By.xpath("//div[@class='tabscontent']//table/tbody//tr"));
-    }
-
-    public boolean isSelected(WebElement element) {
+    protected boolean isSelected(WebElement element) {
         WebElement parent = element.findElement(By.xpath("./.."));
         return "selected".equals(parent.getAttribute("class"));
+    }
+
+    public DistributionHeaderFragment navigateTo(WebElement element) {
+        clickOn(element);
+        return asPage(DistributionHeaderFragment.class);
+    }
+
+    @Override
+    public void check() {
+        checkUnselectedTab(extensionPoints);
+        checkUnselectedTab(contributions);
+        checkUnselectedTab(services);
+        checkUnselectedTab(operations);
+        checkUnselectedTab(components);
+        checkUnselectedTab(bundles);
+    }
+
+    public void checkSelectedTab(WebElement element) {
+        assertTrue(isSelected(element));
+    }
+
+    public void checkUnselectedTab(WebElement element) {
+        assertFalse(isSelected(element));
     }
 
 }
