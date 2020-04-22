@@ -47,4 +47,8 @@ public interface StreamService {
      */
     @Deprecated
     StreamManager getStreamManager(String configName);
+
+
+    // exposed for test
+    void stopProcessors();
 }

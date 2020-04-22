@@ -226,11 +226,11 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
     @Override
     public void stop(ComponentContext context) throws InterruptedException {
         super.stop(context);
-        stopComputations(); // should have already be done by the beforeStop listener
         logManager.close();
     }
 
-    protected void startComputations() {
+    protected void startProcessors() {
+        log.debug("Start processors");
         getDescriptors(XP_STREAM_PROCESSOR).forEach(d -> {
             StreamProcessor processor = processors.get(d.getId());
             if (processor != null) {
@@ -239,7 +239,9 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         });
     }
 
-    protected void stopComputations() {
+    @Override
+    public void stopProcessors() {
+        log.debug("Stop processors");
         processors.forEach((name, processor) -> {
             if (processor != null) {
                 processor.stop(Duration.ofSeconds(1));
@@ -252,13 +254,15 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
         @Override
         public void afterStart(ComponentManager mgr, boolean isResume) {
             // this is called once all components are started and ready
-            startComputations();
+            log.debug("afterStart");
+            startProcessors();
         }
 
         @Override
         public void beforeStop(ComponentManager mgr, boolean isStandby) {
             // this is called before components are stopped
-            stopComputations();
+            log.debug("beforeStop");
+            stopProcessors();
             Framework.getRuntime().getComponentManager().removeListener(this);
         }
     }
