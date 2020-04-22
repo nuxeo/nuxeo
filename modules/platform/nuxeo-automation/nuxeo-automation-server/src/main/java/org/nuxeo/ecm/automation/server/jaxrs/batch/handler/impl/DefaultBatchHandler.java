@@ -16,6 +16,7 @@
  * Contributors:
  *     Luís Duarte
  *     Florent Guillaume
+ *     Mickaël Schoentgen
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch.handler.impl;
 
@@ -53,6 +54,11 @@ public class DefaultBatchHandler extends AbstractBatchHandler {
         return fileEntry.getFileSize() == fileInfo.getLength()
                 && Objects.equals(fileEntry.getMimeType(), fileInfo.getMimeType())
                 && Objects.equals(fileEntry.getBlob().getDigest(), fileInfo.getMd5());
+    }
+
+    @Override
+    public Map<String, Object> refreshToken(String batchId) {
+        throw new UnsupportedOperationException("Refresh token is not supported for the default batch handler.");
     }
 
 }

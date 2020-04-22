@@ -16,6 +16,7 @@
  * Contributors:
  *     Luís Duarte
  *     Florent Guillaume
+ *     Mickaël Schoentgen
  */
 package org.nuxeo.ecm.automation.server.jaxrs.batch;
 
@@ -61,6 +62,17 @@ public interface BatchHandler {
      * @return the batch with the given id, or {@code null} if not found
      */
     Batch getBatch(String batchId);
+
+    /**
+     * Attempts to renew the credentials associated to this batch handler.
+     * This is only typically used in third-party batch handlers.
+     *
+     * @param batchId the batch id
+     * @return the new credentials
+     *
+     * @since 11.1
+     */
+    Map<String, Object> refreshToken(String batchId);
 
     /**
      * Callback for the batch handler to execute post-upload actions. This is only typically used in third-party batch
