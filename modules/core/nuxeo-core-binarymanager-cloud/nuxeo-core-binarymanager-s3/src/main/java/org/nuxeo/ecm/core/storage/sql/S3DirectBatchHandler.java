@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -267,9 +267,11 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
         ObjectMetadata newMetadata;
         if (metadata.getContentLength() > lowerThresholdToUseMultipartCopy()) {
-            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, targetSSEAlgorithm, true);
+            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, newFileKey,
+                    targetSSEAlgorithm, true);
         } else {
-            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, targetSSEAlgorithm, true);
+            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, targetSSEAlgorithm,
+                    true);
             boolean isMultipartUpload = REGEX_MULTIPART_ETAG.matcher(etag).find();
             if (isMultipartUpload) {
                 etag = newMetadata.getETag();
