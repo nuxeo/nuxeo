@@ -13,9 +13,6 @@ ARG BASE_IMAGE
 # Build stage
 FROM ${BUILDER_IMAGE} as builder
 
-COPY target/packages /packages
-RUN install-packages.sh /packages
-
 # ------------------------------------------------------------------------
 # Target stage
 FROM ${BASE_IMAGE}
