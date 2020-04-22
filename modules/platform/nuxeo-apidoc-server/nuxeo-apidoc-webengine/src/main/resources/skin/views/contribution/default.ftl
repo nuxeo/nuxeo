@@ -27,8 +27,7 @@
   <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.targetComponentName.name}">${nxItem.targetComponentName.name?replace(".*\\.","","r")}</a>.
 
   <h2>Contributed items</h2>
-  <form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override">
-    <input id="overrideStart" type="button" value="Generate Override" onclick="showOverrideForm()"/>
+  <form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override" target="_blank">
     <ul class="block-list">
     <#list nxItem.contributionItems as contributionItem>
       <li>
@@ -36,20 +35,23 @@
           <pre><code>${contributionItem.xml}</code></pre>
         </div>
         <div class="block-title">
-          <input id="${contributionItem.id}" type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none"/>
+          <input id="${contributionItem.id}" type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none" checked/>
           <label for="${contributionItem.id}">${contributionItem.label}</label>
           <span>${contributionItem.documentation}</span>
         </div>
       </li>
     </#list>
     </ul>
-    <input class="button primary" id="overrideGen" type="submit" value="Generate XML file" style="display:none"/>
+    <input id="overrideStart" type="button" value="Generate Override" onclick="toggleOverrideForm(true)"/>
+    <input id="overrideGen" style="display:none" type="submit" value="Generate XML file" class="button primary"/>
+    <input id="overrideCancel" style="display:none" type="button" value="Cancel" onclick="toggleOverrideForm(false)" />
   </form>
   <script>
-  function showOverrideForm(event) {
-    $('#overrideStart').css("display", "none");
-    $('#overrideGen').css("display", "inline");
-    $(':checkbox').css("display","inline");
+  function toggleOverrideForm(show) {
+    $('#overrideStart').css("display", show ? "none" : "inline");
+    $('#overrideGen').css("display", show ? "inline" : "none");
+    $('#overrideCancel').css("display", show ? "inline" : "none");
+    $(':checkbox').css("display", show ? "inline" : "none");
     return false;
   }
   </script>

@@ -19,7 +19,9 @@
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 /**
  * @since 11.1
@@ -40,6 +42,11 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
     public void checkSelectedTab() {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header.checkSelectedTab(header.extensionPoints);
+    }
+
+    public void generateOverride(String contributionId) {
+        WebElement li = driver.findElement(By.id(contributionId));
+        clickOn(li.findElement(By.linkText("Contribute")));
     }
 
 }

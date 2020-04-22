@@ -18,6 +18,12 @@
  */
 package org.nuxeo.functionaltests.explorer;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.ListingFragment;
@@ -149,6 +155,34 @@ public abstract class AbstractExplorerTest extends AbstractTest {
             apage.checkSelectedTab();
         }
         apage.check();
+    }
+
+    protected String previousWindowHandle;
+
+    protected void storeWindowHandle() {
+        previousWindowHandle = driver.getWindowHandle();
+    }
+
+    protected void switchToNewWindow() {
+        for (String winHandle : driver.getWindowHandles()) {
+            driver.switchTo().window(winHandle);
+        }
+    }
+
+    protected void switchBackToPreviousWindow() {
+        if (previousWindowHandle != null) {
+            driver.close();
+            driver.switchTo().window(previousWindowHandle);
+        }
+    }
+
+    public static String getReferenceContent(String path) throws IOException {
+        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(path);
+        if (fileUrl == null) {
+            throw new IllegalStateException("File not found: " + path);
+        }
+        String refPath = FileUtils.getFilePathFromUrl(fileUrl);
+        return org.apache.commons.io.FileUtils.readFileToString(new File(refPath), StandardCharsets.UTF_8).trim();
     }
 
 }
