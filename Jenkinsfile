@@ -319,7 +319,7 @@ pipeline {
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
     PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
-    MAVEN_OPTS = "$MAVEN_OPTS -Xms512m -Xmx3072m"
+    MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
     VERSION = getVersion()
     DOCKER_TAG = getDockerTagFrom("${VERSION}")
@@ -407,7 +407,7 @@ pipeline {
           Compile
           ----------------------------------------"""
           echo "MAVEN_OPTS=$MAVEN_OPTS"
-          sh "mvn ${MAVEN_ARGS} -V -T0.8C -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} -V -T4C -DskipTests install"
         }
       }
       post {
@@ -559,7 +559,7 @@ pipeline {
           """
           echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
           // Fetch Nuxeo Tomcat Server and Nuxeo Content Platform packages with Maven
-          sh "mvn ${MAVEN_ARGS} -f docker/pom.xml process-resources"
+          sh "mvn ${MAVEN_ARGS} -T4C -f docker/pom.xml process-resources"
           skaffoldBuild('docker/skaffold.yaml')
         }
       }
