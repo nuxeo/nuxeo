@@ -104,8 +104,14 @@ public class KafkaLogConfig extends AbstractLogConfig {
         } else {
             ret = new Properties();
         }
-        ret.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        ret.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.BytesSerializer");
+        try {
+            ret.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+                    Class.forName("org.apache.kafka.common.serialization.StringSerializer"));
+            ret.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+                    Class.forName("org.apache.kafka.common.serialization.BytesSerializer"));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
         ret.remove(DEFAULT_REPLICATION_FACTOR_PROP);
         return ret;
     }
@@ -117,10 +123,14 @@ public class KafkaLogConfig extends AbstractLogConfig {
         } else {
             ret = new Properties();
         }
-        ret.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-                "org.apache.kafka.common.serialization.StringDeserializer");
-        ret.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                "org.apache.kafka.common.serialization.BytesDeserializer");
+        try {
+            ret.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+                    Class.forName("org.apache.kafka.common.serialization.StringDeserializer"));
+            ret.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+                    Class.forName("org.apache.kafka.common.serialization.BytesDeserializer"));
+        } catch (ClassNotFoundException e) {
+            throw new IllegalStateException(e);
+        }
         ret.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         ret.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         ret.remove(DISABLE_SUBSCRIBE_PROP);
