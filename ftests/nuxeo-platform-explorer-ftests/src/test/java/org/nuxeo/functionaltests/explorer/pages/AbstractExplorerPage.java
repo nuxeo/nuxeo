@@ -18,6 +18,8 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
+import static org.junit.Assert.assertEquals;
+
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.pages.AbstractPage;
@@ -38,13 +40,22 @@ public abstract class AbstractExplorerPage extends AbstractPage {
         super(driver);
     }
 
-    public String getTitle() {
-        return driver.getTitle();
+    public void clickOn(WebElement element) {
+        Locator.scrollAndForceClick(element);
     }
 
-    public ArtifactHomePage navigateTo(WebElement element) {
-        Locator.scrollAndForceClick(element);
-        return asPage(ArtifactHomePage.class);
+    public ExplorerHomePage goHome() {
+        clickOn(homeLink);
+        return asPage(ExplorerHomePage.class);
     }
+
+    public void checkTitle(String expected) {
+        assertEquals(expected, driver.getTitle());
+    }
+
+    /**
+     * Generic page check to be implemented.
+     */
+    public abstract void check();
 
 }

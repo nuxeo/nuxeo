@@ -12,7 +12,7 @@
 
 <div class="tabscontent">
 
-  <table id="bundlesTable" class="tablesorter">
+  <table id="contentTable" class="tablesorter">
   <thead>
     <tr>
       <th>
@@ -25,7 +25,7 @@
     <tr>
       <td>
         <div>
-          <h4><a title="Bundle Name" href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a></h4>
+          <h4><a title="Bundle Name" href="${Root.path}/${distId}/viewBundle/${bundleId}" class="itemLink">${bundleId}</a></h4>
         </div>
       </td>
     </tr>
@@ -37,7 +37,7 @@
 </@block>
 
 <@block name="footer_scripts">
-  <@tableSortFilterScript "#bundlesTable" "[0,0]" />
+  <@tableSortFilterScript "#contentTable" "[0,0]" />
 </@block>
 
 </@extends>

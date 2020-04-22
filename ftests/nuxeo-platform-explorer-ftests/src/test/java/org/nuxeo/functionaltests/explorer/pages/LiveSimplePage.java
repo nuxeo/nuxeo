@@ -18,9 +18,8 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -31,43 +30,22 @@ import org.openqa.selenium.support.FindBy;
  *
  * @since 11.1
  */
-public class ExplorerHomePage extends AbstractExplorerPage {
+public class LiveSimplePage extends AbstractExplorerPage {
 
-    public static final String URL = "/site/distribution/";
-
-    @Required
-    @FindBy(className = "current")
-    public WebElement currentPlatform;
+    public static final String URL = "/site/distribution/adm";
 
     @Required
-    @FindBy(className = "distrib")
-    public WebElement currentDistrib;
+    @FindBy(xpath = "//h1")
+    public WebElement header;
 
-    @Required
-    @FindBy(linkText = "Contribute to an Extension")
-    public WebElement currentExtensionPoints;
-
-    @Required
-    @FindBy(linkText = "Override a Contribution")
-    public WebElement currentContributions;
-
-    @Required
-    @FindBy(linkText = "Search Operations")
-    public WebElement currentOperations;
-
-    @Required
-    @FindBy(linkText = "Browse Services")
-    public WebElement currentServices;
-
-    public ExplorerHomePage(WebDriver driver) {
+    public LiveSimplePage(WebDriver driver) {
         super(driver);
     }
 
     @Override
     public void check() {
         checkTitle("Nuxeo Platform Explorer");
-        assertEquals("Running Platform".toUpperCase(), currentPlatform.getText());
-        assertEquals(AbstractTest.NUXEO_URL + URL + "current/", currentDistrib.getAttribute("href"));
+        assertTrue(header.getText(), header.getText().startsWith("Your current Nuxeo Distribution is"));
     }
 
 }

@@ -24,7 +24,7 @@
     </#if>
 
     <li>
-      <a href="${Root.path}/${distId}/viewBundleGroup/${bundleGroup.group.id}">${bundleGroup.group.name}</a>
+      <a href="${Root.path}/${distId}/viewBundleGroup/${bundleGroup.group.id}" class="itemLink">${bundleGroup.group.name}</a>
     </li>
 
     <#assign prevLevel=level/>
