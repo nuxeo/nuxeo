@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 /**
@@ -40,6 +41,14 @@ public class ContributionArtifactPage extends ArtifactPage {
     public void checkSelectedTab() {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header.checkSelectedTab(header.contributions);
+    }
+
+    public void toggleGenerateOverride() {
+        findElementWaitUntilEnabledAndClick(By.id("overrideStart"));
+    }
+
+    public void doGenerateOverride() {
+        findElementWaitUntilEnabledAndClick(By.id("overrideGen"));
     }
 
 }
