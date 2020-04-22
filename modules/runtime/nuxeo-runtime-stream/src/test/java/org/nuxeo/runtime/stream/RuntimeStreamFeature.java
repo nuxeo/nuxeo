@@ -118,7 +118,9 @@ public class RuntimeStreamFeature implements RunnerFeature {
             return;
         }
         log.debug("Clean Kafka topics");
-        LogManager manager = Framework.getService(StreamService.class).getLogManager();
+        StreamService service = Framework.getService(StreamService.class);
+        service.stopProcessors();
+        LogManager manager = service.getLogManager();
         manager.listAll().forEach(manager::delete);
         cleanupTopics = false;
     }
