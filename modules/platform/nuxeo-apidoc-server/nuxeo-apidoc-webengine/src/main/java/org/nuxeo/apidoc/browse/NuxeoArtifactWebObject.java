@@ -154,7 +154,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewDefault() {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("default").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "defView");
+        return getView("default").arg("nxItem", nxItem).arg("docs", docs);
     }
 
     @GET
@@ -163,7 +163,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     public Object doViewDoc() {
         NuxeoArtifact nxItem = getNxArtifact();
         AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "docView");
+        return getView("../documentation").arg("nxItem", nxItem).arg("docs", docs);
     }
 
     @GET
@@ -181,7 +181,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
                                   .arg("mode", "create")
                                   .arg("docItem", docItem)
                                   .arg("versions", versions)
-                                  .arg("selectedTab", "docView")
                                   .arg("preselectedType", type);
     }
 
@@ -196,8 +195,7 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return getView("../docForm").arg("nxItem", nxItem)
                                     .arg("mode", "edit")
                                     .arg("docItem", docItem)
-                                    .arg("versions", versions)
-                                    .arg("selectedTab", "docView");
+                                    .arg("versions", versions);
     }
 
     @GET
