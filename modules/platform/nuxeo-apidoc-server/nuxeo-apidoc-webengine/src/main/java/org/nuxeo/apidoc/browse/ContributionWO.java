@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -37,16 +36,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type = "contribution")
 public class ContributionWO extends NuxeoArtifactWebObject {
 
-    @Override
-    @GET
-    @Produces("text/html")
-    @Path("introspection")
-    public Object doGet() {
-        ExtensionInfo ei = getTargetExtensionInfo();
-        return getView("view").arg("contribution", ei);
-    }
-
-    public ExtensionInfo getTargetExtensionInfo() {
+    protected ExtensionInfo getTargetExtensionInfo() {
         return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession())
                                    .getContribution(nxArtifactId);
     }

@@ -18,10 +18,6 @@
  */
 package org.nuxeo.apidoc.browse;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -29,16 +25,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type = "service")
 public class ServiceWO extends NuxeoArtifactWebObject {
 
-    @Override
-    @GET
-    @Produces("text/html")
-    @Path("introspection")
-    public Object doGet() {
-        ServiceInfo si = getServiceInfo();
-        return getView("view").arg("service", si);
-    }
-
-    public ServiceInfo getServiceInfo() {
+    protected ServiceInfo getServiceInfo() {
         return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getService(nxArtifactId);
     }
 

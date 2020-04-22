@@ -38,16 +38,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type = "component")
 public class ComponentWO extends NuxeoArtifactWebObject {
 
-    @Override
-    @GET
-    @Produces("text/html")
-    @Path("introspection")
-    public Object doGet() {
-        ComponentInfo ci = getTargetComponentInfo();
-        String bundleId = ci.getBundle().getBundleId();
-        return getView("view").arg("bundleId", bundleId).arg("component", ci);
-    }
-
     @GET
     @Produces("text/xml")
     @Path("override")
@@ -63,7 +53,7 @@ public class ComponentWO extends NuxeoArtifactWebObject {
         return getView("override").arg("component", component).arg("extension", extension);
     }
 
-    public ComponentInfo getTargetComponentInfo() {
+    protected ComponentInfo getTargetComponentInfo() {
         return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getComponent(nxArtifactId);
     }
 

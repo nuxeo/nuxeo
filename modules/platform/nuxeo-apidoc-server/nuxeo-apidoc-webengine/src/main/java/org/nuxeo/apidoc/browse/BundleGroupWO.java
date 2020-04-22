@@ -21,32 +21,14 @@ package org.nuxeo.apidoc.browse;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-
 import org.nuxeo.apidoc.api.BundleGroup;
-import org.nuxeo.apidoc.api.BundleGroupFlatTree;
-import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 @WebObject(type = "bundleGroup")
 public class BundleGroupWO extends NuxeoArtifactWebObject {
 
-    @Override
-    @GET
-    @Produces("text/html")
-    @Path("introspection")
-    public Object doGet() {
-        BundleGroup group = getTargetBundleGroup();
-        BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(
-                getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()));
-        List<BundleGroupFlatTree> tree = bgth.getBundleGroupSubTree(nxArtifactId);
-        return getView("view").arg("group", group).arg("groupId", nxArtifactId).arg("tree", tree);
-    }
-
-    public BundleGroup getTargetBundleGroup() {
+    protected BundleGroup getTargetBundleGroup() {
         return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundleGroup(nxArtifactId);
     }
 
