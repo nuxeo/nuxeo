@@ -158,15 +158,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     @GET
     @Produces("text/html")
-    @Path("aggregated")
-    public Object doViewAggregated() {
-        NuxeoArtifact nxItem = getNxArtifact();
-        AssociatedDocuments docs = nxItem.getAssociatedDocuments(ctx.getCoreSession());
-        return getView("aggregated").arg("nxItem", nxItem).arg("docs", docs).arg("selectedTab", "aggView");
-    }
-
-    @GET
-    @Produces("text/html")
     @Path("createForm")
     public Object doAddDoc(@QueryParam("inline") Boolean inline, @QueryParam("type") String type) {
         NuxeoArtifact nxItem = getNxArtifact();
