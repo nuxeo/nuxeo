@@ -28,8 +28,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.bulk.action.computation.AbstractBulkComputation;
 import org.nuxeo.ecm.core.model.Document;
@@ -44,6 +47,8 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
  * @since 11.1
  */
 public class DeletionAction implements StreamProcessorTopology {
+
+    private static final Logger log = LogManager.getLogger(DeletionAction.class);
 
     public static final String ACTION_NAME = "deletion";
 
@@ -72,6 +77,8 @@ public class DeletionAction implements StreamProcessorTopology {
                     doc.removeSingleton();
                 } catch (DocumentNotFoundException e) {
                     // Document is already deleted
+                } catch (DocumentExistsException e) {
+                    log.debug("Cannot delete {}: {}", id, e.getMessage());
                 }
             }
         }
