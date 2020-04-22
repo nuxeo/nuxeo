@@ -21,8 +21,6 @@ package org.nuxeo.apidoc.browse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,15 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "operation")
 public class OperationWO extends NuxeoArtifactWebObject {
 
-    @Override
-    @GET
-    @Produces("text/html")
-    @Path("introspection")
-    public Object doGet() {
-        return getView("view").arg("operation", getTargetComponentInfo());
-    }
-
-    public OperationInfo getTargetComponentInfo() {
+    protected OperationInfo getTargetComponentInfo() {
         return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getOperation(nxArtifactId);
     }
 
@@ -105,7 +95,6 @@ public class OperationWO extends NuxeoArtifactWebObject {
         return "";
     }
 
-    @GET
     @Produces("text/html")
     @Override
     public Object doViewDefault() {
