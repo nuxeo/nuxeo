@@ -70,7 +70,7 @@
 
     <ul id="highlight-plugin" class="block-list">
       <#list nxItem.extensions as contrib>
-      <li>
+      <li id="${contrib.id}">
         <div class="searchableText">
           <span style="display:none">${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}</span>
           <pre><code>${contrib.xml?xml}</code></pre>
@@ -80,7 +80,7 @@
           ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
           </a>
           &nbsp;
-          <a class="components" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?extensionId=${contrib.extensionPoint}"">
+          <a class="components" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?extensionId=${contrib.extensionPoint}" target="_blank">
           Contribute
           </a>
         </div>

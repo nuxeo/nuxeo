@@ -19,13 +19,18 @@ package org.nuxeo.functionaltests.explorer;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.ContributionArtifactPage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.ExtensionPointArtifactPage;
 
 /**
  * Test explorer "adm" "simple" webengine pages.
@@ -136,6 +141,33 @@ public class ITExplorerTest extends AbstractExplorerTest {
         header = header.navigateTo(header.bundles);
         header.checkSelectedTab(header.bundles);
         checkBundles();
+    }
+
+    @Test
+    public void testOverrideContribution() throws IOException {
+        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT,
+                ApiBrowserConstants.VIEW_CONTRIBUTION, "org.nuxeo.apidoc.listener.contrib--listener"));
+        ContributionArtifactPage apage = asPage(ContributionArtifactPage.class);
+        apage.toggleGenerateOverride();
+        storeWindowHandle();
+        apage.doGenerateOverride();
+        switchToNewWindow();
+        String expected = AbstractExplorerTest.getReferenceContent("data/override_reference.xml");
+        assertEquals(expected, driver.getPageSource());
+        switchBackToPreviousWindow();
+    }
+
+    @Test
+    public void testOverrideContributionFromExtensionPoint() throws IOException {
+        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT,
+                ApiBrowserConstants.VIEW_EXTENSIONPOINT, "org.nuxeo.ecm.core.event.EventServiceComponent--listener"));
+        ExtensionPointArtifactPage apage = asPage(ExtensionPointArtifactPage.class);
+        storeWindowHandle();
+        apage.generateOverride("org.nuxeo.apidoc.listener.contrib--listener");
+        switchToNewWindow();
+        String expected = AbstractExplorerTest.getReferenceContent("data/override_xp_reference.xml");
+        assertEquals(expected, driver.getPageSource());
+        switchBackToPreviousWindow();
     }
 
 }
