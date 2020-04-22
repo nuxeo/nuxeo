@@ -19,14 +19,9 @@
 package org.nuxeo.apidoc.browse;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -36,17 +31,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @WebObject(type = "bundle")
 public class BundleWO extends NuxeoArtifactWebObject {
 
-    @Override
-    @GET
-    @Produces("text/html")
-    @Path("introspection")
-    public Object doGet() {
-        BundleInfo bi = getTargetBundleInfo();
-        Collection<ComponentInfo> ci = bi.getComponents();
-        return getView("view").arg("bundle", bi).arg("components", ci);
-    }
-
-    public BundleInfo getTargetBundleInfo() {
+    protected BundleInfo getTargetBundleInfo() {
         return getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession()).getBundle(nxArtifactId);
     }
 

@@ -72,8 +72,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
 
     public abstract NuxeoArtifact getNxArtifact();
 
-    protected abstract Object doGet();
-
     protected String getDistributionId() {
         return (String) ctx.getProperty(Distribution.DIST_ID);
     }
@@ -139,7 +137,19 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
         return redirect(getDocUrl());
     }
 
+    /**
+     * Default getter on artifact.
+     * <p>
+     * Can be overridden for customization.
+     *
+     * @since 11.1
+     */
     @GET
+    @Produces("text/html")
+    public Object doGet() {
+        return doViewDefault();
+    }
+
     @Produces("text/html")
     public Object doViewDefault() {
         NuxeoArtifact nxItem = getNxArtifact();
