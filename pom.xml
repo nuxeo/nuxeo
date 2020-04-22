@@ -125,7 +125,7 @@
     <gatling-plugin.version>3.0.4</gatling-plugin.version>
     <scala.version>2.12.3</scala.version>
     <scala-logging.version>3.9.0</scala-logging.version>
-    <scala-maven-plugin.version>3.3.2</scala-maven-plugin.version>
+    <scala-maven-plugin.version>4.3.1</scala-maven-plugin.version>
     <jgiven.version>0.18.2</jgiven.version>
 
     <nuxeo.skip.enforcer>false</nuxeo.skip.enforcer>
