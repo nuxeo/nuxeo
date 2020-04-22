@@ -66,9 +66,12 @@
            readonly
            directory-name="RetentionEvent">
         </nuxeo-directory-suggestion>
-        <nuxeo-tag  name="eventInput">
-          [[document.properties.retention_def:startingPointExpression]]
-        </nuxeo-tag>
+        <div role="widget">
+          <label>[[i18n("retention.rule.label.startPolicy.eventBased.expression.placeholder")]]</label>
+          <nuxeo-tag name="eventInput">
+            [[document.properties.retention_def:startingPointExpression]]
+          </nuxeo-tag>
+        </div>
       </div>
       <div role="widget" hidden$="[[!_isMetadataBased(document)]]">
         <nuxeo-tag name="xpath">
