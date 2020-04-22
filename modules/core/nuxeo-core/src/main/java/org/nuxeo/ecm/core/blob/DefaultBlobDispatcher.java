@@ -95,7 +95,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     // name="records" is equivalent to the following clause:
     protected static final String RECORDS_CLAUSE = "ecm:isRecord=true,blob:xpath=" + MAIN_BLOB_XPATH;
 
-    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*)(=|!=|<|>|~|\\^)(.*)");
+    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*?)(=|!=|<|>|~|\\^)(.*)");
 
     /** Pseudo-property for the repository name. */
     protected static final String REPOSITORY_NAME = "ecm:repositoryName";
