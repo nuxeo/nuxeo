@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static org.nuxeo.ecm.core.model.Session.PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -432,6 +434,11 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     protected void checkBlobCanBeDeleted(Document doc, String xpath) {
         if (MAIN_BLOB_XPATH.equals(xpath) && doc.isUnderRetentionOrLegalHold()) {
+            boolean allowDeleteUndeletable = Framework.isBooleanPropertyTrue(PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS);
+            if (allowDeleteUndeletable) {
+                // in unit tests allow this
+                return;
+            }
             throw new DocumentSecurityException(
                     "Cannot remove main blob from document " + doc.getUUID() + ", it is under retention / hold");
         }
