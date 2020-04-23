@@ -145,7 +145,7 @@ public class JsonESDocumentWriter {
         }
 
         jg.writeEndArray();
-        Map<String, String> bmap = doc.getBinaryFulltext();
+        Map<String, String> bmap = getBinaryFulltext(doc);
         if (bmap != null && !bmap.isEmpty()) {
             for (Map.Entry<String, String> item : bmap.entrySet()) {
                 String value = item.getValue();
@@ -154,6 +154,11 @@ public class JsonESDocumentWriter {
                 }
             }
         }
+    }
+
+    // kept separate for easy override
+    protected Map<String, String> getBinaryFulltext(DocumentModel doc) throws IOException {
+        return doc.getBinaryFulltext();
     }
 
     /**
