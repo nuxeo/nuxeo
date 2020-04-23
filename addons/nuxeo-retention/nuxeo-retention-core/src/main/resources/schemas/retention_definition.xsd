@@ -32,6 +32,7 @@
     </xs:simpleType>
   </xs:element>
   <xs:element name="startingPointExpression" type="xs:string" />
+  <xs:element name="startingPointValue" type="xs:string" />
 
   <xs:element name="metadataXPath" type="xs:string" />
 

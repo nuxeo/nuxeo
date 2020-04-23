@@ -116,11 +116,11 @@ limitations under the License.
              min-chars="0">
            </nuxeo-directory-suggestion>
            <nuxeo-input role="widget" name="eventInput"
-                        label="[[i18n('retention.rule.label.startPolicy.eventBased.expression.description')]]"
-                        placeholder="[[i18n('retention.rule.label.startPolicy.eventBased.expression.placeholder')]]"
-                        name="startingPointExpression"
+                        label="[[i18n('retention.rule.label.startPolicy.eventBased.input.description')]]"
+                        placeholder="[[i18n('retention.rule.label.startPolicy.eventBased.input.placeholder')]]"
+                        name="startingPointValue"
                         required
-                        value="{{document.properties.retention_def:startingPointExpression}}">
+                        value="{{document.properties.retention_def:startingPointValue}}">
            </nuxeo-input>
         </template>
       </dom-if>
