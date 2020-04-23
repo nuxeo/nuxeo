@@ -18,11 +18,13 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.core.model.Session.PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +32,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.regex.Matcher;
@@ -190,51 +193,13 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
-                List<Clause> clauses = new ArrayList<>(2);
-                for (String name : clausesString.split(",")) {
-                    Matcher m = NAME_PATTERN.matcher(name);
-                    if (m.matches()) {
-                        String xpath = m.group(1);
-                        String ops = m.group(2);
-                        Object value = m.group(3);
-                        Op op;
-                        switch (ops) {
-                        case "=":
-                            op = Op.EQ;
-                            break;
-                        case "!=":
-                            op = Op.NEQ;
-                            break;
-                        case "<":
-                            op = Op.LT;
-                            break;
-                        case "<=":
-                            op = Op.LTE;
-                            break;
-                        case ">":
-                            op = Op.GT;
-                            break;
-                        case ">=":
-                            op = Op.GTE;
-                            break;
-                        case "~":
-                            op = Op.GLOB;
-                            value = getPatternFromGlob((String) value);
-                            break;
-                        case "^":
-                            op = Op.RE;
-                            value = Pattern.compile((String) value);
-                            break;
-                        default:
-                            log.error("Invalid dispatcher configuration operator: " + ops);
-                            continue;
-                        }
-                        clauses.add(new Clause(xpath, op, value));
-                        rulesXPaths.add(xpath);
-                    } else {
-                        log.error("Invalid dispatcher configuration property name: " + name);
-                    }
+                List<Clause> clauses = Arrays.stream(clausesString.split(","))
+                                             .map(this::getClause)
+                                             .filter(Objects::nonNull)
+                                             .collect(toList());
+                if (!clauses.isEmpty()) {
                     rules.add(new Rule(clauses, providerId));
+                    clauses.forEach(clause -> rulesXPaths.add(clause.xpath));
                 }
             }
         }
@@ -242,6 +207,51 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         if (!useRepositoryName && defaultProviderId == null) {
             log.error("Invalid dispatcher configuration, missing default, configuration will be ignored");
             useRepositoryName = true;
+        }
+    }
+
+    protected Clause getClause(String name) {
+        Matcher m = NAME_PATTERN.matcher(name);
+        if (m.matches()) {
+            String xpath = m.group(1);
+            String ops = m.group(2);
+            Object value = m.group(3);
+            Op op;
+            switch (ops) {
+            case "=":
+                op = Op.EQ;
+                break;
+            case "!=":
+                op = Op.NEQ;
+                break;
+            case "<":
+                op = Op.LT;
+                break;
+            case "<=":
+                op = Op.LTE;
+                break;
+            case ">":
+                op = Op.GT;
+                break;
+            case ">=":
+                op = Op.GTE;
+                break;
+            case "~":
+                op = Op.GLOB;
+                value = getPatternFromGlob((String) value);
+                break;
+            case "^":
+                op = Op.RE;
+                value = Pattern.compile((String) value);
+                break;
+            default:
+                log.error("Invalid dispatcher configuration operator: " + ops);
+                return null;
+            }
+            return new Clause(xpath, op, value);
+        } else {
+            log.error("Invalid dispatcher configuration property name: " + name);
+            return null;
         }
     }
 
@@ -267,97 +277,93 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         if (useRepositoryName) {
             return doc.getRepositoryName();
         }
+        NEXT_RULE: //
         for (Rule rule : rules) {
-            boolean allClausesMatch = true;
             for (Clause clause : rule.clauses) {
-                String xpath = clause.xpath;
                 Object value;
-                if (xpath.equals(REPOSITORY_NAME)) {
-                    value = doc.getRepositoryName();
-                } else if (xpath.equals(PATH)) {
-                    value = doc.getPath();
-                } else if (xpath.equals(IS_RECORD)) {
-                    value = Boolean.valueOf(doc.isRecord());
-                } else if (xpath.startsWith(BLOB_PREFIX)) {
-                    switch (xpath.substring(BLOB_PREFIX.length())) {
-                    case BLOB_NAME:
-                        value = blob.getFilename();
-                        break;
-                    case BLOB_MIME_TYPE:
-                        value = blob.getMimeType();
-                        break;
-                    case BLOB_ENCODING:
-                        value = blob.getEncoding();
-                        break;
-                    case BLOB_DIGEST:
-                        value = blob.getDigest();
-                        break;
-                    case BLOB_LENGTH:
-                        value = Long.valueOf(blob.getLength());
-                        break;
-                    case BLOB_XPATH:
-                        value = blobXPath;
-                        break;
-                    default:
-                        log.error("Invalid dispatcher configuration property name: " + xpath);
-                        continue;
-                    }
-                } else {
-                    try {
-                        value = doc.getValue(xpath);
-                    } catch (PropertyNotFoundException e) {
-                        try {
-                            value = doc.getPropertyValue(xpath);
-                        } catch (PropertyNotFoundException e2) {
-                            allClausesMatch = false;
-                            break;
-                        }
-                    }
+                try {
+                    value = getValue(doc, blob, blobXPath, clause);
+                } catch (PropertyNotFoundException e) {
+                    continue NEXT_RULE;
                 }
-                if (value instanceof Calendar) {
-                    value = ((Calendar) value).toInstant();
-                }
-                boolean match;
-                switch (clause.op) {
-                case EQ:
-                    match = compare(value, clause.value, true, cmp -> cmp == 0);
-                    break;
-                case NEQ:
-                    match = compare(value, clause.value, true, cmp -> cmp != 0);
-                    break;
-                case LT:
-                    match = compare(value, clause.value, false, cmp -> cmp < 0);
-                    break;
-                case LTE:
-                    match = compare(value, clause.value, false, cmp -> cmp <= 0);
-                    break;
-                case GT:
-                    match = compare(value, clause.value, false, cmp -> cmp > 0);
-                    break;
-                case GTE:
-                    match = compare(value, clause.value, false, cmp -> cmp >= 0);
-                    break;
-                case GLOB:
-                case RE:
-                    match = ((Pattern) clause.value).matcher(String.valueOf(value)).matches();
-                    break;
-                default:
-                    throw new AssertionError("notreached");
-                }
-                allClausesMatch = allClausesMatch && match;
-                if (!allClausesMatch) {
-                    break;
+                value = convert(value);
+                if (!match(value, clause)) {
+                    continue NEXT_RULE;
                 }
             }
-            if (allClausesMatch) {
-                return rule.providerId;
-            }
+            return rule.providerId;
         }
         return defaultProviderId;
     }
 
-    protected boolean compare(Object a, Object ob, boolean eqneq, IntPredicate predicate) {
-        String b = (String) ob;
+    protected Object getValue(Document doc, Blob blob, String blobXPath, Clause clause) {
+        String xpath = clause.xpath;
+        if (xpath.equals(REPOSITORY_NAME)) {
+            return doc.getRepositoryName();
+        }
+        if (xpath.equals(PATH)) {
+            return doc.getPath();
+        }
+        if (xpath.equals(IS_RECORD)) {
+            return doc.isRecord();
+        }
+        if (xpath.startsWith(BLOB_PREFIX)) {
+            switch (xpath.substring(BLOB_PREFIX.length())) {
+            case BLOB_NAME:
+                return blob.getFilename();
+            case BLOB_MIME_TYPE:
+                return blob.getMimeType();
+            case BLOB_ENCODING:
+                return blob.getEncoding();
+            case BLOB_DIGEST:
+                return blob.getDigest();
+            case BLOB_LENGTH:
+                return blob.getLength();
+            case BLOB_XPATH:
+                return blobXPath;
+            default:
+                log.error("Invalid dispatcher configuration property name: " + xpath);
+                throw new PropertyNotFoundException(xpath);
+            }
+        }
+        try {
+            return doc.getValue(xpath);
+        } catch (PropertyNotFoundException e) {
+            return doc.getPropertyValue(xpath); // may still throw PropertyNotFoundException
+        }
+    }
+
+    protected Object convert(Object value) {
+        if (value instanceof Calendar) {
+            value = ((Calendar) value).toInstant();
+        }
+        return value;
+    }
+
+    protected boolean match(Object value, Clause clause) {
+        switch (clause.op) {
+        case EQ:
+            return compare(value, clause, true, cmp -> cmp == 0);
+        case NEQ:
+            return compare(value, clause, true, cmp -> cmp != 0);
+        case LT:
+            return compare(value, clause, false, cmp -> cmp < 0);
+        case LTE:
+            return compare(value, clause, false, cmp -> cmp <= 0);
+        case GT:
+            return compare(value, clause, false, cmp -> cmp > 0);
+        case GTE:
+            return compare(value, clause, false, cmp -> cmp >= 0);
+        case GLOB:
+        case RE:
+            return ((Pattern) clause.value).matcher(String.valueOf(value)).matches();
+        default:
+            throw new AssertionError("notreached");
+        }
+    }
+
+    protected boolean compare(Object a, Clause clause, boolean eqneq, IntPredicate predicate) {
+        String b = (String) clause.value;
         int cmp;
         if (a == null) {
             if (eqneq) {
