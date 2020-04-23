@@ -657,6 +657,11 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     @Test
     public void whenFileIsGreaterThanThresholdTotalDocsShouldBeAvailableWhenImportIsCompleted()
             throws IOException, InterruptedException {
+        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
+            // NXP-28859: temporarily ignore against PostgreSQL
+            return;
+        }
+
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
         String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_GREATER_THAN_THE_LENGTH_THRESHOLD),
                 options);
@@ -683,6 +688,11 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     @Test
     public void whenFileIsSmallerThanThresholdTotalDocsShouldBeAvailableWhenImportIsRunningOrScheduled()
             throws IOException, InterruptedException {
+        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
+            // NXP-28859: temporarily ignore against PostgreSQL
+            return;
+        }
+
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
         String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_BELOW_THE_LENGTH_THRESHOLD), options);
         workManager.awaitCompletion(1, TimeUnit.SECONDS);

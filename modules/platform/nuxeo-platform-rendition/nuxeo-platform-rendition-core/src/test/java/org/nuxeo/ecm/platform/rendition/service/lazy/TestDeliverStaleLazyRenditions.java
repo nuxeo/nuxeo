@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -144,6 +145,7 @@ public class TestDeliverStaleLazyRenditions {
     }
 
     // NXP-27316
+    @Ignore(value = "NXP-28769")
     @Test
     public void testOnlyStoreUpToDateRenditions() {
         // ask for the initial rendition: up-to-date and stored
