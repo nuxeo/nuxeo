@@ -118,9 +118,10 @@ limitations under the License.
       _updateActions: function() {
         if (this.nxProvider && this.nxProvider.quickFilters) {
           var rqf = this.nxProvider.quickFilters.find(function(el) { return el.name === 'withoutRule' });
+          const nrqf = this.nxProvider.quickFilters.find((el) => el.name === 'withRule');
           var lhqf = this.nxProvider.quickFilters.find(function(el) { return el.name === 'hasLegalHold' });
           var nlhqf = this.nxProvider.quickFilters.find(function(el) { return el.name === 'hasNotLegalHold' });
-          this._isWithoutRule = rqf && rqf.active && !(lhqf && lhqf.active) && !(nlhqf && nlhqf.active);
+          this._isWithoutRule = rqf && rqf.active && !(lhqf && lhqf.active) && !(nlhqf && nlhqf.active) && !(nrqf && nrqf.active);
           this._isHasLegalHold = lhqf && lhqf.active && !(rqf && rqf.active) && !(nlhqf && nlhqf.active);
           this._isHasNotLegalHold = nlhqf && nlhqf.active  && !(rqf && rqf.active) && !(lhqf && lhqf.active);
         } else {

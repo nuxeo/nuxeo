@@ -90,6 +90,10 @@
           <clause>record:ruleIds IS NULL</clause>
           <clause>ecm:retainUntil IS NULL</clause>
         </quickFilter>
+        <quickFilter name="withRule">
+          <clause>record:ruleIds IS NOT NULL</clause>
+          <clause>ecm:retainUntil IS NOT NULL</clause>
+        </quickFilter>
         <quickFilter name="hasLegalHold">
           <clause>ecm:hasLegalHold = 1</clause>
         </quickFilter>
