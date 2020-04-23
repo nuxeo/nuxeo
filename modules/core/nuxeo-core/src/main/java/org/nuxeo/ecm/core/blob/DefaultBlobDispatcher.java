@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.IntPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,9 +56,13 @@ import org.nuxeo.runtime.api.Framework;
  * Comma-separated clauses are ANDed together. The special name {@code default} defines the default provider, and must
  * be present.
  * <p>
- * Available operators between property and value are =, !=, &lt, >, ~ and ^. The operators &lt; and > work with integer
- * values. The operator ~ does glob matching using {@code ?} to match a single arbitrary character, and {@code *} to
- * match any number of characters (including none). The operator ^ does full regexp matching.
+ * Available operators between property and value are =, !=, &lt;, &lt;= ,>, >=, ~ and ^.
+ * <p>
+ * The operators =, !=, &lt;, &lt;=, > and >= work as numeric operators if the property is numeric, otherwise as string
+ * comparisons operators.
+ * <p>
+ * The operator ~ does glob matching using {@code ?} to match a single arbitrary character, and {@code *} to match any
+ * number of characters (including none). The operator ^ does full regexp matching.
  * <p>
  * For example, to dispatch to the "first" provider if dc:format is "video", to the "second" provider if the blob's MIME
  * type is "video/mp4", to the "third" provider if the blob is stored as a secondary attached file, to the "fourth"
@@ -74,6 +79,7 @@ import org.nuxeo.runtime.api.Framework;
  * </pre>
  * <p>
  * You can make use of a record blob provider by using:
+ *
  * <pre>
  * &lt;property name="records">records&lt;/property>
  * &lt;property name="default">other&lt;/property>
@@ -95,7 +101,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     // name="records" is equivalent to the following clause:
     protected static final String RECORDS_CLAUSE = "ecm:isRecord=true,blob:xpath=" + MAIN_BLOB_XPATH;
 
-    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*?)(=|!=|<|>|~|\\^)(.*)");
+    protected static final Pattern NAME_PATTERN = Pattern.compile("(.*?)(=|!=|<=|<|>=|>|~|\\^)(.*)");
 
     /** Pseudo-property for the repository name. */
     protected static final String REPOSITORY_NAME = "ecm:repositoryName";
@@ -125,7 +131,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     protected static final String BLOB_XPATH = "xpath";
 
     protected enum Op {
-        EQ, NEQ, LT, GT, GLOB, RE;
+        EQ, NEQ, LT, LTE, GT, GTE, GLOB, RE;
     }
 
     protected static class Clause {
@@ -198,11 +204,15 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                             break;
                         case "<":
                             op = Op.LT;
-                            value = Long.valueOf((String) value);
+                            break;
+                        case "<=":
+                            op = Op.LTE;
                             break;
                         case ">":
                             op = Op.GT;
-                            value = Long.valueOf((String) value);
+                            break;
+                        case ">=":
+                            op = Op.GTE;
                             break;
                         case "~":
                             op = Op.GLOB;
@@ -304,22 +314,22 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                 boolean match;
                 switch (clause.op) {
                 case EQ:
-                    match = String.valueOf(value).equals(clause.value);
+                    match = compare(value, clause.value, true, cmp -> cmp == 0);
                     break;
                 case NEQ:
-                    match = !String.valueOf(value).equals(clause.value);
+                    match = compare(value, clause.value, true, cmp -> cmp != 0);
                     break;
                 case LT:
-                    if (value == null) {
-                        value = Long.valueOf(0);
-                    }
-                    match = ((Long) value).compareTo((Long) clause.value) < 0;
+                    match = compare(value, clause.value, false, cmp -> cmp < 0);
+                    break;
+                case LTE:
+                    match = compare(value, clause.value, false, cmp -> cmp <= 0);
                     break;
                 case GT:
-                    if (value == null) {
-                        value = Long.valueOf(0);
-                    }
-                    match = ((Long) value).compareTo((Long) clause.value) > 0;
+                    match = compare(value, clause.value, false, cmp -> cmp > 0);
+                    break;
+                case GTE:
+                    match = compare(value, clause.value, false, cmp -> cmp >= 0);
                     break;
                 case GLOB:
                 case RE:
@@ -338,6 +348,40 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             }
         }
         return defaultProviderId;
+    }
+
+    protected boolean compare(Object a, Object ob, boolean eqneq, IntPredicate predicate) {
+        String b = (String) ob;
+        int cmp;
+        if (a == null) {
+            if (eqneq) {
+                // treat null as the string "null" (backward compat)
+                cmp = "null".compareTo(b);
+            } else {
+                // for <, >, etc. try to treat null as 0
+                try {
+                    // try Long
+                    cmp = Long.valueOf(0).compareTo(Long.valueOf(b));
+                } catch (NumberFormatException e) {
+                    // else treat null as empty string
+                    cmp = "".compareTo(b);
+                }
+            }
+        } else {
+            if (a instanceof Long) {
+                try {
+                    cmp = ((Long) a).compareTo(Long.valueOf(b));
+                } catch (NumberFormatException e) {
+                    if (!eqneq) {
+                        return false; // no match
+                    }
+                    cmp = 1; // different
+                }
+            } else {
+                cmp = String.valueOf(a).compareTo(b);
+            }
+        }
+        return predicate.test(cmp);
     }
 
     @Override
