@@ -20,7 +20,10 @@ package org.nuxeo.ecm.core.blob;
 
 import static org.nuxeo.ecm.core.model.Session.PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS;
 
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -311,6 +314,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                         }
                     }
                 }
+                if (value instanceof Calendar) {
+                    value = ((Calendar) value).toInstant();
+                }
                 boolean match;
                 switch (clause.op) {
                 case EQ:
@@ -386,6 +392,15 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                 try {
                     cmp = ((Double) a).compareTo(Double.valueOf(b));
                 } catch (NumberFormatException e) {
+                    if (!eqneq) {
+                        return false; // no match
+                    }
+                    cmp = 1; // different
+                }
+            } else if (a instanceof Instant) {
+                try {
+                    cmp = ((Instant) a).compareTo(Instant.parse(b));
+                } catch (DateTimeParseException e) {
                     if (!eqneq) {
                         return false; // no match
                     }

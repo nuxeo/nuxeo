@@ -22,6 +22,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -291,6 +296,93 @@ public class TestDefaultBlobDispatcher {
         expect(dispatcher, CUSTOM, 987.0D);
         dispatcher = dispatcherWith("prop>=foo");
         expect(dispatcher, DEFAULT, 555.0D);
+    }
+
+    // ===== Calendar =====
+
+    protected static Calendar cal(String string) {
+        ZonedDateTime instant = ZonedDateTime.ofInstant(Instant.parse(string), ZoneOffset.UTC);
+        return GregorianCalendar.from(instant);
+    }
+
+    protected static final Calendar CAL1 = cal("2020-01-02T03:04:05Z");
+
+    protected static final Calendar CAL2 = cal("2020-01-02T12:34:56Z");
+
+    protected static final Calendar CAL3 = cal("2050-12-25T00:00:00Z");
+
+    @Test
+    public void testOperatorCalendarGlob() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop~2020-01-*");
+        expect(dispatcher, CUSTOM, CAL1);
+        expect(dispatcher, CUSTOM, CAL2);
+        expect(dispatcher, DEFAULT, CAL3);
+    }
+
+    @Test
+    public void testOperatorCalendarRegexp() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop^2020-01-.*");
+        expect(dispatcher, CUSTOM, CAL1);
+        expect(dispatcher, CUSTOM, CAL2);
+        expect(dispatcher, DEFAULT, CAL3);
+    }
+
+    @Test
+    public void testOperatorCalendarEq() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop=2020-01-02T12:34:56Z");
+        expect(dispatcher, DEFAULT, CAL1);
+        expect(dispatcher, CUSTOM, CAL2);
+        dispatcher = dispatcherWith("prop=foo");
+        expect(dispatcher, DEFAULT, CAL1);
+    }
+
+    @Test
+    public void testOperatorCalendarNeq() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop!=2020-01-02T12:34:56Z");
+        expect(dispatcher, CUSTOM, CAL1);
+        expect(dispatcher, DEFAULT, CAL2);
+        dispatcher = dispatcherWith("prop!=foo");
+        expect(dispatcher, CUSTOM, CAL1);
+    }
+
+    @Test
+    public void testOperatorCalendarLt() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop<2020-01-02T12:34:56Z");
+        expect(dispatcher, CUSTOM, CAL1);
+        expect(dispatcher, DEFAULT, CAL2);
+        expect(dispatcher, DEFAULT, CAL3);
+        dispatcher = dispatcherWith("prop<foo");
+        expect(dispatcher, DEFAULT, CAL1);
+    }
+
+    @Test
+    public void testOperatorCalendarLte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop<=2020-01-02T12:34:56Z");
+        expect(dispatcher, CUSTOM, CAL1);
+        expect(dispatcher, CUSTOM, CAL2);
+        expect(dispatcher, DEFAULT, CAL3);
+        dispatcher = dispatcherWith("prop<=foo");
+        expect(dispatcher, DEFAULT, CAL1);
+    }
+
+    @Test
+    public void testOperatorCalendarGt() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop>2020-01-02T12:34:56Z");
+        expect(dispatcher, DEFAULT, CAL1);
+        expect(dispatcher, DEFAULT, CAL2);
+        expect(dispatcher, CUSTOM, CAL3);
+        dispatcher = dispatcherWith("prop>foo");
+        expect(dispatcher, DEFAULT, CAL1);
+    }
+
+    @Test
+    public void testOperatorCalendarGte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop>=2020-01-02T12:34:56Z");
+        expect(dispatcher, DEFAULT, CAL1);
+        expect(dispatcher, CUSTOM, CAL2);
+        expect(dispatcher, CUSTOM, CAL3);
+        dispatcher = dispatcherWith("prop>=foo");
+        expect(dispatcher, DEFAULT, CAL1);
     }
 
     // ===== Clauses =====
