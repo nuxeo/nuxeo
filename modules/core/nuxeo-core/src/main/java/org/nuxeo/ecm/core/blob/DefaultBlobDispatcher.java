@@ -363,14 +363,28 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
                     // try Long
                     cmp = Long.valueOf(0).compareTo(Long.valueOf(b));
                 } catch (NumberFormatException e) {
-                    // else treat null as empty string
-                    cmp = "".compareTo(b);
+                    try {
+                        // try Double
+                        cmp = Double.valueOf(0).compareTo(Double.valueOf(b));
+                    } catch (NumberFormatException e2) {
+                        // else treat null as empty string
+                        cmp = "".compareTo(b);
+                    }
                 }
             }
         } else {
             if (a instanceof Long) {
                 try {
                     cmp = ((Long) a).compareTo(Long.valueOf(b));
+                } catch (NumberFormatException e) {
+                    if (!eqneq) {
+                        return false; // no match
+                    }
+                    cmp = 1; // different
+                }
+            } else if (a instanceof Double) {
+                try {
+                    cmp = ((Double) a).compareTo(Double.valueOf(b));
                 } catch (NumberFormatException e) {
                     if (!eqneq) {
                         return false; // no match
