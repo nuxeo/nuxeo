@@ -233,6 +233,66 @@ public class TestDefaultBlobDispatcher {
         expect(dispatcher, DEFAULT, 555L);
     }
 
+    // ===== Double =====
+
+    @Test
+    public void testOperatorDoubleEq() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop=555");
+        expect(dispatcher, DEFAULT, 9.0D);
+        expect(dispatcher, CUSTOM, 555.0D);
+        dispatcher = dispatcherWith("prop=foo");
+        expect(dispatcher, DEFAULT, 555.0D);
+    }
+
+    @Test
+    public void testOperatorDoubleNeq() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop!=555");
+        expect(dispatcher, CUSTOM, 9.0D);
+        expect(dispatcher, DEFAULT, 555.0D);
+        dispatcher = dispatcherWith("prop!=foo");
+        expect(dispatcher, CUSTOM, 555.0D);
+    }
+
+    @Test
+    public void testOperatorDoubleLt() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop<555");
+        expect(dispatcher, CUSTOM, 9.0D); // to be sure we don't compare as strings
+        expect(dispatcher, DEFAULT, 555.0D);
+        expect(dispatcher, DEFAULT, 987.0D);
+        dispatcher = dispatcherWith("prop<foo");
+        expect(dispatcher, DEFAULT, 555.0D);
+    }
+
+    @Test
+    public void testOperatorDoubleLte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop<=555");
+        expect(dispatcher, CUSTOM, 9.0D);
+        expect(dispatcher, CUSTOM, 555.0D);
+        expect(dispatcher, DEFAULT, 987.0D);
+        dispatcher = dispatcherWith("prop<=foo");
+        expect(dispatcher, DEFAULT, 555.0D);
+    }
+
+    @Test
+    public void testOperatorDoubleGt() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop>555");
+        expect(dispatcher, DEFAULT, 9.0D);
+        expect(dispatcher, DEFAULT, 555.0D);
+        expect(dispatcher, CUSTOM, 987.0D);
+        dispatcher = dispatcherWith("prop>foo");
+        expect(dispatcher, DEFAULT, 555.0D);
+    }
+
+    @Test
+    public void testOperatorDoubleGte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop>=555");
+        expect(dispatcher, DEFAULT, 9.0D);
+        expect(dispatcher, CUSTOM, 555.0D);
+        expect(dispatcher, CUSTOM, 987.0D);
+        dispatcher = dispatcherWith("prop>=foo");
+        expect(dispatcher, DEFAULT, 555.0D);
+    }
+
     // ===== Clauses =====
 
     @Test
