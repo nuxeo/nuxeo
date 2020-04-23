@@ -108,6 +108,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, String text, String author) {
         throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
@@ -140,16 +141,19 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child) {
         throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
         throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
 
     @Override
+    @SuppressWarnings("removal")
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         throw new UnsupportedOperationException("This service implementation does not implement deprecated API.");
     }
