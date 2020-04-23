@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -71,6 +72,13 @@ public class TestSQLBackendNoPathOptims extends TestSQLBackend {
         assertEquals(1, nodes.size());
         res = session.query(sql, QueryFilter.EMPTY, false);
         assertEquals(4, res.size());
+    }
+
+    @Ignore(value = "NXP-28908")
+    @Override
+    @Test
+    public void testRecursiveRemovalBig() throws Exception {
+        // temporarily ignored
     }
 
 }

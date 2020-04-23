@@ -34,6 +34,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -138,6 +139,7 @@ public class TestExportedZipImporterPlugin {
         archive.close();
     }
 
+    @Ignore(value = "NXP-26831")
     @Test
     public void testImportViaFileManager() throws Exception {
         createTestDocumentsAndArchive();
@@ -164,6 +166,7 @@ public class TestExportedZipImporterPlugin {
         assertSame(1, subSubChildren.size());
     }
 
+    @Ignore(value = "NXP-26831")
     @Test
     public void testOverrideImportViaFileManager() throws Exception {
         createTestDocumentsAndArchive();

@@ -40,6 +40,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LogEvent;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -211,6 +212,7 @@ public class CanMonitorTransactionsTest {
         }
     }
 
+    @Ignore(value = "NXP-28983")
     @Test
     @LogCaptureFeature.FilterWith(value = CanMonitorTransactionsTest.LogMessageFilter.class)
     public void logContainsTxKey() throws InterruptedException, ExecutionException, NoLogCaptureFilterException {

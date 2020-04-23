@@ -23,6 +23,8 @@ import static org.nuxeo.ecm.core.trash.TrashServiceImpl.MIGRATION_STEP_LIFECYCLE
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.nuxeo.ecm.core.test.MigrationFeature;
 import org.nuxeo.ecm.core.trash.TrashServiceImpl;
 import org.nuxeo.runtime.test.runner.Features;
@@ -44,6 +46,13 @@ public class TestBridgeTrashService extends AbstractTestTrashService {
         super.setUp();
         migrationFeature.changeStatus(MIGRATION_ID, MIGRATION_STEP_LIFECYCLE_TO_PROPERTY);
         trashService.invalidateTrashServiceImplementation();
+    }
+
+    @Ignore(value = "NXP-28982")
+    @Override
+    @Test
+    public void testUntrashChildren() {
+        // temporarily ignored
     }
 
 }

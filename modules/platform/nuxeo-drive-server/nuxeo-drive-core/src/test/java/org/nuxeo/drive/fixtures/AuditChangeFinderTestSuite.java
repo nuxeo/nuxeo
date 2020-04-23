@@ -42,6 +42,7 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.FileSystemChangeSummary;
@@ -904,6 +905,7 @@ public class AuditChangeFinderTestSuite extends AbstractChangeFinderTestCase {
         }
     }
 
+    @Ignore(value = "NXP-28912")
     @Test
     public void testCollectionEvents() {
         DocumentModel doc1;
