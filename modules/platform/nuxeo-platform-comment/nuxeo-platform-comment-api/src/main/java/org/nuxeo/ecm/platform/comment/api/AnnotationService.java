@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2018-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Funsho David
  *     Nuno Cunha <ncunha@nuxeo.com>
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 
 package org.nuxeo.ecm.platform.comment.api;

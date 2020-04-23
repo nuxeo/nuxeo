@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
+import static java.util.Objects.requireNonNullElseGet;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
@@ -37,6 +38,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.apache.logging.log4j.LogManager;
@@ -134,6 +136,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
         CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
         DocumentModel commentDM = session.createDocumentModel(COMMENT_DOC_TYPE);
@@ -226,11 +229,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
 
         String[] pathList = getCommentPathList(comment);
 
-        if (path == null) {
-            domainPath = "/" + docModel.getPath().segment(0);
-        } else {
-            domainPath = path;
-        }
+        domainPath = requireNonNullElseGet(path, () -> "/" + docModel.getPath().segment(0));
         if (mySession == null) {
             return null;
         }
@@ -320,6 +319,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
         CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
         DocumentRef ref = comment.getRef();
@@ -337,6 +337,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child) {
         CoreSession session = CoreInstance.getCoreSessionSystem(docModel.getRepositoryName());
         DocumentModel parentDocModel = session.getDocument(parent.getRef());
@@ -348,6 +349,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
+    @SuppressWarnings("removal")
     public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         return doPrivileged(comment.getCoreSession(), comment.getRepositoryName(), session -> {
             Map<String, Object> ctxMap = Collections.singletonMap(ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.comment.listener.test;
@@ -58,8 +56,7 @@ public class SimpleListenerTest {
     @Inject
     protected CommentManager commentManager;
 
-
-    protected DocumentModel doCreateADocWithComments() throws Exception {
+    protected DocumentModel doCreateADocWithComments() {
 
         DocumentModel domain = session.createDocumentModel("Folder");
         domain.setProperty("dublincore", "title", "Domain");
@@ -94,7 +91,7 @@ public class SimpleListenerTest {
     }
 
     @Test
-    public void testDocumentRemovedCommentEventListener() throws Exception {
+    public void testDocumentRemovedCommentEventListener() {
         DocumentModel doc = doCreateADocWithComments();
         assertNotNull(doc);
 
@@ -118,7 +115,7 @@ public class SimpleListenerTest {
     }
 
     @Test
-    public void testCommentRemovedEventListener() throws Exception {
+    public void testCommentRemovedEventListener() {
         DocumentModel doc = doCreateADocWithComments();
         assertNotNull(doc);
 
