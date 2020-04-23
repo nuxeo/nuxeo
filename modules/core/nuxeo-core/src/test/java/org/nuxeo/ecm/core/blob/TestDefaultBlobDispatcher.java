@@ -26,9 +26,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+@RunWith(FeaturesRunner.class)
 public class TestDefaultBlobDispatcher {
 
     protected static final String DEFAULT = "default";
@@ -85,6 +88,42 @@ public class TestDefaultBlobDispatcher {
     }
 
     @Test
+    public void testOperatorStringLt() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop<foo");
+        expect(dispatcher, CUSTOM, null);
+        expect(dispatcher, CUSTOM, "bar");
+        expect(dispatcher, DEFAULT, "foo");
+        expect(dispatcher, DEFAULT, "gee");
+    }
+
+    @Test
+    public void testOperatorStringLte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop<=foo");
+        expect(dispatcher, CUSTOM, null);
+        expect(dispatcher, CUSTOM, "bar");
+        expect(dispatcher, CUSTOM, "foo");
+        expect(dispatcher, DEFAULT, "gee");
+    }
+
+    @Test
+    public void testOperatorStringGt() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop>foo");
+        expect(dispatcher, DEFAULT, null);
+        expect(dispatcher, DEFAULT, "bar");
+        expect(dispatcher, DEFAULT, "foo");
+        expect(dispatcher, CUSTOM, "gee");
+    }
+
+    @Test
+    public void testOperatorStringGte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop>=foo");
+        expect(dispatcher, DEFAULT, null);
+        expect(dispatcher, DEFAULT, "bar");
+        expect(dispatcher, CUSTOM, "foo");
+        expect(dispatcher, CUSTOM, "gee");
+    }
+
+    @Test
     public void testOperatorStringGlob() {
         DefaultBlobDispatcher dispatcher = dispatcherWith("prop~/fo?/bar*");
         expect(dispatcher, DEFAULT, null);
@@ -115,6 +154,9 @@ public class TestDefaultBlobDispatcher {
         DefaultBlobDispatcher dispatcher = dispatcherWith("prop=true");
         expect(dispatcher, DEFAULT, false);
         expect(dispatcher, CUSTOM, true);
+        dispatcher = dispatcherWith("prop=foo");
+        expect(dispatcher, DEFAULT, false);
+        expect(dispatcher, DEFAULT, true);
     }
 
     @Test
@@ -122,6 +164,9 @@ public class TestDefaultBlobDispatcher {
         DefaultBlobDispatcher dispatcher = dispatcherWith("prop!=true");
         expect(dispatcher, CUSTOM, false);
         expect(dispatcher, DEFAULT, true);
+        dispatcher = dispatcherWith("prop!=foo");
+        expect(dispatcher, CUSTOM, false);
+        expect(dispatcher, CUSTOM, true);
     }
 
     // ===== Long =====
@@ -131,6 +176,8 @@ public class TestDefaultBlobDispatcher {
         DefaultBlobDispatcher dispatcher = dispatcherWith("prop=555");
         expect(dispatcher, DEFAULT, 9L);
         expect(dispatcher, CUSTOM, 555L);
+        dispatcher = dispatcherWith("prop=foo");
+        expect(dispatcher, DEFAULT, 555L);
     }
 
     @Test
@@ -138,6 +185,8 @@ public class TestDefaultBlobDispatcher {
         DefaultBlobDispatcher dispatcher = dispatcherWith("prop!=555");
         expect(dispatcher, CUSTOM, 9L);
         expect(dispatcher, DEFAULT, 555L);
+        dispatcher = dispatcherWith("prop!=foo");
+        expect(dispatcher, CUSTOM, 555L);
     }
 
     @Test
@@ -147,6 +196,19 @@ public class TestDefaultBlobDispatcher {
         expect(dispatcher, CUSTOM, 9L); // to be sure we don't compare as strings
         expect(dispatcher, DEFAULT, 555L);
         expect(dispatcher, DEFAULT, 987L);
+        dispatcher = dispatcherWith("prop<foo");
+        expect(dispatcher, DEFAULT, 555L);
+    }
+
+    @Test
+    public void testOperatorLongLte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop<=555");
+        expect(dispatcher, CUSTOM, null); // treated as 0
+        expect(dispatcher, CUSTOM, 9L);
+        expect(dispatcher, CUSTOM, 555L);
+        expect(dispatcher, DEFAULT, 987L);
+        dispatcher = dispatcherWith("prop<=foo");
+        expect(dispatcher, DEFAULT, 555L);
     }
 
     @Test
@@ -156,6 +218,19 @@ public class TestDefaultBlobDispatcher {
         expect(dispatcher, DEFAULT, 9L);
         expect(dispatcher, DEFAULT, 555L);
         expect(dispatcher, CUSTOM, 987L);
+        dispatcher = dispatcherWith("prop>foo");
+        expect(dispatcher, DEFAULT, 555L);
+    }
+
+    @Test
+    public void testOperatorLongGte() {
+        DefaultBlobDispatcher dispatcher = dispatcherWith("prop>=555");
+        expect(dispatcher, DEFAULT, null); // treated as 0
+        expect(dispatcher, DEFAULT, 9L);
+        expect(dispatcher, CUSTOM, 555L);
+        expect(dispatcher, CUSTOM, 987L);
+        dispatcher = dispatcherWith("prop>=foo");
+        expect(dispatcher, DEFAULT, 555L);
     }
 
     // ===== Clauses =====
