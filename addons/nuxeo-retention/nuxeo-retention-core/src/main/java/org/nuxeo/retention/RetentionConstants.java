@@ -60,6 +60,8 @@ public class RetentionConstants {
 
     public static final String STARTING_POINT_EXPRESSION_PROP = "retention_def:startingPointExpression";
 
+    public static final String STARTING_POINT_VALUE_PROP = "retention_def:startingPointValue";
+
     public static final String STARTING_POINT_EVENT_PROP = "retention_def:startingPointEvent";
 
     public static final String RECORD_MANAGER_GROUP_NAME = "RecordManager";
