@@ -19,6 +19,7 @@
  */
 
 dockerNamespace = 'nuxeo'
+kubernetesNamespace = 'platform'
 repositoryUrl = 'https://github.com/nuxeo/nuxeo'
 testEnvironments= [
   'dev',
@@ -687,6 +688,10 @@ pipeline {
                 // Previous preview deployment needs to be scaled to 0 to be replaced correctly
                 sh "kubectl -n ${PREVIEW_NAMESPACE} scale deployment nuxeo-preview --replicas=0"
               }
+              sh """kubectl create secret generic kubernetes-docker-cfg \
+                  --namespace=${PREVIEW_NAMESPACE} \
+                  --from-literal=.dockerconfigjson="\$(kubectl --namespace ${kubernetesNamespace} get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode)" \
+                  --type=kubernetes.io/dockerconfigjson"""
               // build and deploy the chart
               // To avoid jx gc cron job, reference branch previews are deployed by calling jx step helm install instead of jx preview
               sh """
