@@ -178,8 +178,8 @@
         <!-- install sl4j bridge in container classpath -->
         <include name="slf4j*" />
         <include name="log4j-*" /> <!-- log4j2 / bridges: jcl, slf4j, log4j -->
-        <include name="json-smart-*" />
-        <include name="jsonevent-layout-*" />
+        <!-- install log4j2 JSON logging dependencies in container classpath -->
+        <include name="jackson-*" />
       </fileset>
     </move>
     <nx:rmdups dir="${distribution.dir}/nxserver/lib" />
