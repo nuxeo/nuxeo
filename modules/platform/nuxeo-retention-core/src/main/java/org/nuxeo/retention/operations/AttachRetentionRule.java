@@ -34,7 +34,7 @@ import org.nuxeo.retention.service.RetentionManager;
 /**
  * @since 11.1
  */
-@Operation(id = AttachRetentionRule.ID, category = Constants.CAT_DOCUMENT, label = "Attach Retation Rule", description = "Attach the given retetention rule to the input document.")
+@Operation(id = AttachRetentionRule.ID, category = Constants.RETENTION_CATEGORY, label = "Attach Retention Rule", description = "Attach the given retention rule to the input document. The document becomes a record and the main blob cannot be updated")
 public class AttachRetentionRule {
 
     public static final String ID = "Retention.AttachRule";

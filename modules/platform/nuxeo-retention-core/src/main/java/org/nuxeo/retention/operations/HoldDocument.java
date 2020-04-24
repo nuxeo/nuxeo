@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 /**
  * @since 11.1
  */
-@Operation(id = HoldDocument.ID, category = Constants.CAT_DOCUMENT, label = "Hold", description = "Turn the input document into a record and set a legal hold on it. Returns back the hold document.")
+@Operation(id = HoldDocument.ID, category = Constants.RETENTION_CATEGORY, label = "Apply Legal Hold", description = "Turn the input document into a record and set a legal hold on it. Returns back the hold document.")
 public class HoldDocument {
 
     public static final String ID = "Document.Hold";

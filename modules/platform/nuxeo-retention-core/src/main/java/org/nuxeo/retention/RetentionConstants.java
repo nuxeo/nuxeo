@@ -93,6 +93,8 @@ public class RetentionConstants {
 
     public static final String RULE_ATTACHED_EVENT = "retentionRuleAttached";
 
+    public static final String RETENTION_CATEGORY = "Retention";
+
     private RetentionConstants() {
         // utility class
     }
