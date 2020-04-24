@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -99,6 +100,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     protected boolean consumerMoved;
 
     protected static final AtomicInteger CONSUMER_CLIENT_ID_SEQUENCE = new AtomicInteger(1);
+
+    protected long lastPollTimestamp;
+
+    protected int lastPollSize;
 
     protected KafkaLogTailer(Codec<M> codec, NameResolver resolver, Name group, Properties consumerProps) {
         this.codec = codec;
@@ -190,6 +195,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     protected int poll(Duration timeout) throws InterruptedException {
         records.clear();
         try {
+            lastPollTimestamp = System.currentTimeMillis();
             for (ConsumerRecord<String, Bytes> record : consumer.poll(timeout)) {
                 if (log.isDebugEnabled() && records.isEmpty()) {
                     log.debug("Poll first record: " + resolver.getName(record.topic()).getUrn() + ":"
@@ -214,6 +220,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                 log.debug(msg);
             }
         }
+        lastPollSize = records.size();
         return records.size();
     }
 
@@ -338,7 +345,16 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         if (offsetToCommit.isEmpty()) {
             return;
         }
-        consumer.commitSync(offsetToCommit);
+        try {
+            consumer.commitSync(offsetToCommit);
+            consumer.commitSync(offsetToCommit);
+        } catch (CommitFailedException e) {
+            log.error("Fail to commit " + offsetToCommit + " assigned " + assignments() + " last committed: "
+                    + lastCommittedOffsets + " last size: " + lastPollSize + " elapsed: "
+                    + (System.currentTimeMillis() - lastPollTimestamp) + " ms, records polled: " + records.size());
+
+            throw e;
+        }
         offsetToCommit.forEach((topicPartition, offset) -> lastCommittedOffsets.put(topicPartition, offset.offset()));
         if (log.isDebugEnabled()) {
             String msg = offsetToCommit.entrySet()
