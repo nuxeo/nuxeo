@@ -32,7 +32,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class LiveSimplePage extends AbstractExplorerPage {
 
-    public static final String URL = "/site/distribution/adm";
+    public static final String URL = "/site/distribution/adm/";
 
     @Required
     @FindBy(xpath = "//h1")
