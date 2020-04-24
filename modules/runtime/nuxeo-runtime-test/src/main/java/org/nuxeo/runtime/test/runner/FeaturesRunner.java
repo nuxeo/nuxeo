@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -281,7 +281,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         return factory.build();
     }
 
-    protected abstract class MethodStatement extends Statement {
+    protected abstract static class MethodStatement extends Statement {
 
         protected final FrameworkMethod method;
 
@@ -422,7 +422,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             return new Statement() {
 
                 @Override
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings({"unchecked", "rawtypes"})
                 public void evaluate() throws Throwable {
                     injector = injector.createChildInjector((Module) binder -> {
                         for (Object each : rules) {
