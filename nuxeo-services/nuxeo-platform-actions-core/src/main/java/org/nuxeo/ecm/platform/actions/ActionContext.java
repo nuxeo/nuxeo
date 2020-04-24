@@ -112,4 +112,14 @@ public interface ActionContext extends Serializable {
      */
     boolean disableGlobalCaching();
 
+    /**
+     * Validates the given expression before evaluated it, which avoid any errors or exception during the evaluation.
+     * <p>
+     * This is designed to be called before {@link #checkCondition(String)}.
+     * 
+     * @param expression the expression to evaluate
+     * @return true if the given expression can be evaluated without exceptions
+     */
+    boolean isValid(String expression);
+
 }

@@ -25,6 +25,7 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -58,6 +59,29 @@ public class JSFActionContext extends AbstractActionContext implements ActionCon
     @SuppressWarnings("unchecked")
     @Override
     public <T> T evalExpression(String expression, Class<T> expectedType) throws ELException {
+        ExpressionDetails veDetails = getExpressionDetails(expression, Boolean.class);
+        return (T) veDetails.valueExpression.getValue(veDetails.context);
+    }
+
+    @Override
+    public boolean checkCondition(String expression) throws ELException {
+        return Boolean.TRUE.equals(evalExpression(expression, Boolean.class));
+    }
+
+    @Override
+    public boolean isValid(String expression) throws ELException {
+        return getExpressionDetails(expression, Boolean.class).valid;
+    }
+
+    /**
+     * Gets the expression details.
+     *
+     * @param expression the expression to evaluate
+     * @param expectedType the expected type of the evaluated expression
+     * @return the value expression details
+     * @since 10.10-HF25
+     */
+    protected <T> ExpressionDetails getExpressionDetails(String expression, Class<T> expectedType) {
         if (StringUtils.isBlank(expression)) {
             return null;
         }
@@ -65,8 +89,8 @@ public class JSFActionContext extends AbstractActionContext implements ActionCon
         // compatibility code, as JEXL could resolve that kind of expression:
         // detect if expression is in brackets #{}, otherwise add it
         if (!expr.startsWith("#{") && !expr.startsWith("${")
-        // don't confuse error messages in case of simple mistakes in the
-        // expression
+                // don't confuse error messages in case of simple mistakes in the
+                // expression
                 && !expr.endsWith("}")) {
             expr = "#{" + expr + "}";
         }
@@ -91,13 +115,26 @@ public class JSFActionContext extends AbstractActionContext implements ActionCon
         putLocalVariable("SeamContext", new SeamContextHelper());
 
         // evaluate expression
-        ValueExpression ve = expressionFactory.createValueExpression(finalContext, expr, Boolean.class);
-        return (T) ve.getValue(finalContext);
+        ValueExpression valueExpression = expressionFactory.createValueExpression(finalContext, expr, expectedType);
+        Class<?> type = valueExpression.getType(originalContext);
+        boolean valid = type != null && ClassUtils.isAssignable(type, expectedType);
+        return new ExpressionDetails(finalContext, valueExpression, valid);
     }
 
-    @Override
-    public boolean checkCondition(String expression) throws ELException {
-        return Boolean.TRUE.equals(evalExpression(expression, Boolean.class));
+    protected static class ExpressionDetails {
+
+        protected final ELContext context;
+
+        protected final ValueExpression valueExpression;
+
+        protected final boolean valid;
+
+        public ExpressionDetails(ELContext context, ValueExpression valueExpression, boolean valid) {
+            this.context = context;
+            this.valueExpression = valueExpression;
+            this.valid = valid;
+        }
+
     }
 
 }

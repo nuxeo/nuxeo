@@ -24,6 +24,7 @@ import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -58,6 +59,23 @@ public class ELActionContext extends AbstractActionContext implements ActionCont
     @SuppressWarnings("unchecked")
     @Override
     public <T> T evalExpression(String expression, Class<T> expectedType) throws ELException {
+        ValueExpression valueExpression = getExpressionDetails(expression, expectedType);
+        return (T) valueExpression.getValue(originalContext);
+    }
+
+    @Override
+    public boolean checkCondition(String expression) throws ELException {
+        return Boolean.TRUE.equals(evalExpression(expression, Boolean.class));
+    }
+
+    @Override
+    public boolean isValid(String expression) {
+        ValueExpression valueExpression = getExpressionDetails(expression, Boolean.class);
+        Class<?> type = valueExpression.getType(originalContext);
+        return type != null && ClassUtils.isAssignable(type, Boolean.class);
+    }
+
+    protected <T> ValueExpression getExpressionDetails(String expression, Class<T> expectedType) {
         if (StringUtils.isBlank(expression)) {
             return null;
         }
@@ -65,8 +83,8 @@ public class ELActionContext extends AbstractActionContext implements ActionCont
         // compatibility code, as JEXL could resolve that kind of expression:
         // detect if expression is in brackets #{}, otherwise add it
         if (!expr.startsWith("#{") && !expr.startsWith("${")
-        // don't confuse error messages in case of simple mistakes in the
-        // expression
+                // don't confuse error messages in case of simple mistakes in the
+                // expression
                 && !expr.endsWith("}")) {
             expr = "#{" + expr + "}";
         }
@@ -88,13 +106,7 @@ public class ELActionContext extends AbstractActionContext implements ActionCont
         }
 
         // evaluate expression
-        ValueExpression ve = expressionFactory.createValueExpression(originalContext, expr, expectedType);
-        return (T) ve.getValue(originalContext);
-    }
-
-    @Override
-    public boolean checkCondition(String expression) throws ELException {
-        return Boolean.TRUE.equals(evalExpression(expression, Boolean.class));
+        return expressionFactory.createValueExpression(originalContext, expr, expectedType);
     }
 
 }
