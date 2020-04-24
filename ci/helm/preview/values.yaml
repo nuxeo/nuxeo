@@ -39,7 +39,7 @@ nuxeo:
     image:
       repository: $DOCKER_REGISTRY/nuxeo/nuxeo
       tag: $VERSION
-      pullSecrets: nexus-docker-cfg
+      pullSecrets: kubernetes-docker-cfg
     persistence:
       enabled: $PERSISTENCE
   mongodb:
