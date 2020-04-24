@@ -29,20 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.runners.model.TestClass;
 
 import com.google.inject.Module;
 
 class FeaturesLoader {
-
-    protected enum Direction {
-        FORWARD, BACKWARD
-    }
-
-    protected interface Callable {
-        void call(Holder holder) throws Exception;
-    }
 
     private final FeaturesRunner runner;
 
@@ -78,38 +69,21 @@ class FeaturesLoader {
         return Collections.unmodifiableCollection(holders);
     }
 
-    Collection<RunnerFeature> features() {
-        return holders.stream().map(h -> h.feature).collect(Collectors.toList());
+    /**
+     * @since 11.1
+     */
+    Collection<Holder> reversedHolders() {
+        return reversed(holders);
     }
 
-    protected void apply(Direction direction, Callable callable) {
-        apply(direction == Direction.FORWARD ? holders : reversed(holders), callable);
+    Collection<RunnerFeature> features() {
+        return holders.stream().map(h -> h.feature).collect(Collectors.toList());
     }
 
     protected <T> List<T> reversed(List<T> list) {
         List<T> reversed = new ArrayList<>(list);
         Collections.reverse(reversed);
         return reversed;
-    }
-
-    protected void apply(Iterable<Holder> holders, Callable callable) {
-        AssertionError errors = new AssertionError("invoke on features error " + holders);
-        for (Holder each : holders) {
-            try {
-                callable.call(each);
-            } catch (AssumptionViolatedException cause) {
-                throw cause;
-            } catch (InterruptedException cause) {
-                errors.addSuppressed(cause);
-                Thread.currentThread().interrupt();
-                throw new AssertionError("Interrupted on invoke features", errors);
-            } catch (Throwable cause) { // NOSONAR
-                errors.addSuppressed(cause);
-            }
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
     }
 
     protected boolean contains(Class<? extends RunnerFeature> aType) {
