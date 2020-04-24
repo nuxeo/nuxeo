@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@
 package org.nuxeo.runtime.test.runner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.runners.model.TestClass;
@@ -49,7 +50,7 @@ class FeaturesLoader {
         runner = featuresRunner;
     }
 
-    protected class Holder {
+    protected static class Holder {
         protected final Class<? extends RunnerFeature> type;
 
         protected final TestClass testClass;
@@ -73,31 +74,12 @@ class FeaturesLoader {
 
     protected final List<Holder> holders = new LinkedList<>();
 
-    Iterable<Holder> holders() {
-        return holders;
+    Collection<Holder> holders() {
+        return Collections.unmodifiableCollection(holders);
     }
 
-    Iterable<RunnerFeature> features() {
-        return () -> new Iterator<>() {
-
-            Iterator<Holder> iterator = holders.iterator();
-
-            @Override
-            public boolean hasNext() {
-                return iterator.hasNext();
-            }
-
-            @Override
-            public RunnerFeature next() {
-                return iterator.next().feature;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-
-        };
+    Collection<RunnerFeature> features() {
+        return holders.stream().map(h -> h.feature).collect(Collectors.toList());
     }
 
     protected void apply(Direction direction, Callable callable) {
@@ -177,7 +159,7 @@ class FeaturesLoader {
         return aType.cast(index.get(aType).feature);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected Module onModule() {
         return aBinder -> {
             for (Holder each : holders) {
