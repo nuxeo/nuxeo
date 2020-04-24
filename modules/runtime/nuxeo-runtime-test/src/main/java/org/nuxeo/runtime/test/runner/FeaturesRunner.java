@@ -19,16 +19,25 @@
  */
 package org.nuxeo.runtime.test.runner;
 
+import static org.nuxeo.runtime.test.runner.FeaturesRunner.Direction.BACKWARD;
+import static org.nuxeo.runtime.test.runner.FeaturesRunner.Direction.FORWARD;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -38,9 +47,10 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
+import org.nuxeo.common.function.ThrowableConsumer;
+import org.nuxeo.common.function.ThrowableRunnable;
 import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.test.TargetResourceLocator;
-import org.nuxeo.runtime.test.runner.FeaturesLoader.Direction;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -54,6 +64,8 @@ import com.google.inject.name.Names;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class FeaturesRunner extends BlockJUnit4ClassRunner {
+
+    private static final Logger log = LogManager.getLogger(FeaturesRunner.class);
 
     protected static final AnnotationScanner scanner = new AnnotationScanner();
 
@@ -133,7 +145,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         if (annotation != null) {
             configs.add(annotation);
         }
-        loader.apply(Direction.BACKWARD, holder -> {
+        apply("getAnnotation", BACKWARD, holder -> {
             T hAnnotation = scanner.getAnnotation(holder.type, type);
             if (hAnnotation != null) {
                 configs.add(hAnnotation);
@@ -167,42 +179,122 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     }
 
     protected void initialize() throws Exception {
+        log.trace("Invoke initialize on features");
         for (RunnerFeature each : getFeatures()) {
             each.initialize(this);
         }
     }
 
     protected void beforeRun() {
-        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeRun(FeaturesRunner.this));
+        apply("beforeRun", FORWARD, holder -> holder.feature.beforeRun(FeaturesRunner.this));
     }
 
     protected void beforeMethodRun(final FrameworkMethod method, final Object test) {
-        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeMethodRun(FeaturesRunner.this, method, test));
+        apply("beforeMethodRun", FORWARD, holder -> holder.feature.beforeMethodRun(FeaturesRunner.this, method, test));
     }
 
     protected void afterMethodRun(final FrameworkMethod method, final Object test) {
-        loader.apply(Direction.FORWARD, holder -> holder.feature.afterMethodRun(FeaturesRunner.this, method, test));
+        apply("afterMethodRun", FORWARD, holder -> holder.feature.afterMethodRun(FeaturesRunner.this, method, test));
     }
 
     protected void afterRun() {
-        loader.apply(Direction.BACKWARD, holder -> holder.feature.afterRun(FeaturesRunner.this));
+        apply("afterRun", BACKWARD, holder -> holder.feature.afterRun(FeaturesRunner.this));
     }
 
     protected void start() {
-        loader.apply(Direction.FORWARD, holder -> holder.feature.start(FeaturesRunner.this));
+        apply("start", FORWARD, holder -> holder.feature.start(FeaturesRunner.this));
     }
 
     protected void stop() {
-        loader.apply(Direction.BACKWARD, holder -> holder.feature.stop(FeaturesRunner.this));
+        apply("stop", BACKWARD, holder -> holder.feature.stop(FeaturesRunner.this));
     }
 
     protected void beforeSetup(final FrameworkMethod method, final Object test) {
-        loader.apply(Direction.FORWARD, holder -> holder.feature.beforeSetup(FeaturesRunner.this, method, test));
+        apply("beforeSetup", FORWARD, holder -> holder.feature.beforeSetup(FeaturesRunner.this, method, test));
         injector.injectMembers(underTest);
     }
 
     protected void afterTeardown(final FrameworkMethod method, final Object test) {
-        loader.apply(Direction.BACKWARD, holder -> holder.feature.afterTeardown(FeaturesRunner.this, method, test));
+        apply("afterTeardown", BACKWARD, holder -> holder.feature.afterTeardown(FeaturesRunner.this, method, test));
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected void apply(String id, Direction direction, ThrowableConsumer<FeaturesLoader.Holder, Exception> consumer) {
+        apply(id, direction == FORWARD ? loader.holders() : loader.reversedHolders(), consumer);
+    }
+
+    /**
+     * @since 11.1
+     */
+    protected void apply(String id, Collection<FeaturesLoader.Holder> holders,
+            ThrowableConsumer<FeaturesLoader.Holder, Exception> consumer) {
+        log.trace("Invoke: {} on features: {}", () -> id, () -> formatFeatures(holders));
+        Supplier<String> msg = () -> String.format("Error while invoking %s on features: %s", id,
+                formatFeatures(holders));
+        var errors = new ArrayList<Throwable>();
+        for (FeaturesLoader.Holder holder : holders) {
+            try {
+                consumer.accept(holder);
+            } catch (AssumptionViolatedException cause) {
+                log.debug("Test ignored by the feature: {}", holder.type);
+                throw cause;
+            } catch (InterruptedException cause) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeServiceException(msg.get(), cause);
+            } catch (Throwable cause) { // NOSONAR
+                log.debug("Error while invoking: {} on feature: {}", id, holder.type);
+                throwSeriousError(cause);
+                errors.add(cause);
+            }
+        }
+        if (!errors.isEmpty()) {
+            var exception = new AssertionError(msg.get());
+            errors.forEach(exception::addSuppressed);
+            throw exception;
+        }
+    }
+
+    protected String formatFeatures(Collection<FeaturesLoader.Holder> holders) {
+        return holders.stream().map(h -> h.type.getName()).collect(Collectors.joining(", ", "[", "]"));
+    }
+
+    public void evaluateRunnable(ThrowableRunnable<Throwable> runnable, ThrowableRunnable<Throwable> finisher)
+            throws Throwable {
+        Throwable error = null;
+        try {
+            runnable.run();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeServiceException(e);
+        } catch (Throwable t) { // NOSONAR
+            throwSeriousError(t);
+            error = t;
+        }
+        // don't use finally, we want to stop if thread was interrupted
+        try {
+            finisher.run();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeServiceException(e);
+        } catch (Throwable t) { // NOSONAR
+            throwSeriousError(t);
+            if (error == null) {
+                error = t;
+            } else {
+                error.addSuppressed(t);
+            }
+        }
+        if (error != null) {
+            throw error;
+        }
+    }
+
+    protected void throwSeriousError(Throwable cause) {
+        if (cause instanceof Error && !(cause instanceof AssertionError)) {
+            throw (Error) cause; // serious error, rethrow immediately
+        }
     }
 
     public Injector getInjector() {
@@ -249,11 +341,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         @Override
         public void evaluate() throws Throwable {
             previous.evaluate();
-            try {
-                afterRun();
-            } finally {
-                stop();
-            }
+            evaluateRunnable(FeaturesRunner.this::afterRun, FeaturesRunner.this::stop);
         }
     }
 
@@ -276,7 +364,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         final RulesFactory<ClassRule, TestRule> factory = new RulesFactory<>(ClassRule.class, TestRule.class);
 
         factory.withRule((base, description) -> new BeforeClassStatement(base)).withRules(super.classRules());
-        loader.apply(Direction.FORWARD, holder -> factory.withRules(holder.testClass, null));
+        apply("classRules", FORWARD, holder -> factory.withRules(holder.testClass, null));
 
         return factory.build();
     }
@@ -341,11 +429,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public void evaluate() throws Throwable {
-            try {
-                statement.evaluate();
-            } finally {
-                afterMethodRun(method, target);
-            }
+            evaluateRunnable(statement::evaluate, () -> afterMethodRun(method, target));
         }
 
     }
@@ -358,11 +442,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
         @Override
         public void evaluate() throws Throwable {
-            try {
-                statement.evaluate();
-            } finally {
-                afterTeardown(method, target);
-            }
+            evaluateRunnable(statement::evaluate, () -> afterTeardown(method, target));
         }
 
     }
@@ -379,7 +459,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     protected List<TestRule> getTestRules(Object target) {
         final RulesFactory<Rule, TestRule> factory = new RulesFactory<>(Rule.class, TestRule.class);
-        loader.apply(Direction.FORWARD, holder -> factory.withRules(holder.testClass, holder.feature));
+        apply("getTestRules", FORWARD, holder -> factory.withRules(holder.testClass, holder.feature));
         factory.withRules(getTestClass(), target);
         return factory.build();
     }
@@ -387,7 +467,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     protected List<MethodRule> rules(Object target) {
         final RulesFactory<Rule, MethodRule> factory = new RulesFactory<>(Rule.class, MethodRule.class);
-        loader.apply(Direction.FORWARD, holder -> factory.withRules(holder.testClass, holder.feature));
+        apply("rules", FORWARD, holder -> factory.withRules(holder.testClass, holder.feature));
         factory.withRules(getTestClass(), target);
         return factory.build();
     }
@@ -397,7 +477,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     @Override
     public Object createTest() throws Exception {
         underTest = super.createTest();
-        loader.apply(Direction.FORWARD, holder -> holder.feature.testCreated(underTest));
+        apply("createTest", FORWARD, holder -> holder.feature.testCreated(underTest));
         // TODO replace underTest member with a binding
         // Class<?> testType = underTest.getClass();
         // injector.getInstance(Binder.class).bind(testType)
@@ -422,7 +502,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
             return new Statement() {
 
                 @Override
-                @SuppressWarnings({"unchecked", "rawtypes"})
+                @SuppressWarnings({ "unchecked", "rawtypes" })
                 public void evaluate() throws Throwable {
                     injector = injector.createChildInjector((Module) binder -> {
                         for (Object each : rules) {
@@ -519,6 +599,10 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     public <T extends RunnerFeature> T getFeature(Class<T> aType) {
         return loader.getFeature(aType);
+    }
+
+    protected enum Direction {
+        FORWARD, BACKWARD
     }
 
 }
