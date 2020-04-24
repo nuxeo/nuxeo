@@ -21,6 +21,9 @@ package org.nuxeo.retention.listeners;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jboss.el.ExpressionFactoryImpl;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
@@ -29,6 +32,9 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.platform.actions.ELActionContext;
+import org.nuxeo.ecm.platform.el.ExpressionContext;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.retention.RetentionConstants;
 import org.nuxeo.retention.actions.ProcessRetentionEventAction;
 import org.nuxeo.retention.event.RetentionEventContext;
@@ -60,7 +66,7 @@ public class RetentionBusinessEventListener implements EventListener {
                  .append(RetentionConstants.STARTING_POINT_EVENT_PROP)
                  .append(" = ")
                  .append(NXQL.escapeString(eventName));
-            if (StringUtils.isBlank(eventInput)) {
+            if (StringUtils.isBlank(eventInput) || isExpression(eventInput)) {
                 query.append(" AND ") //
                      .append(RetentionConstants.STARTING_POINT_EXPRESSION_PROP)
                      .append(" IS NULL");
@@ -76,6 +82,19 @@ public class RetentionBusinessEventListener implements EventListener {
                 bulkService.submit(command);
             }
         }
+    }
+
+    protected boolean isExpression(String expression) {
+        UserManager userManager = Framework.getService(UserManager.class);
+        try (CloseableCoreSession session = CoreInstance.openCoreSession(null)) {
+            // we need only to ensure if we can evaluate the EL without any errors, no matter if the EL is evaluated to
+            // true or false. that's why we give the user system and any document
+            ELActionContext ctx = new ELActionContext(new ExpressionContext(), new ExpressionFactoryImpl());
+            ctx.setCurrentPrincipal(userManager.getPrincipal(SecurityConstants.SYSTEM_USERNAME));
+            ctx.setCurrentDocument(session.getRootDocument());
+            return ctx.isValid(expression);
+        }
+
     }
 
 }

@@ -33,6 +33,7 @@ import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.bulk.BulkService;
+import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.security.RetentionExpiredFinderListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -59,6 +60,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-service-framework.xml")
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-listeners.xml")
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-operations.xml")
+@Deploy("org.nuxeo.retention.core:OSGI-INF/retention-actions.xml")
 public abstract class RetentionTestCase {
 
     @Inject

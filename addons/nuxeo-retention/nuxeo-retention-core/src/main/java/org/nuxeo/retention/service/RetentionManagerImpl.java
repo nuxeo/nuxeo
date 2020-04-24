@@ -291,14 +291,16 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
         if (events.contains(startingPointEvent)) {
             ELActionContext actionContext = initActionContext(record.getDocument(), session);
             String expression = rule.getStartingPointExpression();
-            boolean startNow = evaluateConditionExpression(actionContext, expression);
-            if (startNow) {
-                session.setRetainUntil(record.getDocument().getRef(), rule.getRetainUntilDateFromNow(), null);
-                log.debug("Evaluating event-based rules: expression {} matched on event {}", expression,
-                        startingPointEvent);
-            } else {
-                log.debug("Evaluating event-based rules: expression {} did not match on event {}", expression,
-                        startingPointEvent);
+            if (actionContext.isValid(expression)) {
+                boolean startNow = evaluateConditionExpression(actionContext, expression);
+                if (startNow) {
+                    session.setRetainUntil(record.getDocument().getRef(), rule.getRetainUntilDateFromNow(), null);
+                    log.debug("Evaluating event-based rules: expression {} matched on event {}", expression,
+                            startingPointEvent);
+                } else {
+                    log.debug("Evaluating event-based rules: expression {} did not match on event {}", expression,
+                            startingPointEvent);
+                }
             }
         }
     }
