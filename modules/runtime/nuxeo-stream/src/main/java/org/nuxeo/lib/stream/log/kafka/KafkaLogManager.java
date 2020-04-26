@@ -171,16 +171,17 @@ public class KafkaLogManager extends AbstractLogManager {
         // Prevents to create multiple consumers with the same client/group ids
         synchronized(KafkaLogManager.class) {
             try (KafkaConsumer<String, Bytes> consumer = new KafkaConsumer<>(props)) {
-                List<TopicPartition> topicPartitions = consumer.partitionsFor(config.getResolver().getId(name))
+                Set<TopicPartition> topicPartitions = consumer.partitionsFor(config.getResolver().getId(name))
                                                                .stream()
                         .map(meta -> new TopicPartition(meta.topic(),
                                 meta.partition()))
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toSet());
                 LogLag[] ret = new LogLag[topicPartitions.size()];
                 Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
+                Map<TopicPartition, OffsetAndMetadata> committedOffsets = consumer.committed(topicPartitions);
                 for (TopicPartition topicPartition : topicPartitions) {
+                    OffsetAndMetadata committed = committedOffsets.get(topicPartition);
                     long committedOffset = 0L;
-                    OffsetAndMetadata committed = consumer.committed(topicPartition);
                     if (committed != null) {
                         committedOffset = committed.offset();
                     }

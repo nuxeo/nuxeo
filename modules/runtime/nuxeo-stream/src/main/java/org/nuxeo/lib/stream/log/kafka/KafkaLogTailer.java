@@ -264,9 +264,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
     protected long toLastCommitted(TopicPartition topicPartition) {
         Long offset = lastCommittedOffsets.get(topicPartition);
         if (offset == null) {
-            OffsetAndMetadata offsetMeta = consumer.committed(topicPartition);
-            if (offsetMeta != null) {
-                offset = offsetMeta.offset();
+            Map<TopicPartition, OffsetAndMetadata> offsetMeta = consumer.committed(
+                    Collections.singleton(topicPartition));
+            if (offsetMeta != null && offsetMeta.get(topicPartition) != null) {
+                offset = offsetMeta.get(topicPartition).offset();
             }
         }
         if (offset != null) {
