@@ -42,9 +42,9 @@ import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
+import org.apache.kafka.clients.consumer.ConsumerPartitionAssignor;
 import org.apache.kafka.clients.consumer.RangeAssignor;
 import org.apache.kafka.clients.consumer.RoundRobinAssignor;
-import org.apache.kafka.clients.consumer.internals.PartitionAssignor;
 import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
@@ -119,27 +119,28 @@ public class KafkaUtils implements AutoCloseable {
     }
 
     public static List<List<LogPartition>> rangeAssignments(int threads, Map<String, Integer> streams) {
-        PartitionAssignor assignor = new RangeAssignor();
+        RangeAssignor assignor = new RangeAssignor();
         return assignments(assignor, threads, streams);
     }
 
     public static List<List<LogPartition>> roundRobinAssignments(int threads, Map<String, Integer> streams) {
-        PartitionAssignor assignor = new RoundRobinAssignor();
+        RoundRobinAssignor assignor = new RoundRobinAssignor();
         return assignments(assignor, threads, streams);
     }
 
-    protected static List<List<LogPartition>> assignments(PartitionAssignor assignor, int threads,
+    protected static List<List<LogPartition>> assignments(ConsumerPartitionAssignor assignor, int threads,
             Map<String, Integer> streams) {
         final List<PartitionInfo> parts = new ArrayList<>();
         streams.forEach((streamName, size) -> parts.addAll(getPartsFor(streamName, size)));
-        Map<String, PartitionAssignor.Subscription> subscriptions = new HashMap<>();
+        Map<String, ConsumerPartitionAssignor.Subscription> subscriptions = new HashMap<>();
         List<String> streamNames = streams.keySet().stream().sorted().collect(Collectors.toList());
         for (int i = 0; i < threads; i++) {
-            subscriptions.put(String.valueOf(i), new PartitionAssignor.Subscription(streamNames));
+            subscriptions.put(String.valueOf(i), new ConsumerPartitionAssignor.Subscription(streamNames));
         }
         Cluster cluster = new Cluster("kafka-cluster", Collections.emptyList(), parts, Collections.emptySet(),
                 Collections.emptySet());
-        Map<String, PartitionAssignor.Assignment> assignments = assignor.assign(cluster, subscriptions);
+        Map<String, ConsumerPartitionAssignor.Assignment> assignments = assignor.assign(cluster,
+                new ConsumerPartitionAssignor.GroupSubscription(subscriptions)).groupAssignment();
         List<List<LogPartition>> ret = new ArrayList<>(threads);
         for (int i = 0; i < threads; i++) {
             ret.add(assignments.get(String.valueOf(i))

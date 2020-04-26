@@ -43,10 +43,10 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerPartitionAssignor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.RoundRobinAssignor;
-import org.apache.kafka.clients.consumer.internals.PartitionAssignor;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -162,20 +162,21 @@ public class TestLibKafka {
         final List<PartitionInfo> parts = new ArrayList<>();
         parts.addAll(getPartsFor("t0", 4));
         parts.addAll(getPartsFor("t1", 5));
-        Map<String, PartitionAssignor.Subscription> subscriptions = new HashMap<>();
-        subscriptions.put("C1.1", new PartitionAssignor.Subscription(Arrays.asList("t0", "t1")));
-        subscriptions.put("C1.2", new PartitionAssignor.Subscription(Arrays.asList("t0", "t1")));
-        subscriptions.put("C1.3", new PartitionAssignor.Subscription(Arrays.asList("t0", "t1")));
+        Map<String, ConsumerPartitionAssignor.Subscription> subscriptions = new HashMap<>();
+        subscriptions.put("C1.1", new ConsumerPartitionAssignor.Subscription(Arrays.asList("t0", "t1")));
+        subscriptions.put("C1.2", new ConsumerPartitionAssignor.Subscription(Arrays.asList("t0", "t1")));
+        subscriptions.put("C1.3", new ConsumerPartitionAssignor.Subscription(Arrays.asList("t0", "t1")));
         Cluster cluster = new Cluster("kafka-cluster", Collections.emptyList(), parts, Collections.emptySet(),
                 Collections.emptySet());
-        PartitionAssignor assignor = new RoundRobinAssignor();
+        RoundRobinAssignor assignor = new RoundRobinAssignor();
         // PartitionAssignor assignor2 = new RangeAssignor();
-        Map<String, PartitionAssignor.Assignment> assignment = assignor.assign(cluster, subscriptions);
+        Map<String, ConsumerPartitionAssignor.Assignment> assignments = assignor.assign(cluster,
+                new ConsumerPartitionAssignor.GroupSubscription(subscriptions)).groupAssignment();
         // assertEquals(null, assignment);
-        assertEquals(3, assignment.get("C1.1").partitions().size());
-        assertEquals(3, assignment.get("C1.2").partitions().size());
-        assertEquals(3, assignment.get("C1.3").partitions().size());
-        TopicPartition c1tp0 = assignment.get("C1.1").partitions().get(0);
+        assertEquals(3, assignments.get("C1.1").partitions().size());
+        assertEquals(3, assignments.get("C1.2").partitions().size());
+        assertEquals(3, assignments.get("C1.3").partitions().size());
+        TopicPartition c1tp0 = assignments.get("C1.1").partitions().get(0);
         assertEquals(new TopicPartition("t0", 0), c1tp0);
         // assertEquals(new HashMap<>(), assignor.assign(cluster, subscriptions));
     }
