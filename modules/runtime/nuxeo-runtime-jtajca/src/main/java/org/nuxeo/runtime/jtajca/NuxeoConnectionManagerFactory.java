@@ -21,6 +21,8 @@ package org.nuxeo.runtime.jtajca;
 
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.naming.Context;
 import javax.naming.Name;
@@ -72,12 +74,12 @@ public class NuxeoConnectionManagerFactory implements ObjectFactory {
         return NuxeoContainer.initConnectionManager(config);
     }
 
-    public static NuxeoConnectionManagerConfiguration getConfig(Reference ref) {
+    public static NuxeoConnectionManagerConfiguration getConfig(Map<String, String> properties) {
         NuxeoConnectionManagerConfiguration config = new NuxeoConnectionManagerConfiguration();
         IllegalArgumentException errors = new IllegalArgumentException("wrong naming config");
-        for (RefAddr addr : Collections.list(ref.getAll())) {
-            String name = addr.getType();
-            String value = (String) addr.getContent();
+        for (Entry<String, String> es : properties.entrySet()) {
+            String name = es.getKey();
+            String value = es.getValue();
             try {
                 BeanUtils.setProperty(config, name, value);
             } catch (ReflectiveOperationException cause) {

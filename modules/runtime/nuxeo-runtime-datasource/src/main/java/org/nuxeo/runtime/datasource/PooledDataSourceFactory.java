@@ -18,23 +18,21 @@
  */
 package org.nuxeo.runtime.datasource;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.naming.Context;
-import javax.naming.Name;
 import javax.naming.NamingException;
-import javax.naming.RefAddr;
-import javax.naming.Reference;
-import javax.naming.spi.ObjectFactory;
 import javax.resource.NotSupportedException;
 import javax.resource.ResourceException;
 import javax.resource.spi.ConnectionManager;
@@ -52,7 +50,10 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAResource;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tomcat.jdbc.pool.ClassLoaderUtil;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerFactory;
@@ -71,107 +72,144 @@ import org.tranql.connector.jdbc.LocalDataSourceWrapper;
 import org.tranql.connector.jdbc.TranqlDataSource;
 import org.tranql.connector.jdbc.XADataSourceWrapper;
 
-public class PooledDataSourceFactory implements ObjectFactory {
+public class PooledDataSourceFactory {
 
-    @Override
-    public Object getObjectInstance(Object obj, Name name, Context ctx, Hashtable<?, ?> environment) {
-        class NuxeoDataSource extends TranqlDataSource implements PooledDataSource {
+    public static class NuxeoDataSource extends TranqlDataSource implements PooledDataSource {
 
-            protected ConnectionManagerWrapper wrapper;
+        protected ConnectionManagerWrapper wrapper;
 
-            public NuxeoDataSource(ManagedConnectionFactory mcf, ConnectionManagerWrapper wrapper) {
-                super(mcf, wrapper);
-                this.wrapper = wrapper;
+        public NuxeoDataSource(ManagedConnectionFactory mcf, ConnectionManagerWrapper wrapper) {
+            super(mcf, wrapper);
+            this.wrapper = wrapper;
+        }
+
+        @Override
+        public void dispose() {
+            wrapper.dispose();
+        }
+
+        @Override
+        public Connection getConnection(boolean noSharing) throws SQLException {
+            if (!noSharing) {
+                return getConnection();
             }
-
-            @Override
-            public void dispose() {
-                wrapper.dispose();
-            }
-
-            @Override
-            public Connection getConnection(boolean noSharing) throws SQLException {
-                if (!noSharing) {
-                    return getConnection();
-                }
-                wrapper.getManager().enterNoSharing();
-                try {
-                    return getConnection();
-                } finally {
-                    wrapper.getManager().exitNoSharing();
-                }
-            }
-
-            @Override
-            public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-                throw new SQLFeatureNotSupportedException("not yet available");
+            wrapper.getManager().enterNoSharing();
+            try {
+                return getConnection();
+            } finally {
+                wrapper.getManager().exitNoSharing();
             }
         }
-        Reference ref = (Reference) obj;
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException("not yet available");
+        }
+    }
+
+    public PooledDataSource createPooledDataSource(Map<String, String> properties) {
         ManagedConnectionFactory mcf;
         ConnectionManagerWrapper cm;
         try {
-            mcf = createFactory(ref, ctx);
-            cm = createManager(ref, ctx);
+            mcf = createFactory(properties);
+            cm = createManager(properties);
         } catch (ResourceException | NamingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeServiceException(e);
         }
         return new NuxeoDataSource(mcf, cm);
     }
 
-    protected ConnectionManagerWrapper createManager(Reference ref, Context ctx) throws ResourceException {
-        NuxeoConnectionManagerConfiguration config = NuxeoConnectionManagerFactory.getConfig(ref);
-        String className = ref.getClassName();
-        config.setXAMode(XADataSource.class.getName().equals(className));
+    protected ConnectionManagerWrapper createManager(Map<String, String> properties) {
+        NuxeoConnectionManagerConfiguration config = NuxeoConnectionManagerFactory.getConfig(properties);
+        boolean isXA = properties.containsKey("xaDataSource");
+        config.setXAMode(isXA);
         return NuxeoContainer.initConnectionManager(config);
     }
 
-    protected ManagedConnectionFactory createFactory(Reference ref, Context ctx) throws NamingException,
-            InvalidPropertyException {
-        String className = ref.getClassName();
-        if (XADataSource.class.getName().equals(className)) {
-            String user = refAttribute(ref, "User", "");
-            String password = refAttribute(ref, "Password", "");
-            String name = refAttribute(ref, "dataSourceJNDI", null);
-            XADataSource ds = NuxeoContainer.lookup(name, XADataSource.class);
+    protected ManagedConnectionFactory createFactory(Map<String, String> properties)
+            throws NamingException, InvalidPropertyException {
+        String xaDataSourceClassName = properties.get("xaDataSource");
+        if (!isBlank(xaDataSourceClassName)) {
+            XADataSource ds = createXADataSource(xaDataSourceClassName, properties);
+            String user = getProperty(properties, "User", "");
+            String password = getProperty(properties, "Password", "");
             XADataSourceWrapper wrapper = new XADataSourceWrapper(ds);
             wrapper.setUserName(user);
             wrapper.setPassword(password);
             return wrapper;
         }
-        if (javax.sql.DataSource.class.getName().equals(className)) {
-            String user = refAttribute(ref, "username", "");
-            if (user.isEmpty()) {
-                user = refAttribute(ref, "user", "");
-                if (!user.isEmpty()) {
-                    LogFactory.getLog(PooledDataSourceFactory.class).warn(
-                            "wrong attribute 'user' in datasource descriptor, should use 'username' instead");
-                }
+
+        // datasource username / password
+        String user = getProperty(properties, "username", "");
+        if (user.isEmpty()) {
+            user = getProperty(properties, "user", "");
+            if (!user.isEmpty()) {
+                LogFactory.getLog(PooledDataSourceFactory.class)
+                .warn("wrong attribute 'user' in datasource descriptor, should use 'username' instead");
             }
-            String password = refAttribute(ref, "password", "");
-            String dsname = refAttribute(ref, "dataSourceJNDI", "");
-            if (!dsname.isEmpty()) {
-                javax.sql.DataSource ds = NuxeoContainer.lookup(dsname, DataSource.class);
-                LocalDataSourceWrapper wrapper = new LocalDataSourceWrapper(ds);
-                wrapper.setUserName(user);
-                wrapper.setPassword(password);
-                return wrapper;
-            }
-            String name = refAttribute(ref, "driverClassName", null);
-            String url = refAttribute(ref, "url", null);
-            String sqlExceptionSorter = refAttribute(ref, "sqlExceptionSorter",
-                    DatasourceExceptionSorter.class.getName());
-            boolean commitBeforeAutocommit = Boolean.valueOf(refAttribute(ref, "commitBeforeAutocommit", "true")).booleanValue();
-            JdbcConnectionFactory factory = new JdbcConnectionFactory();
-            factory.setDriver(name);
-            factory.setUserName(user);
-            factory.setPassword(password);
-            factory.setConnectionURL(url);
-            factory.setExceptionSorterClass(sqlExceptionSorter);
-            factory.setCommitBeforeAutocommit(commitBeforeAutocommit);
-            return factory;
         }
-        throw new IllegalArgumentException("unsupported class " + className);
+        String password = getProperty(properties, "password", "");
+
+        // datasource from JNDI lookup (unused?)
+        String dataSourceName = properties.get("dataSource");
+        if (!isBlank(dataSourceName)) {
+            String dsname = DataSourceHelper.getDataSourceJNDIName(dataSourceName);
+            DataSource ds = NuxeoContainer.lookup(dsname, DataSource.class);
+            LocalDataSourceWrapper wrapper = new LocalDataSourceWrapper(ds);
+            wrapper.setUserName(user);
+            wrapper.setPassword(password);
+            return wrapper;
+        }
+
+        // datasource from driver class name
+        String driver = getProperty(properties, "driverClassName", null);
+        String url = getProperty(properties, "url", null);
+        String sqlExceptionSorter = getProperty(properties, "sqlExceptionSorter",
+                DatasourceExceptionSorter.class.getName());
+        boolean commitBeforeAutocommit = Boolean.parseBoolean(
+                getProperty(properties, "commitBeforeAutocommit", "true"));
+        JdbcConnectionFactory factory = new JdbcConnectionFactory();
+        factory.setDriver(driver);
+        factory.setUserName(user);
+        factory.setPassword(password);
+        factory.setConnectionURL(url);
+        factory.setExceptionSorterClass(sqlExceptionSorter);
+        factory.setCommitBeforeAutocommit(commitBeforeAutocommit);
+        return factory;
+    }
+
+    protected String getProperty(Map<String, String> props, String key, String defvalue) {
+        String value = props.get(key);
+        if (value == null) {
+            if (defvalue == null) {
+                throw new IllegalArgumentException(key + " address is mandatory");
+            }
+            return defvalue;
+        }
+        return value;
+    }
+
+    protected XADataSource createXADataSource(String className, Map<String, String> properties) {
+        XADataSource ds;
+        try {
+            Class<?> klass = ClassLoaderUtil.loadClass(className, //
+                    getClass().getClassLoader(), //
+                    Thread.currentThread().getContextClassLoader());
+            ds = (XADataSource) klass.getConstructor().newInstance();
+        } catch (ReflectiveOperationException | IllegalArgumentException | SecurityException e) {
+            throw new RuntimeServiceException(className, e);
+        }
+        // initialize properties
+        for (Entry<String, String> es : properties.entrySet()) {
+            String name = es.getKey();
+            String value = es.getValue();
+            try {
+                BeanUtils.setProperty(ds, name, value);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeServiceException(name, e);
+            }
+        }
+        return ds;
     }
 
     static class JdbcConnectionFactory implements UserPasswordManagedConnectionFactory, AutocommitSpecCompliant {
@@ -506,17 +544,6 @@ public class PooledDataSourceFactory implements ObjectFactory {
             return "Pooled JDBC Driver Connection Factory [" + user + "@" + url + "]";
         }
 
-    }
-
-    protected String refAttribute(Reference ref, String key, String defvalue) {
-        RefAddr addr = ref.get(key);
-        if (addr == null) {
-            if (defvalue == null) {
-                throw new IllegalArgumentException(key + " address is mandatory");
-            }
-            return defvalue;
-        }
-        return (String) addr.getContent();
     }
 
 }

@@ -20,21 +20,8 @@
 package org.nuxeo.runtime.datasource;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.NamingException;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-import javax.naming.spi.ObjectFactory;
-import javax.sql.DataSource;
-import javax.sql.XADataSource;
-
-import org.apache.commons.logging.LogFactory;
-import org.apache.tomcat.jdbc.naming.GenericNamingResourcesFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -122,82 +109,16 @@ public class DataSourceDescriptor {
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties;
 
-    protected Reference poolReference;
-
-    protected Reference xaReference;
-
-    public static class PoolFactory implements ObjectFactory {
-
-        @Override
-        public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable<?, ?> env) {
-            return Framework.getService(PooledDataSourceRegistry.class).getOrCreatePool(obj, name, nameCtx, env);
-        }
-
-    }
-
-    public void bindSelf(Context naming) throws NamingException {
-        if (xaDataSource != null) {
-            String xaName = DataSourceHelper.relativize(getName() + "-xa");
-            poolReference = new Reference(XADataSource.class.getName(), PoolFactory.class.getName(), null);
-            poolReference.add(new StringRefAddr("dataSourceJNDI", xaName));
-            xaReference = new Reference(Framework.expandVars(xaDataSource),
-                    GenericNamingResourcesFactory.class.getName(), null);
-            for (Entry<String, String> e : properties.entrySet()) {
-                String key = e.getKey();
-                String value = Framework.expandVars(e.getValue());
-                StringRefAddr addr = new StringRefAddr(key, value);
-                xaReference.add(addr);
-            }
-            naming.bind(DataSourceHelper.getDataSourceJNDIName(xaName), xaReference);
-        } else if (dataSource != null) {
-            poolReference = new Reference(DataSource.class.getName(), PoolFactory.class.getName(), null);
-            final String name = Framework.expandVars(dataSource);
-            poolReference.add(new StringRefAddr("dataSourceJNDI", DataSourceHelper.getDataSourceJNDIName(name)));
-        } else if (driverClasssName != null) {
-            poolReference = new Reference(DataSource.class.getName(), PoolFactory.class.getName(), null);
-        } else {
-            throw new RuntimeException("Datasource " + getName()
-                    + " should have xaDataSource or driverClassName attribute");
-        }
-
-        for (Entry<String, String> e : properties.entrySet()) {
-            String key = e.getKey();
-            String value = Framework.expandVars(e.getValue());
-            StringRefAddr addr = new StringRefAddr(key, value);
-            poolReference.add(addr);
-        }
-
+    // collect explicit properties and all descriptor attributes
+    public Map<String, String> getAllProperties() {
+        Map<String, String> props = new HashMap<>();
+        properties.forEach((k, v) -> props.put(k, Framework.expandVars(v)));
         NamedNodeMap attrs = element.getAttributes();
         for (int i = 0; i < attrs.getLength(); i++) {
             Node attr = attrs.item(i);
-            String attrName = attr.getNodeName();
-            String value = Framework.expandVars(attr.getNodeValue());
-            StringRefAddr addr = new StringRefAddr(attrName, value);
-            poolReference.add(addr);
+            props.put(attr.getNodeName(), Framework.expandVars(attr.getNodeValue()));
         }
-
-        LogFactory.getLog(DataSourceDescriptor.class).info("binding " + getName());
-        String jndiName = DataSourceHelper.getDataSourceJNDIName(getName());
-        naming.bind(jndiName, poolReference);
-        // create pooled
-        naming.lookup(jndiName);
-    }
-
-    public void unbindSelf(Context naming) throws NamingException {
-        try {
-            final PooledDataSourceRegistry registry = Framework.getService(PooledDataSourceRegistry.class);
-            if (registry != null) {
-                registry.clearPool(getName());
-            }
-        } finally {
-            try {
-                if (xaReference != null) {
-                    naming.unbind(DataSourceHelper.getDataSourceJNDIName(getName() + "-xa"));
-                }
-            } finally {
-                naming.unbind(DataSourceHelper.getDataSourceJNDIName(getName()));
-            }
-        }
+        return props;
     }
 
 }
