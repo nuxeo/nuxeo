@@ -22,6 +22,8 @@
 package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
+import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Interface to manage a low-level repository.
@@ -34,7 +36,11 @@ public interface Repository {
 
     void shutdown();
 
-    int getActiveSessionsCount();
+    /** @deprecated since 11.1, use {@link RepositoryService#getActiveSessionsCount(String)} instead */
+    @Deprecated
+    default int getActiveSessionsCount() {
+        return Framework.getService(RepositoryService.class).getActiveSessionsCount(getName());
+    }
 
     /**
      * Marks the binaries in use by passing them to the binary manager(s)'s GC mark() method.

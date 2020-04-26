@@ -376,11 +376,6 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
     }
 
     @Override
-    public int getActiveSessionsCount() {
-        return sessions.size();
-    }
-
-    @Override
     public int clearCaches() {
         int n = 0;
         for (SessionImpl session : sessions) {

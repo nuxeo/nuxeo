@@ -273,11 +273,6 @@ public class DBSCachingRepository implements DBSRepository {
     }
 
     @Override
-    public int getActiveSessionsCount() {
-        return repository.getActiveSessionsCount();
-    }
-
-    @Override
     public void markReferencedBinaries() {
         repository.markReferencedBinaries();
     }

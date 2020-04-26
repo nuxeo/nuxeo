@@ -248,7 +248,11 @@ public class RepositoryService extends DefaultComponent {
     }
 
     public int getActiveSessionsCount() {
-        return repositories.values().stream().mapToInt(Repository::getActiveSessionsCount).sum();
+        return pool.getNumActive();
+    }
+
+    public int getActiveSessionsCount(String repositoryName) {
+        return pool.getNumActive(repositoryName);
     }
 
     /**
