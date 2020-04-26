@@ -15,14 +15,8 @@
  */
 package org.nuxeo.runtime.datasource;
 
-import javax.naming.Context;
-import javax.naming.LinkRef;
-import javax.naming.NamingException;
-
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 
 @XObject("link")
 public class DataSourceLinkDescriptor {
@@ -43,15 +37,5 @@ public class DataSourceLinkDescriptor {
 
     @XNode("@type")
     protected String type;
-
-    public void bindSelf(Context namingContext) throws NamingException {
-        namingContext.bind(name, new LinkRef(global));
-        PooledDataSource pool = DataSourceHelper.getDataSource(global, PooledDataSource.class);
-        Framework.getService(PooledDataSourceRegistry.class).createAlias(DataSourceHelper.relativize(name), pool);
-    }
-
-    public void unbindSelf(Context namingContext) throws NamingException {
-        namingContext.unbind(name);
-    }
 
 }

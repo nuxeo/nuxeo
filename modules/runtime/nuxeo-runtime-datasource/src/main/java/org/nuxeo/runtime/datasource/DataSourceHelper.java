@@ -20,12 +20,6 @@
 
 package org.nuxeo.runtime.datasource;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.naming.Context;
-import javax.naming.NameClassPair;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -42,13 +36,6 @@ import org.nuxeo.runtime.jtajca.NuxeoContainer;
 public class DataSourceHelper {
 
     private DataSourceHelper() {
-    }
-
-    /**
-     * Get the JNDI prefix used for DataSource lookups.
-     */
-    public static String getDataSourceJNDIPrefix() {
-        return NuxeoContainer.nameOf("jdbc");
     }
 
     /**
@@ -96,29 +83,6 @@ public class DataSourceHelper {
             return NuxeoContainer.lookup(name, clazz);
         }
         return ds;
-    }
-
-    public static Map<String, DataSource> getDatasources() throws NamingException {
-        String prefix = getDataSourceJNDIPrefix();
-        Context naming = NuxeoContainer.getRootContext();
-        if (naming == null) {
-            throw new NamingException("No root context");
-        }
-        Context jdbc = (Context) naming.lookup(prefix);
-        Enumeration<NameClassPair> namesPair = jdbc.list("");
-        Map<String, DataSource> datasourcesByName = new HashMap<>();
-        while (namesPair.hasMoreElements()) {
-            NameClassPair pair = namesPair.nextElement();
-            String name = pair.getName();
-            if (pair.isRelative()) {
-                name = prefix + "/" + name;
-            }
-            Object ds = naming.lookup(name);
-            if (ds instanceof DataSource) {
-                datasourcesByName.put(name, (DataSource) ds);
-            }
-        }
-        return datasourcesByName;
     }
 
 }

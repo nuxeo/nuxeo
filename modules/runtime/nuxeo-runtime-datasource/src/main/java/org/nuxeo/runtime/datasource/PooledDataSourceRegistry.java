@@ -18,19 +18,12 @@ package org.nuxeo.runtime.datasource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentHashMap;
 
-import javax.naming.Context;
-import javax.naming.Name;
-import javax.naming.Reference;
 import javax.sql.DataSource;
 
-public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
-
-    private static final long serialVersionUID = 1L;
+public class PooledDataSourceRegistry {
 
     public interface PooledDataSource extends DataSource {
         void dispose();
@@ -38,38 +31,16 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
         Connection getConnection(boolean noSharing) throws SQLException;
     }
 
-    protected final Map<String, PooledDataSource> pools = new HashMap<>();
+    protected final Map<String, PooledDataSource> pools = new ConcurrentHashMap<>();
 
-    protected final PooledDataSourceFactory poolFactory = new org.nuxeo.runtime.datasource.PooledDataSourceFactory();
+    protected final PooledDataSourceFactory poolFactory = new PooledDataSourceFactory();
 
     public <T> T getPool(String name, Class<T> type) {
         return type.cast(pools.get(name));
     }
 
-    public PooledDataSource getOrCreatePool(Object obj, Name objectName, Context nameCtx, Hashtable<?, ?> env) {
-        final Reference ref = (Reference) obj;
-        String dsName = (String) ref.get("name").getContent();
-        PooledDataSource ds = pools.get(dsName);
-        if (ds != null) {
-            return ds;
-        }
-        return createPool(dsName, ref, objectName, nameCtx, env);
-    }
-
-    protected PooledDataSource createPool(String dsName, Reference ref, Name objectName, Context nameCtx, Hashtable<?, ?> env) {
-        PooledDataSource ds;
-        try {
-            readLock().lock();
-            ds = pools.get(dsName);
-            if (ds != null) {
-                return ds;
-            }
-            ds = (PooledDataSource) poolFactory.getObjectInstance(ref, objectName, nameCtx, env);
-            pools.put(dsName, ds);
-        } finally {
-            readLock().unlock();
-        }
-        return ds;
+    public synchronized void registerPooledDataSource(String dsName, Map<String, String> properties) {
+        pools.computeIfAbsent(dsName, k -> poolFactory.createPooledDataSource(properties));
     }
 
     protected void clearPool(String name) {
@@ -79,8 +50,12 @@ public class PooledDataSourceRegistry extends ReentrantReadWriteLock {
         }
     }
 
-    public void createAlias(String name, PooledDataSource pool) {
-        pools.put(name, pool);
+    public void createAlias(String name, PooledDataSource ds) {
+        pools.put(name, ds);
+    }
+
+    public void removeAlias(String name) {
+        pools.remove(name);
     }
 
 }
