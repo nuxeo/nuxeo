@@ -177,8 +177,6 @@ public class DBSSession extends BaseSession {
     protected static final Set<String> KEYS_RETENTION_HOLD_AND_PROXIES = new HashSet<>(Arrays.asList(KEY_RETAIN_UNTIL,
             KEY_HAS_LEGAL_HOLD, KEY_IS_RETENTION_ACTIVE, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS));
 
-    protected final Runnable closeCallback;
-
     protected final DBSTransactionState transaction;
 
     protected final boolean fulltextStoredInBlob;
@@ -199,9 +197,8 @@ public class DBSSession extends BaseSession {
 
     protected boolean isLatestVersionDisabled = false;
 
-    public DBSSession(DBSRepository repository, Runnable closeCallback) {
+    public DBSSession(DBSRepository repository) {
         super(repository);
-        this.closeCallback = closeCallback;
         transaction = new DBSTransactionState(repository, this);
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         fulltextStoredInBlob = fulltextConfiguration != null && fulltextConfiguration.fulltextStoredInBlob;
@@ -224,7 +221,6 @@ public class DBSSession extends BaseSession {
     @Override
     public void destroy() {
         transaction.close();
-        closeCallback.run();
     }
 
     @SuppressWarnings("resource") // timerContext closed by stop() in finally

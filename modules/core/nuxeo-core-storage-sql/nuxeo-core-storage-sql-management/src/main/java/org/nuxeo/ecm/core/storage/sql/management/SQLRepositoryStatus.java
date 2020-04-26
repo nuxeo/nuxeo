@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -42,7 +43,7 @@ public class SQLRepositoryStatus implements SQLRepositoryStatusMBean {
         sb.append("Actives sessions for SQL repositories:<br />");
         for (RepositoryManagement repository : getRepositories()) {
             sb.append("<b>").append(repository.getName()).append("</b>: ");
-            sb.append(repository.getActiveSessionsCount());
+            sb.append(getActiveSessionsCount());
             sb.append("<br />");
         }
         return sb.toString();
@@ -50,9 +51,10 @@ public class SQLRepositoryStatus implements SQLRepositoryStatusMBean {
 
     @Override
     public int getActiveSessionsCount() {
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
         int count = 0;
         for (RepositoryManagement repository : getRepositories()) {
-            count += repository.getActiveSessionsCount();
+            count += repositoryService.getActiveSessionsCount(repository.getName());
         }
         return count;
     }

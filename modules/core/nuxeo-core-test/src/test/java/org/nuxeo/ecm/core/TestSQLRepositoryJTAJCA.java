@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -93,12 +92,11 @@ public class TestSQLRepositoryJTAJCA {
     @Test
     public void testSessionSharing() {
         String repositoryName = session.getRepositoryName();
-        Repository repo = repositoryService.getRepository(repositoryName);
         session.getRootDocument(); // use the session at least once
-        assertEquals(1, repo.getActiveSessionsCount());
+        assertEquals(1, repositoryService.getActiveSessionsCount(repositoryName));
 
         CoreSession session2 = CoreInstance.getCoreSession(repositoryName, ADMINISTRATOR);
-        assertEquals(1, repo.getActiveSessionsCount());
+        assertEquals(1, repositoryService.getActiveSessionsCount(repositoryName));
         DocumentModel doc = session.createDocumentModel("/", "doc", "Document");
         doc = session.createDocument(doc);
         session.save();
@@ -106,7 +104,7 @@ public class TestSQLRepositoryJTAJCA {
         // (underlying ManagedConnection is the same)
         assertTrue(session2.exists(new PathRef("/doc")));
 
-        assertEquals(1, repo.getActiveSessionsCount());
+        assertEquals(1, repositoryService.getActiveSessionsCount(repositoryName));
     }
 
     /**

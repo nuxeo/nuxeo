@@ -24,7 +24,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.resource.spi.ConnectionManager;
 
@@ -110,8 +109,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      * @since 7.4 : used to know if the LockManager was provided by this repository or externally
      */
     protected boolean selfRegisteredLockManager = false;
-
-    protected final AtomicInteger sessionCount = new AtomicInteger();
 
     public DBSRepositoryBase(ConnectionManager cm, String repositoryName, DBSRepositoryDescriptor descriptor) {
         this.repositoryName = repositoryName;
@@ -317,18 +314,8 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     @Override
-    public int getActiveSessionsCount() {
-        return sessionCount.get();
-    }
-
-    @Override
     public Session getSession() {
-        sessionCount.incrementAndGet();
-        return new DBSSession(this, this::sessionCloseCallback);
-    }
-
-    protected void sessionCloseCallback() {
-        sessionCount.decrementAndGet();
+        return new DBSSession(this);
     }
 
 }

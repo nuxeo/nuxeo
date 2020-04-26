@@ -34,11 +34,6 @@ public interface RepositoryManagement {
     String getName();
 
     /**
-     * Gets the number of active sessions.
-     */
-    int getActiveSessionsCount();
-
-    /**
      * Evaluate number of elements in all caches
      *
      * @since 5.7.2
