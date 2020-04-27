@@ -66,9 +66,9 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
     @Override
     public Topology getTopology(Map<String, String> options) {
         return Topology.builder()
-                .addComputation(RecomputeViewsComputation::new, //
-                        Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
-                .build();
+                       .addComputation(RecomputeViewsComputation::new, //
+                               Arrays.asList(INPUT_1 + ":" + ACTION_NAME, OUTPUT_1 + ":" + STATUS_STREAM))
+                       .build();
     }
 
     public static class RecomputeViewsComputation extends AbstractBulkComputation {
@@ -89,7 +89,7 @@ public class RecomputeViewsAction implements StreamProcessorTopology {
 
         @Override
         protected void compute(CoreSession session, List<String> ids, Map<String, Serializable> properties) {
-            log.debug("Compute action: {} for doc ids: {}", ACTION_NAME , ids);
+            log.debug("Compute action: {} for doc ids: {}", ACTION_NAME, ids);
             for (String docId : ids) {
 
                 if (!session.exists(new IdRef(docId))) {
