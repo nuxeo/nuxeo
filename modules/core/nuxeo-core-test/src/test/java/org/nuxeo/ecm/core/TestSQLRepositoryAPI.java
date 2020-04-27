@@ -4388,6 +4388,11 @@ public class TestSQLRepositoryAPI {
     @Test
     @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
     public void testBinaryGC() throws Exception {
+        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
+            // NXP-29006: temporarily ignore against PostgreSQL
+            return;
+        }
+
         // GC binaries from previous tests
         Thread.sleep(3 * 1000);
         runBinariesGC(true, false);

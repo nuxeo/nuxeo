@@ -73,6 +73,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.Comment;
@@ -134,6 +135,9 @@ public class TestCommentsMigrator {
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResult;
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     protected DocumentModel firstFileToComment;
 
@@ -402,6 +406,11 @@ public class TestCommentsMigrator {
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
     @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/disable-removing-comment-children-listener.xml")
     public void testProbeWithInConsistentComments() {
+        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
+            // NXP-29004: temporarily ignore against PostgreSQL
+            return;
+        }
+
         CommentManager propertyCommentManager = new PropertyCommentManager();
         // add a comment with empty parent
         DocumentModel commentWithEmptyParent = session.createDocumentModel(null, "comment", COMMENT_DOC_TYPE);

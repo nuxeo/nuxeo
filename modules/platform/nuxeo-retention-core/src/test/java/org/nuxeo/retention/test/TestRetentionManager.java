@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Calendar;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -88,6 +89,7 @@ public class TestRetentionManager extends RetentionTestCase {
         assertTrue(file.isTrashed());
     }
 
+    @Ignore(value = "NXP-29002")
     @Test
     public void testManualImmediateRule() throws InterruptedException {
         RetentionRule testRule = createManualImmediateRuleMillis(100);

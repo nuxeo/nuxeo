@@ -55,4 +55,11 @@ public class TestBridgeTrashService extends AbstractTestTrashService {
         // temporarily ignored
     }
 
+    @Ignore(value = "NXP-29005")
+    @Override
+    @Test
+    public void testTrashFolderContainingProxy() {
+        // temporarily ignored
+    }
+
 }
