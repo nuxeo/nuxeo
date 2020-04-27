@@ -61,9 +61,8 @@ public class PictureViewsGenerationListener implements EventListener {
             String query = "SELECT * FROM Document WHERE ecm:uuid='" + doc.getId() + "'";
             BulkService service = Framework.getService(BulkService.class);
             String username = ctx.getPrincipal().getName();
-            service.submit(new BulkCommand.Builder(ACTION_NAME, query, username)
-                    .param(PARAM_XPATH, "file:content")
-                    .build());
+            service.submit(
+                    new BulkCommand.Builder(ACTION_NAME, query, username).param(PARAM_XPATH, "file:content").build());
         }
     }
 
