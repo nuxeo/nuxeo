@@ -24,12 +24,12 @@ import java.sql.SQLException;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 
 /**
  * Helper to acquire a JDBC {@link Connection} from a datasource name.
@@ -49,9 +49,6 @@ public class ConnectionHelper {
      * @throws SQLException if no actual physical connection was allocated yet
      */
     public static Connection unwrap(Connection connection) throws SQLException {
-        if (connection instanceof org.tranql.connector.jdbc.ConnectionHandle) {
-            return ((org.tranql.connector.jdbc.ConnectionHandle) connection).getAssociation().getPhysicalConnection();
-        }
         // now try Apache DBCP unwrap (standard or Tomcat), to skip datasource wrapping layers
         // this needs accessToUnderlyingConnectionAllowed=true in the pool config
         try {
@@ -89,9 +86,9 @@ public class ConnectionHelper {
      * @return a new connection
      */
     public static Connection getConnection(String dataSourceName, boolean noSharing) throws SQLException {
-        DataSource dataSource = getDataSource(dataSourceName);
-        if (dataSource instanceof PooledDataSource) {
-            return ((PooledDataSource) dataSource).getConnection(noSharing);
+        DataSource dataSource = getDataSource(dataSourceName, noSharing);
+        if (dataSource instanceof BasicManagedDataSource) {
+            return dataSource.getConnection();
         } else {
             return JDBCUtils.getConnection(dataSource);
         }
@@ -103,9 +100,9 @@ public class ConnectionHelper {
      * @param dataSourceName the datasource name
      * @return the datasource
      */
-    private static DataSource getDataSource(String dataSourceName) throws SQLException {
+    private static DataSource getDataSource(String dataSourceName, boolean noSharing) throws SQLException {
         try {
-            return DataSourceHelper.getDataSource(dataSourceName);
+            return DataSourceHelper.getDataSource(dataSourceName, noSharing);
         } catch (NamingException e) {
             if (Framework.isTestModeSet()) {
                 String url = Framework.getProperty("nuxeo.test.vcs.url");

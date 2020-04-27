@@ -174,13 +174,8 @@ public class RepositoryDescriptor {
     @XNode("repository")
     public RepositoryDescriptor repositoryDescriptor;
 
-    public NuxeoConnectionManagerConfiguration pool;
-
     @XNode("pool")
-    public void setPool(NuxeoConnectionManagerConfiguration pool) {
-        pool.setName("repository/" + name);
-        this.pool = pool;
-    }
+    public NuxeoConnectionManagerConfiguration pool;
 
     @XNode("clusterInvalidatorClass")
     public Class<? extends VCSClusterInvalidator> clusterInvalidatorClass;

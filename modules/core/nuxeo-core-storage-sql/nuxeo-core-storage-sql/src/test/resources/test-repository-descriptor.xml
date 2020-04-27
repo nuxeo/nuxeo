@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <repository name="foo">
   <pool minPoolSize="1" maxPoolSize="2"
-    blockingTimeoutMillis="3" idleTimeoutMinutes="4" />
+    blockingTimeoutMillis="3" />
   <sqlInitFile>file1</sqlInitFile>
   <sqlInitFile>file2</sqlInitFile>
   <schema>

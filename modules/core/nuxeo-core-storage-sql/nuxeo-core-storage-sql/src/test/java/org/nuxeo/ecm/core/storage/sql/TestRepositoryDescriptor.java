@@ -155,7 +155,6 @@ public class TestRepositoryDescriptor {
         assertEquals(111, pool.getMinPoolSize());
         assertEquals(222, pool.getMaxPoolSize());
         assertEquals(3, pool.getBlockingTimeoutMillis());
-        assertEquals(4, pool.getIdleTimeoutMinutes());
 
         // schema fields
 

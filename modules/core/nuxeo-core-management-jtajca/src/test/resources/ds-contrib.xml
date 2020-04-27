@@ -2,7 +2,7 @@
 <component name="org.nuxeo.runtime.jtajca.management.test.ds">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/canrollback" driverClassName="${nuxeo.test.vcs.driver}"
-      maxPoolSize="20" minPoolSize="5">
+      maxTotal="20" minTotal="5">
       <property name="url">${nuxeo.test.vcs.url}</property>
       <property name="user">${nuxeo.test.vcs.user}</property>
       <property name="password">${nuxeo.test.vcs.password}</property>

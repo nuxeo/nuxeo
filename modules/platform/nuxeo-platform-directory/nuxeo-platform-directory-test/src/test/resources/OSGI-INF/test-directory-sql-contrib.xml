@@ -4,7 +4,7 @@
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/nxsqldirectory" driverClassName="${nuxeo.test.vcs.driver}"
                 url="${nuxeo.test.vcs.url}" username="${nuxeo.test.vcs.user}" password="${nuxeo.test.vcs.password}"
-                maxPoolSize="20" minPoolSize="5"/>
+                maxTotal="20" minTotal="5"/>
   </extension>
 
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">

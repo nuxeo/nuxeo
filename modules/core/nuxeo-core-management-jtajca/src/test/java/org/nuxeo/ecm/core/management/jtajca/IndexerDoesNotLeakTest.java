@@ -58,17 +58,13 @@ public class IndexerDoesNotLeakTest {
 
     @Test
     public void indexerWorkDoesNotLeak() throws InterruptedException {
-        ConnectionPoolMonitor dbMonitor = JtajcaManagementFeature.getInstanceNamedWithPrefix(
-                ConnectionPoolMonitor.class, "jdbc/");
         int repoCount = repoMonitor.getConnectionCount();
-        int dbCount = dbMonitor.getConnectionCount();
         DocumentModel doc = repo.createDocumentModel("/", "note", "Note");
         repo.createDocument(doc);
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
         works.awaitCompletion(10, TimeUnit.SECONDS);
         assertThat(repoCount, is(repoMonitor.getConnectionCount()));
-        assertThat(dbCount, is(dbMonitor.getConnectionCount()));
 
     }
 }

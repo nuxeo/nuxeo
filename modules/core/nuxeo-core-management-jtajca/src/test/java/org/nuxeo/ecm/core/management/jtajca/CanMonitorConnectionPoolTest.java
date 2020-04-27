@@ -54,18 +54,12 @@ public class CanMonitorConnectionPoolTest {
 
     @Test
     public void areMonitorsInstalled() {
-        ConnectionPoolMonitor db = JtajcaManagementFeature.getInstanceNamedWithPrefix(ConnectionPoolMonitor.class,
-                "jdbc/");
         isMonitorInstalled(repo);
-        isMonitorInstalled(db);
     }
 
     @Test
     public void areConnectionsOpened() {
-        ConnectionPoolMonitor db = JtajcaManagementFeature.getInstanceNamedWithPrefix(ConnectionPoolMonitor.class,
-                "jdbc/");
         isConnectionOpened(repo);
-        isConnectionOpened(db);
     }
 
     protected void isMonitorInstalled(ConnectionPoolMonitor monitor) {

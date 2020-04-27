@@ -34,7 +34,7 @@ public class MongoDBRepositoryFactory extends DBSRepositoryFactory {
 
     @Override
     public Object call() {
-        return new MongoDBRepository(installPool(), (MongoDBRepositoryDescriptor) getRepositoryDescriptor());
+        return new MongoDBRepository((MongoDBRepositoryDescriptor) getRepositoryDescriptor());
     }
 
 }

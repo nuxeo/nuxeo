@@ -19,7 +19,6 @@
  */
 package org.nuxeo.ecm.core.management.jtajca;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -92,19 +91,6 @@ public class JtajcaManagementFeature implements RunnerFeature {
         }
     }
 
-    public static <T> T getInstanceNamedWithPrefix(Class<T> type, String prefix) {
-        MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
-        Set<String> names = new HashSet<>();
-        for (ObjectName objectName : mbs.queryNames(nameOf(type), null)) {
-            String name = objectName.getKeyProperty("name");
-            names.add(name); // for error case
-            if (name.startsWith(prefix)) {
-                return JMX.newMXBeanProxy(mbs, objectName, type);
-            }
-        }
-        throw new RuntimeException("Found no bean with name prefix: " + prefix + " in available names: " + names);
-    }
-
     CoreFeature core;
 
     Class<?> target;
@@ -121,9 +107,6 @@ public class JtajcaManagementFeature implements RunnerFeature {
             return;
         }
         runner.getFeature(RuntimeFeature.class).registerHandler(new JtajcaDeployer(runner));
-        // bind repository
-        String repositoryName = core.getStorageConfiguration().getRepositoryName();
-        NuxeoContainer.getConnectionManager(repositoryName);
 
         MBeanServer mbs = Framework.getService(ServerLocator.class).lookupServer();
         bind(binder, mbs, ConnectionPoolMonitor.class);

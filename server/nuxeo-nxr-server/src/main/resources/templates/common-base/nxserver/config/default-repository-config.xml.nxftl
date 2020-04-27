@@ -32,9 +32,7 @@
     point="repository">
     <repository name="default" label="label.default.repository">
       <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
-        blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}"
-        idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}"
-        activeTimeoutMinutes="${nuxeo.vcs["active-timeout-minutes"]}" />
+        blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" />
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
       <ddlMode>${nuxeo.vcs.ddlmode}</ddlMode>
       <aclOptimizations enabled="${nuxeo.vcs.optimizations.acl.enabled}" readAclMaxSize="${nuxeo.vcs.optimizations.acl.maxsize}"/>

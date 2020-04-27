@@ -9,13 +9,6 @@
 </suppress>
 <suppress>
    <notes><![CDATA[
-   file name: geronimo-connector-2.2.1-NX1.jar (vulnerable Geronimo SUSE init script is not used nor included by Nuxeo)
-   ]]></notes>
-   <gav regex="true">^org\.apache\.geronimo\.components:geronimo-connector:.*$</gav>
-   <cve>CVE-2008-0732</cve>
-</suppress>
-<suppress>
-   <notes><![CDATA[
    file name: geronimo-transaction-2.2.1.jar
    (CVE-2008-0732: vulnerable Geronimo SUSE init script is not used nor included by Nuxeo)
    (CVE-2011-5034: vulnerable code not in geronimo-transaction)

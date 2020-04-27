@@ -22,12 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.RuntimeServiceException;
-import org.nuxeo.runtime.datasource.DatasourceExceptionSorter.Configuration;
-import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -51,8 +50,6 @@ public class DataSourceComponent extends DefaultComponent {
     protected Map<String, DataSourceDescriptor> datasources = new HashMap<>();
 
     protected Map<String, DataSourceLinkDescriptor> links = new HashMap<>();
-
-    protected final DatasourceExceptionSorter.Registry sorterRegistry = new DatasourceExceptionSorter.Registry();
 
     protected final PooledDataSourceRegistry poolRegistry = new PooledDataSourceRegistry();
 
@@ -80,8 +77,6 @@ public class DataSourceComponent extends DefaultComponent {
             addDataSource((DataSourceDescriptor) contrib);
         } else if (contrib instanceof DataSourceLinkDescriptor) {
             addDataSourceLink((DataSourceLinkDescriptor) contrib);
-        } else if (contrib instanceof DatasourceExceptionSorter.Configuration) {
-            sorterRegistry.addContribution((Configuration) contrib);
         } else {
             log.error("Wrong datasource extension type " + contrib.getClass().getName());
         }
@@ -93,8 +88,6 @@ public class DataSourceComponent extends DefaultComponent {
             removeDataSource((DataSourceDescriptor) contrib);
         } else if (contrib instanceof DataSourceLinkDescriptor) {
             removeDataSourceLink((DataSourceLinkDescriptor) contrib);
-        } else if (contrib instanceof DatasourceExceptionSorter.Configuration) {
-            sorterRegistry.removeContribution((Configuration) contrib);
         }
     }
 
@@ -154,7 +147,7 @@ public class DataSourceComponent extends DefaultComponent {
 
     protected void unbindDataSource(DataSourceDescriptor descr) {
         log.info("Unregistering datasource: " + descr.getName());
-        poolRegistry.clearPool(descr.getName());
+        poolRegistry.unregisterPooledDataSource(descr.getName());
     }
 
     protected void addDataSourceLink(DataSourceLinkDescriptor contrib) {
@@ -169,9 +162,9 @@ public class DataSourceComponent extends DefaultComponent {
 
     protected void bindDataSourceLink(DataSourceLinkDescriptor descr) {
         log.info("Registering DataSourceLink: " + descr.name);
-        PooledDataSource ds;
+        DataSource ds;
         try {
-            ds = DataSourceHelper.getDataSource(descr.global, PooledDataSource.class);
+            ds = DataSourceHelper.getDataSource(descr.global, DataSource.class);
         } catch (NamingException e) {
             throw new RuntimeServiceException("Cannot find DataSourceLink '" + descr.name + "' in JNDI", e);
         }

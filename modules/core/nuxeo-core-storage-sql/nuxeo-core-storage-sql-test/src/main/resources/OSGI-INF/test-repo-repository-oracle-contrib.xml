@@ -4,7 +4,7 @@
     point="datasources">
 
     <datasource name="jdbc/${nuxeo.test.vcs.database}" driverClassName="${nuxeo.test.vcs.driver}"
-        maxPoolSize="30" minPoolSize="5" blockingTimeoutMillis="10000">
+        maxTotal="30" minTotal="5" maxWaitMillis="10000">
       <property name="url">${nuxeo.test.vcs.url}</property>
       <property name="username">${nuxeo.test.vcs.user}</property>
       <property name="password">${nuxeo.test.vcs.password}</property>

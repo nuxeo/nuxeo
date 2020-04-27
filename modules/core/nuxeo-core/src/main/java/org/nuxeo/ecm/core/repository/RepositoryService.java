@@ -133,6 +133,10 @@ public class RepositoryService extends DefaultComponent {
         pool.close();
     }
 
+    public void resetPool() {
+        basePool.clear();
+    }
+
     // for monitoring
     public GenericKeyedObjectPool<String, ?> getPool() {
         return basePool;
