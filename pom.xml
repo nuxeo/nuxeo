@@ -3423,11 +3423,6 @@
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.resource</groupId>
-        <artifactId>connector-api</artifactId>
-        <version>1.5</version>
-      </dependency>
-      <dependency>
         <groupId>com.sun.activation</groupId>
         <artifactId>javax.activation</artifactId>
         <version>1.2.0</version>
@@ -3502,22 +3497,6 @@
         <version>6.2.1</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.apache.geronimo.components</groupId>
-        <artifactId>geronimo-connector</artifactId>
-        <version>2.2.1-NX1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.tranql</groupId>
-        <artifactId>tranql-connector</artifactId>
-        <version>1.8</version>
-      </dependency>
       <dependency>
         <groupId>org.apache.geronimo.components</groupId>
         <artifactId>geronimo-transaction</artifactId>
