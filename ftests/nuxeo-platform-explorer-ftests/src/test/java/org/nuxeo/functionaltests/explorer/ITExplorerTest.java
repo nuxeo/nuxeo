@@ -17,10 +17,13 @@
  */
 package org.nuxeo.functionaltests.explorer;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.RestHelper;
+import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 
@@ -49,6 +52,16 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testLoginLogout() {
         goHome();
+    }
+
+    /**
+     * Checks the distrib admin page is hidden to any non-admin user.
+     */
+    @Test
+    public void testDistribAdminPage() {
+        open(DistribAdminPage.URL);
+        assertEquals("", driver.getTitle());
+        assertEquals("", driver.getPageSource());
     }
 
     @Test
