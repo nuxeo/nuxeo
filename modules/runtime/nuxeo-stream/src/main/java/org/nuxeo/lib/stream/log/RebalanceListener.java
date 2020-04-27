@@ -31,4 +31,7 @@ public interface RebalanceListener {
 
     void onPartitionsAssigned(Collection<LogPartition> partitions);
 
+    default void onPartitionsLost(Collection<LogPartition> partitions) {
+        onPartitionsRevoked(partitions);
+    }
 }
