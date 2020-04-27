@@ -11,30 +11,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-apiVersion: skaffold/v1beta11
+apiVersion: skaffold/v1beta14
 kind: Config
 build:
   tagPolicy:
     envTemplate:
       template: "{{.DOCKER_REGISTRY}}/nuxeo/{{.IMAGE_NAME}}:{{.VERSION}}"
   artifacts:
-    - image: builder
-      context: docker/builder
+    - image: slim
+      context: docker/slim
       kaniko:
         dockerfile: Dockerfile
         buildContext:
           localDir: {}
         cache:
-          repo: ${DOCKER_REGISTRY}/nuxeo/builder/cache
-    - image: base
-      context: docker/base
+          repo: ${DOCKER_REGISTRY}/nuxeo/slim/cache
+    - image: nuxeo
+      context: docker/nuxeo
       kaniko:
         dockerfile: Dockerfile
         buildContext:
           localDir: {}
+        buildArgs:
+          BASE_IMAGE: ${DOCKER_REGISTRY}/nuxeo/slim:${VERSION}
         cache:
-          repo: ${DOCKER_REGISTRY}/nuxeo/base/cache
+          repo: ${DOCKER_REGISTRY}/nuxeo/nuxeo/cache
   cluster:
+    concurrency: 1
     namespace: platform
     dockerConfig:
       secretName: jenkins-docker-cfg
