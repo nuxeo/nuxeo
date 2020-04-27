@@ -109,16 +109,6 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.components</groupId>
-      <artifactId>geronimo-connector</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.geronimo.components</groupId>
       <artifactId>geronimo-transaction</artifactId>
       <scope>compile</scope>

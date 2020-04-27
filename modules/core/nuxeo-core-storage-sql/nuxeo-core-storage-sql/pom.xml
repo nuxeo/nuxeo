@@ -30,10 +30,6 @@
       <artifactId>commons-pool2</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
     </dependency>

@@ -46,10 +46,6 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <scope>provided</scope>

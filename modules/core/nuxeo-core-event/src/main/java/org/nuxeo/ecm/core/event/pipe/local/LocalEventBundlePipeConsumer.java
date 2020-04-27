@@ -20,8 +20,6 @@ package org.nuxeo.ecm.core.event.pipe.local;
 
 import java.util.List;
 
-import javax.resource.spi.work.WorkManager;
-
 import org.nuxeo.common.annotation.Experimental;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.pipe.AbstractListenerPipeConsumer;
