@@ -55,26 +55,32 @@ public class TestRetentionManager extends RetentionTestCase {
 
     @Test
     public void test1DayManualImmediateRuleRunningRetention() throws InterruptedException {
-        assertStillUnderRetentionAfter(file, createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, 0, 0, 1, 0, null, null), 1000);
+        assertStillUnderRetentionAfter(file,
+                createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
+                        RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, 0, 0, 1, 0, null, null),
+                1000);
     }
 
     @Test
     public void test1MonthManualImmediateRuleRunningRetention() throws InterruptedException {
-        assertStillUnderRetentionAfter(file, createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, 0, 1, 0, 0, null, null), 1000);
+        assertStillUnderRetentionAfter(file,
+                createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
+                        RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, 0, 1, 0, 0, null, null),
+                1000);
     }
 
     @Test
     public void test1YearManualImmediateRuleRunningRetention() throws InterruptedException {
-        assertStillUnderRetentionAfter(file, createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, 1, 0, 0, 0, null, null), 1000);
+        assertStillUnderRetentionAfter(file,
+                createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
+                        RetentionRule.StartingPointPolicy.IMMEDIATE, null, null, null, null, 1, 0, 0, 0, null, null),
+                1000);
     }
 
     @Test
     public void testManualImmediateRuleWithActions() throws InterruptedException {
-        RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100,
-                null, Arrays.asList("Document.Trash"));
+        RetentionRule testRule = createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, 100, null,
+                Arrays.asList("Document.Trash"));
 
         file = service.attachRule(file, testRule, session);
         assertTrue(session.isRecord(file.getRef()));
