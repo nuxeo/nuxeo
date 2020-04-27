@@ -46,6 +46,7 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.InterruptException;
+import org.apache.kafka.common.errors.RebalanceInProgressException;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.utils.Bytes;
 import org.nuxeo.lib.stream.codec.Codec;
@@ -348,12 +349,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
         try {
             consumer.commitSync(offsetToCommit);
-            consumer.commitSync(offsetToCommit);
-        } catch (CommitFailedException e) {
+        } catch (CommitFailedException | RebalanceInProgressException e) {
             log.error("Fail to commit " + offsetToCommit + " assigned " + assignments() + " last committed: "
                     + lastCommittedOffsets + " last size: " + lastPollSize + " elapsed: "
                     + (System.currentTimeMillis() - lastPollTimestamp) + " ms, records polled: " + records.size());
-
             throw e;
         }
         offsetToCommit.forEach((topicPartition, offset) -> lastCommittedOffsets.put(topicPartition, offset.offset()));
@@ -483,4 +482,16 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
     }
 
+    @Override
+    public void onPartitionsLost(Collection<TopicPartition> partitions) {
+        Collection<LogPartition> lost = partitions.stream()
+                .map(tp -> LogPartition.of(resolver.getName(tp.topic()),
+                        tp.partition()))
+                .collect(Collectors.toList());
+        log.warn(String.format("Rebalance Partition Lost: %s", lost));
+        id += "-lost";
+        if (listener != null) {
+            listener.onPartitionsLost(lost);
+        }
+    }
 }

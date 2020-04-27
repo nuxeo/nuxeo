@@ -338,14 +338,17 @@ public class ConsumerRunner<M extends Message> implements Callable<ConsumerStatu
 
     @Override
     public void onPartitionsRevoked(Collection<LogPartition> partitions) {
-        // log.info("Partitions revoked: " + partitions);
+        setThreadName("rebalance-revoked");
+    }
+
+    @Override
+    public void onPartitionsLost(Collection<LogPartition> partitions) {
+        setThreadName("rebalance-LOST");
     }
 
     @Override
     public void onPartitionsAssigned(Collection<LogPartition> partitions) {
         consumerId = tailer.toString();
-        setThreadName("rebalance-" + consumerId);
-        // log.error("Partitions assigned: " + consumerId);
-        // partitions are opened on last committed by default
+        setThreadName("rebalance-assigned-" + tailer.toString());
     }
 }
