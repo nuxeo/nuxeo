@@ -3,21 +3,78 @@
 # It includes a bare Nuxeo server distribution without any Nuxeo package installed.
 # It doesn't include any converter.
 #
-# It uses a multi-stage build relying on a builder image and a base image.
-# These images must be passed as build args.
-
-ARG BUILDER_IMAGE
-ARG BASE_IMAGE
+# It uses a multi-stage build.
 
 # ------------------------------------------------------------------------
 # Build stage
-FROM ${BUILDER_IMAGE} as builder
+FROM openjdk:11-jdk-slim as builder
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  procps \
+  unzip \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY target/distrib/nuxeo-server-tomcat-*.zip /tmp/nuxeo-distribution-tomcat.zip
+
+ENV NUXEO_HOME=/distrib
+
+RUN mkdir -p /tmp/nuxeo-distribution \
+  && unzip -q -d /tmp/nuxeo-distribution /tmp/nuxeo-distribution-tomcat.zip \
+  && DISTDIR=$(/bin/ls /tmp/nuxeo-distribution | head -n 1) \
+  && mv /tmp/nuxeo-distribution/$DISTDIR $NUXEO_HOME \
+  && sed -i -e "s/^org.nuxeo.distribution.package.*/org.nuxeo.distribution.package=docker/" $NUXEO_HOME/templates/common/config/distribution.properties \
+  && rm -rf /tmp/nuxeo-distribution* \
+  && chmod +x $NUXEO_HOME/bin/*ctl $NUXEO_HOME/bin/*.sh \
+  && chmod -R g+rwX $NUXEO_HOME
 
 # ------------------------------------------------------------------------
 # Target stage
-FROM ${BASE_IMAGE}
+FROM centos:7
 LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
+
+RUN yum -y update && yum -y --setopt=skip_missing_names_on_install=False install \
+  java-11-openjdk java-11-openjdk-devel \
+  less \
+  tar \
+  unzip \
+  wget \
+  && yum clean all
+
+# Set Java 11 as default java (if libreoffice is installed in the final image, it adds Java 8 and sets it as default)
+RUN alternatives --set java java-11-openjdk.x86_64
+
+# Remove setuid/setgid binaries from images for security
+RUN find / -perm 6000 -type f -exec chmod a-s {} \; || true
+
+# Add a nuxeo user with a fixed UID
+# We chose an arbitrary UID that doesn't conflict with possibly existing users
+ENV NUXEO_USER nuxeo
+RUN useradd -m -d /home/$NUXEO_USER -u 900 -s /bin/bash $NUXEO_USER
+
+ENV NUXEO_HOME /opt/nuxeo/server
+ENV NUXEO_CONF /etc/nuxeo/nuxeo.conf
+
+# Set permissions on writeable directories to support arbitrary user IDs for OpenShift.
+# These directories must be owned by the root group and be readable/writable by that group.
+# See https://docs.openshift.com/container-platform/3.5/creating_images/guidelines.html#use-uid
+RUN mkdir -p $NUXEO_HOME \
+  && chown 900:0 $NUXEO_HOME && chmod g+rwX $NUXEO_HOME \
+  && mkdir -p /etc/nuxeo \
+  && chown 900:0 /etc/nuxeo && chmod g+rwX /etc/nuxeo \
+  && mkdir -p /var/lib/nuxeo \
+  && chown 900:0 /var/lib/nuxeo && chmod g+rwX /var/lib/nuxeo \
+  && mkdir -p /var/log/nuxeo \
+  && chown  900:0 /var/log/nuxeo && chmod g+rwX /var/log/nuxeo \
+  && mkdir -p /var/pid/nuxeo \
+  && chown 900:0 /var/pid/nuxeo && chmod g+rwX /var/pid/nuxeo \
+  && chmod g=u /etc/passwd
+
+COPY docker-entrypoint.sh /
+
+# Create directory in which to mount property files appended to nuxeo.conf at runtime.
+RUN mkdir /etc/nuxeo/conf.d
+# Copy base property files.
+COPY conf.d /etc/nuxeo/conf.d/
 
 # Copy Nuxeo distribution
 COPY --from=builder /distrib $NUXEO_HOME
@@ -26,6 +83,18 @@ COPY --from=builder /distrib $NUXEO_HOME
 # TODO NXP-28052: remove and use COPY --chown when fixed in Kaniko, or find a proper way
 RUN chown -R 900:0 $NUXEO_HOME \
   && chmod -R g+rwX $NUXEO_HOME
+
+VOLUME /var/lib/nuxeo
+VOLUME /var/log/nuxeo
+VOLUME /tmp
+
+ENV HOME $NUXEO_HOME
+ENV PATH $NUXEO_HOME/bin:$PATH
+
+WORKDIR $NUXEO_HOME
+EXPOSE 8080
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nuxeoctl", "console"]
 
 # Run as a non root user with a fixed UID
 USER 900

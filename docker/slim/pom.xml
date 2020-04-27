@@ -15,19 +15,31 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.docker</groupId>
-      <artifactId>nuxeo-base-docker-image</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.docker</groupId>
-      <artifactId>nuxeo-builder-docker-image</artifactId>
-      <type>pom</type>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-server-tomcat</artifactId>
+      <type>zip</type>
     </dependency>
   </dependencies>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-distrib</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>nuxeo-server-tomcat</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/distrib</outputDirectory>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
@@ -40,10 +52,6 @@
             <configuration>
               <repository>nuxeo/slim</repository>
               <tag>${nuxeo.platform.version}</tag>
-              <buildArgs>
-                <BUILDER_IMAGE>nuxeo/builder:${nuxeo.platform.version}</BUILDER_IMAGE>
-                <BASE_IMAGE>nuxeo/base:${nuxeo.platform.version}</BASE_IMAGE>
-              </buildArgs>
               <pullNewerImage>false</pullNewerImage>
             </configuration>
           </execution>

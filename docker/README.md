@@ -1,13 +1,9 @@
 # Nuxeo Docker Images
 
-Nuxeo provides a set of Docker images that can be separated into two categories:
+Nuxeo provides ready to use Docker images:
 
-- The [builder](#builder-images) images.
-- The [final](#final-images) images.
-
-The builder images allow to build a final Docker image using a multi-stage build.
-
-The final images are ready to use.
+- The [slim](#slim-nuxeoslim) image.
+- The [nuxeo](#nuxeo-nuxeonuxeo) image.
 
 These images are pushed to our [public Docker regsitry](https://packages.nuxeo.com/#browse/search/docker). To pull an image, run:
 
@@ -25,38 +21,7 @@ docker pull docker.packages.nuxeo.com/nuxeo/slim:11.1-SNAPSHOT
 
 These Docker images don't aim to replace the [Nuxeo Docker official image](https://hub.docker.com/_/nuxeo/). They implement a different approach, described [here](https://jira.nuxeo.com/browse/NXP-27514), to try having immutable images configured at build time instead of runtime.
 
-## Builder Images
-
-The versioning of these images follows the Nuxeo platform versioning. In the Dockerfile samples below, `VERSION` can be replaced for instance by `11.1-SNAPSHOT`.
-
-### Base Builder: nuxeo/builder
-
-It provides:
-
-- A Nuxeo server distribution with appropriate permissions in the `/distrib` directory.
-- An `install-packages.sh` script to install Nuxeo packages.
-
-It is based on an OpenJDK image as it requires Java for the package installation.
-
-It must be used within a multi-stage build.
-For instance, you can use the following Dockerfile sample to build an image based on a `BASE_IMAGE`, containing a Nuxeo server distribution:
-
-- In the `NUXEO_HOME` directory.
-- With some Nuxeo packages installed, whose ZIP files must be located in the `local/packages` directory.
-- Owned by the UID user and GID group.
-
-```Dockerfile
-FROM nuxeo/builder:VERSION as builder
-COPY local/packages /packages
-RUN install-packages.sh /packages
-
-FROM BASE_IMAGE
-COPY --from=builder --chown=UID:GID /distrib NUXEO_HOME
-```
-
-### Nuxeo Base: nuxeo/base
-
-This image can be used as the `BASE_IMAGE` in the Dockerfile samples seen above.
+## Slim: nuxeo/slim
 
 Based on CentOS 7, it includes:
 
@@ -68,38 +33,13 @@ Based on CentOS 7, it includes:
 - The environment variables required by the server, typically `NUXEO_HOME` and `NUXEO_CONF`.
 - The exposed port `8080`.
 
-It doesn't contain the Nuxeo server distribution itself.
-To build an image containing a Nuxeo server distribution with some packages installed, you must use a multi-stage build
-with the [nuxeo/builder](#base-builder-nuxeobuilder) image and the [nuxeo/base](#nuxeo-base-nuxeobase) image, as in the following Dockerfile sample:
-
-```Dockerfile
-FROM nuxeo/builder:VERSION as builder
-COPY local/packages /packages
-RUN install-packages.sh /packages
-
-FROM nuxeo/base:VERSION
-RUN yum -y install ...
-COPY --from=builder --chown=900:0 /distrib $NUXEO_HOME
-USER 900
-```
-
-## Final Images
-
-### Slim: nuxeo/slim
-
 It includes a bare Nuxeo server distribution without any package installed.
 It doesn't include any converter.
 
-It is a typical example of an image built using multi-stage with the [nuxeo/builder](#base-builder-nuxeobuilder) and [nuxeo/base](#nuxeo-base-nuxeobase) images.
-These images are passed as build args in the [Dockerfile](slim/Dockerfile).
+## Nuxeo: nuxeo/nuxeo
 
-### Content Platform: nuxeo/nuxeo
-
-It includes a bare Nuxeo server distribution with a set of Nuxeo packages pre-installed. These packages are described by the Maven project's [POM](nuxeo/pom.xml).
+It includes a bare Nuxeo server distribution without any package installed.
 It includes basic Open Source converters.
-
-This image is also built using multi-stage with the [nuxeo/builder](#base-builder-nuxeobuilder) and [nuxeo/base](#nuxeo-base-nuxeobase) images.
-These images are passed as build args in the [Dockerfile](nuxeo/Dockerfile).
 
 ## Build the Images
 
@@ -119,15 +59,15 @@ To build all the images locally, run:
 mvn -nsu install
 ```
 
-To build a single image, for instance the `nuxeo/builder` one, run:
+To build a single image, for instance the `nuxeo/slim` one, run:
 
 ```bash
-mvn -nsu -f builder/pom.xml install
+mvn -nsu -f slim/pom.xml install
 ```
 
 ### With Skaffold
 
-We use Skaffold to build the images as part of the [nuxeo](http://jenkins.platform.34.74.59.50.nip.io/job/nuxeo/job/nuxeo/) pipeline in our Jenkins X CI/CD platform.
+We use Skaffold to build the images as part of the [nuxeo](http://jenkins.platform.dev.nuxeo.com/job/nuxeo/job/nuxeo/) pipeline in our Jenkins X CI/CD platform.
 
 This requires to:
 
@@ -140,62 +80,36 @@ It also requires the following environment variables:
 - `DOCKER_REGISTRY`: the Docker registry to push the images to.
 - `VERSION`: the image tag, for instance `11.1-SNAPSHOT`.
 
-Because we are using the [Kaniko](https://github.com/GoogleContainerTools/kaniko) builder and there is no support (yet) for [ordering dependant builds](https://github.com/GoogleContainerTools/skaffold/issues/2717), we are relying on several `skaffold.yaml` files and performing a sequential build, see the `skaffoldBuildAll` method in the [Jenkinsfile](../Jenkinsfile).
-
-First, to build the `nuxeo/builder` and `nuxeo/base` images, run:
-
-```bash
-skaffold build
-```
-
 To build the `nuxeo/slim` image, run:
 
 ```bash
-skaffold build -f slim/skaffold.yaml
+skaffold build -b slim
 ```
 
 To build the `nuxeo/nuxeo` image, run:
 
 ```bash
-skaffold build -f nuxeo/skaffold.yaml
+skaffold build -b nuxeo
 ```
 
 ### With Docker
 
-To build the `nuxeo/builder` image, you first need to fetch the Nuxeo distribution and make it available for the Docker build with Maven:
+To build the `nuxeo/slim` image, you first need to fetch the Nuxeo distribution and make it available for the Docker build with Maven:
 
 ```bash
-mvn -nsu -f builder/pom.xml process-resources
+mvn -nsu -f slim/pom.xml process-resources
 ```
 
 Then run:
 
 ```bash
-docker build -t nuxeo/builder:11.1-SNAPSHOT -f builder/Dockerfile builder
+docker build -t nuxeo/slim:11.1-SNAPSHOT -f slim/Dockerfile slim
 ```
 
-To build the `nuxeo/base` image, run:
+To build the `nuxeo/nuxeo` image, run:
 
 ```bash
-docker build -t nuxeo/base:11.1-SNAPSHOT -f base/Dockerfile base
-```
-
-To build the `nuxeo/slim` image, run:
-
-```bash
-docker build -t nuxeo/slim:11.1-SNAPSHOT -f slim/Dockerfile --build-arg BUILDER_IMAGE=nuxeo/builder:11.1-SNAPSHOT --build-arg BASE_IMAGE=nuxeo/base:11.1-SNAPSHOT slim
-```
-
-To build the `nuxeo/nuxeo` image, you first need to fetch the Nuxeo packages to install and make them available for the Docker build with Maven:
-
-```bash
-mvn -nsu -f nuxeo/pom.xml process-resources
-```
-
-Then run:
-
-```bash
-docker build -t nuxeo/nuxeo:11.1-SNAPSHOT -f nuxeo/Dockerfile --build-arg BUILDER_IMAGE=nuxeo/builder:11.1-SNAPSHOT --build-arg BASE_IMAGE=nuxeo/base:11.1-SNAPSHOT nuxeo
+docker build -t nuxeo/nuxeo:11.1-SNAPSHOT -f nuxeo/Dockerfile --build-arg BASE_IMAGE=nuxeo/slim:11.1-SNAPSHOT nuxeo
 ```
 
 ## Run an Image
@@ -232,7 +146,7 @@ Though we try to have immutable images configured at build time, in some cases i
 
 ### Configuration Properties
 
-To add some configuration properties when running a container from a final image, you can mount property files as volumes into the `/etc/nuxeo/conf.d` directory of the container. Each property file will be appended to `nuxeo.conf` ordered by filename during startup.
+To add some configuration properties when running a container from a Nuxeo image, you can mount property files as volumes into the `/etc/nuxeo/conf.d` directory of the container. Each property file will be appended to `nuxeo.conf` ordered by filename during startup.
 
 For instance, to append the following `postgresql.conf` file to `nuxeo.conf`:
 
@@ -252,7 +166,7 @@ docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgr
 
 ### Environment Variables
 
-Currently, there are three environment variables that are taken into account by a final image:
+Currently, there are three environment variables that are taken into account by a Nuxeo image:
 
 - `JAVA_OPTS`
 - `NUXEO_CLID`

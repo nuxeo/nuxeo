@@ -145,14 +145,6 @@ void skaffoldBuild(String yaml) {
   """
 }
 
-void skaffoldBuildAll() {
-  // build builder and base images
-  skaffoldBuild('docker/skaffold.yaml')
-  // build images depending on the builder and/or base images, waiting for dependent images support in skaffold
-  skaffoldBuild('docker/slim/skaffold.yaml')
-  skaffoldBuild('docker/nuxeo/skaffold.yaml')
-}
-
 def buildUnitTestStage(env) {
   def isDev = env == 'dev'
   def testNamespace = "${TEST_NAMESPACE_PREFIX}-${env}"
@@ -274,8 +266,6 @@ pipeline {
     TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT = '1m'
      // Elasticsearch might take longer
     TEST_ELASTICSEARCH_ROLLOUT_STATUS_TIMEOUT = '3m'
-    BUILDER_IMAGE_NAME = 'builder'
-    BASE_IMAGE_NAME = 'base'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
@@ -473,7 +463,7 @@ pipeline {
           echo "Build and push Docker images to internal Docker registry ${DOCKER_REGISTRY}"
           // Fetch Nuxeo Tomcat Server and Nuxeo Content Platform packages with Maven
           sh "mvn ${MAVEN_ARGS} -f docker/pom.xml process-resources"
-          skaffoldBuildAll()
+          skaffoldBuild('docker/skaffold.yaml')
         }
       }
       post {
@@ -496,20 +486,8 @@ pipeline {
           ----------------------------------------
           """
           script {
-            // builder image
-            def image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BUILDER_IMAGE_NAME}:${VERSION}"
-            echo "Test ${image}"
-            dockerPull(image)
-            dockerRun(image, 'ls -l /distrib')
-
-            // base image
-            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${BASE_IMAGE_NAME}:${VERSION}"
-            echo "Test ${image}"
-            dockerPull(image)
-            dockerRun(image, 'cat /etc/centos-release; java -version')
-
             // nuxeo slim image
-            image = "${DOCKER_REGISTRY}/${dockerNamespace}/${SLIM_IMAGE_NAME}:${VERSION}"
+            def image = "${DOCKER_REGISTRY}/${dockerNamespace}/${SLIM_IMAGE_NAME}:${VERSION}"
             echo "Test ${image}"
             dockerPull(image)
             echo 'Run image as root (0)'
