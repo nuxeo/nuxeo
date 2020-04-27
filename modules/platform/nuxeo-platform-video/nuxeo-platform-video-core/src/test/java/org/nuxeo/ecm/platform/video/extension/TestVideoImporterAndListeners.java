@@ -133,7 +133,7 @@ public class TestVideoImporterAndListeners {
         assertNull(docModel.getPropertyValue("uid:uid"));
         assertNull(docModel.getPropertyValue(DURATION_PROPERTY));
 
-        docModel.setPropertyValue("common:icon", "/icons/video.png");
+        docModel.setPropertyValue("common:icon", "/icons/video.gif");
         docModel.setPropertyValue("dc:title", "testTitle");
         docModel.setPropertyValue("picture:credit", "testUser");
         docModel.setPropertyValue("uid:uid", "testUid");
@@ -141,7 +141,7 @@ public class TestVideoImporterAndListeners {
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
 
-        assertEquals("/icons/video.png", docModelResult.getPropertyValue("common:icon"));
+        assertEquals("/icons/video.gif", docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUser", docModelResult.getPropertyValue("picture:credit"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));

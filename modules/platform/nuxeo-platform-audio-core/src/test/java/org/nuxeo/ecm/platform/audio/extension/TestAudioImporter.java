@@ -100,7 +100,7 @@ public class TestAudioImporter {
         assertNull(docModel.getPropertyValue("uid:uid"));
         assertNull(docModel.getPropertyValue("aud:duration"));
 
-        docModel.setPropertyValue("common:icon", "/icons/audio.png");
+        docModel.setPropertyValue("common:icon", "/icons/audio.gif");
         docModel.setPropertyValue("dc:title", "testTitle");
         docModel.setPropertyValue("uid:uid", "testUid");
         docModel.setPropertyValue("aud:duration", 133);
@@ -108,7 +108,7 @@ public class TestAudioImporter {
         DocumentModel docModelResult = session.createDocument(docModel);
         assertNotNull(docModelResult);
 
-        assertEquals("/icons/audio.png", docModelResult.getPropertyValue("common:icon"));
+        assertEquals("/icons/audio.gif", docModelResult.getPropertyValue("common:icon"));
         assertEquals("testTitle", docModelResult.getPropertyValue("dc:title"));
         assertEquals("testUid", docModelResult.getPropertyValue("uid:uid"));
         assertEquals("133", docModelResult.getPropertyValue("aud:duration").toString());

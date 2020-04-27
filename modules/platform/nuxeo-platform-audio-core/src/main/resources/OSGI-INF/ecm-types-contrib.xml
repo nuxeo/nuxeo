@@ -6,7 +6,7 @@
     <type id="Audio">
       <label>Audio</label>
       <default-view>view_documents</default-view>
-      <icon>/icons/audio.png</icon>
+      <icon>/icons/audio.gif</icon>
       <bigIcon>/icons/audio_100.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Audio.description</description>
