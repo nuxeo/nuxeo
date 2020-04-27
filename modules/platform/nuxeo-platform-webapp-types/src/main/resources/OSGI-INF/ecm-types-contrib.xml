@@ -133,7 +133,7 @@
 
     <type id="SectionRoot">
       <label>SectionRoot</label>
-      <icon>/icons/section.gif</icon>
+      <icon>/icons/section.png</icon>
       <bigIcon>/icons/section_100.png</bigIcon>
       <category>SuperDocument</category>
       <description>SectionRoot.description</description>
@@ -157,7 +157,7 @@
 
     <type id="Section">
       <label>Section</label>
-      <icon>/icons/section.gif</icon>
+      <icon>/icons/section.png</icon>
       <bigIcon>/icons/section_100.png</bigIcon>
       <category>Collaborative</category>
       <description>Section.description</description>
@@ -205,7 +205,7 @@
 
     <type id="OrderedFolder">
       <label>OrderedFolder</label>
-      <icon>/icons/ordered_folder.gif</icon>
+      <icon>/icons/ordered_folder.png</icon>
       <bigIcon>/icons/ordered_folder_100.png</bigIcon>
       <category>Collaborative</category>
       <description>OrderedFolder.description</description>
@@ -280,7 +280,7 @@
       <label>Collections</label>
       <description></description>
       <default-view>view_documents</default-view>
-      <icon>/icons/collection.gif</icon>
+      <icon>/icons/collection.png</icon>
       <bigIcon>/icons/collection_100.png</bigIcon>
       <category>Collaborative</category>
       <description>Folder.description</description>
@@ -306,7 +306,7 @@
       <label>Collection</label>
       <description></description>
       <default-view>view_documents</default-view>
-      <icon>/icons/collection.gif</icon>
+      <icon>/icons/collection.png</icon>
       <bigIcon>/icons/collection_100.png</bigIcon>
       <category>Collaborative</category>
       <description>Folder.description</description>

@@ -5,7 +5,7 @@
     <type id="Video">
       <label>Video</label>
       <default-view>view_documents</default-view>
-      <icon>/icons/video.gif</icon>
+      <icon>/icons/video.png</icon>
       <bigIcon>/icons/video_big.png</bigIcon>
       <category>SimpleDocument</category>
       <description>Video.description</description>
