@@ -98,6 +98,10 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
 
     protected boolean isRebalanced;
 
+    protected boolean isRevoked;
+
+    protected boolean isLost;
+
     protected boolean consumerMoved;
 
     protected static final AtomicInteger CONSUMER_CLIENT_ID_SEQUENCE = new AtomicInteger(1);
@@ -169,9 +173,15 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
         }
         if (records.isEmpty()) {
             int items = poll(timeout);
-            if (isRebalanced) {
-                isRebalanced = false;
-                log.debug("Rebalance happens during poll, raising exception");
+            if (isRebalanced || isRevoked || isLost) {
+                if (isRebalanced) {
+                    log.debug("Rebalance happens during poll, raising exception");
+                    isRebalanced = false;
+                } else {
+                    log.warn("Incomplete rebalance during poll, raising exception, revoked: " + isRevoked + ", lost: "
+                            + isLost);
+                    isRevoked = isLost = false;
+                }
                 throw new RebalanceException("Partitions has been rebalanced");
             }
             if (items == 0) {
@@ -459,6 +469,8 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                                                              tp.partition()))
                                                      .collect(Collectors.toList());
         log.info(String.format("Rebalance revoked: %s", revoked));
+        cleanDuringRebalancing();
+        isRevoked = true;
         id += "-revoked";
         if (listener != null) {
             listener.onPartitionsRevoked(revoked);
@@ -472,9 +484,7 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                                   .collect(Collectors.toList());
         topicPartitions = newPartitions;
         id = buildId(group, partitions);
-        lastCommittedOffsets.clear();
-        lastOffsets.clear();
-        records.clear();
+        cleanDuringRebalancing();
         isRebalanced = true;
         log.info(String.format("Rebalance assigned: %s", partitions));
         if (listener != null) {
@@ -490,8 +500,17 @@ public class KafkaLogTailer<M extends Externalizable> implements LogTailer<M>, C
                 .collect(Collectors.toList());
         log.warn(String.format("Rebalance Partition Lost: %s", lost));
         id += "-lost";
+        cleanDuringRebalancing();
+        isLost = true;
         if (listener != null) {
             listener.onPartitionsLost(lost);
         }
+    }
+
+    protected void cleanDuringRebalancing() {
+        lastCommittedOffsets.clear();
+        lastOffsets.clear();
+        records.clear();
+        isRebalanced = isRevoked = isLost = false;
     }
 }
