@@ -33,13 +33,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.resource.spi.ConnectionManager;
-
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.blob.DocumentBlobManager;
 import org.nuxeo.ecm.core.model.LockManager;
-import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
@@ -67,8 +64,8 @@ public class MemRepository extends DBSRepositoryBase {
      */
     protected Map<String, State> states;
 
-    public MemRepository(ConnectionManager cm, MemRepositoryDescriptor descriptor) {
-        super(cm, descriptor.name, descriptor);
+    public MemRepository(MemRepositoryDescriptor descriptor) {
+        super(descriptor.name, descriptor);
         initRepository();
     }
 

@@ -66,19 +66,32 @@ public class DataSourceHelper {
      * @return the datasource
      */
     public static DataSource getDataSource(String partialName) throws NamingException {
-        return getDataSource(partialName, DataSource.class);
+        return getDataSource(partialName, DataSource.class, false);
     }
 
-    public static XADataSource getXADataSource(String partialName) throws NamingException {
-        return getDataSource(partialName, XADataSource.class);
+    /**
+     * Look up a datasource given a partial name.
+     * <p>
+     * For a datasource {@code "jdbc/foo"}, then it's sufficient to pass {@code "foo"} to this method.
+     *
+     * @param partialName the partial name
+     * @param noSharing {@code true} to request an unshared datasource
+     * @return the datasource
+     */
+    public static DataSource getDataSource(String partialName, boolean noSharing) throws NamingException {
+        return getDataSource(partialName, DataSource.class, noSharing);
     }
 
     public static <T> T getDataSource(String name, Class<T> clazz) throws NamingException {
+        return getDataSource(name, clazz, false);
+    }
+
+    public static <T> T getDataSource(String name, Class<T> clazz, boolean noSharing) throws NamingException {
         PooledDataSourceRegistry pools = Framework.getService(PooledDataSourceRegistry.class);
         if (pools == null) {
             throw new NamingException("runtime datasource no installed");
         }
-        T ds = pools.getPool(relativize(name), clazz);
+        T ds = pools.getDataSource(relativize(name), clazz, noSharing);
         if (ds == null) {
             return NuxeoContainer.lookup(name, clazz);
         }

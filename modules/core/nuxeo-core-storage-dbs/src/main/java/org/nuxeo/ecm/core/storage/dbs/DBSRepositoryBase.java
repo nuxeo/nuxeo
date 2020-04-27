@@ -25,8 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.resource.spi.ConnectionManager;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +47,6 @@ import org.nuxeo.ecm.core.storage.FulltextConfigurationFactory;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Provides sharing behavior for repository sessions and other basic functions.
@@ -101,8 +97,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected LockManager lockManager;
 
-    protected final ConnectionManager cm;
-
     protected final boolean changeTokenEnabled;
 
     /**
@@ -110,7 +104,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      */
     protected boolean selfRegisteredLockManager = false;
 
-    public DBSRepositoryBase(ConnectionManager cm, String repositoryName, DBSRepositoryDescriptor descriptor) {
+    public DBSRepositoryBase(String repositoryName, DBSRepositoryDescriptor descriptor) {
         this.repositoryName = repositoryName;
         String idt = descriptor.idType;
         List<IdType> allowed = getAllowedIdTypes();
@@ -131,7 +125,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         } else {
             fulltextConfiguration = FulltextConfigurationFactory.make(fulltextDescriptor);
         }
-        this.cm = cm;
         changeTokenEnabled = descriptor.isChangeTokenEnabled();
         blobManager = Framework.getService(BlobManager.class);
         initBlobsPaths();
@@ -148,11 +141,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     @Override
     public void shutdown() {
-        try {
-            NuxeoContainer.disposeConnectionManager(cm);
-        } catch (RuntimeException e) {
-            log.warn("cannot dispose connection manager of " + repositoryName);
-        }
         if (selfRegisteredLockManager) {
             LockManagerService lms = Framework.getService(LockManagerService.class);
             if (lms != null) {

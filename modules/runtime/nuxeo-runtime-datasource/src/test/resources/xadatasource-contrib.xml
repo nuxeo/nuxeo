@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.runtime.datasource.tests">
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
-    <datasource name="jdbc/foo" xaDataSource="org.h2.jdbcx.JdbcDataSource" minPoolSize="0" maxPoolSize="5">
+    <datasource name="jdbc/foo" xaDataSource="org.h2.jdbcx.JdbcDataSource" minTotal="0" maxTotal="5">
       <property name="URL">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</property>
     </datasource>
   </extension>

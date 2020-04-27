@@ -32,7 +32,6 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -83,17 +82,18 @@ public class TestDataSourceComponent {
     @Test
     @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
     public void testNonShared() throws Exception {
-        PooledDataSource ds = (PooledDataSource) DataSourceHelper.getDataSource("foo");
+        DataSource ds = DataSourceHelper.getDataSource("foo");
+        DataSource dsNoSharing = DataSourceHelper.getDataSource("foo", true);
         TransactionHelper.startTransaction();
         try (Connection c1 = ds.getConnection()) {
             int n1 = countPhysicalConnections(c1);
-            try (Connection c2 = ds.getConnection(false)) {
-                int n2 = countPhysicalConnections(c2);
-                assertEquals(n1, n2);
-            }
-            try (Connection c2 = ds.getConnection(true)) {
+            try (Connection c2 = dsNoSharing.getConnection()) {
                 int n2 = countPhysicalConnections(c2);
                 assertEquals(n1 + 1, n2);
+                try (Connection c3 = dsNoSharing.getConnection()) {
+                    int n3 = countPhysicalConnections(c3);
+                    assertEquals(n1 + 2, n3);
+                }
             }
         } finally {
             TransactionHelper.commitOrRollbackTransaction();

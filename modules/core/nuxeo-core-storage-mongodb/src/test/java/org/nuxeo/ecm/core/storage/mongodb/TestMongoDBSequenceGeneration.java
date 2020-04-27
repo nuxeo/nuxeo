@@ -19,8 +19,6 @@
 package org.nuxeo.ecm.core.storage.mongodb;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.COUNTER_FIELD;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.COUNTER_NAME_UUID;
 import static org.nuxeo.ecm.core.storage.mongodb.MongoDBRepository.MONGODB_ID;
@@ -33,7 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase.IdType;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer.ConnectionManagerWrapper;
 import org.nuxeo.runtime.mongodb.MongoDBConnectionService;
 import org.nuxeo.runtime.mongodb.MongoDBFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -63,9 +60,6 @@ public class TestMongoDBSequenceGeneration {
     protected MongoDBConnection conn2;
 
     public void setUp(IdType idType) {
-        ConnectionManagerWrapper cm = mock(ConnectionManagerWrapper.class);
-        doNothing().when(cm).dispose();
-
         MongoDBRepositoryDescriptor desc = new MongoDBRepositoryDescriptor();
         desc.name = Framework.getProperty(MongoDBFeature.MONGODB_DBNAME_PROPERTY);
         desc.idType = idType.name();
@@ -76,7 +70,7 @@ public class TestMongoDBSequenceGeneration {
         MongoCollection<Document> countersColl = database.getCollection(desc.name + ".counters");
         countersColl.deleteMany(new Document());
 
-        repo = new MongoDBRepository(cm, desc);
+        repo = new MongoDBRepository(desc);
         conn1 = repo.getConnection();
         conn2 = repo.getConnection();
     }

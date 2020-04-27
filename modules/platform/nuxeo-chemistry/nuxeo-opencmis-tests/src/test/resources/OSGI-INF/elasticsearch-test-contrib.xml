@@ -4,7 +4,7 @@
   <!-- for uidgen which is a dependency -->
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
     <datasource name="jdbc/nxuidsequencer" driverClassName="${nuxeo.test.vcs.driver}"
-        maxPoolSize="20" minPoolSize="5">
+        maxTotal="20" minTotal="5">
       <property name="url">${nuxeo.test.vcs.url}</property>
       <property name="username">${nuxeo.test.vcs.user}</property>
       <property name="password">${nuxeo.test.vcs.password}</property>

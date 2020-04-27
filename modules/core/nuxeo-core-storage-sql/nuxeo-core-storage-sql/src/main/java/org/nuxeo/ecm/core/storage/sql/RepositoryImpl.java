@@ -46,6 +46,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -76,7 +77,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
-import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -298,7 +298,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         String dataSourceName = JDBCConnection.getDataSourceName(repositoryDescriptor.name);
         try {
             DataSource ds = DataSourceHelper.getDataSource(dataSourceName);
-            if (ds instanceof PooledDataSource) {
+            if (ds instanceof BasicManagedDataSource) {
                 isPooledDataSource = true;
             }
         } catch (NamingException cause) {

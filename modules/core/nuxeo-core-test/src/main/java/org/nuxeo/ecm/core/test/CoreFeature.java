@@ -56,7 +56,6 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.ecm.core.work.WorkManagerFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterFeature;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.URLStreamRef;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
 import org.nuxeo.runtime.test.runner.Defaults;
@@ -399,8 +398,7 @@ public class CoreFeature implements RunnerFeature {
     public CoreSession reopenCoreSession() {
         releaseCoreSession();
         waitForAsyncCompletion();
-        // flush JCA cache to acquire a new low-level session
-        NuxeoContainer.resetConnectionManager();
+        Framework.getService(RepositoryService.class).resetPool();
         createCoreSession();
         return session;
     }

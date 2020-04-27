@@ -39,9 +39,6 @@ import org.nuxeo.ecm.core.management.jtajca.Defaults;
 import org.nuxeo.ecm.core.management.jtajca.TransactionMonitor;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoConnectionManager;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
-import org.nuxeo.runtime.jtajca.NuxeoContainerListener;
 import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.metrics.MetricsService;
 import org.nuxeo.runtime.model.Component;
@@ -54,30 +51,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @since 5.6
  */
 public class DefaultMonitorComponent extends DefaultComponent {
-
-    private final ConnectionManagerUpdater cmUpdater = new ConnectionManagerUpdater();
-
-    private class ConnectionManagerUpdater implements NuxeoContainerListener {
-        @Override
-        public void handleNewConnectionManager(String name, NuxeoConnectionManager cm) {
-            ConnectionPoolMonitor monitor = new DefaultConnectionPoolMonitor(name, cm);
-            monitor.install();
-            poolConnectionMonitors.put(name, monitor);
-        }
-
-        @Override
-        public void handleConnectionManagerReset(String name, NuxeoConnectionManager cm) {
-            DefaultConnectionPoolMonitor monitor = (DefaultConnectionPoolMonitor) poolConnectionMonitors.get(name);
-            monitor.handleNewConnectionManager(cm);
-        }
-
-        @Override
-        public void handleConnectionManagerDispose(String name, NuxeoConnectionManager mgr) {
-            ConnectionPoolMonitor monitor = poolConnectionMonitors.remove(name);
-            monitor.uninstall();
-        }
-
-    }
 
     protected final Log log = LogFactory.getLog(DefaultMonitorComponent.class);
 
@@ -122,6 +95,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
         transactionMonitor.install();
 
         RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        @SuppressWarnings("resource")
         GenericKeyedObjectPool<String, ?> pool = repositoryService.getPool();
         repositoryService.getRepositoryNames().forEach(repositoryName -> {
             String name = "repository/" + repositoryName;
@@ -129,8 +103,6 @@ public class DefaultMonitorComponent extends DefaultComponent {
             monitor.install();
             poolConnectionMonitors.put(name, monitor);
         });
-
-        NuxeoContainer.addListener(cmUpdater);
     }
 
     /**
@@ -150,7 +122,6 @@ public class DefaultMonitorComponent extends DefaultComponent {
         // temporary log to help diagnostics
         log.info("Total commits during server life: " + transactionMonitor.getTotalCommits());
         installed = false;
-        NuxeoContainer.removeListener(cmUpdater);
         for (ConnectionPoolMonitor storage : poolConnectionMonitors.values()) {
             storage.uninstall();
         }

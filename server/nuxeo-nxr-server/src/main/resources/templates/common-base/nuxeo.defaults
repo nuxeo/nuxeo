@@ -34,16 +34,13 @@ nuxeo.db.blocking-timeout-millis=1000
 # Database transaction timeout in seconds
 nuxeo.db.transactiontimeout=300
 nuxeo.db.idle-timeout-minutes=5
-nuxeo.db.active-timeout-minutes=0
 nuxeo.db.validationQuery=
-nuxeo.db.sql-exception-sorter=org.nuxeo.runtime.datasource.DatasourceExceptionSorter
 nuxeo.db.user_separator_key=,
 
 nuxeo.vcs.min-pool-size=0
 nuxeo.vcs.max-pool-size=20
 nuxeo.vcs.blocking-timeout-millis=100
 nuxeo.vcs.idle-timeout-minutes=10
-nuxeo.vcs.active-timeout-minutes=0
 nuxeo.vcs.fulltext.disabled=false
 nuxeo.vcs.fulltext.storedInBlob=false
 nuxeo.vcs.fulltext.search.disabled=false
