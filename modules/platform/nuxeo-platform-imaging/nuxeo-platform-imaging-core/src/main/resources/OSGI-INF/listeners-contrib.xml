@@ -9,7 +9,7 @@
       <event>beforeDocumentModification</event>
     </listener>
 
-    <listener name="pictureViewsGenerationListener" async="false" postCommit="false"
+    <listener name="pictureViewsGenerationListener" async="true" postCommit="true"
       class="org.nuxeo.ecm.platform.picture.listener.PictureViewsGenerationListener" priority="20">
       <event>documentCreated</event>
       <event>documentModified</event>
