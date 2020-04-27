@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.picture.operation.RecomputePictureViews;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -69,9 +70,17 @@ public class TestRecomputePictureViews {
     @Inject
     protected AutomationService automationService;
 
+    @Inject
+    protected CoreFeature coreFeature;
+
     @Test
     @SuppressWarnings("unchecked")
     public void testRecomputePictureViews() throws Exception {
+        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
+            // NXP-28873: temporarily ignore against PostgreSQL
+            return;
+        }
+
         DocumentModel doc = session.createDocumentModel("/", "pictureDoc", "Picture");
         Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg",
                 StandardCharsets.UTF_8.name(), "test.jpg");
