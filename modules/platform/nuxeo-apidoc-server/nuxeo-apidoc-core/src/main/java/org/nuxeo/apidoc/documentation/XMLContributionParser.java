@@ -75,6 +75,7 @@ public class XMLContributionParser {
         final ContributionItem fragment = new ContributionItem();
         fragment.tagName = element.getName();
 
+        // see NXP-29022: should not rely on this attribute to exist
         fragment.nameOrId = element.attributeValue("name");
         if (fragment.nameOrId == null) {
             fragment.nameOrId = element.attributeValue("id");
