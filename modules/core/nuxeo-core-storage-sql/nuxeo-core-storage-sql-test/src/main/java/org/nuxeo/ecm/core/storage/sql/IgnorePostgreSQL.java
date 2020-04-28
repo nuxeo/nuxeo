@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,13 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
-public class IgnoreNonPostgresql implements ConditionalIgnoreRule.Condition {
+/**
+ * @since 11.1
+ */
+public class IgnorePostgreSQL implements ConditionalIgnoreRule.Condition {
 
     @Override
     public boolean shouldIgnore() {
-        return !(DatabaseHelper.DATABASE instanceof DatabasePostgreSQL);
+        return DatabaseHelper.DATABASE instanceof DatabasePostgreSQL;
     }
 }

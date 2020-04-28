@@ -50,9 +50,11 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
+import org.nuxeo.ecm.core.storage.sql.IgnorePostgreSQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.csv.core.CSVImporterOptions.ImportMode;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -654,14 +656,10 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     /**
      * @since 11.1
      */
+    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-28859")
     @Test
     public void whenFileIsGreaterThanThresholdTotalDocsShouldBeAvailableWhenImportIsCompleted()
             throws IOException, InterruptedException {
-        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
-            // NXP-28859: temporarily ignore against PostgreSQL
-            return;
-        }
-
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
         String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_GREATER_THAN_THE_LENGTH_THRESHOLD),
                 options);
@@ -685,14 +683,10 @@ public class TestCSVImporterCreateMode extends AbstractCSVImporterTest {
     /**
      * @since 11.1
      */
+    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-28859")
     @Test
     public void whenFileIsSmallerThanThresholdTotalDocsShouldBeAvailableWhenImportIsRunningOrScheduled()
             throws IOException, InterruptedException {
-        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
-            // NXP-28859: temporarily ignore against PostgreSQL
-            return;
-        }
-
         CSVImporterOptions options = new CSVImporterOptions.Builder().importMode(ImportMode.CREATE).build();
         String importId = csvImporter.launchImport(session, "/", getCSVBlob(FILE_BELOW_THE_LENGTH_THRESHOLD), options);
         workManager.awaitCompletion(1, TimeUnit.SECONDS);
