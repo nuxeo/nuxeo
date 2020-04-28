@@ -255,7 +255,7 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
     protected boolean evaluateConditionExpression(ELActionContext ctx, String expression) {
         Calendar now = Calendar.getInstance();
         if (StringUtils.isEmpty(expression)) {
-            return true;
+            return false;
         }
         ctx.putLocalVariable("currentDate", now);
         return ctx.checkCondition(expression);

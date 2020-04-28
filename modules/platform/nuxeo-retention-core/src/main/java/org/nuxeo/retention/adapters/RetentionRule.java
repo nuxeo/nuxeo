@@ -144,6 +144,10 @@ public class RetentionRule {
         return (String) document.getPropertyValue(RetentionConstants.STARTING_POINT_EXPRESSION_PROP);
     }
 
+    public String getStartingPointValue() {
+        return (String) document.getPropertyValue(RetentionConstants.STARTING_POINT_VALUE_PROP);
+    }
+
     public StartingPointPolicy getStartingPointPolicy() {
         String value = (String) document.getPropertyValue(RetentionConstants.STARTING_POINT_POLICY_PROP);
         if (value != null) {
@@ -239,6 +243,10 @@ public class RetentionRule {
 
     public void setStartingPointExpression(String expression) {
         document.setPropertyValue(RetentionConstants.STARTING_POINT_EXPRESSION_PROP, expression);
+    }
+
+    public void setStartingPointValue(String eventInput) {
+        document.setPropertyValue(RetentionConstants.STARTING_POINT_VALUE_PROP, eventInput);
     }
 
     public void setStartingPointPolicy(StartingPointPolicy policy) {
