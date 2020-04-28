@@ -73,7 +73,7 @@ public class TestActivateFactories {
                                       .executeReturningBooleanEntity();
         assertFalse(result);
         List<String> caughtEvents = logCaptureResult.getCaughtEventMessages();
-        assertEquals(1, caughtEvents.size());
+        assertFalse(caughtEvents.isEmpty());
         assertEquals("No active file system item factory contribution for profile 'unknown'.", caughtEvents.get(0));
 
         // Activate userworkspace factories
