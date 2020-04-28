@@ -24,6 +24,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
+import static org.nuxeo.ecm.core.test.StorageConfiguration.CORE_MONGODB;
+import static org.nuxeo.ecm.core.test.StorageConfiguration.CORE_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -40,6 +43,7 @@ import javax.inject.Inject;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
@@ -64,8 +68,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.storage.sql.DatabaseMySQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -132,8 +137,6 @@ public class TestUserWorkspaceHierarchy {
     @Inject
     protected HttpAutomationClient automationClient;
 
-    protected StorageConfiguration storageConfiguration;
-
     protected CoreSession session1;
 
     protected DocumentModel userWorkspace1;
@@ -164,6 +167,15 @@ public class TestUserWorkspaceHierarchy {
 
     protected ObjectMapper mapper;
 
+    @BeforeClass
+    public static void checkBackend() {
+        // NXP-29001: temporarily ignore against MongoDB
+        assumeFalse(CORE_MONGODB.equals(System.getProperty(CORE_PROPERTY)));
+
+        // NXP-15969: temporarily ignore under MySQL
+        assumeFalse(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
+    }
+
     /**
      * Initializes the test hierarchy.
      *
@@ -186,9 +198,6 @@ public class TestUserWorkspaceHierarchy {
      */
     @Before
     public void init() throws IOException {
-
-        storageConfiguration = coreFeature.getStorageConfiguration();
-
         // Create test user
         createUser(USER_1, USER_1);
 
@@ -237,7 +246,6 @@ public class TestUserWorkspaceHierarchy {
 
     @After
     public void tearDown() {
-
         // Unregister synchronization roots for user1
         nuxeoDriveManager.unregisterSynchronizationRoot(session1.getPrincipal(),
                 session1.getDocument(user1Folder4.getRef()), session1);
@@ -273,17 +281,6 @@ public class TestUserWorkspaceHierarchy {
      */
     @Test
     public void testClientSideUser1() throws IOException {
-
-        if (storageConfiguration.isDBSMongoDB()) {
-            // NXP-29001: temporarily ignore against MongoDB
-            return;
-        }
-
-        // Temporarily ignore under MySQL waiting for https://jira.nuxeo.com/browse/NXP-15969 to be fixed
-        if (storageConfiguration.isVCSMySQL()) {
-            return;
-        }
-
         // ---------------------------------------------
         // Check active factories
         // ---------------------------------------------
