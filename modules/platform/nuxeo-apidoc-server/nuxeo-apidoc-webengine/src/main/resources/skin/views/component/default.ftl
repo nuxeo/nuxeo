@@ -11,6 +11,15 @@
 
 <div class="tabscontent">
 
+  <h2>Documentation</h2>
+  ${nxItem.documentationHtml}
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  <#if Root.canAddDocumentation()>
+    <div class="tabsbutton">
+      <a class="button" href="${This.path}/doc">Manage Documentation</a>
+    </div>
+  </#if>
+
   <#if !nxItem.xmlPureComponent>
   <h2>Implementation</h2>
     <#assign componentClass=nxItem.componentClass/>
@@ -20,41 +29,37 @@
     </p>
   </#if>
 
+  <#if nxItem.serviceNames?size gt 0>
   <h2>Services</h2>
   <ul class="nolist">
     <#list nxItem.serviceNames as service>
     <li><a class="tag services" href="${Root.path}/${distId}/viewService/${service}">${service}</a></li>
     </#list>
   </ul>
+  </#if>
 
+  <#if nxItem.extensionPoints?size gt 0>
   <h2>Extension points</h2>
   <ul class="nolist">
     <#list nxItem.extensionPoints as ep>
     <li><a class="tag extensions" href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}">${ep.name}</a></li>
     </#list>
   </ul>
+  </#if>
 
+  <#if nxItem.extensions?size gt 0>
   <h2>Contributions</h2>
   <ul class="nolist">
     <#list nxItem.extensions as ex>
     <li><a class="tag contributions" href="${Root.path}/${distId}/viewContribution/${ex.id?url}">${ex.id}</a></li>
     </#list>
   </ul>
-
+  </#if>
 
   <h2>XML source</h2>
   <div>
     <pre><code>${nxItem.xmlFileContent?html}</code></pre>
   </div>
-
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-  <#if Root.canAddDocumentation()>
-    <div class="tabsbutton">
-      <a class="button" href="${This.path}/doc">Manage Documentation</a>
-    </div>
-  </#if>
 
   <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 

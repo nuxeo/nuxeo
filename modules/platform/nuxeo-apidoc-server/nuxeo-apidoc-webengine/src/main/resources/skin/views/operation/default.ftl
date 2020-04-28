@@ -5,8 +5,8 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>Operation <span class="componentTitle">${nxItem.name}</span></h1>
-<div class="include-in">${nxItem.label}</div>
+<h1>Operation <span class="componentTitle">${nxItem.name}</span> (${nxItem.label})</h1>
+<div class="include-in components">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.contributingComponent}">${nxItem.contributingComponent}</a></div>
 
 <div class="tabscontent">
 
