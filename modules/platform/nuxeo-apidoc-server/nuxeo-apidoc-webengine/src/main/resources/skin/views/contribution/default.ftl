@@ -6,12 +6,14 @@
 <#include "/docMacros.ftl">
 
 <h1>Contribution <span class="componentTitle">${nxItem.id}</span></h1>
+<div class="include-in components">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a></div>
 
 <div class="tabscontent">
 
   This contribution is part of XML component <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a>
   inside ${nxItem.component.bundle.fileName} ${nxItem.component.xmlFileName}
 
+  <h2>Documentation</h2>
   ${nxItem.documentationHtml}
   <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
   <#if Root.canAddDocumentation()>

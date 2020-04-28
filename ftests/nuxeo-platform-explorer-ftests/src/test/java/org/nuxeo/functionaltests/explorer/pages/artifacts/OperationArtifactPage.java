@@ -32,7 +32,8 @@ public class OperationArtifactPage extends ArtifactPage {
 
     @Override
     public void check() {
-        checkCommon("Operation acceptComment", "Operation acceptComment", "acceptComment");
+        checkCommon("Operation Document.AddFacet", "Operation Document.AddFacet (Add Facet)",
+                "In component org.nuxeo.ecm.core.automation.coreContrib");
     }
 
     @Override
