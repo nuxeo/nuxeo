@@ -15,10 +15,9 @@
  *
  * Contributors:
  *     Salem Aouana
- *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
-package org.nuxeo.ecm.core;
+package org.nuxeo.coldstorage.helpers;
 
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
@@ -46,6 +45,7 @@ import javax.inject.Inject;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.DummyBlobProvider;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -59,13 +59,12 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobStatus;
-import org.nuxeo.ecm.core.blob.ColdStorageHelper;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.test.ColdStorageFeature;
+import org.nuxeo.coldstorage.ColdStorageFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.TransactionalFeature;
@@ -286,7 +285,7 @@ public class TestColdStorage {
         transactionalFeature.nextTransaction();
         documentModel.refresh();
 
-        assertTrue(documentModel.hasFacet(FacetNames.COLD_STORAGE));
+        assertTrue(documentModel.hasFacet(ColdStorageHelper.COLD_STORAGE_FACET_NAME));
 
         assertNull(documentModel.getPropertyValue(ColdStorageHelper.FILE_CONTENT_PROPERTY));
 

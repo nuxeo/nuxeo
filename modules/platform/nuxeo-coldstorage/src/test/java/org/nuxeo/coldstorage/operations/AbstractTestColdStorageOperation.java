@@ -17,7 +17,7 @@
  *     Salem Aouana
  */
 
-package org.nuxeo.ecm.automation.core.operations.coldstorage;
+package org.nuxeo.coldstorage.operations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
+import org.nuxeo.coldstorage.ColdStorageFeature;
+import org.nuxeo.coldstorage.helpers.ColdStorageHelper;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -42,9 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.blob.ColdStorageHelper;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.test.ColdStorageFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -92,7 +92,7 @@ public abstract class AbstractTestColdStorageOperation {
 
             // check document
             assertTrue(expectedDocIds.contains(updatedDoc.getId()));
-            assertTrue(updatedDoc.hasFacet(FacetNames.COLD_STORAGE));
+            assertTrue(updatedDoc.hasFacet(ColdStorageHelper.COLD_STORAGE_FACET_NAME));
 
             // check blobs
             assertEquals(DummyThumbnailFactory.DUMMY_THUMBNAIL_CONTENT, fileContent.getString());

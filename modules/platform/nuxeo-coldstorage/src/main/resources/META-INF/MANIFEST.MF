@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Nuxeo Cold Storage
+Bundle-SymbolicName: org.nuxeo.coldstorage;singleton:=true
+Bundle-Vendor: Nuxeo
+Bundle-Localization: bundle
+Eclipse-LazyStart: true
+Nuxeo-Component: OSGI-INF/coldstorage-core-types-contrib.xml,
+ OSGI-INF/coldstorage-operations-contrib.xml,
+ OSGI-INF/coldstorage-events-contrib.xml

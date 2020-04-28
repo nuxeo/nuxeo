@@ -16,9 +16,10 @@
  * Contributors:
  *     Salem Aouana
  *     Nuno Cunha <ncunha@nuxeo.com>
+ *
  */
 
-package org.nuxeo.ecm.automation.core.operations.coldstorage;
+package org.nuxeo.coldstorage.operations;
 
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;

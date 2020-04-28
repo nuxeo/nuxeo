@@ -98,7 +98,6 @@ NXOperation: op:Document.Lock *** /op:Document.Lock
 NXOperation: op:Document.Mail *** /op:Document.Mail
 NXOperation: op:Document.Move *** /op:Document.Move
 NXOperation: op:Document.MoveCollectionMember *** /op:Document.MoveCollectionMember
-NXOperation: op:Document.MoveToColdStorage *** /op:Document.MoveToColdStorage
 NXOperation: op:Document.Order *** /op:Document.Order
 NXOperation: op:Document.PublishToSection *** /op:Document.PublishToSection
 NXOperation: op:Document.PublishToSections *** /op:Document.PublishToSections
@@ -112,7 +111,6 @@ NXOperation: op:Document.RemovePermission *** /op:Document.RemovePermission
 NXOperation: op:Document.RemoveProperty *** /op:Document.RemoveProperty
 NXOperation: op:Document.RemoveProxies *** /op:Document.RemoveProxies
 NXOperation: op:Document.ReplacePermission *** /op:Document.ReplacePermission
-NXOperation: op:Document.RequestRetrievalFromColdStorage *** /op:Document.RequestRetrievalFromColdStorage
 NXOperation: op:Document.ResetSchema *** /op:Document.ResetSchema
 NXOperation: op:Document.RestoreVersion *** /op:Document.RestoreVersion
 NXOperation: op:Document.Save *** /op:Document.Save

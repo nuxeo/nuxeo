@@ -23,7 +23,6 @@
     <schema name="note" src="schema/note.xsd"/>
     <schema name="domain" src="schema/domain.xsd"/>
     <schema name="relatedtext" src="schema/relatedtext.xsd"/>
-    <schema name="coldstorage" prefix="coldstorage" src="schema/coldstorage.xsd"/>
 
     <schema name="publishing" prefix="publish" src="schema/publishing.xsd" />
     <schema name="webcontainer" prefix="webc" src="schema/webcontainer.xsd"/>
@@ -88,10 +87,6 @@
 
     <facet name="CollectionMember">
       <schema name="collectionMember" />
-    </facet>
-
-    <facet name="ColdStorage">
-      <schema name="coldstorage" />
     </facet>
 
     <proxies>

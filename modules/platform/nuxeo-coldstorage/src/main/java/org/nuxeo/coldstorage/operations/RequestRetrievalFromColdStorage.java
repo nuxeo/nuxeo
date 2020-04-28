@@ -17,10 +17,11 @@
  *     Salem Aouana
  */
 
-package org.nuxeo.ecm.automation.core.operations.coldstorage;
+package org.nuxeo.coldstorage.operations;
 
 import java.time.Duration;
 
+import org.nuxeo.coldstorage.helpers.ColdStorageHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -31,7 +32,6 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.blob.ColdStorageHelper;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.api.Framework;
