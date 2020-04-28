@@ -158,7 +158,7 @@ public class Distribution extends ModuleRoot {
         return getView("index").arg("hideNav", Boolean.TRUE);
     }
 
-    @Path("latest")
+    @Path(ApiBrowserConstants.DISTRIBUTION_ALIAS_LATEST)
     public Resource getLatest() {
         List<DistributionSnapshot> snaps = listPersistedDistributions();
         Optional<DistributionSnapshot> distribution = snaps.stream()
@@ -167,11 +167,11 @@ public class Distribution extends ModuleRoot {
                                                                                .startsWith("nuxeo platform"))
                                                            .findFirst();
 
-        String latest = "current";
+        String latest = ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT;
         if (distribution.isPresent()) {
             latest = distribution.get().getKey();
         }
-        return ctx.newObject("redirectWO", "latest", latest);
+        return ctx.newObject("redirectWO", ApiBrowserConstants.DISTRIBUTION_ALIAS_LATEST, latest);
     }
 
     @Path("{distributionId}")
@@ -187,21 +187,21 @@ public class Distribution extends ModuleRoot {
                                        .filter(s -> s.getVersion().equals(finalDistributionId))
                                        .findFirst()
                                        .map(DistributionSnapshot::getKey)
-                                       .orElse("current");
+                                       .orElse(ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT);
 
             return ctx.newObject("redirectWO", finalDistributionId, distribution);
         }
 
         String orgDistributionId = distributionId;
         Boolean embeddedMode = Boolean.FALSE;
-        if ("adm".equals(distributionId)) {
+        if (ApiBrowserConstants.DISTRIBUTION_ALIAS_ADM.equals(distributionId)) {
             embeddedMode = Boolean.TRUE;
         } else {
             snaps.add(getSnapshotManager().getRuntimeSnapshot());
             distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
         }
         if (distributionId == null || "".equals(distributionId)) {
-            distributionId = "current";
+            distributionId = ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT;
         }
 
         if (!orgDistributionId.equals(distributionId)) {

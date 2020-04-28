@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests.explorer.pages;
 
 import static org.junit.Assert.assertEquals;
 
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.WebDriver;
@@ -67,7 +68,9 @@ public class ExplorerHomePage extends AbstractExplorerPage {
     public void check() {
         checkTitle("Nuxeo Platform Explorer");
         assertEquals("Running Platform".toUpperCase(), currentPlatform.getText());
-        assertEquals(AbstractTest.NUXEO_URL + URL + "current/", currentDistrib.getAttribute("href"));
+        assertEquals(
+                String.format("%s%s%s/", AbstractTest.NUXEO_URL, URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT),
+                currentDistrib.getAttribute("href"));
     }
 
 }
