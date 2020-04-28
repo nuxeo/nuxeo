@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.AutomationServerFeature;
@@ -972,6 +973,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      *
      * @since 9.3
      */
+    @Ignore(value = "NXP-29024")
     @Test
     @Deploy("org.nuxeo.ecm.platform.restapi.server.routing:test-disable-task-deletion-listener.xml")
     public void testFetchTaskTargetDocumentsDeleted() throws IOException {
