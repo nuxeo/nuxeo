@@ -2,13 +2,14 @@
 <component name="${component.id}.override">
 
   <require>${component.id}</require>
-  <!--
-  ${component.documentation}
-  -->
 
-<#if extension??>
-  <extension target="${extension.target}" point="${extension.point}">
-
-  </extension>
+<#if component.documentation?has_content>
+<!--
+${component.documentation}
+-->
 </#if>
+<#if contribution??>
+  ${contribution.xml}
+</#if>
+
 </component>

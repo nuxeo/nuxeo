@@ -50,7 +50,6 @@ public class ContributionWO extends NuxeoArtifactWebObject {
     @Produces("text/xml")
     @Path("override")
     public Object generateOverride() {
-
         ExtensionInfo ei = getTargetExtensionInfo();
         String epid = ei.getExtensionPoint();
         ExtensionPointInfo ep = getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession())

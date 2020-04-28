@@ -3,18 +3,19 @@
 
   <require>${contribution.component.id}</require>
 
+<#if ep.documentation?has_content>
 <!--
-  ${ep.documentation}
+${ep.documentation}
 -->
+</#if>
 
-  <extension target="${contribution.extensionPoint?split("--")[0]}"
-    point="${contribution.extensionPoint?split("--")[1]}">
+  <extension target="${ep.componentId}" point="${ep.name}">
 
-   <#list contribution.contributionItems as contributionItem>
-     <#if selectedContribs?seq_contains(contributionItem.id)>
+  <#list contribution.contributionItems as contributionItem>
+    <#if selectedContribs?seq_contains(contributionItem.id)>
     ${contributionItem.rawXml}
-     </#if>
-   </#list>
+    </#if>
+  </#list>
 
   </extension>
 
