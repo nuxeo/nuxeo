@@ -2,11 +2,22 @@
 <component name="org.nuxeo.apidoc.listener.contrib.override">
 
   <require>org.nuxeo.apidoc.listener.contrib</require>
-  <!--
-  
-  -->
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+  <extension point="listener" target="org.nuxeo.ecm.core.event.EventServiceComponent">
+    <listener async="false" class="org.nuxeo.apidoc.listener.LatestDistributionsListener" name="latestDistributionsListener" postCommit="false">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
 
+    <listener async="false" class="org.nuxeo.apidoc.listener.AttributesExtractorStater" name="AttributesExtractorStater" postCommit="false">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener async="false" class="org.nuxeo.apidoc.listener.AttributesExtractorScheduler" name="AttributesExtractorScheduler" postCommit="false" priority="20">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+    </listener>
   </extension>
+
 </component>

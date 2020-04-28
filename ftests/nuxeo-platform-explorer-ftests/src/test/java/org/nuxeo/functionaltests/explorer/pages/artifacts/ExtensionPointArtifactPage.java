@@ -46,7 +46,7 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
 
     public void generateOverride(String contributionId) {
         WebElement li = driver.findElement(By.id(contributionId));
-        clickOn(li.findElement(By.linkText("Contribute")));
+        clickOn(li.findElement(By.className("override")));
     }
 
 }
