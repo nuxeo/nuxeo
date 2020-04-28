@@ -4,7 +4,7 @@
   <require>org.nuxeo.apidoc.listener.contrib</require>
 
 <!--
-  
+
       Extension point defining event listeners.
 
       An event listener describes some Java code that can be executed
