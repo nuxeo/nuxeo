@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.coldstorage.operations.contrib" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations">
+    <operation class="org.nuxeo.coldstorage.operations.MoveToColdStorage" />
+    <operation class="org.nuxeo.coldstorage.operations.RequestRetrievalFromColdStorage" />
+  </extension>
+
+</component>

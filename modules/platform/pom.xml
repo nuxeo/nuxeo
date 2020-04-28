@@ -20,6 +20,7 @@
     <module>nuxeo-automation</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-chemistry</module>
+    <module>nuxeo-coldstorage</module>
     <module>nuxeo-collections</module>
     <module>nuxeo-csv-core</module>
     <module>nuxeo-dam</module>

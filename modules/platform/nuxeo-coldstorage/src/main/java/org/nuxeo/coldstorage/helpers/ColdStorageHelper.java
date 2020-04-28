@@ -18,7 +18,7 @@
  *     Nuno Cunha <ncunha@nuxeo.com>
  */
 
-package org.nuxeo.ecm.core.blob;
+package org.nuxeo.coldstorage.helpers;
 
 import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
@@ -39,10 +39,13 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobStatus;
+import org.nuxeo.ecm.core.blob.BlobUpdateContext;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.io.download.DownloadService;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,6 +56,8 @@ import org.nuxeo.runtime.api.Framework;
 public class ColdStorageHelper {
 
     private static final Logger log = LogManager.getLogger(ColdStorageHelper.class);
+
+    public static final String COLD_STORAGE_FACET_NAME = "ColdStorage";
 
     public static final String FILE_CONTENT_PROPERTY = "file:content";
 
@@ -92,7 +97,7 @@ public class ColdStorageHelper {
                     SC_FORBIDDEN);
         }
 
-        if (documentModel.hasFacet(FacetNames.COLD_STORAGE)
+        if (documentModel.hasFacet(COLD_STORAGE_FACET_NAME)
                 && documentModel.getPropertyValue(COLD_STORAGE_CONTENT_PROPERTY) != null) {
             throw new NuxeoException(
                     String.format("The main content for document: %s is already in cold storage.", documentModel),
@@ -105,7 +110,7 @@ public class ColdStorageHelper {
                     SC_NOT_FOUND);
         }
 
-        documentModel.addFacet(FacetNames.COLD_STORAGE);
+        documentModel.addFacet(COLD_STORAGE_FACET_NAME);
         documentModel.setPropertyValue(COLD_STORAGE_CONTENT_PROPERTY, mainContent);
         documentModel.setPropertyValue(FILE_CONTENT_PROPERTY, null);
         return documentModel;
@@ -131,7 +136,7 @@ public class ColdStorageHelper {
         log.debug("Retrieve from cold storage the content of document: {} for a duration: {}", documentModel,
                 restoreDuration);
 
-        if (!documentModel.hasFacet(FacetNames.COLD_STORAGE)
+        if (!documentModel.hasFacet(COLD_STORAGE_FACET_NAME)
                 || documentModel.getPropertyValue(COLD_STORAGE_CONTENT_PROPERTY) == null) {
             throw new NuxeoException(String.format("No cold storage content defined for document: %s.", documentModel),
                     SC_NOT_FOUND);
@@ -189,7 +194,7 @@ public class ColdStorageHelper {
                 continue;
             }
 
-            if (blobStatus.downloadable) {
+            if (blobStatus.isDownloadable()) {
                 available++;
                 beingRetrieved--;
 
@@ -197,7 +202,7 @@ public class ColdStorageHelper {
                 session.saveDocument(doc);
 
                 DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
-                Instant downloadableUntil = blobStatus.downloadableUntil;
+                Instant downloadableUntil = blobStatus.getDownloadableUntil();
                 if (downloadableUntil != null) {
                     ctx.getProperties()
                        .put(COLD_STORAGE_CONTENT_AVAILABLE_UNTIL_MAIL_TEMPLATE_KEY, downloadableUntil.toString());

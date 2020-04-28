@@ -17,15 +17,15 @@
  *     Salem Aouana
  */
 
-package org.nuxeo.ecm.core.coldstorage;
+package org.nuxeo.coldstorage.events;
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
+import org.nuxeo.coldstorage.helpers.ColdStorageHelper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.blob.ColdStorageHelper;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -48,7 +48,7 @@ public class CheckUpdateMainContentInColdStorage implements EventListener {
 
         DocumentModel previousDocument = (DocumentModel) eventContext.getProperty(
                 CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
-        if (previousDocument.hasFacet(FacetNames.COLD_STORAGE)
+        if (previousDocument.hasFacet(ColdStorageHelper.COLD_STORAGE_FACET_NAME)
                 && previousDocument.getPropertyValue(ColdStorageHelper.COLD_STORAGE_CONTENT_PROPERTY) != null) {
             DocumentModel document = ((DocumentEventContext) eventContext).getSourceDocument();
             Property mainContent = document.getProperty(ColdStorageHelper.FILE_CONTENT_PROPERTY);

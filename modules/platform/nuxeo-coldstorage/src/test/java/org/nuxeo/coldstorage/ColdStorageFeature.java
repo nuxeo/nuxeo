@@ -17,8 +17,9 @@
  *     Salem Aouana
  */
 
-package org.nuxeo.ecm.core.test;
+package org.nuxeo.coldstorage;
 
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -27,7 +28,10 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
  * @since 11.1
  */
 @Features(CoreFeature.class)
-@Deploy("org.nuxeo.ecm.core.test:OSGI-INF/test-dummy-thumbnail-factory-contrib.xml")
-@Deploy("org.nuxeo.ecm.core.test:OSGI-INF/test-coldstorage-contrib.xml")
+@Deploy("org.nuxeo.ecm.platform.notification.core")
+@Deploy("org.nuxeo.ecm.automation.core")
+@Deploy("org.nuxeo.ecm.core.management")
+@Deploy("org.nuxeo.coldstorage")
+@Deploy("org.nuxeo.coldstorage.test")
 public class ColdStorageFeature implements RunnerFeature {
 }

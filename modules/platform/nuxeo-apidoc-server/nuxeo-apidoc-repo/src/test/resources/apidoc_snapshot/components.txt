@@ -57,7 +57,6 @@ NXComponent: org.nuxeo.ecm.core.bulk.config *** /grp:org.nuxeo.ecm.core/org.nuxe
 NXComponent: org.nuxeo.ecm.core.bulk.io *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core.bulk/org.nuxeo.ecm.core.bulk.io
 NXComponent: org.nuxeo.ecm.core.bulk.tests *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core.bulk.test/org.nuxeo.ecm.core.bulk.tests
 NXComponent: org.nuxeo.ecm.core.cache.CacheService *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core.cache/org.nuxeo.ecm.core.cache.CacheService
-NXComponent: org.nuxeo.ecm.core.coldstorage.contrib *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.coldstorage.contrib
 NXComponent: org.nuxeo.ecm.core.convert.configuration *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core.convert/org.nuxeo.ecm.core.convert.configuration
 NXComponent: org.nuxeo.ecm.core.convert.plugins *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core.convert.plugins/org.nuxeo.ecm.core.convert.plugins
 NXComponent: org.nuxeo.ecm.core.convert.service.ConversionServiceImpl *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core.convert/org.nuxeo.ecm.core.convert.service.ConversionServiceImpl
