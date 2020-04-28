@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.IgnoreNonPostgresql;
+import org.nuxeo.ecm.core.storage.sql.IgnoreNonPostgreSQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgresql.class)
+@ConditionalIgnoreRule.Ignore(condition = IgnoreNonPostgreSQL.class)
 public class WorkTest {
 
     @Inject

@@ -122,6 +122,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.security.RetentionExpiredFinderListener;
+import org.nuxeo.ecm.core.storage.sql.IgnorePostgreSQL;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -4386,13 +4387,8 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
+    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-29006")
     public void testBinaryGC() throws Exception {
-        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
-            // NXP-29006: temporarily ignore against PostgreSQL
-            return;
-        }
-
         // GC binaries from previous tests
         Thread.sleep(3 * 1000);
         runBinariesGC(true, false);
