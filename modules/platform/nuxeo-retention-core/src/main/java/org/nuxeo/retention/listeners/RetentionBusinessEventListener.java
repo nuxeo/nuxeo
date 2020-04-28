@@ -62,11 +62,11 @@ public class RetentionBusinessEventListener implements EventListener {
                  .append(NXQL.escapeString(eventName));
             if (StringUtils.isBlank(eventInput)) {
                 query.append(" AND ") //
-                     .append(RetentionConstants.STARTING_POINT_EXPRESSION_PROP)
+                     .append(RetentionConstants.STARTING_POINT_VALUE_PROP)
                      .append(" IS NULL");
             } else {
                 query.append(" AND ") //
-                     .append(RetentionConstants.STARTING_POINT_EXPRESSION_PROP)
+                     .append(RetentionConstants.STARTING_POINT_VALUE_PROP)
                      .append(" = ")
                      .append(NXQL.escapeString(eventInput));
             }

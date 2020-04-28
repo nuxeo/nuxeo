@@ -58,6 +58,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-service-framework.xml")
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-listeners.xml")
 @Deploy("org.nuxeo.retention.core:OSGI-INF/retention-operations.xml")
+@Deploy("org.nuxeo.retention.core:OSGI-INF/retention-actions.xml")
 public abstract class RetentionTestCase {
 
     @Inject
@@ -107,7 +108,7 @@ public abstract class RetentionTestCase {
 
     protected RetentionRule createRuleWithActions(RetentionRule.ApplicationPolicy policy,
             StartingPointPolicy startingPointPolicy, List<String> docTypes, String startingPointEventId,
-            String startingPointExpression, String metadataXPath, long years, long months, long days,
+            String startingPointExpression, String startingPointValue, String metadataXPath, long years, long months, long days,
             long durationMillis, List<String> beginActions, List<String> endActions) {
         DocumentModel doc = session.createDocumentModel("/RetentionRules", "testRule", "RetentionRule");
         RetentionRule rule = doc.getAdapter(RetentionRule.class);
@@ -120,6 +121,7 @@ public abstract class RetentionTestCase {
         rule.setDocTypes(docTypes);
         rule.setStartingPointEvent(startingPointEventId);
         rule.setStartingPointExpression(startingPointExpression);
+        rule.setStartingPointValue(startingPointValue);
         rule.setMetadataXpath(metadataXPath);
         rule.setBeginActions(beginActions);
         rule.setEndActions(endActions);
@@ -130,23 +132,30 @@ public abstract class RetentionTestCase {
     protected RetentionRule createImmediateRuleMillis(RetentionRule.ApplicationPolicy policy, long durationMillis,
             List<String> beginActions, List<String> endActions) {
         return createRuleWithActions(policy, RetentionRule.StartingPointPolicy.IMMEDIATE, Arrays.asList("File"), null,
-                null, null, 0L, 0L, 0L, durationMillis, beginActions, endActions);
+                null, null, null, 0L, 0L, 0L, durationMillis, beginActions, endActions);
     }
 
     protected RetentionRule createManualImmediateRuleMillis(long durationMillis) {
         return createImmediateRuleMillis(RetentionRule.ApplicationPolicy.MANUAL, durationMillis, null, null);
     }
 
-    protected RetentionRule createManualEventBasedRuleMillis(String eventId, String startingPointExpression,
+    protected RetentionRule createManualEventBasedRuleMillisWithExpression(String eventId,
+            String startingPointExpression, long durationMillis) {
+        return createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
+                RetentionRule.StartingPointPolicy.EVENT_BASED, null, eventId, startingPointExpression, null, null, 0L,
+                0L, 0L, durationMillis, null, null);
+    }
+
+    protected RetentionRule createManualEventBasedRuleMillisWithEventValue(String eventId, String startingPointValue,
             long durationMillis) {
         return createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.EVENT_BASED, null, eventId, startingPointExpression, null, 0L, 0L, 0L,
-                durationMillis, null, null);
+                RetentionRule.StartingPointPolicy.EVENT_BASED, null, eventId, null, startingPointValue, null, 0L, 0L,
+                0L, durationMillis, null, null);
     }
 
     protected RetentionRule createManualMetadataBasedRuleMillis(String metadataXPath, long durationMillis) {
         return createRuleWithActions(RetentionRule.ApplicationPolicy.MANUAL,
-                RetentionRule.StartingPointPolicy.METADATA_BASED, null, null, null, metadataXPath, 0L, 0L, 0L,
+                RetentionRule.StartingPointPolicy.METADATA_BASED, null, null, null,null, metadataXPath, 0L, 0L, 0L,
                 durationMillis, null, null);
     }
 
