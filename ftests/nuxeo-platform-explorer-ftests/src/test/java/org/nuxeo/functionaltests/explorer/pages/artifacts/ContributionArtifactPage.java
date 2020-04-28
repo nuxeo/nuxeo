@@ -34,7 +34,8 @@ public class ContributionArtifactPage extends ArtifactPage {
     @Override
     public void check() {
         checkCommon("Contribution org.nuxeo.apidoc.adapterContrib--adapters",
-                "Contribution org.nuxeo.apidoc.adapterContrib--adapters", null);
+                "Contribution org.nuxeo.apidoc.adapterContrib--adapters",
+                "In component org.nuxeo.apidoc.adapterContrib");
     }
 
     @Override

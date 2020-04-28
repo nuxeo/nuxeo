@@ -9,6 +9,15 @@
 
 <div class="tabscontent">
 
+  <h2>Documentation</h2>
+  ${nxItem.documentationHtml}
+  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
+  <#if Root.canAddDocumentation()>
+    <div class="tabsbutton">
+      <a class="button" href="${This.path}/doc">Manage Documentation</a>
+    </div>
+  </#if>
+
   <h2>Components</h2>
   <#if nxItem.components?size == 0>
     No components.
@@ -32,15 +41,6 @@
   <div>
     <pre><code>${nxItem.manifest}</code></pre>
   </div>
-
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-  <#if Root.canAddDocumentation()>
-    <div class="tabsbutton">
-      <a class="button" href="${This.path}/doc">Manage Documentation</a>
-    </div>
-  </#if>
 
   <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
