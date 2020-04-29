@@ -18,13 +18,18 @@
  */
 package org.nuxeo.functionaltests.explorer;
 
+import static org.junit.Assert.assertFalse;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.http.HttpStatus;
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.JavaScriptErrorCollector;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.ListingFragment;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
@@ -48,6 +53,17 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         driver.get(NUXEO_URL + "/logout");
     }
 
+    protected void open(String url) {
+        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
+        driver.get(NUXEO_URL + url);
+        check404();
+    }
+
+    protected void check404() {
+        assertFalse("404 on URL: '" + driver.getCurrentUrl(),
+                driver.getTitle().contains(String.valueOf(HttpStatus.SC_NOT_FOUND)));
+    }
+
     protected ExplorerHomePage goHome() {
         open(ExplorerHomePage.URL);
         return asPage(ExplorerHomePage.class);
@@ -55,6 +71,11 @@ public abstract class AbstractExplorerTest extends AbstractTest {
 
     protected boolean hasNavigationHeader() {
         return true;
+    }
+
+    protected void goToArtifact(String type, String id) {
+        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT,
+                ApiBrowserConstants.getArtifactView(type), id));
     }
 
     protected void checkExtensionPoints() {
@@ -72,7 +93,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.check();
+        apage.checkReference();
     }
 
     protected void checkContributions() {
@@ -89,7 +110,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.check();
+        apage.checkReference();
     }
 
     protected void checkServices() {
@@ -107,7 +128,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.check();
+        apage.checkReference();
     }
 
     protected void checkOperations() {
@@ -123,7 +144,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.check();
+        apage.checkReference();
     }
 
     protected void checkComponents() {
@@ -140,7 +161,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.check();
+        apage.checkReference();
     }
 
     protected void checkBundles() {
@@ -155,7 +176,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.check();
+        apage.checkReference();
     }
 
     protected String previousWindowHandle;

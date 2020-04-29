@@ -20,7 +20,7 @@
 
   <#if nxItem.requirements?size gt 0>
     <h2>Requirements</h2>
-    <ul class="nolist">
+    <ul class="nolist" id="requirements">
       <#list nxItem.requirements as req>
       <li><a class="tag bundles" href="${Root.path}/${distId}/viewBundle/${req}">${req}</a></li>
       </#list>
