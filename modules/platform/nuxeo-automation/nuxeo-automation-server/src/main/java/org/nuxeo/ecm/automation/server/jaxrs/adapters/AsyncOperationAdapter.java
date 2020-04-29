@@ -213,7 +213,9 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                 Object result = getAsyncService(executionId).getStatus(taskId);
                 return ResponseHelper.getResponse(result, request, HttpServletResponse.SC_OK);
             } else {
-                return Response.status(HttpServletResponse.SC_OK).entity(RUNNING_STATUS).build();
+                return Response.status(HttpServletResponse.SC_OK)
+                               .entity(MAPPER.writeValueAsString(RUNNING_STATUS))
+                               .build();
             }
 
         }
