@@ -40,6 +40,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
+import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -114,11 +116,20 @@ public class TestSnapshotPersist {
     }
 
     protected String represent(NuxeoArtifact artifact) {
-        return String.format("%s: %s *** %s\n", //
+        List<String> requirements = null;
+        if (artifact instanceof BundleInfo) {
+            requirements = ((BundleInfo) artifact).getRequirements();
+        }
+        if (artifact instanceof ComponentInfo) {
+            requirements = ((ComponentInfo) artifact).getRequirements();
+        }
+        String res = String.format("%s: %s *** %s%s\n", //
                 artifact.getArtifactType(), //
                 artifact.getId(), //
-                artifact.getHierarchyPath() //
+                artifact.getHierarchyPath(), //
+                (requirements != null && requirements.size() > 0) ? " *** " + requirements : ""//
         );
+        return res;
     }
 
     protected void checkBundles(DistributionSnapshot snapshot) throws IOException {

@@ -20,6 +20,15 @@
     </div>
   </#if>
 
+  <#if nxItem.requirements?size gt 0>
+    <h2>Requirements</h2>
+    <ul class="nolist">
+      <#list nxItem.requirements as req>
+      <li><a class="tag components" href="${Root.path}/${distId}/viewComponent/${req}">${req}</a></li>
+      </#list>
+    </ul>
+  </#if>
+
   <#if !nxItem.xmlPureComponent>
   <h2>Implementation</h2>
     <#assign componentClass=nxItem.componentClass/>

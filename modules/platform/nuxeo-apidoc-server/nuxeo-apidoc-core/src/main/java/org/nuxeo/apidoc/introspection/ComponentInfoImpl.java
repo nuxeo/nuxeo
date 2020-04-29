@@ -61,6 +61,11 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected final List<ExtensionInfo> extensions = new ArrayList<>();
 
+    /**
+     * @since 11.1
+     */
+    protected final List<String> requirements = new ArrayList<>();
+
     protected URL xmlFileUrl;
 
     protected String xmlFileContent;
@@ -138,7 +143,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     @Override
     public List<String> getServiceNames() {
-        return serviceNames;
+        return Collections.unmodifiableList(serviceNames);
     }
 
     @Override
@@ -246,4 +251,12 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
         return getBundle().getHierarchyPath() + "/" + getId();
     }
 
+    @Override
+    public List<String> getRequirements() {
+        return Collections.unmodifiableList(requirements);
+    }
+
+    public void addRequirement(String requirement) {
+        requirements.add(requirement);
+    }
 }

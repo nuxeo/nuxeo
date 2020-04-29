@@ -46,7 +46,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected String manifest;
 
-    protected String[] requirements;
+    protected final List<String> requirements = new ArrayList<>();
 
     protected String groupId;
 
@@ -62,7 +62,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     @JsonCreator
     private BundleInfoImpl(@JsonProperty("bundleId") String bundleId, @JsonProperty("fileName") String fileName,
-            @JsonProperty("manifest") String manifest, @JsonProperty("requirements") String[] requirements,
+            @JsonProperty("manifest") String manifest, @JsonProperty("requirements") List<String> requirements,
             @JsonProperty("groupId") String groupId, @JsonProperty("artifactId") String artifactId,
             @JsonProperty("artifactVersion") String artifactVersion,
             @JsonProperty("bundleGroup") BundleGroup bundleGroup,
@@ -72,7 +72,9 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.bundleId = bundleId;
         this.fileName = fileName;
         this.manifest = manifest;
-        this.requirements = requirements;
+        if (requirements != null) {
+            this.requirements.addAll(requirements);
+        }
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.artifactVersion = artifactVersion;
@@ -121,12 +123,15 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     }
 
     @Override
-    public String[] getRequirements() {
-        return requirements;
+    public List<String> getRequirements() {
+        return Collections.unmodifiableList(requirements);
     }
 
-    public void setRequirements(String[] requirements) {
-        this.requirements = requirements;
+    public void setRequirements(List<String> requirements) {
+        this.requirements.clear();
+        if (requirements != null) {
+            this.requirements.addAll(requirements);
+        }
     }
 
     @Override
