@@ -19,6 +19,7 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,6 +37,8 @@ import java.util.Map;
 import java.util.PropertyResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -53,10 +56,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.deployment.preprocessor.DeploymentPreprocessor;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
 import org.nuxeo.runtime.model.RegistrationInfo;
@@ -203,6 +208,7 @@ public class ServerInfo {
                     InputStream is = new FileInputStream(manifest);
                     String mf = IOUtils.toString(is, StandardCharsets.UTF_8);
                     binfo.setManifest(mf);
+                    binfo.setRequirements(getBundleRequires(mf));
                 }
                 // find and parse pom.xml
                 File up = new File(jarFile, "..");
@@ -240,7 +246,9 @@ public class ServerInfo {
                         try (InputStream mfStream = zFile.getInputStream(mfEntry)) {
                             String mf = IOUtils.toString(mfStream, StandardCharsets.UTF_8);
                             binfo.setManifest(mf);
+                            binfo.setRequirements(getBundleRequires(mf));
                         }
+
                     }
                     Enumeration<? extends ZipEntry> entries = zFile.entries();
                     while (entries.hasMoreElements()) {
@@ -267,6 +275,38 @@ public class ServerInfo {
             log.error(e, e);
         }
         return binfo;
+    }
+
+    /**
+     * Retrieve bundle requirements.
+     *
+     * @implNote: code copy/pasted from {@link DeploymentPreprocessor#processManifest} internal method.
+     * @since 11.1
+     */
+    protected static List<String> getBundleRequires(String mforig) throws IOException {
+        List<String> res = new ArrayList<>();
+        if (mforig == null) {
+            return res;
+        }
+        Manifest mf = new Manifest(new ByteArrayInputStream(mforig.getBytes()));
+        Attributes attrs = mf.getMainAttributes();
+        String requires = attrs.getValue("Nuxeo-Require");
+        if (requires == null) {
+            // if not specific requirement is met, fallback on 'Require-Bundle'
+            requires = attrs.getValue("Require-Bundle");
+        }
+        if (requires != null) {
+            String[] ids = StringUtils.split(requires, ',', true);
+            for (int i = 0; i < ids.length; i++) {
+                String rid = ids[i];
+                int p = rid.indexOf(';');
+                if (p > -1) { // remove properties part if any
+                    ids[i] = rid.substring(0, p);
+                }
+                res.add(ids[i]);
+            }
+        }
+        return res;
     }
 
     protected static List<Class<?>> getSPI(Class<?> klass) {
@@ -316,7 +356,6 @@ public class ServerInfo {
                 }
             }
 
-            // TODO binfo.setRequirements(requirements);
             ComponentInfoImpl component = new ComponentInfoImpl(binfo, cname);
             if (ri.getExtensionPoints() != null) {
                 for (ExtensionPoint xp : ri.getExtensionPoints()) {
@@ -366,6 +405,8 @@ public class ServerInfo {
 
             component.setComponentClass(ri.getImplementation());
             component.setDocumentation(ri.getDocumentation());
+
+            ri.getRequiredComponents().forEach(req -> component.addRequirement(req.getName()));
 
             binfo.addComponent(component);
             server.addBundle(binfo);

@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -154,7 +155,7 @@ public class TestJson {
                 + "  OSGI-INF/listener-contrib.xml\n"//
                 + "", bundle.getManifest());
         assertNull(bundle.getParentLiveDoc());
-        assertNull(bundle.getRequirements());
+        assertEquals(Collections.emptyList(), bundle.getRequirements());
         assertEquals(version, bundle.getVersion());
 
         // check components

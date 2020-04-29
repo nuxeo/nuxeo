@@ -43,6 +43,11 @@ public interface BundleInfo extends NuxeoArtifact {
     /**
      * @since 11.1
      */
+    String PROP_REQUIREMENTS = "nxbundle:requirements";
+
+    /**
+     * @since 11.1
+     */
     String RUNTIME_CONFIG_BUNDLE = "org.nuxeo.ecm.config";
 
     @JsonManagedReference("bundle")
@@ -52,7 +57,10 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String getBundleId();
 
-    String[] getRequirements();
+    /**
+     * @since 11.1
+     */
+    List<String> getRequirements();
 
     String getManifest();
 
