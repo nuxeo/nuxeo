@@ -5100,6 +5100,7 @@ public class TestSQLRepositoryAPI {
         }
     }
 
+    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-29039")
     @Test
     public void testChangeTokenAfterExceptionDuringSave() throws Exception {
         assumeTrue("H2 has subpar locking", !coreFeature.getStorageConfiguration().isVCSH2());
