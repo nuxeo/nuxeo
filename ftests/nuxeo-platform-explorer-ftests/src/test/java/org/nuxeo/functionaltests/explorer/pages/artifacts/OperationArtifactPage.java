@@ -31,8 +31,14 @@ public class OperationArtifactPage extends ArtifactPage {
     }
 
     @Override
-    public void check() {
+    public void checkReference() {
         checkCommon("Operation Document.AddFacet", "Operation Document.AddFacet (Add Facet)",
+                "In component org.nuxeo.ecm.core.automation.coreContrib");
+    }
+
+    @Override
+    public void checkAlternative() {
+        checkCommon("Operation Document.Create", "Operation Document.Create (Create)",
                 "In component org.nuxeo.ecm.core.automation.coreContrib");
     }
 

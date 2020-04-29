@@ -32,10 +32,17 @@ public class ContributionArtifactPage extends ArtifactPage {
     }
 
     @Override
-    public void check() {
+    public void checkReference() {
         checkCommon("Contribution org.nuxeo.apidoc.adapterContrib--adapters",
                 "Contribution org.nuxeo.apidoc.adapterContrib--adapters",
                 "In component org.nuxeo.apidoc.adapterContrib");
+    }
+
+    @Override
+    public void checkAlternative() {
+        checkCommon("Contribution org.nuxeo.apidoc.doctypeContrib--doctype",
+                "Contribution org.nuxeo.apidoc.doctypeContrib--doctype",
+                "In component org.nuxeo.apidoc.doctypeContrib");
     }
 
     @Override

@@ -21,6 +21,8 @@ package org.nuxeo.functionaltests.explorer.pages.artifacts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.List;
+
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.By;
@@ -42,10 +44,19 @@ public class BundleArtifactPage extends ArtifactPage {
     }
 
     @Override
-    public void check() {
+    public void checkReference() {
         checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core", null);
         checkGroupId("org.nuxeo.ecm.platform");
         checkArtifactId("nuxeo-apidoc-core");
+        checkRequirements(null);
+    }
+
+    @Override
+    public void checkAlternative() {
+        checkCommon("Bundle org.nuxeo.apidoc.webengine", "Bundle org.nuxeo.apidoc.webengine", null);
+        checkGroupId("org.nuxeo.ecm.platform");
+        checkArtifactId("nuxeo-apidoc-webengine");
+        checkRequirements(List.of("org.nuxeo.ecm.webengine.core", "org.nuxeo.apidoc.core"));
     }
 
     @Override
@@ -65,6 +76,5 @@ public class BundleArtifactPage extends ArtifactPage {
         assertNotNull(artifactId);
         assertEquals(id, artifactId.getText());
     }
-
 
 }

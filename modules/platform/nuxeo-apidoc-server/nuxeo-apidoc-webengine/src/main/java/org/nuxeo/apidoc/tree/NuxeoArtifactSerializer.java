@@ -18,13 +18,7 @@
  */
 package org.nuxeo.apidoc.tree;
 
-import org.nuxeo.apidoc.api.BundleGroup;
-import org.nuxeo.apidoc.api.BundleInfo;
-import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.ExtensionInfo;
-import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -66,24 +60,10 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
 
         if (obj.getArtifactType().equals(DistributionSnapshot.TYPE_NAME)) {
             return url;
-        } else if (obj.getArtifactType().equals(BundleInfo.TYPE_NAME)) {
-            url += ApiBrowserConstants.VIEW_BUNDLE + "/";
-        } else if (obj.getArtifactType().equals(BundleGroup.TYPE_NAME)) {
-            url += ApiBrowserConstants.VIEW_BUNDLEGROUP + "/";
-        } else if (obj.getArtifactType().equals(ComponentInfo.TYPE_NAME)) {
-            url += ApiBrowserConstants.VIEW_COMPONENT + "/";
-        } else if (obj.getArtifactType().equals(ExtensionInfo.TYPE_NAME)) {
-            url += ApiBrowserConstants.VIEW_CONTRIBUTION + "/";
-        } else if (obj.getArtifactType().equals(ExtensionPointInfo.TYPE_NAME)) {
-            url += ApiBrowserConstants.VIEW_EXTENSIONPOINT + "/";
-        } else if (obj.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
-            url += ApiBrowserConstants.VIEW_SERVICE + "/";
-        } else {
-            url = null;
         }
-
-        if (url != null) {
-            url += obj.getId();
+        String view = ApiBrowserConstants.getArtifactView(obj.getArtifactType());
+        if (view != null) {
+            url += view + "/" + obj.getId();
         } else {
             if (obj instanceof VirtualNode) {
                 VirtualNode vn = (VirtualNode) obj;
