@@ -22,5 +22,6 @@
   <xs:element name="isXML" type="xs:boolean"/>
 
   <xs:element name="services" type="nxcomponent:stringList"/>
+  <xs:element name="requirements" type="nxcomponent:stringList"/>
 
 </xs:schema>

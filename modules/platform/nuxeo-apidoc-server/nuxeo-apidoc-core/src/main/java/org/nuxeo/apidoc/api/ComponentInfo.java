@@ -39,6 +39,11 @@ public interface ComponentInfo extends NuxeoArtifact {
 
     String PROP_BUILT_IN_DOC = "nxcomponent:builtInDocumentation";
 
+    /**
+     * @since 11.1
+     */
+    String PROP_REQUIREMENTS = "nxcomponent:requirements";
+
     String PROP_IS_XML = "nxcomponent:isXML";
 
     String PROP_SERVICES = "nxcomponent:services";
@@ -78,5 +83,10 @@ public interface ComponentInfo extends NuxeoArtifact {
     String getXmlFileName();
 
     String getXmlFileContent() throws IOException;
+
+    /**
+     * @since 11.1
+     */
+    List<String> getRequirements();
 
 }
