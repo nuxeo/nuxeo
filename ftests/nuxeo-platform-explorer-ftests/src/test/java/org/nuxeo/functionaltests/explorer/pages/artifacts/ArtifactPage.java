@@ -19,10 +19,15 @@
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+
+import java.util.List;
+import java.util.stream.IntStream;
 
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.pages.AbstractExplorerPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -46,7 +51,16 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
         super(driver);
     }
 
-    protected void checkCommon(String title, String headerText, String description) {
+    @Override
+    public void check() {
+        checkReference();
+    }
+
+    public abstract void checkReference();
+
+    public abstract void checkAlternative();
+
+    public void checkCommon(String title, String headerText, String description) {
         checkTitle(title);
         checkHeaderText(headerText);
         checkDescription(description);
@@ -54,17 +68,31 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
 
     protected abstract void checkSelectedTab();
 
-    protected void checkHeaderText(String expected) {
+    public void checkHeaderText(String expected) {
         assertEquals(expected, header.getText());
     }
 
-    protected void checkDescription(String expected) {
+    public void checkDescription(String expected) {
         try {
             assertEquals(expected, description.getText());
         } catch (NoSuchElementException e) {
             // description is not mandatory on all pages
             assertNull(expected);
         }
+    }
+
+    public void checkRequirements(List<String> ids) {
+        WebElement requirements = null;
+        try {
+            requirements = driver.findElement(By.id("requirements"));
+        } catch (NoSuchElementException e) {
+            assertNull(ids);
+            return;
+        }
+        assertNotNull(ids);
+        List<WebElement> bundles = requirements.findElements(By.xpath(".//li"));
+        assertEquals(ids.size(), bundles.size());
+        IntStream.range(0, bundles.size()).forEach(i -> assertEquals(ids.get(i), bundles.get(i).getText()));
     }
 
 }

@@ -24,13 +24,22 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.apidoc.browse.ApiBrowserConstants;
+import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.ComponentArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ContributionArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ExtensionPointArtifactPage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.OperationArtifactPage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.ServiceArtifactPage;
 
 /**
  * Test explorer "adm" "simple" webengine pages.
@@ -103,10 +112,24 @@ public class ITExplorerTest extends AbstractExplorerTest {
     }
 
     @Test
+    public void testExtensionPointsAlternative() {
+        goToArtifact(ExtensionPointInfo.TYPE_NAME, "org.nuxeo.ecm.core.schema.TypeService--doctype");
+        ExtensionPointArtifactPage apage = asPage(ExtensionPointArtifactPage.class);
+        apage.checkAlternative();
+    }
+
+    @Test
     public void testContributions() {
         ExplorerHomePage home = goHome();
         home.clickOn(home.currentContributions);
         checkContributions();
+    }
+
+    @Test
+    public void testContributionsAlternative() {
+        goToArtifact(ExtensionInfo.TYPE_NAME, "org.nuxeo.apidoc.doctypeContrib--doctype");
+        ContributionArtifactPage apage = asPage(ContributionArtifactPage.class);
+        apage.checkAlternative();
     }
 
     @Test
@@ -117,10 +140,24 @@ public class ITExplorerTest extends AbstractExplorerTest {
     }
 
     @Test
+    public void testServicesAlternative() {
+        goToArtifact(ServiceInfo.TYPE_NAME, "org.nuxeo.ecm.platform.types.TypeManager");
+        ServiceArtifactPage apage = asPage(ServiceArtifactPage.class);
+        apage.checkAlternative();
+    }
+
+    @Test
     public void testOperations() {
         ExplorerHomePage home = goHome();
         home.clickOn(home.currentOperations);
         checkOperations();
+    }
+
+    @Test
+    public void testOperationsAlternative() {
+        goToArtifact(OperationInfo.TYPE_NAME, "Document.Create");
+        OperationArtifactPage apage = asPage(OperationArtifactPage.class);
+        apage.checkAlternative();
     }
 
     @Test
@@ -134,6 +171,13 @@ public class ITExplorerTest extends AbstractExplorerTest {
     }
 
     @Test
+    public void testComponentsAlternative() {
+        goToArtifact(ComponentInfo.TYPE_NAME, "org.nuxeo.ecm.automation.server.marshallers");
+        ComponentArtifactPage apage = asPage(ComponentArtifactPage.class);
+        apage.checkAlternative();
+    }
+
+    @Test
     public void testBundles() {
         ExplorerHomePage home = goHome();
         home.clickOn(home.currentExtensionPoints);
@@ -144,9 +188,15 @@ public class ITExplorerTest extends AbstractExplorerTest {
     }
 
     @Test
+    public void testBundlesAlternative() {
+        goToArtifact(BundleInfo.TYPE_NAME, "org.nuxeo.apidoc.webengine");
+        BundleArtifactPage apage = asPage(BundleArtifactPage.class);
+        apage.checkAlternative();
+    }
+
+    @Test
     public void testOverrideContribution() throws IOException {
-        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT,
-                ApiBrowserConstants.VIEW_CONTRIBUTION, "org.nuxeo.apidoc.listener.contrib--listener"));
+        goToArtifact(ExtensionInfo.TYPE_NAME, "org.nuxeo.apidoc.listener.contrib--listener");
         ContributionArtifactPage apage = asPage(ContributionArtifactPage.class);
         apage.toggleGenerateOverride();
         storeWindowHandle();
@@ -159,8 +209,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
 
     @Test
     public void testOverrideContributionFromExtensionPoint() throws IOException {
-        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT,
-                ApiBrowserConstants.VIEW_EXTENSIONPOINT, "org.nuxeo.ecm.core.event.EventServiceComponent--listener"));
+        goToArtifact(ExtensionPointInfo.TYPE_NAME, "org.nuxeo.ecm.core.event.EventServiceComponent--listener");
         ExtensionPointArtifactPage apage = asPage(ExtensionPointArtifactPage.class);
         storeWindowHandle();
         apage.generateOverride("org.nuxeo.apidoc.listener.contrib--listener");

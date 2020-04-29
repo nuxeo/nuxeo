@@ -18,6 +18,14 @@
  */
 package org.nuxeo.apidoc.browse;
 
+import org.nuxeo.apidoc.api.BundleGroup;
+import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.apidoc.api.ExtensionInfo;
+import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.ServiceInfo;
+
 /**
  * @since 11.1
  */
@@ -67,6 +75,39 @@ public class ApiBrowserConstants {
 
     public static final boolean check(String url, String view) {
         return url.contains("/" + view);
+    }
+
+    public static final String getArtifactView(String artifactType) {
+        String view = null;
+        if (artifactType == null) {
+            return view;
+        }
+        switch (artifactType) {
+        case BundleInfo.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_BUNDLE;
+            break;
+        case BundleGroup.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_BUNDLEGROUP;
+            break;
+        case ComponentInfo.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_COMPONENT;
+            break;
+        case ExtensionInfo.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_CONTRIBUTION;
+            break;
+        case ExtensionPointInfo.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_EXTENSIONPOINT;
+            break;
+        case ServiceInfo.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_SERVICE;
+            break;
+        case OperationInfo.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_OPERATION;
+            break;
+        default:
+            break;
+        }
+        return view;
     }
 
 }

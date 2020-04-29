@@ -18,6 +18,8 @@
  */
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
+import java.util.List;
+
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.WebDriver;
 
@@ -31,9 +33,17 @@ public class ComponentArtifactPage extends ArtifactPage {
     }
 
     @Override
-    public void check() {
+    public void checkReference() {
         checkCommon("Component org.nuxeo.apidoc.adapterContrib", "Component org.nuxeo.apidoc.adapterContrib",
                 "In bundle org.nuxeo.apidoc.repo");
+        checkRequirements(null);
+    }
+
+    @Override
+    public void checkAlternative() {
+        checkCommon("Component org.nuxeo.ecm.automation.server.marshallers",
+                "Component org.nuxeo.ecm.automation.server.marshallers", "In bundle org.nuxeo.ecm.automation.io");
+        checkRequirements(List.of("org.nuxeo.ecm.platform.contentview.json.marshallers"));
     }
 
     @Override

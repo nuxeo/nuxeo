@@ -33,9 +33,15 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
     }
 
     @Override
-    public void check() {
+    public void checkReference() {
         checkCommon("Extension point org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
                 "Extension point plugins", "In component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
+    }
+
+    @Override
+    public void checkAlternative() {
+        checkCommon("Extension point org.nuxeo.ecm.core.schema.TypeService--doctype", "Extension point doctype",
+                "In component org.nuxeo.ecm.core.schema.TypeService");
     }
 
     @Override
