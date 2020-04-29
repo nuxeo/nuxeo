@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -164,7 +165,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
 
             @Override
             public OperationException onError(OperationException error) {
-                setError(executionId, error.getMessage());
+                setError(executionId, error);
                 return error;
             }
 
@@ -182,7 +183,7 @@ public class AsyncOperationAdapter extends DefaultAdapter {
                     opCtx.setCoreSession(s);
                     service.run(opCtx, opId, xreq.getParams());
                 } catch (OperationException e) {
-                    setError(executionId, e.getMessage());
+                    setError(executionId, e);
                 } finally {
                     LoginComponent.popPrincipal();
                 }
@@ -200,11 +201,11 @@ public class AsyncOperationAdapter extends DefaultAdapter {
     @GET
     @Path("{executionId}/status")
     public Object status(@PathParam("executionId") String executionId) throws IOException, MessagingException {
+        String error = getError(executionId);
+        if (error != null) {
+            throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
         if (isCompleted(executionId)) {
-            String error = getError(executionId);
-            if (error != null) {
-                throw new NuxeoException(error, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
             String resURL = String.format("%s/%s", getPath(), executionId);
             return redirect(resURL);
         } else {
@@ -289,6 +290,14 @@ public class AsyncOperationAdapter extends DefaultAdapter {
         }
     }
 
+    protected void setError(String executionId, Throwable t) {
+        setError(executionId, ExceptionHelper.unwrapException(t).getMessage());
+    }
+
+    /**
+     * @deprecated since 11.1, because unused
+     */
+    @Deprecated(since = "11.1")
     protected void setError(String executionId, String error) {
         getTransientStore().putParameter(executionId, TRANSIENT_STORE_ERROR, error);
         setCompleted(executionId);

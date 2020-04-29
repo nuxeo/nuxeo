@@ -183,7 +183,7 @@ public class AsyncOperationAdapterTest {
                             .set("error", true)
                             .set("rollback", true)
                             .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
-        assertEquals("Failed to invoke operation Test.Exit", error);
+        assertEquals("termination error", error);
     }
 
     @Test
@@ -220,6 +220,19 @@ public class AsyncOperationAdapterTest {
                                  .executeReturningDocument();
 
         assertEquals("foo", getTitle(folder));
+    }
+
+    @Test
+    public void testFailingBulkAction() throws Exception {
+        String result = async.newRequest(BulkRunAction.ID) //
+                             .set("action", AutomationBulkAction.ACTION_NAME)
+                             .set("query", "SELECT * FROM Folder")
+                             .set("bucketSize", "10")
+                             .set("batchSize", "5")
+                             .set("parameters", "{}")
+                             .executeReturningExceptionEntity(SC_INTERNAL_SERVER_ERROR);
+        assertTrue(
+                result.startsWith("Unknown operation id null in command: org.nuxeo.ecm.core.bulk.message.BulkCommand"));
     }
 
     /**
