@@ -91,6 +91,7 @@ public class ApiBrowser extends DefaultObject {
             Boolean embed = (Boolean) args[1];
             embeddedMode = embed != null && embed;
         }
+        getSnapshotManager().initWebContext(getContext().getRequest());
     }
 
     @GET
