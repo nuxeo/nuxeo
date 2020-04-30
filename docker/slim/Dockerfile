@@ -92,10 +92,8 @@ VOLUME /var/lib/nuxeo
 VOLUME /var/log/nuxeo
 VOLUME /tmp
 
-ENV HOME $NUXEO_HOME
 ENV PATH $NUXEO_HOME/bin:$PATH
 
-WORKDIR $NUXEO_HOME
 EXPOSE 8080
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nuxeoctl", "console"]
