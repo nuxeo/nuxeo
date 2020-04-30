@@ -387,6 +387,7 @@ public class TestVideoImporterAndListeners {
 
     @Test
     @Deploy("org.nuxeo.ecm.platform.video.core:test-video-conversions-enabled.xml")
+    @Deploy("org.nuxeo.ecm.platform.video.core:video-configuration-override.xml")
     @Deploy("org.nuxeo.ecm.platform.video.core:test-video-listeners-contrib.xml")
     @SuppressWarnings("unchecked")
     public void testVideoConversions() throws IOException, InterruptedException {
