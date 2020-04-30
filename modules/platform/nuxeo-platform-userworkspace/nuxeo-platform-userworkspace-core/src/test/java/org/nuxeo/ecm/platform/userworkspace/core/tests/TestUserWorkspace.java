@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
+import org.nuxeo.ecm.core.storage.sql.IgnorePostgreSQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -58,6 +59,7 @@ import org.nuxeo.ecm.platform.userworkspace.core.service.AbstractUserWorkspaceIm
 import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceDescriptor;
 import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceServiceImplComponent;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -104,6 +106,7 @@ public class TestUserWorkspace {
         userSession.save();
     }
 
+    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-29051")
     @Test
     public void testMultiDomains() {
         ACE ace = new ACE("Everyone", "Read", true);
