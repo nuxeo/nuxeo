@@ -830,12 +830,26 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     /**
      * Writes state from a complex property.
      *
-     * @return {@code true} if something changed
+     * @deprecated since 11.1, use
+     *             {@link #writeDocumentPart(StateAccessor, DocumentPart, org.nuxeo.ecm.core.model.Document.WriteContext, boolean)}
+     *             instead
      */
+    @Deprecated
     protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, WriteContext writeContext)
             throws PropertyException {
-        boolean writeAll = ((DocumentPart) complexProperty).getClearComplexPropertyBeforeSet();
-        return writeComplexProperty(state, complexProperty, null, writeAll, writeContext);
+        return writeDocumentPart(state, (DocumentPart) complexProperty, writeContext, false);
+    }
+
+    /**
+     * Writes state from a document part.
+     *
+     * @return {@code true} if something changed
+     */
+    protected boolean writeDocumentPart(T state, DocumentPart dp, WriteContext writeContext, boolean create)
+            throws PropertyException {
+        boolean writeAll = create;
+        boolean writeAllChildren = dp.getClearComplexPropertyBeforeSet();
+        return writeComplexProperty(state, (ComplexProperty) dp, null, writeAll, writeAllChildren, writeContext);
     }
 
     /**
@@ -846,7 +860,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      * @return {@code true} if something changed
      */
     protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, String xpath, boolean writeAll,
-            WriteContext wc) throws PropertyException {
+            boolean writeAllChildren, WriteContext wc) throws PropertyException {
         @SuppressWarnings("unchecked")
         BlobWriteContext<T> writeContext = (BlobWriteContext<T>) wc;
         if (complexProperty instanceof BlobProperty) {
@@ -883,7 +897,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             } else if (type.isComplexType()) {
                 // complex property
                 T childState = getChildForWrite(state, name, type);
-                writeComplexProperty(childState, (ComplexProperty) property, xp, writeAll, writeContext);
+                writeComplexProperty(childState, (ComplexProperty) property, xp, writeAllChildren, writeAllChildren,
+                        writeContext);
             } else {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
@@ -940,7 +955,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                         String xpi = xp + '/' + i;
                         boolean moved = childProperty.isMoved();
                         boolean c = writeComplexProperty(childState, (ComplexProperty) childProperty, xpi,
-                                writeAll || moved, writeContext);
+                                writeAllChildren || moved, writeAllChildren || moved, writeContext);
                         if (c) {
                             writeContext.recordChange(xpi);
                         }
