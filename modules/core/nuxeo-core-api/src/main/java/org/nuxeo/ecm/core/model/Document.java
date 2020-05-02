@@ -443,9 +443,26 @@ public interface Document {
      * <p>
      * Writing data is done by {@link DocumentPart} because of per-proxy schemas.
      *
+     * @param dp the document part
+     * @param writeContext the write context
+     * @param create whether this is for a document creation
      * @return {@code true} if something changed
+     * @since 11.1
      */
-    boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException;
+    boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext, boolean create) throws PropertyException;
+
+    /**
+     * Writes a {@link DocumentPart} to storage.
+     * <p>
+     * Writing data is done by {@link DocumentPart} because of per-proxy schemas.
+     *
+     * @return {@code true} if something changed
+     * @deprecated since 11.1, use the signature with {@code create} instead
+     */
+    @Deprecated
+    default boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
+        return writeDocumentPart(dp, writeContext, false);
+    }
 
     /**
      * Gets the facets available on this document (from the type and the instance facets).

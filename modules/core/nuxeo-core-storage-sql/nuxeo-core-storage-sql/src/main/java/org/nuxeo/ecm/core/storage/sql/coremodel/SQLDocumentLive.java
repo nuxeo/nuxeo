@@ -185,8 +185,9 @@ public class SQLDocumentLive extends BaseDocument<Node> implements SQLDocument {
     }
 
     @Override
-    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
-        boolean changed = writeComplexProperty(getNode(), (ComplexProperty) dp, writeContext);
+    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext, boolean create)
+            throws PropertyException {
+        boolean changed = writeDocumentPart(getNode(), dp, writeContext, create);
         clearDirtyFlags(dp);
         return changed;
     }
