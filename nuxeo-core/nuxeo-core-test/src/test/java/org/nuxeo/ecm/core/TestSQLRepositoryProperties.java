@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -438,6 +439,33 @@ public class TestSQLRepositoryProperties {
         session.save(); // save succeeds, no unique constraint problem
     }
 
+    @Test
+    public void testComplexListNullInStorage() {
+        assumeTrue(coreFeature.getStorageConfiguration().isDBS());
+
+        // we check for the fact that storage is null (actually unset) by using
+        // a query (which would fail if we stored an empty list)
+        String query = "SELECT * FROM TestDocument WHERE tp:complexList IS NULL";
+        DocumentModelList dml;
+
+        // on create
+        session.save();
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+
+        // on update
+        doc.setPropertyValue("tp:complexList", (Serializable) Arrays.asList(map("string", "foo")));
+        doc = session.saveDocument(doc);
+        session.save();
+        doc.setPropertyValue("tp:complexList", null);
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // check after update
+        dml = session.query(query);
+        assertEquals(1, dml.size());
+    }
+
     // DBS-only test for in-db data corruption(?) (NXP-21278)
     @Test
     public void testComplexListElementNullInStorage() throws Exception {
@@ -744,6 +772,65 @@ public class TestSQLRepositoryProperties {
         prop.setValue(Collections.singletonMap("vignettes",
                 Collections.singletonList(Collections.singletonMap("width", Long.valueOf(123)))));
         doc = session.saveDocument(doc);
+    }
+
+    @Test
+    public void testTwoComplexInSameSchema() throws InterruptedException {
+        // create a doc with two complex lists in the same schema
+        doc = session.createDocumentModel("/", "mydoc", "MyDocType2");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        session.save();
+        nextTransaction();
+        doc.refresh();
+        assertEquals(map("foo", null, "bar", null), doc.getPropertyValue("cpx:complex"));
+
+        // another thread changes one of the complex properties
+        Thread t = new Thread(() -> TransactionHelper.runInTransaction(
+                () -> CoreInstance.doPrivileged(session.getRepositoryName(), s -> {
+                    DocumentModel d = s.getDocument(docRef);
+                    d.setPropertyValue("cpx:complex", (Serializable) map("foo", "1"));
+                    d = s.saveDocument(d);
+                    s.save();
+                })));
+        t.start();
+        t.join();
+
+        // the main thread needs to commit the transaction (long-running process for instance)
+        nextTransaction();
+        // this has the effect of clearing internal transient caches
+        // so low-level doc state will be refetched from storage on access
+
+        // property "complex" has the old value as the high-level doc has not been refreshed
+        // but subsequent save shouldn't write this old value as it's not dirty
+        assertEquals(map("foo", null, "bar", null), doc.getPropertyValue("cpx:complex"));
+        // change property "complex2"
+        doc.setPropertyValue("cpx:complex2", (Serializable) map("bar", "1"));
+        doc = session.saveDocument(doc);
+        session.save();
+
+        // check that the value changed by the thread hasn't been overwritten
+        doc.refresh();
+        assertEquals(map("foo", "1", "bar", null), doc.getPropertyValue("cpx:complex"));
+    }
+
+    /*
+     * This use case isn't really supported and shouldn't be allowed but there's probably legacy code that still does
+     * this and shouldn't break suddenly.
+     */
+    @Test
+    public void testCreateWithReusedDocumentModel() throws InterruptedException {
+        // create a doc
+        doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:title", "foo");
+        doc = session.createDocument(doc);
+
+        // create a new doc from reused DocumentModel
+        // the title is present but the property is not dirty
+        assertEquals("foo", doc.getPropertyValue("dc:title"));
+        doc = session.createDocument(doc);
+        // check that the title, even though not dirty, was saved
+        assertEquals("foo", doc.getPropertyValue("dc:title"));
     }
 
     // NXP-2318: i don't get what's supposed to be answered to these questions
