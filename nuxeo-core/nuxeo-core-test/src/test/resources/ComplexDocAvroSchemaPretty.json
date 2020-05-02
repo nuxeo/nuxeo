@@ -35,6 +35,9 @@
             "type" : [ "null", "string" ]
           } ]
         } ]
+      }, {
+        "name" : "complex2",
+        "type" : [ "null", "complex" ]
       } ],
       "logicalType" : "schema"
     }

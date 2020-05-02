@@ -1044,11 +1044,12 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
+    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext, boolean create)
+            throws PropertyException {
         DBSDocumentState docState = getStateOrTarget(dp.getType());
         // markDirty has to be called *before* we change the state
         docState.markDirty();
-        boolean changed = writeComplexProperty(docState.getState(), (ComplexProperty) dp, writeContext);
+        boolean changed = writeDocumentPart(docState.getState(), dp, writeContext, create);
         clearDirtyFlags(dp);
         return changed;
     }
