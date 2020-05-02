@@ -459,6 +459,13 @@ public class DBSDocument extends BaseDocument<State> {
         int newSize = properties.size();
         @SuppressWarnings("unchecked")
         List<State> childStates = (List<State>) state.get(name);
+        if (newSize == 0) {
+            // storage invariant is that empty complex lists are not stored
+            if (childStates != null) {
+                state.put(name, null);
+            }
+            return null;
+        }
         if (childStates == null) {
             childStates = new ArrayList<>(newSize);
             state.put(name, (Serializable) childStates);
@@ -1055,11 +1062,12 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
+    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext, boolean create)
+            throws PropertyException {
         DBSDocumentState docState = getStateOrTarget(dp.getType());
         // markDirty has to be called *before* we change the state
         docState.markDirty();
-        boolean changed = writeComplexProperty(docState.getState(), (ComplexProperty) dp, writeContext);
+        boolean changed = writeDocumentPart(docState.getState(), dp, writeContext, create);
         clearDirtyFlags(dp);
         return changed;
     }
