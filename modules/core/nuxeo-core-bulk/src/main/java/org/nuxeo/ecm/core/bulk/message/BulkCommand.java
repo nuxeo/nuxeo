@@ -39,7 +39,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class BulkCommand implements Serializable {
 
-    private static final long serialVersionUID = 20181021L;
+    private static final long serialVersionUID = 20200526L;
 
     protected String id;
 
@@ -60,6 +60,9 @@ public class BulkCommand implements Serializable {
     @Nullable
     protected String scroller;
 
+    // @since 11.1
+    protected boolean genericScroller;
+
     @AvroEncode(using = MapAsJsonAsStringEncoding.class)
     protected Map<String, Serializable> params;
 
@@ -77,6 +80,7 @@ public class BulkCommand implements Serializable {
         this.batchSize = builder.batchSize;
         this.params = builder.params;
         this.scroller = builder.scroller;
+        this.genericScroller = builder.genericScroller;
     }
 
     public String getUsername() {
@@ -97,6 +101,15 @@ public class BulkCommand implements Serializable {
 
     public String getScroller() {
         return scroller;
+    }
+
+    /**
+     * True if the command uses a generic scroller.
+     *
+     * @since 11.1
+     */
+    public boolean useGenericScroller() {
+        return genericScroller;
     }
 
     public Map<String, Serializable> getParams() {
@@ -166,13 +179,16 @@ public class BulkCommand implements Serializable {
 
         protected String scroller;
 
+        protected boolean genericScroller;
+
         protected Map<String, Serializable> params = new HashMap<>();
 
         /**
          * BulkCommand builder
          *
          * @param action the registered bulk action name
-         * @param nxqlQuery the query that represent the document set to apply the action
+         * @param nxqlQuery by default an NXQL query that represents the document set to apply the action. When using a
+         *            generic scroller the query syntax is a convention with the scroller implementation.
          * @param username the user with whose rights the computation will be executed
          * @since 11.1
          */
@@ -284,10 +300,30 @@ public class BulkCommand implements Serializable {
         }
 
         /**
-         * Set scroller name used to materialized the document set
+         * Sets scroller name used to materialized the document set
          */
         public Builder scroller(String scrollerName) {
             this.scroller = scrollerName;
+            return this;
+        }
+
+        /**
+         * Uses a generic scroller, the query syntax depends on scroller implementation.
+         *
+         * @since 11.1
+         */
+        public Builder useGenericScroller() {
+            this.genericScroller = true;
+            return this;
+        }
+
+        /**
+         * Uses a document scroller, the query must be a valid NXQL query. This is the default.
+         *
+         * @since 11.1
+         */
+        public Builder useDocumentScroller() {
+            this.genericScroller = false;
             return this;
         }
 
