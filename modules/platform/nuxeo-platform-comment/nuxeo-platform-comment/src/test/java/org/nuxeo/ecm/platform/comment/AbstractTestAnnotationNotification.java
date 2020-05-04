@@ -103,9 +103,7 @@ public abstract class AbstractTestAnnotationNotification {
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
 
@@ -128,9 +126,7 @@ public abstract class AbstractTestAnnotationNotification {
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
             List<MailMessage> mails = emailsResult.getMails();
@@ -155,9 +151,7 @@ public abstract class AbstractTestAnnotationNotification {
 
             transactionalFeature.nextTransaction();
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, annotationDocModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
             // No new mail was sent when comment removed
@@ -180,9 +174,8 @@ public abstract class AbstractTestAnnotationNotification {
             DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, replyDocumentModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
 

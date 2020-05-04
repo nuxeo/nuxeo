@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.automation.core.operations.notification;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +37,7 @@ import org.nuxeo.ecm.automation.core.events.operations.FireEvent;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -95,9 +94,8 @@ public class TestFireEventOperation {
 
         try (CapturingEventListener listener = new CapturingEventListener(eventId)) {
             automationService.run(ctx, FireEvent.ID, params);
-            Event event = listener.getLastCapturedEvent(eventId).orElse(null);
-            assertNotNull(event);
-            assertEquals("test property", event.getContext().getProperty("prop"));
+            EventContext eventCtx = listener.findLastCapturedEventContextOrElseThrow(eventId);
+            assertEquals("test property", eventCtx.getProperty("prop"));
         }
 
     }
