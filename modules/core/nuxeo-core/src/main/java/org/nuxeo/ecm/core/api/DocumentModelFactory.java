@@ -192,16 +192,6 @@ public class DocumentModelFactory {
      */
     @SuppressWarnings("deprecation")
     public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) {
-        return writeDocumentModel(docModel, doc, false);
-    }
-
-    /**
-     * Writes a document model to a document. Returns the re-read document model.
-     *
-     * @since 11.1
-     */
-    @SuppressWarnings("deprecation")
-    public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc, boolean create) {
         if (!(docModel instanceof DocumentModelImpl)) {
             throw new NuxeoException("Must be a DocumentModelImpl: " + docModel);
         }
@@ -241,8 +231,8 @@ public class DocumentModelFactory {
         for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
             DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
             // check if we have dirty properties or default values to write
-            if (create || dm.isDirty() || part.isPhantom() && part.hasDefaultValue()) {
-                changed |= doc.writeDocumentPart(part, writeContext, create);
+            if (dm.isDirty() || part.isPhantom() && part.hasDefaultValue()) {
+                changed = doc.writeDocumentPart(part, writeContext) || changed;
             }
         }
         // write the blobs last, so that blob providers have access to the new doc state

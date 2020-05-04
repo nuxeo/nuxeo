@@ -4,7 +4,6 @@
            targetNamespace="http://www.nuxeo.org/ecm/schemas/complex/">
 
    <xs:element name="complex" type="nxs:complex"/>
-   <xs:element name="complex2" type="nxs:complex"/>
 
    <xs:complexType name="complex">
       <xs:sequence>

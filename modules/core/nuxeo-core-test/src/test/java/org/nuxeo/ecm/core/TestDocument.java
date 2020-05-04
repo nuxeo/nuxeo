@@ -563,7 +563,16 @@ public class TestDocument {
         boolean changed = doc.writeDocumentPart(dp, writeContext);
         assertTrue(changed);
         Set<String> changes = writeContext.getChanges();
-        Set<String> expected = Collections.singleton("dc:title");
+        Set<String> expected;
+        if (schemaManager.getClearComplexPropertyBeforeSet()) {
+            // expect all of the schema fields to be written (others are set to null)
+            expected = new HashSet<>();
+            for (Field field : schema.getFields()) {
+                expected.add(field.getName().getPrefixedName());
+            }
+        } else {
+            expected = Collections.singleton("dc:title");
+        }
         assertEquals(expected, changes);
 
         // change to complex prop
