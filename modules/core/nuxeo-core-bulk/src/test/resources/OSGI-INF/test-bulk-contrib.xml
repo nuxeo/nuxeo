@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.bulk.contrib.test">
+  <require>org.nuxeo.ecm.core.bulk.config</require>
+
+  <extension target="org.nuxeo.ecm.core.bulk" point="actions">
+    <action name="testWordCount" inputStream="test/wordCount" defaultScroller="myFileScroll" bucketSize="100"
+      batchSize="25" />
+  </extension>
+
+  <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+    <streamProcessor name="fail" class="org.nuxeo.ecm.core.bulk.action.WordCountAction" defaultConcurrency="2"
+      defaultPartitions="2" />
+  </extension>
+
+</component>

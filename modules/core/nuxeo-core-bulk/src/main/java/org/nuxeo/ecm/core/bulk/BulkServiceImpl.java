@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core.bulk;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.ABORTED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.SCHEDULED;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.scroll.ScrollService;
 import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
+import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -107,17 +109,15 @@ public class BulkServiceImpl implements BulkService {
         if (actionValidation != null) {
             actionValidation.validate(command);
         }
-
         RepositoryManager repoManager = Framework.getService(RepositoryManager.class);
-        if (isBlank(command.getRepository())) {
-            command.setRepository(repoManager.getDefaultRepositoryName());
-        } else {
-            if (repoManager.getRepository(command.getRepository()) == null) {
+        if (repoManager != null) {
+            if (isEmpty(command.getRepository())) {
+                command.setRepository(repoManager.getDefaultRepositoryName());
+            } else if (repoManager.getRepository(command.getRepository()) == null) {
                 throw new IllegalArgumentException("Unknown repository: " + command);
             }
         }
         if (command.getBucketSize() == 0 || command.getBatchSize() == 0) {
-
             if (command.getBucketSize() == 0) {
                 command.setBucketSize(adminService.getBucketSize(command.getAction()));
             }
@@ -131,11 +131,7 @@ public class BulkServiceImpl implements BulkService {
                 command.setScroller(actionScroller);
             }
         }
-        ScrollService scrollService = Framework.getService(ScrollService.class);
-        if (!scrollService.exists(
-                DocumentScrollRequest.builder(command.getQuery()).name(command.getScroller()).build())) {
-            throw new IllegalArgumentException("Unknown Scroll for command: " + command);
-        }
+        checkIfScrollerExists(command);
 
         // store the bulk command and status in the key/value store
         BulkStatus status = new BulkStatus(command.getId());
@@ -157,6 +153,19 @@ public class BulkServiceImpl implements BulkService {
         // send command to bulk processor
         log.debug("Submit action with command: {}", command);
         return submit(shardKey, command.getId(), commandAsBytes);
+    }
+
+    protected void checkIfScrollerExists(BulkCommand command) {
+        ScrollService scrollService = Framework.getService(ScrollService.class);
+        if (command.useGenericScroller()) {
+            if (!scrollService.exists(
+                    GenericScrollRequest.builder(command.getScroller(), command.getQuery()).build())) {
+                throw new IllegalArgumentException("Unknown Generic Scroller for command: " + command);
+            }
+        } else if (!scrollService.exists(
+                DocumentScrollRequest.builder(command.getQuery()).name(command.getScroller()).build())) {
+            throw new IllegalArgumentException("Unknown Document Scroller for command: " + command);
+        }
     }
 
     @SuppressWarnings("resource") // LogManager not ours to close
