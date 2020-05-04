@@ -21,22 +21,27 @@ package org.nuxeo.ecm.platform.comment;
 
 import static org.nuxeo.ecm.platform.comment.CommentUtils.addNotificationSubscriptions;
 
-import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
+import org.nuxeo.ecm.platform.comment.impl.BridgeCommentManager;
+import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * @since 11.1
+ * @deprecated since 10.3, in order to follow the service deprecation
+ *             {@link org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl}.
  */
-public class TestPropertyCommentNotification extends AbstractTestCommentNotification {
+@Deprecated
+@Features({ RelationCommentFeature.class, BridgeCommentFeature.class })
+public class TestBridgeFromRelationToPropertyCommentNotification extends AbstractTestCommentNotification {
 
-    public TestPropertyCommentNotification() {
-        super(PropertyCommentManager.class);
+    public TestBridgeFromRelationToPropertyCommentNotification() {
+        super(BridgeCommentManager.class);
     }
 
     @Override
     public void before() {
         super.before();
         // abstract supposes auto subscription is enabled
-        // property implementation doesn't have this feature, so enable it for each tests
+        // relation nor property implementations have this feature, so enable it for each tests
         addNotificationSubscriptions(session.getPrincipal(), commentedDocModel, "CommentAdded", "CommentUpdated");
     }
 }

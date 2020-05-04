@@ -22,25 +22,57 @@ package org.nuxeo.ecm.platform.comment;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newAnnotation;
 
-import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.comment.api.Annotation;
+import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 /**
- * @since 11.1
+ * This isn't present on 11.1.
+ * 
+ * @since 10.10-HF26
  */
-@Features(TreeCommentFeature.class)
-public class TestTreeAnnotationNotification extends AbstractTestAnnotationNotification {
+@RunWith(FeaturesRunner.class)
+@Features({ NotificationCommentFeature.class, TreeCommentFeature.class })
+public class TestTreeAnnotationNotification {
 
-    @Override
-    protected Class<? extends CommentManager> getType() {
-        return TreeCommentManager.class;
+    @Inject
+    protected TransactionalFeature transactionalFeature;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
+    protected AnnotationService annotationService;
+
+    @Inject
+    protected NotificationManager notificationManager;
+
+    protected DocumentModel annotatedDocModel;
+
+    @Before
+    public void before() {
+        // Create the file under a domain is needed in this test context, due to the control of
+        // NotificationEventListener#gatherConcernedUsersForDocument (doc.getPath().segmentCount() > 1)
+        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
+        domain = session.createDocument(domain);
+        annotatedDocModel = session.createDocumentModel(domain.getPathAsString(), "test", "File");
+        annotatedDocModel = session.createDocument(annotatedDocModel);
+        transactionalFeature.nextTransaction();
     }
 
     @Test
@@ -48,23 +80,32 @@ public class TestTreeAnnotationNotification extends AbstractTestAnnotationNotifi
         String john = "john";
         String johnSubscription = NotificationConstants.USER_PREFIX + john;
         createUser(john);
-        List<String> subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription,
-                annotatedDocumentModel);
+
+        // check subscriptions has not been created
+        List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(johnSubscription,
+                annotatedDocModel);
         assertEquals(0, subscriptions.size());
-        createAnnotation(annotatedDocumentModel, john, "Test message");
-        transactionalFeature.nextTransaction();
-        annotatedDocumentModel = session.getDocument(annotatedDocumentModel.getRef());
-        subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, annotatedDocumentModel);
-        List<String> expectedSubscriptions = Arrays.asList("CommentAdded", "CommentUpdated");
-        assertEquals(expectedSubscriptions.size(), subscriptions.size());
-        assertTrue(subscriptions.containsAll(expectedSubscriptions));
+
+        // create an annotation and check auto subscriptions
+        createAnnotationAndRefreshAnnotatedDocument(john);
+        subscriptions = notificationManager.getSubscriptionsForUserOnDocument(johnSubscription, annotatedDocModel);
+        assertTrue(subscriptions.contains("CommentAdded"));
+        assertTrue(subscriptions.contains("CommentUpdated"));
+
+        // remove subscriptions, re-create an annotation and check no auto subscriptions
         for (String subscription : subscriptions) {
-            notificationService.removeSubscription(johnSubscription, subscription, annotatedDocumentModel);
+            notificationManager.removeSubscription(johnSubscription, subscription, annotatedDocModel);
         }
-        createAnnotation(annotatedDocumentModel, john, "Test message again");
-        transactionalFeature.nextTransaction();
-            subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, annotatedDocumentModel);
+        createAnnotationAndRefreshAnnotatedDocument(john);
+        subscriptions = notificationManager.getSubscriptionsForUserOnDocument(johnSubscription, annotatedDocModel);
         assertTrue(subscriptions.isEmpty());
     }
 
+    protected void createAnnotationAndRefreshAnnotatedDocument(String author) {
+        Annotation annotation = newAnnotation(annotatedDocModel.getId(), "file:content", "Test message");
+        annotation.setAuthor(author);
+        annotationService.createAnnotation(session, annotation);
+        transactionalFeature.nextTransaction();
+        annotatedDocModel.refresh();
+    }
 }

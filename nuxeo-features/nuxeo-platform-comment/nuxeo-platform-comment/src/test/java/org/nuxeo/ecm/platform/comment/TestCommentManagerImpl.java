@@ -22,28 +22,20 @@ package org.nuxeo.ecm.platform.comment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.emptyComment;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_DOC_TYPE;
 
 import java.util.Calendar;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CloseableCoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentImpl;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -55,107 +47,217 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(RelationCommentFeature.class)
 public class TestCommentManagerImpl extends AbstractTestCommentManager {
 
-    public static final String QUERY_COMMENTS_AS_DOCUMENTS = "SELECT * FROM " + COMMENT_DOC_TYPE;
-
-    public static final String USERNAME = "Foo";
-
-    public static final String COMMENT_CONTENT = "This is my comment";
-
-    @Inject
-    protected CoreFeature coreFeature;
-
-    @Inject
-    protected UserManager userManager;
-
-    @Test
-    public void testCreateReadDelete() {
-        // Create a user
-        DocumentModel userModel = userManager.getBareUserModel();
-        String schemaName = userManager.getUserSchemaName();
-        userModel.setProperty(schemaName, "username", USERNAME);
-
-        // Create a folder
-        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
-        session.createDocument(folder);
-
-        // Create a document
-        DocumentModel doc = session.createDocumentModel("/folder/", "TestFile", "File");
-        doc = session.createDocument(doc);
-
-        // Set The right ACE so a user can read the document
-        ACP acp = doc.getACP();
-        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        acl.add(new ACE(USERNAME, SecurityConstants.READ, true));
-        doc.setACP(acp, true);
-
-        try (CloseableCoreSession userSession = coreFeature.openCoreSession(USERNAME)) {
-            // Get the document as the user
-            DocumentModel userDoc = userSession.getDocument(doc.getRef());
-
-            // Comment the document as the user
-            Comment comment = new CommentImpl();
-            comment.setAuthor(session.getPrincipal().getName());
-            comment.setText(COMMENT_CONTENT);
-            comment.setParentId(userDoc.getId());
-            commentManager.createComment(session, comment);
-
-            // Check the comment document can be retrieved by a system session query
-            List<DocumentModel> dml = session.query(QUERY_COMMENTS_AS_DOCUMENTS);
-            assertEquals(1, dml.size());
-
-            // Check the comment document cannot be retrieved by the user session query
-            dml = userSession.query(QUERY_COMMENTS_AS_DOCUMENTS);
-            assertEquals(0, dml.size());
-
-            // Check the comment can be retrieved by the user via the comment service
-            List<Comment> comments = commentManager.getComments(userSession, userDoc.getId());
-            assertEquals(1, comments.size());
-            assertEquals(COMMENT_CONTENT, comments.get(0).getText());
-
-            // Check the comment was deleted by the user
-            commentManager.deleteComment(userSession, comments.get(0).getId());
-            comments = commentManager.getComments(userSession, userDoc.getId());
-            assertEquals(0, comments.size());
-        }
+    public TestCommentManagerImpl() {
+        super(CommentManagerImpl.class);
     }
 
     @Test
-    public void testCreateLocalComment() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        session.save();
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - permissions check different")
+    public void testCreateReply() {
+    }
 
-        String author = "toto";
-        String text = "I am a comment !";
-        Comment comment = new CommentImpl();
-        comment.setAuthor(author);
-        comment.setText(text);
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - permissions check different")
+    public void testGetCommentPermissions() {
+    }
 
-        // Create a comment in a specific location
-        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
-        commentModel = session.createDocument(commentModel);
-        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        applyDirtyPropertyValues(comment.getDocument(), commentModel);
-        commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - permissions check different")
+    public void testGetReply() {
+        // mainly due to testCreateReply not supported
+    }
 
-        // Check if Comments folder has been created in the given container
-        assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - ordering not supported")
+    public void testGetCommentsOrdering() {
+    }
 
-        assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - ordering not supported")
+    public void testGetCommentsPaginationOrdering() {
+    }
+
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this test/case - permissions check different")
+    public void testGetCommentsWithReply() {
+        // mainly due to testCreateReply not supported
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testUpdateComment() {
+        super.testUpdateComment(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testUpdateCommentByItsAuthor() {
+        super.testUpdateCommentByItsAuthor(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testUpdateCommentByPowerfulUser() {
+        super.testUpdateCommentByPowerfulUser(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testUpdateCommentWithModificationDate() {
+        super.testUpdateCommentWithModificationDate(); // if implemented one day
+    }
+
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this test/case - permissions check different")
+    public void testUpdateReply() {
+        // mainly due to testCreateReply not supported
+    }
+
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - permissions check different")
+    public void testDeleteCommentByItsAuthor() {
+    }
+
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - permissions check different")
+    public void testDeleteReply() {
+        // mainly due to testCreateReply not supported
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testGetExternalComment() {
+        super.testGetExternalComment(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testGetExternalCommentPermissions() {
+        super.testGetExternalCommentPermissions(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testUpdateExternalComment() {
+        super.testUpdateExternalComment(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testUpdateExternalCommentByItsAuthor() {
+        super.testUpdateExternalCommentByItsAuthor(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testUpdateExternalCommentByPowerfulUser() {
+        super.testUpdateExternalCommentByPowerfulUser(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testDeleteExternalComment() {
+        super.testDeleteExternalComment(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testDeleteExternalCommentByItsAuthor() {
+        super.testDeleteExternalCommentByItsAuthor(); // if implemented one day
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testDeleteExternalCommentByPowerfulUser() {
+        super.testDeleteExternalCommentByPowerfulUser(); // if implemented one day
+    }
+
+    @Test
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this case - deprecated implementation")
+    public void testCommentsAncestorIds() {
     }
 
     /*
      * NXP-28719
      */
     @Test
-    @Ignore("Ignore this test since the comment implementation behind it is deprecated")
-    public void testCreateCommentsUnderPlacelessDocument() {
+    @Override
+    @Ignore("CommentManagerImpl doesn't support this test/case - deprecated implementation")
+    public void testCreateCommentUnderPlacelessDocument() {
     }
 
+    /*
+     * NXP-28719
+     */
+    @Test
     @Override
-    public Class<? extends CommentManager> getType() {
-        return CommentManagerImpl.class;
+    @Ignore("CommentManagerImpl doesn't support this test/case - deprecated implementation")
+    public void testCreateRepliesUnderPlacelessDocument() {
+    }
+
+    // -------------
+    // Legacy tests
+    // -------------
+
+    @Test
+    public void testCreateReadDelete() {
+        try (CloseableCoreSession jamesSession = coreFeature.openCoreSession(JAMES)) {
+            // Get the document as the user
+            DocumentModel userDoc = jamesSession.getDocument(commentedDocModel.getRef());
+
+            // Comment the document as the user
+            commentManager.createComment(jamesSession, newComment(userDoc.getId(), "I am a comment!"));
+
+            // Check the comment document can be retrieved by a system session query
+            List<DocumentModel> dml = session.query("SELECT * FROM Comment");
+            assertEquals(1, dml.size());
+
+            // Check the comment document cannot be retrieved by the user session query
+            dml = jamesSession.query("SELECT * FROM Comment");
+            assertEquals(0, dml.size());
+
+            // Check the comment can be retrieved by the user via the comment service
+            List<Comment> comments = commentManager.getComments(jamesSession, userDoc.getId());
+            assertEquals(1, comments.size());
+            assertEquals("I am a comment!", comments.get(0).getText());
+
+            // Check the comment was deleted by the user
+            commentManager.deleteComment(jamesSession, comments.get(0).getId());
+            comments = commentManager.getComments(jamesSession, userDoc.getId());
+            assertEquals(0, comments.size());
+        }
+    }
+
+    @Test
+    public void testCreateLocalComment() {
+        DocumentModel container = session.createDocumentModel("/domain", "CommentContainer", "Folder");
+        session.createDocument(container);
+        session.save();
+
+        Comment comment = emptyComment();
+        comment.setAuthor("linda");
+        comment.setText("I am a comment !");
+
+        // Create a comment in a specific location
+        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
+        commentModel = session.createDocument(commentModel);
+        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
+        applyDirtyPropertyValues(comment.getDocument(), commentModel);
+        commentModel = commentManager.createLocatedComment(commentedDocModel, commentModel, "/domain/CommentContainer");
+
+        // Check if Comments folder has been created in the given container
+        assertThat(session.getChildren(new PathRef("/domain/CommentContainer")).totalSize()).isEqualTo(1);
+
+        assertThat(commentModel.getPathAsString()).contains("/domain/CommentContainer");
     }
 }

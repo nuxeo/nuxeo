@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,7 +73,8 @@ public abstract class AbstractCommentManager implements CommentManager {
 
     private static final Log log = LogFactory.getLog(AbstractCommentManager.class);
 
-    protected static final String COMMENTS_DIRECTORY = "Comments";
+    /** @since 11.1 */
+    public static final String COMMENTS_DIRECTORY = "Comments";
 
     @Override
     public List<DocumentModel> getComments(DocumentModel docModel) {
@@ -216,6 +218,23 @@ public abstract class AbstractCommentManager implements CommentManager {
         acl.setACEs(new ACE[] { grantRead, grantRemove });
         acp.addACL(acl);
         session.setACP(documentModel.getRef(), acp, true);
+    }
+
+    protected void fillCommentForCreation(CoreSession session, Comment comment) {
+        // Initiate Author if it is not done yet
+        if (comment.getAuthor() == null) {
+            comment.setAuthor(session.getPrincipal().getName());
+        }
+
+        // Initiate Creation Date if it is not done yet
+        if (comment.getCreationDate() == null) {
+            comment.setCreationDate(Instant.now());
+        }
+
+        // Initiate Modification Date if it is not done yet
+        if (comment.getModificationDate() == null) {
+            comment.setModificationDate(Instant.now());
+        }
     }
 
     /**

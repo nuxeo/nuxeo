@@ -52,8 +52,10 @@ public class DocumentRemovedCommentEventListener extends AbstractCommentListener
         if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
             deleteCommentChildren(coreSession, commentManager, docMessage);
             coreSession.save();
-        } else {
+        } else if (relationManager != null) {
             onDocumentRemoved(coreSession, relationManager, config, docMessage);
+        } else {
+            log.info("Migration in progress or relation manager is missing");
         }
     }
 

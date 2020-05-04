@@ -426,6 +426,8 @@ public class CommentManagerImpl extends AbstractCommentManager {
         DocumentModel commentModel = session.createDocumentModel(COMMENT_DOC_TYPE);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
 
+        fillCommentForCreation(session, comment);
+
         if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
             commentModel.addFacet(EXTERNAL_ENTITY_FACET);
         }
