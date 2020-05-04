@@ -19,26 +19,9 @@
 
 package org.nuxeo.ecm.platform.comment;
 
-import static org.junit.Assert.assertEquals;
-import static org.nuxeo.ecm.platform.comment.CommentUtils.checkDocumentEventContext;
-import static org.nuxeo.ecm.platform.comment.CommentUtils.getExpectedMailContent;
-import static org.nuxeo.ecm.platform.comment.CommentUtils.getMailContent;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_ADDED;
-import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_REMOVED;
-import static org.nuxeo.ecm.platform.comment.api.CommentEvents.COMMENT_UPDATED;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.addNotificationSubscriptions;
 
-import java.util.List;
-
-import org.junit.Test;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.test.CapturingEventListener;
-import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
-import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -49,103 +32,15 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(PropertyCommentFeature.class)
 public class TestPropertyCommentNotification extends AbstractTestCommentNotification {
 
-    @Override
-    protected Class<? extends CommentManager> getType() {
-        return PropertyCommentManager.class;
+    public TestPropertyCommentNotification() {
+        super(PropertyCommentManager.class);
     }
 
-    @Test
     @Override
-    public void shouldNotifyEventWhenCreateComment() {
-        addSubscriptions("CommentAdded");
-        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
-            Comment comment = createComment(commentedDocumentModel);
-            transactionalFeature.nextTransaction();
-            DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
-            DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-
-            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
-            checkDocumentEventContext(expectedEvent, commentDocumentModel, commentParentDocumentModel,
-                    commentedDocumentModel);
-            List<MailMessage> mails = emailsResult.getMails();
-            assertEquals(1, mails.size());
-            String expectedMailContent = getExpectedMailContent(commentDocumentModel, commentedDocumentModel,
-                    expectedEvent);
-            assertEquals(expectedMailContent, getMailContent(mails.get(0)));
-        }
-    }
-
-    @Test
-    @Override
-    public void shouldNotifyEventWhenUpdateComment() {
-        addSubscriptions("CommentUpdated");
-        Comment comment = createComment(commentedDocumentModel);
-        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_UPDATED)) {
-            comment.setText("I update the comment");
-            commentManager.updateComment(session, comment.getId(), comment);
-            transactionalFeature.nextTransaction();
-            DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
-            DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-
-            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
-            checkDocumentEventContext(expectedEvent, commentDocumentModel, commentParentDocumentModel,
-                    commentedDocumentModel);
-            List<MailMessage> mails = emailsResult.getMails();
-            assertEquals(1, mails.size());
-            String expectedMailContent = getExpectedMailContent(commentDocumentModel, commentedDocumentModel,
-                    expectedEvent);
-            assertEquals(expectedMailContent, getMailContent(mails.get(0)));
-        }
-    }
-
-    @Test
-    @Override
-    public void shouldNotifyEventWhenRemoveComment() {
-        Comment comment = createComment(commentedDocumentModel);
-        transactionalFeature.nextTransaction();
-        assertEquals(0, emailsResult.getMails().size());
-        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_REMOVED)) {
-            DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
-            commentManager.deleteComment(session, comment.getId());
-            transactionalFeature.nextTransaction();
-            DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-
-            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
-            checkDocumentEventContext(expectedEvent, commentDocModel, commentParentDocumentModel,
-                    commentedDocumentModel);
-            // No mail was sent
-            assertEquals(0, emailsResult.getMails().size());
-        }
-    }
-
-    @Test
-    @Override
-    public void shouldNotifyWithTheRightCommentedDocument() {
-        // First comment
-        Comment comment = createComment(commentedDocumentModel);
-        // before subscribing, or previous event will be notified as well
-        transactionalFeature.nextTransaction();
-        // Reply
-        addSubscriptions("CommentAdded");
-        try (CapturingEventListener listener = new CapturingEventListener(COMMENT_ADDED)) {
-            DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
-            Comment reply = createComment(commentDocModel);
-            transactionalFeature.nextTransaction();
-            DocumentModel replyDocumentModel = session.getDocument(new IdRef(reply.getId()));
-            DocumentModel commentParentDocumentModel = session.getDocument(
-                    new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-
-            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
-            checkDocumentEventContext(expectedEvent, replyDocumentModel, commentParentDocumentModel,
-                    commentedDocumentModel);
-            List<MailMessage> mails = emailsResult.getMails();
-            assertEquals(1, mails.size());
-            String expectedMailContent = getExpectedMailContent(replyDocumentModel, commentedDocumentModel,
-                    expectedEvent);
-            assertEquals(expectedMailContent, getMailContent(mails.get(0)));
-        }
+    public void before() {
+        super.before();
+        // abstract supposes auto subscription is enabled
+        // property implementation doesn't have this feature, so enable it for each tests
+        addNotificationSubscriptions(session.getPrincipal(), commentedDocModel, "CommentAdded", "CommentUpdated");
     }
 }

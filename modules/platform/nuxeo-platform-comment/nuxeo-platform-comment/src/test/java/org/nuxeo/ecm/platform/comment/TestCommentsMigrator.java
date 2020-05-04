@@ -36,7 +36,7 @@ import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_ANCESTORID;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_NAME;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_PRIMARYTYPE;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
-import static org.nuxeo.ecm.platform.comment.AbstractTestCommentManager.AUTHOR_OF_COMMENT;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
@@ -78,7 +78,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.impl.CommentManagerImpl;
 import org.nuxeo.ecm.platform.comment.impl.CommentsMigrator;
@@ -710,12 +709,7 @@ public class TestCommentsMigrator {
     protected DocumentModel createReply(CommentManager commentManager, DocumentRef docRefToComment, int level) {
         DocumentModel documentToComment = session.getDocument(docRefToComment);
         String text = String.format("I am a reply level%d on comment %s !", level, docRefToComment);
-        Comment comment = new CommentImpl();
-        comment.setAuthor(AUTHOR_OF_COMMENT);
-        comment.setText(text);
-        comment.setParentId(documentToComment.getId());
-
-        Comment reply = commentManager.createComment(session, comment);
+        Comment reply = commentManager.createComment(session, newComment(documentToComment.getId(), text));
         transactionalFeature.nextTransaction();
         return session.getDocument(new IdRef(reply.getId()));
     }

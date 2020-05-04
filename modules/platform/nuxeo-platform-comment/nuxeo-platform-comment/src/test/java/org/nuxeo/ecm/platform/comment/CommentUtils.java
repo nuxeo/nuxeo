@@ -39,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +50,16 @@ import org.apache.log4j.Logger;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.comment.api.Annotation;
+import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
+import org.nuxeo.ecm.platform.comment.api.Comment;
+import org.nuxeo.ecm.platform.comment.api.CommentImpl;
+import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
+import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.mail.SmtpMailServerFeature.MailMessage;
@@ -162,6 +171,114 @@ public class CommentUtils {
             // Avoid failure in tests if the user already exists
             log.trace("User already exists", e);
         }
+    }
+
+    public static void addNotificationSubscriptions(NuxeoPrincipal principal, DocumentModel docToSubscribe,
+            String... notifications) {
+        var notificationManager = Framework.getService(NotificationManager.class);
+        String subscriber = NotificationConstants.USER_PREFIX + principal.getName();
+        Arrays.asList(notifications)
+              .forEach(n -> notificationManager.addSubscription(subscriber, n, docToSubscribe, false, principal, n));
+    }
+
+    /**
+     * @return a mutable {@link Comment} for update
+     */
+    @SuppressWarnings("unchecked")
+    public static <C extends Comment> C emptyComment() {
+        return (C) new CommentImpl();
+    }
+
+    /**
+     * @return a mutable {@link Comment} for creation
+     */
+    public static <C extends Comment> C newComment(String parentId) {
+        C comment = emptyComment();
+        comment.setParentId(parentId);
+        return comment;
+    }
+
+    /**
+     * @return a mutable {@link Comment} for creation
+     */
+    public static <C extends Comment> C newComment(String parentId, String text) {
+        C comment = newComment(parentId);
+        comment.setText(text);
+        return comment;
+    }
+
+    /**
+     * @return a mutable {@link Comment} made by an external system for creation
+     */
+    public static <C extends Comment & ExternalEntity> C newExternalComment(String parentId, String entityId) {
+        C comment = newComment(parentId);
+        comment.setEntityId(entityId);
+        comment.setOrigin("Test");
+        return comment;
+    }
+
+    /**
+     * @return a mutable {@link Comment} made by an external system for creation
+     */
+    public static <C extends Comment & ExternalEntity> C newExternalComment(String parentId, String entityId,
+            String entity, String text) {
+        C comment = newExternalComment(parentId, entityId);
+        comment.setEntity(entity);
+        comment.setText(text);
+        return comment;
+    }
+
+    /**
+     * @return a mutable {@link Annotation} for creation
+     */
+    @SuppressWarnings("unchecked")
+    public static <A extends Annotation> A newAnnotation(String parentId, String xpath) {
+        var annotation = new AnnotationImpl();
+        annotation.setParentId(parentId);
+        annotation.setXpath(xpath);
+        annotation.setCreationDate(Instant.now());
+        annotation.setModificationDate(Instant.now());
+        return (A) annotation;
+    }
+
+    /**
+     * @return a mutable {@link Annotation} for creation
+     */
+    public static <A extends Annotation> A newAnnotation(String parentId, String xpath, String text) {
+        A annotation = newAnnotation(parentId, xpath);
+        annotation.setText(text);
+        return annotation;
+    }
+
+    /**
+     * @return a mutable {@link Annotation} made by an external system for creation
+     */
+    public static <A extends Annotation & ExternalEntity> A newExternalAnnotation(String parentId, String xpath,
+            String entityId) {
+        A annotation = newAnnotation(parentId, xpath);
+        annotation.setEntityId(entityId);
+        annotation.setOrigin("Test");
+        return annotation;
+    }
+
+    /**
+     * @return a mutable {@link Annotation} made by an external system for creation
+     */
+    public static <A extends Annotation & ExternalEntity> A newExternalAnnotation(String parentId, String xpath,
+            String entityId, String entity) {
+        A annotation = newExternalAnnotation(parentId, xpath, entityId);
+        annotation.setEntity(entity);
+        return annotation;
+    }
+
+    /**
+     * @return a mutable {@link Annotation} made by an external system for creation
+     */
+    public static <A extends Annotation & ExternalEntity> A newExternalAnnotation(String parentId, String xpath,
+            String entityId, String entity, String text) {
+        A annotation = newExternalAnnotation(parentId, xpath, entityId, entity);
+        annotation.setText(text);
+        return annotation;
     }
 
 }

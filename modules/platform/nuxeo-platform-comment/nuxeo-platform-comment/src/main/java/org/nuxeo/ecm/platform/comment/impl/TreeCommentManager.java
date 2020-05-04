@@ -46,6 +46,7 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
+import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
@@ -94,8 +95,6 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     /** The key to the config turning on or off autosubscription. */
     public static final String AUTOSUBSCRIBE_CONFIG_KEY = "org.nuxeo.ecm.platform.comment.service.notification.autosubscribe";
-
-    protected static final String COMMENTS_DIRECTORY_NAME = "Comments";
 
     protected static final String COMMENT_NAME = "comment";
 
@@ -159,17 +158,15 @@ public class TreeCommentManager extends AbstractCommentManager {
         var parentRef = new IdRef(comment.getParentId());
         checkCreateCommentPermissions(session, parentRef);
 
-        // Initiate Creation Date if it is not done yet
-        if (comment.getCreationDate() == null) {
-            comment.setCreationDate(Instant.now());
-        }
+        fillCommentForCreation(session, comment);
 
         return CoreInstance.doPrivileged(session, s -> {
             DocumentModel commentedDoc = s.getDocument(parentRef);
             // Get the location where comment will be stored
             DocumentRef locationDocRef = getLocationRefOfCommentCreation(s, commentedDoc);
 
-            DocumentModel commentDoc = s.newDocumentModel(locationDocRef, COMMENT_NAME, comment.getDocument().getType());
+            DocumentModel commentDoc = s.newDocumentModel(locationDocRef, COMMENT_NAME,
+                    comment.getDocument().getType());
             if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
                 commentDoc.addFacet(EXTERNAL_ENTITY_FACET);
             }
@@ -202,7 +199,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             // Get the location to store the comment
             DocumentRef locationDocRef = getLocationRefOfCommentCreation(session, commentedDoc);
 
-            DocumentModel commentModelToCreate = session.newDocumentModel(locationDocRef, COMMENT_NAME, commentDoc.getType());
+            DocumentModel commentModelToCreate = session.newDocumentModel(locationDocRef, COMMENT_NAME,
+                    commentDoc.getType());
             commentModelToCreate.copyContent(commentDoc);
 
             // Should compute ancestors and set comment:parentId for backward compatibility
@@ -268,12 +266,14 @@ public class TreeCommentManager extends AbstractCommentManager {
      */
     protected Comment update(CoreSession session, Comment comment, DocumentModel commentDoc) {
         NuxeoPrincipal principal = session.getPrincipal();
-        if (!principal.isAdministrator()
-                && !commentDoc.getPropertyValue(COMMENT_AUTHOR_PROPERTY).equals(principal.getName())) {
-            throw new CommentSecurityException(String.format("The user %s cannot edit comments of document %s",
-                    principal.getName(), comment.getParentId()));
-        }
         return CoreInstance.doPrivileged(session, s -> {
+            DocumentModel topLevelDoc = getTopLevelDocument(s, commentDoc);
+            if (!principal.isAdministrator()
+                    && !commentDoc.getPropertyValue(COMMENT_AUTHOR_PROPERTY).equals(principal.getName())
+                    && !session.hasPermission(principal, topLevelDoc.getRef(), EVERYTHING)) {
+                throw new CommentSecurityException(String.format("The user %s cannot edit comments of document %s",
+                        principal.getName(), commentDoc.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
+            }
             if (comment.getModificationDate() == null) {
                 comment.setModificationDate(Instant.now());
             }
@@ -284,9 +284,9 @@ public class TreeCommentManager extends AbstractCommentManager {
             var updatedDoc = s.saveDocument(commentDoc);
             Comment updatedComment = updatedDoc.getAdapter(Comment.class);
 
-            DocumentModel topLevelDoc = getTopLevelDocument(session, updatedDoc);
             manageRelatedTextOfTopLevelDocument(s, topLevelDoc, updatedComment.getId(), updatedComment.getText());
-            notifyEvent(session, CommentEvents.COMMENT_UPDATED, updatedDoc);
+            DocumentModel commentedDoc = getCommentedDocument(session, commentDoc);
+            notifyEvent(session, CommentEvents.COMMENT_UPDATED, topLevelDoc, commentedDoc, updatedDoc);
             return updatedComment;
         });
     }
@@ -321,7 +321,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             return commentedDoc.getRef();
         }
         // regular document case, store the comment under a CommentRoot folder under the regular document
-        DocumentModel commentsFolder = session.newDocumentModel(commentedDoc.getRef(), COMMENTS_DIRECTORY_NAME,
+        DocumentModel commentsFolder = session.newDocumentModel(commentedDoc.getRef(), COMMENTS_DIRECTORY,
                 COMMENT_ROOT_DOC_TYPE);
         // no need to notify the creation of the Comments folder
         commentsFolder.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
@@ -439,8 +439,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             // Depending on the case, the `doc` can be a comment or the top level document
             // if it's the top level document, then we should retrieve all comments under `Comments` folder
             // if it's a comment, then get all comments under it
-            if (!doc.hasSchema(COMMENT_SCHEMA) && session.hasChild(doc.getRef(), COMMENTS_DIRECTORY_NAME)) {
-                DocumentModel commentsFolder = session.getChild(doc.getRef(), COMMENTS_DIRECTORY_NAME);
+            if (!doc.hasSchema(COMMENT_SCHEMA) && session.hasChild(doc.getRef(), COMMENTS_DIRECTORY)) {
+                DocumentModel commentsFolder = session.getChild(doc.getRef(), COMMENTS_DIRECTORY);
                 documentId = commentsFolder.getId();
             }
 
@@ -506,6 +506,7 @@ public class TreeCommentManager extends AbstractCommentManager {
         topLevelDoc.setPropertyValue(RELATED_TEXT_RESOURCES, (Serializable) resources);
         topLevelDoc.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
         topLevelDoc.putContextData(VERSIONING_OPTION, NONE);
+        topLevelDoc.putContextData(DISABLE_DUBLINCORE_LISTENER, TRUE);
         session.saveDocument(topLevelDoc);
     }
 
