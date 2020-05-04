@@ -46,7 +46,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
 import javax.mail.Session;
 import javax.naming.Context;
@@ -127,6 +127,7 @@ public class SmtpMailServerFeature implements RunnerFeature {
         // Create the server and start it
         try {
             server = SimpleSmtpServer.start(serverPort);
+            result.skip = 0;
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
@@ -233,23 +234,34 @@ public class SmtpMailServerFeature implements RunnerFeature {
      */
     public class MailsResult {
 
-        public List<MailMessage> getMails() {
+        protected int skip = 0;
+
+        public Stream<MailMessage> streamMails() {
             if (isNull(server)) {
                 log.trace("No server available");
-                return List.of();
+                return Stream.empty();
             }
+            return server.getReceivedEmails().stream().map(this::convert).skip(skip);
+        }
 
-            return StreamSupport.stream(server.getReceivedEmails().spliterator(), false)
-                                .map(this::convert)
-                                .collect(Collectors.toList());
+        public List<MailMessage> getMails() {
+            return streamMails().collect(Collectors.toList());
+        }
+
+        public void clearMails() {
+            if (isNull(server)) {
+                log.trace("No server available");
+                return;
+            }
+            this.skip = server.getReceivedEmails().size();
         }
 
         public List<MailMessage> getMailsBySubject(String subject) {
-            return getMails().stream().filter(e -> subject.equals(e.getSubject())).collect(Collectors.toList());
+            return streamMails().filter(e -> subject.equals(e.getSubject())).collect(Collectors.toList());
         }
 
         public boolean hasSubject(String subject) {
-            return getMails().stream().anyMatch(e -> subject.equals(e.getSubject()));
+            return streamMails().anyMatch(e -> subject.equals(e.getSubject()));
         }
 
         public void assertSender(String sender, int expectedMailsCount) {
@@ -261,15 +273,15 @@ public class SmtpMailServerFeature implements RunnerFeature {
         }
 
         public List<MailMessage> getMailsBySender(String from) {
-            return getMails().stream().filter(e -> e.getSenders().contains(from)).collect(Collectors.toList());
+            return streamMails().filter(e -> e.getSenders().contains(from)).collect(Collectors.toList());
         }
 
         public List<MailMessage> getMailsByRecipient(String recipient) {
-            return getMails().stream().filter(e -> e.getRecipients().contains(recipient)).collect(Collectors.toList());
+            return streamMails().filter(e -> e.getRecipients().contains(recipient)).collect(Collectors.toList());
         }
 
         public int getSize() {
-            return server != null ? server.getReceivedEmails().size() : 0;
+            return (int) streamMails().count();
         }
 
         protected MailMessage convert(SmtpMessage sm) {
