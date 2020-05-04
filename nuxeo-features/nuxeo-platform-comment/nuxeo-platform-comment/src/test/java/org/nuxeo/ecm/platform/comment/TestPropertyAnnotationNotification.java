@@ -57,9 +57,7 @@ public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNo
             DocumentModel annotationParentDocumentModel = session.getDocument(
                     new IdRef((String) annotationDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, annotationDocumentModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
         }
@@ -77,9 +75,7 @@ public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNo
             annotationService.deleteAnnotation(session, annotation.getId());
             transactionalFeature.nextTransaction();
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, annotationDocModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
         }
@@ -102,9 +98,7 @@ public class TestPropertyAnnotationNotification extends AbstractTestAnnotationNo
                     new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
             transactionalFeature.nextTransaction();
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, replyDocumentModel, annotationParentDocumentModel,
                     annotatedDocumentModel);
         }

@@ -21,6 +21,7 @@ package org.nuxeo.retention.test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.nuxeo.ecm.core.api.CoreSession.RETAIN_UNTIL_INDETERMINATE;
 
 import java.util.Calendar;
@@ -115,13 +116,14 @@ public class TestRetentionEvents extends RetentionTestCase {
         setRetentionAndCheckEvents(CoreSession.RETAIN_UNTIL_INDETERMINATE, DocumentEventTypes.BEFORE_SET_RETENTION,
                 DocumentEventTypes.AFTER_SET_RETENTION);
 
-        // update the retainUnitl with the same value, no event should occur
-        String[] events = { DocumentEventTypes.BEFORE_SET_RETENTION, DocumentEventTypes.AFTER_SET_RETENTION,
-                DocumentEventTypes.BEFORE_EXTEND_RETENTION, DocumentEventTypes.AFTER_EXTEND_RETENTION };
-        try (CapturingEventListener listener = new CapturingEventListener(events)) {
+        // update the retainUntil with the same value, no event should occur
+        try (CapturingEventListener listener = new CapturingEventListener()) {
             session.setRetainUntil(file.getRef(), CoreSession.RETAIN_UNTIL_INDETERMINATE, null);
             transactionalFeature.nextTransaction();
-            assertEquals(0, listener.streamCapturedEvents().count());
+            assertFalse(listener.hasBeenFired(DocumentEventTypes.BEFORE_SET_RETENTION));
+            assertFalse(listener.hasBeenFired(DocumentEventTypes.AFTER_SET_RETENTION));
+            assertFalse(listener.hasBeenFired(DocumentEventTypes.BEFORE_EXTEND_RETENTION));
+            assertFalse(listener.hasBeenFired(DocumentEventTypes.AFTER_EXTEND_RETENTION));
         }
     }
 

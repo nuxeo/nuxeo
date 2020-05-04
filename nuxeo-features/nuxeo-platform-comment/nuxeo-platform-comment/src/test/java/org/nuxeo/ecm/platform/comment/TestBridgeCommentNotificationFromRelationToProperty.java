@@ -69,9 +69,7 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, commentDocumentModel, commentParentDocumentModel,
                     commentedDocumentModel);
         }
@@ -90,9 +88,7 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, commentDocumentModel, commentParentDocumentModel,
                     commentedDocumentModel);
         }
@@ -110,9 +106,7 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
                     new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID)));
             transactionalFeature.nextTransaction();
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, commentDocModel, commentParentDocumentModel,
                     commentedDocumentModel);
         }
@@ -135,9 +129,7 @@ public class TestBridgeCommentNotificationFromRelationToProperty extends Abstrac
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID)));
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, replyDocumentModel, commentParentDocumentModel,
                     commentedDocumentModel);
         }
