@@ -44,9 +44,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.NamingException;
-import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
@@ -61,7 +59,6 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLSession;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapperConnector;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
 import org.nuxeo.ecm.core.storage.sql.jdbc.TableUpgrader;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
@@ -132,8 +129,6 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
     private Model model;
 
     protected SQLInfo sqlInfo;
-
-    protected boolean isPooledDataSource;
 
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
@@ -254,8 +249,9 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
             throw new IllegalStateException("Cannot open connection, runtime is shutting down");
         }
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = newMapper(pathResolver, true);
-        SessionImpl session = newSession(model, mapper);
+        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, clusterInvalidator, this);
+        mapper = createCachingMapper(model, mapper);
+        SessionImpl session = new SessionImpl(this, model, mapper);
         pathResolver.setSession(session);
 
         sessions.add(session);
@@ -269,27 +265,6 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         sessionCount.dec();
     }
 
-    /**
-     * Creates a new mapper.
-     *
-     * @param pathResolver the path resolver (for regular mappers)
-     * @param useInvalidations whether this mapper participates in invalidation propagation (false for lock manager /
-     *            cluster invalidator)
-     * @return the new mapper.
-     * @since 7.4
-     */
-    public Mapper newMapper(PathResolver pathResolver, boolean useInvalidations) {
-        boolean noSharing = !useInvalidations;
-        VCSClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
-        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, cnh, this);
-        if (isPooledDataSource) {
-            mapper = JDBCMapperConnector.newConnector(mapper, noSharing);
-        } else {
-            mapper.connect(false);
-        }
-        return mapper;
-    }
-
     protected void initRepository() {
         log.debug("Initializing");
         prepareClusterInvalidator(); // sets requiresClusterSQL used by backend init
@@ -297,10 +272,7 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
         // check datasource
         String dataSourceName = JDBCConnection.getDataSourceName(repositoryDescriptor.name);
         try {
-            DataSource ds = DataSourceHelper.getDataSource(dataSourceName);
-            if (ds instanceof BasicManagedDataSource) {
-                isPooledDataSource = true;
-            }
+            DataSourceHelper.getDataSource(dataSourceName);
         } catch (NamingException cause) {
             throw new NuxeoException("Cannot acquire datasource: " + dataSourceName, cause);
         }
@@ -421,11 +393,6 @@ public class RepositoryImpl implements Repository, org.nuxeo.ecm.core.model.Repo
             String nodeId = Framework.getService(ClusterService.class).getNodeId();
             clusterInvalidator.initialize(nodeId, this);
         }
-    }
-
-    protected SessionImpl newSession(Model model, Mapper mapper) {
-        mapper = createCachingMapper(model, mapper);
-        return new SessionImpl(this, model, mapper);
     }
 
     public static class SessionPathResolver implements PathResolver {

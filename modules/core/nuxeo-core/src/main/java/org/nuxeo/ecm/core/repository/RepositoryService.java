@@ -19,13 +19,15 @@
  */
 package org.nuxeo.ecm.core.repository;
 
+import static javax.transaction.Status.STATUS_COMMITTED;
+import static javax.transaction.Status.STATUS_ROLLEDBACK;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.transaction.Status;
 import javax.transaction.Synchronization;
 
 import org.apache.commons.logging.Log;
@@ -270,17 +272,16 @@ public class RepositoryService extends DefaultComponent {
      * @since 11.1
      */
     public Session getSession(String repositoryName) {
-        if (!TransactionHelper.isTransactionActive()) {
-            if (TransactionHelper.isTransactionMarkedRollback()) {
-                throw new NuxeoException("Cannot use a session when transaction is marked rollback-only");
-            } else {
-                throw new NuxeoException("Cannot use a session outside a transaction");
-            }
+        if (!TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            throw new NuxeoException("Cannot use a session outside a transaction");
         }
         TransactionHelper.checkTransactionTimeout();
         ThreadLocal<Session> threadSessions = SESSIONS.computeIfAbsent(repositoryName, r -> new ThreadLocal<>());
         Session session = threadSessions.get();
         if (session == null) {
+            if (!TransactionHelper.isTransactionActive()) {
+                throw new NuxeoException("Cannot use a session when transaction is marked rollback-only");
+            }
             session = getSessionFromPool(repositoryName, threadSessions::remove);
             threadSessions.set(session);
         }
@@ -308,49 +309,58 @@ public class RepositoryService extends DefaultComponent {
             }
             throw new NuxeoException(e);
         }
-        // register session as XAResource with transaction
-        TransactionHelper.enlistResource(session);
-        // register cleanup to return to pool and remove from thread-local at end of transaction
-        TransactionHelper.registerSynchronization(new SessionCleanup(session, cleanup));
+        // register synchronization for transaction commit/rollback
+        // and to return to pool and remove from thread-local at end of transaction
+        TransactionHelper.registerSynchronization(new SessionSynchronization(session, cleanup));
+        session.start();
         return session;
     }
 
     /** @since 11.1 */
-    protected class SessionCleanup implements Synchronization {
+    protected class SessionSynchronization implements Synchronization {
 
         protected final Session session;
 
         protected final Runnable cleanup;
 
-        protected SessionCleanup(Session session, Runnable cleanup) {
+        protected SessionSynchronization(Session session, Runnable cleanup) {
             this.session = session;
             this.cleanup = cleanup;
         }
 
         @Override
         public void beforeCompletion() {
-            session.beforeCompletion();
+            session.end();
         }
 
         @Override
         public void afterCompletion(int status) {
-            String repositoryName = session.getRepositoryName();
+            boolean completedAbruptly = true;
             try {
-                if (status == Status.STATUS_COMMITTED) {
-                    pool.returnObject(repositoryName, session);
+                if (status == STATUS_COMMITTED) {
+                    session.commit();
+                } else if (status == STATUS_ROLLEDBACK) {
+                    session.rollback();
                 } else {
-                    pool.invalidateObject(repositoryName, session);
-                    if (status != Status.STATUS_ROLLEDBACK) {
-                        log.error("Unexpected afterCompletion status: " + status);
-                    }
+                    log.error("Unexpected afterCompletion status: " + status);
                 }
-            } catch (Exception e) {
-                if (e instanceof InterruptedException) { // NOSONAR
-                    Thread.currentThread().interrupt();
-                }
-                log.error(e, e);
+                completedAbruptly = false;
             } finally {
-                cleanup.run();
+                try {
+                    String repositoryName = session.getRepositoryName();
+                    if (status == STATUS_COMMITTED && !completedAbruptly) {
+                        pool.returnObject(repositoryName, session);
+                    } else {
+                        pool.invalidateObject(repositoryName, session);
+                    }
+                } catch (Exception e) {
+                    if (e instanceof InterruptedException) { // NOSONAR
+                        Thread.currentThread().interrupt();
+                    }
+                    log.error(e, e);
+                } finally {
+                    cleanup.run();
+                }
             }
         }
     }

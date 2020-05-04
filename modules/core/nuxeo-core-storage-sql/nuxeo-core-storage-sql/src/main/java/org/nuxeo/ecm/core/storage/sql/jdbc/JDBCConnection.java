@@ -22,8 +22,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.transaction.xa.XAResource;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -62,8 +60,6 @@ public class JDBCConnection {
 
     protected boolean supportsBatchUpdates;
 
-    protected XAResource xaresource = new XAResourceConnectionAdapter(this);
-
     // for tests
     public boolean countExecutes;
 
@@ -92,6 +88,7 @@ public class JDBCConnection {
         this.sqlInfo = sqlInfo;
         dialect = sqlInfo.dialect;
         setClientInfo = Boolean.parseBoolean(Framework.getProperty(SET_CLIENT_INFO_PROP, SET_CLIENT_INFO_DEFAULT));
+        connect();
     }
 
     /**
@@ -128,9 +125,14 @@ public class JDBCConnection {
         return "repository_" + repositoryName;
     }
 
-    protected void openConnections(boolean noSharing) {
+    public void connect() {
         try {
-            openBaseConnection(noSharing);
+            String dataSourceName = getDataSourceName(getRepositoryName());
+            connection = ConnectionHelper.getConnection(dataSourceName);
+            if (setClientInfo) {
+                // log the mapper number (m=123)
+                connection.setClientInfo(APPLICATION_NAME, "nuxeo m=" + instanceNumber);
+            }
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             dialect.performPostOpenStatements(connection);
         } catch (SQLException cause) {
@@ -138,20 +140,7 @@ public class JDBCConnection {
         }
     }
 
-    protected void openBaseConnection(boolean noSharing) throws SQLException {
-        String dataSourceName = getDataSourceName(getRepositoryName());
-        connection = ConnectionHelper.getConnection(dataSourceName, noSharing);
-        if (setClientInfo) {
-            // log the mapper number (m=123)
-            connection.setClientInfo(APPLICATION_NAME, "nuxeo m=" + instanceNumber);
-        }
-    }
-
-    public void close() {
-        closeConnections();
-    }
-
-    public void closeConnections() {
+    public void closeConnection() {
         if (connection != null) {
             try {
                 try {

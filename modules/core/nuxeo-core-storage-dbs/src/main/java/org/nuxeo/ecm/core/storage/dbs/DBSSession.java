@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
-import static javax.transaction.xa.XAException.XAER_RMERR;
 import static org.nuxeo.ecm.core.action.DeletionAction.ACTION_NAME;
 import static org.nuxeo.ecm.core.api.AbstractSession.DISABLED_ISLATESTVERSION_PROPERTY;
 import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
@@ -98,10 +97,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.Mutable;
@@ -2140,74 +2135,27 @@ public class DBSSession extends BaseSession {
     }
 
     /*
-     * ----- Transaction / XAResource -----
+     * ----- Transaction management -----
      */
 
     @Override
-    public void beforeCompletion() {
+    public void start() {
+        transaction.begin();
+    }
+
+    @Override
+    public void end() {
         // nothing
     }
 
     @Override
-    public void start(Xid xid, int flags) throws XAException {
-        try {
-            transaction.begin();
-        } catch (RuntimeException e) {
-            throw (XAException) new XAException(XAER_RMERR).initCause(e);
-        }
+    public void commit() {
+        transaction.commit();
     }
 
     @Override
-    public int prepare(Xid xid) {
-        return XA_OK;
-    }
-
-    @Override
-    public void commit(Xid xid, boolean onePhase) throws XAException {
-        try {
-            transaction.commit();
-        } catch (RuntimeException e) {
-            throw (XAException) new XAException(XAER_RMERR).initCause(e);
-        }
-    }
-
-    @Override
-    public void rollback(Xid xid) throws XAException {
-        try {
-            transaction.rollback();
-        } catch (RuntimeException e) {
-            throw (XAException) new XAException(XAER_RMERR).initCause(e);
-        }
-    }
-
-    @Override
-    public void end(Xid xid, int flags) {
-        // nothing
-    }
-
-    @Override
-    public boolean isSameRM(XAResource xaRes) {
-        return xaRes == this;
-    }
-
-    @Override
-    public void forget(Xid xid) throws XAException {
-        throw new XAException(XAER_RMERR);
-    }
-
-    @Override
-    public Xid[] recover(int flag) {
-        return new Xid[0];
-    }
-
-    @Override
-    public boolean setTransactionTimeout(int seconds) {
-        return false;
-    }
-
-    @Override
-    public int getTransactionTimeout() {
-        return 0;
+    public void rollback() {
+        transaction.rollback();
     }
 
 }

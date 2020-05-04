@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.xa.XAResource;
-
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.ScrollResult;
@@ -34,7 +32,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 /**
  * A {@link Mapper} maps {@link Row}s to and from the database.
  */
-public interface Mapper extends RowMapper, XAResource {
+public interface Mapper extends RowMapper {
 
     /**
      * Executes the given query and returns the first batch of results containing id of documents, next batch must be
@@ -245,20 +243,5 @@ public interface Mapper extends RowMapper, XAResource {
      * @return the number of rows deleted
      */
     int cleanupDeletedRows(int max, Calendar beforeTime);
-
-    /**
-     * @since 5.9.3
-     */
-    boolean isConnected();
-
-    /**
-     * @since 5.9.3
-     */
-    void connect(boolean noSharing);
-
-    /**
-     * @since 5.9.3
-     */
-    void disconnect();
 
 }

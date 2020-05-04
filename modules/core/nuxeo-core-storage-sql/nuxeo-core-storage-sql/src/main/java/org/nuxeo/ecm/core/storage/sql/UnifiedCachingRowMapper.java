@@ -35,8 +35,6 @@ import javax.management.MBeanServer;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -388,9 +386,9 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public void rollback(Xid xid) throws XAException {
+    public void rollback() {
         try {
-            rowMapper.rollback(xid);
+            rowMapper.rollback();
         } finally {
             ehCacheRemoveAll();
             localInvalidations.clear();

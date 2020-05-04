@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.Xid;
-
 import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
@@ -278,9 +275,9 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public void rollback(Xid xid) throws XAException {
+    public void rollback() {
         try {
-            rowMapper.rollback(xid);
+            rowMapper.rollback();
         } finally {
             clearCache();
         }

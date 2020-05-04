@@ -28,12 +28,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.inject.Inject;
-import javax.transaction.Transaction;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
-import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
@@ -77,11 +75,6 @@ public class TestConnectionManagement {
         return ConnectionHelper.getConnection(JDBCConnection.getDataSourceName(repositoryName));
     }
 
-    protected Connection getConnectionNoSharing() throws SQLException {
-        String repositoryName = coreFeature.getRepositoryName();
-        return ConnectionHelper.getConnection(JDBCConnection.getDataSourceName(repositoryName), true);
-    }
-
     @Test
     public void testNoTxNoBegin() throws Exception {
         TransactionHelper.commitOrRollbackTransaction(); // end tx
@@ -119,9 +112,6 @@ public class TestConnectionManagement {
     public void testBadTxBegin() throws Exception {
         TransactionHelper.setTransactionRollbackOnly(); // not ACTIVE
         try (Connection connection = getConnection()) {
-            // first thing set autoCommit=false, but no tx
-            connection.setAutoCommit(false);
-            connection.setAutoCommit(false); // already false, no effect
             try (Statement st = connection.createStatement()) {
                 String sql = getValidationQuery(connection);
                 st.execute(sql);
@@ -239,74 +229,7 @@ public class TestConnectionManagement {
             try (Statement st = connection.createStatement()) {
                 st.execute(sql);
             }
-            connection.commit();
-            connection.setAutoCommit(true);
             TransactionHelper.commitOrRollbackTransaction();
-        }
-    }
-
-    /*
-     * Test through XAResource wrapper and transaction enlisting. As a side effect the connection commit is called while
-     * the transaction is in STATUS_COMMITTING.
-     */
-    @Test
-    public void testXAResourceBeginDoStuffCommit() throws Exception {
-        JDBCConnection jdbc = new JDBCConnection();
-        jdbc.connection = getConnection();
-        try {
-            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(jdbc);
-            TransactionHelper.enlistResource(xaresource);
-            // use connection
-            jdbc.connection.createStatement();
-            // then commit
-            TransactionHelper.commitOrRollbackTransaction();
-        } finally {
-            assertFalse(jdbc.connection.isClosed());
-            jdbc.connection.close();
-            assertTrue(jdbc.connection.isClosed());
-        }
-    }
-
-    /*
-     * Test through XAResource wrapper and transaction enlisting. But do nothing between tx start and end.
-     */
-    @Test
-    public void testXAResourceBeginDoNothingCommit() throws Exception {
-        JDBCConnection jdbc = new JDBCConnection();
-        jdbc.connection = getConnection();
-        try {
-            Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(jdbc);
-            transaction.enlistResource(xaresource);
-            // do nothing between start and end
-            TransactionHelper.commitOrRollbackTransaction();
-        } finally {
-            assertFalse(jdbc.connection.isClosed());
-            jdbc.connection.close();
-            assertTrue(jdbc.connection.isClosed());
-        }
-    }
-
-    /*
-     * Test through XAResource wrapper and transaction enlisting. But do nothing between tx start and end, and do a
-     * rollback.
-     */
-    @Test
-    public void testXAResourceBeginDoNothingRollback() throws Exception {
-        JDBCConnection jdbc = new JDBCConnection();
-        jdbc.connection = getConnection();
-        try {
-            Transaction transaction = TransactionHelper.lookupTransactionManager().getTransaction();
-            XAResourceConnectionAdapter xaresource = new XAResourceConnectionAdapter(jdbc);
-            transaction.enlistResource(xaresource);
-            // do nothing between start and end
-            // provoke rollback
-            TransactionHelper.setTransactionRollbackOnly();
-            TransactionHelper.commitOrRollbackTransaction();
-        } finally {
-            assertFalse(jdbc.connection.isClosed());
-            jdbc.connection.close();
-            assertTrue(jdbc.connection.isClosed());
         }
     }
 

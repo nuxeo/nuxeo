@@ -43,9 +43,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.Xid;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.nuxeo.common.utils.BatchUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -138,13 +135,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public void rollback(Xid xid) throws XAException {
-        try {
-            xaresource.rollback(xid);
-        } catch (XAException e) {
-            logger.error("XA error on rollback: " + e);
-            throw e;
-        }
+    public void rollback() {
+        // nothing
     }
 
     protected CollectionIO getCollectionIO(String tableName) {
