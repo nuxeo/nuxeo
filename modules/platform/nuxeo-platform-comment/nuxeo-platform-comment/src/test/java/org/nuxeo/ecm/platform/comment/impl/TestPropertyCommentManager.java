@@ -20,43 +20,29 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static java.time.temporal.ChronoUnit.MILLIS;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
+import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
+import static org.nuxeo.ecm.core.schema.FacetNames.HIDDEN_IN_NAVIGATION;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
-import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT_ID_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.impl.AbstractCommentManager.COMMENTS_DIRECTORY;
+import static org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager.HIDDEN_FOLDER_TYPE;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
 import org.nuxeo.ecm.platform.comment.PropertyCommentFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentImpl;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
-import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -67,861 +53,133 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(PropertyCommentFeature.class)
 public class TestPropertyCommentManager extends AbstractTestCommentManager {
 
-    @Test
-    public void shouldThrowExceptionWhenGettingNonExistingComment() {
-        try {
-            commentManager.getComment(session, "nonExistingCommentId");
-            fail("This test is expected to fail!");
-        } catch (CommentNotFoundException e) {
-            assertEquals(404, e.getStatusCode());
-            assertEquals("The comment nonExistingCommentId does not exist.", e.getMessage());
-        }
-
+    public TestPropertyCommentManager() {
+        super(PropertyCommentManager.class);
     }
 
     @Test
-    public void shouldThrowExceptionWhenGettingNonExistingExternalComment() {
-        try {
-            commentManager.getExternalComment(session, "nonExistingExternalCommentId");
-            fail("This test is expected to fail!");
-        } catch (CommentNotFoundException e) {
-            assertEquals(404, e.getStatusCode());
-            assertEquals("The external comment nonExistingExternalCommentId does not exist.", e.getMessage());
-        }
+    @Override
+    @Ignore("PropertyCommentManager doesn't support update by powerful user")
+    public void testUpdateCommentByPowerfulUser() {
     }
 
     @Test
-    public void shouldThrowExceptionWhenCreatingCommentForNonExistingParent() {
-        try {
-            commentManager.createComment(session,
-                    createSampleComment("nonExistingId", session.getPrincipal().getName(), "some text"));
-            fail("This test is expected to fail!");
-        } catch (CommentNotFoundException e) {
-            assertEquals(404, e.getStatusCode());
-            assertEquals("The document or comment nonExistingId does not exist.", e.getMessage());
-        }
+    @Override
+    @Ignore("PropertyCommentManager doesn't support update by powerful user")
+    public void testUpdateExternalCommentByPowerfulUser() {
     }
 
-    @Test
-    public void shouldThrowExceptionWhenUpdatingNonExistingComment() {
-        try {
-            commentManager.updateComment(session, "nonExistingCommentId", new CommentImpl());
-            fail("This test is expected to fail!");
-        } catch (CommentNotFoundException e) {
-            assertEquals(404, e.getStatusCode());
-            assertEquals("The comment nonExistingCommentId does not exist.", e.getMessage());
-        }
-    }
+    // ----------------
+    // Structure tests
+    // ----------------
 
     @Test
-    public void shouldThrowExceptionWhenUpdatingNonExistingExternalComment() {
-        try {
-            commentManager.updateExternalComment(session, "nonExistingExternalCommentId", new CommentImpl());
-            fail("This test is expected to fail!");
-        } catch (CommentNotFoundException e) {
-            assertEquals(404, e.getStatusCode());
-            assertEquals("The external comment nonExistingExternalCommentId does not exist.", e.getMessage());
-        }
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenDeletingNonExistingComment() {
-        try {
-            commentManager.deleteComment(session, "nonExistingCommentId");
-            fail("This test is expected to fail!");
-        } catch (CommentNotFoundException e) {
-            assertEquals(404, e.getStatusCode());
-            assertEquals("The comment nonExistingCommentId does not exist.", e.getMessage());
-        }
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenDeletingNonExistingExternalComment() {
-        try {
-            commentManager.deleteExternalComment(session, "nonExistingExternalCommentId");
-            fail("This test is expected to fail!");
-        } catch (CommentNotFoundException e) {
-            assertEquals(404, e.getStatusCode());
-            assertEquals("The external comment nonExistingExternalCommentId does not exist.", e.getMessage());
-        }
-    }
-
-    @Test
-    public void shouldReturnCreatedObjectWhenCreatingComment() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-        session.save();
-
-        Comment commentToCreate = createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text");
-
-        Comment createdComment = commentManager.createComment(session, commentToCreate);
-        assertNotNull(createdComment);
-        assertNotNull(createdComment.getId());
-        assertEquals(commentToCreate.getCreationDate(), createdComment.getCreationDate());
-        assertNotNull(createdComment.getAncestorIds());
-        assertEquals(1, createdComment.getAncestorIds().size());
-        assertTrue(createdComment.getAncestorIds().contains(doc.getId()));
-        assertEquals(commentToCreate.getAuthor(), createdComment.getAuthor());
-        assertEquals(doc.getId(), createdComment.getParentId());
-        assertEquals(commentToCreate.getText(), createdComment.getText());
-        assertNull(createdComment.getModificationDate());
-    }
-
-    @Test
-    public void shouldReturnCreatedObjectWithCreationDateWhenCreatingCommentWithoutCreationDate() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-        session.save();
-
-        Comment commentToCreate = createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text");
-        commentToCreate.setCreationDate(null);
-
-        Comment createdComment = commentManager.createComment(session, commentToCreate);
-        assertNotNull(createdComment);
-        assertNotNull(createdComment.getId());
-        assertNotNull(createdComment.getCreationDate());
-        assertNotNull(createdComment.getAncestorIds());
-        assertEquals(1, createdComment.getAncestorIds().size());
-        assertTrue(createdComment.getAncestorIds().contains(doc.getId()));
-        assertEquals(commentToCreate.getAuthor(), createdComment.getAuthor());
-        assertEquals(doc.getId(), createdComment.getParentId());
-        assertEquals(commentToCreate.getText(), createdComment.getText());
-        assertNull(createdComment.getModificationDate());
-    }
-
-    @Test
-    public void shouldReturnObjectWhenGettingExistingComment() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-        session.save();
-
-        Comment comment = commentManager.createComment(session,
-                createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text"));
-
-        Comment storedComment = session.getDocument(new IdRef(comment.getId())).getAdapter(Comment.class);
-        assertNotNull(storedComment);
-        assertEquals(comment.getText(), storedComment.getText());
-    }
-
-    @Test
-    public void shouldReturnObjectWhenGettingExistingExternalComment() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text");
-        ((CommentImpl) comment).setEntityId("anEntityId");
-        ((CommentImpl) comment).setEntity("anEntityByItself");
-        ((CommentImpl) comment).setOrigin("anOriginForExternalEntity");
-
-        comment = commentManager.createComment(session, comment);
-
-        session.save();
-
-        Comment storedExternalComment = commentManager.getExternalComment(session, "anEntityId");
-        assertNotNull(storedExternalComment);
-        assertEquals(comment.getText(), storedExternalComment.getText());
-    }
-
-    @Test
-    public void shouldReflectUpdatedFieldsWhenUpdatingExistingComment() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = commentManager.createComment(session,
-                createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text"));
-
-        session.save();
-
-        comment.setText("my updated text!");
-        comment.setModificationDate(Instant.now());
-        commentManager.updateComment(session, comment.getId(), comment);
-
-        Comment storedComment = session.getDocument(new IdRef(comment.getId())).getAdapter(Comment.class);
-        assertEquals(comment.getText(), storedComment.getText());
-    }
-
-    @Test
-    public void shouldReflectUpdatedFieldsWhenUpdatingExistingCommentWithoutProvidingModificationDate() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = commentManager.createComment(session,
-                createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text"));
-
-        session.save();
-
-        comment.setText("my updated text!");
-        commentManager.updateComment(session, comment.getId(), comment);
-
-        Comment storedComment = session.getDocument(new IdRef(comment.getId())).getAdapter(Comment.class);
-        assertEquals(comment.getId(), storedComment.getId());
-        assertEquals(comment.getAuthor(), storedComment.getAuthor());
-        assertEquals(comment.getCreationDate(), storedComment.getCreationDate());
-        assertEquals(comment.getText(), storedComment.getText());
-        assertEquals(comment.getParentId(), storedComment.getParentId());
-        assertEquals(comment.getAncestorIds(), storedComment.getAncestorIds());
-        assertNotNull(storedComment.getModificationDate());
-    }
-
-    @Test
-    public void shouldReflectUpdatedFieldsWhenUpdatingExistingExternalComment() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text");
-        ((CommentImpl) comment).setEntityId("anEntityId");
-        ((CommentImpl) comment).setEntity("anEntityByItself");
-        ((CommentImpl) comment).setOrigin("anOriginForExternalEntity");
-
-        comment = commentManager.createComment(session, comment);
-
-        session.save();
-
-        comment.setText("my updated text!");
-        comment.setModificationDate(Instant.now());
-        Comment storedComment = commentManager.updateExternalComment(session, "anEntityId", comment);
-        assertEquals(comment.getText(), storedComment.getText());
-    }
-
-    @Test
-    public void shouldNotBeAvailableWhenExistingCommentIsDeleted() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = commentManager.createComment(session,
-                createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text"));
-
-        session.save();
-
-        commentManager.deleteComment(session, comment.getId());
-        assertFalse(session.exists(new IdRef(comment.getId())));
-    }
-
-    @Test
-    public void shouldNotBeAvailableWhenExistingExternalCommentIsDeleted() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = createSampleComment(doc.getId(), session.getPrincipal().getName(), "some text");
-        ((CommentImpl) comment).setEntityId("anEntityId");
-        ((CommentImpl) comment).setEntity("anEntityByItself");
-        ((CommentImpl) comment).setOrigin("anOriginForExternalEntity");
-
-        comment = commentManager.createComment(session, comment);
-
-        session.save();
-
-        commentManager.deleteExternalComment(session, "anEntityId");
-        assertFalse(session.exists(new IdRef(comment.getId())));
-    }
-
-    @Test
-    public void shouldReturnEmptyListWhenDocumentHasNoComments() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-        session.save();
-
-        List<DocumentModel> comments = commentManager.getComments(session, doc);
-        assertNotNull(comments);
-        assertEquals(0, comments.size());
-    }
-
-    @Test
-    public void shouldReturnAllCommentsHasDocumentModelsSortedByCreationDateAscendingWhenDocumentHasComments() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        List<Comment> sampleComments = createSampleComments(4, doc.getId(), session.getPrincipal().getName(),
-                "comment");
-
-        Comment firstComment = commentManager.createComment(session, sampleComments.get(0));
-        Comment secondComment = commentManager.createComment(session, sampleComments.get(1));
-        Comment thirdComment = commentManager.createComment(session, sampleComments.get(2));
-        Comment fourthComment = commentManager.createComment(session, sampleComments.get(3));
-
-        session.save();
-
-        List<DocumentModel> comments = commentManager.getComments(session, doc);
-        assertNotNull(comments);
-        assertEquals(4, comments.size());
-        assertEquals(comments.get(0).getAdapter(Comment.class).getText(), firstComment.getText());
-        assertEquals(comments.get(1).getAdapter(Comment.class).getText(), secondComment.getText());
-        assertEquals(comments.get(2).getAdapter(Comment.class).getText(), thirdComment.getText());
-        assertEquals(comments.get(3).getAdapter(Comment.class).getText(), fourthComment.getText());
-    }
-
-    @Test
-    public void shouldReturnAllCommentsSortedByCreationDateDescendingWhenDocumentHasComments() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        List<Comment> sampleComments = createSampleComments(4, doc.getId(), session.getPrincipal().getName(),
-                "comment");
-
-        Comment firstComment = commentManager.createComment(session, sampleComments.get(0));
-        Comment secondComment = commentManager.createComment(session, sampleComments.get(1));
-        Comment thirdComment = commentManager.createComment(session, sampleComments.get(2));
-        Comment fourthComment = commentManager.createComment(session, sampleComments.get(3));
-
-        session.save();
-
-        List<Comment> comments = commentManager.getComments(session, doc.getId(), false);
-        assertNotNull(comments);
-        assertEquals(4, comments.size());
-        assertEquals(comments.get(0).getText(), fourthComment.getText());
-        assertEquals(comments.get(1).getText(), thirdComment.getText());
-        assertEquals(comments.get(2).getText(), secondComment.getText());
-        assertEquals(comments.get(3).getText(), firstComment.getText());
-    }
-
-    @Test
-    public void shouldReturnCommentsPaginatedAndSortedByCreationDateDescendingWhenDocumentHasComments() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        List<Comment> sampleComments = createSampleComments(4, doc.getId(), session.getPrincipal().getName(),
-                "comment");
-
-        Comment firstComment = commentManager.createComment(session, sampleComments.get(0));
-        Comment secondComment = commentManager.createComment(session, sampleComments.get(1));
-        Comment thirdComment = commentManager.createComment(session, sampleComments.get(2));
-        Comment fourthComment = commentManager.createComment(session, sampleComments.get(3));
-
-        session.save();
-
-        List<Comment> firstPage = commentManager.getComments(session, doc.getId(), 2L, 0L, false);
-        assertNotNull(firstPage);
-        assertEquals(2, firstPage.size());
-        assertEquals(firstPage.get(0).getText(), fourthComment.getText());
-        assertEquals(firstPage.get(1).getText(), thirdComment.getText());
-
-        List<Comment> secondPage = commentManager.getComments(session, doc.getId(), 2L, 1L, false);
-        assertNotNull(secondPage);
-        assertEquals(2, secondPage.size());
-        assertEquals(secondPage.get(0).getText(), secondComment.getText());
-        assertEquals(secondPage.get(1).getText(), firstComment.getText());
-    }
-
-    @Test
-    public void shouldReturnRepliesByCreationDateDescendingWhenCommentHasReplies() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment mainComment = commentManager.createComment(session,
-                createSampleComment(doc.getId(), session.getPrincipal().getName(), "main comment"));
-
-        List<Comment> sampleReplies = createSampleComments(2, mainComment.getId(), session.getPrincipal().getName(),
-                "reply");
-        Comment firstReply = commentManager.createComment(session, sampleReplies.get(0));
-        Comment secondReply = commentManager.createComment(session, sampleReplies.get(1));
-
-        session.save();
-
-        List<Comment> replies = commentManager.getComments(session, mainComment.getId(), false);
-        assertNotNull(replies);
-        assertEquals(2, replies.size());
-        assertEquals(replies.get(0).getText(), secondReply.getText());
-        assertEquals(replies.get(1).getText(), firstReply.getText());
-    }
-
-    @Test
-    public void shouldReturnMainCommentWhenSeveralNestedRepliesExist() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = commentManager.createComment(session,
-                createSampleComment(doc.getId(), session.getPrincipal().getName(), "main comment"));
-        Comment firstLevelReply = commentManager.createComment(session,
-                createSampleComment(comment.getId(), session.getPrincipal().getName(), "first level reply"));
-        Comment secondLevelReply = commentManager.createComment(session,
-                createSampleComment(firstLevelReply.getId(), session.getPrincipal().getName(), "second level reply"));
-        Comment thirdLevelReply = commentManager.createComment(session,
-                createSampleComment(secondLevelReply.getId(), session.getPrincipal().getName(), "third level reply"));
-        Comment fourthLevelReply = commentManager.createComment(session,
-                createSampleComment(thirdLevelReply.getId(), session.getPrincipal().getName(), "fourth level reply"));
-
-        session.save();
-
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session,
-                fourthLevelReply.getDocument().getRef());
-        assertNotNull(topLevelCommentAncestor);
-        assertEquals(doc.getRef(), topLevelCommentAncestor);
-    }
-
-    @Test
-    public void shouldReturnSameCommentWhenNoRepliesExist() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = commentManager.createComment(session,
-                createSampleComment(doc.getId(), session.getPrincipal().getName(), "main comment"));
-
-        session.save();
-
-        DocumentRef topLevelCommentAncestor = commentManager.getTopLevelDocumentRef(session,
-                new IdRef(comment.getId()));
-        assertNotNull(topLevelCommentAncestor);
-        assertEquals(doc.getRef(), topLevelCommentAncestor);
-    }
-
-    @Test
-    public void shouldCreateLocatedComment() {
-        DocumentModel doc = session.createDocumentModel(FOLDER_COMMENT_CONTAINER, "myFile", "File");
-        doc = session.createDocument(doc);
-
-        Comment comment = createSampleComment(null, session.getPrincipal().getName(), "some text");
-        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
-        applyDirtyPropertyValues(comment.getDocument(), commentModel);
-
-        session.save();
-
-        commentModel.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, doc.getId());
-        commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
-
-        DocumentModelList children = session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER), COMMENT_DOC_TYPE);
-        assertNotNull(children);
-        assertEquals(1, children.totalSize());
-        assertEquals(comment.getAuthor(), children.get(0).getPropertyValue("comment:author"));
-        assertEquals(comment.getCreationDate(),
-                ((Calendar) children.get(0).getPropertyValue("comment:creationDate")).toInstant());
-        assertEquals(comment.getText(), children.get(0).getPropertyValue("comment:text"));
-    }
-
-    @Test
-    public void testAdministratorCanManageComments() {
-        DocumentModel doc = createTestFileAndUser("bob");
-
-        Comment comment = createSampleComment(doc.getId(), session.getPrincipal().getName(), "test");
-        comment = commentManager.createComment(session, comment);
-        session.save();
-
-        testManageComments(session, comment.getId());
-        createUser("bob");
-        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
-        comment = createSampleComment(doc.getId(), "bob", "test bob");
-        comment = commentManager.createComment(bobSession, comment);
-        bobSession.save();
-
-        testManageComments(session, comment.getId());
-    }
-
-    @Test
-    public void testAuthorCanManageComments() {
-        DocumentModel doc = createTestFileAndUser("bob");
-
-        CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
-        Comment comment = createSampleComment(doc.getId(), "bob", "test");
-        comment = commentManager.createComment(session, comment);
-        bobSession.save();
-
-        testManageComments(bobSession, comment.getId());
-    }
-
-    @Test
-    public void testRegularUserCannotManageComments() {
-        DocumentModel doc = createTestFileAndUser("bob");
-
-        Comment comment = createSampleComment(doc.getId(), session.getPrincipal().getName(), "test");
-        comment = commentManager.createComment(session, comment);
-        session.save();
-
-        try {
-            CoreSession bobSession = CoreInstance.getCoreSession(session.getRepositoryName(), "bob");
-            testManageComments(bobSession, comment.getId());
-            fail("bob should not be able to manage comments created by Administrator");
-        } catch (CommentSecurityException e) {
-            // ok
-        }
-    }
-
-    @Test
-    public void testCreateCommentAsRegularUser() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        String anotherAuthor = "john";
-        createUser(anotherAuthor);
-        ACPImpl acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE("john", SecurityConstants.READ, true));
-        acl.add(new ACE("jane", SecurityConstants.BROWSE, true));
-        session.setACP(doc.getRef(), acp, false);
-        session.save();
-
-        String text = "I am a comment !";
-        Comment comment = new CommentImpl();
-        comment.setAuthor("john");
-        comment.setText(text);
-        comment.setParentId(doc.getId());
-
-        CoreSession johnSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "john");
-        Comment createdComment = commentManager.createComment(johnSession, comment);
-        assertEquals(doc.getId(), createdComment.getParentId());
-
-        Comment subComment = new CommentImpl();
-        subComment.setAuthor(AUTHOR_OF_COMMENT);
-        subComment.setText(text);
-        subComment.setParentId(createdComment.getId());
-
-        Comment createdSubcomment = commentManager.createComment(johnSession, subComment);
-        assertEquals(createdComment.getId(), createdSubcomment.getParentId());
-
-        try {
-            CoreSession janeSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "jane");
-            commentManager.createComment(janeSession, comment);
-            fail("jane should not be able to create comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane can not create comments on document " + doc.getId(), e.getMessage());
-        }
-    }
-
-    @Test
-    public void testGetCommentAsRegularUser() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        ACPImpl acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE("john", SecurityConstants.READ, true));
-        // Fake the existence of document for janeSession
-        acl.add(new ACE("jane", SecurityConstants.BROWSE, true));
-        session.setACP(doc.getRef(), acp, false);
-        session.save();
-
-        String author = "john";
-        createUser(author);
-        String text = "I am a comment !";
-        Comment comment = new CommentImpl();
-        comment.setAuthor(author);
-        comment.setText(text);
-        comment.setParentId(doc.getId());
-
-        comment = commentManager.createComment(session, comment);
-
-        Comment subComment = new CommentImpl();
-        subComment.setAuthor(author);
-        subComment.setText(text);
-        subComment.setParentId(comment.getId());
-
-        subComment = commentManager.createComment(session, subComment);
-
-        CoreSession johnSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "john");
-        Comment createdComment = commentManager.getComment(johnSession, comment.getId());
-        assertEquals(doc.getId(), createdComment.getParentId());
-        Comment createdSubcomment = commentManager.getComment(johnSession, subComment.getId());
-        assertEquals(comment.getId(), createdSubcomment.getParentId());
-
-        CoreSession janeSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "jane");
-        try {
-            commentManager.getComment(janeSession, comment.getId());
-            fail("jane should not be able to get comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
-                    e.getMessage());
-        }
-        try {
-            commentManager.getComment(janeSession, subComment.getId());
-            fail("jane should not be able to get comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
-                    e.getMessage());
-        }
-    }
-
-    @Test
-    public void testUpdateCommentAsRegularUser() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        ACPImpl acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE("john", SecurityConstants.READ, true));
-        acl.add(new ACE("jane", SecurityConstants.READ, true));
-        session.setACP(doc.getRef(), acp, false);
-        session.save();
-
-        String author = "john";
-        createUser(author);
-        String text = "I am a comment !";
-        Comment comment = new CommentImpl();
-        comment.setAuthor(author);
-        comment.setText(text);
-        comment.setParentId(doc.getId());
-
-        comment = commentManager.createComment(session, comment);
-
-        Comment subComment = new CommentImpl();
-        subComment.setAuthor(author);
-        subComment.setText(text);
-        subComment.setParentId(comment.getId());
-
-        subComment = commentManager.createComment(session, subComment);
-
-        CoreSession johnSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "john");
-        comment.setText("Updated comment by john");
-        commentManager.updateComment(johnSession, comment.getId(), comment);
-        subComment.setText("Updated subComment by john");
-        commentManager.updateComment(johnSession, subComment.getId(), subComment);
-
-        CoreSession janeSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "jane");
-        try {
-            comment.setText("Updated comment by jane");
-            commentManager.updateComment(janeSession, comment.getId(), comment);
-            fail("jane should not be able to edit comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane cannot edit comments of document " + doc.getId(), e.getMessage());
-        }
-        try {
-            subComment.setText("Updated subComment by jane");
-            commentManager.updateComment(janeSession, subComment.getId(), subComment);
-            fail("jane should not be able to edit comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane cannot edit comments of document " + comment.getId(), e.getMessage());
-        }
-
-    }
-
-    @Test
-    public void testDeleteCommentAsRegularUser() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        ACPImpl acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE("john", SecurityConstants.EVERYTHING, true));
-        acl.add(new ACE("jane", SecurityConstants.READ, true));
-        acl.add(new ACE("luke", SecurityConstants.READ, true));
-        session.setACP(doc.getRef(), acp, false);
-        session.save();
-
-        String author = "luke";
-        createUser(author);
-        Comment comment1 = new CommentImpl();
-        comment1.setAuthor(author);
-        comment1.setParentId(doc.getId());
-
-        Comment comment2 = new CommentImpl();
-        comment2.setAuthor(author);
-        comment2.setParentId(doc.getId());
-
-        Comment comment3 = new CommentImpl();
-        comment3.setAuthor(author);
-        comment3.setParentId(doc.getId());
-
-        comment1 = commentManager.createComment(session, comment1);
-        comment2 = commentManager.createComment(session, comment2);
-        comment3 = commentManager.createComment(session, comment3);
-
-        Comment comment4 = new CommentImpl();
-        comment4.setAuthor(author);
-        comment4.setParentId(comment3.getId());
-        comment4 = commentManager.createComment(session, comment4);
-
-        CoreSession johnSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "john");
-        commentManager.deleteComment(johnSession, comment1.getId());
-
-        CoreSession janeSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "jane");
-        try {
-            commentManager.deleteComment(janeSession, comment2.getId());
-            fail("jane should not be able to delete comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane cannot delete comments of the document " + doc.getId(), e.getMessage());
-        }
-
-        try {
-            commentManager.deleteComment(janeSession, comment4.getId());
-            fail("jane should not be able to delete comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane cannot delete comments of the document " + comment3.getId(), e.getMessage());
-        }
-
-        CoreSession lukeSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "luke");
-        commentManager.deleteComment(lukeSession, comment4.getId());
-        commentManager.deleteComment(lukeSession, comment3.getId());
-    }
-
-    @Test
-    public void testGetComments() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        ACPImpl acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE("john", SecurityConstants.READ, true));
-        // Fake the existence of document for jane
-        acl.add(new ACE("jane", SecurityConstants.BROWSE, true));
-        session.setACP(doc.getRef(), acp, false);
-        session.save();
-
-        String author = "john";
-        Comment comment1 = new CommentImpl();
-        comment1.setAuthor(author);
-        comment1.setParentId(doc.getId());
-
-        commentManager.createComment(session, comment1);
-
-        Comment comment2 = new CommentImpl();
-        comment2.setAuthor(author);
-        comment2.setParentId(doc.getId());
-
-        comment2 = commentManager.createComment(session, comment2);
-
-        Comment comment3 = new CommentImpl();
-        comment3.setAuthor(author);
-        comment3.setParentId(comment2.getId());
-        commentManager.createComment(session, comment3);
-        session.save();
-
-        CoreSession johnSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "john");
-        assertEquals(2, commentManager.getComments(johnSession, doc.getId()).size());
-        assertEquals(1, commentManager.getComments(johnSession, comment2.getId()).size());
-
-        CoreSession janeSession = CoreInstance.getCoreSession(doc.getRepositoryName(), "jane");
-        try {
-            assertEquals(2, commentManager.getComments(janeSession, doc.getId()).size());
-            fail("jane should not be able to get comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane does not have access to the comments of document " + doc.getId(),
-                    e.getMessage());
-        }
-
-        try {
-            assertEquals(1, commentManager.getComments(janeSession, comment2.getId()).size());
-            fail("jane should not be able to get comment");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user jane does not have access to the comments of document " + comment2.getId(),
-                    e.getMessage());
-        }
-
-    }
-
-    @Test
-    public void testCreateLocalComment() {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        session.createDocument(domain);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
-        session.save();
-
-        String text = "I am a comment !";
-        Comment comment = new CommentImpl();
-        comment.setAuthor(AUTHOR_OF_COMMENT);
-        comment.setText(text);
-
-        // Create a comment in a specific location
-        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
-        commentModel = session.createDocument(commentModel);
-        commentModel.setPropertyValue("dc:created", Calendar.getInstance());
-        applyDirtyPropertyValues(comment.getDocument(), commentModel);
-        commentModel.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, doc.getId());
-        commentModel = commentManager.createLocatedComment(doc, commentModel, FOLDER_COMMENT_CONTAINER);
-
-        // Check if Comments folder has been created in the given container
-        assertThat(session.getChildren(new PathRef(FOLDER_COMMENT_CONTAINER)).totalSize()).isEqualTo(1);
-
-        assertThat(commentModel.getPathAsString()).contains(FOLDER_COMMENT_CONTAINER);
+    public void testCommentsStructure() {
+        Comment c1 = commentManager.createComment(session, newComment(commentedDocModel.getId(), "I am a comment!"));
+        Comment c2 = commentManager.createComment(session, newComment(c1.getId(), "I am a reply!"));
+        Comment c3 = commentManager.createComment(session, newComment(c2.getId(), "Me too!"));
+
+        // in PropertyCommentManager: domain > Comments (container) > c1 ~ c2 ~ c3
+        DocumentModel domainDocModel = session.getDocument(new PathRef("/domain"));
+        DocumentModel commentContainerDocModel = session.getChild(domainDocModel.getRef(), COMMENTS_DIRECTORY);
+
+        DocumentRef[] c1ParentDocRefs = session.getParentDocumentRefs(c1.getDocument().getRef());
+        assertEquals(commentContainerDocModel.getRef(), c1ParentDocRefs[0]);
+        assertEquals(domainDocModel.getRef(), c1ParentDocRefs[1]);
+
+        DocumentRef[] c2ParentDocRefs = session.getParentDocumentRefs(c2.getDocument().getRef());
+        assertEquals(commentContainerDocModel.getRef(), c2ParentDocRefs[0]);
+        assertEquals(domainDocModel.getRef(), c2ParentDocRefs[1]);
+
+        DocumentRef[] c3ParentDocRefs = session.getParentDocumentRefs(c3.getDocument().getRef());
+        assertEquals(commentContainerDocModel.getRef(), c3ParentDocRefs[0]);
+        assertEquals(domainDocModel.getRef(), c3ParentDocRefs[1]);
+
+        // check paths
+        assertEquals("/domain/test", commentedDocModel.getPathAsString());
+        assertEquals("/domain/Comments", commentContainerDocModel.getPathAsString());
+        assertEquals("/domain/Comments/comment", c1.getDocument().getPathAsString());
+        String c2Path = c2.getDocument().getPathAsString();
+        assertTrue("Reply path: " + c2Path + " is not correct", c2Path.startsWith("/domain/Comments/comment."));
+        String c3Path = c3.getDocument().getPathAsString();
+        assertTrue("Sub reply path: " + c3Path + " is not correct", c3Path.startsWith("/domain/Comments/comment."));
+
+        // check container
+        assertEquals(HIDDEN_FOLDER_TYPE, commentContainerDocModel.getType());
+        assertTrue(commentContainerDocModel.hasFacet(FOLDERISH));
+        assertTrue(commentContainerDocModel.hasFacet(HIDDEN_IN_NAVIGATION));
+        assertEquals(domainDocModel.getRef(), commentContainerDocModel.getParentRef());
     }
 
     /*
      * NXP-28719
      */
     @Test
-    public void testCreateCommentsAndRepliesUnderPlacelessDocument() {
-        DocumentModel anyFile = session.createDocumentModel(null, "anyFile", "File");
-        anyFile = session.createDocument(anyFile);
+    public void testCommentsStructureOnPlaceless() {
+        DocumentModel placeless = session.createDocumentModel(null, "placeless", "File");
+        placeless = session.createDocument(placeless);
         transactionalFeature.nextTransaction();
 
-        // first comment
-        String author = "toto";
-        String text = "I am a comment !";
-        Comment comment = new CommentImpl();
-        comment.setAuthor(author);
-        comment.setText(text);
-        comment.setParentId(anyFile.getId());
+        Comment c1 = commentManager.createComment(session, newComment(placeless.getId(), "I am a comment!"));
+        Comment c2 = commentManager.createComment(session, newComment(c1.getId(), "I am a reply!"));
+        Comment c3 = commentManager.createComment(session, newComment(c2.getId(), "Me too!"));
 
-        comment = commentManager.createComment(session, comment);
-        DocumentModel commentDocModel = session.getDocument(new IdRef(comment.getId()));
-        DocumentModel ecmCommentParent = session.getDocument(commentDocModel.getParentRef());
+        // in PropertyCommentManager in the case of placeless:
+        // Root > Comments (container) > c1
+        // Root > Comments (container) > Comments (container) > c2 ~ c3
+        DocumentModel rootDocModel = session.getRootDocument();
+        DocumentModel commentContainerDocModel = session.getChild(rootDocModel.getRef(), COMMENTS_DIRECTORY);
+        DocumentModel subCommentContainerDocModel = session.getChild(commentContainerDocModel.getRef(),
+                COMMENTS_DIRECTORY);
 
-        assertNotNull(commentDocModel.getParentRef());
-        assertEquals(anyFile.getId(), commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY));
-        assertTrue(ecmCommentParent.hasFacet("Folderish"));
-        assertTrue(ecmCommentParent.hasFacet("HiddenInNavigation"));
-        assertEquals(ecmCommentParent.getRef(), commentDocModel.getParentRef());
-        assertEquals("/Comments", ecmCommentParent.getPathAsString());
+        DocumentRef[] c1ParentDocRefs = session.getParentDocumentRefs(c1.getDocument().getRef());
+        assertEquals(commentContainerDocModel.getRef(), c1ParentDocRefs[0]);
+        assertEquals(rootDocModel.getRef(), c1ParentDocRefs[1]);
 
-        // a reply
-        text = "I am a reply !";
-        Comment reply = new CommentImpl();
-        reply.setAuthor(author);
-        reply.setText(text);
-        reply.setParentId(comment.getId());
+        DocumentRef[] c2ParentDocRefs = session.getParentDocumentRefs(c2.getDocument().getRef());
+        assertEquals(subCommentContainerDocModel.getRef(), c2ParentDocRefs[0]);
+        assertEquals(commentContainerDocModel.getRef(), c2ParentDocRefs[1]);
+        assertEquals(rootDocModel.getRef(), c2ParentDocRefs[2]);
 
-        reply = commentManager.createComment(session, reply);
-        DocumentModel replyDocModel = session.getDocument(new IdRef(reply.getId()));
-        assertEquals(comment.getId(), commentDocModel.getId());
-        assertEquals(comment.getId(), replyDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY));
-        ecmCommentParent = session.getDocument(replyDocModel.getParentRef());
-        assertTrue(ecmCommentParent.hasFacet("Folderish"));
-        assertTrue(ecmCommentParent.hasFacet("HiddenInNavigation"));
+        DocumentRef[] c3ParentDocRefs = session.getParentDocumentRefs(c3.getDocument().getRef());
+        assertEquals(subCommentContainerDocModel.getRef(), c3ParentDocRefs[0]);
+        assertEquals(commentContainerDocModel.getRef(), c3ParentDocRefs[1]);
+        assertEquals(rootDocModel.getRef(), c3ParentDocRefs[2]);
+
+        // check paths
         // PropertyCommentManager in the case of placeless will create this hierarchy
-        assertEquals("/Comments/Comments", ecmCommentParent.getPathAsString());
+        // c1EcmParentDocModel = session.getDocument(replyDocModel.getParentRef());
+        // assertEquals("/Comments/Comments", c1EcmParentDocModel.getPathAsString());
+        assertEquals("/Comments", commentContainerDocModel.getPathAsString());
+        assertEquals("/Comments/comment", c1.getDocument().getPathAsString());
+        assertEquals("/Comments/Comments", subCommentContainerDocModel.getPathAsString());
+        assertEquals("/Comments/Comments/comment", c2.getDocument().getPathAsString());
+        String c3Path = c3.getDocument().getPathAsString();
+        assertTrue("Sub reply path: " + c3Path + " is not correct", c3Path.startsWith("/Comments/Comments/comment."));
     }
 
+    // -------------
+    // Legacy tests
+    // -------------
 
-    protected DocumentModel createTestFileAndUser(String user) {
-        DocumentModel domain = session.createDocumentModel("/", "domain", "Domain");
-        domain = session.createDocument(domain);
-        ACPImpl acp = new ACPImpl();
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE(user, SecurityConstants.READ, true));
-        acl.add(new ACE(user, SecurityConstants.ADD_CHILDREN, true));
-        acl.add(new ACE(user, SecurityConstants.REMOVE_CHILDREN, true));
-        session.setACP(domain.getRef(), acp, false);
-        DocumentModel doc = session.createDocumentModel("/domain", "test", "File");
-        doc = session.createDocument(doc);
+    @Test
+    public void shouldCreateLocatedComment() {
+        DocumentModel container = session.createDocumentModel("/domain", "CommentContainer", "Folder");
+        session.createDocument(container);
         session.save();
 
-        return doc;
-    }
+        Comment comment = newComment(commentedDocModel.getId(), "some text");
+        comment.setCreationDate(Instant.now());
+        DocumentModel commentModel = session.createDocumentModel(null, "Comment", COMMENT_DOC_TYPE);
+        applyDirtyPropertyValues(comment.getDocument(), commentModel);
+        commentManager.createLocatedComment(commentedDocModel, commentModel, "/domain/CommentContainer");
 
-    protected void testManageComments(CoreSession session, String commentId) {
-        // Read
-        Comment comment = commentManager.getComment(session, commentId);
-
-        // Update
-        comment.setText("update");
-        commentManager.updateComment(session, comment.getId(), comment);
-
-        // Delete
-        commentManager.deleteComment(session, commentId);
-    }
-
-    protected Comment createSampleComment(String parentId, String author, String text) {
-        return createSampleComments(1, parentId, author, text).get(0);
-    }
-
-    protected List<Comment> createSampleComments(int nbComments, String parentId, String author, String text) {
-        List<Comment> comments = new ArrayList<>();
-        Instant date = Instant.now().truncatedTo(MILLIS);
-        for (int i = 0; i < nbComments; i++) {
-            Comment comment = new CommentImpl();
-            comment.setParentId(parentId);
-            comment.setAuthor(author);
-            comment.setText(text + " " + i);
-            comment.setCreationDate(date.plusSeconds(i));
-            comments.add(comment);
-        }
-        return comments;
-    }
-
-    @Override
-    public Class<? extends CommentManager> getType() {
-        return PropertyCommentManager.class;
+        DocumentModelList children = session.getChildren(new PathRef("/domain/CommentContainer"), COMMENT_DOC_TYPE);
+        assertNotNull(children);
+        assertEquals(1, children.totalSize());
+        assertEquals(comment.getAuthor(), children.get(0).getPropertyValue("comment:author"));
+        assertEquals(comment.getCreationDate(),
+                ((Calendar) children.get(0).getPropertyValue("comment:creationDate")).toInstant());
+        assertEquals(comment.getText(), children.get(0).getPropertyValue("comment:text"));
     }
 }

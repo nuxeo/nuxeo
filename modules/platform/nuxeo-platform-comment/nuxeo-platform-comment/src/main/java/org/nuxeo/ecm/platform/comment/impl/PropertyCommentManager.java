@@ -205,10 +205,7 @@ public class PropertyCommentManager extends AbstractCommentManager {
                     + " can not create comments on document " + parentId);
         }
 
-        // Initiate Creation Date if it is not done yet
-        if (comment.getCreationDate() == null) {
-            comment.setCreationDate(Instant.now());
-        }
+        fillCommentForCreation(session, comment);
 
         return CoreInstance.doPrivileged(session, s -> {
             String path = getCommentContainerPath(s, parentId);
@@ -282,23 +279,22 @@ public class PropertyCommentManager extends AbstractCommentManager {
     public Comment updateComment(CoreSession session, String commentId, Comment comment)
             throws CommentNotFoundException {
         IdRef commentRef = new IdRef(commentId);
-        if (!CoreInstance.doPrivileged(session, s -> {
-            return s.exists(commentRef);
-        })) {
-            throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
-        }
         NuxeoPrincipal principal = session.getPrincipal();
-        if (!principal.isAdministrator() && !comment.getAuthor().equals(principal.getName())) {
-            throw new CommentSecurityException(
-                    "The user " + principal.getName() + " cannot edit comments of document " + comment.getParentId());
-        }
         return CoreInstance.doPrivileged(session, s -> {
+            if (!s.exists(commentRef)) {
+                throw new CommentNotFoundException("The comment " + commentId + " does not exist.");
+            }
+            DocumentModel commentModel = s.getDocument(commentRef);
+            if (!principal.isAdministrator()
+                    && !principal.getName().equals(commentModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY))) {
+                throw new CommentSecurityException(
+                        "The user " + principal.getName() + " cannot edit comment " + commentId);
+            }
+
             // Initiate Modification Date if it is not done yet
             if (comment.getModificationDate() == null) {
                 comment.setModificationDate(Instant.now());
             }
-
-            DocumentModel commentModel = s.getDocument(commentRef);
             if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
                 commentModel.addFacet(EXTERNAL_ENTITY_FACET);
             }
@@ -360,11 +356,16 @@ public class PropertyCommentManager extends AbstractCommentManager {
             throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
         NuxeoPrincipal principal = session.getPrincipal();
-        if (!principal.isAdministrator() && !comment.getAuthor().equals(principal.getName())) {
+        if (!principal.isAdministrator()
+                && !principal.getName().equals(commentModel.getPropertyValue(COMMENT_AUTHOR_PROPERTY))) {
             throw new CommentSecurityException(
                     "The user " + principal.getName() + " can not edit comments of document " + comment.getParentId());
         }
         return CoreInstance.doPrivileged(session, s -> {
+            // Initiate Modification Date if it is not done yet
+            if (comment.getModificationDate() == null) {
+                comment.setModificationDate(Instant.now());
+            }
             applyDirtyPropertyValues(comment.getDocument(), commentModel);
             s.saveDocument(commentModel);
             notifyEvent(s, CommentEvents.COMMENT_UPDATED, commentModel);
@@ -413,14 +414,16 @@ public class PropertyCommentManager extends AbstractCommentManager {
 
     @SuppressWarnings("unchecked")
     protected DocumentModel getExternalCommentModel(CoreSession session, String entityId) {
-        PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
-        List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_COMMENT_PAGEPROVIDER_NAME, null, 1L, 0L, props, entityId)).getCurrentPage();
-        if (results.isEmpty()) {
-            return null;
-        }
-        return results.get(0);
+        return CoreInstance.doPrivileged(session, s -> {
+            PageProviderService ppService = Framework.getService(PageProviderService.class);
+            Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
+            List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
+                    GET_COMMENT_PAGEPROVIDER_NAME, null, 1L, 0L, props, entityId)).getCurrentPage();
+            if (results.isEmpty()) {
+                return null;
+            }
+            return results.get(0);
+        });
     }
 
     protected String getCommentContainerPath(CoreSession session, String commentedDocumentId) {

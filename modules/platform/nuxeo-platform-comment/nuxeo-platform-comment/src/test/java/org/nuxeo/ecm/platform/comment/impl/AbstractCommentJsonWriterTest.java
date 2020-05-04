@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -83,30 +84,17 @@ public abstract class AbstractCommentJsonWriterTest
         docModel = session.createDocument(doc);
         session.save();
 
-        Comment commentToCreate = new CommentImpl();
-        commentToCreate.setParentId(docModel.getId());
-        commentToCreate.setAuthor(session.getPrincipal().getName());
-        commentToCreate.setText("main comment");
-        comment = commentManager.createComment(session, commentToCreate);
+        comment = commentManager.createComment(session, newComment(docModel.getId(), "main comment"));
 
         replies = new ArrayList<>();
         Instant date = Instant.now();
-        Comment firstReply = new CommentImpl();
-        firstReply.setParentId(comment.getId());
-        firstReply.setAuthor(session.getPrincipal().getName());
-        firstReply.setText("first reply");
+        Comment firstReply = newComment(comment.getId(), "first reply");
         firstReply.setCreationDate(date);
 
-        Comment secondReply = new CommentImpl();
-        secondReply.setParentId(comment.getId());
-        secondReply.setAuthor(session.getPrincipal().getName());
-        secondReply.setText("second reply");
+        Comment secondReply = newComment(comment.getId(), "second reply");
         secondReply.setCreationDate(date.plusSeconds(1));
 
-        Comment thirdReply = new CommentImpl();
-        thirdReply.setParentId(comment.getId());
-        thirdReply.setAuthor(session.getPrincipal().getName());
-        thirdReply.setText("third reply");
+        Comment thirdReply = newComment(comment.getId(), "third reply");
         thirdReply.setCreationDate(date.plusSeconds(2));
         ((CommentImpl) thirdReply).setOrigin("origin");
         ((CommentImpl) thirdReply).setEntity("entity");
@@ -162,7 +150,7 @@ public abstract class AbstractCommentJsonWriterTest
         json.has("author").isEquals(comment.getAuthor());
         json.has("text").isEquals(comment.getText());
         json.has("creationDate").isEquals(comment.getCreationDate().toString());
-        json.has("modificationDate").isEmptyStringOrNull();
+        json.has("modificationDate").isEquals(comment.getModificationDate().toString());
         json.has("entity").isEmptyStringOrNull();
         json.has("entityId").isEmptyStringOrNull();
         json.has("origin").isEmptyStringOrNull();

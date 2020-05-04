@@ -28,6 +28,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newExternalComment;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_FIELD;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ENTITY_TYPE;
@@ -43,7 +45,6 @@ import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNA
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_ORIGIN_FIELD;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,9 +63,7 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.impl.CommentJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -88,19 +87,20 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
     @Inject
     protected CommentManager commentManager;
 
+    protected DocumentModel file;
+
     @Before
     public void setup() {
         DocumentModel domain = session.createDocumentModel("/", "testDomain", "Domain");
         session.createDocument(domain);
+        file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
     }
 
     @Test
     public void testCreateComment() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = instantiateComment(file.getId());
+        Comment comment = newComment(file.getId(), "Some text");
 
         String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
 
@@ -110,7 +110,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
             assertEquals(session.getPrincipal().getName(), node.get(COMMENT_AUTHOR_FIELD).textValue());
-            assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+            assertEquals("Some text", node.get(COMMENT_TEXT_FIELD).textValue());
         }
     }
 
@@ -119,11 +119,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
      */
     @Test
     public void testCreateCommentSetCorrectAuthor() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = instantiateComment(file.getId());
+        Comment comment = newComment(file.getId());
         String fakeAuthor = "fakeAuthor";
         comment.setAuthor(fakeAuthor);
 
@@ -141,11 +137,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testCreateCommentWithoutCreationDate() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = instantiateComment(file.getId());
+        Comment comment = newComment(file.getId());
         comment.setCreationDate(null);
 
         String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
@@ -171,16 +163,11 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testGetComments() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-
-        fetchInvalidations();
-
-        Comment comment1 = createComment(file.getId());
-        Comment comment2 = createComment(file.getId());
-        Comment comment3 = createComment(file.getId());
-        Comment comment4 = createComment(file.getId());
-        Comment comment5 = createComment(file.getId());
+        Comment comment1 = commentManager.createComment(session, newComment(file.getId()));
+        Comment comment2 = commentManager.createComment(session, newComment(file.getId()));
+        Comment comment3 = commentManager.createComment(session, newComment(file.getId()));
+        Comment comment4 = commentManager.createComment(session, newComment(file.getId()));
+        Comment comment5 = commentManager.createComment(session, newComment(file.getId()));
 
         String comment1Id = comment1.getId();
         String comment2Id = comment2.getId();
@@ -229,10 +216,6 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testGetCommentWithNonExistingId() {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
         try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + file.getId() + "/@comment/" + "nonExistingId")) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
@@ -241,11 +224,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testGetComment() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = createComment(file.getId());
+        Comment comment = commentManager.createComment(session, newComment(file.getId(), "Some text"));
         String commentId = comment.getId();
         fetchInvalidations();
 
@@ -255,7 +234,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
         assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
-        assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        assertEquals("Some text", node.get(COMMENT_TEXT_FIELD).textValue());
         assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
 
         // Get permissions
@@ -270,11 +249,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testGetCommentWithoutRepliesUsingRepliesFetcher() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = createComment(file.getId());
+        Comment comment = commentManager.createComment(session, newComment(file.getId(), "Some text"));
         String commentId = comment.getId();
         fetchInvalidations();
 
@@ -287,7 +262,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
         assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
-        assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        assertEquals("Some text", node.get(COMMENT_TEXT_FIELD).textValue());
         assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
         assertEquals(0, node.get(COMMENT_NUMBER_OF_REPLIES_FIELD).intValue());
         assertFalse(node.has(COMMENT_LAST_REPLY_DATE_FIELD));
@@ -295,17 +270,13 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testGetCommentWithRepliesUsingRepliesFetcher() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = createComment(file.getId());
+        Comment comment = commentManager.createComment(session, newComment(file.getId(), "Some text"));
         String commentId = comment.getId();
         fetchInvalidations();
 
-        createComment(commentId);
-        createComment(commentId);
-        Comment reply3 = createComment(commentId);
+        commentManager.createComment(session, newComment(commentId));
+        commentManager.createComment(session, newComment(commentId));
+        Comment reply3 = commentManager.createComment(session, newComment(commentId));
         fetchInvalidations();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -317,7 +288,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
         assertEquals(comment.getAuthor(), node.get(COMMENT_AUTHOR_FIELD).textValue());
-        assertEquals(comment.getText(), node.get(COMMENT_TEXT_FIELD).textValue());
+        assertEquals("Some text", node.get(COMMENT_TEXT_FIELD).textValue());
         assertEquals(comment.getCreationDate().toString(), node.get(COMMENT_CREATION_DATE_FIELD).textValue());
         assertEquals(3, node.get(COMMENT_NUMBER_OF_REPLIES_FIELD).intValue());
         assertTrue(node.has(COMMENT_LAST_REPLY_DATE_FIELD));
@@ -326,11 +297,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testUpdateComment() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = createComment(file.getId());
+        Comment comment = commentManager.createComment(session, newComment(file.getId()));
         String author = comment.getAuthor();
         String commentId = comment.getId();
         fetchInvalidations();
@@ -353,11 +320,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testUpdateCommentWithoutModificationDate() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = createComment(file.getId());
+        Comment comment = commentManager.createComment(session, newComment(file.getId()));
         String commentId = comment.getId();
         fetchInvalidations();
 
@@ -380,16 +343,8 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
      */
     @Test
     public void testUpdateCommentWithPartialData() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        var comment = instantiateComment(file.getId());
-        comment.setAuthor(session.getPrincipal().getName());
-        comment.setEntityId("an-id");
-        comment.setEntity("some-content");
-        comment.setOrigin("somewhere");
-        comment = (CommentImpl) commentManager.createComment(session, comment);
+        var comment = commentManager.createComment(session,
+                newExternalComment(file.getId(), "an-id", "<entity/>", "Some text"));
         String commentId = comment.getId();
         fetchInvalidations();
 
@@ -405,8 +360,8 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
             assertEquals(commentId, node.get(COMMENT_ID_FIELD).textValue());
             assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
             assertEquals("an-id", node.get(EXTERNAL_ENTITY_ID_FIELD).textValue());
-            assertEquals("some-content", node.get(EXTERNAL_ENTITY).textValue());
-            assertEquals("somewhere", node.get(EXTERNAL_ENTITY_ORIGIN_FIELD).textValue());
+            assertEquals("<entity/>", node.get(EXTERNAL_ENTITY).textValue());
+            assertEquals("Test", node.get(EXTERNAL_ENTITY_ORIGIN_FIELD).textValue());
         }
     }
 
@@ -417,16 +372,14 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
     public void testUpdateCommentWithRegularUser() throws IOException {
         // create jdoe user as a regular user
         createUser(JDOE);
+        // re-compute read acls
+        fetchInvalidations();
         // use it in rest calls
         service = getServiceFor(JDOE, JDOE);
 
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
         String commentId;
         // use rest for creation in order to have the correct author
-        Comment comment = instantiateComment(file.getId());
+        Comment comment = newComment(file.getId());
         String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
                 jsonComment)) {
@@ -453,10 +406,6 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testDeleteCommentWithNonExistingId() {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
         try (CloseableClientResponse response = getResponse(RequestType.GET,
                 "id/" + file.getId() + "/@comment/" + "nonExistingId")) {
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
@@ -465,11 +414,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testDeleteComment() {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
-        Comment comment = createComment(file.getId());
+        Comment comment = commentManager.createComment(session, newComment(file.getId()));
         String commentId = comment.getId();
         fetchInvalidations();
 
@@ -485,18 +430,10 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testGetExternalComment() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-
         String entityId = "foo";
-        String origin = "origin";
         String entity = "<entity></entity>";
 
-        Comment comment = new CommentImpl();
-        ((ExternalEntity) comment).setEntityId(entityId);
-        ((ExternalEntity) comment).setOrigin(origin);
-        ((ExternalEntity) comment).setEntity(entity);
-        comment.setParentId(file.getId());
+        Comment comment = newExternalComment(file.getId(), entityId, entity, "Some text");
         comment = commentManager.createComment(session, comment);
         fetchInvalidations();
 
@@ -506,22 +443,17 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
         assertEquals(comment.getId(), node.get(COMMENT_ID_FIELD).textValue());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
         assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID_FIELD).textValue());
-        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN_FIELD).textValue());
+        assertEquals("Test", node.get(EXTERNAL_ENTITY_ORIGIN_FIELD).textValue());
         assertEquals(entity, node.get(EXTERNAL_ENTITY).textValue());
     }
 
     @Test
     public void testUpdateExternalComment() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-
         fetchInvalidations();
         String entityId = "foo";
         String author = "toto";
 
-        Comment comment = new CommentImpl();
-        ((ExternalEntity) comment).setEntityId(entityId);
-        comment.setParentId(file.getId());
+        Comment comment = newExternalComment(file.getId(), entityId);
         comment.setAuthor(author);
         comment = commentManager.createComment(session, comment);
 
@@ -548,19 +480,14 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
     public void testUpdateExternalCommentWithRegularUser() throws IOException {
         // create jdoe user as a regular user
         createUser(JDOE);
+        // re-compute read acls
+        fetchInvalidations();
         // use it in rest calls
         service = getServiceFor(JDOE, JDOE);
 
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
         String entityId = "foo";
         // use rest for creation in order to have the correct author
-        var comment = new CommentImpl();
-        comment.setEntityId(entityId);
-        comment.setParentId(file.getId());
-        comment.setText("Some text");
+        var comment = newExternalComment(file.getId(), entityId, "<entity/>", "Some text");
         String jsonComment = MarshallerHelper.objectToJson(comment, CtxBuilder.session(session).get());
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@comment",
                 jsonComment)) {
@@ -585,14 +512,8 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
 
     @Test
     public void testDeleteExternalComment() {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
         String entityId = "foo";
-
-        Comment comment = instantiateComment(file.getId());
-        ((ExternalEntity) comment).setEntityId(entityId);
-        comment.setAuthor(session.getPrincipal().getName());
-        comment = commentManager.createComment(session, comment);
+        var comment = commentManager.createComment(session, newExternalComment(file.getId(), entityId));
 
         fetchInvalidations();
 
@@ -604,21 +525,6 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
             fetchInvalidations();
             assertFalse(session.exists(new IdRef(comment.getId())));
         }
-    }
-
-    protected Comment createComment(String documentId) {
-        Comment comment = instantiateComment(documentId);
-        comment.setAuthor(session.getPrincipal().getName());
-        return commentManager.createComment(session, comment);
-    }
-
-    protected CommentImpl instantiateComment(String documentId) {
-        CommentImpl comment = new CommentImpl();
-        comment.setParentId(documentId);
-        comment.setText("Here my wonderful comment on " + documentId + "!");
-        comment.setCreationDate(Instant.now());
-        comment.setModificationDate(Instant.now());
-        return comment;
     }
 
 }
