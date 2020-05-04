@@ -39,10 +39,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -86,7 +82,7 @@ import io.dropwizard.metrics5.Timer;
 /**
  * The session is the main high level access point to data from the underlying database.
  */
-public class SessionImpl implements Session, XAResource {
+public class SessionImpl implements Session {
 
     private static final Log log = LogFactory.getLog(SessionImpl.class);
 
@@ -173,10 +169,6 @@ public class SessionImpl implements Session, XAResource {
 
     protected PersistenceContext getContext() {
         return context;
-    }
-
-    protected void rollback() {
-        context.clearCaches();
     }
 
     /**
@@ -1106,10 +1098,6 @@ public class SessionImpl implements Session, XAResource {
         queryResults.add(new QueryResultContext(result));
     }
 
-    public void beforeCompletion() {
-        closeQueryResults();
-    }
-
     protected void closeQueryResults() {
         for (QueryResultContext ctx : queryResults) {
             if (!ctx.queryResult.mustBeClosed()) {
@@ -1254,123 +1242,42 @@ public class SessionImpl implements Session, XAResource {
     }
 
     /*
-     * ----- XAResource -----
+     * ----- Transaction management -----
      */
 
-    @Override
-    public boolean isSameRM(XAResource xaresource) {
-        return xaresource == this;
-    }
-
-    @Override
-    public void start(Xid xid, int flags) throws XAException {
-        if (flags == TMNOFLAGS) {
-            try {
-                processReceivedInvalidations();
-            } catch (NuxeoException e) {
-                log.error("Could not start transaction", e);
-                throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
-            }
-        }
-        mapper.start(xid, flags);
+    public void start() {
         inTransaction = true;
+        processReceivedInvalidations();
     }
 
-    @Override
-    public void end(Xid xid, int flags) throws XAException {
-        boolean failed = true;
+    public void end() {
+        closeQueryResults();
         try {
-            if (flags != TMFAIL) {
-                try {
-                    flush();
-                } catch (ConcurrentUpdateException e) {
-                    TransactionHelper.noteSuppressedException(e);
-                    log.debug("Exception during transaction commit", e);
-                    // set rollback only manually instead of throwing, this avoids
-                    // a spurious log in Geronimo TransactionImpl and has the same effect
-                    TransactionHelper.setTransactionRollbackOnly();
-                    return;
-                } catch (NuxeoException e) {
-                    log.error("Exception during transaction commit", e);
-                    throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
-                }
-            }
-            failed = false;
-            mapper.end(xid, flags);
-        } finally {
-            if (failed) {
-                mapper.end(xid, TMFAIL);
-                // rollback done by tx manager
-            }
+            flush();
+        } catch (ConcurrentUpdateException e) {
+            TransactionHelper.setTransactionRollbackOnly();
+            throw e;
         }
     }
 
-    @Override
-    public int prepare(Xid xid) throws XAException {
-        int res = mapper.prepare(xid);
-        if (res == XA_RDONLY) {
-            // Read-only optimization, commit() won't be called by the TM.
-            // It's important to nevertheless send invalidations because
-            // Oracle, in tightly-coupled transaction mode, can return
-            // this status even when some changes were actually made
-            // (they just will be committed by another resource).
-            // See NXP-7943
-            commitDone();
-        }
-        return res;
-    }
-
-    @Override
-    public void commit(Xid xid, boolean onePhase) throws XAException {
-        try {
-            mapper.commit(xid, onePhase);
-        } finally {
-            commitDone();
-        }
-    }
-
-    protected void commitDone() throws XAException {
-        inTransaction = false;
+    public void commit() {
         try {
             sendInvalidationsToOthers();
-        } catch (NuxeoException e) {
-            log.error("Could not send invalidations", e);
-            throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
+        } finally {
+            inTransaction = false;
         }
     }
 
-    @Override
-    public void rollback(Xid xid) throws XAException {
+    public void rollback() {
         try {
             try {
-                mapper.rollback(xid);
+                mapper.rollback();
             } finally {
-                rollback();
+                context.clearCaches();
             }
         } finally {
             inTransaction = false;
-            // no invalidations to send
         }
-    }
-
-    @Override
-    public void forget(Xid xid) throws XAException {
-        mapper.forget(xid);
-    }
-
-    @Override
-    public Xid[] recover(int flag) throws XAException {
-        return mapper.recover(flag);
-    }
-
-    @Override
-    public boolean setTransactionTimeout(int seconds) throws XAException {
-        return mapper.setTransactionTimeout(seconds);
-    }
-
-    @Override
-    public int getTransactionTimeout() throws XAException {
-        return mapper.getTransactionTimeout();
     }
 
     public long getCacheSize() {

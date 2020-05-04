@@ -36,10 +36,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -96,8 +92,6 @@ public class SQLSession extends BaseSession {
 
     private final SessionImpl session;
 
-    private Document root;
-
     private final boolean negativeAclAllowed;
 
     private final boolean copyFindFreeNameDisabled;
@@ -105,8 +99,6 @@ public class SQLSession extends BaseSession {
     public SQLSession(SessionImpl session, Repository repository) {
         super(repository);
         this.session = session;
-        Node rootNode = session.getRootNode();
-        root = newDocument(rootNode);
         negativeAclAllowed = Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
         copyFindFreeNameDisabled = Framework.isBooleanPropertyTrue(COPY_FINDFREENAME_DISABLED_PROP);
     }
@@ -117,7 +109,7 @@ public class SQLSession extends BaseSession {
 
     @Override
     public Document getRootDocument() {
-        return root;
+        return newDocument(session.getRootNode());
     }
 
     @Override
@@ -128,7 +120,6 @@ public class SQLSession extends BaseSession {
     @Override
     public void destroy() {
         session.close();
-        root = null;
     }
 
     @Override
@@ -866,62 +857,27 @@ public class SQLSession extends BaseSession {
     }
 
     /*
-     * ----- Transaction / XAResource -----
+     * ----- Transaction management -----
      */
 
     @Override
-    public void beforeCompletion() {
-        session.beforeCompletion();
+    public void start() {
+        session.start();
     }
 
     @Override
-    public void start(Xid xid, int flags) throws XAException {
-        session.start(xid, flags);
+    public void end() {
+        session.end();
     }
 
     @Override
-    public int prepare(Xid xid) throws XAException {
-        return session.prepare(xid);
+    public void commit() {
+        session.commit();
     }
 
     @Override
-    public void commit(Xid xid, boolean onePhase) throws XAException {
-        session.commit(xid, onePhase);
-    }
-
-    @Override
-    public void rollback(Xid xid) throws XAException {
-        session.rollback(xid);
-    }
-
-    @Override
-    public void end(Xid xid, int flags) throws XAException {
-        session.end(xid, flags);
-    }
-
-    @Override
-    public boolean isSameRM(XAResource xaRes) throws XAException {
-        return xaRes == this;
-    }
-
-    @Override
-    public void forget(Xid xid) throws XAException {
-        session.forget(xid);
-    }
-
-    @Override
-    public Xid[] recover(int flag) throws XAException {
-        return session.recover(flag);
-    }
-
-    @Override
-    public boolean setTransactionTimeout(int seconds) throws XAException {
-        return session.setTransactionTimeout(seconds);
-    }
-
-    @Override
-    public int getTransactionTimeout() throws XAException {
-        return session.getTransactionTimeout();
+    public void rollback() {
+        session.rollback();
     }
 
 }

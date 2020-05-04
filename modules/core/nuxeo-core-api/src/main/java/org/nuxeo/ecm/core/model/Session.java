@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.transaction.xa.XAResource;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -39,7 +37,7 @@ import org.nuxeo.ecm.core.api.query.QueryFilter;
 /**
  * Internal Session accessing the low-level storage.
  */
-public interface Session<T extends QueryFilter> extends XAResource {
+public interface Session<T extends QueryFilter> {
 
     // parameters for the session contexts
     String USER_NAME = "username";
@@ -107,13 +105,6 @@ public interface Session<T extends QueryFilter> extends XAResource {
      * Saves this session.
      */
     void save();
-
-    /**
-     * Called before this session is committed or rolled back.
-     *
-     * @since 11.1
-     */
-    void beforeCompletion();
 
     /**
      * Destroys this session.
@@ -292,5 +283,37 @@ public interface Session<T extends QueryFilter> extends XAResource {
      * @since 11.1
      */
     String PROP_ALLOW_DELETE_UNDELETABLE_DOCUMENTS = "org.nuxeo.core.allowDeleteUndeletableDocuments";
+
+    /*
+     * ----- Transaction management -----
+     */
+
+    /**
+     * Start the transaction.
+     *
+     * @since 11.1
+     */
+    void start();
+
+    /**
+     * Called just before the transaction is committed or rolled back.
+     *
+     * @since 11.1
+     */
+    void end();
+
+    /**
+     * Commit the transaction.
+     *
+     * @since 11.1
+     */
+    void commit();
+
+    /**
+     * Rollback the transaction.
+     *
+     * @since 11.1
+     */
+    void rollback();
 
 }

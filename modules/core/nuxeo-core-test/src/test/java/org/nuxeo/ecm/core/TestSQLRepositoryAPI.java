@@ -4284,13 +4284,13 @@ public class TestSQLRepositoryAPI {
         // abort the transaction
         TransactionHelper.setTransactionRollbackOnly();
 
-        // attempt save in rollback-only state
-        try {
-            session.save();
-            fail("should not allow save when marked rollback-only");
-        } catch (NuxeoException e) {
-            assertEquals("Cannot use a session when transaction is marked rollback-only", e.getMessage());
-        }
+        // save is allowed in rollback-only state
+        session.save();
+        nextTransaction();
+
+        // the changes have been rolled back
+        file.refresh();
+        assertEquals("foo", file.getPropertyValue("dc:title"));
     }
 
     @Test

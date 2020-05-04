@@ -44,10 +44,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
@@ -108,6 +104,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         this.pathResolver = pathResolver;
         this.repository = repository;
         queryMakerService = Framework.getService(QueryMakerService.class);
+    }
+
+    @Override
+    public void close() {
+        closeConnection();
     }
 
     @Override
@@ -952,110 +953,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             throw new RuntimeException("Failed to mark binaries for gC", e);
         }
         log.debug("End of binaries GC mark");
-    }
-
-    /*
-     * ----- XAResource -----
-     */
-
-    protected static String systemToString(Object o) {
-        return o.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(o));
-    }
-
-    @Override
-    public void start(Xid xid, int flags) throws XAException {
-        try {
-            xaresource.start(xid, flags);
-            if (logger.isLogEnabled()) {
-                logger.log("XA start on " + systemToString(xid));
-            }
-        } catch (NuxeoException e) {
-            throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
-        } catch (XAException e) {
-            logger.error("XA start error on " + systemToString(xid), e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void end(Xid xid, int flags) throws XAException {
-        try {
-            xaresource.end(xid, flags);
-            if (logger.isLogEnabled()) {
-                logger.log("XA end on " + systemToString(xid));
-            }
-        } catch (NullPointerException e) {
-            // H2 when no active transaction
-            logger.error("XA end error on " + systemToString(xid), e);
-            throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
-        } catch (XAException e) {
-            if (flags != XAResource.TMFAIL) {
-                logger.error("XA end error on " + systemToString(xid), e);
-            }
-            throw e;
-        }
-    }
-
-    @Override
-    public int prepare(Xid xid) throws XAException {
-        try {
-            return xaresource.prepare(xid);
-        } catch (XAException e) {
-            logger.error("XA prepare error on  " + systemToString(xid), e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void commit(Xid xid, boolean onePhase) throws XAException {
-        try {
-            xaresource.commit(xid, onePhase);
-        } catch (XAException e) {
-            logger.error("XA commit error on  " + systemToString(xid), e);
-            throw e;
-        }
-    }
-
-    // rollback interacts with caches so is in RowMapper
-
-    @Override
-    public void forget(Xid xid) throws XAException {
-        xaresource.forget(xid);
-    }
-
-    @Override
-    public Xid[] recover(int flag) throws XAException {
-        return xaresource.recover(flag);
-    }
-
-    @Override
-    public boolean setTransactionTimeout(int seconds) throws XAException {
-        return xaresource.setTransactionTimeout(seconds);
-    }
-
-    @Override
-    public int getTransactionTimeout() throws XAException {
-        return xaresource.getTransactionTimeout();
-    }
-
-    @Override
-    public boolean isSameRM(XAResource xares) throws XAException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return connection != null;
-    }
-
-    @Override
-    public void connect(boolean noSharing) {
-        openConnections(noSharing);
-    }
-
-    @Override
-    public void disconnect() {
-        closeConnections();
     }
 
     /**
