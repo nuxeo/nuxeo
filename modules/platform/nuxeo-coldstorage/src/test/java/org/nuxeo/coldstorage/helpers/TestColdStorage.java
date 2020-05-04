@@ -333,12 +333,9 @@ public class TestColdStorage {
             assertTrue(listener.hasBeenFired(ColdStorageHelper.COLD_STORAGE_CONTENT_AVAILABLE_EVENT_NAME));
             assertEquals(expectedSizeOfDocs, listener.streamCapturedEvents().count());
 
-            List<String> docEventIds = listener.streamCapturedEvents() //
-                                               .map(event -> {
-                                                   DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
-                                                   return docCtx.getSourceDocument().getId();
-                                               }) //
-                                               .sorted() //
+            List<String> docEventIds = listener.streamCapturedEventContexts(DocumentEventContext.class)
+                                               .map(docCtx -> docCtx.getSourceDocument().getId())
+                                               .sorted()
                                                .collect(Collectors.toList());
 
             expectedAvailableDocIds.sort(Comparator.naturalOrder());

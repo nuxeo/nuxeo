@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.api.CoreSession.BINARY_FULLTEXT_MAIN_KEY;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.BINARYTEXT_UPDATED;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Function;
@@ -59,7 +59,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -991,11 +991,9 @@ public class TestSQLRepositoryFulltextQuery {
             assertEventSet(listener, "sessionSaved=2", "binaryTextUpdated=1");
 
             // check content of "binaryTextUpdated" event
-            Optional<Event> optEvent = listener.getLastCapturedEvent(DocumentEventTypes.BINARYTEXT_UPDATED);
-            assertTrue("binaryTextUpdated event not found", optEvent.isPresent());
+            EventContext eventCtx = listener.findLastCapturedEventContextOrElseThrow(BINARYTEXT_UPDATED);
 
-            Event event = optEvent.get();
-            Map<String, Serializable> props = event.getContext().getProperties();
+            Map<String, Serializable> props = eventCtx.getProperties();
             assertEquals(Boolean.TRUE, props.get("fulltextBinary")); // deprecated, not very useful
             assertEquals("fulltextBinary", props.get(DocumentEventTypes.SYSTEM_PROPERTY));
             String string = (String) props.get(DocumentEventTypes.SYSTEM_PROPERTY_VALUE);

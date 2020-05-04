@@ -50,7 +50,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.io.marshallers.json.document.ACPJsonWriter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BasePermissionsJsonEnricher;
@@ -185,10 +185,8 @@ public class DocumentBrowsingTest extends BaseTest {
             fetchInvalidations();
             note = RestServerInit.getNote(0, session);
             assertEquals("Another title", note.getTitle());
-            String comment = listener.getLastCapturedEvent(DocumentEventTypes.BEFORE_DOC_UPDATE)
-                                     .map(event -> (String) event.getContext().getProperty("comment"))
-                                     .orElseThrow(() -> new AssertionError("Comment is not present"));
-            assertEquals("a simple comment", comment);
+            EventContext ctx = listener.findLastCapturedEventContextOrElseThrow();
+            assertEquals("a simple comment", ctx.getProperty("comment"));
         }
     }
 

@@ -81,8 +81,8 @@ public class TransitionTest {
     }
 
     private String getLastComment(CapturingEventListener listener) {
-        return listener.getLastCapturedEvent(LifeCycleConstants.TRANSITION_EVENT)
-                       .map(event -> (String) event.getContext().getProperty("comment"))
+        return listener.findLastCapturedEventContext()
+                       .map(ctx -> (String) ctx.getProperty("comment"))
                        .orElseThrow(() -> new AssertionError("Unable to find last comment"));
     }
 

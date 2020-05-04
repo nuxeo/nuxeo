@@ -71,9 +71,8 @@ public class TestBridgeFromPropertyToTreeCommentNotification extends AbstractTes
             DocumentModel commentDocumentModel = session.getDocument(new IdRef(comment.getId()));
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, commentDocumentModel, commentParentDocumentModel,
                     commentedDocumentModel);
 
@@ -100,9 +99,7 @@ public class TestBridgeFromPropertyToTreeCommentNotification extends AbstractTes
             DocumentModel commentParentDocumentModel = session.getDocument(
                     new IdRef((String) commentDocModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, commentDocModel, commentParentDocumentModel,
                     commentedDocumentModel);
             // No additional mail was sent
@@ -127,9 +124,7 @@ public class TestBridgeFromPropertyToTreeCommentNotification extends AbstractTes
                     new IdRef((String) replyDocumentModel.getPropertyValue(COMMENT_PARENT_ID_PROPERTY)));
             transactionalFeature.nextTransaction();
 
-            Event expectedEvent = listener.streamCapturedEvents()
-                                          .findFirst()
-                                          .orElseThrow(() -> new AssertionError("Event wasn't fired"));
+            Event expectedEvent = listener.findFirstCapturedEventOrElseThrow();
             checkDocumentEventContext(expectedEvent, replyDocumentModel, commentParentDocumentModel,
                     commentedDocumentModel);
             List<MailMessage> mails = emailsResult.getMails();
