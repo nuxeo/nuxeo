@@ -45,7 +45,7 @@ void setGitHubBuildStatus(String context, String message, String state) {
 }
 
 String getMavenArgs() {
-  def args = '-B -nsu'
+  def args = '-B -nsu -Dnuxeo.skip.enforcer=true'
   if (!isPullRequest()) {
     args += ' -Prelease'
   }
@@ -311,8 +311,6 @@ pipeline {
     TEST_KAFKA_PORT = '9092'
     TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
     TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT = '1m'
-    // Elasticsearch might take longer
-    TEST_ELASTICSEARCH_ROLLOUT_STATUS_TIMEOUT = '3m'
     // Elasticsearch and Kafka might take longer
     TEST_LONG_ROLLOUT_STATUS_TIMEOUT = '3m'
     NUXEO_IMAGE_NAME = 'nuxeo'
@@ -513,8 +511,8 @@ pipeline {
           ----------------------------------------
           Package
           ----------------------------------------"""
-          sh "mvn ${MAVEN_ARGS} -f server/pom.xml -DskipTests install"
-          sh "mvn ${MAVEN_ARGS} -f packages/pom.xml -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -f server/pom.xml -DskipTests install"
+          sh "mvn ${MAVEN_ARGS} -Dnuxeo.skip.enforcer=false -f packages/pom.xml -DskipTests install"
         }
       }
       post {
