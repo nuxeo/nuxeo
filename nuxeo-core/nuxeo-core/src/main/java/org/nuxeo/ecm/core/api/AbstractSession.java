@@ -367,11 +367,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected DocumentModel writeModel(Document doc, DocumentModel docModel) {
-        return writeModel(doc, docModel, false);
-    }
-
-    protected DocumentModel writeModel(Document doc, DocumentModel docModel, boolean create) {
-        return DocumentModelFactory.writeDocumentModel(docModel, doc, create);
+        return DocumentModelFactory.writeDocumentModel(docModel, doc);
     }
 
     @Override
@@ -723,7 +719,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         getLifeCycleService().initialize(doc, initialLifecycleState);
 
         // init document with data from doc model
-        docModel = writeModel(doc, docModel, true); // in create mode
+        docModel = writeModel(doc, docModel);
 
         if (!Boolean.TRUE.equals(docModel.getContextData(VersioningService.SKIP_VERSIONING))) {
             // during remote publishing we want to skip versioning

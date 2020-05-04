@@ -187,11 +187,11 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext, boolean create) throws PropertyException {
+    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
         if (isSchemaForProxy(dp.getName())) {
-            return proxy.writeDocumentPart(dp, writeContext, create);
+            return proxy.writeDocumentPart(dp, writeContext);
         } else {
-            return target.writeDocumentPart(dp, writeContext, create);
+            return target.writeDocumentPart(dp, writeContext);
         }
     }
 
