@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.bulk.message.BulkCommand;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.scroll.DocumentScrollRequest;
+import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
@@ -154,13 +155,22 @@ public class BulkScrollerComputation extends AbstractComputation {
     }
 
     protected Scroll buildScroll(BulkCommand command) {
-        ScrollRequest request = DocumentScrollRequest.builder(command.getQuery())
-                                                     .username(command.getUsername())
-                                                     .repository(command.getRepository())
-                                                     .size(scrollSize)
-                                                     .timeout(Duration.ofSeconds(scrollKeepAliveSeconds))
-                                                     .name(command.getScroller())
-                                                     .build();
+        ScrollRequest request;
+        if (command.useGenericScroller()) {
+            request = GenericScrollRequest.builder(command.getScroller(), command.getQuery())
+                                          .options(command.getParams())
+                                          .size(scrollSize)
+                                          .build();
+
+        } else {
+            request = DocumentScrollRequest.builder(command.getQuery())
+                                           .username(command.getUsername())
+                                           .repository(command.getRepository())
+                                           .size(scrollSize)
+                                           .timeout(Duration.ofSeconds(scrollKeepAliveSeconds))
+                                           .name(command.getScroller())
+                                           .build();
+        }
         ScrollService service = Framework.getService(ScrollService.class);
         return service.scroll(request);
     }

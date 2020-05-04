@@ -139,7 +139,7 @@ public abstract class AbstractBulkComputation extends AbstractComputation {
                 LoginContext loginContext = SYSTEM_USERNAME.equals(username) ? Framework.login()
                         : Framework.loginAsUser(username);
                 String repository = command.getRepository();
-                try (CloseableCoreSession session = CoreInstance.openCoreSession(repository)) {
+                try (CloseableCoreSession session = repository == null ? null : CoreInstance.openCoreSession(repository)) {
                     compute(session, batch, command.getParams());
                 } finally {
                     if (loginContext != null) {
