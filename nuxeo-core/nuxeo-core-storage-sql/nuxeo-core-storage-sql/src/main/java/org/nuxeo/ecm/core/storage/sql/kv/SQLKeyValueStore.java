@@ -916,12 +916,13 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                     throw new NuxeoException("TODO expected and value have different types");
                     // TODO in that case we must set to null the old value column
                 }
-                String sql = "UPDATE " + tableName + " SET " + valueCol.getQuotedName() + " = ?, " + ttlColName
+                // Prevent ORA-24816 by setting the long value at the end
+                String sql = "UPDATE " + tableName + " SET " + ttlColName + " = ?, " + valueCol.getQuotedName()
                         + " = ? WHERE " + keyColName + " = ? AND " + dialect.getQuotedNameForExpression(expectedCol)
                         + " = ?";
                 try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                    setToPreparedStatement(sql, ps, Arrays.asList(valueCol, ttlCol, keyCol, expectedCol),
-                            Arrays.asList((Serializable) value, ttlToStorage(ttl), key, (Serializable) expected));
+                    setToPreparedStatement(sql, ps, Arrays.asList(ttlCol, valueCol, keyCol, expectedCol),
+                            Arrays.asList(ttlToStorage(ttl), (Serializable) value, key, (Serializable) expected));
                     int count = ps.executeUpdate();
                     boolean set = count == 1;
                     if (logger.isLogEnabled()) {
