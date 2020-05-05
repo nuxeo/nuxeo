@@ -262,12 +262,12 @@ public class TestAnnotationService {
         // external comment uses a page provider -> wait indexation
         transactionalFeature.nextTransaction();
 
-        annotation = annotationService.getExternalAnnotation(session, entityId);
+        annotation = annotationService.getExternalAnnotation(session, annotatedDocModel.getId(), entityId);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
 
         try {
             CoreSession bobSession = coreFeature.getCoreSession("bob");
-            annotationService.getExternalAnnotation(bobSession, entityId);
+            annotationService.getExternalAnnotation(bobSession, annotatedDocModel.getId(), entityId);
             fail("bob should not be able to get annotation");
         } catch (CommentNotFoundException e) {
             assertEquals(String.format("The external comment %s does not exist.", entityId), e.getMessage());
@@ -290,7 +290,15 @@ public class TestAnnotationService {
 
         ((ExternalEntity) annotation).setEntity(entity);
         try {
-            annotationService.updateExternalAnnotation(session, "fakeId", annotation);
+            annotationService.updateExternalAnnotation(session, "fakeId", entityId, annotation);
+            fail("The external annotation should not exist");
+        } catch (CommentNotFoundException e) {
+            // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
+        }
+        try {
+            annotationService.updateExternalAnnotation(session, annotatedDocModel.getId(), "fakeId", annotation);
             fail("The external annotation should not exist");
         } catch (CommentNotFoundException e) {
             // ok
@@ -298,13 +306,13 @@ public class TestAnnotationService {
             assertNotNull(e.getMessage());
         }
 
-        annotationService.updateExternalAnnotation(session, entityId, annotation);
-        annotation = annotationService.getExternalAnnotation(session, entityId);
+        annotation = annotationService.updateExternalAnnotation(session, annotatedDocModel.getId(), entityId,
+                annotation);
         assertEquals(entityId, ((ExternalEntity) annotation).getEntityId());
 
         try {
             CoreSession bobSession = coreFeature.getCoreSession("bob");
-            annotationService.updateExternalAnnotation(bobSession, entityId, annotation);
+            annotationService.updateExternalAnnotation(bobSession, annotatedDocModel.getId(), entityId, annotation);
             fail("bob should not be able to edit annotation");
         } catch (CommentNotFoundException e) {
             assertEquals("The external comment foo does not exist.", e.getMessage());
@@ -325,7 +333,16 @@ public class TestAnnotationService {
         assertTrue(session.exists(new IdRef(annotation.getId())));
 
         try {
-            annotationService.deleteExternalAnnotation(session, "toto");
+            annotationService.deleteExternalAnnotation(session, "fakeId", entityId);
+            fail("Deleting an unknown annotation should have failed");
+        } catch (CommentNotFoundException e) {
+            // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
+        }
+
+        try {
+            annotationService.deleteExternalAnnotation(session, annotatedDocModel.getId(), "fakeId");
             fail("Deleting an unknown annotation should have failed");
         } catch (CommentNotFoundException e) {
             // ok
@@ -335,14 +352,13 @@ public class TestAnnotationService {
 
         try {
             CoreSession bobSession = coreFeature.getCoreSession("bob");
-            annotationService.deleteAnnotation(bobSession, annotation.getId());
+            annotationService.deleteExternalAnnotation(bobSession, annotatedDocModel.getId(), entityId);
             fail("bob should not be able to delete annotation");
-        } catch (CommentSecurityException e) {
-            assertEquals("The user bob cannot delete comments of the document " + annotatedDocModel.getId(),
-                    e.getMessage());
+        } catch (CommentNotFoundException e) {
+            assertEquals("The external comment foo does not exist.", e.getMessage());
         }
 
-        annotationService.deleteExternalAnnotation(session, entityId);
+        annotationService.deleteExternalAnnotation(session, annotatedDocModel.getId(), entityId);
         assertFalse(session.exists(new IdRef(annotation.getId())));
     }
 

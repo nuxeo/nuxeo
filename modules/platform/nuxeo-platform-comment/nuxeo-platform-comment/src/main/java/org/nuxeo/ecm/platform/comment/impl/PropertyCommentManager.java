@@ -24,6 +24,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ANCESTOR_IDS_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
@@ -67,7 +68,12 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated(since = "11.1")
 public class PropertyCommentManager extends AbstractCommentManager {
 
+    /** @deprecated since 11.1, use {@link #GET_EXTERNAL_COMMENT_PAGEPROVIDER_NAME} instead */
+    @Deprecated(since = "11.1")
     protected static final String GET_COMMENT_PAGEPROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
+
+    /** @since 11.1 */
+    protected static final String GET_EXTERNAL_COMMENT_PAGEPROVIDER_NAME = "GET_EXTERNAL_COMMENT_BY_COMMENT_ANCESTOR";
 
     protected static final String GET_COMMENTS_FOR_DOC_PAGEPROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT";
 
@@ -335,8 +341,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) throws CommentNotFoundException {
-        DocumentModel commentModel = getExternalCommentModel(session, entityId);
+    public Comment getExternalComment(CoreSession session, String documentId, String entityId)
+            throws CommentNotFoundException {
+        DocumentModel commentModel = getExternalCommentModel(session, documentId, entityId);
         if (commentModel == null) {
             throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
@@ -349,9 +356,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
+    public Comment updateExternalComment(CoreSession session, String documentId, String entityId, Comment comment)
             throws CommentNotFoundException {
-        DocumentModel commentModel = getExternalCommentModel(session, entityId);
+        DocumentModel commentModel = getExternalCommentModel(session, documentId, entityId);
         if (commentModel == null) {
             throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
@@ -374,8 +381,9 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) throws CommentNotFoundException {
-        DocumentModel commentModel = getExternalCommentModel(session, entityId);
+    public void deleteExternalComment(CoreSession session, String documentId, String entityId)
+            throws CommentNotFoundException {
+        DocumentModel commentModel = getExternalCommentModel(session, documentId, entityId);
         if (commentModel == null) {
             throw new CommentNotFoundException("The external comment " + entityId + " does not exist.");
         }
@@ -401,6 +409,8 @@ public class PropertyCommentManager extends AbstractCommentManager {
         switch (feature) {
         case COMMENTS_LINKED_WITH_PROPERTY:
             return true;
+        case COMMENTS_ARE_SPECIAL_CHILDREN:
+            return false;
         default:
             throw new UnsupportedOperationException(feature.name());
         }
@@ -413,12 +423,20 @@ public class PropertyCommentManager extends AbstractCommentManager {
     }
 
     @SuppressWarnings("unchecked")
-    protected DocumentModel getExternalCommentModel(CoreSession session, String entityId) {
+    protected DocumentModel getExternalCommentModel(CoreSession session, String documentId, String entityId) {
         return CoreInstance.doPrivileged(session, s -> {
             PageProviderService ppService = Framework.getService(PageProviderService.class);
             Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
-            List<DocumentModel> results = ((PageProvider<DocumentModel>) ppService.getPageProvider(
-                    GET_COMMENT_PAGEPROVIDER_NAME, null, 1L, 0L, props, entityId)).getCurrentPage();
+            PageProvider<DocumentModel> pageProvider;
+            // backward compatibility
+            if (isBlank(documentId)) {
+                pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(GET_COMMENT_PAGEPROVIDER_NAME, null,
+                        1L, 0L, props, entityId);
+            } else {
+                pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                        GET_EXTERNAL_COMMENT_PAGEPROVIDER_NAME, null, 1L, 0L, props, documentId, entityId);
+            }
+            List<DocumentModel> results = pageProvider.getCurrentPage();
             if (results.isEmpty()) {
                 return null;
             }
