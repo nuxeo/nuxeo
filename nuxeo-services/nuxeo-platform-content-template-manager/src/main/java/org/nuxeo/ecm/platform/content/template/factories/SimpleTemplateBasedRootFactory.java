@@ -37,6 +37,8 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
     public void createContentStructure(DocumentModel eventDoc) {
         initSession(eventDoc);
 
+        boolean initRootAcl = shouldInitAcl(eventDoc);
+
         for (TemplateItemDescriptor item : template) {
             if (!shouldCreateDocument(eventDoc.getId(), item.getId(), item.getTypeName())) {
                 continue;
@@ -55,7 +57,9 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
             session.save();
         }
         // init root ACL if really empty
-        setAcl(acl, eventDoc.getRef());
+        if (initRootAcl) {
+            setAcl(acl, eventDoc.getRef());
+        }
     }
 
     /**
@@ -72,6 +76,29 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
         try (IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL)) {
             return !it.iterator().hasNext();
         }
+    }
+
+    /**
+     * Checks if we should init the acl of the root document.
+     * <p>
+     * The root init acl should occur only once, At the beginning where root document doesn't contain any child.
+     *
+     * @return {@code true} if the root document doesn't contain any child of template document type, {@code false}
+     *         otherwise
+     */
+    protected boolean shouldInitAcl(DocumentModel rootDoc) {
+        for (TemplateItemDescriptor item : template) {
+            String query = String.format("SELECT %s FROM Document WHERE %s = '%s' AND %s = '%s'", //
+                    NXQL.ECM_UUID, //
+                    NXQL.ECM_PARENTID, rootDoc.getId(), //
+                    NXQL.ECM_PRIMARYTYPE, item.getTypeName());
+            try (IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL)) {
+                if (it.iterator().hasNext()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }
