@@ -54,6 +54,8 @@ public class AnnotationAdapter extends DefaultAdapter {
 
     @POST
     public Response createAnnotation(Annotation annotation) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+        annotation.setParentId(doc.getId());
         AnnotationService annotationService = Framework.getService(AnnotationService.class);
         // Set logged user as author
         annotation.setAuthor(getContext().getCoreSession().getPrincipal().getName());
@@ -99,13 +101,16 @@ public class AnnotationAdapter extends DefaultAdapter {
     @GET
     @Path("external/{entityId}")
     public Annotation getExternalAnnotation(@PathParam("entityId") String entityId) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         AnnotationService annotationService = Framework.getService(AnnotationService.class);
-        return annotationService.getExternalAnnotation(getContext().getCoreSession(), entityId);
+        return annotationService.getExternalAnnotation(getContext().getCoreSession(), doc.getId(), entityId);
     }
 
     @PUT
     @Path("{annotationId}")
     public Annotation updateAnnotation(@PathParam("annotationId") String annotationId, Annotation annotation) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+        annotation.setParentId(doc.getId());
         AnnotationService annotationService = Framework.getService(AnnotationService.class);
         // Fetch original annotation author
         CoreSession session = getContext().getCoreSession();
@@ -118,12 +123,13 @@ public class AnnotationAdapter extends DefaultAdapter {
     @PUT
     @Path("external/{entityId}")
     public Annotation updateExternalAnnotation(@PathParam("entityId") String entityId, Annotation annotation) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         AnnotationService annotationService = Framework.getService(AnnotationService.class);
         // Fetch original annotation author
         CoreSession session = getContext().getCoreSession();
-        String author = annotationService.getExternalAnnotation(session, entityId).getAuthor();
+        String author = annotationService.getExternalAnnotation(session, doc.getId(), entityId).getAuthor();
         annotation.setAuthor(author);
-        annotationService.updateExternalAnnotation(getContext().getCoreSession(), entityId, annotation);
+        annotationService.updateExternalAnnotation(getContext().getCoreSession(), doc.getId(), entityId, annotation);
         return annotation;
     }
 
@@ -138,8 +144,9 @@ public class AnnotationAdapter extends DefaultAdapter {
     @DELETE
     @Path("external/{entityId}")
     public Response deleteExternalAnnotation(@PathParam("entityId") String entityId) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         AnnotationService annotationService = Framework.getService(AnnotationService.class);
-        annotationService.deleteExternalAnnotation(getContext().getCoreSession(), entityId);
+        annotationService.deleteExternalAnnotation(getContext().getCoreSession(), doc.getId(), entityId);
         return Response.noContent().build();
     }
 

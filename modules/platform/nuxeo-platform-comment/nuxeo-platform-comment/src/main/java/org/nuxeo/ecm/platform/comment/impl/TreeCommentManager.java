@@ -26,6 +26,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.nuxeo.ecm.core.api.VersioningOption.NONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
@@ -44,7 +45,6 @@ import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_PARENT
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_ROOT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
-import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
@@ -98,7 +98,12 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     protected static final String COMMENT_NAME = "comment";
 
+    /** @deprecated since 11.1, use {@link #GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME} instead */
+    @Deprecated(since = "11.1")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     protected static final String GET_COMMENT_PAGE_PROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
+
+    protected static final String GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME = "GET_EXTERNAL_COMMENT_BY_ECM_ANCESTOR";
 
     protected static final String GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT_BY_ECM_PARENT";
 
@@ -148,8 +153,8 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) {
-        var commentDoc = getExternalCommentModel(session, entityId);
+    public Comment getExternalComment(CoreSession session, String documentId, String entityId) {
+        var commentDoc = getExternalCommentModel(session, documentId, entityId);
         return commentDoc.getAdapter(Comment.class);
     }
 
@@ -253,9 +258,9 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment) {
+    public Comment updateExternalComment(CoreSession session, String documentId, String entityId, Comment comment) {
         // Get the external comment doc model
-        DocumentModel commentDoc = getExternalCommentModel(session, entityId);
+        DocumentModel commentDoc = getExternalCommentModel(session, documentId, entityId);
         return update(session, comment, commentDoc);
     }
 
@@ -292,8 +297,8 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) {
-        DocumentModel commentDoc = getExternalCommentModel(session, entityId);
+    public void deleteExternalComment(CoreSession session, String documentId, String entityId) {
+        DocumentModel commentDoc = getExternalCommentModel(session, documentId, entityId);
         removeComment(session, commentDoc.getRef());
     }
 
@@ -332,11 +337,13 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     @Override
     public boolean hasFeature(Feature feature) {
-        if (COMMENTS_LINKED_WITH_PROPERTY.equals(feature)) {
+        switch (feature) {
+        case COMMENTS_LINKED_WITH_PROPERTY:
+        case COMMENTS_ARE_SPECIAL_CHILDREN:
             return true;
+        default:
+            throw new UnsupportedOperationException(feature.name());
         }
-
-        throw new UnsupportedOperationException(feature.name());
     }
 
     @Override
@@ -369,11 +376,19 @@ public class TreeCommentManager extends AbstractCommentManager {
      *         {@link CommentNotFoundException}
      */
     @SuppressWarnings("unchecked")
-    protected DocumentModel getExternalCommentModel(CoreSession session, String entityId) {
+    protected DocumentModel getExternalCommentModel(CoreSession session, String documentId, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_COMMENT_PAGE_PROVIDER_NAME, Collections.emptyList(), 1L, 0L, props, entityId);
+        PageProvider<DocumentModel> pageProvider;
+        // backward compatibility
+        if (isBlank(documentId)) {
+            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(GET_COMMENT_PAGE_PROVIDER_NAME,
+                    Collections.emptyList(), 1L, 0L, props, entityId);
+        } else {
+            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME, Collections.emptyList(), 1L, 0L, props, documentId,
+                    entityId);
+        }
         List<DocumentModel> documents = pageProvider.getCurrentPage();
         if (documents.isEmpty()) {
             throw new CommentNotFoundException(String.format("The external comment %s does not exist.", entityId));

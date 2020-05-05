@@ -3,6 +3,8 @@
 
   <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService" point="providers">
 
+    <!-- deprecated since 11.1 -->
+    <!-- TreeCommentManager & PropertyCommentManager use it to provide backward compatibility on external entity API -->
     <coreQueryPageProvider name="GET_COMMENT_AS_EXTERNAL_ENTITY">
       <pattern>
         SELECT * FROM Comment WHERE ecm:path STARTSWITH '/' AND externalEntity:entityId = ?
@@ -11,6 +13,7 @@
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
+    <!-- deprecated since 11.1 / PropertyCommentManager uses it -->
     <coreQueryPageProvider name="GET_COMMENTS_FOR_DOCUMENT">
       <pattern>
         SELECT * FROM Comment WHERE comment:parentId = ?
@@ -19,15 +22,16 @@
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
-    <!-- deprecated since 11.1 -->
+    <!-- deprecated since 11.1 / unused -->
     <coreQueryPageProvider name="GET_ANNOTATION_AS_EXTERNAL_ENTITY">
       <pattern>
-        SELECT * FROM Annotation WHERE ecm:path STARTSWITH '/' AND  externalEntity:entityId = ?
+        SELECT * FROM Annotation WHERE ecm:path STARTSWITH '/' AND externalEntity:entityId = ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
+    <!-- deprecated since 11.1 / AnnotationService uses it when PropertyCommentManager is in place-->
     <coreQueryPageProvider name="GET_ANNOTATIONS_FOR_DOCUMENT">
       <pattern>
         SELECT * FROM Annotation WHERE comment:parentId = ? AND annotation:xpath = ?
@@ -36,9 +40,37 @@
       <maxPageSize>0</maxPageSize>
     </coreQueryPageProvider>
 
+    <!-- deprecated since 11.1 / PropertyCommentManager uses it -->
+    <coreQueryPageProvider name="GET_EXTERNAL_COMMENT_BY_COMMENT_ANCESTOR">
+      <pattern>
+        SELECT * FROM Comment WHERE comment:ancestorIds = ? AND externalEntity:entityId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <!-- used by TreeCommentManager -->
     <coreQueryPageProvider name="GET_COMMENTS_FOR_DOCUMENT_BY_ECM_PARENT">
       <pattern>
         SELECT * FROM Comment WHERE ecm:parentId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <!-- used by TreeCommentManager -->
+    <coreQueryPageProvider name="GET_EXTERNAL_COMMENT_BY_ECM_ANCESTOR">
+      <pattern>
+        SELECT * FROM Comment WHERE ecm:ancestorId = ? AND externalEntity:entityId = ?
+      </pattern>
+      <pageSize>0</pageSize>
+      <maxPageSize>0</maxPageSize>
+    </coreQueryPageProvider>
+
+    <!-- AnnotationService uses it when TreeCommentManager is in place-->
+    <coreQueryPageProvider name="GET_ANNOTATIONS_FOR_DOCUMENT_BY_ECM_PARENT">
+      <pattern>
+        SELECT * FROM Annotation WHERE ecm:parentId = ? AND annotation:xpath = ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>

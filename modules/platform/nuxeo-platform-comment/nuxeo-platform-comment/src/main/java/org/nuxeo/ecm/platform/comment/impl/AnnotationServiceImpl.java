@@ -23,14 +23,17 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.util.Collections.singletonMap;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
+import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_ARE_SPECIAL_CHILDREN;
 import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
+import static org.nuxeo.ecm.platform.comment.impl.AbstractCommentManager.COMMENTS_DIRECTORY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -54,11 +57,17 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class AnnotationServiceImpl extends DefaultComponent implements AnnotationService {
 
-    /** @deprecated since 11.1 because unused. */
+    /** @deprecated since 11.1, because unused. */
     @Deprecated(since = "11.1")
     protected static final String GET_ANNOTATION_PAGEPROVIDER_NAME = "GET_ANNOTATION_AS_EXTERNAL_ENTITY";
 
+    /** @deprecated since 11.1, because unused. */
+    @Deprecated(since = "11.1")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     protected static final String GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME = "GET_ANNOTATIONS_FOR_DOCUMENT";
+
+    /** @since 11.1 */
+    protected static final String GET_ANNOTATIONS_FOR_DOCUMENT_PAGE_PROVIDER_NAME = "GET_ANNOTATIONS_FOR_DOCUMENT_BY_ECM_PARENT";
 
     @Override
     public Annotation createAnnotation(CoreSession session, Annotation annotation) throws CommentSecurityException {
@@ -72,7 +81,6 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Annotation> getAnnotations(CoreSession session, String documentId, String xpath)
             throws CommentNotFoundException, CommentSecurityException {
         DocumentRef docRef = new IdRef(documentId);
@@ -84,29 +92,46 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
         } catch (DocumentNotFoundException dnfe) {
             throw new CommentNotFoundException(String.format("The document %s does not exist.", docRef), dnfe);
         }
-        DocumentModel annotatedDoc = session.getDocument(docRef);
-        CommentManager commentManager = Framework.getService(CommentManager.class);
-        if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
-            PageProviderService ppService = Framework.getService(PageProviderService.class);
-            return CoreInstance.doPrivileged(session, s -> {
-                Map<String, Serializable> props = Collections.singletonMap(CORE_SESSION_PROPERTY, (Serializable) s);
-                PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                        GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, null, null, null, props, documentId, xpath);
+        return streamAnnotations(session, documentId, xpath).map(doc -> doc.getAdapter(Annotation.class))
+                                                            .collect(Collectors.toList());
+    }
 
-                return pageProvider.getCurrentPage()
-                                   .stream()
-                                   .map(doc -> doc.getAdapter(Annotation.class))
-                                   .collect(Collectors.toList());
-            });
-        }
+    protected Stream<DocumentModel> streamAnnotations(CoreSession session, String documentId, String xpath) {
+        DocumentModel annotatedDoc = session.getDocument(new IdRef(documentId));
+        CommentManager commentManager = Framework.getService(CommentManager.class);
         return CoreInstance.doPrivileged(session, s -> {
-            return commentManager.getComments(s, annotatedDoc)
+            if (commentManager.hasFeature(COMMENTS_LINKED_WITH_PROPERTY)) {
+                Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) s);
+                List<DocumentModel> docs = getPageProviderPage(GET_ANNOTATIONS_FOR_DOC_PAGEPROVIDER_NAME, props, documentId, xpath);
+                docs.forEach(doc -> doc.detach(true)); // due to privileged session
+                return docs;
+            } else if (commentManager.hasFeature(COMMENTS_ARE_SPECIAL_CHILDREN)) {
+                // handle first comment/reply cases
+                String parentId = documentId;
+                if (!annotatedDoc.hasSchema(COMMENT_SCHEMA) && s.hasChild(annotatedDoc.getRef(), COMMENTS_DIRECTORY)) {
+                    DocumentModel commentsFolder = s.getChild(annotatedDoc.getRef(), COMMENTS_DIRECTORY);
+                    parentId = commentsFolder.getId();
+                }
+                // when comments are special children we can leverage inherited acls
+                Map<String, Serializable> props = Map.of(CORE_SESSION_PROPERTY, (Serializable) session);
+                return getPageProviderPage(GET_ANNOTATIONS_FOR_DOCUMENT_PAGE_PROVIDER_NAME, props, parentId, xpath);
+            }
+            // provide a poor support for deprecated implementations
+            return commentManager.getComments(session, annotatedDoc)
                                  .stream()
                                  .filter(annotationModel -> ANNOTATION_DOC_TYPE.equals(annotationModel.getType())
                                          && xpath.equals(annotationModel.getPropertyValue(ANNOTATION_XPATH_PROPERTY)))
-                                 .map(doc -> doc.getAdapter(Annotation.class))
                                  .collect(Collectors.toList());
-        });
+        }).stream();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<DocumentModel> getPageProviderPage(String ppName, Map<String, Serializable> props,
+            Object... parameters) {
+        var ppService = Framework.getService(PageProviderService.class);
+        var pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(ppName, null, null, null, props,
+                parameters);
+        return pageProvider.getCurrentPage();
     }
 
     @Override
@@ -121,21 +146,23 @@ public class AnnotationServiceImpl extends DefaultComponent implements Annotatio
     }
 
     @Override
-    public Annotation getExternalAnnotation(CoreSession session, String entityId)
+    public Annotation getExternalAnnotation(CoreSession session, String documentId, String entityId)
             throws CommentNotFoundException, CommentSecurityException {
-        return (Annotation) Framework.getService(CommentManager.class).getExternalComment(session, entityId);
+        return (Annotation) Framework.getService(CommentManager.class)
+                                     .getExternalComment(session, documentId, entityId);
     }
 
     @Override
-    public void updateExternalAnnotation(CoreSession session, String entityId, Annotation annotation)
-            throws CommentNotFoundException, CommentSecurityException {
-        Framework.getService(CommentManager.class).updateExternalComment(session, entityId, annotation);
+    public Annotation updateExternalAnnotation(CoreSession session, String documentId, String entityId,
+            Annotation annotation) throws CommentNotFoundException, CommentSecurityException {
+        return (Annotation) Framework.getService(CommentManager.class)
+                                     .updateExternalComment(session, documentId, entityId, annotation);
     }
 
     @Override
-    public void deleteExternalAnnotation(CoreSession session, String entityId)
+    public void deleteExternalAnnotation(CoreSession session, String documentId, String entityId)
             throws CommentNotFoundException, CommentSecurityException {
-        Framework.getService(CommentManager.class).deleteExternalComment(session, entityId);
+        Framework.getService(CommentManager.class).deleteExternalComment(session, documentId, entityId);
     }
 
     /**

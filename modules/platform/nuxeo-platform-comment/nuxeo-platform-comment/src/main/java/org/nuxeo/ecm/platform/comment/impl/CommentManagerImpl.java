@@ -22,12 +22,12 @@ package org.nuxeo.ecm.platform.comment.impl;
 import static java.util.Objects.requireNonNullElseGet;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_AUTHOR_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_CREATION_DATE_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_DOC_TYPE;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_SCHEMA;
 import static org.nuxeo.ecm.platform.comment.api.CommentConstants.COMMENT_TEXT_PROPERTY;
-import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
 
 import java.text.SimpleDateFormat;
@@ -485,19 +485,20 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) throws NuxeoException {
+    public Comment getExternalComment(CoreSession session, String documentId, String entityId) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Get a comment from its external entity id is not possible through this implementation");
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
+    public Comment updateExternalComment(CoreSession session, String documentId, String entityId, Comment comment)
+            throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Update a comment from its external entity id is not possible through this implementation");
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) throws NuxeoException {
+    public void deleteExternalComment(CoreSession session, String documentId, String entityId) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Delete a comment from its external entity id is not possible through this implementation");
     }
@@ -506,6 +507,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     public boolean hasFeature(Feature feature) {
         switch (feature) {
         case COMMENTS_LINKED_WITH_PROPERTY:
+        case COMMENTS_ARE_SPECIAL_CHILDREN:
             return false;
         default:
             throw new UnsupportedOperationException(feature.name());

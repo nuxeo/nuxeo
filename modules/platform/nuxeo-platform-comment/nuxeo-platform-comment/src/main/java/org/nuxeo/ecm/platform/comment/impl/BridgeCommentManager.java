@@ -205,21 +205,21 @@ public class BridgeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId)
+    public Comment getExternalComment(CoreSession session, String documentId, String entityId)
             throws CommentNotFoundException, CommentSecurityException {
-        return second.getExternalComment(session, entityId);
+        return second.getExternalComment(session, documentId, entityId);
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
+    public Comment updateExternalComment(CoreSession session, String documentId, String entityId, Comment comment)
             throws CommentNotFoundException, CommentSecurityException {
-        return second.updateExternalComment(session, entityId, comment);
+        return second.updateExternalComment(session, documentId, entityId, comment);
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId)
+    public void deleteExternalComment(CoreSession session, String documentId, String entityId)
             throws CommentNotFoundException, CommentSecurityException {
-        second.deleteExternalComment(session, entityId);
+        second.deleteExternalComment(session, documentId, entityId);
     }
 
     @Override

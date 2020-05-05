@@ -51,6 +51,8 @@ public class CommentAdapter extends DefaultAdapter {
 
     @POST
     public Response createComment(Comment comment) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+        comment.setParentId(doc.getId());
         CommentManager commentManager = Framework.getService(CommentManager.class);
         // Set logged user as author
         comment.setAuthor(getContext().getCoreSession().getPrincipal().getName());
@@ -77,13 +79,16 @@ public class CommentAdapter extends DefaultAdapter {
     @GET
     @Path("external/{entityId}")
     public Comment getExternalComment(@PathParam("entityId") String entityId) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         CommentManager commentManager = Framework.getService(CommentManager.class);
-        return commentManager.getExternalComment(getContext().getCoreSession(), entityId);
+        return commentManager.getExternalComment(getContext().getCoreSession(), doc.getId(), entityId);
     }
 
     @PUT
     @Path("{commentId}")
     public Response updateComment(@PathParam("commentId") String commentId, Comment comment) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
+        comment.setParentId(doc.getId());
         CommentManager commentManager = Framework.getService(CommentManager.class);
         // Fetch original comment author
         CoreSession session = getContext().getCoreSession();
@@ -96,12 +101,13 @@ public class CommentAdapter extends DefaultAdapter {
     @PUT
     @Path("external/{entityId}")
     public Comment updateExternalComment(@PathParam("entityId") String entityId, Comment comment) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         CommentManager commentManager = Framework.getService(CommentManager.class);
         // Fetch original comment author
         CoreSession session = getContext().getCoreSession();
-        String author = commentManager.getExternalComment(session, entityId).getAuthor();
+        String author = commentManager.getExternalComment(session, doc.getId(), entityId).getAuthor();
         comment.setAuthor(author);
-        commentManager.updateExternalComment(session, entityId, comment);
+        commentManager.updateExternalComment(session, doc.getId(), entityId, comment);
         return comment;
     }
 
@@ -116,8 +122,9 @@ public class CommentAdapter extends DefaultAdapter {
     @DELETE
     @Path("external/{entityId}")
     public Response deleteExternalComment(@PathParam("entityId") String entityId) {
+        DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
         CommentManager commentManager = Framework.getService(CommentManager.class);
-        commentManager.deleteExternalComment(getContext().getCoreSession(), entityId);
+        commentManager.deleteExternalComment(getContext().getCoreSession(), doc.getId(), entityId);
         return Response.noContent().build();
     }
 
