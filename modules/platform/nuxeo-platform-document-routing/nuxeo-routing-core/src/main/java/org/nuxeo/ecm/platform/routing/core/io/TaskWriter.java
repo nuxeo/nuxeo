@@ -35,7 +35,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.ExtensibleEntityJsonWriter;
@@ -71,6 +74,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
+
+    private static final Logger log = LogManager.getLogger(TaskWriter.class);
 
     public static final String FETCH_ACTORS = "actors";
 
@@ -108,7 +113,12 @@ public class TaskWriter extends ExtensibleEntityJsonWriter<Task> {
             if (StringUtils.isNotBlank(workflowInstanceId)) {
                 NodeAccessRunner nodeAccessRunner = new NodeAccessRunner(wrapper.getSession(), workflowInstanceId,
                         nodeId);
-                nodeAccessRunner.runUnrestricted();
+                try {
+                    nodeAccessRunner.runUnrestricted();
+                } catch (DocumentNotFoundException e) {
+                    log.warn("Failed to get workflow instance: {}", workflowInstanceId);
+                    log.debug(e, e);
+                }
                 workflowInstance = nodeAccessRunner.getWorkflowInstance();
                 node = nodeAccessRunner.getNode();
             }

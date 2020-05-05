@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
@@ -48,11 +49,12 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 @RunWith(FeaturesRunner.class)
-@Features(WorkflowFeature.class)
+@Features({ WorkflowFeature.class, LogCaptureFeature.class })
 @Deploy("org.nuxeo.ecm.platform.routing.default")
 @Deploy("org.nuxeo.ecm.platform.filemanager.api")
 @Deploy("org.nuxeo.ecm.platform.filemanager.core")
@@ -63,6 +65,9 @@ public class TaskWriterTest extends AbstractJsonWriterTest.External<TaskWriter, 
 
     @Inject
     protected CoreSession session;
+
+    @Inject
+    protected LogCaptureFeature.Result logCaptureResult;
 
     protected DocumentModel doc;
 
@@ -323,6 +328,17 @@ public class TaskWriterTest extends AbstractJsonWriterTest.External<TaskWriter, 
 
         JsonAssert json = jsonAssert(tasks.get(0));
         assertDetachedTaskDefaultProperties(json);
+    }
+
+    @Test
+    @LogCaptureFeature.FilterOn(logLevel = "WARN", loggerClass = TaskWriter.class)
+    public void shouldFailGracefullyWhenDocumentRouteIsMissing() throws IOException {
+        // Delete the DocumentRoute
+        session.removeDocument(new IdRef(task.getProcessId()));
+        jsonAssert(task);
+        var caughtEvents = logCaptureResult.getCaughtEventMessages();
+        assertEquals(1, caughtEvents.size());
+        assertEquals(String.format("Failed to get workflow instance: %s", task.getProcessId()), caughtEvents.get(0));
     }
 
     protected static void assertTaskDefaultProperties(JsonAssert json) throws IOException {
