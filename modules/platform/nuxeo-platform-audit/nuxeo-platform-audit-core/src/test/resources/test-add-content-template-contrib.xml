@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.retention.contentTemplate">
+
+  <require>
+    org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib
+  </require>
+
+  <extension
+    target="org.nuxeo.ecm.platform.content.template.service.ContentTemplateService"
+    point="factoryBinding">
+
+    <factoryBinding name="MyFactory" factoryName="SimpleTemplateRootFactory"
+                    targetType="Root" append="true">
+      <template>
+        <templateItem typeName="Folder" id="MyFolderTemplateName" title="MyFolderTemplate">
+          <acl>
+            <ace principal="John" permission="Everything"
+                 granted="true" />
+          </acl>
+        </templateItem>
+      </template>
+    </factoryBinding>
+
+  </extension>
+
+</component>
