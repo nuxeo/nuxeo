@@ -48,6 +48,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ORIGINAL_PATH_ATTRIBUTE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
 
 import java.io.IOException;
@@ -247,6 +248,10 @@ public class TestNuxeoAuthenticationFilter {
         return attributes;
     }
 
+    protected void mockRequestURI(HttpServletRequest request, String servletPath) {
+        mockRequestURI(request, servletPath, null, null, null);
+    }
+
     protected void mockRequestURI(HttpServletRequest request, String servletPath, String pathInfo, String queryString) {
         mockRequestURI(request, servletPath, pathInfo, queryString, null);
     }
@@ -323,6 +328,15 @@ public class TestNuxeoAuthenticationFilter {
         doTestGetRequestedPage("ui/index.jsp", "/nuxeo/ui/index.jsp", "/ui/index.jsp", null, null);
         // index.jsp not in the request uri but present in the servlet path (welcome file)
         doTestGetRequestedPage("ui/", "/nuxeo/ui/", "/ui/index.jsp", null, null);
+        // the original request path is returned when set as a request attribute
+        doTestGetOriginalPage("repo/default/ui", "/ui", "/repo/default/ui");
+    }
+
+    protected void doTestGetOriginalPage(String expected, String servletPath, String originalPath) {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        mockRequestURI(request, servletPath);
+        mockRequestAttributes(request).put(ORIGINAL_PATH_ATTRIBUTE, originalPath);
+        assertEquals(expected, NuxeoAuthenticationFilter.getRequestedPage(request));
     }
 
     protected void doTestGetRequestedPage(String expected, String requestURI, String servletPath, String pathInfo,
