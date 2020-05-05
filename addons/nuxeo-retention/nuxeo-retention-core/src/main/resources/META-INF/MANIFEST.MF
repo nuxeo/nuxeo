@@ -17,4 +17,5 @@ Nuxeo-Component: OSGI-INF/retention-service-framework.xml,
  OSGI-INF/retention-security.xml,
  OSGI-INF/retention-actions.xml,
  OSGI-INF/retention-properties.xml,
+ OSGI-INF/retention-schedulers.xml,
  OSGI-INF/retention-audit.xml
