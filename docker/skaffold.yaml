@@ -24,8 +24,10 @@ build:
         dockerfile: Dockerfile
         buildContext:
           localDir: {}
-        cache:
-          repo: ${DOCKER_REGISTRY}/nuxeo/slim/cache
+        # TODO NXP-28052: reuse cache when Dockerfile chown workaround is removed
+        # => when COPY --chown is fixed in Kaniko
+        # cache:
+        #   repo: ${DOCKER_REGISTRY}/nuxeo/slim/cache
     - image: nuxeo
       context: docker/nuxeo
       kaniko:
@@ -34,8 +36,10 @@ build:
           localDir: {}
         buildArgs:
           BASE_IMAGE: ${DOCKER_REGISTRY}/nuxeo/slim:${VERSION}
-        cache:
-          repo: ${DOCKER_REGISTRY}/nuxeo/nuxeo/cache
+        # TODO NXP-28052: reuse cache when Dockerfile chown workaround is removed
+        # => when COPY --chown is fixed in Kaniko
+        # cache:
+        #   repo: ${DOCKER_REGISTRY}/nuxeo/nuxeo/cache
   cluster:
     concurrency: 1
     namespace: platform
