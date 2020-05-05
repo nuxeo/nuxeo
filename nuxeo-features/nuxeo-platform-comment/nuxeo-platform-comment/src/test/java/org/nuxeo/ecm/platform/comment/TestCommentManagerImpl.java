@@ -181,6 +181,12 @@ public class TestCommentManagerImpl extends AbstractTestCommentManager {
         super.testDeleteExternalCommentByPowerfulUser(); // if implemented one day
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    @Override
+    public void testExternalCommentOnVersion() {
+        super.testExternalCommentOnVersion(); // if implemented one day
+    }
+
     @Test
     @Override
     @Ignore("CommentManagerImpl doesn't support this case - deprecated implementation")

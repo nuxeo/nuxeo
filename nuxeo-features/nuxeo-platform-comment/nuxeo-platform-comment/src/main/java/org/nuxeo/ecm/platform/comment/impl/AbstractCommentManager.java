@@ -60,11 +60,8 @@ import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @since 10.3
@@ -100,6 +97,24 @@ public abstract class AbstractCommentManager implements CommentManager {
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
             Long currentPageIndex) {
         return getComments(session, documentId, pageSize, currentPageIndex, true);
+    }
+
+    @Override
+    public Comment getExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException {
+        return getExternalComment(session, null, entityId);
+    }
+
+    @Override
+    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException {
+        return updateExternalComment(session, null, entityId, comment);
+    }
+
+    @Override
+    public void deleteExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException {
+        deleteExternalComment(session, null, entityId);
     }
 
     public DocumentRef getTopLevelDocumentRef(CoreSession session, DocumentRef commentRef) {

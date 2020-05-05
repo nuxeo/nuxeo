@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -712,7 +713,15 @@ public abstract class AbstractTestCommentManager {
         transactionalFeature.nextTransaction();
 
         try {
-            commentManager.getExternalComment(session, "fakeId");
+            commentManager.getExternalComment(session, "fakeId", "entityId");
+            fail("Getting an external comment should have failed !");
+        } catch (CommentNotFoundException e) {
+            // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
+        }
+        try {
+            commentManager.getExternalComment(session, commentedDocModel.getId(), "fakeId");
             fail("Getting an external comment should have failed !");
         } catch (CommentNotFoundException e) {
             // ok
@@ -721,7 +730,7 @@ public abstract class AbstractTestCommentManager {
         }
 
         // check regular get
-        Comment comment = commentManager.getExternalComment(session, "entityId");
+        Comment comment = commentManager.getExternalComment(session, commentedDocModel.getId(), "entityId");
         assertEquals("Administrator", comment.getAuthor());
         assertEquals(text, comment.getText());
         assertEquals(commentedDocModel.getId(), comment.getParentId());
@@ -744,18 +753,17 @@ public abstract class AbstractTestCommentManager {
 
         // check james can get (because he has READ on commentedDocModel)
         try (CloseableCoreSession jamesSession = coreFeature.openCoreSession(JAMES)) {
-            commentManager.getExternalComment(jamesSession, "entityId");
+            commentManager.getExternalComment(jamesSession, commentedDocModel.getId(), "entityId");
         }
 
             // check jane can not get
         try (CloseableCoreSession janeSession = coreFeature.openCoreSession("jane")) {
-            commentManager.getExternalComment(janeSession, "entityId");
+            commentManager.getExternalComment(janeSession, commentedDocModel.getId(), "entityId");
             fail("jane should not be able to get comment");
         } catch (CommentSecurityException | CommentNotFoundException cse) {
             // ok
         }
     }
-
 
     @Test
     public void testUpdateExternalComment() {
@@ -768,7 +776,15 @@ public abstract class AbstractTestCommentManager {
         transactionalFeature.nextTransaction();
 
         try {
-            commentManager.updateExternalComment(session, "fakeId", emptyComment());
+            commentManager.updateExternalComment(session, "fakeId", "entityId", emptyComment());
+            fail("Updating a comment should have failed !");
+        } catch (CommentNotFoundException e) {
+            // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
+        }
+        try {
+            commentManager.updateExternalComment(session, commentedDocModel.getId(), "fakeId", emptyComment());
             fail("Updating a comment should have failed !");
         } catch (CommentNotFoundException e) {
             // ok
@@ -779,7 +795,8 @@ public abstract class AbstractTestCommentManager {
         Comment updatedComment = emptyComment();
         updatedComment.setText("This a new text on this comment");
         ((ExternalEntity) updatedComment).setEntity("<entity/>");
-        updatedComment = commentManager.updateExternalComment(session, "entityId", updatedComment);
+        updatedComment = commentManager.updateExternalComment(session, commentedDocModel.getId(), "entityId",
+                updatedComment);
         assertEquals(comment.getId(), updatedComment.getId());
         assertEquals("Administrator", updatedComment.getAuthor());
         assertEquals("This a new text on this comment", updatedComment.getText());
@@ -813,7 +830,7 @@ public abstract class AbstractTestCommentManager {
 
             // check only author can update its comment
             try (CloseableCoreSession jdoeSession = coreFeature.openCoreSession("jdoe")) {
-                commentManager.updateExternalComment(jdoeSession, "entityId", emptyComment());
+                commentManager.updateExternalComment(jdoeSession, commentedDocModel.getId(), "entityId", emptyComment());
             } catch (CommentSecurityException e) {
                 // ok
             }
@@ -822,7 +839,8 @@ public abstract class AbstractTestCommentManager {
             Comment updatedComment = emptyComment();
             updatedComment.setText("This a new text on this comment");
             ((ExternalEntity) updatedComment).setEntity("<entity/>");
-            updatedComment = commentManager.updateExternalComment(jamesSession, "entityId", updatedComment);
+            updatedComment = commentManager.updateExternalComment(jamesSession, commentedDocModel.getId(), "entityId",
+                                                                  updatedComment);
             assertEquals(comment.getId(), updatedComment.getId());
             assertEquals(JAMES, updatedComment.getAuthor());
             assertEquals("This a new text on this comment", updatedComment.getText());
@@ -859,7 +877,8 @@ public abstract class AbstractTestCommentManager {
                 Comment updatedComment = emptyComment();
                 updatedComment.setText("This a new text on this comment");
                 ((ExternalEntity) updatedComment).setEntity("<entity/>");
-                updatedComment = commentManager.updateExternalComment(juliaSession, "entityId", updatedComment);
+                updatedComment = commentManager.updateExternalComment(juliaSession, commentedDocModel.getId(), "entityId",
+                                                                      updatedComment);
                 assertEquals(comment.getId(), updatedComment.getId());
                 assertEquals(JAMES, updatedComment.getAuthor());
                 assertEquals("This a new text on this comment", updatedComment.getText());
@@ -885,7 +904,7 @@ public abstract class AbstractTestCommentManager {
         transactionalFeature.nextTransaction();
 
         try {
-            commentManager.deleteExternalComment(session, "fakeId");
+            commentManager.deleteExternalComment(session, "fakeId", "entityId");
             fail("Deleting a comment should have failed !");
         } catch (CommentNotFoundException e) {
             // ok
@@ -893,8 +912,46 @@ public abstract class AbstractTestCommentManager {
             assertNotNull(e.getMessage());
         }
 
-        commentManager.deleteExternalComment(session, "entityId");
+        try {
+            commentManager.deleteExternalComment(session, commentedDocModel.getId(), "fakeId");
+            fail("Deleting a comment should have failed !");
+        } catch (CommentNotFoundException e) {
+            // ok
+            assertEquals(404, e.getStatusCode());
+            assertNotNull(e.getMessage());
+        }
+
+        commentManager.deleteExternalComment(session, commentedDocModel.getId(), "entityId");
         assertFalse(session.exists(new IdRef(comment.getId())));
+    }
+
+    /*
+     * NXP-28964
+     */
+    @Test
+    public void testExternalCommentOnVersion() {
+        // first create a version
+        DocumentRef versionRef = commentedDocModel.checkIn(VersioningOption.MINOR, "checkin comment");
+        String versionId = versionRef.reference().toString();
+        // then create an external comment
+        commentManager.createComment(session, newExternalComment(versionId, "foo", "<entity/>", "I am a comment!"));
+        // external comment uses a page provider -> wait indexation
+        transactionalFeature.nextTransaction();
+
+        Comment externalComment = commentManager.getExternalComment(session, versionId, "foo");
+        assertEquals(versionId, externalComment.getParentId());
+
+        externalComment.setText("Updated text");
+        externalComment = commentManager.updateExternalComment(session, versionId, "foo", externalComment);
+        assertEquals("Updated text", externalComment.getText());
+
+        // external comment uses a page provider -> wait indexation
+        transactionalFeature.nextTransaction();
+        externalComment = commentManager.getExternalComment(session, versionId, "foo");
+        assertEquals("Updated text", externalComment.getText());
+
+        commentManager.deleteExternalComment(session, versionId, "foo");
+        assertFalse(session.exists(new IdRef(externalComment.getId())));
     }
 
     @Test
@@ -915,13 +972,13 @@ public abstract class AbstractTestCommentManager {
 
             // check only author can delete its comment
             try (CloseableCoreSession jdoeSession = coreFeature.openCoreSession("jdoe")) {
-                commentManager.deleteExternalComment(jdoeSession, "entityId");
+                commentManager.deleteExternalComment(jdoeSession, commentedDocModel.getId(), "entityId");
             } catch (CommentSecurityException e) {
                 // ok
             }
 
             // check regular delete
-            commentManager.deleteExternalComment(jamesSession, "entityId");
+            commentManager.deleteExternalComment(jamesSession, commentedDocModel.getId(), "entityId");
             assertFalse(session.exists(new IdRef(comment.getId())));
         }
     }
@@ -943,7 +1000,7 @@ public abstract class AbstractTestCommentManager {
             session.save();
 
             try (CloseableCoreSession juliaSession = coreFeature.openCoreSession("julia")) {
-                commentManager.deleteExternalComment(juliaSession, "entityId");
+                commentManager.deleteExternalComment(juliaSession, commentedDocModel.getId(), "entityId");
                 assertFalse(session.exists(new IdRef(comment.getId())));
             }
         }

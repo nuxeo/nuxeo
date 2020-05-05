@@ -298,7 +298,7 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
             fetchInvalidations();
-            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, entityId);
+            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, file.getId(), entityId);
             assertEquals(author, updatedAnnotation.getAuthor());
         }
     }
@@ -336,7 +336,7 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
             assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
             fetchInvalidations();
             // assert DB was updated
-            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, entityId);
+            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, file.getId(), entityId);
             assertEquals("And now I update it", updatedAnnotation.getText());
         }
     }

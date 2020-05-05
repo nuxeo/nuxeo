@@ -467,7 +467,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
             fetchInvalidations();
-            Comment updatedComment = commentManager.getExternalComment(session, entityId);
+            Comment updatedComment = commentManager.getExternalComment(session, file.getId(), entityId);
             // Author should not be modified
             assertEquals(author, updatedComment.getAuthor());
         }
@@ -505,7 +505,7 @@ public abstract class AbstractCommentAdapterTest extends BaseTest {
             assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
             fetchInvalidations();
             // assert DB was updated
-            Comment updatedComment = commentManager.getExternalComment(session, entityId);
+            Comment updatedComment = commentManager.getExternalComment(session, file.getId(), entityId);
             assertEquals("And now I update it", updatedComment.getText());
         }
     }

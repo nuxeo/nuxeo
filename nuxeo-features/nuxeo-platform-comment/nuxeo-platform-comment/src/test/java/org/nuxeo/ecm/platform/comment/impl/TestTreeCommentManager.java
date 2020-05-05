@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.comment.impl;
 
-import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -29,14 +28,15 @@ import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.newExternalComment;
 import static org.nuxeo.ecm.platform.comment.impl.AbstractCommentManager.COMMENTS_DIRECTORY;
 import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.COMMENT_NAME;
-import static org.nuxeo.ecm.platform.comment.impl.TreeCommentManager.GET_COMMENT_PAGE_PROVIDER_NAME;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
-import static org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider.CORE_SESSION_PROPERTY;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -52,9 +52,6 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.comment.AbstractTestCommentManager;
 import org.nuxeo.ecm.platform.comment.TreeCommentFeature;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -197,27 +194,43 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
     }
 
     /*
-     * NXP-28700
+     * NXP-28700 / NXP-28964 (only for TreeCommentManager, others don't copy comments on checkIn)
      */
     @Test
-    public void _testGetExternalCommentPageProviderReturnsRightCommentAndNotVersionOnes() {
-        commentManager.createComment(session,
+    public void _testCommentsAndVersioning() {
+        // create a comment + reply on original document
+        Comment comment = commentManager.createComment(session,
                 newExternalComment(commentedDocModel.getId(), "foo", "<entity/>", "I am a comment!"));
+        commentManager.createComment(session, newComment(comment.getId(), "I am a reply!"));
+        // version the document with its comments
+        DocumentRef versionRef = commentedDocModel.checkIn(VersioningOption.MINOR, "checkin comment");
+        String versionId = versionRef.reference().toString();
 
-        commentedDocModel.checkIn(VersioningOption.MINOR, "checkin comment");
         // we now have two external entities with id foo in repository
         assertEquals(2, session.query("SELECT * FROM Comment where externalEntity:entityId='foo'").size());
 
+        // external comment uses a page provider -> wait indexation
+        transactionalFeature.nextTransaction();
+
         // test external entity retrieval with comment manager
-        Comment externalComment = commentManager.getExternalComment(session, "foo");
+        Comment externalComment = commentManager.getExternalComment(session, commentedDocModel.getId(), "foo");
         assertEquals(commentedDocModel.getId(), externalComment.getParentId());
         assertEquals("I am a comment!", externalComment.getText());
 
-        // now test page provider used internally by comment manager
-        PageProviderService ppService = Framework.getService(PageProviderService.class);
-        Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<?> pageProvider = ppService.getPageProvider(GET_COMMENT_PAGE_PROVIDER_NAME,
-                Collections.emptyList(), 10L, 0L, props, "foo");
-        assertEquals(1, pageProvider.getCurrentPageSize());
+        // test external entity retrieval with comment manager for version
+        externalComment = commentManager.getExternalComment(session, versionId, "foo");
+        assertEquals(versionId, externalComment.getParentId());
+        assertEquals("I am a comment!", externalComment.getText());
+
+        // test ancestor ids
+        Comment versionComment = commentManager.getExternalComment(session, versionId, "foo");
+        assertEquals(new HashSet<>(Collections.singletonList(versionId)),
+                new HashSet<>(versionComment.getAncestorIds()));
+
+        List<Comment> versionReplies = commentManager.getComments(session, versionComment.getId());
+        assertEquals(1, versionReplies.size());
+        Comment versionReply = versionReplies.get(0);
+        assertEquals(new HashSet<>(Arrays.asList(versionId, versionComment.getId())),
+                new HashSet<>(versionReply.getAncestorIds()));
     }
 }
