@@ -43,12 +43,12 @@ import org.nuxeo.common.utils.DurationUtils;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
+import org.nuxeo.ecm.core.api.repository.PoolConfiguration;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.cluster.ClusterService;
-import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
@@ -77,6 +77,8 @@ public class RepositoryService extends DefaultComponent {
 
     // for monitoring
     protected GenericKeyedObjectPool<String, Session> basePool;
+
+    protected PoolConfiguration poolConfig;
 
     protected KeyedObjectPool<String, Session> pool;
 
@@ -114,18 +116,29 @@ public class RepositoryService extends DefaultComponent {
         shutdownPool();
     }
 
-    protected void initPool() {
-        // TODO find descriptor from default repository
-        NuxeoConnectionManagerConfiguration ncmc = null;
-        if (ncmc == null) {
-            ncmc = new NuxeoConnectionManagerConfiguration();
+    protected void initPoolConfig() {
+        PoolConfiguration poolConfig = null; // NOSONAR
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+        if (repositoryManager != null) {
+            org.nuxeo.ecm.core.api.repository.Repository repo = repositoryManager.getDefaultRepository();
+            if (repo != null) {
+                poolConfig = repo.getPoolConfig();
+            }
         }
+        if (poolConfig == null) {
+            poolConfig = new PoolConfiguration();
+        }
+        this.poolConfig = poolConfig;
+    }
+
+    protected void initPool() {
+        initPoolConfig();
         GenericKeyedObjectPoolConfig<Session> config = new GenericKeyedObjectPoolConfig<>();
-        config.setMaxTotal(ncmc.getMaxPoolSize());
-        config.setMaxIdlePerKey(8); // default
-        config.setMinIdlePerKey(ncmc.getMinPoolSize());
-        config.setBlockWhenExhausted(true);
-        config.setMaxWaitMillis(ncmc.getBlockingTimeoutMillis());
+        config.setMaxTotal(poolConfig.getMaxPoolSize());
+        config.setMaxTotalPerKey(poolConfig.getMaxPoolSize());
+        config.setMaxIdlePerKey(poolConfig.getMaxPoolSize());
+        config.setMinIdlePerKey(poolConfig.getMinPoolSize());
+        config.setMaxWaitMillis(poolConfig.getBlockingTimeoutMillis());
         basePool = new GenericKeyedObjectPool<>(new SessionFactory(), config);
         // use an eroding pool to avoid keeping idle sessions too long
         pool = PoolUtils.erodingPool(basePool);
@@ -293,13 +306,11 @@ public class RepositoryService extends DefaultComponent {
         try {
             session = pool.borrowObject(repositoryName);
         } catch (NoSuchElementException e) {
-            // TODO find descriptor from default repository
-            NuxeoConnectionManagerConfiguration ncmc = new NuxeoConnectionManagerConfiguration();
             String err = String.format(
                     "Connection pool is fully used,"
                             + " consider increasing nuxeo.vcs.blocking-timeout-millis (currently %s)"
                             + " or nuxeo.vcs.max-pool-size (currently %s)",
-                    ncmc.getBlockingTimeoutMillis(), ncmc.getMaxPoolSize());
+                    poolConfig.getBlockingTimeoutMillis(), poolConfig.getMaxPoolSize());
             throw new NuxeoException(err, e);
         } catch (RuntimeException e) {
             throw e;

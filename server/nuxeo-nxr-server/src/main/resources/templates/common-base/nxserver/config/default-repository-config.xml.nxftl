@@ -140,6 +140,8 @@
       point="repository">
     <!-- it will lookup for "repository/default" connection -->
     <repository name="default" label="label.default.repository">
+      <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
+        blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" />
       <fulltext disabled="${nuxeo.vcs.fulltext.disabled}"
                 storedInBlob="${nuxeo.vcs.fulltext.storedInBlob}"
                 searchDisabled="${nuxeo.vcs.fulltext.search.disabled}" />

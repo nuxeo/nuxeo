@@ -135,7 +135,7 @@ public class SQLRepositoryService extends DefaultComponent {
         // and pass it to high-level registry
         RepositoryFactory repositoryFactory = new VCSRepositoryFactory(repositoryName);
         Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
-                descriptor.isHeadless(), repositoryFactory);
+                descriptor.isHeadless(), repositoryFactory, descriptor.pool);
         repositoryManager.addRepository(repository);
     }
 

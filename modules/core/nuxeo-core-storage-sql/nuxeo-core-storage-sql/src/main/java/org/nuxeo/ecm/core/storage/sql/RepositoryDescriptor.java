@@ -32,9 +32,9 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.repository.PoolConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
-import org.nuxeo.runtime.jtajca.NuxeoConnectionManagerConfiguration;
 
 /**
  * Low-level VCS Repository Descriptor.
@@ -175,7 +175,7 @@ public class RepositoryDescriptor {
     public RepositoryDescriptor repositoryDescriptor;
 
     @XNode("pool")
-    public NuxeoConnectionManagerConfiguration pool;
+    public PoolConfiguration pool;
 
     @XNode("clusterInvalidatorClass")
     public Class<? extends VCSClusterInvalidator> clusterInvalidatorClass;
@@ -401,7 +401,7 @@ public class RepositoryDescriptor {
         label = other.label;
         isDefault = other.isDefault;
         headless = other.headless;
-        pool = other.pool == null ? null : new NuxeoConnectionManagerConfiguration(other.pool);
+        pool = other.pool == null ? null : new PoolConfiguration(other.pool);
         clusterInvalidatorClass = other.clusterInvalidatorClass;
         cachingMapperClass = other.cachingMapperClass;
         cachingMapperEnabled = other.cachingMapperEnabled;
@@ -443,7 +443,7 @@ public class RepositoryDescriptor {
         }
         if (other.pool != null) {
             if (pool == null) {
-                pool = new NuxeoConnectionManagerConfiguration(other.pool);
+                pool = new PoolConfiguration(other.pool);
             } else {
                 pool.merge(other.pool);
             }

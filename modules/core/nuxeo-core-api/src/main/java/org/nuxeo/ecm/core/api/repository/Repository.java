@@ -52,16 +52,19 @@ public class Repository {
      */
     private Callable<Object> repositoryFactory;
 
+    private PoolConfiguration poolConfig;
+
     public Repository() {
     }
 
     public Repository(String name, String label, Boolean isDefault, Boolean headless,
-            Callable<Object> repositoryFactory) {
+            Callable<Object> repositoryFactory, PoolConfiguration poolConfig) {
         this.name = name;
         this.label = label;
         this.isDefault = isDefault;
         this.headless = headless;
         this.repositoryFactory = repositoryFactory;
+        this.poolConfig = poolConfig;
     }
 
     public void setLabel(String label) {
@@ -95,6 +98,10 @@ public class Repository {
 
     public Callable<Object> getRepositoryFactory() {
         return repositoryFactory;
+    }
+
+    public PoolConfiguration getPoolConfig() {
+        return poolConfig;
     }
 
     @Override
