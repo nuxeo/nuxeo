@@ -25,14 +25,12 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonReader.applyDirtyPropertyValues;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_ANCESTORID;
 import static org.nuxeo.ecm.core.query.sql.NXQL.ECM_UUID;
-import static org.nuxeo.ecm.platform.comment.api.CommentManager.Feature.COMMENTS_LINKED_WITH_PROPERTY;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY_FACET;
-import static org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager.COMMENT_NAME;
-import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_NAME;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENTS_DIRECTORY_TYPE;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_ANCESTOR_IDS;
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_AUTHOR;
@@ -82,16 +80,21 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     private static final Logger log = LogManager.getLogger(TreeCommentManager.class);
 
+    /** The key to the config turning on or off autosubscription. */
+    public static final String AUTOSUBSCRIBE_CONFIG_KEY = "org.nuxeo.ecm.platform.comment.service.notification.autosubscribe";
+
+    protected static final String COMMENT_NAME = "comment";
+
+    /** @deprecated since 11.1, use {@link #GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME} instead */
+    @Deprecated
+    @SuppressWarnings("DeprecatedIsStillUsed")
     protected static final String GET_COMMENT_PAGE_PROVIDER_NAME = "GET_COMMENT_AS_EXTERNAL_ENTITY";
+
+    protected static final String GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME = "GET_EXTERNAL_COMMENT_BY_ECM_ANCESTOR";
 
     protected static final String GET_COMMENTS_FOR_DOCUMENT_PAGE_PROVIDER_NAME = "GET_COMMENTS_FOR_DOCUMENT_BY_ECM_PARENT";
 
-    public static final String SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE = "This service implementation does not implement deprecated API.";
-
-    /**
-     * The key to the config turning on or off autosubscription.
-     */
-    public static final String AUTOSUBSCRIBE_CONFIG_KEY = "org.nuxeo.ecm.platform.comment.service.notification.autosubscribe";
+    protected static final String SERVICE_WITHOUT_IMPLEMENTATION_MESSAGE = "This service implementation does not implement deprecated API.";
 
     /**
      * Counts how many comments where made on a specific document.
@@ -137,8 +140,8 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) {
-        DocumentModel commentDoc = getExternalCommentModel(session, entityId);
+    public Comment getExternalComment(CoreSession session, String documentId, String entityId) {
+        DocumentModel commentDoc = getExternalCommentModel(session, documentId, entityId);
         return commentDoc.getAdapter(Comment.class);
     }
 
@@ -147,17 +150,15 @@ public class TreeCommentManager extends AbstractCommentManager {
         DocumentRef parentRef = new IdRef(comment.getParentId());
         checkCreateCommentPermissions(session, parentRef);
 
-        // Initiate Creation Date if it is not done yet
-        if (comment.getCreationDate() == null) {
-            comment.setCreationDate(Instant.now());
-        }
+        fillCommentForCreation(session, comment);
 
         return CoreInstance.doPrivileged(session, s -> {
             DocumentModel commentedDoc = s.getDocument(parentRef);
             // Get the location where comment will be stored
             DocumentRef locationDocRef = getLocationRefOfCommentCreation(s, commentedDoc);
 
-            DocumentModel commentDoc = s.newDocumentModel(locationDocRef, COMMENT_NAME, comment.getDocument().getType());
+            DocumentModel commentDoc = s.newDocumentModel(locationDocRef, COMMENT_NAME,
+                    comment.getDocument().getType());
             if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
                 commentDoc.addFacet(EXTERNAL_ENTITY_FACET);
             }
@@ -183,7 +184,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             // Get the location to store the comment
             DocumentRef locationDocRef = getLocationRefOfCommentCreation(session, commentedDoc);
 
-            DocumentModel commentModelToCreate = session.newDocumentModel(locationDocRef, COMMENT_NAME, commentDoc.getType());
+            DocumentModel commentModelToCreate = session.newDocumentModel(locationDocRef, COMMENT_NAME,
+                    commentDoc.getType());
             commentModelToCreate.copyContent(commentDoc);
 
             // Should compute ancestors and set comment:parentId for backward compatibility
@@ -227,9 +229,9 @@ public class TreeCommentManager extends AbstractCommentManager {
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment) {
+    public Comment updateExternalComment(CoreSession session, String documentId, String entityId, Comment comment) {
         // Get the external comment doc model
-        DocumentModel commentDoc = getExternalCommentModel(session, entityId);
+        DocumentModel commentDoc = getExternalCommentModel(session, documentId, entityId);
         return update(session, comment, commentDoc);
     }
 
@@ -240,11 +242,13 @@ public class TreeCommentManager extends AbstractCommentManager {
      */
     protected Comment update(CoreSession session, Comment comment, DocumentModel commentDoc) {
         NuxeoPrincipal principal = session.getPrincipal();
-        if (!principal.isAdministrator() && !commentDoc.getPropertyValue(COMMENT_AUTHOR).equals(principal.getName())) {
-            throw new CommentSecurityException(String.format("The user %s cannot edit comments of document %s",
-                    principal.getName(), comment.getParentId()));
-        }
         return CoreInstance.doPrivileged(session, s -> {
+            DocumentModel topLevelDoc = getTopLevelDocument(s, commentDoc);
+            if (!principal.isAdministrator() && !commentDoc.getPropertyValue(COMMENT_AUTHOR).equals(principal.getName())
+                    && !session.hasPermission(principal, topLevelDoc.getRef(), EVERYTHING)) {
+                throw new CommentSecurityException(String.format("The user %s cannot edit comments of document %s",
+                        principal.getName(), commentDoc.getPropertyValue(COMMENT_PARENT_ID)));
+            }
             if (comment.getModificationDate() == null) {
                 comment.setModificationDate(Instant.now());
             }
@@ -253,14 +257,15 @@ public class TreeCommentManager extends AbstractCommentManager {
             }
             applyDirtyPropertyValues(comment.getDocument(), commentDoc);
             DocumentModel updatedDoc = s.saveDocument(commentDoc);
-            notifyEvent(session, CommentEvents.COMMENT_UPDATED, updatedDoc);
+            DocumentModel commentedDoc = getCommentedDocument(session, commentDoc);
+            notifyEvent(session, CommentEvents.COMMENT_UPDATED, topLevelDoc, commentedDoc, updatedDoc);
             return updatedDoc.getAdapter(Comment.class);
         });
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) {
-        DocumentModel commentDoc = getExternalCommentModel(session, entityId);
+    public void deleteExternalComment(CoreSession session, String documentId, String entityId) {
+        DocumentModel commentDoc = getExternalCommentModel(session, documentId, entityId);
         removeComment(session, commentDoc.getRef());
     }
 
@@ -287,7 +292,7 @@ public class TreeCommentManager extends AbstractCommentManager {
             return commentedDoc.getRef();
         }
         // regular document case, store the comment under a CommentRoot folder under the regular document
-        DocumentModel commentsFolder = session.newDocumentModel(commentedDoc.getRef(), COMMENTS_DIRECTORY_NAME,
+        DocumentModel commentsFolder = session.newDocumentModel(commentedDoc.getRef(), COMMENTS_DIRECTORY,
                 COMMENTS_DIRECTORY_TYPE);
         // no need to notify the creation of the Comments folder
         commentsFolder.putContextData(DISABLE_NOTIFICATION_SERVICE, TRUE);
@@ -298,11 +303,13 @@ public class TreeCommentManager extends AbstractCommentManager {
 
     @Override
     public boolean hasFeature(Feature feature) {
-        if (COMMENTS_LINKED_WITH_PROPERTY.equals(feature)) {
+        switch (feature) {
+        case COMMENTS_LINKED_WITH_PROPERTY:
+        case COMMENTS_ARE_SPECIAL_CHILDREN:
             return true;
+        default:
+            throw new UnsupportedOperationException(feature.name());
         }
-
-        throw new UnsupportedOperationException(feature.name());
     }
 
     @Override
@@ -335,11 +342,19 @@ public class TreeCommentManager extends AbstractCommentManager {
      *         {@link CommentNotFoundException}
      */
     @SuppressWarnings("unchecked")
-    protected DocumentModel getExternalCommentModel(CoreSession session, String entityId) {
+    protected DocumentModel getExternalCommentModel(CoreSession session, String documentId, String entityId) {
         PageProviderService ppService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = singletonMap(CORE_SESSION_PROPERTY, (Serializable) session);
-        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                GET_COMMENT_PAGE_PROVIDER_NAME, Collections.emptyList(), 1L, 0L, props, entityId);
+        PageProvider<DocumentModel> pageProvider;
+        // backward compatibility
+        if (isBlank(documentId)) {
+            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(GET_COMMENT_PAGE_PROVIDER_NAME,
+                    Collections.emptyList(), 1L, 0L, props, entityId);
+        } else {
+            pageProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                    GET_EXTERNAL_COMMENT_PAGE_PROVIDER_NAME, Collections.emptyList(), 1L, 0L, props, documentId,
+                    entityId);
+        }
         List<DocumentModel> documents = pageProvider.getCurrentPage();
         if (documents.isEmpty()) {
             throw new CommentNotFoundException(String.format("The external comment %s does not exist.", entityId));
@@ -378,7 +393,6 @@ public class TreeCommentManager extends AbstractCommentManager {
      * @param session the user session, in order to implicitly check permissions
      * @return the comment document model of the given {@code documentRef} if it exists, otherwise throws a
      *         {@link CommentNotFoundException}
-     * @throws CommentNotFoundException
      */
     protected DocumentModel getCommentDocumentModel(CoreSession session, String id) {
         try {
@@ -402,8 +416,8 @@ public class TreeCommentManager extends AbstractCommentManager {
             // Depending on the case, the `doc` can be a comment or the top level document
             // if it's the top level document, then we should retrieve all comments under `Comments` folder
             // if it's a comment, then get all comments under it
-            if (!doc.hasSchema(COMMENT_SCHEMA) && session.hasChild(doc.getRef(), COMMENTS_DIRECTORY_NAME)) {
-                DocumentModel commentsFolder = session.getChild(doc.getRef(), COMMENTS_DIRECTORY_NAME);
+            if (!doc.hasSchema(COMMENT_SCHEMA) && session.hasChild(doc.getRef(), COMMENTS_DIRECTORY)) {
+                DocumentModel commentsFolder = session.getChild(doc.getRef(), COMMENTS_DIRECTORY);
                 documentId = commentsFolder.getId();
             }
 

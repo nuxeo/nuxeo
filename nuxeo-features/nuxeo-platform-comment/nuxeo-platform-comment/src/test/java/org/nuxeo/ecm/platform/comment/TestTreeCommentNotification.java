@@ -22,14 +22,22 @@ package org.nuxeo.ecm.platform.comment;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
 
-import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
-import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.core.api.CloseableCoreSession;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.comment.impl.TreeCommentManager;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
+import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
@@ -38,9 +46,14 @@ import org.nuxeo.runtime.test.runner.Features;
 @Features(TreeCommentFeature.class)
 public class TestTreeCommentNotification extends AbstractTestCommentNotification {
 
-    @Override
-    protected Class<? extends CommentManager> getType() {
-        return TreeCommentManager.class;
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected NotificationManager notificationManager;
+
+    public TestTreeCommentNotification() {
+        super(TreeCommentManager.class);
     }
 
     @Test
@@ -48,23 +61,40 @@ public class TestTreeCommentNotification extends AbstractTestCommentNotification
         String john = "john";
         String johnSubscription = NotificationConstants.USER_PREFIX + john;
         createUser(john);
-        List<String> subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription,
-                commentedDocumentModel);
-        assertEquals(0, subscriptions.size());
-        createComment(commentedDocumentModel, john, "Test message");
-        transactionalFeature.nextTransaction();
-        commentedDocumentModel.refresh();
-        subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, commentedDocumentModel);
-        List<String> expectedSubscriptions = Arrays.asList("CommentAdded", "CommentUpdated");
-        assertEquals(expectedSubscriptions.size(), subscriptions.size());
-        assertTrue(subscriptions.containsAll(expectedSubscriptions));
-        for (String subscription : subscriptions) {
-            notificationService.removeSubscription(johnSubscription, subscription, commentedDocumentModel);
+        // give permission to comment to john
+        ACP acp = commentedDocModel.getACP();
+        ACL acl = acp.getOrCreateACL();
+        acl.add(new ACE("john", SecurityConstants.READ, true));
+        session.setACP(commentedDocModel.getRef(), acp, false);
+        session.save();
+
+        try (CloseableCoreSession johnSession = coreFeature.openCoreSession("john")) {
+
+            // check no subscriptions
+            List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(johnSubscription,
+                                                                                               commentedDocModel);
+            assertEquals(0, subscriptions.size());
+
+            // create a comment and check auto subscriptions
+            commentManager.createComment(johnSession, newComment(commentedDocModel.getId(), "Test message"));
+            // wait for auto subscriptions
+            transactionalFeature.nextTransaction();
+            commentedDocModel.refresh();
+            subscriptions = notificationManager.getSubscriptionsForUserOnDocument(johnSubscription, commentedDocModel);
+            assertTrue(subscriptions.contains("CommentAdded"));
+            assertTrue(subscriptions.contains("CommentUpdated"));
+
+            // clear subscriptions
+            for (String subscription : subscriptions) {
+                notificationManager.removeSubscription(johnSubscription, subscription, commentedDocModel);
+            }
+
+            // create a document and check auto subscribe doesn't happen
+            commentManager.createComment(johnSession, newComment(commentedDocModel.getId(), "Test message again"));
+            transactionalFeature.nextTransaction();
+            subscriptions = notificationManager.getSubscriptionsForUserOnDocument(johnSubscription, commentedDocModel);
+            assertTrue(subscriptions.isEmpty());
         }
-        createComment(commentedDocumentModel, john, "Test message again");
-        transactionalFeature.nextTransaction();
-        subscriptions = notificationService.getSubscriptionsForUserOnDocument(johnSubscription, commentedDocumentModel);
-        assertTrue(subscriptions.isEmpty());
     }
 
 }

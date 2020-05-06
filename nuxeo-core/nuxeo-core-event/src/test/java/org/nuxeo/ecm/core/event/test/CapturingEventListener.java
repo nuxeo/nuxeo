@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.event.test;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +27,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.nuxeo.ecm.core.event.Event;
@@ -86,6 +87,13 @@ public class CapturingEventListener extends EventListenerDescriptor implements E
     /**
      * @since 11.1
      */
+    public Stream<Event> streamCapturedEvents(String event) {
+        return results.stream().filter(e -> e.getName().equals(event));
+    }
+
+    /**
+     * @since 11.1
+     */
     public Stream<EventContext> streamCapturedEventContexts() {
         return streamCapturedEvents().map(Event::getContext);
     }
@@ -97,8 +105,166 @@ public class CapturingEventListener extends EventListenerDescriptor implements E
         return streamCapturedEventContexts().filter(clazz::isInstance).map(clazz::cast);
     }
 
+    /**
+     * @since 11.1
+     */
+    public Optional<Event> findFirstCapturedEvent() {
+        return streamCapturedEvents().findFirst();
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Event findFirstCapturedEventOrElseThrow() {
+        return findFirstCapturedEvent().orElseThrow(() -> new AssertionError("Unable to find first Event"));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<Event> findFirstCapturedEvent(String event) {
+        return streamCapturedEvents(event).findFirst();
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Event findFirstCapturedEventOrElseThrow(String event) {
+        return findFirstCapturedEvent(event).orElseThrow(
+                () -> new AssertionError("Unable to find first Event for event: " + event));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<EventContext> findFirstCapturedEventContext() {
+        return streamCapturedEventContexts().findFirst();
+    }
+
+    /**
+     * @since 11.1
+     */
+    public EventContext findFirstCapturedEventContextOrElseThrow() {
+        return findFirstCapturedEventContext().orElseThrow(
+                () -> new AssertionError("Unable to find first EventContext"));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<EventContext> findFirstCapturedEventContext(String event) {
+        return findFirstCapturedEvent(event).map(Event::getContext);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public EventContext findFirstCapturedEventContextOrElseThrow(String event) {
+        return findFirstCapturedEventContext(event).orElseThrow(
+                () -> new AssertionError("Unable to find first EventContext for event: " + event));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public <C extends EventContext> Optional<C> findFirstCapturedEventContext(Class<C> clazz) {
+        return streamCapturedEventContexts(clazz).findFirst();
+    }
+
+    /**
+     * @since 11.1
+     */
+    public <C extends EventContext> C findFirstCapturedEventContextOrElseThrow(Class<C> clazz) {
+        return findFirstCapturedEventContext(clazz).orElseThrow(
+                () -> new AssertionError("Unable to find first EventContext for class: " + clazz));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<Event> findLastCapturedEvent() {
+        List<Event> list = streamCapturedEvents().collect(toList());
+        return findLast(list);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Event findLastCapturedEventOrElseThrow() {
+        return findLastCapturedEvent().orElseThrow(() -> new AssertionError("Unable to find last Event"));
+    }
+
+    /**
+     * @deprecated since 11.1, use {@link #findLastCapturedEvent(String)} instead
+     */
+    @Deprecated
     public Optional<Event> getLastCapturedEvent(String event) {
-        List<Event> list = results.stream().filter(e -> e.getName().equals(event)).collect(Collectors.toList());
+        return findLastCapturedEvent(event);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<Event> findLastCapturedEvent(String event) {
+        List<Event> list = streamCapturedEvents(event).collect(toList());
+        return findLast(list);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Event findLastCapturedEventOrElseThrow(String event) {
+        return findLastCapturedEvent(event).orElseThrow(
+                () -> new AssertionError("Unable to find last Event for event: " + event));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<EventContext> findLastCapturedEventContext() {
+        List<EventContext> list = streamCapturedEventContexts().collect(toList());
+        return findLast(list);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public EventContext findLastCapturedEventContextOrElseThrow() {
+        return findLastCapturedEventContext().orElseThrow(() -> new AssertionError("Unable to find last EventContext"));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public Optional<EventContext> findLastCapturedEventContext(String event) {
+        return findLastCapturedEvent(event).map(Event::getContext);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public EventContext findLastCapturedEventContextOrElseThrow(String event) {
+        return findLastCapturedEventContext(event).orElseThrow(
+                () -> new AssertionError("Unable to find last EventContext for event: " + event));
+    }
+
+    /**
+     * @since 11.1
+     */
+    public <C extends EventContext> Optional<C> findLastCapturedEventContext(Class<C> clazz) {
+        List<C> list = streamCapturedEventContexts(clazz).collect(toList());
+        return findLast(list);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public <C extends EventContext> C findLastCapturedEventContextOrElseThrow(Class<C> clazz) {
+        return findLastCapturedEventContext(clazz).orElseThrow(
+                () -> new AssertionError("Unable to find last EventContext for class: " + clazz));
+    }
+
+    protected <C> Optional<C> findLast(List<C> list) {
         if (list.isEmpty()) {
             return Optional.empty();
         } else {
@@ -107,7 +273,7 @@ public class CapturingEventListener extends EventListenerDescriptor implements E
     }
 
     public long getCapturedEventCount(String event) {
-        return results.stream().filter(e -> e.getName().equals(event)).count();
+        return streamCapturedEvents(event).count();
     }
 
     public boolean hasBeenFired(String event) {

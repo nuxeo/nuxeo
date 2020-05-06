@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.CO
 import static org.nuxeo.ecm.platform.comment.workflow.utils.CommentsConstants.COMMENT_TEXT;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,11 +60,8 @@ import org.nuxeo.ecm.platform.comment.api.CommentConstants;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentNotFoundException;
 import org.nuxeo.ecm.platform.comment.api.exceptions.CommentSecurityException;
-import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
-import org.nuxeo.ecm.platform.notification.api.NotificationManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * @since 10.3
@@ -72,7 +70,8 @@ public abstract class AbstractCommentManager implements CommentManager {
 
     private static final Log log = LogFactory.getLog(AbstractCommentManager.class);
 
-    protected static final String COMMENTS_DIRECTORY = "Comments";
+    /** @since 11.1 */
+    public static final String COMMENTS_DIRECTORY = "Comments";
 
     @Override
     public List<DocumentModel> getComments(DocumentModel docModel) {
@@ -98,6 +97,24 @@ public abstract class AbstractCommentManager implements CommentManager {
     public PartialList<Comment> getComments(CoreSession session, String documentId, Long pageSize,
             Long currentPageIndex) {
         return getComments(session, documentId, pageSize, currentPageIndex, true);
+    }
+
+    @Override
+    public Comment getExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException {
+        return getExternalComment(session, null, entityId);
+    }
+
+    @Override
+    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
+            throws CommentNotFoundException, CommentSecurityException {
+        return updateExternalComment(session, null, entityId, comment);
+    }
+
+    @Override
+    public void deleteExternalComment(CoreSession session, String entityId)
+            throws CommentNotFoundException, CommentSecurityException {
+        deleteExternalComment(session, null, entityId);
     }
 
     public DocumentRef getTopLevelDocumentRef(CoreSession session, DocumentRef commentRef) {
@@ -216,6 +233,23 @@ public abstract class AbstractCommentManager implements CommentManager {
         acl.setACEs(new ACE[] { grantRead, grantRemove });
         acp.addACL(acl);
         session.setACP(documentModel.getRef(), acp, true);
+    }
+
+    protected void fillCommentForCreation(CoreSession session, Comment comment) {
+        // Initiate Author if it is not done yet
+        if (comment.getAuthor() == null) {
+            comment.setAuthor(session.getPrincipal().getName());
+        }
+
+        // Initiate Creation Date if it is not done yet
+        if (comment.getCreationDate() == null) {
+            comment.setCreationDate(Instant.now());
+        }
+
+        // Initiate Modification Date if it is not done yet
+        if (comment.getModificationDate() == null) {
+            comment.setModificationDate(Instant.now());
+        }
     }
 
     /**

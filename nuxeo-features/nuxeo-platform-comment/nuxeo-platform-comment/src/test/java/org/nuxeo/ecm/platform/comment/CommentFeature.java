@@ -19,9 +19,18 @@
 
 package org.nuxeo.ecm.platform.comment;
 
+import static org.junit.Assert.assertTrue;
+
+import javax.inject.Inject;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.platform.comment.api.CommentManager;
+import org.nuxeo.ecm.platform.comment.impl.PropertyCommentManager;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
 
 /**
@@ -36,4 +45,17 @@ import org.nuxeo.runtime.test.runner.RunnerFeature;
 @Deploy("org.nuxeo.ecm.platform.query.api")
 @Deploy("org.nuxeo.ecm.platform.comment")
 public class CommentFeature implements RunnerFeature {
+
+    @RunWith(FeaturesRunner.class)
+    @Features(CommentFeature.class)
+    public static class TestCommentFeature {
+
+        @Inject
+        protected CommentManager service;
+
+        @Test
+        public void testCommentManager() {
+            assertTrue(service instanceof PropertyCommentManager);
+        }
+    }
 }

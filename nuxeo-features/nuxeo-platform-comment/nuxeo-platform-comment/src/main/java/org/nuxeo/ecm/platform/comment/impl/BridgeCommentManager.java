@@ -46,11 +46,24 @@ public class BridgeCommentManager extends AbstractCommentManager {
     protected final CommentManager first;
 
     protected final CommentManager second;
-
-
+    
     public BridgeCommentManager(CommentManager first, CommentManager second) {
         this.first = first;
         this.second = second;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public CommentManager getFirst() {
+        return first;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public CommentManager getSecond() {
+        return second;
     }
 
     @Override
@@ -155,46 +168,52 @@ public class BridgeCommentManager extends AbstractCommentManager {
     public Comment updateComment(CoreSession session, String commentId, Comment comment)
             throws CommentNotFoundException, CommentSecurityException {
         DocumentRef commentRef = new IdRef(commentId);
-        if (!session.exists(commentRef)) {
-            throw new CommentNotFoundException("The comment " + commentId + " does not exist");
-        }
-        if (session.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID) != null) {
-            return second.updateComment(session, commentId, comment);
-        } else {
-            return first.updateComment(session, commentId, comment);
-        }
+        return CoreInstance.doPrivileged(session, s -> {
+            // retrieve comment to check which service handles it
+            if (!s.exists(commentRef)) {
+                throw new CommentNotFoundException("The comment " + commentId + " does not exist");
+            }
+            if (s.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID) != null) {
+                return second.updateComment(session, commentId, comment);
+            } else {
+                return first.updateComment(session, commentId, comment);
+            }
+        });
     }
 
     @Override
     public void deleteComment(CoreSession session, String commentId)
             throws CommentNotFoundException, CommentSecurityException {
         DocumentRef commentRef = new IdRef(commentId);
-        if (!session.exists(commentRef)) {
-            throw new CommentNotFoundException("The comment " + commentId + " does not exist");
-        }
-        if (session.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID) != null) {
-            second.deleteComment(session, commentId);
-        } else {
-            first.deleteComment(session, commentId);
-        }
+        CoreInstance.doPrivileged(session, s -> {
+            // retrieve comment to check which service handles it
+            if (!s.exists(commentRef)) {
+                throw new CommentNotFoundException("The comment " + commentId + " does not exist");
+            }
+            if (s.getDocument(commentRef).getPropertyValue(COMMENT_PARENT_ID) != null) {
+                second.deleteComment(session, commentId);
+            } else {
+                first.deleteComment(session, commentId);
+            }
+        });
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId)
+    public Comment getExternalComment(CoreSession session, String documentId, String entityId)
             throws CommentNotFoundException, CommentSecurityException {
-        return second.getExternalComment(session, entityId);
+        return second.getExternalComment(session, documentId, entityId);
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment)
+    public Comment updateExternalComment(CoreSession session, String documentId, String entityId, Comment comment)
             throws CommentNotFoundException, CommentSecurityException {
-        return second.updateExternalComment(session, entityId, comment);
+        return second.updateExternalComment(session, documentId, entityId, comment);
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId)
+    public void deleteExternalComment(CoreSession session, String documentId, String entityId)
             throws CommentNotFoundException, CommentSecurityException {
-        second.deleteExternalComment(session, entityId);
+        second.deleteExternalComment(session, documentId, entityId);
     }
 
     @Override

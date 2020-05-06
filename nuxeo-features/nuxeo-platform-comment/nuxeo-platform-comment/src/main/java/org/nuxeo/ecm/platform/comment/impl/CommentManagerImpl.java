@@ -426,6 +426,8 @@ public class CommentManagerImpl extends AbstractCommentManager {
         DocumentModel commentModel = session.createDocumentModel(COMMENT_DOC_TYPE);
         commentModel.setPropertyValue("dc:created", Calendar.getInstance());
 
+        fillCommentForCreation(session, comment);
+
         if (comment.getDocument().hasFacet(EXTERNAL_ENTITY_FACET)) {
             commentModel.addFacet(EXTERNAL_ENTITY_FACET);
         }
@@ -489,19 +491,20 @@ public class CommentManagerImpl extends AbstractCommentManager {
     }
 
     @Override
-    public Comment getExternalComment(CoreSession session, String entityId) throws NuxeoException {
+    public Comment getExternalComment(CoreSession session, String documentId, String entityId) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Get a comment from its external entity id is not possible through this implementation");
     }
 
     @Override
-    public Comment updateExternalComment(CoreSession session, String entityId, Comment comment) throws NuxeoException {
+    public Comment updateExternalComment(CoreSession session, String documentId, String entityId, Comment comment)
+            throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Update a comment from its external entity id is not possible through this implementation");
     }
 
     @Override
-    public void deleteExternalComment(CoreSession session, String entityId) throws NuxeoException {
+    public void deleteExternalComment(CoreSession session, String documentId, String entityId) throws NuxeoException {
         throw new UnsupportedOperationException(
                 "Delete a comment from its external entity id is not possible through this implementation");
     }
@@ -510,6 +513,7 @@ public class CommentManagerImpl extends AbstractCommentManager {
     public boolean hasFeature(Feature feature) {
         switch (feature) {
         case COMMENTS_LINKED_WITH_PROPERTY:
+        case COMMENTS_ARE_SPECIAL_CHILDREN:
             return false;
         default:
             throw new UnsupportedOperationException(feature.name());

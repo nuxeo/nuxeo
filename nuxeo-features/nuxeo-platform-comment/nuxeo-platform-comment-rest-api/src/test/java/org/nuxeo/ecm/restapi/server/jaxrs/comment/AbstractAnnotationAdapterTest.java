@@ -24,6 +24,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.platform.comment.CommentUtils.createUser;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newAnnotation;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newComment;
+import static org.nuxeo.ecm.platform.comment.CommentUtils.newExternalAnnotation;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_PERMISSIONS;
 import static org.nuxeo.ecm.platform.comment.api.AnnotationConstants.ANNOTATION_XPATH;
 import static org.nuxeo.ecm.platform.comment.api.ExternalEntityConstants.EXTERNAL_ENTITY;
@@ -55,12 +58,9 @@ import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.CtxBuilder;
 import org.nuxeo.ecm.platform.comment.api.Annotation;
-import org.nuxeo.ecm.platform.comment.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.comment.api.AnnotationService;
 import org.nuxeo.ecm.platform.comment.api.Comment;
-import org.nuxeo.ecm.platform.comment.api.CommentImpl;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
-import org.nuxeo.ecm.platform.comment.api.ExternalEntity;
 import org.nuxeo.ecm.platform.comment.impl.AnnotationJsonWriter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
@@ -85,23 +85,21 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
     @Inject
     protected CommentManager commentManager;
 
+    protected DocumentModel file;
+
     @Before
     public void setup() {
         DocumentModel domain = session.createDocumentModel("/", "testDomain", "Domain");
         session.createDocument(domain);
+        file = session.createDocumentModel("/testDomain", "testDoc", "File");
+        file = session.createDocument(file);
+        fetchInvalidations();
     }
 
     @Test
     public void testCreateAnnotation() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-
-        fetchInvalidations();
         String xpath = "file:content";
-
-        Annotation annotation = new AnnotationImpl();
-        annotation.setParentId(file.getId());
-        annotation.setXpath(xpath);
+        Annotation annotation = newAnnotation(file.getId(), xpath);
 
         String jsonAnnotation = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
 
@@ -116,14 +114,8 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
     @Test
     public void testGetAnnotation() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
         String xpath = "files:files/0/file";
-
-        Annotation annotation = new AnnotationImpl();
-        annotation.setParentId(file.getId());
-        annotation.setXpath(xpath);
-        annotation = annotationService.createAnnotation(session, annotation);
+        Annotation annotation = annotationService.createAnnotation(session, newAnnotation(file.getId(), xpath));
         fetchInvalidations();
 
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/" + annotation.getId());
@@ -145,19 +137,8 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
     @Test
     public void testUpdateAnnotation() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-
-        fetchInvalidations();
         String xpath = "file:content";
-        String author = "author";
-
-        Annotation annotation = new AnnotationImpl();
-        annotation.setId("foo");
-        annotation.setAuthor(author);
-        annotation.setParentId(file.getId());
-        annotation.setXpath(xpath);
-        annotation = annotationService.createAnnotation(session, annotation);
+        Annotation annotation = annotationService.createAnnotation(session, newAnnotation(file.getId(), xpath));
 
         fetchInvalidations();
 
@@ -174,7 +155,7 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
             Annotation updatedAnnotation = annotationService.getAnnotation(session, annotation.getId());
             assertEquals("test", updatedAnnotation.getText());
-            assertEquals(author, updatedAnnotation.getAuthor());
+            assertEquals(session.getPrincipal().getName(), updatedAnnotation.getAuthor());
         }
     }
 
@@ -185,19 +166,14 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
     public void testUpdateAnnotationWithRegularUser() throws IOException {
         // create jdoe user as a regular user
         createUser(JDOE);
+        // re-compute read acls
+        fetchInvalidations();
         // use it in rest calls
         service = getServiceFor(JDOE, JDOE);
 
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
         String annotationId;
         // use rest for creation in order to have the correct author
-        AnnotationImpl annotation = new AnnotationImpl();
-        annotation.setParentId(file.getId());
-        annotation.setText("Some text");
-        annotation.setXpath("file:content");
+        Annotation annotation = newAnnotation(file.getId(), "file:content", "Some text");
         String jsonComment = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@annotation",
                 jsonComment)) {
@@ -224,17 +200,8 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
     @Test
     public void testDeleteAnnotation() {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
         String xpath = "files:files/0/file";
-
-        Annotation annotation = new AnnotationImpl();
-        annotation.setId("foo");
-        annotation.setParentId(file.getId());
-        annotation.setXpath(xpath);
-        annotation.setAuthor(session.getPrincipal().getName());
-        annotation = annotationService.createAnnotation(session, annotation);
-
+        Annotation annotation = annotationService.createAnnotation(session, newAnnotation(file.getId(), xpath));
         fetchInvalidations();
 
         assertTrue(session.exists(new IdRef(annotation.getId())));
@@ -251,35 +218,17 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
     public void testSearchAnnotations() throws IOException {
         DocumentModel file1 = session.createDocumentModel("/testDomain", "testDoc1", "File");
         file1 = session.createDocument(file1);
-        String xpath1 = "files:files/0/file";
-        String xpath2 = "files:files/1/file";
-
         DocumentModel file2 = session.createDocumentModel("/testDomain", "testDoc2", "File");
         file2 = session.createDocument(file2);
+
+        String xpath1 = "files:files/0/file";
+        String xpath2 = "files:files/1/file";
         String xpath3 = "file:content";
-
-        Annotation annotation1 = new AnnotationImpl();
-        annotation1.setParentId(file1.getId());
-        annotation1.setXpath(xpath1);
-        Annotation annotation2 = new AnnotationImpl();
-        annotation2.setParentId(file1.getId());
-        annotation2.setXpath(xpath2);
-        Annotation annotation3 = new AnnotationImpl();
-        annotation3.setParentId(file1.getId());
-        annotation3.setXpath(xpath2);
-        Annotation annotation4 = new AnnotationImpl();
-        annotation4.setParentId(file2.getId());
-        annotation4.setXpath(xpath3);
-        Annotation annotation5 = new AnnotationImpl();
-        annotation5.setParentId(file2.getId());
-        annotation5.setXpath(xpath3);
-
-        annotation1 = annotationService.createAnnotation(session, annotation1);
-        annotation2 = annotationService.createAnnotation(session, annotation2);
-        annotation3 = annotationService.createAnnotation(session, annotation3);
-        annotation4 = annotationService.createAnnotation(session, annotation4);
-        annotation5 = annotationService.createAnnotation(session, annotation5);
-
+        Annotation annotation1 = annotationService.createAnnotation(session, newAnnotation(file1.getId(), xpath1));
+        Annotation annotation2 = annotationService.createAnnotation(session, newAnnotation(file1.getId(), xpath2));
+        Annotation annotation3 = annotationService.createAnnotation(session, newAnnotation(file1.getId(), xpath2));
+        Annotation annotation4 = annotationService.createAnnotation(session, newAnnotation(file2.getId(), xpath3));
+        Annotation annotation5 = annotationService.createAnnotation(session, newAnnotation(file2.getId(), xpath3));
         fetchInvalidations();
 
         MultivaluedMap<String, String> params1 = new MultivaluedMapImpl();
@@ -314,28 +263,17 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
     @Test
     public void testGetExternalAnnotation() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
         String xpath = "files:files/0/file";
-
         String entityId = "foo";
-        String origin = "origin";
         String entity = "<entity></entity>";
-
-        Annotation annotation = new AnnotationImpl();
-        ((ExternalEntity) annotation).setEntityId(entityId);
-        ((ExternalEntity) annotation).setOrigin(origin);
-        ((ExternalEntity) annotation).setEntity(entity);
-        annotation.setParentId(file.getId());
-        annotation.setXpath(xpath);
-        annotation = annotationService.createAnnotation(session, annotation);
+        annotationService.createAnnotation(session, newExternalAnnotation(file.getId(), xpath, entityId, entity));
         fetchInvalidations();
 
         JsonNode node = getResponseAsJson(RequestType.GET, "id/" + file.getId() + "/@annotation/external/" + entityId);
 
         assertEquals(AnnotationJsonWriter.ENTITY_TYPE, node.get("entity-type").asText());
         assertEquals(entityId, node.get(EXTERNAL_ENTITY_ID).textValue());
-        assertEquals(origin, node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
+        assertEquals("Test", node.get(EXTERNAL_ENTITY_ORIGIN).textValue());
         assertEquals(entity, node.get(EXTERNAL_ENTITY).textValue());
         assertEquals(file.getId(), node.get(COMMENT_PARENT_ID_FIELD).textValue());
         assertEquals(xpath, node.get(ANNOTATION_XPATH).textValue());
@@ -343,19 +281,11 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
     @Test
     public void testUpdateExternalAnnotation() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-
-        fetchInvalidations();
         String xpath = "file:content";
         String entityId = "foo";
         String author = "toto";
-
-        Annotation annotation = new AnnotationImpl();
-        ((ExternalEntity) annotation).setEntityId(entityId);
-        annotation.setParentId(file.getId());
+        Annotation annotation = newExternalAnnotation(file.getId(), xpath, entityId);
         annotation.setAuthor(author);
-        annotation.setXpath(xpath);
         annotation = annotationService.createAnnotation(session, annotation);
 
         fetchInvalidations();
@@ -368,7 +298,7 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
             fetchInvalidations();
-            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, entityId);
+            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, file.getId(), entityId);
             assertEquals(author, updatedAnnotation.getAuthor());
         }
     }
@@ -380,20 +310,15 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
     public void testUpdateExternalAnnotationWithRegularUser() throws IOException {
         // create jdoe user as a regular user
         createUser(JDOE);
+        // re-compute read acls
+        fetchInvalidations();
         // use it in rest calls
         service = getServiceFor(JDOE, JDOE);
 
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-        fetchInvalidations();
-
         String entityId = "foo";
         // use rest for creation in order to have the correct author
-        AnnotationImpl annotation = new AnnotationImpl();
-        annotation.setEntityId(entityId);
-        annotation.setParentId(file.getId());
+        Annotation annotation = newExternalAnnotation(file.getId(), "file:content", entityId);
         annotation.setText("Some text");
-        annotation.setXpath("file:content");
         String jsonComment = MarshallerHelper.objectToJson(annotation, CtxBuilder.session(session).get());
         try (CloseableClientResponse response = getResponse(RequestType.POST, "id/" + file.getId() + "/@annotation",
                 jsonComment)) {
@@ -411,25 +336,17 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
             assertEquals("And now I update it", node.get(COMMENT_TEXT_FIELD).textValue());
             fetchInvalidations();
             // assert DB was updated
-            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, entityId);
+            Annotation updatedAnnotation = annotationService.getExternalAnnotation(session, file.getId(), entityId);
             assertEquals("And now I update it", updatedAnnotation.getText());
         }
     }
 
     @Test
     public void testDeleteExternalAnnotation() {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
         String xpath = "files:files/0/file";
         String entityId = "foo";
-
-        Annotation annotation = new AnnotationImpl();
-        ((ExternalEntity) annotation).setEntityId(entityId);
-        annotation.setParentId(file.getId());
-        annotation.setXpath(xpath);
-        annotation.setAuthor(session.getPrincipal().getName());
-        annotation = annotationService.createAnnotation(session, annotation);
-
+        Annotation annotation = annotationService.createAnnotation(session,
+                newExternalAnnotation(file.getId(), xpath, entityId));
         fetchInvalidations();
 
         assertTrue(session.exists(new IdRef(annotation.getId())));
@@ -444,33 +361,19 @@ public abstract class AbstractAnnotationAdapterTest extends BaseTest {
 
     @Test
     public void testGetCommentsOfAnnotations() throws IOException {
-        DocumentModel file = session.createDocumentModel("/testDomain", "testDoc", "File");
-        file = session.createDocument(file);
-
-        Annotation annotation1 = new AnnotationImpl();
-        Annotation annotation2 = new AnnotationImpl();
-
-        annotation1.setAuthor(session.getPrincipal().getName());
-        annotation1.setParentId(file.getId());
-        annotation1 = annotationService.createAnnotation(session, annotation1);
-
-        annotation2.setAuthor(session.getPrincipal().getName());
-        annotation2.setParentId(file.getId());
-        annotation2 = annotationService.createAnnotation(session, annotation2);
-
+        Annotation annotation1 = annotationService.createAnnotation(session,
+                newAnnotation(file.getId(), "file:content"));
+        Annotation annotation2 = annotationService.createAnnotation(session,
+                newAnnotation(file.getId(), "file:content"));
         fetchInvalidations();
 
         List<String> commentIds = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            Comment comment = new CommentImpl();
-            comment.setAuthor(session.getPrincipal().getName());
-            comment.setParentId(i % 2 == 0 ? annotation1.getId() : annotation2.getId());
+            Comment comment = newComment(i % 2 == 0 ? annotation1.getId() : annotation2.getId());
             comment = commentManager.createComment(session, comment);
             commentIds.add(comment.getId());
 
-            Comment subComment = new CommentImpl();
-            subComment.setAuthor(session.getPrincipal().getName());
-            subComment.setParentId(comment.getId());
+            Comment subComment = newComment(comment.getId());
             subComment = commentManager.createComment(session, subComment);
             commentIds.add(subComment.getId());
         }

@@ -15,6 +15,11 @@
       <event>documentRemoved</event>
     </listener>
 
+    <listener name="checkedInCommentListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.comment.listener.CheckedInCommentListener">
+      <event>documentCheckedIn</event>
+    </listener>
+
   </extension>
 
 </component>
