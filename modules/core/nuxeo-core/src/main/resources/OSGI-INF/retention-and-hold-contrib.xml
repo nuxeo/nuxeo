@@ -10,14 +10,6 @@
       order="1" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService" point="schedule">
-    <schedule id="findRetentionExpired">
-      <eventId>findRetentionExpired</eventId>
-      <!-- every hour -->
-      <cronExpression>0 0 * * * ?</cronExpression>
-    </schedule>
-  </extension>
-
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <listener name="findRetentionExpired" async="true"
       class="org.nuxeo.ecm.core.security.RetentionExpiredFinderListener">
