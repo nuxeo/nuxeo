@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.nuxeo.retention.contentTemplate">
+<component name="org.nuxeo.contentTemplate.contrib.audit.test">
 
   <require>
     org.nuxeo.ecm.platform.content.template.service.ContentTemplateService.defaultContrib
