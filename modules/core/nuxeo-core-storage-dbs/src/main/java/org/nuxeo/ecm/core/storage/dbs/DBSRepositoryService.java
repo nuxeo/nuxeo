@@ -112,7 +112,7 @@ public class DBSRepositoryService extends DefaultComponent {
             repositoryFactory = new DBSCachingRepositoryFactory(repositoryName, repositoryFactory);
         }
         Repository repository = new Repository(repositoryName, descriptor.label, descriptor.isDefault(),
-                descriptor.isHeadless(), repositoryFactory);
+                descriptor.isHeadless(), repositoryFactory, descriptor.pool);
         repositoryManager.addRepository(repository);
     }
 

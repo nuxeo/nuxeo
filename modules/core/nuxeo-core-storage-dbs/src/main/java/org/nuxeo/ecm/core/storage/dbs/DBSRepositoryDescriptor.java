@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.ecm.core.api.repository.PoolConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor;
 import org.nuxeo.ecm.core.storage.FulltextDescriptor.FulltextIndexDescriptor;
 
@@ -148,11 +149,15 @@ public class DBSRepositoryDescriptor implements Cloneable {
         this.changeTokenEnabled = Boolean.valueOf(enabled);
     }
 
+    @XNode("pool")
+    public PoolConfiguration pool;
+
     @Override
     public DBSRepositoryDescriptor clone() {
         try {
             DBSRepositoryDescriptor clone = (DBSRepositoryDescriptor) super.clone();
             clone.fulltextDescriptor = new FulltextDescriptor(fulltextDescriptor);
+            clone.pool = pool == null ? null : new PoolConfiguration(pool);
             return clone;
         } catch (CloneNotSupportedException e) { // cannot happen
             throw new RuntimeException(e);
@@ -168,6 +173,13 @@ public class DBSRepositoryDescriptor implements Cloneable {
         }
         if (other.isDefault != null) {
             isDefault = other.isDefault;
+        }
+        if (other.pool != null) {
+            if (pool == null) {
+                pool = new PoolConfiguration(other.pool);
+            } else {
+                pool.merge(other.pool);
+            }
         }
         if (other.idType != null) {
             idType = other.idType;

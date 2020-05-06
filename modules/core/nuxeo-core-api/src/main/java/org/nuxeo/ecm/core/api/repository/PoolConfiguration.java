@@ -17,10 +17,8 @@
  *     Florent Guillaume
  *     Julien Carsique
  */
-package org.nuxeo.runtime.jtajca;
+package org.nuxeo.ecm.core.api.repository;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -30,9 +28,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.6
  */
 @XObject("pool")
-public class NuxeoConnectionManagerConfiguration {
-
-    private static final Logger log = LogManager.getLogger(NuxeoConnectionManagerConfiguration.class);
+public class PoolConfiguration {
 
     public static final int DEFAULT_MAX_POOL_SIZE = 20;
 
@@ -49,17 +45,17 @@ public class NuxeoConnectionManagerConfiguration {
     @XNode("@blockingTimeoutMillis")
     private Integer blockingTimeoutMillis;
 
-    public NuxeoConnectionManagerConfiguration() {
+    public PoolConfiguration() {
     }
 
     /** Copy constructor. */
-    public NuxeoConnectionManagerConfiguration(NuxeoConnectionManagerConfiguration other) {
+    public PoolConfiguration(PoolConfiguration other) {
         maxPoolSize = other.maxPoolSize;
         minPoolSize = other.minPoolSize;
         blockingTimeoutMillis = other.blockingTimeoutMillis;
     }
 
-    public void merge(NuxeoConnectionManagerConfiguration other) {
+    public void merge(PoolConfiguration other) {
         if (other.maxPoolSize != null) {
             maxPoolSize = other.maxPoolSize;
         }
@@ -102,22 +98,16 @@ public class NuxeoConnectionManagerConfiguration {
     @XNode("@maxActive")
     public void setMaxActive(int num) {
         maxPoolSize = num;
-        log.warn(
-                "maxActive deprecated dbcp pool attribute usage, should use maxPoolSize geronimo pool attribute instead");
     }
 
     @XNode("@maxIdle")
     public void setMaxIdle(int num) {
         minPoolSize = num;
-        log.warn(
-                "maxIdle deprecated dbcp pool attribute usage, should use minPoolSize geronimo pool attribute instead");
     }
 
     @XNode("@maxWait")
     public void setMaxWait(int num) {
         blockingTimeoutMillis = num;
-        log.warn(
-                "maxWait deprecated dbcp pool attribute usage, should use blockingTimeoutMillis geronimo pool attribute instead");
     }
 
 }
