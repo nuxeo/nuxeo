@@ -669,7 +669,7 @@ pipeline {
               sh """kubectl create secret generic kubernetes-docker-cfg \
                   --namespace=${PREVIEW_NAMESPACE} \
                   --from-literal=.dockerconfigjson="\$(kubectl --namespace ${kubernetesNamespace} get secret kubernetes-docker-cfg -ojsonpath='{.data.\\.dockerconfigjson}' | base64 --decode)" \
-                  --type=kubernetes.io/dockerconfigjson"""
+                  --type=kubernetes.io/dockerconfigjson --dry-run -o yaml | kubectl apply -f -"""
               // build and deploy the chart
               // To avoid jx gc cron job, reference branch previews are deployed by calling jx step helm install instead of jx preview
               sh """
