@@ -85,7 +85,6 @@ NXContribution: org.nuxeo.ecm.core.query.properties--configuration *** /grp:org.
 NXContribution: org.nuxeo.ecm.core.retention.contrib--actions *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.retention.contrib/Contributions/org.nuxeo.ecm.core.retention.contrib--actions
 NXContribution: org.nuxeo.ecm.core.retention.contrib--listener *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.retention.contrib/Contributions/org.nuxeo.ecm.core.retention.contrib--listener
 NXContribution: org.nuxeo.ecm.core.retention.contrib--policies *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.retention.contrib/Contributions/org.nuxeo.ecm.core.retention.contrib--policies
-NXContribution: org.nuxeo.ecm.core.retention.contrib--schedule *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.retention.contrib/Contributions/org.nuxeo.ecm.core.retention.contrib--schedule
 NXContribution: org.nuxeo.ecm.core.retention.contrib--streamProcessor *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.retention.contrib/Contributions/org.nuxeo.ecm.core.retention.contrib--streamProcessor
 NXContribution: org.nuxeo.ecm.core.schedulers--listener *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.schedulers/Contributions/org.nuxeo.ecm.core.schedulers--listener
 NXContribution: org.nuxeo.ecm.core.schedulers--queues *** /grp:org.nuxeo.ecm.core/org.nuxeo.ecm.core/org.nuxeo.ecm.core.schedulers/Contributions/org.nuxeo.ecm.core.schedulers--queues
