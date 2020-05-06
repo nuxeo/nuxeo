@@ -42,8 +42,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.function.ThrowableConsumer;
-import org.nuxeo.common.function.ThrowableFunction;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -61,7 +59,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.kv.AbstractKeyValueStoreProvider;
 import org.nuxeo.runtime.kv.KeyValueStoreDescriptor;
-import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * SQL implementation of a Key/Value Store Provider.
@@ -201,10 +198,12 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
             tbl = tableProp.trim() + "_" + namespace.trim();
         }
         // check connection, get dialect and create table if needed
-        runWithConnection(connection -> {
+        try (Connection connection = getConnection()) {
             dialect = Dialect.createDialect(connection, null);
             getTable(connection, tbl);
-        });
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
         prepareSQL();
         startTTLThread();
     }
@@ -381,28 +380,9 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
         return null;
     }
 
-    protected void runWithConnection(ThrowableConsumer<Connection, SQLException> consumer) {
-        TransactionHelper.runWithoutTransaction(() -> {
-            try (Connection connection = getConnection()) {
-                consumer.accept(connection);
-            } catch (SQLException e) {
-                throw new NuxeoException(e);
-            }
-        });
-    }
-
-    protected <R> R runWithConnection(ThrowableFunction<Connection, R, SQLException> function) {
-        return TransactionHelper.runWithoutTransaction(() -> {
-            try (Connection connection = getConnection()) {
-                return function.apply(connection);
-            } catch (SQLException e) {
-                throw new NuxeoException(e);
-            }
-        });
-    }
-
     protected Connection getConnection() throws SQLException {
-        return ConnectionHelper.getConnection(dataSourceName);
+        // open connection in noSharing mode
+        return ConnectionHelper.getConnection(dataSourceName, true);
     }
 
     protected void setToPreparedStatement(String sql, PreparedStatement ps, Column column, Serializable value)
@@ -516,42 +496,44 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     protected void expireTTLOnce() {
-        runWithConnection(connection -> {
-            try {
-                try (PreparedStatement ps = connection.prepareStatement(expireSQL)) {
-                    Long ttlDeadline = getTTLValue(0);
-                    setToPreparedStatement(expireSQL, ps, ttlCol, ttlDeadline);
-                    int count = ps.executeUpdate();
-                    logger.logCount(count);
-                }
-            } catch (SQLException e) {
-                if (dialect.isConcurrentUpdateException(e)) {
-                    // ignore
-                    return;
-                }
-                log.debug("Exception during TTL expiration", e);
+        try (Connection connection = getConnection(); //
+                PreparedStatement ps = connection.prepareStatement(expireSQL)) {
+            Long ttlDeadline = getTTLValue(0);
+            setToPreparedStatement(expireSQL, ps, ttlCol, ttlDeadline);
+            int count = ps.executeUpdate();
+            logger.logCount(count);
+        } catch (SQLException e) {
+            if (dialect.isConcurrentUpdateException(e)) {
+                // ignore
+                return;
             }
-        });
+            log.debug("Exception during TTL expiration", e);
+        }
     }
 
     @Override
     public void clear() {
-        runWithConnection(connection -> {
-            try (Statement st = connection.createStatement()) {
-                logger.log(deleteAllSQL);
-                st.execute(deleteAllSQL);
-            }
-        });
+        try (Connection connection = getConnection(); //
+                Statement st = connection.createStatement()) {
+            logger.log(deleteAllSQL);
+            st.execute(deleteAllSQL);
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override
     public Stream<String> keyStream() {
-        return runWithConnection((Connection connection) -> keyStream(connection, null));
+        return keyStream(null);
     }
 
     @Override
     public Stream<String> keyStream(String prefix) {
-        return runWithConnection((Connection connection) -> keyStream(connection, prefix));
+        try (Connection connection = getConnection()) {
+            return keyStream(connection, prefix);
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     protected Stream<String> keyStream(Connection connection, String prefix) throws SQLException {
@@ -652,70 +634,72 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     protected Object getObject(String key) {
-        return runWithConnection(connection -> {
-            try (PreparedStatement ps = connection.prepareStatement(getSQL)) {
-                setToPreparedStatement(getSQL, ps, keyCol, key);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
-                        if (logger.isLogEnabled()) {
-                            logger.log("  -> null");
-                        }
-                        return null;
-                    }
-                    Long longValue = (Long) longCol.getFromResultSet(rs, 1);
-                    String string = (String) stringCol.getFromResultSet(rs, 2);
-                    byte[] bytes = (byte[]) bytesCol.getFromResultSet(rs, 3);
+        try (Connection connection = getConnection(); //
+                PreparedStatement ps = connection.prepareStatement(getSQL)) {
+            setToPreparedStatement(getSQL, ps, keyCol, key);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
                     if (logger.isLogEnabled()) {
-                        logger.logResultSet(rs, Arrays.asList(longCol, stringCol, bytesCol));
+                        logger.log("  -> null");
                     }
-                    if (string != null) {
-                        return string;
-                    } else if (longValue != null) {
-                        return longValue;
-                    } else {
-                        return bytes;
-                    }
+                    return null;
+                }
+                Long longValue = (Long) longCol.getFromResultSet(rs, 1);
+                String string = (String) stringCol.getFromResultSet(rs, 2);
+                byte[] bytes = (byte[]) bytesCol.getFromResultSet(rs, 3);
+                if (logger.isLogEnabled()) {
+                    logger.logResultSet(rs, Arrays.asList(longCol, stringCol, bytesCol));
+                }
+                if (string != null) {
+                    return string;
+                } else if (longValue != null) {
+                    return longValue;
+                } else {
+                    return bytes;
                 }
             }
-        });
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     protected void getObjects(Collection<String> keys, BiConsumer<String, Object> consumer) {
         if (keys.isEmpty()) {
             return;
         }
-        runWithConnection((Connection connection) -> {
-            String sql = String.format(getMultiSQL, nParams(keys.size()));
-            logger.logSQL(sql, keys);
-            try (PreparedStatement ps = connection.prepareStatement(sql)) {
-                int i = 1;
-                for (String key : keys) {
-                    keyCol.setToPreparedStatement(ps, i++, key);
-                }
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        String key = (String) keyCol.getFromResultSet(rs, 1);
-                        Long longVal = (Long) longCol.getFromResultSet(rs, 2);
-                        String string = (String) stringCol.getFromResultSet(rs, 3);
-                        byte[] bytes = (byte[]) bytesCol.getFromResultSet(rs, 4);
-                        if (logger.isLogEnabled()) {
-                            logger.logResultSet(rs, Arrays.asList(keyCol, longCol, stringCol, bytesCol));
-                        }
-                        Object value;
-                        if (string != null) {
-                            value = string;
-                        } else if (longVal != null) {
-                            value = longVal;
-                        } else {
-                            value = bytes;
-                        }
-                        if (value != null) {
-                            consumer.accept(key, value);
-                        }
+        String sql = String.format(getMultiSQL, nParams(keys.size()));
+        logger.logSQL(sql, keys);
+        try (Connection connection = getConnection(); //
+                PreparedStatement ps = connection.prepareStatement(sql)) {
+            int i = 1;
+            for (String key : keys) {
+                keyCol.setToPreparedStatement(ps, i++, key);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String key = (String) keyCol.getFromResultSet(rs, 1);
+                    Long longVal = (Long) longCol.getFromResultSet(rs, 2);
+                    String string = (String) stringCol.getFromResultSet(rs, 3);
+                    byte[] bytes = (byte[]) bytesCol.getFromResultSet(rs, 4);
+                    if (logger.isLogEnabled()) {
+                        logger.logResultSet(rs, Arrays.asList(keyCol, longCol, stringCol, bytesCol));
+                    }
+                    Object value;
+                    if (string != null) {
+                        value = string;
+                    } else if (longVal != null) {
+                        value = longVal;
+                    } else {
+                        value = bytes;
+                    }
+                    if (value != null) {
+                        consumer.accept(key, value);
                     }
                 }
             }
-        });
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     protected String nParams(int n) {
@@ -768,7 +752,7 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     protected void put(String key, Object value, long ttl) {
-        runWithConnection((Connection connection) -> {
+        try (Connection connection = getConnection()) {
             if (value == null) {
                 // delete
                 try (PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
@@ -803,19 +787,22 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                 }
                 throw new ConcurrentUpdateException("Failed to do atomic put for key: " + key);
             }
-        });
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override
     public boolean setTTL(String key, long ttl) {
-        return runWithConnection((Connection connection) -> {
-            try (PreparedStatement ps = connection.prepareStatement(setTTLSQL)) {
-                setToPreparedStatement(setTTLSQL, ps, ttlCol, ttlToStorage(ttl), keyCol, key);
-                int count = ps.executeUpdate();
-                boolean set = count == 1;
-                return set;
-            }
-        }).booleanValue();
+        try (Connection connection = getConnection(); //
+                PreparedStatement ps = connection.prepareStatement(setTTLSQL)) {
+            setToPreparedStatement(setTTLSQL, ps, ttlCol, ttlToStorage(ttl), keyCol, key);
+            int count = ps.executeUpdate();
+            boolean set = count == 1;
+            return set;
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override
@@ -829,7 +816,7 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
     }
 
     protected boolean compareAndSet(String key, Object expected, Object value, long ttl) {
-        return runWithConnection((Connection connection) -> {
+        try (Connection connection = getConnection()) {
             if (expected == null && value == null) {
                 // check that document doesn't exist
                 try (PreparedStatement ps = connection.prepareStatement(existsSQL)) {
@@ -927,12 +914,14 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                     return set;
                 }
             }
-        }).booleanValue();
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     @Override
     public long addAndGet(String key, long delta) throws NumberFormatException { // NOSONAR
-        return runWithConnection((Connection connection) -> {
+        try (Connection connection = getConnection()) {
             for (int retry = 0; retry < MAX_RETRY; retry++) {
                 String updateReturningSql;
                 boolean useReturnResultSet = false;
@@ -1047,7 +1036,9 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                 sleepBeforeRetry();
             }
             throw new ConcurrentUpdateException("Failed to do atomic addAndGet for key: " + key);
-        }).longValue();
+        } catch (SQLException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     protected void sleepBeforeRetry() {
