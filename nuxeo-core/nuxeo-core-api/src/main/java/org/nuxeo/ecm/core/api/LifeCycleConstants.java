@@ -44,7 +44,10 @@ public interface LifeCycleConstants {
 
     /**
      * Event for a document undeleted by the user. Triggers an async listener that undeletes its children too.
+     *
+     * @deprecated since 11.1, technical event used by former trash mechanism
      */
+    @Deprecated
     static final String DOCUMENT_UNDELETED = "documentUndeleted";
 
     /**

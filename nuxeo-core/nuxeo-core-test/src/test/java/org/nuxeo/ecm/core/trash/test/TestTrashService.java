@@ -365,4 +365,52 @@ public class TestTrashService {
         assertTrue(doc2.isCheckedOut());
     }
 
+    /*
+     * NXP-28935
+     */
+    @Test
+    public void testUntrashThreeLevels() {
+        DocumentModel folder1 = session.createDocumentModel("/", "folder1", "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel folder2 = session.createDocumentModel("/folder1", "folder2", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel folder3 = session.createDocumentModel("/folder1/folder2", "folder3", "Folder");
+        folder3 = session.createDocument(folder3);
+        DocumentModel doc = session.createDocumentModel("/folder1/folder2/folder3", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // trashing /folder1
+        trashService.trashDocuments(Collections.singletonList(folder1));
+
+        // children recursion is async
+        nextTransaction();
+
+        // refetch as lifecycle state is cached
+        folder1.refresh();
+        folder2.refresh();
+        folder3.refresh();
+        doc.refresh();
+
+        assertEquals("deleted", folder1.getCurrentLifeCycleState());
+        assertEquals("deleted", folder2.getCurrentLifeCycleState());
+        assertEquals("deleted", folder3.getCurrentLifeCycleState());
+        assertEquals("deleted", doc.getCurrentLifeCycleState());
+
+        // untrashing /folder1
+        trashService.undeleteDocuments(Collections.singletonList(folder1));
+
+        // children recursion is async
+        nextTransaction();
+
+        // refetch as lifecycle state is cached
+        folder1.refresh();
+        folder2.refresh();
+        folder3.refresh();
+        doc.refresh();
+
+        assertEquals("project", folder1.getCurrentLifeCycleState());
+        assertEquals("project", folder2.getCurrentLifeCycleState());
+        assertEquals("project", folder3.getCurrentLifeCycleState());
+        assertEquals("project", doc.getCurrentLifeCycleState());
+    }
 }
