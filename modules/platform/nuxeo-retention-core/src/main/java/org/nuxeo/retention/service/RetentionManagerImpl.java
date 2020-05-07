@@ -22,6 +22,7 @@ import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -308,31 +309,24 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
         executeRuleEndActions(record, session);
     }
 
-    protected volatile List<String> acceptedEvents; // NOSONAR double-checked locking
+    protected List<String> acceptedEvents;
 
     @Override
     public List<String> getAcceptedEvents() {
-        if (acceptedEvents == null) {
-            synchronized (this) {
-                if (acceptedEvents == null) {
-                    DirectoryService directoryService = Framework.getService(DirectoryService.class);
-                    Directory dir = directoryService.getDirectory(RetentionConstants.EVENTS_DIRECTORY_NAME);
-                    try (Session session = dir.getSession()) {
-                        Map<String, Serializable> filter = new HashMap<>();
-                        filter.put(RetentionConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
-                        List<String> evts = session.getProjection(filter, session.getIdField());
-                        if (evts.isEmpty()) {
-                            log.trace("Empty accepted events, not catching anything");
-                            return evts;
-                        }
-                        acceptedEvents = evts;
-                        log.debug("Accepted events {}", acceptedEvents::toString);
-                    }
-                }
-
-            }
-        }
         return acceptedEvents;
+    }
+
+    protected List<String> computeAcceptedEvents() {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        Directory dir = directoryService.getDirectory(RetentionConstants.EVENTS_DIRECTORY_NAME);
+        if (dir == null) {
+            return Collections.emptyList();
+        }
+        try (Session session = dir.getSession()) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put(RetentionConstants.OBSOLETE_FIELD_ID, Long.valueOf(0));
+            return session.getProjection(filter, session.getIdField());
+        }
     }
 
     @Override
@@ -343,8 +337,15 @@ public class RetentionManagerImpl extends DefaultComponent implements RetentionM
     }
 
     @Override
+    public int getApplicationStartedOrder() {
+        // after directories
+        return 98;
+    }
+
+    @Override
     public void start(ComponentContext context) {
         Framework.doPrivileged(() -> {
+            acceptedEvents = computeAcceptedEvents();
             UserManager userManager = Framework.getService(UserManager.class);
             if (userManager.getGroup(RetentionConstants.RECORD_MANAGER_GROUP_NAME) == null) {
                 DocumentModel groupModel = userManager.getBareGroupModel();
