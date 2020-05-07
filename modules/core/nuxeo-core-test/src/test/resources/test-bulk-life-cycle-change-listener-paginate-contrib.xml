@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.lifecycle.listener.test">
+  <require>org.nuxeo.runtime.ConfigurationService</require>
+  <require>org.nuxeo.ecm.core.event.lifecycle.listener</require>
+
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="nuxeo.bulkLifeCycleChangeListener.paginate-get-children">true</property>
+  </extension>
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
+    <property name="nuxeo.bulkLifeCycleChangeListener.get-children-page-size">2</property>
+  </extension>
+
+</component>
