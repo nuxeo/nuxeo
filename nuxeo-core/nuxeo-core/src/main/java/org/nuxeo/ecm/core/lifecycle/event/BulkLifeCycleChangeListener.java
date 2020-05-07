@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.core.lifecycle.event;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -27,11 +29,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -214,6 +218,14 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                             trashService.unmangleName(doc));
                 }
                 doc.followTransition(transition);
+                // handle children if we're handling the technical documentUndeleted event
+                if (LifeCycleConstants.UNDELETE_TRANSITION.equals(transition) && isBlank(targetState)
+                        && doc.isFolder()) {
+                    DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
+                    ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
+                    Framework.getService(EventService.class)
+                             .fireEvent(ctx.newEvent(LifeCycleConstants.DOCUMENT_UNDELETED));
+                }
             } else {
                 if (targetState.equals(doc.getCurrentLifeCycleState())) {
                     log.debug("Document" + doc.getRef() + " is already in the target LifeCycle state");

@@ -417,4 +417,52 @@ public abstract class AbstractTestTrashService {
 
     }
 
+    /*
+     * NXP-28935
+     */
+    @Test
+    public void testUntrashThreeLevels() {
+        DocumentModel folder1 = session.createDocumentModel("/", "folder1", "Folder");
+        folder1 = session.createDocument(folder1);
+        DocumentModel folder2 = session.createDocumentModel("/folder1", "folder2", "Folder");
+        folder2 = session.createDocument(folder2);
+        DocumentModel folder3 = session.createDocumentModel("/folder1/folder2", "folder3", "Folder");
+        folder3 = session.createDocument(folder3);
+        DocumentModel doc = session.createDocumentModel("/folder1/folder2/folder3", "doc", "File");
+        doc = session.createDocument(doc);
+
+        // trashing /folder1
+        trashService.trashDocument(folder1);
+
+        // children recursion is async
+        transactionalFeature.nextTransaction();
+
+        // refetch as lifecycle state is cached
+        folder1.refresh();
+        folder2.refresh();
+        folder3.refresh();
+        doc.refresh();
+
+        assertTrue(folder1.isTrashed());
+        assertTrue(folder2.isTrashed());
+        assertTrue(folder3.isTrashed());
+        assertTrue(doc.isTrashed());
+
+        // untrashing /folder1
+        trashService.untrashDocument(folder1);
+
+        // children recursion is async
+        transactionalFeature.nextTransaction();
+
+        // refetch as lifecycle state is cached
+        folder1.refresh();
+        folder2.refresh();
+        folder3.refresh();
+        doc.refresh();
+
+        assertFalse(folder1.isTrashed());
+        assertFalse(folder2.isTrashed());
+        assertFalse(folder3.isTrashed());
+        assertFalse(doc.isTrashed());
+    }
 }
