@@ -17,11 +17,13 @@
  *     dmetzler
  *     ataillefer
  *     Gabriel Barata
+ *     Mickaël Schoentgen
  */
 package org.nuxeo.ecm.restapi.test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -1029,6 +1031,17 @@ public class BatchUploadFixture extends BaseTest {
             assertEquals(0, fileEntriesArrayNode.size());
 
             assertEquals(batchId, jsonNode.get("batchId").asText());
+        }
+    }
+
+    /** @since 11.1 */
+    @Test
+    public void testErrorOnRefreshedTokenError() throws Exception {
+        // The default batch handler does not support token renewal.
+        String batchId = initializeNewBatch();
+
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "upload/" + batchId + "/refreshToken")) {
+            assertEquals(SC_NOT_IMPLEMENTED, response.getStatus());
         }
     }
 
