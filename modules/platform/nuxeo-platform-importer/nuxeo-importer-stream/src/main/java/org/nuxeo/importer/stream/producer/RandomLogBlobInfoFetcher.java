@@ -33,7 +33,9 @@ import org.nuxeo.lib.stream.log.LogTailer;
  * @since 9.3
  */
 public class RandomLogBlobInfoFetcher implements BlobInfoFetcher {
-    protected static final int READ_DELAY_MS = 100;
+    protected static final Duration READ_DELAY = Duration.ofMillis(100);
+
+    protected static final Duration FIRST_READ_DELAY = Duration.ofSeconds(1);
 
     protected final LogTailer<BlobInfoMessage> tailer;
 
@@ -48,7 +50,7 @@ public class RandomLogBlobInfoFetcher implements BlobInfoFetcher {
     public BlobInfo get(DocumentMessage.Builder builder) {
         LogRecord<BlobInfoMessage> record;
         try {
-            record = tailer.read(Duration.ofMillis(READ_DELAY_MS));
+            record = tailer.read(getDuration());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException(e);
@@ -59,11 +61,20 @@ public class RandomLogBlobInfoFetcher implements BlobInfoFetcher {
                 return null;
             }
             // start again from beginning
+            first = true;
             tailer.toStart();
             return get(builder);
         }
         first = false;
         return record.message();
+    }
+
+    protected Duration getDuration() {
+        if (first) {
+            // first read may need more time on slow infra
+            return FIRST_READ_DELAY;
+        }
+        return READ_DELAY;
     }
 
     @Override
