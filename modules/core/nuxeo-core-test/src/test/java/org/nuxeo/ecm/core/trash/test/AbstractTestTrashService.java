@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package org.nuxeo.ecm.core.trash.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.DELETED_STATE;
@@ -166,12 +167,12 @@ public abstract class AbstractTestTrashService {
         // doc2 done by async BulkLifeCycleChangeListener
         assertTrue(doc2.isTrashed());
         // check names changed
-        assertFalse("fold".equals(fold.getName()));
-        assertFalse("doc1".equals(doc1.getName()));
+        assertNotEquals("fold", fold.getName());
+        assertNotEquals("doc1", doc1.getName());
         String doc3delname = doc3.getName();
-        assertFalse("doc3".equals(doc3.getName()));
-        assertFalse(doc4origname.equals(doc4.getName()));
-        assertFalse("doc4".equals(doc4.getName()));
+        assertNotEquals("doc3", doc3.getName());
+        assertNotEquals(doc4origname, doc4.getName());
+        assertNotEquals("doc4", doc4.getName());
         // when recursing, don't change name
         assertEquals("doc2", doc2.getName());
 
@@ -206,8 +207,8 @@ public abstract class AbstractTestTrashService {
         doc3 = session.getDocument(new IdRef(doc3.getId()));
         assertFalse(doc3.isTrashed());
         // check it was renamed again during untrash
-        assertFalse("doc3".equals(doc3.getName()));
-        assertFalse(doc3delname.equals(doc3.getName()));
+        assertNotEquals("doc3", doc3.getName());
+        assertNotEquals(doc3delname, doc3.getName());
     }
 
     @Test

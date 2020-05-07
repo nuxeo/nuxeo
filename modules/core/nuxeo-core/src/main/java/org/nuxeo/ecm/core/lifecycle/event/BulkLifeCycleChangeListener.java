@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -210,8 +210,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 } else if (LifeCycleConstants.UNDELETE_TRANSITION.equals(transition)
                         && trashService.isMangledName(doc.getName())) {
                     // mangled children names need to be explicitely unmangled
-                    session.move(doc.getRef(), doc.getParentRef(),
-                            trashService.unmangleName(doc));
+                    session.move(doc.getRef(), doc.getParentRef(), trashService.unmangleName(doc));
                 }
                 doc.followTransition(transition);
             } else {
