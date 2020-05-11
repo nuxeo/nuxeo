@@ -128,7 +128,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         }
     }
 
-    private void writeScalarPropertyValue(JsonGenerator jg, Type type, Object value) throws IOException {
+    protected void writeScalarPropertyValue(JsonGenerator jg, Type type, Object value) throws IOException {
         if (value == null) {
             jg.writeNull();
         } else if (type instanceof BooleanType) {
@@ -270,7 +270,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
      * @since 10.3
      */
     @SuppressWarnings("rawtypes")
-    private void enrichBlobProperty(JsonGenerator jg, BlobProperty property) throws IOException {
+    protected void enrichBlobProperty(JsonGenerator jg, BlobProperty property) throws IOException {
         Set<String> enrichers = ctx.getEnrichers("blob");
         if (!enrichers.isEmpty()) {
             WrappedContext wrappedCtx = ctx.wrap();
@@ -294,7 +294,7 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
      *
      * @since 7.2
      */
-    private String getBlobUrl(Property prop) {
+    protected String getBlobUrl(Property prop) {
         DocumentModel doc = ctx.getParameter(ENTITY_TYPE);
         if (doc == null) {
             return "";

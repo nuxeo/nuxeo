@@ -116,9 +116,9 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
 
     public static final String DOCUMENT_JSON_FETCH_HEAVY_KEY = "nuxeo.document.json.fetch.heavy";
 
-    private static Boolean FETCH_HEAVY_VALUES = null;
+    protected static Boolean FETCH_HEAVY_VALUES = null;
 
-    private static boolean fetchHeavy() {
+    protected static boolean fetchHeavy() {
         if (FETCH_HEAVY_VALUES == null) {
             try {
                 FETCH_HEAVY_VALUES = Framework.isBooleanPropertyTrue("nuxeo.document.json.fetch.heavy");
@@ -129,12 +129,12 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
         return FETCH_HEAVY_VALUES;
     }
 
-    private boolean mustFetch(String name) {
+    protected boolean mustFetch(String name) {
         return ctx.getFetched(ENTITY_TYPE).contains(name) || fetchHeavy();
     }
 
     @Inject
-    private SchemaManager schemaManager;
+    protected SchemaManager schemaManager;
 
     public DocumentModelJsonWriter() {
         super(ENTITY_TYPE, DocumentModel.class);
@@ -233,7 +233,7 @@ public class DocumentModelJsonWriter extends ExtensibleEntityJsonWriter<Document
 
     }
 
-    private void writeSchemaProperties(JsonGenerator jg, DocumentModel doc, String schemaName) throws IOException {
+    protected void writeSchemaProperties(JsonGenerator jg, DocumentModel doc, String schemaName) throws IOException {
         Writer<Property> propertyWriter = registry.getWriter(ctx, Property.class, APPLICATION_JSON_TYPE);
         // provides the current document to the property marshaller
         try (Closeable resource = ctx.wrap().with(ENTITY_TYPE, doc).open()) {
