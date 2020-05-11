@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -80,6 +81,7 @@ public class TestPictureResize {
         ctx.close();
     }
 
+    @Ignore(value = "NXP-29089")
     @Test
     public void testResizer() throws Exception {
         // TODO: NXP-27622
@@ -100,6 +102,7 @@ public class TestPictureResize {
         assertNotNull(result);
     }
 
+    @Ignore(value = "NXP-29089")
     @Test
     public void testResizerForDoc() throws Exception{
         // TODO: NXP-27622
