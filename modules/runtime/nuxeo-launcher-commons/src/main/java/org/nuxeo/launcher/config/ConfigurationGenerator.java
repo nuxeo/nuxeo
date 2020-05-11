@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,9 +84,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.codec.Crypto;
@@ -106,9 +107,9 @@ import freemarker.template.TemplateException;
  */
 public class ConfigurationGenerator {
 
-    /**
-     * @since 6.0
-     */
+    private static final Logger log = LogManager.getLogger(ConfigurationGenerator.class);
+
+    /** @since 6.0 */
     public static final String TEMPLATE_SEPARATOR = ",";
 
     /**
@@ -118,12 +119,8 @@ public class ConfigurationGenerator {
      */
     public static final String[] COMPLIANT_JAVA_VERSIONS = new String[] { "1.8.0_40", "11" };
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     protected static final String CONFIGURATION_PROPERTIES = "configuration.properties";
-
-    private static final Log log = LogFactory.getLog(ConfigurationGenerator.class);
 
     public static final String NUXEO_CONF = "nuxeo.conf";
 
@@ -138,16 +135,12 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_TEMPLATE_DBNAME = "nuxeo.dbtemplate";
 
-    /**
-     * @since 9.3
-     */
+    /** @since 9.3 */
     public static final String PARAM_TEMPLATE_DBSECONDARY_NAME = "nuxeo.dbnosqltemplate";
 
     public static final String PARAM_TEMPLATE_DBTYPE = "nuxeo.db.type";
 
-    /**
-     * @since 9.3
-     */
+    /** @since 9.3 */
     public static final String PARAM_TEMPLATE_DBSECONDARY_TYPE = "nuxeo.dbsecondary.type";
 
     public static final String OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS = "nuxeo.templates.parsing.extensions";
@@ -238,12 +231,16 @@ public class ConfigurationGenerator {
 
     /**
      * @since 8.1
+     * @deprecated since 11.1, seems unused
      */
+    @Deprecated(since = "11.1")
     public static final String PARAM_MONGODB_NAME = "nuxeo.mongodb.dbname";
 
     /**
      * @since 8.1
+     * @deprecated since 11.1, seems unused
      */
+    @Deprecated(since = "11.1")
     public static final String PARAM_MONGODB_SERVER = "nuxeo.mongodb.server";
 
     /**
@@ -282,9 +279,7 @@ public class ConfigurationGenerator {
     @Deprecated
     public static final String PARAM_PRODUCT_VERSION = Environment.PRODUCT_VERSION;
 
-    /**
-     * @since 5.6
-     */
+    /** @since 5.6 */
     public static final String PARAM_NUXEO_URL = "nuxeo.url";
 
     /**
@@ -334,11 +329,11 @@ public class ConfigurationGenerator {
     private final List<File> includedTemplates = new ArrayList<>();
 
     // Common default configuration file
-    private File nuxeoDefaultConf;
+    private final File nuxeoDefaultConf;
 
-    private ServerConfigurator serverConfigurator;
+    private final ServerConfigurator serverConfigurator;
 
-    private BackingServiceConfigurator backingServicesConfigurator;
+    private final BackingServiceConfigurator backingServicesConfigurator;
 
     private boolean forceGeneration;
 
@@ -355,19 +350,10 @@ public class ConfigurationGenerator {
     // if PARAM_FORCE_GENERATION=once, set to false; else keep current value
     private boolean setOnceToFalse = true;
 
-    // if PARAM_FORCE_GENERATION=false, set to once; else keep the current
-    // value
+    // if PARAM_FORCE_GENERATION=false, set to once; else keep the current value
     private boolean setFalseToOnce = false;
 
-    public boolean isConfigurable() {
-        return configurable;
-    }
-
-    public ConfigurationGenerator() {
-        this(true, false);
-    }
-
-    private boolean quiet = false;
+    private final Level logLevel;
 
     private static boolean hideDeprecationWarnings = false;
 
@@ -377,45 +363,22 @@ public class ConfigurationGenerator {
 
     private String currentConfigurationDigest;
 
-    /**
-     * @since 5.7
-     */
-    protected Properties getStoredConfig() {
-        if (storedConfig == null) {
-            updateStoredConfig();
-        }
-        return storedConfig;
-    }
+    protected static final Map<String, String> parametersMigration = Map.ofEntries(
+            Map.entry(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS, PARAM_TEMPLATES_PARSING_EXTENSIONS), //
+            Map.entry("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key"), //
+            Map.entry("mail.pop3.host", "mail.store.host"), //
+            Map.entry("mail.pop3.port", "mail.store.port"), //
+            Map.entry("mail.smtp.host", "mail.transport.host"), //
+            Map.entry("mail.smtp.port", "mail.transport.port"), //
+            Map.entry("mail.smtp.username", "mail.transport.username"), //
+            Map.entry("mail.transport.username", "mail.transport.user"), //
+            Map.entry("mail.smtp.password", "mail.transport.password"), //
+            Map.entry("mail.smtp.usetls", "mail.transport.usetls"), //
+            Map.entry("mail.smtp.auth", "mail.transport.auth"), //
+            Map.entry("nuxeo.server.tomcat-admin.port", PARAM_HTTP_TOMCAT_ADMIN_PORT));
 
-    protected static final Map<String, String> parametersMigration = new HashMap<String, String>() {
-        private static final long serialVersionUID = 1L;
-
-        {
-            put(OLD_PARAM_TEMPLATES_PARSING_EXTENSIONS, PARAM_TEMPLATES_PARSING_EXTENSIONS);
-            put("nuxeo.db.user.separator.key", "nuxeo.db.user_separator_key");
-            put("mail.pop3.host", "mail.store.host");
-            put("mail.pop3.port", "mail.store.port");
-            put("mail.smtp.host", "mail.transport.host");
-            put("mail.smtp.port", "mail.transport.port");
-            put("mail.smtp.username", "mail.transport.username");
-            put("mail.transport.username", "mail.transport.user");
-            put("mail.smtp.password", "mail.transport.password");
-            put("mail.smtp.usetls", "mail.transport.usetls");
-            put("mail.smtp.auth", "mail.transport.auth");
-            put("nuxeo.server.tomcat-admin.port", PARAM_HTTP_TOMCAT_ADMIN_PORT);
-        }
-    };
-
-    public static File[] getJarFilesFromPattern(File dir, String pattern) {
-        Pattern jarPattern = Pattern.compile(pattern);
-        File[] foundJarFiles = dir.listFiles(f -> jarPattern.matcher(f.getName()).matches());
-        if (foundJarFiles == null) {
-            foundJarFiles = new File[0];
-        } else if (foundJarFiles.length > 1) {
-            throw new RuntimeException(
-                    foundJarFiles.length + " files found in " + dir.getAbsolutePath() + " looking for " + pattern);
-        }
-        return foundJarFiles;
+    public ConfigurationGenerator() {
+        this(true, false);
     }
 
     /**
@@ -424,7 +387,7 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     public ConfigurationGenerator(boolean quiet, boolean debug) {
-        this.quiet = quiet;
+        logLevel = quiet ? Level.DEBUG : Level.INFO;
         File serverHome = Environment.getDefault().getServerHome();
         if (serverHome != null) {
             nuxeoHome = serverHome.getAbsoluteFile();
@@ -451,15 +414,22 @@ public class ConfigurationGenerator {
             serverConfigurator.initLogs();
         }
         backingServicesConfigurator = new BackingServiceConfigurator(this);
-        String homeInfo = "Nuxeo home:          " + nuxeoHome.getPath();
-        String confInfo = "Nuxeo configuration: " + nuxeoConf.getPath();
-        if (quiet) {
-            log.debug(homeInfo);
-            log.debug(confInfo);
-        } else {
-            log.info(homeInfo);
-            log.info(confInfo);
+        log.log(logLevel, "Nuxeo home:          {}", nuxeoHome::getPath);
+        log.log(logLevel, "Nuxeo configuration: {}", nuxeoConf::getPath);
+    }
+
+    public boolean isConfigurable() {
+        return configurable;
+    }
+
+    /**
+     * @since 5.7
+     */
+    protected Properties getStoredConfig() {
+        if (storedConfig == null) {
+            updateStoredConfig();
         }
+        return storedConfig;
     }
 
     public void hideDeprecationWarnings(boolean hide) {
@@ -502,8 +472,8 @@ public class ConfigurationGenerator {
                 log.info("No current configuration, generating files...");
                 generateFiles();
             } else if (forceGeneration) {
-                log.info("Configuration files generation (nuxeo.force.generation="
-                        + userConfig.getProperty(PARAM_FORCE_GENERATION) + ")...");
+                log.info("Configuration files generation (nuxeo.force.generation={})...",
+                        () -> userConfig.getProperty(PARAM_FORCE_GENERATION));
                 generateFiles();
             } else {
                 log.info(
@@ -530,7 +500,7 @@ public class ConfigurationGenerator {
      */
     public boolean init(boolean forceReload) {
         if (!nuxeoConf.exists()) {
-            log.info("Missing " + nuxeoConf);
+            log.info("Missing {}", nuxeoConf);
             configurable = false;
             userConfig = new CryptoProperties();
             defaultConfig = new Properties();
@@ -603,11 +573,11 @@ public class ConfigurationGenerator {
 
             // Synchronize directories between serverConfigurator and
             // userConfig/defaultConfig
-            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_DATA_DIR);
-            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
-            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_PID_DIR);
-            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_TMP_DIR);
-            setDirectoryWithProperty(org.nuxeo.common.Environment.NUXEO_MP_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_DATA_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_LOG_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_PID_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_TMP_DIR);
+            setDirectoryWithProperty(Environment.NUXEO_MP_DIR);
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
@@ -649,8 +619,8 @@ public class ConfigurationGenerator {
     }
 
     private void logDebugInformation() {
-        String debugPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP);
-        if (Boolean.parseBoolean(debugPropValue)) {
+        String devPropValue = userConfig.getProperty(NUXEO_DEV_SYSTEM_PROP);
+        if (Boolean.parseBoolean(devPropValue)) {
             log.debug("Nuxeo Dev mode enabled");
         } else {
             log.debug("Nuxeo Dev mode is not enabled");
@@ -673,8 +643,8 @@ public class ConfigurationGenerator {
      * @return Map with new parameters to save in {@code nuxeoConf}
      * @since 5.5
      */
-    protected HashMap<String, String> evalDynamicProperties() throws ConfigurationException {
-        HashMap<String, String> newParametersToSave = new HashMap<>();
+    protected Map<String, String> evalDynamicProperties() throws ConfigurationException {
+        Map<String, String> newParametersToSave = new HashMap<>();
         evalEnvironmentVariables(newParametersToSave);
         evalLoopbackURL();
         evalServerStatusKey(newParametersToSave);
@@ -743,23 +713,10 @@ public class ConfigurationGenerator {
     private void evalLoopbackURL() throws ConfigurationException {
         String loopbackURL = userConfig.getProperty(PARAM_LOOPBACK_URL);
         if (loopbackURL != null) {
-            log.debug("Using configured loop back url: " + loopbackURL);
+            log.debug("Using configured loop back url: {}", loopbackURL);
             return;
         }
         InetAddress bindAddress = getBindAddress();
-        // Address and ports already checked by #checkAddressesAndPorts
-        try {
-            if (bindAddress.isAnyLocalAddress()) {
-                boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
-                        && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
-                bindAddress = preferIPv6 ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
-                log.debug("Bind address is \"ANY\", using local address instead: " + bindAddress);
-            }
-        } catch (UnknownHostException e) {
-            log.debug(e, e);
-            log.error(e.getMessage());
-        }
-
         String httpPort = userConfig.getProperty(PARAM_HTTP_PORT);
         String contextPath = userConfig.getProperty(PARAM_CONTEXT_PATH);
         // Is IPv6 or IPv4 ?
@@ -768,7 +725,7 @@ public class ConfigurationGenerator {
         } else {
             loopbackURL = "http://" + bindAddress.getHostAddress() + ":" + httpPort + contextPath;
         }
-        log.debug("Set as loop back URL: " + loopbackURL);
+        log.debug("Set as loop back URL: {}", loopbackURL);
         defaultConfig.setProperty(PARAM_LOOPBACK_URL, loopbackURL);
     }
 
@@ -856,20 +813,20 @@ public class ConfigurationGenerator {
                 chosenTemplate = new File(nuxeoDefaultConf.getParentFile(), nextToken);
             }
             if (includedTemplates.contains(chosenTemplate)) {
-                log.debug("Already included " + nextToken);
+                log.debug("Already included {}", nextToken);
                 continue;
             }
             if (!chosenTemplate.exists()) {
-                log.error(String.format(
-                        "Template '%s' not found with relative or absolute path (%s). "
-                                + "Check your %s parameter, and %s for included files.",
-                        nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES));
+                log.error(
+                        "Template '{}' not found with relative or absolute path ({}). "
+                                + "Check your {} parameter, and {} for included files.",
+                        nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES);
                 continue;
             }
             File chosenTemplateConf = new File(chosenTemplate, NUXEO_DEFAULT_CONF);
             includedTemplates.add(chosenTemplate);
             if (!chosenTemplateConf.exists()) {
-                log.warn("Ignore template (no default configuration): " + nextToken);
+                log.warn("Ignore template (no default configuration): {}", nextToken);
                 continue;
             }
 
@@ -882,12 +839,7 @@ public class ConfigurationGenerator {
             // Load configuration from chosen templates
             defaultConfig.putAll(subTemplateConf);
             orderedTemplates.add(chosenTemplate);
-            String templateInfo = "Include template: " + chosenTemplate.getPath();
-            if (quiet) {
-                log.debug(templateInfo);
-            } else {
-                log.info(templateInfo);
-            }
+            log.log(logLevel, "Include template: {}", chosenTemplate::getPath);
         }
         return orderedTemplates;
     }
@@ -898,7 +850,6 @@ public class ConfigurationGenerator {
      * @since 5.6
      */
     protected void checkForDeprecatedParameters(Properties properties) {
-        serverConfigurator.addServerSpecificParameters(parametersMigration);
         @SuppressWarnings("rawtypes")
         Enumeration userEnum = properties.propertyNames();
         while (userEnum.hasMoreElements()) {
@@ -910,8 +861,7 @@ public class ConfigurationGenerator {
                 // warnings but old things should keep working
                 // properties.remove(key);
                 if (!hideDeprecationWarnings) {
-                    log.warn("Parameter " + key + " is deprecated - please use " + parametersMigration.get(key)
-                            + " instead");
+                    log.warn("Parameter {} is deprecated - please use {} instead", key, parametersMigration.get(key));
                 }
             }
         }
@@ -1274,15 +1224,14 @@ public class ConfigurationGenerator {
      */
     public void verifyInstallation() throws ConfigurationException {
         checkJavaVersion();
-        ifNotExistsAndIsDirectoryThenCreate(getLogDir());
-        ifNotExistsAndIsDirectoryThenCreate(getPidDir());
-        ifNotExistsAndIsDirectoryThenCreate(getDataDir());
-        ifNotExistsAndIsDirectoryThenCreate(getTmpDir());
-        ifNotExistsAndIsDirectoryThenCreate(getPackagesDir());
+        getLogDir().mkdirs();
+        getPidDir().mkdirs();
+        getDataDir().mkdirs();
+        getTmpDir().mkdirs();
+        getPackagesDir().mkdirs();
         checkAddressesAndPorts();
         serverConfigurator.verifyInstallation();
         backingServicesConfigurator.verifyInstallation();
-
     }
 
     /**
@@ -1451,9 +1400,9 @@ public class ConfigurationGenerator {
                 boolean preferIPv6 = "false".equals(System.getProperty("java.net.preferIPv4Stack"))
                         && "true".equals(System.getProperty("java.net.preferIPv6Addresses"));
                 bindAddress = preferIPv6 ? InetAddress.getByName("::1") : InetAddress.getByName("127.0.0.1");
-                log.debug("Bind address is \"ANY\", using local address instead: " + bindAddress);
+                log.debug("Bind address is \"ANY\", using local address instead: {}", bindAddress);
             }
-            log.debug("Configured bind address: " + bindAddress);
+            log.debug("Configured bind address: {}", bindAddress);
         } catch (UnknownHostException e) {
             throw new ConfigurationException(e);
         }
@@ -1468,8 +1417,8 @@ public class ConfigurationGenerator {
         try {
             log.debug("Checking availability of " + address);
             address.isReachable(ADDRESS_PING_TIMEOUT);
-        } catch (IOException e) {
-            throw new ConfigurationException("Unreachable bind address " + address);
+        } catch (IllegalArgumentException | IOException e) {
+            throw new ConfigurationException("Unreachable bind address " + address, e);
         }
     }
 
@@ -1482,35 +1431,17 @@ public class ConfigurationGenerator {
      */
     public static void checkPortAvailable(InetAddress address, int port) throws ConfigurationException {
         if (port == 0 || port == -1) {
-            log.warn("Port is set to " + Integer.toString(port)
-                    + " - assuming it is disabled - skipping availability check");
+            log.warn("Port is set to {} - assuming it is disabled - skipping availability check", port);
             return;
         }
         if (port < MIN_PORT || port > MAX_PORT) {
             throw new IllegalArgumentException("Invalid port: " + port);
         }
-        ServerSocket socketTCP = null;
-        // DatagramSocket socketUDP = null;
-        try {
-            log.debug("Checking availability of port " + port + " on address " + address);
-            socketTCP = new ServerSocket(port, 0, address);
+        log.debug("Checking availability of port {} on address {}", port, address);
+        try (ServerSocket socketTCP = new ServerSocket(port, 0, address)) {
             socketTCP.setReuseAddress(true);
-            // socketUDP = new DatagramSocket(port, address);
-            // socketUDP.setReuseAddress(true);
-            // return true;
         } catch (IOException e) {
             throw new ConfigurationException(e.getMessage() + ": " + address + ":" + port, e);
-        } finally {
-            // if (socketUDP != null) {
-            // socketUDP.close();
-            // }
-            if (socketTCP != null) {
-                try {
-                    socketTCP.close();
-                } catch (IOException e) {
-                    // Do not throw
-                }
-            }
         }
     }
 
@@ -1521,12 +1452,6 @@ public class ConfigurationGenerator {
         return serverConfigurator.getTmpDir();
     }
 
-    private void ifNotExistsAndIsDirectoryThenCreate(File directory) {
-        if (!directory.isDirectory()) {
-            directory.mkdirs();
-        }
-    }
-
     /**
      * @return Log files produced by Log4J configuration without loading this configuration instead of current active
      *         one.
@@ -1534,7 +1459,7 @@ public class ConfigurationGenerator {
      */
     public List<String> getLogFiles() {
         File log4jConfFile = serverConfigurator.getLogConfFile();
-        System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
+        System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
         return Log4JHelper.getFileAppendersFileNames(log4jConfFile);
     }
 
@@ -1635,7 +1560,7 @@ public class ConfigurationGenerator {
         List<String> templatesToAddList = asList(templatesToAdd.split(TEMPLATE_SEPARATOR));
         if (templatesList.addAll(templatesToAddList)) {
             String newTemplatesStr = String.join(TEMPLATE_SEPARATOR, templatesList);
-            HashMap<String, String> parametersToSave = new HashMap<>();
+            Map<String, String> parametersToSave = new HashMap<>();
             parametersToSave.put(PARAM_TEMPLATES_NAME, newTemplatesStr);
             saveFilteredConfiguration(parametersToSave);
             changeTemplates(newTemplatesStr);
@@ -1913,7 +1838,7 @@ public class ConfigurationGenerator {
         if (charset == null) {
             throw new IOException("Can't identify input file charset for " + propsFile.getName());
         }
-        log.debug("Opening " + propsFile.getName() + " in " + charset.name());
+        log.debug("Opening {} in {}", propsFile::getName, charset::name);
         try (InputStreamReader propsIS = new InputStreamReader(new FileInputStream(propsFile), charset)) {
             loadTrimmedProperties(props, propsIS);
         }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2010-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  *
  * Contributors:
  *     Julien Carsique
+ *     Kevin Leturc <kleturc@nuxeo.com>
  */
 package org.nuxeo.launcher.config;
 
@@ -30,12 +31,13 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -77,6 +79,18 @@ public class ServerConfigurator {
     /** @since 5.7 */
     public static final String PARAM_HTTP_TOMCAT_ADMIN_PORT = "nuxeo.server.tomcat_admin.port";
 
+    /**
+     * @since 5.4.2
+     */
+    public static final List<String> NUXEO_SYSTEM_PROPERTIES = List.of("nuxeo.conf", "nuxeo.home", "log.id");
+
+    protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
+
+    /** @since 9.3 */
+    public static final String JAVA_OPTS = "JAVA_OPTS";
+
+    private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES + File.separator + "files.list";
+
     protected final ConfigurationGenerator generator;
 
     protected File dataDir = null;
@@ -89,18 +103,6 @@ public class ServerConfigurator {
 
     protected File packagesDir = null;
 
-    /**
-     * @since 5.4.2
-     */
-    public static final List<String> NUXEO_SYSTEM_PROPERTIES = Arrays.asList("nuxeo.conf", "nuxeo.home", "log.id");
-
-    protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
-
-    /** @since 9.3 */
-    public static final String JAVA_OPTS = "JAVA_OPTS";
-
-    private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES + File.separator + "files.list";
-
     private String contextName = null;
 
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
@@ -111,16 +113,8 @@ public class ServerConfigurator {
      * @return true if server configuration files already exist
      */
     protected boolean isConfigured() {
-        return new File(generator.getNuxeoHome(), getTomcatConfig()).exists();
-    }
-
-    /**
-     * @since 5.4.2
-     * @return Path to Tomcat configuration of Nuxeo context
-     */
-    public String getTomcatConfig() {
-        return "conf" + File.separator + "Catalina" + File.separator + "localhost" + File.separator + getContextName()
-                + ".xml";
+        Path tomcatNuxeoConf = Path.of("conf", "Catalina", "localhost", getContextName() + ".xml");
+        return Files.exists(generator.getNuxeoHome().toPath().resolve(tomcatNuxeoConf));
     }
 
     /**
@@ -131,9 +125,8 @@ public class ServerConfigurator {
         if (contextName == null) {
             Properties userConfig = generator.getUserConfig();
             if (userConfig != null) {
-                contextName = generator.getUserConfig()
-                        .getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME)
-                        .substring(1);
+                contextName = userConfig.getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME)
+                                        .substring(1);
             } else {
                 contextName = DEFAULT_CONTEXT_NAME.substring(1);
             }
@@ -202,15 +195,17 @@ public class ServerConfigurator {
             while ((line = reader.readLine()) != null) {
                 if (line.endsWith(".bak")) {
                     log.debug("Restore {}", line);
+                    String originalName = line.substring(0, line.length() - 4);
                     try {
                         File backup = new File(generator.getNuxeoHome(), line);
-                        File original = new File(generator.getNuxeoHome(), line.substring(0, line.length() - 4));
+                        File original = new File(generator.getNuxeoHome(), originalName);
                         FileUtils.copyFile(backup, original);
                         backup.delete();
                     } catch (IOException e) {
-                        throw new ConfigurationException(String.format(
-                                "Failed to restore %s from %s\nEdit or " + "delete %s to bypass that error.",
-                                line.substring(0, line.length() - 4), line, newFiles), e);
+                        throw new ConfigurationException(
+                                String.format("Failed to restore %s from %s\nEdit or delete %s to bypass that error.",
+                                        originalName, line, newFiles),
+                                e);
                     }
                 } else {
                     log.debug("Remove {}", line);
@@ -277,7 +272,7 @@ public class ServerConfigurator {
      */
     public File getLogDir() {
         if (logDir == null) {
-            logDir = new File(generator.getNuxeoHome(), org.nuxeo.common.Environment.DEFAULT_LOG_DIR);
+            logDir = new File(generator.getNuxeoHome(), Environment.DEFAULT_LOG_DIR);
         }
         return logDir;
     }
@@ -308,9 +303,9 @@ public class ServerConfigurator {
      */
     public void initLogs() {
         File logFile = getLogConfFile();
-        String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
+        String logDirectory = System.getProperty(Environment.NUXEO_LOG_DIR);
         if (logDirectory == null) {
-            System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
+            System.setProperty(Environment.NUXEO_LOG_DIR, getLogDir().getPath());
         }
         if (logFile == null || !logFile.exists()) {
             System.out.println("No logs configuration, will setup a basic one.");
@@ -383,7 +378,7 @@ public class ServerConfigurator {
      * @since 5.4.2
      */
     public String getDefaultTmpDir() {
-        return org.nuxeo.common.Environment.DEFAULT_TMP_DIR;
+        return Environment.DEFAULT_TMP_DIR;
     }
 
     /**
@@ -403,15 +398,15 @@ public class ServerConfigurator {
      */
     public void setDirectory(String key, String directory) {
         String absoluteDirectory = setAbsolutePath(key, directory);
-        if (org.nuxeo.common.Environment.NUXEO_DATA_DIR.equals(key)) {
+        if (Environment.NUXEO_DATA_DIR.equals(key)) {
             setDataDir(absoluteDirectory);
-        } else if (org.nuxeo.common.Environment.NUXEO_LOG_DIR.equals(key)) {
+        } else if (Environment.NUXEO_LOG_DIR.equals(key)) {
             setLogDir(absoluteDirectory);
-        } else if (org.nuxeo.common.Environment.NUXEO_PID_DIR.equals(key)) {
+        } else if (Environment.NUXEO_PID_DIR.equals(key)) {
             setPidDir(absoluteDirectory);
-        } else if (org.nuxeo.common.Environment.NUXEO_TMP_DIR.equals(key)) {
+        } else if (Environment.NUXEO_TMP_DIR.equals(key)) {
             setTmpDir(absoluteDirectory);
-        } else if (org.nuxeo.common.Environment.NUXEO_MP_DIR.equals(key)) {
+        } else if (Environment.NUXEO_MP_DIR.equals(key)) {
             setPackagesDir(absoluteDirectory);
         } else {
             log.error("Unknown directory key: {}", key);
@@ -450,15 +445,15 @@ public class ServerConfigurator {
      * @since 5.4.2
      */
     public File getDirectory(String key) {
-        if (org.nuxeo.common.Environment.NUXEO_DATA_DIR.equals(key)) {
+        if (Environment.NUXEO_DATA_DIR.equals(key)) {
             return getDataDir();
-        } else if (org.nuxeo.common.Environment.NUXEO_LOG_DIR.equals(key)) {
+        } else if (Environment.NUXEO_LOG_DIR.equals(key)) {
             return getLogDir();
-        } else if (org.nuxeo.common.Environment.NUXEO_PID_DIR.equals(key)) {
+        } else if (Environment.NUXEO_PID_DIR.equals(key)) {
             return getPidDir();
-        } else if (org.nuxeo.common.Environment.NUXEO_TMP_DIR.equals(key)) {
+        } else if (Environment.NUXEO_TMP_DIR.equals(key)) {
             return getTmpDir();
-        } else if (org.nuxeo.common.Environment.NUXEO_MP_DIR.equals(key)) {
+        } else if (Environment.NUXEO_MP_DIR.equals(key)) {
             return getPackagesDir();
         } else {
             log.error("Unknown directory key: {}", key);
@@ -569,15 +564,6 @@ public class ServerConfigurator {
     }
 
     /**
-     * Override to add server specific parameters to the list of parameters to migrate
-     *
-     * @since 5.7
-     */
-    protected void addServerSpecificParameters(Map<String, String> parametersMigration) {
-        // Nothing to do
-    }
-
-    /**
      * @return Marketplace Packages directory
      * @since 5.9.4
      */
@@ -593,7 +579,7 @@ public class ServerConfigurator {
      * @since 5.9.4
      */
     public String getDefaultPackagesDir() {
-        return org.nuxeo.common.Environment.DEFAULT_MP_DIR;
+        return Environment.DEFAULT_MP_DIR;
     }
 
     /**

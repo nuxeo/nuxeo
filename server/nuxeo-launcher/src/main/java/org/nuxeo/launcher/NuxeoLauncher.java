@@ -699,13 +699,15 @@ public class NuxeoLauncher {
         return cp;
     }
 
-    protected String getBinJarName(File binDir, String pattern) {
-        File[] binJarFiles = ConfigurationGenerator.getJarFilesFromPattern(binDir, pattern);
-        if (binJarFiles.length != 1) {
-            throw new RuntimeException("There should be only 1 file but " + binJarFiles.length + " were found in "
-                    + binDir.getAbsolutePath() + " looking for " + pattern);
+    protected String getBinJarName(File dir, String pattern) {
+        Pattern jarPattern = Pattern.compile(pattern);
+        File[] foundJarFiles = dir.listFiles(f -> jarPattern.matcher(f.getName()).matches());
+        int found = foundJarFiles == null ? 0 : foundJarFiles.length;
+        if (found == 1) {
+            return dir.getName() + File.separator + foundJarFiles[0].getName();
         }
-        return binDir.getName() + File.separator + binJarFiles[0].getName();
+        throw new RuntimeException(String.format("There should be only 1 file but %s were found in %s looking for %s",
+                found, dir.getAbsolutePath(), pattern));
     }
 
     protected Collection<String> getNuxeoProperties() {
