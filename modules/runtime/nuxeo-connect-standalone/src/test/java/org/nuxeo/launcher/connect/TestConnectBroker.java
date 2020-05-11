@@ -62,7 +62,7 @@ import org.nuxeo.connect.NuxeoConnectClient;
 import org.nuxeo.connect.connector.http.ConnectUrlConfig;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.connect.update.PackageState;
-import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.launcher.connect.fake.LocalConnectFakeConnector;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -154,7 +154,7 @@ public class TestConnectBroker {
         FileUtils.deleteQuietly(nuxeoHome);
         nuxeoHome.mkdirs();
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
-        System.setProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
+        System.setProperty(ServerConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
 
         // build test packages store
         buildInitialPackageStore();
@@ -206,7 +206,7 @@ public class TestConnectBroker {
     public void afterEach() {
         // clear system properties
         System.clearProperty(Environment.NUXEO_HOME);
-        System.clearProperty(TomcatConfigurator.TOMCAT_HOME);
+        System.clearProperty(ServerConfigurator.TOMCAT_HOME);
         // clear any potential registration
         LogicalInstanceIdentifier.cleanUp();
     }

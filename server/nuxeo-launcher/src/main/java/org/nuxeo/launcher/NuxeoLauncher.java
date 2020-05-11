@@ -32,6 +32,7 @@ import static org.nuxeo.common.Environment.NUXEO_MP_DIR;
 import static org.nuxeo.common.Environment.NUXEO_TMP_DIR;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_CONF;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_DEFAULT_CONF;
+import static org.nuxeo.launcher.config.ServerConfigurator.TOMCAT_STARTUP_CLASS;
 
 import java.io.Console;
 import java.io.File;
@@ -99,7 +100,6 @@ import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.connect.update.Version;
 import org.nuxeo.launcher.config.ConfigurationException;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.TomcatConfigurator;
 import org.nuxeo.launcher.connect.ConnectBroker;
 import org.nuxeo.launcher.connect.ConnectRegistrationBroker;
 import org.nuxeo.launcher.connect.LauncherRestartException;
@@ -619,7 +619,7 @@ public class NuxeoLauncher {
         statusServletClient = new StatusServletClient(configurationGenerator);
         statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(Environment.SERVER_STATUS_KEY));
         String processRegex = "^(?!/bin/sh).*" + Pattern.quote(configurationGenerator.getNuxeoConf().getPath()) + ".*"
-                + Pattern.quote(TomcatConfigurator.STARTUP_CLASS) + ".*$";
+                + Pattern.quote(TOMCAT_STARTUP_CLASS) + ".*$";
         processManager = ProcessManager.of(processRegex);
         // Set OS-specific decorations
         if (SystemUtils.IS_OS_MAC) {
@@ -1683,7 +1683,7 @@ public class NuxeoLauncher {
             startCommand.add("-Dnuxeo.start.strict=true");
         }
 
-        startCommand.add(TomcatConfigurator.STARTUP_CLASS);
+        startCommand.add(TOMCAT_STARTUP_CLASS);
         startCommand.add("start");
         startCommand.addAll(Arrays.asList(params));
 
@@ -1944,7 +1944,7 @@ public class NuxeoLauncher {
         stopCommand.add(getClassPath());
         stopCommand.addAll(getNuxeoProperties());
         stopCommand.addAll(getServerProperties());
-        stopCommand.add(TomcatConfigurator.STARTUP_CLASS);
+        stopCommand.add(TOMCAT_STARTUP_CLASS);
         stopCommand.add("stop");
         stopCommand.addAll(Arrays.asList(params));
         ProcessBuilder pb = new ProcessBuilder(getOSCommand(stopCommand));

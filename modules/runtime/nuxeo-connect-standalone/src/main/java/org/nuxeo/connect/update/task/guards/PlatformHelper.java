@@ -60,12 +60,20 @@ public class PlatformHelper {
         return true;
     }
 
+    /**
+     * @deprecated since 11.1, no replacement
+     */
+    @Deprecated(since = "11.1")
     public boolean isTomcat() {
-        return cg.isTomcat;
+        return true;
     }
 
+    /**
+     * @deprecated since 11.1, no replacement
+     */
+    @Deprecated(since = "11.1")
     public boolean isJetty() {
-        return cg.isJetty;
+        return false;
     }
 
     /**

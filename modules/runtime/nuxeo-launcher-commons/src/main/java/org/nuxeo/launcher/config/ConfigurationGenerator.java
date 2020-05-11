@@ -25,6 +25,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.nuxeo.launcher.config.ServerConfigurator.PARAM_HTTP_TOMCAT_ADMIN_PORT;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -335,10 +336,6 @@ public class ConfigurationGenerator {
     // Common default configuration file
     private File nuxeoDefaultConf;
 
-    public boolean isJetty;
-
-    public boolean isTomcat;
-
     private ServerConfigurator serverConfigurator;
 
     private BackingServiceConfigurator backingServicesConfigurator;
@@ -405,6 +402,7 @@ public class ConfigurationGenerator {
             put("mail.smtp.password", "mail.transport.password");
             put("mail.smtp.usetls", "mail.transport.usetls");
             put("mail.smtp.auth", "mail.transport.auth");
+            put("nuxeo.server.tomcat-admin.port", PARAM_HTTP_TOMCAT_ADMIN_PORT);
         }
     };
 
@@ -414,7 +412,8 @@ public class ConfigurationGenerator {
         if (foundJarFiles == null) {
             foundJarFiles = new File[0];
         } else if (foundJarFiles.length > 1) {
-            throw new RuntimeException(foundJarFiles.length + " files found in " + dir.getAbsolutePath() + " looking for " + pattern);
+            throw new RuntimeException(
+                    foundJarFiles.length + " files found in " + dir.getAbsolutePath() + " looking for " + pattern);
         }
         return foundJarFiles;
     }
@@ -447,28 +446,7 @@ public class ConfigurationGenerator {
         System.setProperty(NUXEO_CONF, nuxeoConf.getPath());
 
         nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator + NUXEO_DEFAULT_CONF);
-
-        // detect server type based on System properties
-        isJetty = System.getProperty(JettyConfigurator.JETTY_HOME) != null;
-        isTomcat = System.getProperty(TomcatConfigurator.TOMCAT_HOME) != null;
-        if (!isJetty && !isTomcat) {
-            // fallback on jar detection
-            isTomcat = getJarFilesFromPattern(getNuxeoBinDir(), BOOTSTRAP_JAR_REGEX).length == 1;
-            String[] files = nuxeoHome.list();
-            for (String file : files) {
-                if (file.startsWith("nuxeo-runtime-launcher")) {
-                    isJetty = true;
-                    break;
-                }
-            }
-        }
-        if (isTomcat) {
-            serverConfigurator = new TomcatConfigurator(this);
-        } else if (isJetty) {
-            serverConfigurator = new JettyConfigurator(this);
-        } else {
-            serverConfigurator = new UnknownServerConfigurator(this);
-        }
+        serverConfigurator = new ServerConfigurator(this);
         if (LoggerContext.getContext(false).getRootLogger().getAppenders().isEmpty()) {
             serverConfigurator.initLogs();
         }
@@ -551,11 +529,6 @@ public class ConfigurationGenerator {
      * @return returns true if current install is configurable, else returns false
      */
     public boolean init(boolean forceReload) {
-        if (serverConfigurator instanceof UnknownServerConfigurator) {
-            configurable = false;
-            forceGeneration = false;
-            log.warn("Server will be considered as not configurable.");
-        }
         if (!nuxeoConf.exists()) {
             log.info("Missing " + nuxeoConf);
             configurable = false;
@@ -890,7 +863,7 @@ public class ConfigurationGenerator {
                 log.error(String.format(
                         "Template '%s' not found with relative or absolute path (%s). "
                                 + "Check your %s parameter, and %s for included files.",
-                                nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES));
+                        nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES));
                 continue;
             }
             File chosenTemplateConf = new File(chosenTemplate, NUXEO_DEFAULT_CONF);
@@ -938,7 +911,7 @@ public class ConfigurationGenerator {
                 // properties.remove(key);
                 if (!hideDeprecationWarnings) {
                     log.warn("Parameter " + key + " is deprecated - please use " + parametersMigration.get(key)
-                    + " instead");
+                            + " instead");
                 }
             }
         }
@@ -975,8 +948,8 @@ public class ConfigurationGenerator {
     /**
      * Save changed parameters in {@code nuxeo.conf} calculating templates if changedParameters contains a value for
      * {@link #PARAM_TEMPLATE_DBNAME}. If a parameter value is empty ("" or null), then the property is unset.
-     * {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset,
-     * but their value can be changed.<br/>
+     * {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset, but their value can be
+     * changed.<br/>
      * This method does not check values in map: use {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
@@ -1510,7 +1483,7 @@ public class ConfigurationGenerator {
     public static void checkPortAvailable(InetAddress address, int port) throws ConfigurationException {
         if (port == 0 || port == -1) {
             log.warn("Port is set to " + Integer.toString(port)
-            + " - assuming it is disabled - skipping availability check");
+                    + " - assuming it is disabled - skipping availability check");
             return;
         }
         if (port < MIN_PORT || port > MAX_PORT) {
@@ -1678,7 +1651,7 @@ public class ConfigurationGenerator {
         String currentTemplatesStr = userConfig.getProperty(PARAM_TEMPLATES_NAME);
 
         return Stream.of(replaceEnvironmentVariables(currentTemplatesStr).split(TEMPLATE_SEPARATOR))
-                .collect(Collectors.toList());
+                     .collect(Collectors.toList());
 
     }
 
@@ -1763,10 +1736,9 @@ public class ConfigurationGenerator {
                     String key = line.substring(0, equalIdx).trim();
                     if (newParametersToSave.containsKey(key)) {
                         newContent.append(key)
-                        .append("=")
-                        .append(newParametersToSave.get(key))
-                        .append(
-                                System.getProperty("line.separator"));
+                                  .append("=")
+                                  .append(newParametersToSave.get(key))
+                                  .append(System.getProperty("line.separator"));
                     } else {
                         newContent.append(line).append(System.getProperty("line.separator"));
                     }
@@ -1778,10 +1750,7 @@ public class ConfigurationGenerator {
             if (templateProperties.containsKey(key)) {
                 oldValues.put(key, templateProperties.getProperty(key));
             } else {
-                newContent.append(key)
-                .append("=")
-                .append(newParametersToSave.get(key))
-                .append(System.lineSeparator());
+                newContent.append(key).append("=").append(newParametersToSave.get(key)).append(System.lineSeparator());
             }
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(templateConf))) {
@@ -2070,9 +2039,9 @@ public class ConfigurationGenerator {
      */
     public List<String> getJavaOpts(Function<String, String> mapper) {
         return Arrays.stream(JAVA_OPTS_PATTERN.split(System.getProperty(JAVA_OPTS_PROP, "")))
-                .map(option -> StringSubstitutor.replace(option, getUserConfig()))
-                .map(mapper)
-                .collect(Collectors.toList());
+                     .map(option -> StringSubstitutor.replace(option, getUserConfig()))
+                     .map(mapper)
+                     .collect(Collectors.toList());
     }
 
     /**

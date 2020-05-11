@@ -22,10 +22,8 @@ package org.nuxeo.launcher.config;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_NOFAIL;
@@ -531,42 +529,6 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         } finally {
             Files.deleteIfExists(tempFile);
         }
-    }
-
-    protected void checkIsTomcat(boolean isTomcat) {
-        configGenerator = new ConfigurationGenerator();
-        assertTrue(configGenerator.init());
-        assertEquals(configGenerator.isTomcat, isTomcat);
-    }
-
-    @Test
-    public void testTomcatDetectionWithoutVersioning() throws Exception {
-        new File(nuxeoBinDir, "bootstrap.jar").createNewFile();
-        checkIsTomcat(true);
-    }
-
-    @Test
-    public void testTomcatDetectionNoBootstrap() throws Exception {
-        checkIsTomcat(false);
-    }
-
-    @Test
-    public void testTomcatDetectionVersionedBootstrap() throws Exception {
-        new File(nuxeoBinDir, "bootstrap-8.0.49.jar").createNewFile();
-        checkIsTomcat(true);
-    }
-
-    @Test
-    public void testTomcatDetectionWrongBootstrap() throws Exception {
-        new File(nuxeoBinDir, "bootstrapzzz.jar").createNewFile();
-        checkIsTomcat(false);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testTomcatDetectionWithMultipleBootstrapFiles() throws Exception {
-        new File(nuxeoBinDir, "bootstrap.jar").createNewFile();
-        new File(nuxeoBinDir, "bootstrap-8.0.49.jar").createNewFile();
-        checkIsTomcat(true);
     }
 
     private static class LogCaptureAppender extends AbstractAppender {
