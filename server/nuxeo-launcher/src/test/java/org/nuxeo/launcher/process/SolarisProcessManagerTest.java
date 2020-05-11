@@ -22,7 +22,7 @@ package org.nuxeo.launcher.process;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.nuxeo.launcher.config.TomcatConfigurator.STARTUP_CLASS;
+import static org.nuxeo.launcher.config.ServerConfigurator.TOMCAT_STARTUP_CLASS;
 
 import java.util.List;
 import java.util.Map;
@@ -86,7 +86,7 @@ public class SolarisProcessManagerTest {
     /** Code from {@link NuxeoLauncher#init} */
     protected Pattern getRegex() {
         return Pattern.compile(
-                "^(?!/bin/sh).*" + Pattern.quote(NUXEO_PATH) + ".*" + Pattern.quote(STARTUP_CLASS) + ".*$");
+                "^(?!/bin/sh).*" + Pattern.quote(NUXEO_PATH) + ".*" + Pattern.quote(TOMCAT_STARTUP_CLASS) + ".*$");
     }
 
     protected static class MockSolarisProcessManager extends SolarisProcessManager {

@@ -29,6 +29,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -61,10 +62,20 @@ import freemarker.template.TemplateException;
 
 /**
  * @author jcarsique
+ * @implNote since 11.1, configurator only handles Tomcat and is no more abstract
  */
-public abstract class ServerConfigurator {
+public class ServerConfigurator {
 
     private static final Logger log = LogManager.getLogger(ServerConfigurator.class);
+
+    /** @since 5.4.2 */
+    public static final String TOMCAT_STARTUP_CLASS = "org.apache.catalina.startup.Bootstrap";
+
+    /** @since 5.6 */
+    public static final String TOMCAT_HOME = "tomcat.home";
+
+    /** @since 5.7 */
+    public static final String PARAM_HTTP_TOMCAT_ADMIN_PORT = "nuxeo.server.tomcat_admin.port";
 
     protected final ConfigurationGenerator generator;
 
@@ -90,6 +101,8 @@ public abstract class ServerConfigurator {
 
     private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES + File.separator + "files.list";
 
+    private String contextName = null;
+
     public ServerConfigurator(ConfigurationGenerator configurationGenerator) {
         generator = configurationGenerator;
     }
@@ -97,7 +110,36 @@ public abstract class ServerConfigurator {
     /**
      * @return true if server configuration files already exist
      */
-    abstract boolean isConfigured();
+    protected boolean isConfigured() {
+        return new File(generator.getNuxeoHome(), getTomcatConfig()).exists();
+    }
+
+    /**
+     * @since 5.4.2
+     * @return Path to Tomcat configuration of Nuxeo context
+     */
+    public String getTomcatConfig() {
+        return "conf" + File.separator + "Catalina" + File.separator + "localhost" + File.separator + getContextName()
+                + ".xml";
+    }
+
+    /**
+     * @return Configured context name
+     * @since 5.4.2
+     */
+    public String getContextName() {
+        if (contextName == null) {
+            Properties userConfig = generator.getUserConfig();
+            if (userConfig != null) {
+                contextName = generator.getUserConfig()
+                        .getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME)
+                        .substring(1);
+            } else {
+                contextName = DEFAULT_CONTEXT_NAME.substring(1);
+            }
+        }
+        return contextName;
+    }
 
     /**
      * Generate configuration files from templates and given configuration parameters
@@ -208,13 +250,15 @@ public abstract class ServerConfigurator {
      * @since 5.4.2
      */
     protected String getDefaultDataDir() {
-        return org.nuxeo.common.Environment.DEFAULT_DATA_DIR;
+        return "nxserver" + File.separator + Environment.DEFAULT_DATA_DIR;
     }
 
     /**
      * Returns the Home of NuxeoRuntime (same as Framework.getRuntime().getHome().getAbsolutePath())
      */
-    protected abstract File getRuntimeHome();
+    protected File getRuntimeHome() {
+        return new File(generator.getNuxeoHome(), "nxserver");
+    }
 
     /**
      * @return Data directory
@@ -321,7 +365,6 @@ public abstract class ServerConfigurator {
             log.warn("NXP-8014 Packages cache location changed. You can safely delete {} or move its content to {}",
                     () -> oldPackagesPath, this::getPackagesDir);
         }
-
     }
 
     /**
@@ -441,13 +484,17 @@ public abstract class ServerConfigurator {
      * @return Log4J configuration file
      * @since 5.4.2
      */
-    public abstract File getLogConfFile();
+    public File getLogConfFile() {
+        return new File(getServerLibDir(), "log4j2.xml");
+    }
 
     /**
      * @return Nuxeo config directory
      * @since 5.4.2
      */
-    public abstract File getConfigDir();
+    public File getConfigDir() {
+        return new File(getRuntimeHome(), Environment.DEFAULT_CONFIG_DIR);
+    }
 
     /**
      * @param userConfig Properties to dump into config directory
@@ -497,7 +544,9 @@ public abstract class ServerConfigurator {
      * @return Server's third party libraries directory
      * @since 5.4.1
      */
-    public abstract File getServerLibDir();
+    public File getServerLibDir() {
+        return new File(generator.getNuxeoHome(), "lib");
+    }
 
     /**
      * @since 5.7
@@ -514,6 +563,9 @@ public abstract class ServerConfigurator {
      * @see ConfigurationGenerator#checkAddressesAndPorts()
      */
     protected void checkNetwork() throws ConfigurationException {
+        InetAddress bindAddress = generator.getBindAddress();
+        ConfigurationGenerator.checkPortAvailable(bindAddress,
+                Integer.parseInt(generator.getUserConfig().getProperty(PARAM_HTTP_TOMCAT_ADMIN_PORT)));
     }
 
     /**

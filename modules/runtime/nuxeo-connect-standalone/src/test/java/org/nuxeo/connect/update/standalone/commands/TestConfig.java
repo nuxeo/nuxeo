@@ -40,7 +40,7 @@ import org.junit.Before;
 import org.nuxeo.common.Environment;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.runtime.test.TargetResourceLocator;
 
 public class TestConfig extends AbstractCommandTest {
@@ -59,7 +59,7 @@ public class TestConfig extends AbstractCommandTest {
         File nuxeoConf = new File(Environment.getDefault().getServerHome(), "nuxeo.conf");
         FileUtils.copyFile(new File(URLDecoder.decode(url.getPath(), "UTF-8")), nuxeoConf);
         System.setProperty(ConfigurationGenerator.NUXEO_CONF, nuxeoConf.getPath());
-        System.setProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
+        System.setProperty(ServerConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
         url = locator.getTargetTestResource("templates");
         FileUtils.copyDirectory(new File(URLDecoder.decode(url.getPath(), "UTF-8")), new File(
                 Environment.getDefault().getServerHome(), "templates"));
@@ -130,7 +130,7 @@ public class TestConfig extends AbstractCommandTest {
         super.tearDown();
         System.clearProperty(ConfigurationGenerator.NUXEO_CONF);
         System.clearProperty(Environment.NUXEO_HOME);
-        System.clearProperty(TomcatConfigurator.TOMCAT_HOME);
+        System.clearProperty(ServerConfigurator.TOMCAT_HOME);
         System.clearProperty(Environment.NUXEO_DATA_DIR);
         System.clearProperty(Environment.NUXEO_LOG_DIR);
     }

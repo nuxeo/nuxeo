@@ -44,7 +44,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.connect.identity.LogicalInstanceIdentifier;
 import org.nuxeo.launcher.config.AbstractConfigurationTest;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.launcher.info.InstanceInfo;
 
 public class TestNuxeoLauncher extends AbstractConfigurationTest {
@@ -66,7 +66,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         FileUtils.copyDirectory(getResourceFile("templates"), new File(nuxeoHome, "templates"));
         setSystemProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
         setSystemProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
-        setSystemProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
+        setSystemProperty(ServerConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
     }

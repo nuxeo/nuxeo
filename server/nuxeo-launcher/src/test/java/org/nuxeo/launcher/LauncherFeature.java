@@ -27,7 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.launcher.config.ConfigurationGenerator;
-import org.nuxeo.launcher.config.TomcatConfigurator;
+import org.nuxeo.launcher.config.ServerConfigurator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RunnerFeature;
@@ -62,7 +62,7 @@ public class LauncherFeature implements RunnerFeature {
         FileUtils.copyDirectory(getResourceFile("templates"), new File(nuxeoHome, "templates"));
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
         System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
-        System.setProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
+        System.setProperty(ServerConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
         ConfigurationGenerator configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
         launcher = NuxeoLauncher.createLauncher(new String[] { "showconf" });
