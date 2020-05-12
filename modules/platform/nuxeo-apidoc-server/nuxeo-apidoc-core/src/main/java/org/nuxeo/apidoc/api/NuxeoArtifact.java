@@ -25,7 +25,6 @@ import org.nuxeo.apidoc.introspection.ExtensionInfoImpl;
 import org.nuxeo.apidoc.introspection.ExtensionPointInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.dublincore.constants.DublinCoreConstants;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -55,8 +54,6 @@ public interface NuxeoArtifact {
     public static String CONTENT_PROPERTY_PATH = "file:content";
 
     String getId();
-
-    AssociatedDocuments getAssociatedDocuments(CoreSession session);
 
     String getVersion();
 

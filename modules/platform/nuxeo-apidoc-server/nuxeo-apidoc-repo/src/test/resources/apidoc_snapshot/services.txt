@@ -1,6 +1,5 @@
 NXService: org.apache.avro.message.SchemaStore *** /grp:org.nuxeo.runtime/org.nuxeo.runtime.stream/org.nuxeo.runtime.avro/Services/org.apache.avro.message.SchemaStore
-NXService: org.nuxeo.apidoc.documentation.DocumentationService *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.documentation.DocumentationComponent/Services/org.nuxeo.apidoc.documentation.DocumentationService
-NXService: org.nuxeo.apidoc.search.ArtifactSearcher *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.documentation.DocumentationComponent/Services/org.nuxeo.apidoc.search.ArtifactSearcher
+NXService: org.nuxeo.apidoc.search.ArtifactSearcher *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.search.ArtifactSearcher
 NXService: org.nuxeo.apidoc.snapshot.SnapshotManager *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager
 NXService: org.nuxeo.automation.scripting.api.AutomationScriptingService *** /grp:org.nuxeo.ecm.automation/org.nuxeo.ecm.automation.scripting/org.nuxeo.automation.scripting.internals.AutomationScriptingComponent/Services/org.nuxeo.automation.scripting.api.AutomationScriptingService
 NXService: org.nuxeo.ecm.automation.AutomationAdmin *** /grp:org.nuxeo.ecm.automation/org.nuxeo.ecm.automation.core/org.nuxeo.ecm.core.operation.OperationServiceComponent/Services/org.nuxeo.ecm.automation.AutomationAdmin

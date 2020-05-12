@@ -19,16 +19,10 @@
 package org.nuxeo.apidoc.introspection;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
-import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
-import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
-import org.nuxeo.ecm.core.api.CoreSession;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,11 +41,8 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     protected final List<String> parentIds = new ArrayList<>();
 
-    protected Map<String, ResourceDocumentationItem> liveDoc = new HashMap<>();
-
     @JsonCreator
-    private BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("name") String version,
-            @JsonProperty("liveDoc") Map<String, ResourceDocumentationItem> liveDoc) {
+    public BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("name") String version) {
         this.key = key;
         if (key.startsWith("grp:")) {
             name = key.substring(4);
@@ -59,11 +50,6 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
             name = key;
         }
         this.version = version;
-        this.liveDoc.putAll(liveDoc);
-    }
-
-    public BundleGroupImpl(String key, String version) {
-        this(key, version, Collections.emptyMap());
     }
 
     void addParent(String bgId) {
@@ -124,32 +110,6 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
             path = path + "/" + parentId;
         }
         return path + "/" + getId();
-    }
-
-    public void addLiveDoc(Map<String, ResourceDocumentationItem> newLiveDoc) {
-        if (liveDoc == null) {
-            liveDoc = new HashMap<>();
-        }
-        if (newLiveDoc != null) {
-            for (String key : newLiveDoc.keySet()) {
-                if (newLiveDoc.get(key) != null) {
-                    liveDoc.put(key, new ResourceDocumentationItem(newLiveDoc.get(key), this));
-                }
-            }
-        }
-    }
-
-    @Override
-    public AssociatedDocumentsImpl getAssociatedDocuments(CoreSession session) {
-        AssociatedDocumentsImpl docs = super.getAssociatedDocuments(session);
-        if (liveDoc != null) {
-            docs.setLiveDoc(liveDoc);
-        }
-        return docs;
-    }
-
-    public Map<String, ResourceDocumentationItem> getLiveDoc() {
-        return liveDoc;
     }
 
 }

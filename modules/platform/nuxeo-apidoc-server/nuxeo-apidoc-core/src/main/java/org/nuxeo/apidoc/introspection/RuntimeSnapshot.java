@@ -255,7 +255,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                 if (bi instanceof BundleInfoImpl) {
                     ((BundleInfoImpl) bi).setBundleGroup(bGroup);
                 }
-                bGroup.addLiveDoc(bi.getParentLiveDoc());
             }
         }
         return bGroup;

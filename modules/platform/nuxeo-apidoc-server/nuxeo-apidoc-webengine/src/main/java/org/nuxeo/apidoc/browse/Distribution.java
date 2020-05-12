@@ -55,7 +55,6 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.apidoc.plugin.Plugin;
@@ -390,11 +389,6 @@ public class Distribution extends ModuleRoot {
         return out.toString();
     }
 
-    public String getDocumentationInfo() {
-        DocumentationService ds = Framework.getService(DocumentationService.class);
-        return ds.getDocumentationStats(getContext().getCoreSession());
-    }
-
     protected File getExportTmpFile() {
         File tmpFile = new File(Environment.getDefault().getTemp(), "export.zip");
         if (tmpFile.exists()) {
@@ -402,23 +396,6 @@ public class Distribution extends ModuleRoot {
         }
         tmpFile.deleteOnExit();
         return tmpFile;
-    }
-
-    @GET
-    @Path("downloadDoc")
-    public Response downloadDoc() throws IOException {
-        DocumentationService ds = Framework.getService(DocumentationService.class);
-        File tmp = getExportTmpFile();
-        tmp.createNewFile();
-        OutputStream out = new FileOutputStream(tmp);
-        ds.exportDocumentation(getContext().getCoreSession(), out);
-        out.flush();
-        out.close();
-        ArchiveFile aFile = new ArchiveFile(tmp.getAbsolutePath());
-        return Response.ok(aFile)
-                       .header("Content-Disposition", "attachment;filename=" + "nuxeo-documentation.zip")
-                       .type("application/zip")
-                       .build();
     }
 
     @GET
@@ -506,27 +483,6 @@ public class Distribution extends ModuleRoot {
         getSnapshotManager().validateImportedSnapshot(getContext().getCoreSession(), name, version, pathSegment, title);
         getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
         return getView("importDone");
-    }
-
-    @POST
-    @Path("uploadDoc")
-    @Produces("text/html")
-    public Object uploadDoc() throws IOException {
-        if (!canAddDocumentation()) {
-            return null;
-        }
-
-        Blob blob = getContext().getForm().getFirstBlob();
-        if (blob == null || blob.getLength() == 0) {
-            return null;
-        }
-
-        DocumentationService ds = Framework.getService(DocumentationService.class);
-        ds.importDocumentation(getContext().getCoreSession(), blob.getStream());
-
-        log.info("Documents imported.");
-
-        return getView("docImportDone");
     }
 
     @GET

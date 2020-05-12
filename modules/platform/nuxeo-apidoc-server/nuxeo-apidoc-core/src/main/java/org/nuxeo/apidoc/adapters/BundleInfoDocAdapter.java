@@ -18,16 +18,13 @@
  */
 package org.nuxeo.apidoc.adapters;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -115,25 +112,12 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public String getManifest() {
-        try {
-            Blob mf = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
-            if (mf == null) {
-                return "No MANIFEST.MF";
-            }
-            if (mf.getEncoding() == null || "".equals(mf.getEncoding())) {
-                mf.setEncoding("utf-8");
-            }
-            return mf.getString();
-        } catch (IOException e) {
-            log.error("Error while reading blob", e);
-            return "";
-        }
+        return safeGetContent(safeGet(NuxeoArtifact.CONTENT_PROPERTY_PATH), "No MANIFEST.MF");
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<String> getRequirements() {
-        return new ArrayList<>((List<String>) doc.getPropertyValue(PROP_REQUIREMENTS));
+        return safeGet(PROP_REQUIREMENTS);
     }
 
     @Override
@@ -154,16 +138,6 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public String getArtifactType() {
         return TYPE_NAME;
-    }
-
-    @Override
-    public Map<String, ResourceDocumentationItem> getLiveDoc() {
-        return null;
-    }
-
-    @Override
-    public Map<String, ResourceDocumentationItem> getParentLiveDoc() {
-        return null;
     }
 
 }

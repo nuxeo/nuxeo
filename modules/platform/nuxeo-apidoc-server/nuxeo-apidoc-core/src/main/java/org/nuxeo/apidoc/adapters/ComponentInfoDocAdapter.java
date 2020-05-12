@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.PropertyException;
 
 public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ComponentInfo {
 
@@ -136,33 +135,18 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<String> getServiceNames() {
-        try {
-            return (List<String>) doc.getPropertyValue(PROP_SERVICES);
-        } catch (PropertyException e) {
-            log.error("Error while getting service names", e);
-        }
-        return null;
+        return safeGet(PROP_SERVICES);
     }
 
     @Override
     public String getXmlFileContent() throws IOException {
-        try {
-            Blob xml = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
-            if (xml.getEncoding() == null || "".equals(xml.getEncoding())) {
-                xml.setEncoding("utf-8");
-            }
-            return xml.getString();
-        } catch (IOException e) {
-            log.error("Error while reading blob", e);
-            return "";
-        }
+        return safeGetContent(safeGet(NuxeoArtifact.CONTENT_PROPERTY_PATH), "");
     }
 
     @Override
     public String getXmlFileName() {
-        Blob xml = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
+        Blob xml = safeGet(NuxeoArtifact.CONTENT_PROPERTY_PATH);
         return xml == null ? "" : xml.getFilename() == null ? "" : xml.getFilename();
     }
 
@@ -173,7 +157,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public boolean isXmlPureComponent() {
-        Boolean isXml = safeGet(Boolean.class, PROP_IS_XML, Boolean.TRUE);
+        Boolean isXml = safeGet(PROP_IS_XML, Boolean.TRUE);
         return isXml == null ? true : isXml.booleanValue();
     }
 
@@ -215,14 +199,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<String> getRequirements() {
-        try {
-            return (List<String>) doc.getPropertyValue(PROP_REQUIREMENTS);
-        } catch (PropertyException e) {
-            log.error("Error while getting requirements", e);
-        }
-        return null;
+        return safeGet(PROP_REQUIREMENTS);
     }
 
 }

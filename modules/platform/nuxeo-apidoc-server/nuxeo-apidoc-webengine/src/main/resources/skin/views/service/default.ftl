@@ -12,12 +12,6 @@
 
   <h2>Documentation</h2>
   ${nxItem.documentationHtml}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-  <#if Root.canAddDocumentation()>
-    <div class="tabsbutton">
-      <a class="button" href="${This.path}/doc">Manage Documentation</a>
-    </div>
-  </#if>
 
   <h2>Implementation</h2>
   <p><b>${nxItem.id}</b></p>
@@ -25,8 +19,6 @@
   <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(nxItem.id)}"/>
   <#assign urlBase="${javaDocBaseUrl}/javadoc/${nxItem.id?replace('.','/')}"/>
   <p><a href="${urlBase}.html" target="_new">Click for full Javadoc</a></p>
-
-  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
 </div>
 

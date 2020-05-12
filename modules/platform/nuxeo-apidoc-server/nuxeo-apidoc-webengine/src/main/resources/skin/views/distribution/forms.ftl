@@ -124,26 +124,5 @@
     </tr>
   </table>
 
-  <h2>Documentation</h2>
-  <table>
-    <tr>
-      <td>
-        <p>
-          Documentation items are associated to the Nuxeo Platform artifacts.
-          Documentation packs can be downloaded or uploaded here.
-        </p>
-        <p>
-          Documentation contains currently ${Root.documentationInfo}.
-        </p>
-        <p><a href="${Root.path}/downloadDoc" class="button">Export all documentation as a zip.</a></p>
-        <p>You can use the form below to upload a documentation pack (zip):</p>
-        <form method="POST" action="${Root.path}/uploadDoc" enctype="multipart/form-data">
-          <input type="file" name="archive">
-          <input type="submit" value="Upload doc pack">
-        </form>
-      </td>
-    </tr>
-  </table>
-
   </@block>
 </@extends>

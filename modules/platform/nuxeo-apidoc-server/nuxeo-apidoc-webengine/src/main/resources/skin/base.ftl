@@ -80,11 +80,6 @@
   <@block name="middle">
     <section>
       <article role="contentinfo">
-        <#if false && onArtifact?? && Root.canAddDocumentation()>
-          <div class="tabsbutton">
-            <a class="button" href="${This.path}/doc">Manage Documentation</a>
-          </div>
-        </#if>
         <#if onArtifact?? && !Root.isRunningFunctionalTests()>
           <@block name="googleSearchFrame">
             <@googleSearchFrame This.searchCriterion />
@@ -99,17 +94,6 @@
 </div>
 <script type="text/javascript">
   hljs.initHighlightingOnLoad();
-
-  var lastDisplayedDoc;
-  function showAddDoc(docId) {
-    if (lastDisplayedDoc) {
-      if (lastDisplayedDoc!=docId) {
-        $('#' + lastDisplayedDoc).toggle();
-      }
-    }
-    $('#' + docId).toggle();
-    lastDisplayedDoc=docId;
-  }
 </script>
 
 <@block name="footer_scripts" />

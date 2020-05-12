@@ -215,7 +215,6 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("org.nuxeo.ecm.platform", bundle.getGroupId());
         assertEquals("/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo", bundle.getHierarchyPath());
         assertEquals("org.nuxeo.apidoc.repo", bundle.getId());
-        assertNull(bundle.getLiveDoc());
         assertEquals("Manifest-Version: 1.0\n" //
                 + "Bundle-ManifestVersion: 1\n" //
                 + "Bundle-Name: nuxeo api documentation repository\n" //
@@ -225,19 +224,16 @@ public class TestJson extends AbstractApidocTest {
                 + "Nuxeo-Component: OSGI-INF/schema-contrib.xml,\n" //
                 + "  OSGI-INF/doctype-contrib.xml,\n" + "  OSGI-INF/life-cycle-contrib.xml,\n" //
                 + "  OSGI-INF/snapshot-service-framework.xml,\n" //
-                + "  OSGI-INF/documentation-service-framework.xml,\n" //
                 + "  OSGI-INF/adapter-contrib.xml,\n" //
-                + "  OSGI-INF/directories-contrib.xml,\n" //
                 + "  OSGI-INF/listener-contrib.xml\n"//
                 + "", bundle.getManifest());
-        assertNull(bundle.getParentLiveDoc());
         assertEquals(Collections.emptyList(), bundle.getRequirements());
         assertEquals(version, bundle.getVersion());
 
         // check components
         List<ComponentInfo> components = bundle.getComponents();
         assertNotNull(components);
-        assertEquals(9, components.size());
+        assertEquals(7, components.size());
         ComponentInfo smcomp = snapshot.getComponent("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
         assertNotNull(smcomp);
         assertEquals(ComponentInfo.TYPE_NAME, smcomp.getArtifactType());
@@ -259,7 +255,7 @@ public class TestJson extends AbstractApidocTest {
 
         // check services
         assertNotNull(smcomp.getServices());
-        assertEquals(1, smcomp.getServices().size());
+        assertEquals(2, smcomp.getServices().size());
         ServiceInfo service = smcomp.getServices().get(0);
         assertEquals(ServiceInfo.TYPE_NAME, service.getArtifactType());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", service.getComponentId());
@@ -305,7 +301,7 @@ public class TestJson extends AbstractApidocTest {
         ExtensionInfo ext = smcont.getExtensions().get(0);
         assertEquals(ExtensionInfo.TYPE_NAME, ext.getArtifactType());
         assertNotNull(ext.getContributionItems());
-        assertEquals(9, ext.getContributionItems().size());
+        assertEquals(8, ext.getContributionItems().size());
         assertEquals("NXDistribution", ext.getContributionItems().get(0).getId());
         assertEquals("doctype NXDistribution", ext.getContributionItems().get(0).getLabel());
         assertNotNull(ext.getContributionItems().get(0).getXml());

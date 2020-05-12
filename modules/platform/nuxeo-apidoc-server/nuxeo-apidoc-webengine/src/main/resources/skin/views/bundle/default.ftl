@@ -11,12 +11,6 @@
 
   <h2>Documentation</h2>
   ${nxItem.documentationHtml}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-  <#if Root.canAddDocumentation()>
-    <div class="tabsbutton">
-      <a class="button" href="${This.path}/doc">Manage Documentation</a>
-    </div>
-  </#if>
 
   <#if nxItem.requirements?size gt 0>
     <h2>Requirements</h2>
@@ -50,8 +44,6 @@
   <div>
     <pre><code>${nxItem.manifest}</code></pre>
   </div>
-
-  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
 </div>
 

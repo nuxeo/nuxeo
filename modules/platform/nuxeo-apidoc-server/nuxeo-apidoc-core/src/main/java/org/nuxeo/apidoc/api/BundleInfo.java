@@ -20,9 +20,6 @@
 package org.nuxeo.apidoc.api;
 
 import java.util.List;
-import java.util.Map;
-
-import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -71,9 +68,5 @@ public interface BundleInfo extends NuxeoArtifact {
     String getArtifactId();
 
     String getArtifactVersion();
-
-    Map<String, ResourceDocumentationItem> getLiveDoc();
-
-    Map<String, ResourceDocumentationItem> getParentLiveDoc();
 
 }

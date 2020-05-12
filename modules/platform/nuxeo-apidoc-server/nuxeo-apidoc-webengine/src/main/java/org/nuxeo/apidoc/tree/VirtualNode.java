@@ -18,11 +18,9 @@
  */
 package org.nuxeo.apidoc.tree;
 
-import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.VirtualNodesConsts;
-import org.nuxeo.ecm.core.api.CoreSession;
 
 public class VirtualNode implements NuxeoArtifact {
 
@@ -51,11 +49,6 @@ public class VirtualNode implements NuxeoArtifact {
     @Override
     public String getArtifactType() {
         return type;
-    }
-
-    @Override
-    public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
-        return null;
     }
 
     @Override

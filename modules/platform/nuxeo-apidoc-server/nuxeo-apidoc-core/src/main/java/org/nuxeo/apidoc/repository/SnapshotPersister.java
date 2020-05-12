@@ -20,7 +20,6 @@ package org.nuxeo.apidoc.repository;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,29 +37,20 @@ import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
-import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.documentation.DocumentationItemDocAdapter;
-import org.nuxeo.apidoc.documentation.DocumentationService;
-import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
-import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.plugin.Plugin;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.runtime.api.Framework;
 
 public class SnapshotPersister {
 
@@ -167,14 +157,6 @@ public class SnapshotPersister {
 
         DocumentModel bundleGroupDoc = createBundleGroupDoc(bundleGroup, session, label, parent);
 
-        // save GitHub doc
-        if (bundleGroup instanceof BundleGroupImpl) {
-            Map<String, ResourceDocumentationItem> liveDoc = ((BundleGroupImpl) bundleGroup).getLiveDoc();
-            if (liveDoc != null && liveDoc.size() > 0) {
-                persistLiveDoc(liveDoc, bundleGroupDoc.getAdapter(BundleGroup.class), session);
-            }
-        }
-
         for (String bundleId : bundleGroup.getBundleIds()) {
             BundleInfo bi = snapshot.getBundle(bundleId);
             persistBundle(snapshot, bi, session, label, bundleGroupDoc);
@@ -185,52 +167,12 @@ public class SnapshotPersister {
         }
     }
 
-    protected void persistLiveDoc(Map<String, ResourceDocumentationItem> liveDoc, NuxeoArtifact item,
-            CoreSession session) {
-        DocumentationService ds = Framework.getService(DocumentationService.class);
-        List<DocumentationItem> existingDocs = ds.findDocumentItems(session, item);
-        for (String cat : liveDoc.keySet()) {
-            ResourceDocumentationItem docItem = liveDoc.get(cat);
-            DocumentationItem previousDocItem = null;
-            for (DocumentationItem exiting : existingDocs) {
-                if (exiting.getTitle().equals(docItem.getTitle()) && exiting.getTarget().equals(docItem.getTarget())) {
-                    previousDocItem = exiting;
-                    break;
-                }
-            }
-            if (previousDocItem == null) {
-                ds.createDocumentationItem(session, item, docItem.getTitle(), docItem.getContent(), cat,
-                        Arrays.asList(item.getVersion()), docItem.isApproved(), docItem.getRenderingType());
-            } else {
-                if (previousDocItem instanceof DocumentationItemDocAdapter) {
-                    DocumentationItemDocAdapter existingDoc = (DocumentationItemDocAdapter) previousDocItem;
-                    Blob blob = Blobs.createBlob(docItem.getContent());
-                    Blob oldBlob = (Blob) existingDoc.getDocumentModel()
-                                                     .getPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH);
-                    blob.setFilename(oldBlob.getFilename());
-                    existingDoc.getDocumentModel()
-                               .setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) blob);
-                    ds.updateDocumentationItem(session, existingDoc);
-                }
-
-            }
-        }
-    }
-
     public void persistBundle(DistributionSnapshot snapshot, BundleInfo bundleInfo, CoreSession session, String label,
             DocumentModel parent) {
         if (log.isTraceEnabled()) {
             log.trace("Persist bundle " + bundleInfo.getId());
         }
         DocumentModel bundleDoc = createBundleDoc(snapshot, session, label, bundleInfo, parent);
-
-        // save GitHub doc
-        if (bundleInfo instanceof BundleInfoImpl) {
-            Map<String, ResourceDocumentationItem> liveDoc = ((BundleInfoImpl) bundleInfo).getLiveDoc();
-            if (liveDoc != null && liveDoc.size() > 0) {
-                persistLiveDoc(liveDoc, bundleDoc.getAdapter(BundleInfo.class), session);
-            }
-        }
 
         for (ComponentInfo ci : bundleInfo.getComponents()) {
             persistComponent(snapshot, ci, session, label, bundleDoc);

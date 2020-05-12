@@ -52,6 +52,8 @@ import org.nuxeo.apidoc.plugin.Plugin;
 import org.nuxeo.apidoc.plugin.PluginDescriptor;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
+import org.nuxeo.apidoc.search.ArtifactSearcher;
+import org.nuxeo.apidoc.search.ArtifactSearcherImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -72,6 +74,13 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 
     private static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
+
+    /**
+     * ArtifactSearcher service, moved from removed documentation service.
+     *
+     * @since 11.1
+     */
+    protected final ArtifactSearcher searcher = new ArtifactSearcherImpl();
 
     /**
      * Extension point for plugins.
@@ -391,6 +400,17 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     public void stop(ComponentContext context) throws InterruptedException {
         super.stop(context);
         plugins.clear();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getAdapter(Class<T> adapter) {
+        if (adapter.isAssignableFrom(SnapshotManager.class)) {
+            return (T) this;
+        } else if (adapter.isAssignableFrom(ArtifactSearcher.class)) {
+            return (T) searcher;
+        }
+        return null;
     }
 
 }

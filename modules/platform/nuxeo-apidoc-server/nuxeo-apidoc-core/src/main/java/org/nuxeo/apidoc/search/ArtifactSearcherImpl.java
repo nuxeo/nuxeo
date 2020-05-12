@@ -34,11 +34,9 @@ import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -112,33 +110,10 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
     }
 
     @Override
-    public List<DocumentationItem> searchDocumentation(CoreSession session, String distribId, String fulltext,
-            String targetType) {
-        DistributionSnapshot snap = Framework.getService(SnapshotManager.class).getSnapshot(distribId, session);
-        DocumentModel dist = ((RepositoryDistributionSnapshot) snap).getDoc();
-        String query = QueryHelper.select(DocumentationItem.TYPE_NAME, dist, NXQL.ECM_FULLTEXT, fulltext);
-        if (targetType != null) {
-            query += " AND " + DocumentationItem.PROP_TARGET_TYPE + " = " + NXQL.escapeString(targetType);
-        }
-
-        ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(query).limit(MAX_RESULTS));
-        List<DocumentationItem> result = new ArrayList<>();
-        for (DocumentModel doc : docs) {
-            DocumentationItem docItem = doc.getAdapter(DocumentationItem.class);
-            if (docItem != null) {
-                result.add(docItem);
-            }
-        }
-        return result;
-    }
-
-    @Override
     public List<NuxeoArtifact> filterArtifact(CoreSession session, String distribId, String type, String fulltext) {
         List<NuxeoArtifact> result = new ArrayList<>();
 
         List<NuxeoArtifact> matchingArtifacts = searchArtifact(session, distribId, fulltext);
-        List<DocumentationItem> matchingDocumentationItems = searchDocumentation(session, distribId, fulltext, null);
 
         Map<String, ArtifactWithWeight> sortMap = new HashMap<>();
 
@@ -158,17 +133,6 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
                 sortMap.get(id).addHit();
             } else {
                 sortMap.put(id, new ArtifactWithWeight(matchingParentArtifact));
-            }
-        }
-
-        for (DocumentationItem matchingDocumentationItem : matchingDocumentationItems) {
-            NuxeoArtifact resultArtifact = resolveInTree(session, distribId, matchingDocumentationItem, type);
-            if (resultArtifact != null) {
-                if (sortMap.containsKey(resultArtifact.getId())) {
-                    sortMap.get(resultArtifact.getId()).addHit();
-                } else {
-                    sortMap.put(resultArtifact.getId(), new ArtifactWithWeight(resultArtifact));
-                }
             }
         }
 
@@ -197,37 +161,6 @@ public class ArtifactSearcherImpl implements ArtifactSearcher {
             }
         }
         return null;
-    }
-
-    protected NuxeoArtifact resolveInTree(CoreSession session, String distribId,
-            DocumentationItem matchingDocumentationItem, String searchedType) {
-        DistributionSnapshot snap = Framework.getService(SnapshotManager.class).getSnapshot(distribId, session);
-        String targetId = matchingDocumentationItem.getTarget();
-        String targetType = matchingDocumentationItem.getTargetType();
-        NuxeoArtifact artifact;
-        switch (targetType) {
-        case BundleGroup.TYPE_NAME:
-            artifact = snap.getBundleGroup(targetId);
-            break;
-        case BundleInfo.TYPE_NAME:
-            artifact = snap.getBundle(targetId);
-            break;
-        case ComponentInfo.TYPE_NAME:
-            artifact = snap.getComponent(targetId);
-            break;
-        case ExtensionPointInfo.TYPE_NAME:
-            artifact = snap.getExtensionPoint(targetId);
-            break;
-        case ExtensionInfo.TYPE_NAME:
-            artifact = snap.getContribution(targetId);
-            break;
-        case ServiceInfo.TYPE_NAME:
-            artifact = snap.getService(targetId);
-            break;
-        default:
-            return null;
-        }
-        return resolveInTree(session, distribId, artifact, searchedType);
     }
 
 }

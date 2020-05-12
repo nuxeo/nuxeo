@@ -18,9 +18,7 @@
  */
 package org.nuxeo.apidoc.test;
 
-import org.nuxeo.apidoc.api.AssociatedDocuments;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.ecm.core.api.CoreSession;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,11 +44,6 @@ public class FakeNuxeoArtifact implements NuxeoArtifact {
         this.id = id;
         this.version = version;
         this.type = type;
-    }
-
-    @Override
-    public AssociatedDocuments getAssociatedDocuments(CoreSession session) {
-        return null;
     }
 
     @Override

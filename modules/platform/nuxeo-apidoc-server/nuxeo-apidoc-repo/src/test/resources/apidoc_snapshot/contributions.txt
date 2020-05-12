@@ -1,7 +1,6 @@
 NXContribution: DublinCoreStorageService--configuration *** /grp:org.nuxeo.ecm.platform/org.nuxeo.ecm.platform.dublincore/DublinCoreStorageService/Contributions/DublinCoreStorageService--configuration
 NXContribution: DublinCoreStorageService--listener *** /grp:org.nuxeo.ecm.platform/org.nuxeo.ecm.platform.dublincore/DublinCoreStorageService/Contributions/DublinCoreStorageService--listener
 NXContribution: org.nuxeo.apidoc.adapterContrib--adapters *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib/Contributions/org.nuxeo.apidoc.adapterContrib--adapters
-NXContribution: org.nuxeo.apidoc.directoryContrib--directories *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.directoryContrib/Contributions/org.nuxeo.apidoc.directoryContrib--directories
 NXContribution: org.nuxeo.apidoc.doctypeContrib--doctype *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype
 NXContribution: org.nuxeo.apidoc.lifecycle.contrib--types *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib/Contributions/org.nuxeo.apidoc.lifecycle.contrib--types
 NXContribution: org.nuxeo.apidoc.listener.contrib--listener *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib/Contributions/org.nuxeo.apidoc.listener.contrib--listener
