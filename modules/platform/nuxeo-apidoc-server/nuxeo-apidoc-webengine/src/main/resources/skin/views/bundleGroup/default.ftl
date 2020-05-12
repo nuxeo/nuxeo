@@ -10,11 +10,27 @@
 
 <div class="tabscontent">
 
-  <h2>Documentation</h2>
+  <#if nxItem.readmes?size gt 0>
+    <h2>Documentation</h2>
+    <div class="documentation">
+      <ul class="block-list">
+        <#list nxItem.readmes as readme>
+          <li>
+            <div class="block-title">
+              ${readme.filename}
+            </div>
+            <div>
+              <pre>${readme.getString()}</pre>
+            </div>
+          </li>
+        </#list>
+      </ul>
+    </div>
+  </#if>
 
   <#if nxItem.subGroups?size gt 0>
   <h2>Bundle subgroups</h2>
-  <ul>
+  <ul class="subbroups">
     <#list nxItem.subGroups as subGroup>
     <li>
       <a href="${Root.path}/${distId}/viewBundleGroup/${subGroup.name}">${subGroup.name}</a>
@@ -25,7 +41,7 @@
 
   <#if nxItem.bundleIds?size gt 0>
   <h2>Bundles</h2>
-  <ul>
+  <ul class="groupbundles">
     <#list nxItem.bundleIds as bundleId>
     <li>
       <a href="${Root.path}/${distId}/viewBundle/${bundleId}">${bundleId}</a>

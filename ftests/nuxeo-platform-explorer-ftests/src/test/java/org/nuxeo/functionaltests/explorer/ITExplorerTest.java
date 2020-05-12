@@ -24,6 +24,7 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -33,8 +34,10 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
+import org.nuxeo.functionaltests.explorer.pages.DistributionHomePage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleGroupArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ComponentArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ContributionArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ExtensionPointArtifactPage;
@@ -83,8 +86,13 @@ public class ITExplorerTest extends AbstractExplorerTest {
         ExplorerHomePage home = goHome();
         home.check();
 
-        home.clickOn(home.currentExtensionPoints);
+        home.goHome().clickOn(home.currentDistrib);
+        DistributionHomePage dhome = asPage(DistributionHomePage.class);
+        dhome.check();
+
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
+        home = header.goHome();
+        home.clickOn(home.currentExtensionPoints);
         header.checkTitle("All Extension Points");
         header.checkSelectedTab(header.extensionPoints);
 
@@ -191,6 +199,22 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public void testBundlesAlternative() {
         goToArtifact(BundleInfo.TYPE_NAME, "org.nuxeo.apidoc.webengine");
         BundleArtifactPage apage = asPage(BundleArtifactPage.class);
+        apage.checkAlternative();
+    }
+
+    @Test
+    public void testBundleGroups() {
+        ExplorerHomePage home = goHome();
+        home.clickOn(home.currentDistrib);
+        DistributionHomePage dhome = asPage(DistributionHomePage.class);
+        dhome.clickOn(dhome.bundleGroups);
+        checkBundleGroups();
+    }
+
+    @Test
+    public void testBundleGroupsAlternative() {
+        goToArtifact(BundleGroup.TYPE_NAME, "org.nuxeo.runtime");
+        BundleGroupArtifactPage apage = asPage(BundleGroupArtifactPage.class);
         apage.checkAlternative();
     }
 

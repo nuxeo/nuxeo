@@ -3,6 +3,7 @@
   targetNamespace="http://nuxeo.org/schemas/nxbundle"
   xmlns:nxbundle="http://nuxeo.org/schemas/nxbundle">
 
+  <xs:include schemaLocation="core-types.xsd" />
   <xs:complexType name="stringList">
     <xs:sequence>
       <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
@@ -16,5 +17,8 @@
   <xs:element name="jarName" type="xs:string" />
 
   <xs:element name="requirements" type="nxbundle:stringList" />
+
+  <xs:element name="readme" type="nxbundle:content" />
+  <xs:element name="parentReadme" type="nxbundle:content" />
 
 </xs:schema>

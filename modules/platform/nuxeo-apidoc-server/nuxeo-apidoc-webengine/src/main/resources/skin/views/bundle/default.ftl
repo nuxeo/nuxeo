@@ -6,11 +6,37 @@
 <#include "/docMacros.ftl">
 
 <h1>Bundle <span class="componentTitle">${nxItem.id}</span></h1>
+<div class="include-in">In bundle group <a href="${Root.path}/${distId}/viewBundleGroup/${nxItem.groupId}">${nxItem.groupId}</a></div>
 
 <div class="tabscontent">
 
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
+  <#if nxItem.readme?has_content || nxItem.parentReadme?has_content>
+    <h2>Documentation</h2>
+    <div class="documentation">
+      <ul class="block-list">
+        <#if nxItem.readme?has_content>
+          <li>
+            <div class="block-title">
+              ${nxItem.readme.filename}
+            </div>
+            <div>
+              <pre>${nxItem.readme.getString()}</pre>
+            </div>
+          </li>
+        </#if>
+        <#if nxItem.parentReadme?has_content>
+          <li>
+            <div class="block-title">
+              Parent Documentation: ${nxItem.parentReadme.filename}
+            </div>
+            <div>
+              <pre>${nxItem.parentReadme.getString()}</pre>
+            </div>
+          </li>
+        </#if>
+      </ul>
+    </div>
+  </#if>
 
   <#if nxItem.requirements?size gt 0>
     <h2>Requirements</h2>

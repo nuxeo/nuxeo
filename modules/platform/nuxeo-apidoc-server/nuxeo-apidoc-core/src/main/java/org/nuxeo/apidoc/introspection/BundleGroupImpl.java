@@ -18,11 +18,14 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
+import org.nuxeo.ecm.core.api.Blob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -41,8 +44,11 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     protected final List<String> parentIds = new ArrayList<>();
 
+    protected final List<Blob> readmes = new ArrayList<>();
+
     @JsonCreator
-    public BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("name") String version) {
+    private BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("name") String version,
+            @JsonProperty("readmes") List<Blob> readmes) {
         this.key = key;
         if (key.startsWith("grp:")) {
             name = key.substring(4);
@@ -50,6 +56,13 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
             name = key;
         }
         this.version = version;
+        if (readmes != null) {
+            this.readmes.addAll(readmes);
+        }
+    }
+
+    public BundleGroupImpl(String key, String version) {
+        this(key, version, Collections.emptyList());
     }
 
     void addParent(String bgId) {
@@ -110,6 +123,28 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
             path = path + "/" + parentId;
         }
         return path + "/" + getId();
+    }
+
+    @Override
+    public List<Blob> getReadmes() {
+        return Collections.unmodifiableList(readmes);
+    }
+
+    public void addReadme(Blob readme) throws IOException {
+        if (readme == null) {
+            return;
+        }
+        String content = readme.getString();
+        if (content == null) {
+            return;
+        }
+        // check for duplicates as the same readme can already be referenced by multiple children
+        for (Blob er : readmes) {
+            if (content.equals(er.getString())) {
+                return;
+            }
+        }
+        readmes.add(readme);
     }
 
 }

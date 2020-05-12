@@ -21,6 +21,8 @@ package org.nuxeo.apidoc.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.Blob;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public interface BundleInfo extends NuxeoArtifact {
@@ -36,6 +38,16 @@ public interface BundleInfo extends NuxeoArtifact {
     String PROP_BUNDLE_ID = "nxbundle:bundleId";
 
     String PROP_JAR_NAME = "nxbundle:jarName";
+
+    /**
+     * @since 11.1
+     */
+    String PROP_README = "nxbundle:readme";
+
+    /**
+     * @since 11.1
+     */
+    String PROP_PARENT_README = "nxbundle:parentReadme";
 
     /**
      * @since 11.1
@@ -68,5 +80,15 @@ public interface BundleInfo extends NuxeoArtifact {
     String getArtifactId();
 
     String getArtifactVersion();
+
+    /**
+     * @since 11.1
+     */
+    Blob getReadme();
+
+    /**
+     * @since 11.1
+     */
+    Blob getParentReadme();
 
 }

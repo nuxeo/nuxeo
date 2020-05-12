@@ -47,6 +47,9 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
     @FindBy(xpath = "//section/article[@role='contentinfo']/div[contains(@class, 'include-in')]")
     public WebElement description;
 
+    @FindBy(xpath = "//div[contains(@class, 'documentation')]")
+    public WebElement documentation;
+
     public ArtifactPage(WebDriver driver) {
         super(driver);
     }
@@ -77,6 +80,18 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
             assertEquals(expected, description.getText());
         } catch (NoSuchElementException e) {
             // description is not mandatory on all pages
+            assertNull(expected);
+        }
+    }
+
+    public void checkDocumentationText(String expected) {
+        checkTextIfExists(expected, documentation);
+    }
+
+    protected void checkTextIfExists(String expected, WebElement element) {
+        try {
+            assertEquals(expected, element.getText());
+        } catch (NoSuchElementException e) {
             assertNull(expected);
         }
     }

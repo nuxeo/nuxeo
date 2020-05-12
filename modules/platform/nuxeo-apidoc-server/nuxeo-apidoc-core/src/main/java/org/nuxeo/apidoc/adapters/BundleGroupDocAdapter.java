@@ -18,8 +18,11 @@
  */
 package org.nuxeo.apidoc.adapters;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -27,6 +30,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -49,6 +53,13 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, bundleGroup.getName());
         doc.setPropertyValue(PROP_GROUP_NAME, bundleGroup.getName());
         doc.setPropertyValue(PROP_KEY, bundleGroup.getId());
+        var files = new ArrayList<Map<String, Serializable>>();
+        for (Blob blob : bundleGroup.getReadmes()) {
+            Map<String, Serializable> item = new HashMap<>();
+            item.put("file", (Serializable) blob);
+            files.add(item);
+        }
+        doc.setPropertyValue(PROP_READMES, files);
         if (exist) {
             doc = session.saveDocument(doc);
         } else {
@@ -106,7 +117,6 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     @Override
     public String getVersion() {
         DistributionSnapshot parentSnapshot = getParentNuxeoArtifact(DistributionSnapshot.class);
-
         if (parentSnapshot == null) {
             log.error("Unable to determine version for bundleGroup " + getId());
             return "?";
@@ -122,6 +132,22 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     @Override
     public List<String> getParentIds() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Blob> getReadmes() {
+        @SuppressWarnings("unchecked")
+        List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) safeGet(PROP_READMES, null);
+        List<Blob> res = new ArrayList<>();
+        if (files != null) {
+            for (Map<String, Serializable> item : files) {
+                Serializable blob = item.get("file");
+                if (blob instanceof Blob) {
+                    res.add((Blob) blob);
+                }
+            }
+        }
+        return res;
     }
 
 }
