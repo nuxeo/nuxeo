@@ -38,8 +38,10 @@ import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -221,13 +223,6 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         // create the batch
         Batch batch = new Batch(batchId, parameters, getName(), getTransientStore());
 
-        AssumeRoleRequest request = new AssumeRoleRequest().withRoleArn(roleArn)
-                                                           .withPolicy(policy)
-                                                           .withRoleSessionName(batchId);
-        if (expiration > 0) {
-            request.setDurationSeconds(expiration);
-        }
-
         Credentials credentials = getTempCredentials(batchId);
 
         Map<String, Object> properties = batch.getProperties();
@@ -309,6 +304,20 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected long lowerThresholdToUseMultipartCopy() {
         return NON_MULTIPART_COPY_MAX_SIZE;
+    }
+
+    /** @since 11.1 */
+    @Override
+    public Map<String, Object> refreshToken(String batchId) {
+        Objects.requireNonNull(batchId, "required batch ID");
+
+        Credentials credentials = getTempCredentials(batchId);
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put(INFO_AWS_SECRET_KEY_ID, credentials.getAccessKeyId());
+        result.put(INFO_AWS_SECRET_ACCESS_KEY, credentials.getSecretAccessKey());
+        result.put(INFO_AWS_SESSION_TOKEN, credentials.getSessionToken());
+        result.put(INFO_EXPIRATION, credentials.getExpiration().toInstant().toEpochMilli());
+        return result;
     }
 
 }
