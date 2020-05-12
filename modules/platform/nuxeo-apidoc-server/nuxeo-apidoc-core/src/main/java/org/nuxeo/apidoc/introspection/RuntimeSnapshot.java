@@ -500,7 +500,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             }
 
             String finalId = id;
-            Optional<String> first = Arrays.stream(op.getAliases()).filter(s -> s.equals(finalId)).findFirst();
+            Optional<String> first = op.getAliases().stream().filter(s -> s.equals(finalId)).findFirst();
             if (first.isPresent()) {
                 return op;
             }

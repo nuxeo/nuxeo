@@ -10,11 +10,14 @@
 
 <div class="tabscontent">
 
-  <div class="description">
+  <#if nxItem.description?has_content>
     <h2>Description</h2>
-    ${nxItem.description}
-  </div>
+    <div class="description">
+      ${nxItem.description}
+    </div>
+  </#if>
 
+  <div class="info">
   <table class="listTable">
     <tr><th>Operation id</th><td> ${nxItem.name?html} </td></tr>
     <#if nxItem.aliases> <tr><th>Aliases</th><td><#list nxItem.aliases as alias><code>${alias}<code></#list></td></tr></#if>
@@ -23,8 +26,10 @@
     <tr><th>Requires</th><td> ${nxItem.requires} </td></tr>
     <tr><th>Since</th><td> ${nxItem.since} </td></tr>
   </table>
+  </div>
 
   <h2>Parameters</h2>
+  <div class="parameters">
   <#if nxItem.params?size gt 0>
   <table class="topheaderTable">
     <tr>
@@ -47,14 +52,18 @@
   <#else>
   <p>No parameters.</p>
   </#if>
+  </div>
 
   <h2>Signature</h2>
+  <div class="signature">
   <table class="listTable">
     <tr><th>Inputs</th><td> ${This.getInputsAsString(nxItem)} </td></tr>
     <tr><th>Outputs</th><td> ${This.getOutputsAsString(nxItem)} </td></tr>
   </table>
+  </div>
 
   <h2>Implementation information</h2>
+  <div class="implementation">
   <table class="listTable">
     <tr><th>Implementation class</th><td> ${nxItem.operationClass?html} </td></tr>
     <tr><th>Contributing component</th><td>
@@ -65,10 +74,13 @@
      </#if>
      </td></tr>
   </table>
+  </div>
 
 <#if json??>
   <h2>JSON definition</h2>
-  <pre>${json?html}</pre>
+  <div class="json">
+    <pre>${json?html}</pre>
+  </div>
 </#if>
 
 </div>

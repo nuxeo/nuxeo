@@ -18,13 +18,40 @@
  */
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
+import static org.junit.Assert.assertEquals;
+
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @since 11.1
  */
 public class OperationArtifactPage extends ArtifactPage {
+
+    @FindBy(xpath = "//div[@class='description']")
+    public WebElement opDescription;
+
+    @Required
+    @FindBy(xpath = "//div[@class='info']")
+    public WebElement info;
+
+    @Required
+    @FindBy(xpath = "//div[@class='parameters']")
+    public WebElement parameters;
+
+    @Required
+    @FindBy(xpath = "//div[@class='signature']")
+    public WebElement signature;
+
+    @Required
+    @FindBy(xpath = "//div[@class='implementation']")
+    public WebElement implementation;
+
+    @FindBy(xpath = "//div[@class='json']")
+    public WebElement json;
 
     public OperationArtifactPage(WebDriver driver) {
         super(driver);
@@ -34,6 +61,51 @@ public class OperationArtifactPage extends ArtifactPage {
     public void checkReference() {
         checkCommon("Operation Document.AddFacet", "Operation Document.AddFacet (Add Facet)",
                 "In component org.nuxeo.ecm.core.automation.coreContrib");
+        checkOperationDescriptionText("Adds the facet to the document.\n" //
+                + "WARNING: The save parameter is true by default, which means the document is saved in "
+                + "the database after adding the facet. It must be set to false when the operation is used "
+                + "in the context of an event that will fail if the document is saved (empty document created, "
+                + "about to create, before modification, ...).");
+        checkInfoText("Operation id Document.AddFacet\n" //
+                + "Aliases Document.AddFacet\n" //
+                + "Category Document\n" //
+                + "Label Add Facet\n" //
+                + "Requires\n" //
+                + "Since");
+        checkParametersText("Name Description Type Required Default value\n" //
+                + "facet string yes  \n" //
+                + "save boolean no true ");
+        checkSignatureText("Inputs document, documents\n" //
+                + "Outputs document, documents");
+        checkImplementationText("Implementation class org.nuxeo.ecm.automation.core.operations.document.AddFacet\n" //
+                + "Contributing component org.nuxeo.ecm.core.automation.coreContrib");
+        checkJsonText("{\n" //
+                + "  \"id\" : \"Document.AddFacet\",\n" //
+                + "  \"aliases\" : [ \"Document.AddFacet\" ],\n" //
+                + "  \"label\" : \"Add Facet\",\n" //
+                + "  \"category\" : \"Document\",\n" //
+                + "  \"requires\" : null,\n" //
+                + "  \"description\" : \"Adds the facet to the document. <p>WARNING: The save parameter is true by default, which means the document is saved in the database after adding the facet. It must be set to false when the operation is used in the context of an event that will fail if the document is saved (empty document created, about to create, before modification, ...).</p>\",\n" //
+                + "  \"url\" : \"Document.AddFacet\",\n" //
+                + "  \"signature\" : [ \"document\", \"document\", \"documents\", \"documents\" ],\n" //
+                + "  \"params\" : [ {\n" //
+                + "    \"name\" : \"facet\",\n" //
+                + "    \"description\" : \"\",\n" //
+                + "    \"type\" : \"string\",\n" //
+                + "    \"required\" : true,\n" //
+                + "    \"widget\" : null,\n" //
+                + "    \"order\" : 0,\n" //
+                + "    \"values\" : [ ]\n" //
+                + "  }, {\n" //
+                + "    \"name\" : \"save\",\n" //
+                + "    \"description\" : \"\",\n" //
+                + "    \"type\" : \"boolean\",\n" //
+                + "    \"required\" : false,\n" //
+                + "    \"widget\" : null,\n" //
+                + "    \"order\" : 0,\n" //
+                + "    \"values\" : [ \"true\" ]\n" //
+                + "  } ]\n" //
+                + "}");
     }
 
     @Override
@@ -46,6 +118,30 @@ public class OperationArtifactPage extends ArtifactPage {
     public void checkSelectedTab() {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header.checkSelectedTab(header.operations);
+    }
+
+    public void checkOperationDescriptionText(String expected) {
+        assertEquals(expected, opDescription.getText());
+    }
+
+    public void checkInfoText(String expected) {
+        assertEquals(expected, info.getText());
+    }
+
+    public void checkParametersText(String expected) {
+        assertEquals(expected, parameters.getText());
+    }
+
+    public void checkSignatureText(String expected) {
+        assertEquals(expected, signature.getText());
+    }
+
+    public void checkImplementationText(String expected) {
+        assertEquals(expected, implementation.getText());
+    }
+
+    public void checkJsonText(String expected) {
+        assertEquals(expected, json.getText());
     }
 
 }

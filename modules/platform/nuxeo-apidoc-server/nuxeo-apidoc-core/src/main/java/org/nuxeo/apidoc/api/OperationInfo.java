@@ -83,11 +83,11 @@ public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> 
      */
     String getName();
 
-    String[] getAliases();
+    List<String> getAliases();
 
     String getUrl();
 
-    String[] getSignature();
+    List<String> getSignature();
 
     String getCategory();
 

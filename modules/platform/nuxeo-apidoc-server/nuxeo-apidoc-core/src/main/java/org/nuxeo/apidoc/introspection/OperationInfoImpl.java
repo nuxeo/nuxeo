@@ -18,7 +18,9 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -37,7 +39,7 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
 
     protected final String version;
 
-    protected final String[] aliases;
+    protected final List<String> aliases = new ArrayList<>();
 
     protected final String operationClass;
 
@@ -45,7 +47,7 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
 
     protected final String description;
 
-    protected final String[] signature;
+    protected final List<String> signature = new ArrayList<>();
 
     protected final String category;
 
@@ -60,17 +62,19 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
     protected final List<Param> params;
 
     public OperationInfoImpl(@JsonProperty("name") String name, @JsonProperty("version") String version,
-            @JsonProperty("aliases") String[] aliases, @JsonProperty("description") String description,
+            @JsonProperty("aliases") List<String> aliases, @JsonProperty("description") String description,
             @JsonProperty("operationClass") String operationClass,
             @JsonProperty("contributingComponent") String contributingComponent,
-            @JsonProperty("signature") String[] signature, @JsonProperty("category") String category,
+            @JsonProperty("signature") List<String> signature, @JsonProperty("category") String category,
             @JsonProperty("url") String url, @JsonProperty("label") String label,
             @JsonProperty("requires") String requires, @JsonProperty("since") String since,
             @JsonProperty("params") List<Param> params) {
 
         this.name = name;
         this.version = version;
-        this.aliases = aliases;
+        if (aliases != null) {
+            this.aliases.addAll(aliases);
+        }
         this.description = description;
         this.operationClass = operationClass;
         if (contributingComponent == null || contributingComponent.isEmpty()) {
@@ -83,7 +87,9 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
                 this.contributingComponent = contributingComponent;
             }
         }
-        this.signature = signature;
+        if (signature != null) {
+            this.signature.addAll(signature);
+        }
         this.category = category;
         this.url = url;
         this.label = label;
@@ -94,9 +100,9 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
 
     public OperationInfoImpl(OperationDocumentation op, String version, String operationClass,
             String contributingComponent) {
-        this(op.getId(), version, op.getAliases(), op.getDescription(), operationClass, contributingComponent,
-                op.getSignature(), op.getCategory(), op.getUrl(), op.getLabel(), op.getRequires(), op.getSince(),
-                Arrays.asList(op.getParams()));
+        this(op.getId(), version, Arrays.asList(op.getAliases()), op.getDescription(), operationClass,
+                contributingComponent, Arrays.asList(op.getSignature()), op.getCategory(), op.getUrl(), op.getLabel(),
+                op.getRequires(), op.getSince(), Arrays.asList(op.getParams()));
     }
 
     @Override
@@ -110,8 +116,8 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
     }
 
     @Override
-    public String[] getAliases() {
-        return aliases;
+    public List<String> getAliases() {
+        return Collections.unmodifiableList(aliases);
     }
 
     @Override
@@ -120,8 +126,8 @@ public class OperationInfoImpl extends BaseNuxeoArtifact implements OperationInf
     }
 
     @Override
-    public String[] getSignature() {
-        return signature;
+    public List<String> getSignature() {
+        return Collections.unmodifiableList(signature);
     }
 
     @Override

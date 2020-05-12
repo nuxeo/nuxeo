@@ -335,6 +335,8 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("Actions.GET", op.getName());
         assertNotNull(op.getParams());
         assertEquals(2, op.getParams().size());
+        assertEquals(List.of("void", "blob", "document", "blob"), op.getSignature());
+        assertEquals(List.of(), op.getAliases());
     }
 
 }
