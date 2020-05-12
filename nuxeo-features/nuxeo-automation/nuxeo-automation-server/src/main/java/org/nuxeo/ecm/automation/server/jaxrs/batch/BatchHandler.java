@@ -64,6 +64,19 @@ public interface BatchHandler {
     Batch getBatch(String batchId);
 
     /**
+     * Attempts to renew the credentials associated to this batch handler.
+     * This is only typically used in third-party batch handlers.
+     *
+     * @param batchId the batch id
+     * @return the new credentials
+     *
+     * @since 11.1
+     */
+    default Map<String, Object> refreshToken(String batchId) {
+        throw new UnsupportedOperationException("Refresh token is not supported for this batch handler.");
+    }
+
+    /**
      * Callback for the batch handler to execute post-upload actions. This is only typically used in third-party batch
      * handlers.
      *

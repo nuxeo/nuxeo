@@ -19,6 +19,7 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -127,6 +128,48 @@ public class TestS3DirectBatchHandler {
         // MULTIPART_THRESHOLD is the limit for the client-side multipart upload
         // MULTIPART_THRESHOLD + 1 is the limit for the server-side multipart copy
         test(MULTIPART_THRESHOLD + 2);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
+    public void testTokenRenewal() throws SdkBaseException, InterruptedException {
+        // Test that refreshing tokens actually returns back valid and different tokens.
+        S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler("s3");
+        Batch newBatch = handler.newBatch(null);
+        Batch batch = handler.getBatch(newBatch.getKey());
+
+        // Save current details
+        Map<String, Object> properties = batch.getProperties();
+        String secretKeyId = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SECRET_KEY_ID);
+        String secretAccessKey = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SECRET_ACCESS_KEY);
+        String sessionToken = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SESSION_TOKEN);
+        Long expiration = (Long) properties.get(S3DirectBatchHandler.INFO_EXPIRATION);
+
+        // Renew tokens
+        properties = handler.refreshToken(newBatch.getKey());
+        String newSecretKeyId = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SECRET_KEY_ID);
+        String newSecretAccessKey = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SECRET_ACCESS_KEY);
+        String newSessionToken = (String) properties.get(S3DirectBatchHandler.INFO_AWS_SESSION_TOKEN);
+        Long newExpiration = (Long) properties.get(S3DirectBatchHandler.INFO_EXPIRATION);
+
+        // Checks
+        assertNotEquals(secretKeyId, newSecretKeyId);
+        assertNotEquals(secretAccessKey, newSecretAccessKey);
+        assertNotEquals(sessionToken, newSessionToken);
+        assertTrue(expiration <= newExpiration);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
+    public void testTokenRenewalNullBatchId() throws InterruptedException {
+        // Test that refreshing tokens does not work for an invalid batch ID.
+        S3DirectBatchHandler handler = (S3DirectBatchHandler) batchManager.getHandler("s3");
+        try {
+            handler.refreshToken(null);
+            fail("should not allow null batch ID");
+        } catch (NullPointerException e) {
+            assertTrue(e.getMessage().contains("required batch ID"));
+        }
     }
 
     public void test(int size) throws SdkBaseException, InterruptedException {

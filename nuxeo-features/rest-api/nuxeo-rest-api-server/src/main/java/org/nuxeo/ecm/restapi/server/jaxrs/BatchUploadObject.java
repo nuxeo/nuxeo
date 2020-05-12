@@ -89,6 +89,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * <li>POST /upload/{batchId}/{fileIdx}, see {@link #upload(HttpServletRequest, String, String)}</li>
  * <li>GET /upload/{batchId}, see {@link #getBatchInfo(String)}</li>
  * <li>GET /upload/{batchId}/{fileIdx}, see {@link #getFileInfo(String, String)}</li>
+ * <li>POST /upload/{batchId}/refreshToken, see {@link #refreshToken(String)}</li>
  * <li>POST /upload/{batchId}/execute/{operationId}, see {@link #execute(String, String, ExecutionRequest)}</li>
  * <li>POST /upload/{batchId}/{fileIdx}/execute/{operationId}, see
  * {@link #execute(String, String, String, ExecutionRequest)}</li>
@@ -415,6 +416,27 @@ public class BatchUploadObject extends AbstractResource<ResourceTypeImpl> {
         result.put("fileEntries", fileInfos);
         result.put("batchId", batch.getKey());
         return buildResponse(Status.OK, result);
+    }
+
+    /** @since 11.1 */
+    @POST
+    @Path("{batchId}/refreshToken")
+    public Response refreshToken(@PathParam(REQUEST_BATCH_ID) String batchId) throws IOException {
+        BatchManager bm = Framework.getService(BatchManager.class);
+
+        Batch batch = bm.getBatch(batchId);
+        if (batch == null) {
+            return buildEmptyResponse(Status.NOT_FOUND);
+        }
+
+        BatchHandler handler = bm.getHandler(batch.getHandlerName());
+        try {
+            Map<String, Object> result = handler.refreshToken(batchId);
+            result.put("batchId", batchId);
+            return buildResponse(Status.OK, result);
+        } catch (UnsupportedOperationException e) {
+            return Response.status(HttpServletResponse.SC_NOT_IMPLEMENTED).build();
+        }
     }
 
     @POST
