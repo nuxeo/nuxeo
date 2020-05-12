@@ -31,10 +31,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -44,15 +47,14 @@ import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
+import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.JsonPrettyPrinter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * @since 8.3
@@ -101,9 +103,81 @@ public class TestJson extends AbstractApidocTest {
         }
     }
 
+    @Ignore("Only useful to update reference test-export.json file")
+    @Test
+    public void doWriteLegacy() throws IOException {
+        RuntimeSnapshot snapshot = RuntimeSnapshot.build();
+        assertNotNull(snapshot);
+
+        class ReferenceRuntime extends RuntimeSnapshot {
+            RuntimeSnapshot orig;
+
+            public ReferenceRuntime(RuntimeSnapshot orig) {
+                this.orig = orig;
+            }
+
+            @Override
+            public List<OperationInfo> getOperations() {
+                return orig.getOperations().subList(0, 2);
+            }
+
+            @Override
+            public List<BundleInfo> getBundles() {
+                return orig.getBundles().subList(0, 2);
+            }
+
+            @Override
+            protected void initOperations() {
+                // NOOP
+            }
+
+            @Override
+            public void writeJson(OutputStream out) {
+                writeJson(out, new JsonPrettyPrinter());
+            }
+
+            @Override
+            public String getVersion() {
+                return orig.getVersion();
+            }
+
+            @Override
+            public String getName() {
+                return orig.getName();
+            }
+
+            @Override
+            public String getKey() {
+                return orig.getKey();
+            }
+
+            @Override
+            public Date getCreationDate() {
+                return orig.getCreationDate();
+            }
+
+            @Override
+            public Date getReleaseDate() {
+                return orig.getReleaseDate();
+            }
+
+            @Override
+            public Map<String, PluginSnapshot<?>> getPluginSnapshots() {
+                return orig.getPluginSnapshots();
+            }
+        }
+
+        ReferenceRuntime refSnapshot = new ReferenceRuntime(snapshot);
+        ByteArrayOutputStream sink = new ByteArrayOutputStream();
+        refSnapshot.writeJson(sink);
+        checkContentEquals("test-export.json", sink.toString(), true, true);
+    }
+
     /**
      * Reads a reference export kept in tests, to detect potential compatibility changes.
      *
+     * @implNote reference file "test-export.json" is initialized thanks to above method, keeping only a few operations
+     *           and bundles.
      * @since 11.1
      */
     @Test

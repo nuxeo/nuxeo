@@ -60,6 +60,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -563,10 +564,17 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public void writeJson(OutputStream out) {
+        writeJson(out, null);
+    }
+
+    protected void writeJson(OutputStream out, PrettyPrinter printer) {
         ObjectWriter writer = getJsonMapper().writerFor(DistributionSnapshot.class)
                                              .withoutRootName()
                                              .with(JsonGenerator.Feature.FLUSH_PASSED_TO_STREAM)
                                              .without(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+        if (printer != null) {
+            writer = writer.with(printer);
+        }
         try {
             writer.writeValue(out, this);
         } catch (IOException e) {
