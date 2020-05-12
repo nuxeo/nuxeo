@@ -125,4 +125,46 @@ public class TestDataSourceComponent {
         }
     }
 
+    @Test
+    @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
+    public void testLeak() throws SQLException {
+        doTestLeak(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.runtime.datasource:datasource-contrib.xml")
+    public void testLeakWithSetRollbackOnlyBeforeOpen() throws SQLException {
+        // this test is crucial, even in non-XA mode if the transaction
+        // is in rollback-only mode, we must still be able to register a Synchronization
+        // in DBCP TransactionContext.addTransactionContextListener
+        // so that connection cleanup can be done by ManagedConnection.CompletionListener
+        doTestLeak(true);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.runtime.datasource:xadatasource-contrib.xml")
+    public void testLeakXA() throws SQLException {
+        doTestLeak(false);
+    }
+
+    @Test
+    @Deploy("org.nuxeo.runtime.datasource:xadatasource-contrib.xml")
+    public void testLeakXAWithSetRollbackOnlyBeforeOpen() throws SQLException {
+        doTestLeak(true);
+    }
+
+    protected void doTestLeak(boolean setRollbackOnlyBeforeOpen) throws SQLException {
+        TransactionHelper.startTransaction();
+        for (int i = 1; i < 100; i++) {
+            if (setRollbackOnlyBeforeOpen) {
+                TransactionHelper.setTransactionRollbackOnly();
+            }
+            try (Connection connection = ConnectionHelper.getConnection("foo")) {
+                // nothing, just open then close
+            }
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
+    }
+
 }
