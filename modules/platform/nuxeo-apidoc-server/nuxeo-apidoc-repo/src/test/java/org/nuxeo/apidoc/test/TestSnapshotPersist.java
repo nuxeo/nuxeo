@@ -19,23 +19,16 @@
  */
 package org.nuxeo.apidoc.test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
-import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -46,7 +39,6 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -54,10 +46,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeSnaphotFeature.class)
-public class TestSnapshotPersist {
-
-    // helper for quicker update when running tests locally
-    public static final boolean UPDATE_REFERENCE_FILES_ON_FAILURE = false;
+public class TestSnapshotPersist extends AbstractApidocTest {
 
     @Inject
     protected CoreSession session;
@@ -186,45 +175,4 @@ public class TestSnapshotPersist {
         checkContentEquals("apidoc_snapshot/operations.txt", sb.toString());
     }
 
-    protected void checkContentEquals(String path, String actualContent) throws IOException {
-        String message = String.format("File '%s' content differs: ", path);
-        String expectedPath = getReferencePath(path);
-        String expectedContent = getReferenceContent(expectedPath);
-        if (actualContent != null) {
-            actualContent = actualContent.trim();
-            if (SystemUtils.IS_OS_WINDOWS) {
-                // replace end of lines while testing on windows
-                actualContent = actualContent.replaceAll("\r?\n", "\n");
-            }
-        }
-        try {
-            assertEquals(message, expectedContent, actualContent);
-        } catch (ComparisonFailure e) {
-            // copy content locally to ease up updates when running tests locally
-            if (UPDATE_REFERENCE_FILES_ON_FAILURE) {
-                // ugly hack to get the actual resource file path:
-                // - bin/* are for Eclipse;
-                // - target/classes* for IntelliJ.
-                String resourcePath = expectedPath.replace("bin/test", "src/test/resources")
-                                                  .replace("bin/main", "src/main/resources")
-                                                  .replace("target/test-classes", "src/test/resources")
-                                                  .replace("target/classes", "src/main/resources");
-                org.apache.commons.io.FileUtils.copyInputStreamToFile(
-                        new ByteArrayInputStream(actualContent.getBytes()), new File(resourcePath));
-            }
-            throw e;
-        }
-    }
-
-    public static String getReferencePath(String path) throws IOException {
-        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(path);
-        if (fileUrl == null) {
-            throw new IllegalStateException("File not found: " + path);
-        }
-        return FileUtils.getFilePathFromUrl(fileUrl);
-    }
-
-    public static String getReferenceContent(String refPath) throws IOException {
-        return org.apache.commons.io.FileUtils.readFileToString(new File(refPath), StandardCharsets.UTF_8).trim();
-    }
 }
