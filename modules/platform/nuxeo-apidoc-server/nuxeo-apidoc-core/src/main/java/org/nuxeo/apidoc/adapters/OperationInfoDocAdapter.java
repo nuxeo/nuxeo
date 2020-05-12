@@ -31,7 +31,6 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Adapter from a Nuxeo document to the {@link OperationInfo} interface.
@@ -58,15 +57,9 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return safeGet(PROP_NAME);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public String[] getAliases() {
-        try {
-            return ((List<String>) doc.getPropertyValue(PROP_ALIASES)).toArray(new String[0]);
-        } catch (PropertyException e) {
-            log.error("Unable to get signature field", e);
-        }
-        return null;
+    public List<String> getAliases() {
+        return safeGet(PROP_ALIASES);
     }
 
     @Override
@@ -79,15 +72,9 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         return safeGet(PROP_DESCRIPTION);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public String[] getSignature() {
-        try {
-            return ((List<String>) doc.getPropertyValue(PROP_SIGNATURE)).toArray(new String[0]);
-        } catch (PropertyException e) {
-            log.error("Unable to get signature field", e);
-        }
-        return null;
+    public List<String> getSignature() {
+        return safeGet(PROP_SIGNATURE);
     }
 
     @Override
@@ -160,10 +147,10 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         }
         doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, oi.getName());
         doc.setPropertyValue(PROP_NAME, oi.getName());
-        doc.setPropertyValue(PROP_ALIASES, oi.getAliases());
+        doc.setPropertyValue(PROP_ALIASES, (Serializable) oi.getAliases());
         doc.setPropertyValue(PROP_VERSION, oi.getVersion());
         doc.setPropertyValue(PROP_DESCRIPTION, oi.getDescription());
-        doc.setPropertyValue(PROP_SIGNATURE, oi.getSignature());
+        doc.setPropertyValue(PROP_SIGNATURE, (Serializable) oi.getSignature());
         doc.setPropertyValue(PROP_CATEGORY, oi.getCategory());
         doc.setPropertyValue(PROP_URL, oi.getUrl());
         doc.setPropertyValue(PROP_LABEL, oi.getLabel());
