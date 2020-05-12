@@ -68,7 +68,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
     @Override
     public boolean isOverriden() {
-        return safeGet(Boolean.class, PROP_OVERRIDEN, false);
+        return safeGet(PROP_OVERRIDEN, false);
     }
 
     @Override

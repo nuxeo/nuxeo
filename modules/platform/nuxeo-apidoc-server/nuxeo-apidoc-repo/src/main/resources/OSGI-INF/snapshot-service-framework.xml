@@ -4,6 +4,7 @@
 
   <service>
     <provide interface="org.nuxeo.apidoc.snapshot.SnapshotManager" />
+    <provide interface="org.nuxeo.apidoc.search.ArtifactSearcher" />
   </service>
 
   <extension-point name="plugins">

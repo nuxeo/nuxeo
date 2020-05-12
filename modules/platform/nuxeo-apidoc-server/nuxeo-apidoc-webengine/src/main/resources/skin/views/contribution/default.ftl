@@ -15,12 +15,6 @@
 
   <h2>Documentation</h2>
   ${nxItem.documentationHtml}
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-  <#if Root.canAddDocumentation()>
-    <div class="tabsbutton">
-      <a class="button" href="${This.path}/doc">Manage Documentation</a>
-    </div>
-  </#if>
 
   <h2>Extension point</h2>
   Extension point
@@ -62,8 +56,6 @@
   <div>
     <pre><code>${nxItem.xml?html}</code></pre>
   </div>
-
-  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
 </div>
 

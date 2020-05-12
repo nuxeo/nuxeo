@@ -18,12 +18,6 @@
   </div>
   <div class="description">
     ${nxItem.documentationHtml}
-    <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
-    <#if Root.canAddDocumentation()>
-      <div class="tabsbutton">
-        <a class="button" href="${This.path}/doc">Manage Documentation</a>
-      </div>
-    </#if>
   </div>
 
   <h2>Contribution Descriptor</h2>
@@ -92,8 +86,6 @@
     <h2>Contributions</h2>
     No known contributions.
   </#if>
-
-  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
 </a>
 

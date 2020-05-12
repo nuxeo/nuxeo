@@ -10,17 +10,9 @@
 
 <div class="tabscontent">
 
-  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
-  <#if Root.canAddDocumentation()>
-    <div class="tabsbutton">
-      <a class="button" href="${This.path}/doc">Manage Documentation</a>
-    </div>
-  </#if>
-
   <div class="description">
     <h2>Description</h2>
     ${nxItem.description}
-    <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession()) title=false/>
   </div>
 
   <table class="listTable">

@@ -21,7 +21,6 @@ package org.nuxeo.apidoc.browse;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.nuxeo.apidoc.doc.DocumentationItemReader;
 import org.nuxeo.apidoc.export.ArchiveFileWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
@@ -36,7 +35,6 @@ public class ApiDocApplication extends WebEngineModule {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> classes = super.getClasses();
         classes = classes == null ? new HashSet<>() : new HashSet<>(classes);
-        classes.add(DocumentationItemReader.class);
         classes.add(ArchiveFileWriter.class);
         return classes;
     }

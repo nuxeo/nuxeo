@@ -7,7 +7,6 @@
       "bundleGroup": {
         "@type": "NXBundleGroup",
         "id": "grp:org.nuxeo.ecm.platform",
-        "liveDoc": {},
         "name": "org.nuxeo.ecm.platform",
         "bundleIds": [
           "org.nuxeo.apidoc.core",
@@ -30,7 +29,6 @@
           {
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.directory",
-            "liveDoc": {},
             "name": "org.nuxeo.ecm.directory",
             "bundleIds": [
               "org.nuxeo.ecm.directory",
@@ -49,7 +47,6 @@
           {
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.query",
-            "liveDoc": {},
             "name": "org.nuxeo.ecm.platform.query",
             "bundleIds": [
               "org.nuxeo.ecm.platform.query.api"
@@ -65,7 +62,6 @@
           {
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.usermanager",
-            "liveDoc": {},
             "name": "org.nuxeo.ecm.platform.usermanager",
             "bundleIds": [
               "org.nuxeo.ecm.platform.usermanager",
@@ -85,10 +81,8 @@
       "bundleId": "org.nuxeo.apidoc.core",
       "fileName": "main",
       "groupId": "org.nuxeo.ecm.platform",
-      "liveDoc": null,
       "location": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-core/bin/main",
       "manifest": "Manifest-Version: 1.0\nBundle-SymbolicName: org.nuxeo.apidoc.core;singleton:=true\nBundle-Name: nuxeo api documentation server\nBundle-Version: 0.0.1\nBundle-ManifestVersion: 1\nBundle-Vendor: Nuxeo\n",
-      "parentLiveDoc": null,
       "requirements": [],
       "components": [],
       "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.core",
@@ -102,7 +96,6 @@
       "bundleGroup": {
         "@type": "NXBundleGroup",
         "id": "grp:org.nuxeo.ecm.platform",
-        "liveDoc": {},
         "name": "org.nuxeo.ecm.platform",
         "bundleIds": [
           "org.nuxeo.apidoc.core",
@@ -125,7 +118,6 @@
           {
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.directory",
-            "liveDoc": {},
             "name": "org.nuxeo.ecm.directory",
             "bundleIds": [
               "org.nuxeo.ecm.directory",
@@ -144,7 +136,6 @@
           {
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.query",
-            "liveDoc": {},
             "name": "org.nuxeo.ecm.platform.query",
             "bundleIds": [
               "org.nuxeo.ecm.platform.query.api"
@@ -160,7 +151,6 @@
           {
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.usermanager",
-            "liveDoc": {},
             "name": "org.nuxeo.ecm.platform.usermanager",
             "bundleIds": [
               "org.nuxeo.ecm.platform.usermanager",
@@ -180,10 +170,8 @@
       "bundleId": "org.nuxeo.apidoc.repo",
       "fileName": "main",
       "groupId": "org.nuxeo.ecm.platform",
-      "liveDoc": null,
       "location": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main",
-      "manifest": "Manifest-Version: 1.0\nBundle-ManifestVersion: 1\nBundle-Name: nuxeo api documentation repository\nBundle-SymbolicName: org.nuxeo.apidoc.repo;singleton:=true\nBundle-Version: 0.0.1\nBundle-Vendor: Nuxeo\nNuxeo-Component: OSGI-INF/schema-contrib.xml,\n  OSGI-INF/doctype-contrib.xml,\n  OSGI-INF/life-cycle-contrib.xml,\n  OSGI-INF/snapshot-service-framework.xml,\n  OSGI-INF/documentation-service-framework.xml,\n  OSGI-INF/adapter-contrib.xml,\n  OSGI-INF/directories-contrib.xml,\n  OSGI-INF/listener-contrib.xml\n",
-      "parentLiveDoc": null,
+      "manifest": "Manifest-Version: 1.0\nBundle-ManifestVersion: 1\nBundle-Name: nuxeo api documentation repository\nBundle-SymbolicName: org.nuxeo.apidoc.repo;singleton:=true\nBundle-Version: 0.0.1\nBundle-Vendor: Nuxeo\nNuxeo-Component: OSGI-INF/schema-contrib.xml,\n  OSGI-INF/doctype-contrib.xml,\n  OSGI-INF/life-cycle-contrib.xml,\n  OSGI-INF/snapshot-service-framework.xml,\n  OSGI-INF/adapter-contrib.xml,\n  OSGI-INF/listener-contrib.xml\n",
       "requirements": [],
       "components": [
         {
@@ -246,7 +234,7 @@
           "componentClass": null,
           "documentation": null,
           "name": "org.nuxeo.apidoc.adapterContrib",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.adapterContrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.api.DocumentAdapterService\" point=\"adapters\">\n\n    <adapter type=\"NXBundleGroup\" class=\"org.nuxeo.apidoc.api.BundleGroup\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXBundle\" class=\"org.nuxeo.apidoc.api.BundleInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXComponent\" class=\"org.nuxeo.apidoc.api.ComponentInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXExtensionPoint\" class=\"org.nuxeo.apidoc.api.ExtensionPointInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXContribution\" class=\"org.nuxeo.apidoc.api.ExtensionInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXService\" class=\"org.nuxeo.apidoc.api.ServiceInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXDistribution\" class=\"org.nuxeo.apidoc.snapshot.DistributionSnapshot\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXDocumentation\" class=\"org.nuxeo.apidoc.api.DocumentationItem\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXOperation\" class=\"org.nuxeo.apidoc.api.OperationInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXBundleGroup\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXBundle\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXComponent\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXExtensionPoint\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXContribution\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXService\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXOperation\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n\n  </extension>\n\n</component>\n",
+          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.adapterContrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.api.DocumentAdapterService\" point=\"adapters\">\n\n    <adapter type=\"NXBundleGroup\" class=\"org.nuxeo.apidoc.api.BundleGroup\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXBundle\" class=\"org.nuxeo.apidoc.api.BundleInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXComponent\" class=\"org.nuxeo.apidoc.api.ComponentInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXExtensionPoint\" class=\"org.nuxeo.apidoc.api.ExtensionPointInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXContribution\" class=\"org.nuxeo.apidoc.api.ExtensionInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXService\" class=\"org.nuxeo.apidoc.api.ServiceInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXDistribution\" class=\"org.nuxeo.apidoc.snapshot.DistributionSnapshot\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXOperation\" class=\"org.nuxeo.apidoc.api.OperationInfo\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXBundleGroup\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXBundle\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXComponent\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXExtensionPoint\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXContribution\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXService\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n    <adapter type=\"NXOperation\" class=\"org.nuxeo.apidoc.api.NuxeoArtifact\"\n      factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" />\n\n  </extension>\n\n</component>\n",
           "documentationHtml": "",
           "extensionPoints": [],
           "extensions": [
@@ -260,7 +248,7 @@
                 "name": "org.nuxeo.ecm.core.api.DocumentAdapterService",
                 "type": "service"
               },
-              "xml": "<extension point=\"adapters\" target=\"org.nuxeo.ecm.core.api.DocumentAdapterService\">\n\n    <adapter class=\"org.nuxeo.apidoc.api.BundleGroup\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundleGroup\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.BundleInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundle\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ComponentInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXComponent\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ExtensionPointInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXExtensionPoint\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ExtensionInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXContribution\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ServiceInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXService\"/>\n    <adapter class=\"org.nuxeo.apidoc.snapshot.DistributionSnapshot\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXDistribution\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.DocumentationItem\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXDocumentation\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.OperationInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXOperation\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundleGroup\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundle\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXComponent\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXExtensionPoint\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXContribution\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXService\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXOperation\"/>\n\n  </extension>",
+              "xml": "<extension point=\"adapters\" target=\"org.nuxeo.ecm.core.api.DocumentAdapterService\">\n\n    <adapter class=\"org.nuxeo.apidoc.api.BundleGroup\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundleGroup\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.BundleInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundle\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ComponentInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXComponent\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ExtensionPointInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXExtensionPoint\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ExtensionInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXContribution\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.ServiceInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXService\"/>\n    <adapter class=\"org.nuxeo.apidoc.snapshot.DistributionSnapshot\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXDistribution\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.OperationInfo\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXOperation\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundleGroup\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXBundle\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXComponent\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXExtensionPoint\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXContribution\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXService\"/>\n    <adapter class=\"org.nuxeo.apidoc.api.NuxeoArtifact\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXOperation\"/>\n\n  </extension>",
               "contributionItems": [
                 {
                   "documentation": "",
@@ -310,13 +298,6 @@
                   "label": "adapter",
                   "rawXml": "<adapter class=\"org.nuxeo.apidoc.snapshot.DistributionSnapshot\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXDistribution\"/>",
                   "xml": "&lt;adapter class=&quot;org.nuxeo.apidoc.snapshot.DistributionSnapshot&quot; factory=&quot;org.nuxeo.apidoc.adapters.AdapterFactory&quot; type=&quot;NXDistribution&quot;/&gt;"
-                },
-                {
-                  "documentation": "",
-                  "id": null,
-                  "label": "adapter",
-                  "rawXml": "<adapter class=\"org.nuxeo.apidoc.api.DocumentationItem\" factory=\"org.nuxeo.apidoc.adapters.AdapterFactory\" type=\"NXDocumentation\"/>",
-                  "xml": "&lt;adapter class=&quot;org.nuxeo.apidoc.api.DocumentationItem&quot; factory=&quot;org.nuxeo.apidoc.adapters.AdapterFactory&quot; type=&quot;NXDocumentation&quot;/&gt;"
                 },
                 {
                   "documentation": "",
@@ -392,7 +373,7 @@
           "componentClass": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
           "documentation": null,
           "name": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n  <implementation class=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" />\n\n  <service>\n    <provide interface=\"org.nuxeo.apidoc.snapshot.SnapshotManager\" />\n  </service>\n\n  <extension-point name=\"plugins\">\n    <documentation>\n      <p>\n        A plugin can introspect and persist information related to the current runtime environment.\n      </p>\n      <p>\n        Sample contribution:\n        <code>\n          <extension target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" point=\"plugins\">\n            <plugin id=\"seam\" class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n              snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n              <ui>\n                <label>Seam Components</label>\n                <viewType>seam</viewType>\n                <homeView>listSeamComponents</homeView>\n                <styleClass>seam</styleClass>\n              </ui>\n            </plugin>\n          </extension>\n        </code>\n      </p>\n      <p>\n        The class should implement the\n        <b>org.nuxeo.apidoc.plugin.Plugin</b>\n        interface.\n      </p>\n      <p>\n        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\n        and\n        the module holding this resource should be contributed to the main webengine module as a fragment using:\n        <code>\n          Fragment-Host: org.nuxeo.apidoc.webengine\n        </code>\n      </p>\n    </documentation>\n    <object class=\"org.nuxeo.apidoc.plugin.PluginDescriptor\" />\n  </extension-point>\n\n</component>\n",
+          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n  <implementation class=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" />\n\n  <service>\n    <provide interface=\"org.nuxeo.apidoc.snapshot.SnapshotManager\" />\n    <provide interface=\"org.nuxeo.apidoc.search.ArtifactSearcher\" />\n  </service>\n\n  <extension-point name=\"plugins\">\n    <documentation>\n      <p>\n        A plugin can introspect and persist information related to the current runtime environment.\n      </p>\n      <p>\n        Sample contribution:\n        <code>\n          <extension target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" point=\"plugins\">\n            <plugin id=\"seam\" class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n              snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n              <ui>\n                <label>Seam Components</label>\n                <viewType>seam</viewType>\n                <homeView>listSeamComponents</homeView>\n                <styleClass>seam</styleClass>\n              </ui>\n            </plugin>\n          </extension>\n        </code>\n      </p>\n      <p>\n        The class should implement the\n        <b>org.nuxeo.apidoc.plugin.Plugin</b>\n        interface.\n      </p>\n      <p>\n        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\n        and\n        the module holding this resource should be contributed to the main webengine module as a fragment using:\n        <code>\n          Fragment-Host: org.nuxeo.apidoc.webengine\n        </code>\n      </p>\n    </documentation>\n    <object class=\"org.nuxeo.apidoc.plugin.PluginDescriptor\" />\n  </extension-point>\n\n</component>\n",
           "documentationHtml": "",
           "extensionPoints": [
             {
@@ -421,6 +402,14 @@
               "componentId": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
               "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager",
               "version": "11.1-SNAPSHOT"
+            },
+            {
+              "@type": "NXService",
+              "id": "org.nuxeo.apidoc.search.ArtifactSearcher",
+              "overriden": false,
+              "componentId": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.search.ArtifactSearcher",
+              "version": "11.1-SNAPSHOT"
             }
           ],
           "version": "11.1-SNAPSHOT",
@@ -432,7 +421,7 @@
           "componentClass": null,
           "documentation": null,
           "name": "org.nuxeo.apidoc.doctypeContrib",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.doctypeContrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"doctype\">\n\n    <doctype name=\"NXDistribution\" extends=\"Folder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxdistribution\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXBundleGroup\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxbundlegroup\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype name=\"NXBundle\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxbundle\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXComponent\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcomponent\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXExtensionPoint\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxextensionpoint\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n    </doctype>\n\n    <doctype name=\"NXContribution\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcontribution\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXService\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxservice\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXOperation\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n\n      <schema name=\"nxoperation\" />\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXDocumentation\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"files\" />\n      <schema name=\"nxdocumentation\" />\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n  </extension>\n\n</component>\n",
+          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.doctypeContrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"doctype\">\n\n    <doctype name=\"NXDistribution\" extends=\"Folder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxdistribution\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXBundleGroup\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxbundlegroup\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype name=\"NXBundle\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxbundle\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXComponent\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcomponent\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXExtensionPoint\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxextensionpoint\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n    </doctype>\n\n    <doctype name=\"NXContribution\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcontribution\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXService\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxservice\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXOperation\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n\n      <schema name=\"nxoperation\" />\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n  </extension>\n\n</component>\n",
           "documentationHtml": "",
           "extensionPoints": [],
           "extensions": [
@@ -446,7 +435,7 @@
                 "name": "org.nuxeo.ecm.core.schema.TypeService",
                 "type": "service"
               },
-              "xml": "<extension point=\"doctype\" target=\"org.nuxeo.ecm.core.schema.TypeService\">\n\n    <doctype extends=\"Folder\" name=\"NXDistribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxdistribution\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundleGroup\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundlegroup\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundle\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundle\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXComponent\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcomponent\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXExtensionPoint\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxextensionpoint\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXContribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcontribution\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXService\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxservice\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXOperation\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n\n      <schema name=\"nxoperation\"/>\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXDocumentation\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"files\"/>\n      <schema name=\"nxdocumentation\"/>\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n  </extension>",
+              "xml": "<extension point=\"doctype\" target=\"org.nuxeo.ecm.core.schema.TypeService\">\n\n    <doctype extends=\"Folder\" name=\"NXDistribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxdistribution\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundleGroup\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundlegroup\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundle\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundle\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXComponent\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcomponent\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXExtensionPoint\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxextensionpoint\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXContribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcontribution\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXService\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxservice\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXOperation\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n\n      <schema name=\"nxoperation\"/>\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n  </extension>",
               "contributionItems": [
                 {
                   "documentation": "",
@@ -503,13 +492,6 @@
                   "label": "doctype NXOperation",
                   "rawXml": "<doctype extends=\"Document\" name=\"NXOperation\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n\n      <schema name=\"nxoperation\"/>\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>",
                   "xml": "&lt;doctype extends=&quot;Document&quot; name=&quot;NXOperation&quot;&gt;\n      &lt;schema name=&quot;common&quot;/&gt;\n      &lt;schema name=&quot;dublincore&quot;/&gt;\n      &lt;schema name=&quot;file&quot;/&gt;\n\n      &lt;schema name=&quot;nxoperation&quot;/&gt;\n      &lt;facet name=&quot;Commentable&quot;/&gt;\n      &lt;facet name=&quot;Versionable&quot;/&gt;\n    &lt;/doctype&gt;"
-                },
-                {
-                  "documentation": "",
-                  "id": "NXDocumentation",
-                  "label": "doctype NXDocumentation",
-                  "rawXml": "<doctype extends=\"Document\" name=\"NXDocumentation\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"files\"/>\n      <schema name=\"nxdocumentation\"/>\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>",
-                  "xml": "&lt;doctype extends=&quot;Document&quot; name=&quot;NXDocumentation&quot;&gt;\n      &lt;schema name=&quot;common&quot;/&gt;\n      &lt;schema name=&quot;dublincore&quot;/&gt;\n      &lt;schema name=&quot;file&quot;/&gt;\n      &lt;schema name=&quot;files&quot;/&gt;\n      &lt;schema name=&quot;nxdocumentation&quot;/&gt;\n      &lt;facet name=&quot;Commentable&quot;/&gt;\n      &lt;facet name=&quot;Versionable&quot;/&gt;\n    &lt;/doctype&gt;"
                 }
               ],
               "documentationHtml": "",
@@ -529,7 +511,7 @@
           "componentClass": null,
           "documentation": null,
           "name": "org.nuxeo.apidoc.lifecycle.contrib",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.lifecycle.contrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.lifecycle.LifeCycleService\" point=\"types\">\n    <types>\n      <type name=\"NXDistribution\">default</type>\n      <type name=\"NXBundleGroup\">default</type>\n      <type name=\"NXBundle\">default</type>\n      <type name=\"NXComponent\">default</type>\n      <type name=\"NXService\">default</type>\n      <type name=\"NXExtensionPoint\">default</type>\n      <type name=\"NXContribution\">default</type>\n      <type name=\"NXOperation\">default</type>\n      <type name=\"NXDocumentation\">default</type>\n    </types>\n  </extension>\n\n</component>\n",
+          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.lifecycle.contrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.lifecycle.LifeCycleService\" point=\"types\">\n    <types>\n      <type name=\"NXDistribution\">default</type>\n      <type name=\"NXBundleGroup\">default</type>\n      <type name=\"NXBundle\">default</type>\n      <type name=\"NXComponent\">default</type>\n      <type name=\"NXService\">default</type>\n      <type name=\"NXExtensionPoint\">default</type>\n      <type name=\"NXContribution\">default</type>\n      <type name=\"NXOperation\">default</type>\n    </types>\n  </extension>\n\n</component>\n",
           "documentationHtml": "",
           "extensionPoints": [],
           "extensions": [
@@ -543,14 +525,14 @@
                 "name": "org.nuxeo.ecm.core.lifecycle.LifeCycleService",
                 "type": "service"
               },
-              "xml": "<extension point=\"types\" target=\"org.nuxeo.ecm.core.lifecycle.LifeCycleService\">\n    <types>\n      <type name=\"NXDistribution\">default</type>\n      <type name=\"NXBundleGroup\">default</type>\n      <type name=\"NXBundle\">default</type>\n      <type name=\"NXComponent\">default</type>\n      <type name=\"NXService\">default</type>\n      <type name=\"NXExtensionPoint\">default</type>\n      <type name=\"NXContribution\">default</type>\n      <type name=\"NXOperation\">default</type>\n      <type name=\"NXDocumentation\">default</type>\n    </types>\n  </extension>",
+              "xml": "<extension point=\"types\" target=\"org.nuxeo.ecm.core.lifecycle.LifeCycleService\">\n    <types>\n      <type name=\"NXDistribution\">default</type>\n      <type name=\"NXBundleGroup\">default</type>\n      <type name=\"NXBundle\">default</type>\n      <type name=\"NXComponent\">default</type>\n      <type name=\"NXService\">default</type>\n      <type name=\"NXExtensionPoint\">default</type>\n      <type name=\"NXContribution\">default</type>\n      <type name=\"NXOperation\">default</type>\n    </types>\n  </extension>",
               "contributionItems": [
                 {
                   "documentation": "",
                   "id": null,
                   "label": "types",
-                  "rawXml": "<types>\n      <type name=\"NXDistribution\">default</type>\n      <type name=\"NXBundleGroup\">default</type>\n      <type name=\"NXBundle\">default</type>\n      <type name=\"NXComponent\">default</type>\n      <type name=\"NXService\">default</type>\n      <type name=\"NXExtensionPoint\">default</type>\n      <type name=\"NXContribution\">default</type>\n      <type name=\"NXOperation\">default</type>\n      <type name=\"NXDocumentation\">default</type>\n    </types>",
-                  "xml": "&lt;types&gt;\n      &lt;type name=&quot;NXDistribution&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXBundleGroup&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXBundle&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXComponent&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXService&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXExtensionPoint&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXContribution&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXOperation&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXDocumentation&quot;&gt;default&lt;/type&gt;\n    &lt;/types&gt;"
+                  "rawXml": "<types>\n      <type name=\"NXDistribution\">default</type>\n      <type name=\"NXBundleGroup\">default</type>\n      <type name=\"NXBundle\">default</type>\n      <type name=\"NXComponent\">default</type>\n      <type name=\"NXService\">default</type>\n      <type name=\"NXExtensionPoint\">default</type>\n      <type name=\"NXContribution\">default</type>\n      <type name=\"NXOperation\">default</type>\n    </types>",
+                  "xml": "&lt;types&gt;\n      &lt;type name=&quot;NXDistribution&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXBundleGroup&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXBundle&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXComponent&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXService&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXExtensionPoint&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXContribution&quot;&gt;default&lt;/type&gt;\n      &lt;type name=&quot;NXOperation&quot;&gt;default&lt;/type&gt;\n    &lt;/types&gt;"
                 }
               ],
               "documentationHtml": "",
@@ -569,49 +551,8 @@
           "@type": "NXComponent",
           "componentClass": null,
           "documentation": null,
-          "name": "org.nuxeo.apidoc.directoryContrib",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.directoryContrib\">\n\n  <extension target=\"org.nuxeo.ecm.directory.GenericDirectory\" point=\"directories\">\n\n    <directory name=\"documentationTypes\" extends=\"template-vocabulary\">\n      <dataFile>directories/documentation-types.csv</dataFile>\n    </directory>\n\n  </extension>\n</component>\n",
-          "documentationHtml": "",
-          "extensionPoints": [],
-          "extensions": [
-            {
-              "@type": "NXContribution",
-              "documentation": null,
-              "extensionPoint": "org.nuxeo.ecm.directory.GenericDirectory--directories",
-              "id": "org.nuxeo.apidoc.directoryContrib--directories",
-              "targetComponentName": {
-                "rawName": "service:org.nuxeo.ecm.directory.GenericDirectory",
-                "name": "org.nuxeo.ecm.directory.GenericDirectory",
-                "type": "service"
-              },
-              "xml": "<extension point=\"directories\" target=\"org.nuxeo.ecm.directory.GenericDirectory\">\n\n    <directory extends=\"template-vocabulary\" name=\"documentationTypes\">\n      <dataFile>directories/documentation-types.csv</dataFile>\n    </directory>\n\n  </extension>",
-              "contributionItems": [
-                {
-                  "documentation": "",
-                  "id": "documentationTypes",
-                  "label": "directory documentationTypes",
-                  "rawXml": "<directory extends=\"template-vocabulary\" name=\"documentationTypes\">\n      <dataFile>directories/documentation-types.csv</dataFile>\n    </directory>",
-                  "xml": "&lt;directory extends=&quot;template-vocabulary&quot; name=&quot;documentationTypes&quot;&gt;\n      &lt;dataFile&gt;directories/documentation-types.csv&lt;/dataFile&gt;\n    &lt;/directory&gt;"
-                }
-              ],
-              "documentationHtml": "",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.directoryContrib/Contributions/org.nuxeo.apidoc.directoryContrib--directories",
-              "version": "11.1-SNAPSHOT"
-            }
-          ],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.directoryContrib",
-          "requirements": [],
-          "services": [],
-          "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/directories-contrib.xml",
-          "xmlPureComponent": true
-        },
-        {
-          "@type": "NXComponent",
-          "componentClass": null,
-          "documentation": null,
           "name": "org.nuxeo.apidoc.schemaContrib",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.schemaContrib\">\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"schema\">\n\n    <schema name=\"nxbundle\" src=\"schemas/nxbundle.xsd\" prefix=\"nxbundle\" />\n    <schema name=\"nxbundlegroup\" src=\"schemas/nxbundlegroup.xsd\" prefix=\"nxbundlegroup\" />\n    <schema name=\"nxcomponent\" src=\"schemas/nxcomponent.xsd\" prefix=\"nxcomponent\" />\n    <schema name=\"nxcontribution\" src=\"schemas/nxcontribution.xsd\" prefix=\"nxcontribution\" />\n    <schema name=\"nxdistribution\" src=\"schemas/nxdistribution.xsd\" prefix=\"nxdistribution\" />\n    <schema name=\"nxextensionpoint\" src=\"schemas/nxextensionpoint.xsd\" prefix=\"nxextensionpoint\" />\n    <schema name=\"nxservice\" src=\"schemas/nxservice.xsd\" prefix=\"nxservice\" />\n    <schema name=\"nxoperation\" src=\"schemas/nxoperation.xsd\" prefix=\"nxop\" />\n\n    <schema name=\"nxdocumentation\" src=\"schemas/nxdocumentation.xsd\" prefix=\"nxdoc\" />\n    <schema name=\"apidoccommon\" src=\"schemas/apidoccommon.xsd\" prefix=\"adc\" />\n  </extension>\n</component>\n",
+          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.schemaContrib\">\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"schema\">\n\n    <schema name=\"nxbundle\" src=\"schemas/nxbundle.xsd\" prefix=\"nxbundle\" />\n    <schema name=\"nxbundlegroup\" src=\"schemas/nxbundlegroup.xsd\" prefix=\"nxbundlegroup\" />\n    <schema name=\"nxcomponent\" src=\"schemas/nxcomponent.xsd\" prefix=\"nxcomponent\" />\n    <schema name=\"nxcontribution\" src=\"schemas/nxcontribution.xsd\" prefix=\"nxcontribution\" />\n    <schema name=\"nxdistribution\" src=\"schemas/nxdistribution.xsd\" prefix=\"nxdistribution\" />\n    <schema name=\"nxextensionpoint\" src=\"schemas/nxextensionpoint.xsd\" prefix=\"nxextensionpoint\" />\n    <schema name=\"nxservice\" src=\"schemas/nxservice.xsd\" prefix=\"nxservice\" />\n    <schema name=\"nxoperation\" src=\"schemas/nxoperation.xsd\" prefix=\"nxop\" />\n    <schema name=\"apidoccommon\" src=\"schemas/apidoccommon.xsd\" prefix=\"adc\" />\n\n  </extension>\n</component>\n",
           "documentationHtml": "",
           "extensionPoints": [],
           "extensions": [
@@ -625,7 +566,7 @@
                 "name": "org.nuxeo.ecm.core.schema.TypeService",
                 "type": "service"
               },
-              "xml": "<extension point=\"schema\" target=\"org.nuxeo.ecm.core.schema.TypeService\">\n\n    <schema name=\"nxbundle\" prefix=\"nxbundle\" src=\"schemas/nxbundle.xsd\"/>\n    <schema name=\"nxbundlegroup\" prefix=\"nxbundlegroup\" src=\"schemas/nxbundlegroup.xsd\"/>\n    <schema name=\"nxcomponent\" prefix=\"nxcomponent\" src=\"schemas/nxcomponent.xsd\"/>\n    <schema name=\"nxcontribution\" prefix=\"nxcontribution\" src=\"schemas/nxcontribution.xsd\"/>\n    <schema name=\"nxdistribution\" prefix=\"nxdistribution\" src=\"schemas/nxdistribution.xsd\"/>\n    <schema name=\"nxextensionpoint\" prefix=\"nxextensionpoint\" src=\"schemas/nxextensionpoint.xsd\"/>\n    <schema name=\"nxservice\" prefix=\"nxservice\" src=\"schemas/nxservice.xsd\"/>\n    <schema name=\"nxoperation\" prefix=\"nxop\" src=\"schemas/nxoperation.xsd\"/>\n\n    <schema name=\"nxdocumentation\" prefix=\"nxdoc\" src=\"schemas/nxdocumentation.xsd\"/>\n    <schema name=\"apidoccommon\" prefix=\"adc\" src=\"schemas/apidoccommon.xsd\"/>\n  </extension>",
+              "xml": "<extension point=\"schema\" target=\"org.nuxeo.ecm.core.schema.TypeService\">\n\n    <schema name=\"nxbundle\" prefix=\"nxbundle\" src=\"schemas/nxbundle.xsd\"/>\n    <schema name=\"nxbundlegroup\" prefix=\"nxbundlegroup\" src=\"schemas/nxbundlegroup.xsd\"/>\n    <schema name=\"nxcomponent\" prefix=\"nxcomponent\" src=\"schemas/nxcomponent.xsd\"/>\n    <schema name=\"nxcontribution\" prefix=\"nxcontribution\" src=\"schemas/nxcontribution.xsd\"/>\n    <schema name=\"nxdistribution\" prefix=\"nxdistribution\" src=\"schemas/nxdistribution.xsd\"/>\n    <schema name=\"nxextensionpoint\" prefix=\"nxextensionpoint\" src=\"schemas/nxextensionpoint.xsd\"/>\n    <schema name=\"nxservice\" prefix=\"nxservice\" src=\"schemas/nxservice.xsd\"/>\n    <schema name=\"nxoperation\" prefix=\"nxop\" src=\"schemas/nxoperation.xsd\"/>\n    <schema name=\"apidoccommon\" prefix=\"adc\" src=\"schemas/apidoccommon.xsd\"/>\n\n  </extension>",
               "contributionItems": [
                 {
                   "documentation": "",
@@ -685,13 +626,6 @@
                 },
                 {
                   "documentation": "",
-                  "id": "nxdocumentation",
-                  "label": "schema nxdocumentation",
-                  "rawXml": "<schema name=\"nxdocumentation\" prefix=\"nxdoc\" src=\"schemas/nxdocumentation.xsd\"/>",
-                  "xml": "&lt;schema name=&quot;nxdocumentation&quot; prefix=&quot;nxdoc&quot; src=&quot;schemas/nxdocumentation.xsd&quot;/&gt;"
-                },
-                {
-                  "documentation": "",
                   "id": "apidoccommon",
                   "label": "schema apidoccommon",
                   "rawXml": "<schema name=\"apidoccommon\" prefix=\"adc\" src=\"schemas/apidoccommon.xsd\"/>",
@@ -709,39 +643,6 @@
           "version": "11.1-SNAPSHOT",
           "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/schema-contrib.xml",
           "xmlPureComponent": true
-        },
-        {
-          "@type": "NXComponent",
-          "componentClass": "org.nuxeo.apidoc.documentation.DocumentationComponent",
-          "documentation": null,
-          "name": "org.nuxeo.apidoc.documentation.DocumentationComponent",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.documentation.DocumentationComponent\">\n  <implementation class=\"org.nuxeo.apidoc.documentation.DocumentationComponent\" />\n\n  <service>\n    <provide interface=\"org.nuxeo.apidoc.documentation.DocumentationService\" />\n    <provide interface=\"org.nuxeo.apidoc.search.ArtifactSearcher\" />\n  </service>\n\n</component>\n",
-          "documentationHtml": "",
-          "extensionPoints": [],
-          "extensions": [],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.documentation.DocumentationComponent",
-          "requirements": [],
-          "services": [
-            {
-              "@type": "NXService",
-              "id": "org.nuxeo.apidoc.documentation.DocumentationService",
-              "overriden": false,
-              "componentId": "org.nuxeo.apidoc.documentation.DocumentationComponent",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.documentation.DocumentationComponent/Services/org.nuxeo.apidoc.documentation.DocumentationService",
-              "version": "11.1-SNAPSHOT"
-            },
-            {
-              "@type": "NXService",
-              "id": "org.nuxeo.apidoc.search.ArtifactSearcher",
-              "overriden": false,
-              "componentId": "org.nuxeo.apidoc.documentation.DocumentationComponent",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.documentation.DocumentationComponent/Services/org.nuxeo.apidoc.search.ArtifactSearcher",
-              "version": "11.1-SNAPSHOT"
-            }
-          ],
-          "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/documentation-service-framework.xml",
-          "xmlPureComponent": false
         },
         {
           "@type": "NXComponent",
@@ -814,7 +715,7 @@
       "version": "11.1-SNAPSHOT"
     }
   ],
-  "creationDate": 1589282200878,
+  "creationDate": 1589306200272,
   "key": "Nuxeo-unknown",
   "name": "Nuxeo",
   "operations": [

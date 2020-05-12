@@ -26,12 +26,10 @@ import java.util.Map;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.documentation.ResourceDocumentationItem;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
 import org.nuxeo.apidoc.introspection.ComponentInfoImpl;
@@ -215,8 +213,7 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
               .addAbstractTypeMapping(ExtensionPointInfo.class, ExtensionPointInfoImpl.class)
               .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
               .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
-              .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
-              .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class);
+              .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class);
         mapper.registerModule(module);
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);
         mapper.addMixIn(ComponentName.class, ComponentNameMixin.class);

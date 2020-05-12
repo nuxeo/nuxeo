@@ -11,12 +11,6 @@
 <div class="tabscontent">
 
   <h2>Documentation</h2>
-  <@viewSecDescriptions docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
-  <#if Root.canAddDocumentation()>
-    <div class="tabsbutton">
-      <a class="button" href="${This.path}/doc">Manage Documentation</a>
-    </div>
-  </#if>
 
   <#if nxItem.subGroups?size gt 0>
   <h2>Bundle subgroups</h2>
@@ -39,8 +33,6 @@
     </#list>
   </ul>
   </#if>
-
-  <@viewAdditionalDoc docsByCat=docs.getDocumentationItems(Context.getCoreSession())/>
 
 </div>
 

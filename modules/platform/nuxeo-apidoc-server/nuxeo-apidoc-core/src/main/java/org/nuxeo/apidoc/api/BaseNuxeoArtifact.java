@@ -18,21 +18,7 @@
  */
 package org.nuxeo.apidoc.api;
 
-import org.nuxeo.apidoc.documentation.AssociatedDocumentsImpl;
-import org.nuxeo.ecm.core.api.CoreSession;
-
 public abstract class BaseNuxeoArtifact implements NuxeoArtifact {
-
-    protected AssociatedDocumentsImpl associatedDocuments;
-
-    @Override
-    public AssociatedDocumentsImpl getAssociatedDocuments(CoreSession session) {
-
-        if (associatedDocuments == null) {
-            associatedDocuments = new AssociatedDocumentsImpl(this, session);
-        }
-        return associatedDocuments;
-    }
 
     @Override
     public abstract String getId();

@@ -10,8 +10,7 @@
     <schema name="nxextensionpoint" src="schemas/nxextensionpoint.xsd" prefix="nxextensionpoint" />
     <schema name="nxservice" src="schemas/nxservice.xsd" prefix="nxservice" />
     <schema name="nxoperation" src="schemas/nxoperation.xsd" prefix="nxop" />
-
-    <schema name="nxdocumentation" src="schemas/nxdocumentation.xsd" prefix="nxdoc" />
     <schema name="apidoccommon" src="schemas/apidoccommon.xsd" prefix="adc" />
+
   </extension>
 </component>

@@ -124,21 +124,6 @@
     </form>
   </div>
 </#if>
-<#if !Root.isSiteMode()>
-  <div class="fullspace">
-    <h2>Documentation</h2>
-    <p>
-      Documentation items are associated to Nuxeo Platform artifacts. The documentation contains currently ${Root.documentationInfo}. <a href="${Root.path}/downloadDoc">Export all documentation as a zip.</a>
-    </p>
-    <#if Root.isEditor()>
-      <form method="POST" action="${Root.path}/uploadDoc" enctype="multipart/form-data" class="box">
-        <p>Upload a documentation pack (zip)</p>
-        <input type="file" name="archive">
-        <input type="submit" value="Upload doc pack">
-      </form>
-    </#if>
-  </div>
-</#if>
 
 </div>
 

@@ -101,7 +101,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         listing.checkListing(-1, "cluster-config--configuration", "/viewContribution/cluster-config--configuration",
                 "configuration - org.nuxeo.runtime.cluster.ClusterService");
         listing = listing.filterOn("org.nuxeo.apidoc");
-        listing.checkListing(6, "org.nuxeo.apidoc.adapterContrib--adapters",
+        listing.checkListing(5, "org.nuxeo.apidoc.adapterContrib--adapters",
                 "/viewContribution/org.nuxeo.apidoc.adapterContrib--adapters",
                 "adapters - org.nuxeo.ecm.core.api.DocumentAdapterService");
 
@@ -120,7 +120,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
 
         // toggle sort to check the SnapshotManager service
         listing = listing.filterOn("org.nuxeo.apidoc").toggleSort();
-        listing.checkListing(3, "SnapshotManager", "/viewService/org.nuxeo.apidoc.snapshot.SnapshotManager",
+        listing.checkListing(2, "SnapshotManager", "/viewService/org.nuxeo.apidoc.snapshot.SnapshotManager",
                 "org.nuxeo.apidoc.snapshot.SnapshotManager");
 
         listing.navigateToFirstItem();
@@ -153,7 +153,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
                 "JAVA org.nuxeo.ecm.platform.actions.ActionService");
 
         listing = listing.filterOn("org.nuxeo.apidoc");
-        listing.checkListing(8, "apidoc.adapterContrib", "/viewComponent/org.nuxeo.apidoc.adapterContrib",
+        listing.checkListing(6, "apidoc.adapterContrib", "/viewComponent/org.nuxeo.apidoc.adapterContrib",
                 "XML org.nuxeo.apidoc.adapterContrib");
 
         listing.navigateToFirstItem();

@@ -17,8 +17,6 @@
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXDistribution" class="org.nuxeo.apidoc.snapshot.DistributionSnapshot"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
-    <adapter type="NXDocumentation" class="org.nuxeo.apidoc.api.DocumentationItem"
-      factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXOperation" class="org.nuxeo.apidoc.api.OperationInfo"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXBundleGroup" class="org.nuxeo.apidoc.api.NuxeoArtifact"

@@ -18,10 +18,6 @@
  */
 package org.nuxeo.apidoc.browse;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -48,26 +44,22 @@ import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
-import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.documentation.DocumentationService;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.tree.TreeHelper;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
-import org.nuxeo.ecm.platform.rendering.wiki.WikiSerializer;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
-import org.wikimodel.wem.WikiParserException;
 
 @WebObject(type = "apibrowser")
 public class ApiBrowser extends DefaultObject {
@@ -139,11 +131,6 @@ public class ApiBrowser extends DefaultObject {
                                                                      ctx.getProperty(Distribution.DIST_ID));
     }
 
-    public Map<String, DocumentationItem> getDescriptions(String targetType) {
-        DocumentationService ds = Framework.getService(DocumentationService.class);
-        return ds.getAvailableDescriptions(getContext().getCoreSession(), targetType);
-    }
-
     @GET
     @Produces("text/html")
     @Path(ApiBrowserConstants.LIST_BUNDLES)
@@ -200,40 +187,12 @@ public class ApiBrowser extends DefaultObject {
                                                                  ctx.getProperty(Distribution.DIST_ID));
     }
 
-    protected Map<String, String> getRenderedDescriptions(String type) {
-
-        Map<String, DocumentationItem> descs = getDescriptions(type);
-        Map<String, String> result = new HashMap<>();
-
-        for (String key : descs.keySet()) {
-            DocumentationItem docItem = descs.get(key);
-            String content = docItem.getContent();
-            if ("wiki".equals(docItem.getRenderingType())) {
-                Reader reader = new StringReader(content);
-                WikiSerializer engine = new WikiSerializer();
-                StringWriter writer = new StringWriter();
-                try {
-                    engine.serialize(reader, writer);
-                } catch (IOException | WikiParserException e) {
-                    throw new NuxeoException(e);
-                }
-                content = writer.getBuffer().toString();
-            } else {
-                content = "<div class='doc'>" + content + "</div>";
-            }
-            result.put(key, content);
-        }
-        return result;
-    }
-
     @GET
     @Produces("text/plain")
     @Path("feedServices")
     public String feedServices() throws JSONException {
         List<String> serviceIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
                                                       .getServiceIds();
-
-        Map<String, String> descs = getRenderedDescriptions(ServiceInfo.TYPE_NAME);
 
         List<ArtifactLabel> serviceLabels = new ArrayList<>();
 
@@ -248,7 +207,6 @@ public class ApiBrowser extends DefaultObject {
             JSONObject object = new JSONObject();
             object.put("id", label.getId());
             object.put("label", label.getLabel());
-            object.put("desc", descs.get(label.id));
             object.put("url", "http://explorer.nuxeo.org/nuxeo/site/distribution/current/service2Bundle/" + label.id);
             array.put(object);
         }
@@ -263,8 +221,6 @@ public class ApiBrowser extends DefaultObject {
         List<String> epIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
                                                  .getExtensionPointIds();
 
-        Map<String, String> descs = getRenderedDescriptions(ExtensionPointInfo.TYPE_NAME);
-
         List<ArtifactLabel> labels = new ArrayList<>();
 
         for (String id : epIds) {
@@ -278,7 +234,6 @@ public class ApiBrowser extends DefaultObject {
             JSONObject object = new JSONObject();
             object.put("id", label.getId());
             object.put("label", label.getLabel());
-            object.put("desc", descs.get(label.id));
             object.put("url",
                     "http://explorer.nuxeo.org/nuxeo/site/distribution/current/extensionPoint2Component/" + label.id);
             array.put(object);

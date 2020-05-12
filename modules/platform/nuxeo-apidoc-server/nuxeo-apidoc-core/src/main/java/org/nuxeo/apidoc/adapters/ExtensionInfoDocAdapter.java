@@ -18,7 +18,6 @@
  */
 package org.nuxeo.apidoc.adapters;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -110,19 +109,7 @@ public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public String getXml() {
-        try {
-            Blob xml = safeGet(Blob.class, NuxeoArtifact.CONTENT_PROPERTY_PATH, null);
-            if (xml == null) {
-                return "";
-            }
-            if (xml.getEncoding() == null || "".equals(xml.getEncoding())) {
-                xml.setEncoding("utf-8");
-            }
-            return xml.getString();
-        } catch (IOException e) {
-            log.error("Error while reading blob", e);
-            return "";
-        }
+        return safeGetContent(safeGet(NuxeoArtifact.CONTENT_PROPERTY_PATH), "");
     }
 
     @Override

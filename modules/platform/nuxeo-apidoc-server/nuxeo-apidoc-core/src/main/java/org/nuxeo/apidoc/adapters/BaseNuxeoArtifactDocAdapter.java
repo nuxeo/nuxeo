@@ -18,9 +18,12 @@
  */
 package org.nuxeo.apidoc.adapters;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
@@ -28,6 +31,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -106,16 +110,12 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
         return null;
     }
 
-    protected String safeGet(String xPath) {
-        return safeGet(String.class, xPath, null);
-    }
-
-    protected String safeGet(String xPath, String defaultValue) {
-        return safeGet(String.class, xPath, defaultValue);
+    protected <T> T safeGet(String xPath) {
+        return safeGet(xPath, null);
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T safeGet(Class<T> typ, String xPath, Object defaultValue) {
+    protected <T> T safeGet(String xPath, Object defaultValue) {
         try {
             T value = (T) doc.getPropertyValue(xPath);
             return value;
@@ -125,6 +125,21 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
                 return null;
             }
             return (T) defaultValue;
+        }
+    }
+
+    protected String safeGetContent(Blob blob, String defaultValue) {
+        if (blob == null) {
+            return defaultValue;
+        }
+        if (StringUtils.isBlank(blob.getEncoding())) {
+            blob.setEncoding(StandardCharsets.UTF_8.name());
+        }
+        try {
+            return blob.getString();
+        } catch (IOException e) {
+            log.error("Error while reading blob", e);
+            return defaultValue;
         }
     }
 
