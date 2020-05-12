@@ -51,12 +51,15 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 /**
  * @since 8.3
  */
 @RunWith(FeaturesRunner.class)
 @Features(RuntimeSnaphotFeature.class)
-public class TestJson {
+public class TestJson extends AbstractApidocTest {
 
     @Inject
     protected CoreSession session;
@@ -106,8 +109,7 @@ public class TestJson {
     @Test
     public void canReadLegacy() throws IOException {
         RuntimeSnapshot runtimeSnapshot = RuntimeSnapshot.build();
-        String export = TestSnapshotPersist.getReferenceContent(
-                TestSnapshotPersist.getReferencePath("test-export.json"));
+        String export = getReferenceContent(getReferencePath("test-export.json"));
         try (ByteArrayInputStream source = new ByteArrayInputStream(export.getBytes())) {
             DistributionSnapshot snapshot = runtimeSnapshot.readJson(source);
             checkSnapshot(snapshot, true);
@@ -175,52 +177,7 @@ public class TestJson {
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getName());
         assertEquals(version, smcomp.getVersion());
         assertFalse(smcomp.isXmlPureComponent());
-        String xml = "<?xml version=\"1.0\"?>\n" //
-                + "<component name=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n" //
-                + "  <implementation class=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" />\n\n" //
-                + "  <service>\n" //
-                + "    <provide interface=\"org.nuxeo.apidoc.snapshot.SnapshotManager\" />\n" //
-                + "  </service>\n\n" //
-                + "  <extension-point name=\"plugins\">\n" //
-                + "    <documentation>\n" //
-                + "      <p>\n" //
-                + "        A plugin can introspect and persist information related to the current runtime environment.\n" //
-                + "      </p>\n" //
-                + "      <p>\n" //
-                + "        Sample contribution:\n" //
-                + "        <code>\n" //
-                + "          <extension target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\" point=\"plugins\">\n" //
-                + "            <plugin id=\"seam\" class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n" //
-                + "              snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n" //
-                + "              <ui>\n" //
-                + "                <label>Seam Components</label>\n" //
-                + "                <viewType>seam</viewType>\n" //
-                + "                <homeView>listSeamComponents</homeView>\n" //
-                + "                <styleClass>seam</styleClass>\n" //
-                + "              </ui>\n" //
-                + "            </plugin>\n" //
-                + "          </extension>\n" //
-                + "        </code>\n" //
-                + "      </p>\n" //
-                + "      <p>\n" //
-                + "        The class should implement the\n" //
-                + "        <b>org.nuxeo.apidoc.plugin.Plugin</b>\n" //
-                + "        interface.\n" //
-                + "      </p>\n" //
-                + "      <p>\n" //
-                + "        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\n" //
-                + "        and\n" //
-                + "        the module holding this resource should be contributed to the main webengine module as a fragment using:\n" //
-                + "        <code>\n" //
-                + "          Fragment-Host: org.nuxeo.apidoc.webengine\n" //
-                + "        </code>\n" //
-                + "      </p>\n" //
-                + "    </documentation>\n" //
-                + "    <object class=\"org.nuxeo.apidoc.plugin.PluginDescriptor\" />\n" //
-                + "  </extension-point>\n\n" //
-                + "</component>\n" //
-                + "";
-        assertEquals(xml, smcomp.getXmlFileContent());
+        checkContentEquals("OSGI-INF/snapshot-service-framework.xml", smcomp.getXmlFileContent());
 
         // check json back reference
         assertNotNull(smcomp.getBundle());
