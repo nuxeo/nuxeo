@@ -1,5 +1,9 @@
 {
+  "bundles": [],
+  "creationDate": 1587050016835,
   "key": "Nuxeo-unknown",
+  "name": "Nuxeo",
+  "operations": [],
   "pluginSnapshots": {
     "testPlugin": {
       "@type": "testPlugin",
@@ -25,10 +29,6 @@
       ]
     }
   },
-  "bundles": [],
-  "operations": [],
-  "name": "Nuxeo",
-  "version": "11.1-SNAPSHOT",
-  "creationDate": 1587050016835,
-  "releaseDate": null
+  "releaseDate": null,
+  "version": "11.1-SNAPSHOT"
 }

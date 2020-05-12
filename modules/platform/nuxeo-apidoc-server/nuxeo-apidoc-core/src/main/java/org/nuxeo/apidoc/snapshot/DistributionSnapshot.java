@@ -47,7 +47,9 @@ import org.nuxeo.runtime.model.ComponentName;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public interface DistributionSnapshot extends DistributionSnapshotDesc {
@@ -203,6 +205,8 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     static ObjectMapper jsonMapper() {
         final ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true)
+              .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
         SimpleModule module = new SimpleModule();
         module.addAbstractTypeMapping(DistributionSnapshot.class, RuntimeSnapshot.class)
               .addAbstractTypeMapping(BundleInfo.class, BundleInfoImpl.class)
