@@ -211,14 +211,7 @@ public class ServerInfo {
                     binfo.setRequirements(getBundleRequires(mf));
                 }
                 // find and parse pom.xml
-                File up = new File(jarFile, "..");
-                File pom = new File(up, POM_XML);
-                if (!pom.exists()) {
-                    pom = new File(new File(up, ".."), POM_XML);
-                    if (!pom.exists()) {
-                        pom = null;
-                    }
-                }
+                File pom = EmbeddedDocExtractor.findFile(jarFile, POM_XML);
                 if (pom != null) {
                     DocumentBuilder b = documentBuilderFactory.newDocumentBuilder();
                     Document doc = b.parse(new FileInputStream(pom));
@@ -239,6 +232,8 @@ public class ServerInfo {
                     binfo.setGroupId(groupId);
                     binfo.setArtifactVersion(version);
                 }
+                // find READMEs to mimick maven behavior in eclipse tests
+                EmbeddedDocExtractor.extractEmbeddedDoc(jarFile, binfo);
             } else {
                 try (ZipFile zFile = new ZipFile(jarFile)) {
                     ZipEntry mfEntry = zFile.getEntry(META_INF_MANIFEST_MF);

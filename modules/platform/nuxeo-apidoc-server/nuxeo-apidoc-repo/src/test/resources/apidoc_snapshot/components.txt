@@ -3,7 +3,7 @@ NXComponent: org.nuxeo.apidoc.adapterContrib *** /grp:org.nuxeo.ecm.platform/org
 NXComponent: org.nuxeo.apidoc.doctypeContrib *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib
 NXComponent: org.nuxeo.apidoc.lifecycle.contrib *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib
 NXComponent: org.nuxeo.apidoc.listener.contrib *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib
-NXComponent: org.nuxeo.apidoc.schemaContrib *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib
+NXComponent: org.nuxeo.apidoc.schemaContrib *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib *** [org.nuxeo.ecm.core.CoreExtensions]
 NXComponent: org.nuxeo.apidoc.snapshot.SnapshotManagerComponent *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent
 NXComponent: org.nuxeo.apidoc.test.works *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works
 NXComponent: org.nuxeo.automation.scripting.classfilter *** /grp:org.nuxeo.ecm.automation/org.nuxeo.ecm.automation.scripting/org.nuxeo.automation.scripting.classfilter

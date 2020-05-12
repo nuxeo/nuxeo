@@ -19,6 +19,7 @@
  */
 package org.nuxeo.apidoc.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -39,6 +41,7 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
@@ -87,6 +90,7 @@ public class TestSnapshotPersist extends AbstractApidocTest {
         checkExtensionPoints(snapshot);
         checkContributions(snapshot);
         checkOperations(snapshot);
+        checkReadmes(snapshot);
     }
 
     protected void checkBundleGroups(DistributionSnapshot snapshot) throws IOException {
@@ -173,6 +177,25 @@ public class TestSnapshotPersist extends AbstractApidocTest {
         ops.forEach(op -> sb.append(represent(op)));
 
         checkContentEquals("apidoc_snapshot/operations.txt", sb.toString());
+    }
+
+    protected void checkReadmes(DistributionSnapshot snapshot) throws IOException {
+        BundleInfo bundle = snapshot.getBundle("org.nuxeo.apidoc.core");
+        assertNotNull(bundle);
+
+        Blob readme = bundle.getReadme();
+        assertNotNull(readme);
+        checkContentEquals("apidoc_snapshot/core_readme.txt", readme.getString());
+
+        Blob parentReadme = bundle.getParentReadme();
+        assertNotNull(parentReadme);
+        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", parentReadme.getString());
+
+        BundleGroup bundleGroup = snapshot.getBundleGroup(bundle.getGroupId());
+        assertNotNull(bundleGroup);
+        assertNotNull(bundleGroup.getReadmes());
+        assertEquals(1, bundleGroup.getReadmes().size());
+        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", bundleGroup.getReadmes().get(0).getString());
     }
 
 }

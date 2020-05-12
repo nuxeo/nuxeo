@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -51,6 +52,7 @@ import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.JsonPrettyPrinter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.test.runner.Features;
@@ -215,6 +217,7 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("org.nuxeo.ecm.platform", bundle.getGroupId());
         assertEquals("/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo", bundle.getHierarchyPath());
         assertEquals("org.nuxeo.apidoc.repo", bundle.getId());
+        assertNull(bundle.getReadme());
         assertEquals("Manifest-Version: 1.0\n" //
                 + "Bundle-ManifestVersion: 1\n" //
                 + "Bundle-Name: nuxeo api documentation repository\n" //
@@ -227,8 +230,38 @@ public class TestJson extends AbstractApidocTest {
                 + "  OSGI-INF/adapter-contrib.xml,\n" //
                 + "  OSGI-INF/listener-contrib.xml\n"//
                 + "", bundle.getManifest());
+        Blob parentReadme = bundle.getParentReadme();
+        assertNotNull(parentReadme);
+        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", parentReadme.getString());
         assertEquals(Collections.emptyList(), bundle.getRequirements());
         assertEquals(version, bundle.getVersion());
+        // check readme on core bundle instead
+        BundleInfo coreBundle = snapshot.getBundle("org.nuxeo.apidoc.core");
+        Blob readme = coreBundle.getReadme();
+        assertNotNull(readme);
+        checkContentEquals("apidoc_snapshot/core_readme.txt", readme.getString());
+        readme = coreBundle.getParentReadme();
+        assertNotNull(readme);
+        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", readme.getString());
+
+        // check bundle group
+        BundleGroup group = snapshot.getBundleGroup(bundle.getGroupId());
+        assertNotNull(group);
+        assertEquals("grp:org.nuxeo.ecm.platform", group.getId());
+        assertEquals("org.nuxeo.ecm.platform", group.getName());
+        assertEquals(BundleGroup.TYPE_NAME, group.getArtifactType());
+        assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), group.getBundleIds());
+        assertEquals(List.of(), group.getParentIds());
+        List<Blob> readmes = group.getReadmes();
+        assertNotNull(readmes);
+        assertEquals(1, readmes.size());
+        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", readmes.get(0).getString());
+        assertEquals(List.of(), group.getSubGroups());
+        if (legacy) {
+            assertEquals("unknown", group.getVersion());
+        } else {
+            assertEquals(bundle.getVersion(), group.getVersion());
+        }
 
         // check components
         List<ComponentInfo> components = bundle.getComponents();
@@ -267,6 +300,8 @@ public class TestJson extends AbstractApidocTest {
         assertFalse(service.isOverriden());
         // check json back reference
         assertNotNull(service.getComponent());
+        // check second service id
+        assertEquals("org.nuxeo.apidoc.search.ArtifactSearcher", smcomp.getServices().get(1).getId());
 
         // check extension points
         assertNotNull(smcomp.getExtensionPoints());

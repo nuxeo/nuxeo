@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
@@ -67,6 +69,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
+
+    private static final Logger log = LogManager.getLogger(RuntimeSnapshot.class);
 
     public static final String VIRTUAL_BUNDLE_GROUP = "grp:org.nuxeo.misc";
 
@@ -254,6 +258,11 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
                 BundleInfo bi = getBundle(aid);
                 if (bi instanceof BundleInfoImpl) {
                     ((BundleInfoImpl) bi).setBundleGroup(bGroup);
+                }
+                try {
+                    bGroup.addReadme(bi.getParentReadme());
+                } catch (IOException e) {
+                    log.error("Error setting readme on bundle group", e);
                 }
             }
         }

@@ -27,6 +27,7 @@ import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
+import org.nuxeo.ecm.core.api.Blob;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -51,12 +52,17 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected BundleGroup bundleGroup;
 
+    protected Blob readme;
+
+    protected Blob parentReadme;
+
     @JsonCreator
     private BundleInfoImpl(@JsonProperty("bundleId") String bundleId, @JsonProperty("fileName") String fileName,
             @JsonProperty("manifest") String manifest, @JsonProperty("requirements") List<String> requirements,
             @JsonProperty("groupId") String groupId, @JsonProperty("artifactId") String artifactId,
             @JsonProperty("artifactVersion") String artifactVersion,
-            @JsonProperty("bundleGroup") BundleGroup bundleGroup, @JsonProperty("location") String location) {
+            @JsonProperty("bundleGroup") BundleGroup bundleGroup, @JsonProperty("readme") Blob readme,
+            @JsonProperty("parentReadme") Blob parentReadme, @JsonProperty("location") String location) {
         this.bundleId = bundleId;
         this.fileName = fileName;
         this.manifest = manifest;
@@ -67,6 +73,8 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.artifactId = artifactId;
         this.artifactVersion = artifactVersion;
         this.bundleGroup = bundleGroup;
+        this.readme = readme;
+        this.parentReadme = parentReadme;
         this.location = location;
         // components will be handled by json managed reference
     }
@@ -183,6 +191,24 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     @Override
     public String getHierarchyPath() {
         return getBundleGroup().getHierarchyPath() + "/" + getId();
+    }
+
+    @Override
+    public Blob getReadme() {
+        return readme;
+    }
+
+    @Override
+    public Blob getParentReadme() {
+        return parentReadme;
+    }
+
+    public void setReadme(Blob readme) {
+        this.readme = readme;
+    }
+
+    public void setParentReadme(Blob parentReadme) {
+        this.parentReadme = parentReadme;
     }
 
 }

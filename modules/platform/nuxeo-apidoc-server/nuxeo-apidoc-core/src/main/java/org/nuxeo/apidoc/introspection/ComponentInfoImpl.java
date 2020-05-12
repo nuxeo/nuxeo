@@ -72,7 +72,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected String componentClass;
 
-    protected String documentation; // TODO
+    protected String documentation;
 
     protected static final Log log = LogFactory.getLog(ComponentInfoImpl.class);
 

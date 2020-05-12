@@ -18,6 +18,8 @@
  */
 package org.nuxeo.apidoc.introspection;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +29,8 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 public class EmbeddedDocExtractor {
 
@@ -34,29 +38,96 @@ public class EmbeddedDocExtractor {
 
     public static final String PARENT_DOC_PREFIX = "doc-parent/";
 
+    /**
+     * Hardcoded parent readme filename for tests.
+     *
+     * @since 11.1
+     */
+    protected static final String README = "ReadMe.md";
+
+    /**
+     * Navigates hierarchy to find target file.
+     *
+     * @since 11.1
+     */
+    public static File findFile(File jarFile, String subPath) {
+        File up = new File(jarFile, "..");
+        File file = new File(up, subPath);
+        if (!file.exists()) {
+            file = new File(new File(up, ".."), subPath);
+            if (!file.exists()) {
+                file = null;
+            }
+        }
+        return file;
+    }
+
     public static void extractEmbeddedDoc(ZipFile jarFile, BundleInfoImpl bi) throws IOException {
-
         Enumeration<? extends ZipEntry> entries = jarFile.entries();
-
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
-
-            try (InputStream is = jarFile.getInputStream(entry)) {
-                if (entry.getName().startsWith(PARENT_DOC_PREFIX) && !entry.isDirectory()) {
-                    String content = IOUtils.toString(is, StandardCharsets.UTF_8);
-                    String name = new Path(entry.getName()).lastSegment();
-                    if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
-                        // TODO
-                    }
+            if (entry.isDirectory()) {
+                continue;
+            }
+            int isReadme = isReadme(entry.getName());
+            if (isReadme > 0) {
+                Blob content = null;
+                String name = new Path(entry.getName()).lastSegment();
+                try (InputStream is = jarFile.getInputStream(entry)) {
+                    content = getReadme(name, is);
                 }
-                if (entry.getName().startsWith(DOC_PREFIX) && !entry.isDirectory()) {
-                    String content = IOUtils.toString(is, StandardCharsets.UTF_8);
-                    String name = new Path(entry.getName()).lastSegment();
-                    if (name.length() >= 6 && name.substring(0, 6).equalsIgnoreCase("readme")) {
-                        // TODO
-                    }
+                if (isReadme == 1) {
+                    bi.setReadme(content);
+                } else {
+                    bi.setParentReadme(content);
                 }
+            }
+            if (bi.getReadme() != null && bi.getParentReadme() != null) {
+                break;
             }
         }
     }
+
+    /**
+     * Mimicks extaction of readme file for tests.
+     *
+     * @implNote maven is in charge of copying doc files to the target server: this needs to be done here for tests to
+     *           still take readmes into account in Eclipse for instance.
+     * @since 11.1
+     */
+    public static void extractEmbeddedDoc(File dirFile, BundleInfoImpl bi) throws IOException {
+        File readme = findFile(dirFile, README);
+        if (readme != null) {
+            try (InputStream is = new FileInputStream(readme)) {
+                bi.setReadme(getReadme(README, is));
+            }
+        }
+        File parentReadme = findFile(new File(dirFile, "../.."), README);
+        if (parentReadme != null) {
+            try (InputStream is = new FileInputStream(parentReadme)) {
+                bi.setParentReadme(getReadme(README, is));
+            }
+        }
+    }
+
+    /**
+     * Returns 0 if not a doc, 1 if local doc, 2 if parent doc.
+     */
+    protected static int isReadme(String name) {
+        boolean isDoc = name.startsWith(DOC_PREFIX);
+        boolean isParentDoc = name.startsWith(PARENT_DOC_PREFIX);
+        if (isDoc || isParentDoc) {
+            String filename = new Path(name).lastSegment();
+            if (filename.length() >= 6 && filename.substring(0, 6).equalsIgnoreCase("readme")) {
+                return isDoc ? 1 : 2;
+            }
+        }
+        return 0;
+    }
+
+    protected static Blob getReadme(String name, InputStream is) throws IOException {
+        String content = IOUtils.toString(is, StandardCharsets.UTF_8);
+        return new StringBlob(content, "text/plain", StandardCharsets.UTF_8.name(), name);
+    }
+
 }

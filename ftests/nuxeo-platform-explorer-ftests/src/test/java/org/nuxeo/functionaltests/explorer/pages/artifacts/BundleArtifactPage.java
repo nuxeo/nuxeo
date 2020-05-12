@@ -21,9 +21,11 @@ package org.nuxeo.functionaltests.explorer.pages.artifacts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.explorer.AbstractExplorerTest;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -45,7 +47,15 @@ public class BundleArtifactPage extends ArtifactPage {
 
     @Override
     public void checkReference() {
-        checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core", null);
+        checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core",
+                "In bundle group org.nuxeo.ecm.platform");
+        try {
+            String readme = AbstractExplorerTest.getReferenceContent("data/core_readme.txt");
+            String parentReadme = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
+            checkDocumentationText("ReadMe.md\n" + readme + "\nParent Documentation: ReadMe.md\n" + parentReadme);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         checkGroupId("org.nuxeo.ecm.platform");
         checkArtifactId("nuxeo-apidoc-core");
         checkRequirements(null);
@@ -53,7 +63,8 @@ public class BundleArtifactPage extends ArtifactPage {
 
     @Override
     public void checkAlternative() {
-        checkCommon("Bundle org.nuxeo.apidoc.webengine", "Bundle org.nuxeo.apidoc.webengine", null);
+        checkCommon("Bundle org.nuxeo.apidoc.webengine", "Bundle org.nuxeo.apidoc.webengine",
+                "In bundle group org.nuxeo.ecm.platform");
         checkGroupId("org.nuxeo.ecm.platform");
         checkArtifactId("nuxeo-apidoc-webengine");
         checkRequirements(List.of("org.nuxeo.ecm.webengine.core", "org.nuxeo.apidoc.core"));

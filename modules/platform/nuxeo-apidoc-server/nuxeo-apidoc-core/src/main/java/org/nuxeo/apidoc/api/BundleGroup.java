@@ -20,6 +20,8 @@ package org.nuxeo.apidoc.api;
 
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.Blob;
+
 public interface BundleGroup extends NuxeoArtifact {
 
     String TYPE_NAME = "NXBundleGroup";
@@ -27,6 +29,8 @@ public interface BundleGroup extends NuxeoArtifact {
     String PROP_GROUP_NAME = "nxbundlegroup:groupName";
 
     String PROP_KEY = "nxbundlegroup:key";
+
+    String PROP_READMES = "files:files";
 
     String getName();
 
@@ -36,4 +40,8 @@ public interface BundleGroup extends NuxeoArtifact {
 
     List<String> getParentIds();
 
+    /**
+     * @since 11.1
+     */
+    List<Blob> getReadmes();
 }

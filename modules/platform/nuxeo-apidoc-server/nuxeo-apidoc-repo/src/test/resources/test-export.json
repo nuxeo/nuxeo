@@ -8,6 +8,16 @@
         "@type": "NXBundleGroup",
         "id": "grp:org.nuxeo.ecm.platform",
         "name": "org.nuxeo.ecm.platform",
+        "readmes": [
+          {
+            "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree :\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n\nThe Nuxeo Distribution can be :\n\n - live : in memory (meaning runtime introspection)\n - persisted : saved in Nuxeo Repository as a tree of Documents\n\nIn addition a DocumentationService is provided to be able to :\n\n - extract Documentation that is built-in Nuxeo Runtime descriptors\n - extract Documentation that may be embedded inside the jar\n - add some use documentation (How to, Code samples ...)\n\n## What it can be used for\n\n - browse you distribution and write some documentation\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 2 bundles :\n\n - nuxeo-apidoc-core : for the low level API on the live runtime\n - nuxeo-apidoc-repo : for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine : for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
+            "digest": null,
+            "encoding": "UTF-8",
+            "length": 1617,
+            "mimeType": "text/plain",
+            "name": "ReadMe.md"
+          }
+        ],
         "bundleIds": [
           "org.nuxeo.apidoc.core",
           "org.nuxeo.apidoc.repo",
@@ -30,6 +40,7 @@
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.directory",
             "name": "org.nuxeo.ecm.directory",
+            "readmes": [],
             "bundleIds": [
               "org.nuxeo.ecm.directory",
               "org.nuxeo.ecm.directory.api",
@@ -48,6 +59,7 @@
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.query",
             "name": "org.nuxeo.ecm.platform.query",
+            "readmes": [],
             "bundleIds": [
               "org.nuxeo.ecm.platform.query.api"
             ],
@@ -63,6 +75,7 @@
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.usermanager",
             "name": "org.nuxeo.ecm.platform.usermanager",
+            "readmes": [],
             "bundleIds": [
               "org.nuxeo.ecm.platform.usermanager",
               "org.nuxeo.ecm.platform.usermanager.api"
@@ -83,6 +96,22 @@
       "groupId": "org.nuxeo.ecm.platform",
       "location": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-core/bin/main",
       "manifest": "Manifest-Version: 1.0\nBundle-SymbolicName: org.nuxeo.apidoc.core;singleton:=true\nBundle-Name: nuxeo api documentation server\nBundle-Version: 0.0.1\nBundle-ManifestVersion: 1\nBundle-Vendor: Nuxeo\n",
+      "parentReadme": {
+        "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree :\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n\nThe Nuxeo Distribution can be :\n\n - live : in memory (meaning runtime introspection)\n - persisted : saved in Nuxeo Repository as a tree of Documents\n\nIn addition a DocumentationService is provided to be able to :\n\n - extract Documentation that is built-in Nuxeo Runtime descriptors\n - extract Documentation that may be embedded inside the jar\n - add some use documentation (How to, Code samples ...)\n\n## What it can be used for\n\n - browse you distribution and write some documentation\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 2 bundles :\n\n - nuxeo-apidoc-core : for the low level API on the live runtime\n - nuxeo-apidoc-repo : for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine : for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
+        "digest": null,
+        "encoding": "UTF-8",
+        "length": 1617,
+        "mimeType": "text/plain",
+        "name": "ReadMe.md"
+      },
+      "readme": {
+        "content": "\n## About nuxeo-apidoc-core\n\nThis bundle provides an API to browse the Nuxeo distribution tree :\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n\nThis API has 2 implementation :\n\n - org.nuxeo.apidoc.introspection : Nuxeo Runtime in memory introspection\n - org.nuxeo.apidoc.adapters : DocumentModel adapters implementing the same API\n\nIn addition a DocumentationService is provided to be able to :\n\n - extract Documentation that is built-in Nuxeo Runtime descriptors\n - extract Documentation that may be embedded inside the jar\n - add some use documentation (How to, Code samples ...)\n",
+        "digest": null,
+        "encoding": "UTF-8",
+        "length": 702,
+        "mimeType": "text/plain",
+        "name": "ReadMe.md"
+      },
       "requirements": [],
       "components": [],
       "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.core",
@@ -97,6 +126,16 @@
         "@type": "NXBundleGroup",
         "id": "grp:org.nuxeo.ecm.platform",
         "name": "org.nuxeo.ecm.platform",
+        "readmes": [
+          {
+            "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree :\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n\nThe Nuxeo Distribution can be :\n\n - live : in memory (meaning runtime introspection)\n - persisted : saved in Nuxeo Repository as a tree of Documents\n\nIn addition a DocumentationService is provided to be able to :\n\n - extract Documentation that is built-in Nuxeo Runtime descriptors\n - extract Documentation that may be embedded inside the jar\n - add some use documentation (How to, Code samples ...)\n\n## What it can be used for\n\n - browse you distribution and write some documentation\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 2 bundles :\n\n - nuxeo-apidoc-core : for the low level API on the live runtime\n - nuxeo-apidoc-repo : for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine : for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
+            "digest": null,
+            "encoding": "UTF-8",
+            "length": 1617,
+            "mimeType": "text/plain",
+            "name": "ReadMe.md"
+          }
+        ],
         "bundleIds": [
           "org.nuxeo.apidoc.core",
           "org.nuxeo.apidoc.repo",
@@ -119,6 +158,7 @@
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.directory",
             "name": "org.nuxeo.ecm.directory",
+            "readmes": [],
             "bundleIds": [
               "org.nuxeo.ecm.directory",
               "org.nuxeo.ecm.directory.api",
@@ -137,6 +177,7 @@
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.query",
             "name": "org.nuxeo.ecm.platform.query",
+            "readmes": [],
             "bundleIds": [
               "org.nuxeo.ecm.platform.query.api"
             ],
@@ -152,6 +193,7 @@
             "@type": "NXBundleGroup",
             "id": "grp:org.nuxeo.ecm.platform.usermanager",
             "name": "org.nuxeo.ecm.platform.usermanager",
+            "readmes": [],
             "bundleIds": [
               "org.nuxeo.ecm.platform.usermanager",
               "org.nuxeo.ecm.platform.usermanager.api"
@@ -172,6 +214,15 @@
       "groupId": "org.nuxeo.ecm.platform",
       "location": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main",
       "manifest": "Manifest-Version: 1.0\nBundle-ManifestVersion: 1\nBundle-Name: nuxeo api documentation repository\nBundle-SymbolicName: org.nuxeo.apidoc.repo;singleton:=true\nBundle-Version: 0.0.1\nBundle-Vendor: Nuxeo\nNuxeo-Component: OSGI-INF/schema-contrib.xml,\n  OSGI-INF/doctype-contrib.xml,\n  OSGI-INF/life-cycle-contrib.xml,\n  OSGI-INF/snapshot-service-framework.xml,\n  OSGI-INF/adapter-contrib.xml,\n  OSGI-INF/listener-contrib.xml\n",
+      "parentReadme": {
+        "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree :\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n\nThe Nuxeo Distribution can be :\n\n - live : in memory (meaning runtime introspection)\n - persisted : saved in Nuxeo Repository as a tree of Documents\n\nIn addition a DocumentationService is provided to be able to :\n\n - extract Documentation that is built-in Nuxeo Runtime descriptors\n - extract Documentation that may be embedded inside the jar\n - add some use documentation (How to, Code samples ...)\n\n## What it can be used for\n\n - browse you distribution and write some documentation\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 2 bundles :\n\n - nuxeo-apidoc-core : for the low level API on the live runtime\n - nuxeo-apidoc-repo : for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine : for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
+        "digest": null,
+        "encoding": "UTF-8",
+        "length": 1617,
+        "mimeType": "text/plain",
+        "name": "ReadMe.md"
+      },
+      "readme": null,
       "requirements": [],
       "components": [
         {
@@ -421,7 +472,7 @@
           "componentClass": null,
           "documentation": null,
           "name": "org.nuxeo.apidoc.doctypeContrib",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.doctypeContrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"doctype\">\n\n    <doctype name=\"NXDistribution\" extends=\"Folder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxdistribution\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXBundleGroup\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxbundlegroup\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype name=\"NXBundle\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxbundle\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXComponent\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcomponent\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXExtensionPoint\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxextensionpoint\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n    </doctype>\n\n    <doctype name=\"NXContribution\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcontribution\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXService\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxservice\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXOperation\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n\n      <schema name=\"nxoperation\" />\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n  </extension>\n\n</component>\n",
+          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.doctypeContrib\">\n\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"doctype\">\n\n    <doctype name=\"NXDistribution\" extends=\"Folder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxdistribution\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXBundleGroup\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"files\" />\n      <schema name=\"nxbundlegroup\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype name=\"NXBundle\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxbundle\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXComponent\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcomponent\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype name=\"NXExtensionPoint\" extends=\"OrderedFolder\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxextensionpoint\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n      <facet name=\"Folderish\" />\n    </doctype>\n\n    <doctype name=\"NXContribution\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxcontribution\" />\n      <schema name=\"apidoccommon\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXService\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n      <schema name=\"nxservice\" />\n\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n    <doctype name=\"NXOperation\" extends=\"Document\">\n      <schema name=\"common\" />\n      <schema name=\"dublincore\" />\n      <schema name=\"file\" />\n\n      <schema name=\"nxoperation\" />\n      <facet name=\"Commentable\" />\n      <facet name=\"Versionable\" />\n    </doctype>\n\n  </extension>\n\n</component>\n",
           "documentationHtml": "",
           "extensionPoints": [],
           "extensions": [
@@ -435,7 +486,7 @@
                 "name": "org.nuxeo.ecm.core.schema.TypeService",
                 "type": "service"
               },
-              "xml": "<extension point=\"doctype\" target=\"org.nuxeo.ecm.core.schema.TypeService\">\n\n    <doctype extends=\"Folder\" name=\"NXDistribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxdistribution\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundleGroup\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundlegroup\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundle\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundle\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXComponent\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcomponent\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXExtensionPoint\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxextensionpoint\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXContribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcontribution\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXService\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxservice\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXOperation\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n\n      <schema name=\"nxoperation\"/>\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n  </extension>",
+              "xml": "<extension point=\"doctype\" target=\"org.nuxeo.ecm.core.schema.TypeService\">\n\n    <doctype extends=\"Folder\" name=\"NXDistribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxdistribution\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n        <type>NXBundle</type>\n        <type>NXOperation</type>\n        <type>Workspace</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundleGroup\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"files\"/>\n      <schema name=\"nxbundlegroup\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>\n\n\n    <doctype extends=\"OrderedFolder\" name=\"NXBundle\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundle\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXComponent</type>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXComponent\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcomponent\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n      <subtypes>\n        <type>NXService</type>\n        <type>NXExtensionPoint</type>\n        <type>NXContribution</type>\n      </subtypes>\n    </doctype>\n\n    <doctype extends=\"OrderedFolder\" name=\"NXExtensionPoint\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxextensionpoint\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXContribution\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxcontribution\"/>\n      <schema name=\"apidoccommon\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXService\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxservice\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n    <doctype extends=\"Document\" name=\"NXOperation\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n\n      <schema name=\"nxoperation\"/>\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n    </doctype>\n\n  </extension>",
               "contributionItems": [
                 {
                   "documentation": "",
@@ -448,8 +499,8 @@
                   "documentation": "",
                   "id": "NXBundleGroup",
                   "label": "doctype NXBundleGroup",
-                  "rawXml": "<doctype extends=\"OrderedFolder\" name=\"NXBundleGroup\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"nxbundlegroup\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>",
-                  "xml": "&lt;doctype extends=&quot;OrderedFolder&quot; name=&quot;NXBundleGroup&quot;&gt;\n      &lt;schema name=&quot;common&quot;/&gt;\n      &lt;schema name=&quot;dublincore&quot;/&gt;\n      &lt;schema name=&quot;file&quot;/&gt;\n      &lt;schema name=&quot;nxbundlegroup&quot;/&gt;\n\n      &lt;facet name=&quot;Commentable&quot;/&gt;\n      &lt;facet name=&quot;Versionable&quot;/&gt;\n      &lt;facet name=&quot;Folderish&quot;/&gt;\n\n      &lt;subtypes&gt;\n        &lt;type&gt;NXBundleGroup&lt;/type&gt;\n      &lt;/subtypes&gt;\n    &lt;/doctype&gt;"
+                  "rawXml": "<doctype extends=\"OrderedFolder\" name=\"NXBundleGroup\">\n      <schema name=\"common\"/>\n      <schema name=\"dublincore\"/>\n      <schema name=\"file\"/>\n      <schema name=\"files\"/>\n      <schema name=\"nxbundlegroup\"/>\n\n      <facet name=\"Commentable\"/>\n      <facet name=\"Versionable\"/>\n      <facet name=\"Folderish\"/>\n\n      <subtypes>\n        <type>NXBundleGroup</type>\n      </subtypes>\n    </doctype>",
+                  "xml": "&lt;doctype extends=&quot;OrderedFolder&quot; name=&quot;NXBundleGroup&quot;&gt;\n      &lt;schema name=&quot;common&quot;/&gt;\n      &lt;schema name=&quot;dublincore&quot;/&gt;\n      &lt;schema name=&quot;file&quot;/&gt;\n      &lt;schema name=&quot;files&quot;/&gt;\n      &lt;schema name=&quot;nxbundlegroup&quot;/&gt;\n\n      &lt;facet name=&quot;Commentable&quot;/&gt;\n      &lt;facet name=&quot;Versionable&quot;/&gt;\n      &lt;facet name=&quot;Folderish&quot;/&gt;\n\n      &lt;subtypes&gt;\n        &lt;type&gt;NXBundleGroup&lt;/type&gt;\n      &lt;/subtypes&gt;\n    &lt;/doctype&gt;"
                 },
                 {
                   "documentation": "",
@@ -552,7 +603,7 @@
           "componentClass": null,
           "documentation": null,
           "name": "org.nuxeo.apidoc.schemaContrib",
-          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.schemaContrib\">\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"schema\">\n\n    <schema name=\"nxbundle\" src=\"schemas/nxbundle.xsd\" prefix=\"nxbundle\" />\n    <schema name=\"nxbundlegroup\" src=\"schemas/nxbundlegroup.xsd\" prefix=\"nxbundlegroup\" />\n    <schema name=\"nxcomponent\" src=\"schemas/nxcomponent.xsd\" prefix=\"nxcomponent\" />\n    <schema name=\"nxcontribution\" src=\"schemas/nxcontribution.xsd\" prefix=\"nxcontribution\" />\n    <schema name=\"nxdistribution\" src=\"schemas/nxdistribution.xsd\" prefix=\"nxdistribution\" />\n    <schema name=\"nxextensionpoint\" src=\"schemas/nxextensionpoint.xsd\" prefix=\"nxextensionpoint\" />\n    <schema name=\"nxservice\" src=\"schemas/nxservice.xsd\" prefix=\"nxservice\" />\n    <schema name=\"nxoperation\" src=\"schemas/nxoperation.xsd\" prefix=\"nxop\" />\n    <schema name=\"apidoccommon\" src=\"schemas/apidoccommon.xsd\" prefix=\"adc\" />\n\n  </extension>\n</component>\n",
+          "xmlFileContent": "<?xml version=\"1.0\"?>\n<component name=\"org.nuxeo.apidoc.schemaContrib\">\n  <require>org.nuxeo.ecm.core.CoreExtensions</require>\n  <extension target=\"org.nuxeo.ecm.core.schema.TypeService\" point=\"schema\">\n\n    <schema name=\"nxbundle\" src=\"schemas/nxbundle.xsd\" prefix=\"nxbundle\" />\n    <schema name=\"nxbundlegroup\" src=\"schemas/nxbundlegroup.xsd\" prefix=\"nxbundlegroup\" />\n    <schema name=\"nxcomponent\" src=\"schemas/nxcomponent.xsd\" prefix=\"nxcomponent\" />\n    <schema name=\"nxcontribution\" src=\"schemas/nxcontribution.xsd\" prefix=\"nxcontribution\" />\n    <schema name=\"nxdistribution\" src=\"schemas/nxdistribution.xsd\" prefix=\"nxdistribution\" />\n    <schema name=\"nxextensionpoint\" src=\"schemas/nxextensionpoint.xsd\" prefix=\"nxextensionpoint\" />\n    <schema name=\"nxservice\" src=\"schemas/nxservice.xsd\" prefix=\"nxservice\" />\n    <schema name=\"nxoperation\" src=\"schemas/nxoperation.xsd\" prefix=\"nxop\" />\n    <schema name=\"apidoccommon\" src=\"schemas/apidoccommon.xsd\" prefix=\"adc\" />\n\n  </extension>\n</component>\n",
           "documentationHtml": "",
           "extensionPoints": [],
           "extensions": [
@@ -638,7 +689,9 @@
             }
           ],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib",
-          "requirements": [],
+          "requirements": [
+            "org.nuxeo.ecm.core.CoreExtensions"
+          ],
           "services": [],
           "version": "11.1-SNAPSHOT",
           "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/schema-contrib.xml",
@@ -715,7 +768,7 @@
       "version": "11.1-SNAPSHOT"
     }
   ],
-  "creationDate": 1589306200272,
+  "creationDate": 1589306419725,
   "key": "Nuxeo-unknown",
   "name": "Nuxeo",
   "operations": [

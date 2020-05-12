@@ -30,14 +30,17 @@ import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.JavaScriptErrorCollector;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.ListingFragment;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleGroupArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ComponentArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ContributionArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ExtensionPointArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.OperationArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ServiceArtifactPage;
+import org.openqa.selenium.By;
 
 /**
  * @since 11.1
@@ -176,6 +179,12 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
+        apage.checkReference();
+    }
+
+    protected void checkBundleGroups() {
+        Locator.findElementWaitUntilEnabledAndClick(By.linkText("org.nuxeo.ecm.platform"));
+        BundleGroupArtifactPage apage = asPage(BundleGroupArtifactPage.class);
         apage.checkReference();
     }
 

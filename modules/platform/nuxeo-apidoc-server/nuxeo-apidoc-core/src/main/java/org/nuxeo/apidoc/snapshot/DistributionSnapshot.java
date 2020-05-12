@@ -18,8 +18,10 @@
  */
 package org.nuxeo.apidoc.snapshot;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +42,9 @@ import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.ecm.automation.OperationDocumentation;
+import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableFile;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.model.ComponentName;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -213,10 +218,12 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
               .addAbstractTypeMapping(ExtensionPointInfo.class, ExtensionPointInfoImpl.class)
               .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
               .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
-              .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class);
+              .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
+              .addAbstractTypeMapping(Blob.class, StringBlobReader.class);
         mapper.registerModule(module);
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);
         mapper.addMixIn(ComponentName.class, ComponentNameMixin.class);
+        mapper.addMixIn(Blob.class, StringBlobMixin.class);
         return mapper;
     }
 
@@ -226,7 +233,44 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
 
     static abstract class ComponentNameMixin {
         @JsonCreator
-        public ComponentNameMixin(@JsonProperty("rawName") String rawName) {
+        ComponentNameMixin(@JsonProperty("rawName") String rawName) {
         }
     }
+
+    static abstract class StringBlobMixin {
+        @JsonCreator
+        StringBlobMixin(@JsonProperty("content") String content, @JsonProperty("name") String name) {
+        }
+
+        @JsonProperty("content")
+        abstract String getString();
+
+        @JsonProperty("name")
+        abstract String getFilename();
+
+        @JsonIgnore
+        abstract InputStream getStream();
+
+        @JsonIgnore
+        abstract byte[] getByteArray();
+
+        @JsonIgnore
+        abstract public File getFile();
+
+        @JsonIgnore
+        abstract String getDigestAlgorithm();
+
+        @JsonIgnore
+        abstract CloseableFile getCloseableFile();
+    }
+
+    static class StringBlobReader extends StringBlob {
+        private static final long serialVersionUID = 1L;
+
+        @JsonCreator
+        StringBlobReader(@JsonProperty("content") String content, @JsonProperty("name") String name) {
+            super(content, "text/plain", StandardCharsets.UTF_8.name(), name);
+        }
+    }
+
 }

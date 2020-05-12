@@ -58,6 +58,8 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
             manifestBlob.setFilename("MANIFEST.MF");
             doc.setPropertyValue(NuxeoArtifact.CONTENT_PROPERTY_PATH, (Serializable) manifestBlob);
         }
+        doc.setPropertyValue(PROP_README, (Serializable) bundleInfo.getReadme());
+        doc.setPropertyValue(PROP_PARENT_README, (Serializable) bundleInfo.getParentReadme());
 
         if (exist) {
             doc = session.saveDocument(doc);
@@ -138,6 +140,16 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public String getArtifactType() {
         return TYPE_NAME;
+    }
+
+    @Override
+    public Blob getReadme() {
+        return safeGet(PROP_README);
+    }
+
+    @Override
+    public Blob getParentReadme() {
+        return safeGet(PROP_PARENT_README);
     }
 
 }

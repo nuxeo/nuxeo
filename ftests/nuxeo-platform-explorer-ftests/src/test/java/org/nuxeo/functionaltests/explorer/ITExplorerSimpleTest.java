@@ -107,4 +107,10 @@ public class ITExplorerSimpleTest extends AbstractExplorerTest {
         checkBundles();
     }
 
+    @Test
+    public void testBundlesGroups() {
+        open(LiveSimplePage.URL + ApiBrowserConstants.LIST_BUNDLEGROUPS);
+        checkBundleGroups();
+    }
+
 }

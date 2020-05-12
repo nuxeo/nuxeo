@@ -25,6 +25,7 @@
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="file" />
+      <schema name="files" />
       <schema name="nxbundlegroup" />
 
       <facet name="Commentable" />
