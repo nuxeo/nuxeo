@@ -202,16 +202,18 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
     Map<String, PluginSnapshot<?>> getPluginSnapshots();
 
     static ObjectMapper jsonMapper() {
-        final ObjectMapper mapper = new ObjectMapper().registerModule(
-                new SimpleModule().addAbstractTypeMapping(DistributionSnapshot.class, RuntimeSnapshot.class)
-                                  .addAbstractTypeMapping(BundleInfo.class, BundleInfoImpl.class)
-                                  .addAbstractTypeMapping(BundleGroup.class, BundleGroupImpl.class)
-                                  .addAbstractTypeMapping(ComponentInfo.class, ComponentInfoImpl.class)
-                                  .addAbstractTypeMapping(ExtensionPointInfo.class, ExtensionPointInfoImpl.class)
-                                  .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
-                                  .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
-                                  .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
-                                  .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class));
+        final ObjectMapper mapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addAbstractTypeMapping(DistributionSnapshot.class, RuntimeSnapshot.class)
+              .addAbstractTypeMapping(BundleInfo.class, BundleInfoImpl.class)
+              .addAbstractTypeMapping(BundleGroup.class, BundleGroupImpl.class)
+              .addAbstractTypeMapping(ComponentInfo.class, ComponentInfoImpl.class)
+              .addAbstractTypeMapping(ExtensionPointInfo.class, ExtensionPointInfoImpl.class)
+              .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
+              .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
+              .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
+              .addAbstractTypeMapping(DocumentationItem.class, ResourceDocumentationItem.class);
+        mapper.registerModule(module);
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);
         mapper.addMixIn(ComponentName.class, ComponentNameMixin.class);
         return mapper;
