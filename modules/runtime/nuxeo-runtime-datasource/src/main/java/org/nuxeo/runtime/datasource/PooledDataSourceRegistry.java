@@ -37,6 +37,8 @@ import javax.transaction.TransactionSynchronizationRegistry;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
+import org.apache.commons.dbcp2.managed.TransactionRegistry;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.runtime.RuntimeServiceException;
@@ -76,6 +78,19 @@ public class PooledDataSourceRegistry {
         @Override
         protected ConnectionFactory createConnectionFactory() throws SQLException {
             ConnectionFactory connectionFactory = super.createConnectionFactory();
+            if (getXADataSource() == null) {
+                // fix for https://issues.apache.org/jira/browse/DBCP-564
+                // in non-XA mode, the transactionRegistry computed by super isn't enough,
+                // we need one that includes the JTA TransactionSynchronizationRegistry
+                try {
+                    TransactionRegistry transactionRegistry = new TransactionRegistry(getTransactionManager(),
+                            getTransactionSynchronizationRegistry());
+                    FieldUtils.writeField(this, "transactionRegistry", transactionRegistry, true);
+                    FieldUtils.writeField(connectionFactory, "transactionRegistry", transactionRegistry, true);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeServiceException(e);
+                }
+            }
             configureXADataSource(getXaDataSourceInstance());
             return connectionFactory;
         }
