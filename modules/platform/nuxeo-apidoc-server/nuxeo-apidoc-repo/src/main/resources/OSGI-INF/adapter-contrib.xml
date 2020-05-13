@@ -2,6 +2,9 @@
 <component name="org.nuxeo.apidoc.adapterContrib">
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
+    <documentation>
+      These contributions provide a mapping between live introspections and persisted representations of a distribution.
+    </documentation>
 
     <adapter type="NXBundleGroup" class="org.nuxeo.apidoc.api.BundleGroup"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />

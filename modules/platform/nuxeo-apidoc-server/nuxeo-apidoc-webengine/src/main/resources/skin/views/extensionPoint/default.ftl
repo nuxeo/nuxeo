@@ -16,9 +16,13 @@
       <li><a href="#contribute">Existing Contributions</a></li>
     </ul>
   </div>
-  <div class="description">
-    ${nxItem.documentationHtml}
-  </div>
+
+  <#if nxItem.documentationHtml?has_content>
+    <h2>Documentation</h2>
+    <div class="documentation">
+      ${nxItem.documentationHtml}
+    </div>
+  </#if>
 
   <h2>Contribution Descriptor</h2>
   <ul>
@@ -29,7 +33,7 @@
   </ul>
 
   <#if nxItem.extensions?size gt 0>
-    <h2 id="contribute">Existing Contributions </h2>
+    <h2 id="contribute">Existing Contributions</h2>
     <input type="search" id="searchField" placeholder="Text in contributions"/>
     <input type="button" value="search" onclick="searchContrib($('#searchField').val());"/>
     <span id="searchMatchResult"></span>
@@ -74,7 +78,7 @@
           ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
           </a>
           &nbsp;
-          <a class="override" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?contributionId=${contrib.id}" target="_blank">
+          <a class="override button" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?contributionId=${contrib.id}" target="_blank">
           Override
           </a>
         </div>

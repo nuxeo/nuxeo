@@ -884,6 +884,11 @@ code, code span {
   border-top: 1px solid #eee;
 }
 
+.block-list li .block-description {
+  padding-left: 1em;
+  display: block;
+}
+
 .block-list pre {
   margin: 0;
 }
@@ -1208,4 +1213,8 @@ table.gsc-table-result td {
   list-style: none;
   padding-left: 0;
   margin-left: 0;
+}
+
+.override {
+  font-weight: normal;
 }

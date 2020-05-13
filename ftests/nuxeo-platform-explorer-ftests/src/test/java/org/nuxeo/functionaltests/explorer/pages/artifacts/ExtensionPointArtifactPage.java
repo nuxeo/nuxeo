@@ -36,6 +36,23 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
     public void checkReference() {
         checkCommon("Extension point org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
                 "Extension point plugins", "In component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
+        checkDocumentationText(
+                "A plugin can introspect and persist information related to the current runtime environment.\n" //
+                        + "Sample contribution:\n" //
+                        + "        <extension point=\"plugins\" target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n" //
+                        + "            <plugin class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n" //
+                        + "                id=\"seam\" snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n" //
+                        + "                <ui>\n" //
+                        + "                    <label>Seam Components</label>\n" //
+                        + "                    <viewType>seam</viewType>\n" //
+                        + "                    <homeView>listSeamComponents</homeView>\n" //
+                        + "                    <styleClass>seam</styleClass>\n" //
+                        + "                </ui>\n" //
+                        + "            </plugin>\n" //
+                        + "        </extension>\n" //
+                        + "The class should implement the org.nuxeo.apidoc.plugin.Plugin interface.\n" //
+                        + "UI elements are used for rendering on webengine pages. The view type should match a webengine resource type, and the module holding this resource should be contributed to the main webengine module as a fragment using:\n" //
+                        + "          Fragment-Host: org.nuxeo.apidoc.webengine");
     }
 
     @Override

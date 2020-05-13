@@ -76,12 +76,7 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
     }
 
     public void checkDescription(String expected) {
-        try {
-            assertEquals(expected, description.getText());
-        } catch (NoSuchElementException e) {
-            // description is not mandatory on all pages
-            assertNull(expected);
-        }
+        checkTextIfExists(expected, description);
     }
 
     public void checkDocumentationText(String expected) {

@@ -136,7 +136,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
 
     @Test
     public void testContributionsAlternative() {
-        goToArtifact(ExtensionInfo.TYPE_NAME, "org.nuxeo.apidoc.doctypeContrib--doctype");
+        goToArtifact(ExtensionInfo.TYPE_NAME, "org.nuxeo.apidoc.listener.contrib--listener");
         ContributionArtifactPage apage = asPage(ContributionArtifactPage.class);
         apage.checkAlternative();
     }

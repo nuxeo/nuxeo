@@ -10,9 +10,6 @@
 
 <div class="tabscontent">
 
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
-
   <h2>Implementation</h2>
   <p><b>${nxItem.id}</b></p>
   <p><div id="shortjavadoc" class="description"></div></p>

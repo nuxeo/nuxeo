@@ -13,8 +13,12 @@
   This contribution is part of XML component <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a>
   inside ${nxItem.component.bundle.fileName} ${nxItem.component.xmlFileName}
 
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
+  <#if nxItem.documentationHtml?has_content>
+    <h2>Documentation</h2>
+    <div class="documentation">
+      ${nxItem.documentationHtml}
+    </div>
+  </#if>
 
   <h2>Extension point</h2>
   Extension point
@@ -33,8 +37,12 @@
         <div class="block-title">
           <input id="${contributionItem.id}" type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none" checked/>
           <label for="${contributionItem.id}">${contributionItem.label}</label>
-          <span>${contributionItem.documentation}</span>
         </div>
+        <#if nxItem.documentationHtml?has_content>
+          <div class="block-description">
+            ${contributionItem.documentation}
+          </div>
+        </#if>
       </li>
     </#list>
     </ul>

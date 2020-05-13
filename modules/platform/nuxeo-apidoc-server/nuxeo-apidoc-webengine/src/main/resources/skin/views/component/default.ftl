@@ -10,8 +10,12 @@
 
 <div class="tabscontent">
 
-  <h2>Documentation</h2>
-  ${nxItem.documentationHtml}
+  <#if nxItem.documentationHtml?has_content>
+    <h2>Documentation</h2>
+    <div class="documentation">
+      ${nxItem.documentationHtml}
+    </div>
+  </#if>
 
   <#if nxItem.requirements?size gt 0>
     <h2>Requirements</h2>
