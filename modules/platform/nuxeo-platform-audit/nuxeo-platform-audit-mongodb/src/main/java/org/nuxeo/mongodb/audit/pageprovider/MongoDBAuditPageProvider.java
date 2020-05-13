@@ -24,6 +24,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -59,6 +61,8 @@ import com.mongodb.client.model.Sorts;
 public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> implements PageProvider<LogEntry> {
 
     private static final long serialVersionUID = 1L;
+
+    private static final Logger log = LogManager.getLogger(MongoDBAuditPageProvider.class);
 
     private static final String EMPTY_QUERY = "{}";
 
@@ -315,15 +319,22 @@ public class MongoDBAuditPageProvider extends AbstractPageProvider<LogEntry> imp
 
     private Bson buildSearchFilter(String fixedPart, PredicateDefinition[] predicates,
             DocumentModel searchDocumentModel) {
-        Document fixedFilter = Document.parse(fixedPart);
-        BsonDocument filter = buildFilter(predicates, searchDocumentModel).toBsonDocument(BsonDocument.class,
-                getMongoDBBackend().getAuditCollection().getCodecRegistry());
-        if (fixedFilter.isEmpty()) {
-            return filter;
-        } else if (filter.isEmpty()) {
-            return fixedFilter;
-        } else {
-            return Filters.and(fixedFilter, filter);
+        try {
+            Document fixedFilter = Document.parse(fixedPart);
+            BsonDocument filter = buildFilter(predicates, searchDocumentModel).toBsonDocument(BsonDocument.class,
+                    getMongoDBBackend().getAuditCollection().getCodecRegistry());
+            if (fixedFilter.isEmpty()) {
+                return filter;
+            } else if (filter.isEmpty()) {
+                return fixedFilter;
+            } else {
+                return Filters.and(fixedFilter, filter);
+            }
+        } catch (RuntimeException e) { // NOSONAR
+            // catch everything to detect what's going wrong, see NXP-29101
+            log.error("Error during search filter construction, fixedPart: {}, predicates: {}, searchDocumentModel: {}",
+                    fixedPart, predicates, searchDocumentModel);
+            throw new NuxeoException("Unable to build search filter", e);
         }
     }
 
