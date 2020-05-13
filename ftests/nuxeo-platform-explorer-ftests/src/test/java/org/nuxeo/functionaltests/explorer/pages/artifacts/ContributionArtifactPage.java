@@ -21,11 +21,16 @@ package org.nuxeo.functionaltests.explorer.pages.artifacts;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @since 11.1
  */
 public class ContributionArtifactPage extends ArtifactPage {
+
+    @FindBy(xpath = "//ul[@class='block-list']")
+    public WebElement contributionsList;
 
     public ContributionArtifactPage(WebDriver driver) {
         super(driver);
@@ -36,19 +41,38 @@ public class ContributionArtifactPage extends ArtifactPage {
         checkCommon("Contribution org.nuxeo.apidoc.adapterContrib--adapters",
                 "Contribution org.nuxeo.apidoc.adapterContrib--adapters",
                 "In component org.nuxeo.apidoc.adapterContrib");
+        checkDocumentationText("These contributions provide a mapping between live introspections "
+                + "and persisted representations of a distribution.");
     }
 
     @Override
     public void checkAlternative() {
-        checkCommon("Contribution org.nuxeo.apidoc.doctypeContrib--doctype",
-                "Contribution org.nuxeo.apidoc.doctypeContrib--doctype",
-                "In component org.nuxeo.apidoc.doctypeContrib");
+        checkCommon("Contribution org.nuxeo.apidoc.listener.contrib--listener",
+                "Contribution org.nuxeo.apidoc.listener.contrib--listener",
+                "In component org.nuxeo.apidoc.listener.contrib");
+        checkDocumentationText("These contributions are used for latest distribution flag update "
+                + "and XML attributes extractions in extension points.");
+        checkContributionItemText(1,
+                "<listener async=\"false\" class=\"org.nuxeo.apidoc.listener.LatestDistributionsListener\" name=\"latestDistributionsListener\" postCommit=\"false\">\n" //
+                        + "      <documentation>\n" //
+                        + "        Updates latest distribution flag.\n" //
+                        + "      </documentation>\n" //
+                        + "      <event>aboutToCreate</event>\n" //
+                        + "      <event>beforeDocumentModification</event>\n" //
+                        + "    </listener>\n" //
+                        + "listener latestDistributionsListener\n" //
+                        + "Updates latest distribution flag.");
     }
 
     @Override
     public void checkSelectedTab() {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header.checkSelectedTab(header.contributions);
+    }
+
+    public void checkContributionItemText(int index, String expected) {
+        WebElement element = contributionsList.findElement(By.xpath(".//li[" + index + "]"));
+        checkTextIfExists(expected, element);
     }
 
     public void toggleGenerateOverride() {

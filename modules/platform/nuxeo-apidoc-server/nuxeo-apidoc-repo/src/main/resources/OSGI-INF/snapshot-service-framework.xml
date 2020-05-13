@@ -1,5 +1,13 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent">
+  <documentation>
+    <p>
+      This component handles the introspection of the current live Runtime as a distribution.
+    </p>
+    <p>
+      It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.
+    </p>
+  </documentation>
   <implementation class="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" />
 
   <service>

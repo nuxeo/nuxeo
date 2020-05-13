@@ -155,9 +155,10 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         listing.checkListing(-1, "actions.ActionService", "/viewComponent/org.nuxeo.ecm.platform.actions.ActionService",
                 "JAVA org.nuxeo.ecm.platform.actions.ActionService");
 
-        listing = listing.filterOn("org.nuxeo.apidoc");
-        listing.checkListing(6, "apidoc.adapterContrib", "/viewComponent/org.nuxeo.apidoc.adapterContrib",
-                "XML org.nuxeo.apidoc.adapterContrib");
+        listing = listing.filterOn("org.nuxeo.apidoc").toggleSort();
+        listing.checkListing(6, "apidoc.snapshot.SnapshotManagerComponent",
+                "/viewComponent/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
+                "JAVA org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
 
         listing.navigateToFirstItem();
         ComponentArtifactPage apage = asPage(ComponentArtifactPage.class);

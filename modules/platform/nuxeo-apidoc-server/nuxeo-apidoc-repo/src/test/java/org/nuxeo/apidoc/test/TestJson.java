@@ -271,8 +271,19 @@ public class TestJson extends AbstractApidocTest {
         assertNotNull(smcomp);
         assertEquals(ComponentInfo.TYPE_NAME, smcomp.getArtifactType());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getComponentClass());
-        assertNull(smcomp.getDocumentation());
-        assertEquals("", smcomp.getDocumentationHtml());
+        assertEquals("<p>\n" //
+                + "      This component handles the introspection of the current live Runtime as a distribution.\n" //
+                + "    </p>\n" //
+                + "<p>\n" //
+                + "      It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.\n" //
+                + "    </p>\n", smcomp.getDocumentation());
+        assertEquals("<p/>\n" //
+                + "<p>\n" //
+                + "This component handles the introspection of the current live Runtime as a distribution.\n" //
+                + "</p>\n" //
+                + "<p>\n" //
+                + "It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.\n" //
+                + "</p>", smcomp.getDocumentationHtml());
         assertEquals(
                 "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
                 smcomp.getHierarchyPath());
@@ -309,8 +320,6 @@ public class TestJson extends AbstractApidocTest {
         ExtensionPointInfo xp = smcomp.getExtensionPoints().get(0);
         assertEquals(ExtensionPointInfo.TYPE_NAME, xp.getArtifactType());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", xp.getComponentId());
-        assertNotNull(xp.getDocumentation());
-        assertNotNull(xp.getDocumentationHtml());
         assertEquals(
                 "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/ExtensionPoints/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
                 xp.getHierarchyPath());
@@ -321,6 +330,69 @@ public class TestJson extends AbstractApidocTest {
         assertNotNull(xp.getDescriptors());
         assertEquals(1, xp.getDescriptors().length);
         assertEquals("org.nuxeo.apidoc.plugin.PluginDescriptor", xp.getDescriptors()[0]);
+        assertEquals("<p>\n" //
+                + "        A plugin can introspect and persist information related to the current runtime environment.\n" //
+                + "      </p>\n" //
+                + "<p>\n" //
+                + "        Sample contribution:\n" //
+                + "        <code>\n" //
+                + "        <extension point=\"plugins\" target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n" //
+                + "            <plugin class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n" //
+                + "                id=\"seam\" snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n" //
+                + "                <ui>\n" //
+                + "                    <label>Seam Components</label>\n" //
+                + "                    <viewType>seam</viewType>\n" //
+                + "                    <homeView>listSeamComponents</homeView>\n" //
+                + "                    <styleClass>seam</styleClass>\n" //
+                + "                </ui>\n" //
+                + "            </plugin>\n" //
+                + "        </extension>\n" //
+                + "    </code>\n" //
+                + "</p>\n" //
+                + "<p>\n" //
+                + "        The class should implement the\n" //
+                + "        <b>org.nuxeo.apidoc.plugin.Plugin</b>\n" //
+                + "        interface.\n" //
+                + "      </p>\n" //
+                + "<p>\n" //
+                + "        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\n" //
+                + "        and\n" //
+                + "        the module holding this resource should be contributed to the main webengine module as a fragment using:\n" //
+                + "        <code>\n" //
+                + "          Fragment-Host: org.nuxeo.apidoc.webengine\n" //
+                + "        </code>\n" //
+                + "</p>\n", xp.getDocumentation());
+        assertEquals("<p/>\n" //
+                + "<p>\n" //
+                + "A plugin can introspect and persist information related to the current runtime environment.\n" //
+                + "</p>\n" //
+                + "<p>\n" //
+                + "Sample contribution:\n" //
+                + "<p/><pre><code>        &lt;extension point=\"plugins\" target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n" //
+                + "            &lt;plugin class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n" //
+                + "                id=\"seam\" snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n" //
+                + "                &lt;ui>\n" //
+                + "                    &lt;label>Seam Components&lt;/label>\n" //
+                + "                    &lt;viewType>seam&lt;/viewType>\n" //
+                + "                    &lt;homeView>listSeamComponents&lt;/homeView>\n" //
+                + "                    &lt;styleClass>seam&lt;/styleClass>\n" //
+                + "                &lt;/ui>\n" //
+                + "            &lt;/plugin>\n" //
+                + "        &lt;/extension>\n" //
+                + "</code></pre><p/>\n" //
+                + "</p>\n" //
+                + "<p>\n" //
+                + "The class should implement the\n" //
+                + "<b>org.nuxeo.apidoc.plugin.Plugin</b>\n" //
+                + "interface.\n" //
+                + "</p>\n" //
+                + "<p>\n" //
+                + "UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\n" //
+                + "and\n" //
+                + "the module holding this resource should be contributed to the main webengine module as a fragment using:\n" //
+                + "<p/><pre><code>          Fragment-Host: org.nuxeo.apidoc.webengine\n" //
+                + "</code></pre><p/>\n" + //
+                "</p>", xp.getDocumentationHtml());
         // check json back reference
         assertNotNull(xp.getComponent());
 
@@ -337,10 +409,17 @@ public class TestJson extends AbstractApidocTest {
         assertEquals(ExtensionInfo.TYPE_NAME, ext.getArtifactType());
         assertNotNull(ext.getContributionItems());
         assertEquals(8, ext.getContributionItems().size());
+        assertEquals("\n" //
+                + "      These contributions provide document types that handle persistence of introspected distributions.\n" //
+                + "    \n", ext.getDocumentation());
+        assertEquals("<p/>\n" //
+                + "These contributions provide document types that handle persistence of introspected distributions.\n" //
+                + "<p/>", ext.getDocumentationHtml());
         assertEquals("NXDistribution", ext.getContributionItems().get(0).getId());
         assertEquals("doctype NXDistribution", ext.getContributionItems().get(0).getLabel());
         assertNotNull(ext.getContributionItems().get(0).getXml());
         assertNotNull(ext.getContributionItems().get(0).getRawXml());
+        assertEquals("", ext.getContributionItems().get(0).getDocumentation());
         assertEquals("org.nuxeo.ecm.core.schema.TypeService--doctype", ext.getExtensionPoint());
         assertEquals(
                 "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype",
@@ -349,6 +428,29 @@ public class TestJson extends AbstractApidocTest {
         assertEquals(version, ext.getVersion());
         // check json back reference
         assertNotNull(ext.getComponent());
+
+        // check contribution items doc on another component
+        ComponentInfo lcomp = snapshot.getComponent("org.nuxeo.apidoc.listener.contrib");
+        assertNotNull(lcomp);
+        assertNotNull(lcomp.getExtensions());
+        assertEquals(1, lcomp.getExtensions().size());
+        ExtensionInfo lext = lcomp.getExtensions().get(0);
+        assertEquals("\n" //
+                + "      These contributions are used for latest distribution flag update and XML attributes extractions in\n" //
+                + "      extension points.\n" //
+                + "    \n", lext.getDocumentation());
+        assertEquals("<p/>\n" //
+                + "These contributions are used for latest distribution flag update and XML attributes extractions in\n" //
+                + "extension points.\n" //
+                + "<p/>", lext.getDocumentationHtml());
+        assertNotNull(lext.getContributionItems());
+        assertEquals(3, lext.getContributionItems().size());
+        assertEquals("<p/>\nUpdates latest distribution flag.", lext.getContributionItems().get(0).getDocumentation());
+        assertEquals("<p/>\nListener in charge of triggering AttributesExtractorScheduler.",
+                lext.getContributionItems().get(1).getDocumentation());
+        // this last one uses tag "description" instead of "documentation"
+        assertEquals("<p/>\nSchedules a work for XML attributes extraction.",
+                lext.getContributionItems().get(2).getDocumentation());
 
         // check operations
         List<OperationInfo> operations = snapshot.getOperations();

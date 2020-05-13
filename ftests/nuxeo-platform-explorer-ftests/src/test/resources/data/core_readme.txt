@@ -1,6 +1,6 @@
 ## About nuxeo-apidoc-core
 
-This bundle provides an API to browse the Nuxeo distribution tree :
+This bundle provides an API to browse the Nuxeo distribution tree:
 
     - BundleGroup (maven group or artificial grouping)
       - Bundle
@@ -8,14 +8,13 @@ This bundle provides an API to browse the Nuxeo distribution tree :
           - Service
           - Extension Points
           - Contributions
+    - Operations
 
-This API has 2 implementation :
+This API has 2 implementations:
+ - org.nuxeo.apidoc.introspection: Nuxeo Runtime in memory introspection
+ - org.nuxeo.apidoc.adapters: DocumentModel adapters implementing the same API
 
- - org.nuxeo.apidoc.introspection : Nuxeo Runtime in memory introspection
- - org.nuxeo.apidoc.adapters : DocumentModel adapters implementing the same API
+The following documentation items are also extracted:
 
-In addition a DocumentationService is provided to be able to :
-
- - extract Documentation that is built-in Nuxeo Runtime descriptors
- - extract Documentation that may be embedded inside the jar
- - add some use documentation (How to, Code samples ...)
+ - documentation that is built-in Nuxeo Runtime descriptors
+ - readme files that may be embedded inside the jar

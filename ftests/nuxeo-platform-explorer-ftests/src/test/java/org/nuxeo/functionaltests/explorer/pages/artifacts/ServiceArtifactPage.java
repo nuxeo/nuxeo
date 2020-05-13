@@ -35,6 +35,7 @@ public class ServiceArtifactPage extends ArtifactPage {
         checkCommon("Service org.nuxeo.apidoc.snapshot.SnapshotManager",
                 "Service org.nuxeo.apidoc.snapshot.SnapshotManager",
                 "In component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
+        checkDocumentationText(null);
     }
 
     @Override
@@ -42,6 +43,7 @@ public class ServiceArtifactPage extends ArtifactPage {
         checkCommon("Service org.nuxeo.ecm.platform.types.TypeManager",
                 "Service org.nuxeo.ecm.platform.types.TypeManager",
                 "In component org.nuxeo.ecm.platform.types.TypeService");
+        checkDocumentationText(null);
     }
 
     @Override
