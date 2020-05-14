@@ -25,12 +25,17 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.automation.scripting.internals.ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
+import org.nuxeo.ecm.automation.core.impl.OperationTypeImpl;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
+import org.nuxeo.ecm.automation.core.operations.document.SaveDocument;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.test.AutomationServerFeature;
+import org.nuxeo.ecm.automation.test.helpers.TestOperation;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -71,7 +76,35 @@ public class TestOperationRegistration {
             // should not happen
         }
         assertEquals(DummyCreateDocument.class, op.getType());
+    }
 
+    @Test
+    @Deploy("org.nuxeo.ecm.automation.test.test:operation-contrib.xml")
+    @Deploy("org.nuxeo.ecm.automation.test.test:chain-scripting-operation-contrib.xml")
+    public void testContributingComponent() throws Exception {
+        OperationType op = service.getOperation(SaveDocument.ID);
+        assertEquals("service:org.nuxeo.ecm.core.automation.coreContrib", op.getContributingComponent());
+        // check operation from another component
+        op = service.getOperation(TestOperation.ID);
+        assertTrue(op instanceof OperationTypeImpl);
+        assertEquals("service:org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
+        // check chains
+        op = service.getOperation("FileManager.ImportWithMetaData");
+        assertTrue(op instanceof ChainTypeImpl);
+        assertEquals("service:org.nuxeo.ecm.core.automation.features.operations", op.getContributingComponent());
+        // check chain from another component
+        op = service.getOperation("testChain");
+        assertTrue(op instanceof ChainTypeImpl);
+        assertEquals("service:org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
+        // check chain old-style
+        op = service.getOperation("testChain2");
+        assertTrue(op instanceof ChainTypeImpl);
+        assertEquals("service:org.nuxeo.automation.rest.test.chainScriptingOperationContrib",
+                op.getContributingComponent());
+        // check scripting
+        op = service.getOperation("javascript.RemoteScriptWithDoc");
+        assertTrue(op instanceof ScriptingOperationTypeImpl);
+        assertEquals("service:org.nuxeo.automation.rest.test.operationContrib", op.getContributingComponent());
     }
 
 }

@@ -63,9 +63,7 @@ public interface OperationType {
     OperationDocumentation getDocumentation() throws OperationException;
 
     /**
-     * Gets the name of the component that contributed the operation
-     *
-     * @return
+     * Gets the name of the component that contributed the operation.
      */
     String getContributingComponent();
 
@@ -74,7 +72,7 @@ public interface OperationType {
     /**
      * @since 5.7.2
      */
-    public List<InvokableMethod> getMethods();
+    List<InvokableMethod> getMethods();
 
     @Override
     int hashCode();
