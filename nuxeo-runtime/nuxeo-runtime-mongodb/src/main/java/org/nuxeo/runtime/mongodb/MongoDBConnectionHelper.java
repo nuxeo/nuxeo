@@ -31,6 +31,11 @@ import java.util.stream.StreamSupport;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtilsBean;
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.FluentPropertyBeanIntrospector;
+import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +45,11 @@ import org.apache.http.ssl.SSLContexts;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.ReadConcern;
+import com.mongodb.ReadConcernLevel;
+import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
@@ -58,6 +67,49 @@ public class MongoDBConnectionHelper {
     private static final int MONGODB_OPTION_CONNECTION_TIMEOUT_MS = 30000;
 
     private static final int MONGODB_OPTION_SOCKET_TIMEOUT_MS = 60000;
+
+    /** @since 11.1 */
+    public static class ReadPreferenceConverter implements Converter {
+
+        public static final ReadPreferenceConverter INSTANCE = new ReadPreferenceConverter();
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T convert(Class<T> type, Object value) {
+            return (T) ReadPreference.valueOf((String) value);
+        }
+    }
+
+    /** @since 11.1 */
+    public static class ReadConcernConverter implements Converter {
+
+        public static final ReadConcernConverter INSTANCE = new ReadConcernConverter();
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T convert(Class<T> type, Object value) {
+            ReadConcern readConcern;
+            if ("default".equalsIgnoreCase((String) value)) {
+                readConcern = ReadConcern.DEFAULT;
+            } else {
+                ReadConcernLevel level = ReadConcernLevel.fromString((String) value);
+                readConcern = new ReadConcern(level);
+            }
+            return (T) readConcern;
+        }
+    }
+
+    /** @since 11.1 */
+    public static class WriteConcernConverter implements Converter {
+
+        public static final WriteConcernConverter INSTANCE = new WriteConcernConverter();
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T convert(Class<T> type, Object value) {
+            return (T) WriteConcern.valueOf((String) value);
+        }
+    }
 
     private MongoDBConnectionHelper() {
         // Empty
@@ -100,13 +152,7 @@ public class MongoDBConnectionHelper {
         if (StringUtils.isBlank(server)) {
             throw new RuntimeException("Missing <server> in MongoDB descriptor");
         }
-        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder()
-                  // can help to prevent firewall disconnecting inactive connection, option not available from URI
-                  .socketKeepAlive(true)
-                  // don't wait forever by default, can be overridden using URI options
-                  .connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS)
-                  .socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS)
-                  .description("Nuxeo");
+        MongoClientOptions.Builder optionsBuilder = MongoClientOptions.builder().applicationName("Nuxeo");
         SSLContext sslContext = getSSLContext(config);
         if (sslContext == null) {
             if (config.ssl != null) {
@@ -116,9 +162,30 @@ public class MongoDBConnectionHelper {
             optionsBuilder.sslEnabled(true);
             optionsBuilder.sslContext(sslContext);
         }
+
+        // don't wait forever by default when connecting
+        optionsBuilder.connectTimeout(MONGODB_OPTION_CONNECTION_TIMEOUT_MS);
+        optionsBuilder.socketTimeout(MONGODB_OPTION_SOCKET_TIMEOUT_MS);
+
+        // set properties from Nuxeo config descriptor
+        ConvertUtilsBean convertUtils = new ConvertUtilsBean();
+        convertUtils.register(ReadPreferenceConverter.INSTANCE, ReadPreference.class);
+        convertUtils.register(ReadConcernConverter.INSTANCE, ReadConcern.class);
+        convertUtils.register(WriteConcernConverter.INSTANCE, WriteConcern.class);
+        PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
+        propertyUtils.addBeanIntrospector(new FluentPropertyBeanIntrospector(""));
+        BeanUtilsBean beanUtils = new BeanUtilsBean(convertUtils, propertyUtils);
+        try {
+            beanUtils.populate(optionsBuilder, config.properties);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+
+        // hook for caller to set additional properties
         if (optionsConsumer != null) {
             optionsConsumer.accept(optionsBuilder);
         }
+
         MongoClient client;
         if (server.startsWith("mongodb://") || server.startsWith("mongodb+srv://")) {
             // allow mongodb*:// URI syntax for the server, to pass everything in one string
