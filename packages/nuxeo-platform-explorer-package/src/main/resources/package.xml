@@ -15,9 +15,6 @@
     <platform>server-@VERSION@</platform>
     <platform>server-@VERSION@-*</platform>
   </platforms>
-  <conflicts>
-    <package>nuxeo-quota</package>
-  </conflicts>
   <hotreload-support>false</hotreload-support>
   <supported>true</supported>
   <require-terms-and-conditions-acceptance>true
