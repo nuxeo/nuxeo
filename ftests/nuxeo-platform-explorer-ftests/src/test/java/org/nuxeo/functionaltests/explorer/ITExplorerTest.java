@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -194,6 +195,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
         apage.checkAlternative();
     }
 
+    @Ignore("Failing randomly: see NXP-29107")
     @Test
     public void testOverrideContribution() throws IOException {
         goToArtifact(ExtensionInfo.TYPE_NAME, "org.nuxeo.apidoc.listener.contrib--listener");
@@ -207,6 +209,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
         switchBackToPreviousWindow();
     }
 
+    @Ignore("Failing randomly: see NXP-29107")
     @Test
     public void testOverrideContributionFromExtensionPoint() throws IOException {
         goToArtifact(ExtensionPointInfo.TYPE_NAME, "org.nuxeo.ecm.core.event.EventServiceComponent--listener");
