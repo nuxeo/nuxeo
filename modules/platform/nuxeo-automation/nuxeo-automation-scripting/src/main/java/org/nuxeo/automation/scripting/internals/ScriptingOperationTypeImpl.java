@@ -54,7 +54,7 @@ public class ScriptingOperationTypeImpl implements OperationType {
 
     @Override
     public String getContributingComponent() {
-        return "org.nuxeo.automation.scripting.internals.AutomationScriptingComponent";
+        return desc.getContributingComponent();
     }
 
     @Override

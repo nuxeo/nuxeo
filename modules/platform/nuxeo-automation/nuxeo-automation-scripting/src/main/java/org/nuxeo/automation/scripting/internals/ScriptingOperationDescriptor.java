@@ -53,6 +53,13 @@ public class ScriptingOperationDescriptor {
     @XNode("script")
     protected String source;
 
+    /**
+     * Information setup at registration according to registering component name.
+     *
+     * @since 11.1
+     */
+    protected String contributingComponent;
+
     public String[] getAliases() {
         return aliases;
     }
@@ -79,6 +86,20 @@ public class ScriptingOperationDescriptor {
 
     public OperationDocumentation.Param[] getParams() {
         return params;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public String getContributingComponent() {
+        return contributingComponent;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public void setContributingComponent(String contributingComponent) {
+        this.contributingComponent = contributingComponent;
     }
 
 }

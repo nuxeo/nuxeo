@@ -72,10 +72,23 @@ public class ChainTypeImpl implements OperationType {
      */
     protected OperationChainContribution contribution;
 
+    /**
+     * @deprecated since 11.1, see other constructor
+     */
+    @Deprecated
     public ChainTypeImpl(AutomationService service, OperationChain chain, OperationChainContribution contribution) {
+        this(service, chain, contribution, null);
+    }
+
+    /**
+     * @since 11.1
+     */
+    public ChainTypeImpl(AutomationService service, OperationChain chain, OperationChainContribution contribution,
+            String contributingComponent) {
         this.service = service;
         this.contribution = contribution;
         this.chain = chain;
+        this.contributingComponent = contributingComponent;
     }
 
     public OperationChain getChain() {
@@ -313,7 +326,7 @@ public class ChainTypeImpl implements OperationType {
 
     public static ChainTypeImpl typeof(OperationChain chain, boolean replace) {
         return new ChainTypeImpl(Framework.getService(AutomationService.class), chain,
-                OperationChainContribution.contribOf(chain, replace));
+                OperationChainContribution.contribOf(chain, replace), null);
     }
 
 }
