@@ -112,13 +112,21 @@ public class EmbeddedDocExtractor {
 
     /**
      * Returns 0 if not a doc, 1 if local doc, 2 if parent doc.
+     *
+     * @implNote kept in compliance with maven-resources-plugin configuration on nuxeo global maven pom.
+     * @since 11.1
      */
-    protected static int isReadme(String name) {
+    public static int isReadme(String name) {
+        if (name == null) {
+            return 0;
+        }
         boolean isDoc = name.startsWith(DOC_PREFIX);
         boolean isParentDoc = name.startsWith(PARENT_DOC_PREFIX);
         if (isDoc || isParentDoc) {
-            String filename = new Path(name).lastSegment();
-            if (filename.length() >= 6 && filename.substring(0, 6).equalsIgnoreCase("readme")) {
+            Path path = new Path(name);
+            String filename = path.lastSegment();
+            if ("md".equals(path.getFileExtension()) && filename.length() >= 6
+                    && filename.substring(0, 6).equalsIgnoreCase("readme")) {
                 return isDoc ? 1 : 2;
             }
         }
