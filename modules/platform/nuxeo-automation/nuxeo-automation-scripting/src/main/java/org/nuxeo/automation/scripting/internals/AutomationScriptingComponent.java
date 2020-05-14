@@ -69,7 +69,9 @@ public class AutomationScriptingComponent extends DefaultComponent {
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (XP_OPERATION.equals(extensionPoint)) {
-            registry.addContribution((ScriptingOperationDescriptor) contribution);
+            ScriptingOperationDescriptor desc = (ScriptingOperationDescriptor) contribution;
+            desc.setContributingComponent(contributor.getName().toString());
+            registry.addContribution(desc);
         } else if (XP_CLASSFILTER.equals(extensionPoint)) {
             registerClassFilter((ClassFilterDescriptor) contribution);
         } else {

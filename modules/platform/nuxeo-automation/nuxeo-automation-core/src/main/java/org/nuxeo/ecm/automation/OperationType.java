@@ -63,9 +63,7 @@ public interface OperationType {
     OperationDocumentation getDocumentation() throws OperationException;
 
     /**
-     * Gets the name of the component that contributed the operation
-     *
-     * @return
+     * Gets the name of the component that contributed the operation.
      */
     String getContributingComponent();
 

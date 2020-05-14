@@ -145,7 +145,8 @@ public class AutomationComponent extends DefaultComponent {
             // Register the chain
             try {
                 OperationType docChainType = new ChainTypeImpl(service,
-                        occ.toOperationChain(contributor.getContext().getBundle()), occ);
+                        occ.toOperationChain(contributor.getContext().getBundle()), occ,
+                        contributor.getName().toString());
                 service.putOperation(docChainType, occ.replace);
             } catch (OperationException e) {
                 // TODO Auto-generated catch block
@@ -176,8 +177,7 @@ public class AutomationComponent extends DefaultComponent {
                 handlers.putEventHandler(eh);
             }
         } else if (XP_CONTEXT_HELPER.equals(extensionPoint)) {
-            contextHelperRegistry.addContribution((ContextHelperDescriptor)
-                    contribution);
+            contextHelperRegistry.addContribution((ContextHelperDescriptor) contribution);
         }
     }
 
@@ -207,8 +207,7 @@ public class AutomationComponent extends DefaultComponent {
                 handlers.removeEventHandler(eh);
             }
         } else if (XP_CONTEXT_HELPER.equals(extensionPoint)) {
-            contextHelperRegistry.removeContribution(
-                    (ContextHelperDescriptor) contribution);
+            contextHelperRegistry.removeContribution((ContextHelperDescriptor) contribution);
         }
     }
 
