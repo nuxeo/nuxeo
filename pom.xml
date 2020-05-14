@@ -4262,6 +4262,10 @@
         <classifier>classes</classifier>
         <scope>test</scope>
         <exclusions>
+          <exclusion>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils-core</artifactId>
+          </exclusion>
           <!-- we use official javax.servlet:javax.servlet-api instead -->
           <exclusion>
             <groupId>org.mortbay.jetty</groupId>
@@ -5728,6 +5732,12 @@
                   <exclude>dom4j:dom4j</exclude>
                 </excludes>
                 <message>dom4j:dom4j must not be used, use org.dom4j:dom4j instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>commons-beanutils:commons-beanutils-core</exclude>
+                </excludes>
+                <message>commons-beanutils:commons-beanutils-core must not be used, use commons-beanutils:commons-beanutils instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>

@@ -18,7 +18,13 @@
  */
 package org.nuxeo.runtime.mongodb;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
 
@@ -67,9 +73,31 @@ public class MongoDBConnectionConfig implements Descriptor {
     @XNode("dbname")
     public String dbname;
 
+    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
+    public Map<String, String> properties = new HashMap<>();
+
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public MongoDBConnectionConfig merge(Descriptor o) {
+        MongoDBConnectionConfig other = (MongoDBConnectionConfig) o;
+        MongoDBConnectionConfig merged = new MongoDBConnectionConfig();
+        merged.id = id;
+        merged.server = defaultString(other.server, server);
+        merged.ssl = other.ssl != null ? other.ssl : ssl;
+        merged.trustStorePath = defaultString(other.trustStorePath, trustStorePath);
+        merged.trustStorePassword = defaultString(other.trustStorePassword, trustStorePassword);
+        merged.trustStoreType = defaultString(other.trustStoreType, trustStoreType);
+        merged.keyStorePath = defaultString(other.keyStorePath, keyStorePath);
+        merged.keyStorePassword = defaultString(other.keyStorePassword, keyStorePassword);
+        merged.keyStoreType = defaultString(other.keyStoreType, keyStoreType);
+        merged.dbname = defaultString(other.dbname, dbname);
+        merged.properties.putAll(properties);
+        merged.properties.putAll(other.properties);
+        return merged;
     }
 
 }
