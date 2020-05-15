@@ -156,7 +156,7 @@ public class TestService {
     @Test
     public void testHeadersContrib() throws Exception {
         Map<String, String> rh = requestControllerManager.getResponseHeaders();
-        assertEquals(7, rh.size());
+        assertEquals(8, rh.size());
         assertTrue(rh.containsKey("WWW-Authenticate"));
         assertEquals("basic", rh.get("WWW-Authenticate"));
         assertFalse(rh.containsKey("Warning"));
