@@ -39,6 +39,13 @@ public interface MongoDBConnectionService {
     MongoClient getClient(String id);
 
     /**
+     * Gets the MongoDB configuration for the given id.
+     *
+     * @since 11.1
+     */
+    MongoDBConnectionConfig getConfig(String id);
+
+    /**
      * Gets the MongoDB database name for the given id.
      *
      * @param id the connection id

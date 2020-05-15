@@ -91,12 +91,17 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
     }
 
     @Override
-    public String getDatabaseName(String id) {
+    public MongoDBConnectionConfig getConfig(String id) {
         MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
         if (config == null) {
             config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
         }
-        return config.dbname;
+        return config;
+    }
+
+    @Override
+    public String getDatabaseName(String id) {
+        return getConfig(id).dbname;
     }
 
     @SuppressWarnings("resource") // client is closed only at stop() time

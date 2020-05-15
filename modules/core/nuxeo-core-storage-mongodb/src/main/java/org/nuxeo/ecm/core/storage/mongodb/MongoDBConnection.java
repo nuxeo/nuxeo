@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static com.mongodb.ErrorCategory.DUPLICATE_KEY;
 import static com.mongodb.ErrorCategory.fromErrorCode;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_STATUS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACE_USER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ACL;
@@ -92,6 +93,7 @@ import org.nuxeo.ecm.core.storage.dbs.DBSTransactionState.ChangeTokenUpdater;
 
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.MongoBulkWriteException;
+import com.mongodb.MongoExecutionTimeoutException;
 import com.mongodb.MongoWriteException;
 import com.mongodb.QueryOperators;
 import com.mongodb.bulk.BulkWriteError;
@@ -525,6 +527,20 @@ public class MongoDBConnection extends DBSConnectionBase {
         return findOne(filter);
     }
 
+    protected NuxeoException newQueryTimeout(MongoExecutionTimeoutException cause, Bson filter) {
+        NuxeoException exc = new NuxeoException("Query timed out after " + mongoDBRepository.maxTimeMS + " ms", cause);
+        if (filter != null) {
+            String msg;
+            if (filter instanceof Document) {
+                msg = ((Document) filter).toJson();
+            } else {
+                msg = filter.toString();
+            }
+            exc.addInfo("Filter: " + msg);
+        }
+        return exc;
+    }
+
     protected void logQuery(String id, Bson fields) {
         logQuery(converter.filterEq(KEY_ID, id), fields);
     }
@@ -636,7 +652,11 @@ public class MongoDBConnection extends DBSConnectionBase {
 
     protected boolean exists(Bson filter, Bson projection) {
         logQuery(filter, projection);
-        return find(filter).projection(projection).first() != null;
+        try {
+            return find(filter).projection(projection).first() != null;
+        } catch (MongoExecutionTimeoutException e) {
+            throw newQueryTimeout(e, filter);
+        }
     }
 
     protected State findOne(Bson filter) {
@@ -652,6 +672,8 @@ public class MongoDBConnection extends DBSConnectionBase {
     protected List<State> findAll(Bson filter) {
         try (Stream<State> stream = stream(filter)) {
             return stream.collect(Collectors.toList());
+        } catch (MongoExecutionTimeoutException e) {
+            throw newQueryTimeout(e, filter);
         }
     }
 
@@ -694,6 +716,8 @@ public class MongoDBConnection extends DBSConnectionBase {
             // the stream takes responsibility for closing the session
             completedAbruptly = false;
             return stream;
+        } catch (MongoExecutionTimeoutException e) {
+            throw newQueryTimeout(e, filter); // NOSONAR (cursor is not leaked)
         } finally {
             if (completedAbruptly) {
                 cursor.close();
@@ -750,6 +774,8 @@ public class MongoDBConnection extends DBSConnectionBase {
                     projections.add(flattener.flatten(state));
                 }
             }
+        } catch (MongoExecutionTimeoutException e) {
+            throw newQueryTimeout(e, filter);
         }
         if (countUpTo == -1) {
             // count full size
@@ -799,7 +825,13 @@ public class MongoDBConnection extends DBSConnectionBase {
         Bson keys = builder.getProjection();
         logQuery(filter, keys, null, 0, 0);
 
-        MongoCursor<Document> cursor = find(filter).projection(keys).batchSize(batchSize).iterator();
+        MongoCursor<Document> cursor;
+        try {
+            cursor = find(filter).projection(keys).batchSize(batchSize).iterator();
+            cursor.hasNext(); // check timeout asap - NOSONAR
+        } catch (MongoExecutionTimeoutException e) {
+            throw newQueryTimeout(e, filter);
+        }
         String scrollId = cursorService.registerCursor(cursor, batchSize, keepAliveSeconds);
         return scroll(scrollId);
     }
@@ -807,7 +839,11 @@ public class MongoDBConnection extends DBSConnectionBase {
     @Override
     public ScrollResult<String> scroll(String scrollId) {
         MongoDBCursorService cursorService = mongoDBRepository.getCursorService();
-        return cursorService.scroll(scrollId);
+        try {
+            return cursorService.scroll(scrollId);
+        } catch (MongoExecutionTimeoutException e) {
+            throw newQueryTimeout(e, null);
+        }
     }
 
     protected void addPrincipals(Document query, Set<String> principals) {
@@ -963,22 +999,22 @@ public class MongoDBConnection extends DBSConnectionBase {
     }
 
     protected FindIterable<Document> find(Bson filter) {
+        FindIterable<Document> it;
         if (transactionStarted) {
-            return coll.find(clientSession, filter);
+            it = coll.find(clientSession, filter);
         } else {
-            return coll.find(filter);
+            it = coll.find(filter);
         }
+        it.maxTime(mongoDBRepository.maxTimeMS, MILLISECONDS);
+        return it;
     }
 
     protected long countDocuments(Bson filter) {
-        if (transactionStarted) {
-            return coll.countDocuments(clientSession, filter);
-        } else {
-            return coll.countDocuments(filter);
-        }
+        return countDocuments(filter, new CountOptions());
     }
 
     protected long countDocuments(Bson filter, CountOptions options) {
+        options.maxTime(mongoDBRepository.maxTimeMS, MILLISECONDS);
         if (transactionStarted) {
             return coll.countDocuments(clientSession, filter, options);
         } else {
