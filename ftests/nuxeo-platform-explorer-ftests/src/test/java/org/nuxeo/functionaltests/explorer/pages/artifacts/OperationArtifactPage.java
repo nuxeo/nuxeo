@@ -110,8 +110,13 @@ public class OperationArtifactPage extends ArtifactPage {
 
     @Override
     public void checkAlternative() {
-        checkCommon("Operation Document.Create", "Operation Document.Create (Create)",
-                "In component org.nuxeo.ecm.core.automation.coreContrib");
+        checkCommon("Operation FileManager.ImportWithMetaData",
+                "Operation FileManager.ImportWithMetaData (FileManager.ImportWithMetaData)",
+                // Non-regression test for NXP-29025 as this previously stated "In component BuiltIn" for all chains
+                "In component org.nuxeo.ecm.core.automation.features.operations");
+        checkImplementationText(
+                "Implementation class org.nuxeo.ecm.automation.core.impl.OperationChainCompiler.CompiledChainImpl\n"//
+                        + "Contributing component org.nuxeo.ecm.core.automation.features.operations");
     }
 
     @Override
