@@ -18,6 +18,8 @@
  */
 package org.nuxeo.apidoc.adapters;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -29,6 +31,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 
 public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ServiceInfo {
+
+    private static final Logger log = LogManager.getLogger(ServiceInfoDocAdapter.class);
 
     public ServiceInfoDocAdapter(DocumentModel doc) {
         super(doc);

@@ -22,6 +22,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -40,6 +42,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.model.ComponentName;
 
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionInfo {
+
+    private static final Logger log = LogManager.getLogger(ExtensionInfoDocAdapter.class);
 
     public static ExtensionInfoDocAdapter create(ExtensionInfo xi, int index, CoreSession session,
             String containerPath) {

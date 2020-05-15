@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.adapters.BundleGroupDocAdapter;
 import org.nuxeo.apidoc.adapters.BundleInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ComponentInfoDocAdapter;
@@ -54,6 +54,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 
 public class SnapshotPersister {
 
+    private static final Logger log = LogManager.getLogger(SnapshotPersister.class);
+
     public static final String Root_PATH = "/";
 
     public static final String Root_NAME = "nuxeo-distributions";
@@ -65,8 +67,6 @@ public class SnapshotPersister {
     public static final String Read_Grp = "Everyone";
 
     public static final String Write_Grp = "members";
-
-    protected static final Log log = LogFactory.getLog(SnapshotPersister.class);
 
     public DocumentModel getSubRoot(CoreSession session, DocumentModel root, String name) {
 

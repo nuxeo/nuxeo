@@ -24,8 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -39,7 +39,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 
 public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
-    protected static final Log log = LogFactory.getLog(BaseNuxeoArtifactDocAdapter.class);
+    private static final Logger log = LogManager.getLogger(BaseNuxeoArtifactDocAdapter.class);
 
     protected final DocumentModel doc;
 

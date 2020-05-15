@@ -21,6 +21,8 @@ package org.nuxeo.apidoc.adapters;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
@@ -38,6 +40,8 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
+
+    private static final Logger log = LogManager.getLogger(ExtensionPointInfoDocAdapter.class);
 
     public static ExtensionPointInfoDocAdapter create(ExtensionPointInfo xpi, CoreSession session,
             String containerPath) {

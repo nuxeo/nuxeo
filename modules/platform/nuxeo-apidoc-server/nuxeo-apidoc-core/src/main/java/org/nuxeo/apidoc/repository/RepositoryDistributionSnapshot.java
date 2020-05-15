@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -58,6 +60,8 @@ import org.nuxeo.runtime.api.Framework;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter implements DistributionSnapshot {
+
+    private static final Logger log = LogManager.getLogger(RepositoryDistributionSnapshot.class);
 
     protected JavaDocHelper jdocHelper = null;
 

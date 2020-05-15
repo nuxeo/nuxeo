@@ -37,8 +37,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -73,7 +73,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 public class SnapshotManagerComponent extends DefaultComponent implements SnapshotManager {
 
-    private static final Log log = LogFactory.getLog(SnapshotManagerComponent.class);
+    private static final Logger log = LogManager.getLogger(SnapshotManagerComponent.class);
 
     /**
      * ArtifactSearcher service, moved from removed documentation service.

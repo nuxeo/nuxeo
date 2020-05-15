@@ -33,8 +33,8 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -48,6 +48,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInfo {
+
+    private static final Logger log = LogManager.getLogger(ComponentInfoImpl.class);
 
     protected final BundleInfo bundle;
 
@@ -73,8 +75,6 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     protected String componentClass;
 
     protected String documentation;
-
-    protected static final Log log = LogFactory.getLog(ComponentInfoImpl.class);
 
     public ComponentInfoImpl(BundleInfo bundleInfo, String name) {
         bundle = bundleInfo;

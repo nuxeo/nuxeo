@@ -20,8 +20,8 @@ package org.nuxeo.apidoc.tree;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public class TreeHelper {
 
-    protected static final Log log = LogFactory.getLog(TreeHelper.class);
+    private static final Logger log = LogManager.getLogger(TreeHelper.class);
 
     public static NuxeoArtifactTree getOrBuildAnonymousTree(WebContext ctx) {
         NuxeoArtifactTree tree = (NuxeoArtifactTree) ctx.getRequest()
