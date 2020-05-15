@@ -135,7 +135,7 @@ public class BackingServiceConfigurator {
 
             for (String template : configurationGenerator.getTemplateList()) {
                 try {
-                    File templateDir = configurationGenerator.getTemplateConf(template).getParentFile();
+                    File templateDir = configurationGenerator.getTemplateDirectory(template);
                     String classPath = getClasspathForTemplate(template);
                     String checkClass = configurationGenerator.getUserConfig()
                                                               .getProperty(template + PARAM_CHECK_SUFFIX);

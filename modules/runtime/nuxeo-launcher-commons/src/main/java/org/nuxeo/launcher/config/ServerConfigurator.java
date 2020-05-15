@@ -113,8 +113,8 @@ public class ServerConfigurator {
      * @return true if server configuration files already exist
      */
     protected boolean isConfigured() {
-        Path tomcatNuxeoConf = Path.of("conf", "Catalina", "localhost", getContextName() + ".xml");
-        return Files.exists(generator.getNuxeoHome().toPath().resolve(tomcatNuxeoConf));
+        Path nuxeoContext = Path.of("conf", "Catalina", "localhost", getContextName() + ".xml");
+        return Files.exists(generator.getNuxeoHome().toPath().resolve(nuxeoContext));
     }
 
     /**
@@ -125,11 +125,11 @@ public class ServerConfigurator {
         if (contextName == null) {
             Properties userConfig = generator.getUserConfig();
             if (userConfig != null) {
-                contextName = userConfig.getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME)
-                                        .substring(1);
+                contextName = userConfig.getProperty(ConfigurationGenerator.PARAM_CONTEXT_PATH, DEFAULT_CONTEXT_NAME);
             } else {
-                contextName = DEFAULT_CONTEXT_NAME.substring(1);
+                contextName = DEFAULT_CONTEXT_NAME;
             }
+            contextName = contextName.substring(1);
         }
         return contextName;
     }
@@ -141,7 +141,8 @@ public class ServerConfigurator {
      */
     protected void parseAndCopy(Properties config) throws IOException, TemplateException, ConfigurationException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
-        final FilenameFilter filter = (dir, name) -> !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name);
+        final FilenameFilter filter = (dir, name) -> !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name)
+                && !ConfigurationGenerator.NUXEO_ENVIRONMENT_CONF.equals(name);
         final TextTemplate templateParser = new TextTemplate(config);
         templateParser.setKeepEncryptedAsVar(true);
         templateParser.setTrim(true);

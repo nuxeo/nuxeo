@@ -109,6 +109,9 @@ public class ConfigurationGenerator {
 
     private static final Logger log = LogManager.getLogger(ConfigurationGenerator.class);
 
+    /** @since 11.1 */
+    public static final String NUXEO_ENVIRONMENT = System.getenv("NUXEO_ENVIRONMENT");
+
     /** @since 6.0 */
     public static final String TEMPLATE_SEPARATOR = ",";
 
@@ -127,6 +130,9 @@ public class ConfigurationGenerator {
     public static final String TEMPLATES = "templates";
 
     public static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
+
+    /** @since 11.1 */
+    public static final String NUXEO_ENVIRONMENT_CONF = String.format("nuxeo.%s", NUXEO_ENVIRONMENT);
 
     /**
      * Absolute or relative PATH to the user chosen templates (comma separated list)
@@ -325,11 +331,11 @@ public class ConfigurationGenerator {
     // User configuration file
     private final File nuxeoConf;
 
+    // nuxeo templates directory
+    private final File nuxeoTemplates;
+
     // Chosen templates
     private final List<File> includedTemplates = new ArrayList<>();
-
-    // Common default configuration file
-    private final File nuxeoDefaultConf;
 
     private final ServerConfigurator serverConfigurator;
 
@@ -408,7 +414,7 @@ public class ConfigurationGenerator {
         }
         System.setProperty(NUXEO_CONF, nuxeoConf.getPath());
 
-        nuxeoDefaultConf = new File(nuxeoHome, TEMPLATES + File.separator + NUXEO_DEFAULT_CONF);
+        nuxeoTemplates = new File(nuxeoHome, TEMPLATES);
         serverConfigurator = new ServerConfigurator(this);
         if (LoggerContext.getContext(false).getRootLogger().getAppenders().isEmpty()) {
             serverConfigurator.initLogs();
@@ -553,9 +559,12 @@ public class ConfigurationGenerator {
     }
 
     private void setBasicConfiguration(boolean save) throws ConfigurationException {
+        if (isInvalidNuxeoDefaults(nuxeoTemplates)) {
+            throw new ConfigurationException("Missing nuxeo.defaults configuration in: " + nuxeoTemplates);
+        }
         try {
             // Load default configuration
-            defaultConfig = loadTrimmedProperties(nuxeoDefaultConf);
+            defaultConfig = loadNuxeoDefaults(nuxeoTemplates);
             // Add System properties
             defaultConfig.putAll(System.getProperties());
             userConfig = new CryptoProperties(defaultConfig);
@@ -581,7 +590,7 @@ public class ConfigurationGenerator {
         } catch (NullPointerException e) {
             throw new ConfigurationException("Missing file", e);
         } catch (FileNotFoundException e) {
-            throw new ConfigurationException("Missing file: " + nuxeoDefaultConf + " or " + nuxeoConf, e);
+            throw new ConfigurationException("Missing file: " + nuxeoConf, e);
         } catch (IOException e) {
             throw new ConfigurationException("Error reading " + nuxeoConf, e);
         }
@@ -810,7 +819,7 @@ public class ConfigurationGenerator {
             File chosenTemplate = new File(nextToken);
             // is it absolute and existing or relative path ?
             if (!chosenTemplate.exists() || !chosenTemplate.getPath().equals(chosenTemplate.getAbsolutePath())) {
-                chosenTemplate = new File(nuxeoDefaultConf.getParentFile(), nextToken);
+                chosenTemplate = new File(nuxeoTemplates, nextToken);
             }
             if (includedTemplates.contains(chosenTemplate)) {
                 log.debug("Already included {}", nextToken);
@@ -823,21 +832,20 @@ public class ConfigurationGenerator {
                         nextToken, chosenTemplate, PARAM_TEMPLATES_NAME, PARAM_INCLUDED_TEMPLATES);
                 continue;
             }
-            File chosenTemplateConf = new File(chosenTemplate, NUXEO_DEFAULT_CONF);
             includedTemplates.add(chosenTemplate);
-            if (!chosenTemplateConf.exists()) {
+            if (isInvalidNuxeoDefaults(chosenTemplate)) {
                 log.warn("Ignore template (no default configuration): {}", nextToken);
                 continue;
             }
 
-            Properties subTemplateConf = loadTrimmedProperties(chosenTemplateConf);
+            Properties templateProperties = loadNuxeoDefaults(chosenTemplate);
             String subTemplatesList = replaceEnvironmentVariables(
-                    subTemplateConf.getProperty(PARAM_INCLUDED_TEMPLATES));
-            if (subTemplatesList != null && subTemplatesList.length() > 0) {
+                    templateProperties.getProperty(PARAM_INCLUDED_TEMPLATES));
+            if (StringUtils.isNotEmpty(subTemplatesList)) {
                 orderedTemplates.addAll(includeTemplates(subTemplatesList));
             }
             // Load configuration from chosen templates
-            defaultConfig.putAll(subTemplateConf);
+            defaultConfig.putAll(templateProperties);
             orderedTemplates.add(chosenTemplate);
             log.log(logLevel, "Include template: {}", chosenTemplate::getPath);
         }
@@ -875,8 +883,12 @@ public class ConfigurationGenerator {
         return nuxeoBinDir;
     }
 
+    /**
+     * @deprecated since 11.1, unused
+     */
+    @Deprecated(since = "11.1")
     public File getNuxeoDefaultConf() {
-        return nuxeoDefaultConf;
+        return new File(nuxeoTemplates, NUXEO_DEFAULT_CONF);
     }
 
     public List<File> getIncludedTemplates() {
@@ -1644,7 +1656,13 @@ public class ConfigurationGenerator {
      */
     public Map<String, String> setProperties(String template, Map<String, String> newParametersToSave)
             throws ConfigurationException, IOException {
-        File templateConf = getTemplateConf(template);
+        File templateDir = getTemplateDirectory(template);
+        File templateConf;
+        if (StringUtils.isBlank(NUXEO_ENVIRONMENT)) {
+            templateConf = new File(templateDir, NUXEO_DEFAULT_CONF);
+        } else {
+            templateConf = new File(templateDir, NUXEO_ENVIRONMENT_CONF);
+        }
         Properties templateProperties = loadTrimmedProperties(templateConf);
         Map<String, String> oldValues = new HashMap<>();
         StringBuilder newContent = new StringBuilder();
@@ -1698,8 +1716,8 @@ public class ConfigurationGenerator {
      */
     public void checkDatabaseConnection(String databaseTemplate, String dbName, String dbUser, String dbPassword,
             String dbHost, String dbPort) throws IOException, DatabaseDriverException, SQLException {
-        File databaseTemplateDir = new File(nuxeoHome, TEMPLATES + File.separator + databaseTemplate);
-        Properties templateProperties = loadTrimmedProperties(new File(databaseTemplateDir, NUXEO_DEFAULT_CONF));
+        File databaseTemplateDir = new File(nuxeoTemplates, databaseTemplate);
+        Properties templateProperties = loadNuxeoDefaults(databaseTemplateDir);
         String classname, connectionUrl;
         // check if value is set in nuxeo.conf
         if (userConfig.containsKey(PARAM_DB_DRIVER)) {
@@ -1828,12 +1846,31 @@ public class ConfigurationGenerator {
     }
 
     /**
+     * Loads the {@code nuxeo.defaults} and {@code nuxeo.NUXEO_ENVIRONMENT} files.
+     * <p/>
+     * This method assumes {@code nuxeo.defaults} exists and is readable.
+     */
+    protected static Properties loadNuxeoDefaults(File directory) throws IOException {
+        // load nuxeo.defaults
+        Properties properties = loadTrimmedProperties(new File(directory, NUXEO_DEFAULT_CONF));
+        // load nuxeo.NUXEO_ENVIRONMENT
+        File nuxeoDefaultsEnv = new File(directory, NUXEO_ENVIRONMENT_CONF);
+        if (nuxeoDefaultsEnv.exists()) {
+            loadTrimmedProperties(properties, nuxeoDefaultsEnv);
+        }
+        return properties;
+    }
+
+    /**
      * @since 5.6
      * @param propsFile Properties file
      * @return new Properties containing trimmed keys and values read in {@code propsFile}
      */
     public static Properties loadTrimmedProperties(File propsFile) throws IOException {
-        Properties props = new Properties();
+        return loadTrimmedProperties(new Properties(), propsFile);
+    }
+
+    protected static Properties loadTrimmedProperties(Properties props, File propsFile) throws IOException {
         Charset charset = checkFileCharset(propsFile);
         if (charset == null) {
             throw new IOException("Can't identify input file charset for " + propsFile.getName());
@@ -1927,19 +1964,35 @@ public class ConfigurationGenerator {
      * @return A {@code nuxeo.defaults} file if it exists.
      * @throws ConfigurationException if the template file is not found.
      * @since 7.4
+     * @deprecated since 11.1, there's several configuration files, use {@link #getTemplateDirectory(String)} instead
      */
+    @Deprecated(since = "11.1")
     public File getTemplateConf(String template) throws ConfigurationException {
+        return new File(getTemplateDirectory(template), NUXEO_DEFAULT_CONF);
+    }
+
+    /**
+     * @throws ConfigurationException if the template directory is not valid
+     * @since 11.1
+     */
+    public File getTemplateDirectory(String template) throws ConfigurationException {
+        // look for template declared with a path
         File templateDir = new File(template);
         if (!templateDir.isAbsolute()) {
+            // look for template under nuxeoBinDir
             templateDir = new File(System.getProperty("user.dir"), template);
-            if (!templateDir.exists() || !new File(templateDir, NUXEO_DEFAULT_CONF).exists()) {
-                templateDir = new File(nuxeoDefaultConf.getParentFile(), template);
+            if (isInvalidNuxeoDefaults(templateDir)) {
+                templateDir = new File(nuxeoTemplates, template);
             }
         }
-        if (!templateDir.exists() || !new File(templateDir, NUXEO_DEFAULT_CONF).exists()) {
+        if (isInvalidNuxeoDefaults(templateDir)) {
             throw new ConfigurationException("Template not found: " + template);
         }
-        return new File(templateDir, NUXEO_DEFAULT_CONF);
+        return templateDir;
+    }
+
+    protected boolean isInvalidNuxeoDefaults(File templateDir) {
+        return !templateDir.exists() || !new File(templateDir, NUXEO_DEFAULT_CONF).exists();
     }
 
     /**
