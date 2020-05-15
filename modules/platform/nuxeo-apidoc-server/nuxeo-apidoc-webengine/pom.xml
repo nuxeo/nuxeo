@@ -35,13 +35,9 @@
       <groupId>javax.transaction</groupId>
       <artifactId>javax.transaction-api</artifactId>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.wikimodel</groupId>
-      <artifactId>wem</artifactId>
     </dependency>
 
     <dependency>
