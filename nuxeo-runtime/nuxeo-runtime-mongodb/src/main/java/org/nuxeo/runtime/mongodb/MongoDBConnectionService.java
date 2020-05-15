@@ -35,6 +35,13 @@ public interface MongoDBConnectionService {
     MongoDatabase getDatabase(String id);
 
     /**
+     * Gets the MongoDB configuration for the given id.
+     *
+     * @since 11.1
+     */
+    MongoDBConnectionConfig getConfig(String id);
+
+    /**
      * @return all configured databases
      */
     Iterable<MongoDatabase> getDatabases();

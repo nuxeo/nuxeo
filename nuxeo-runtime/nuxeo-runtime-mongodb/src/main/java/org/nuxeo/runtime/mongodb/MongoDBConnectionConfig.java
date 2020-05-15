@@ -20,6 +20,7 @@ package org.nuxeo.runtime.mongodb;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,6 +74,10 @@ public class MongoDBConnectionConfig implements Descriptor {
     @XNode("dbname")
     public String dbname;
 
+    /** @since 11.1 */
+    @XNode("maxTime")
+    public Duration maxTime;
+
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
     public Map<String, String> properties = new HashMap<>();
 
@@ -95,6 +100,7 @@ public class MongoDBConnectionConfig implements Descriptor {
         merged.keyStorePassword = defaultString(other.keyStorePassword, keyStorePassword);
         merged.keyStoreType = defaultString(other.keyStoreType, keyStoreType);
         merged.dbname = defaultString(other.dbname, dbname);
+        merged.maxTime = other.maxTime != null ? other.maxTime : maxTime;
         merged.properties.putAll(properties);
         merged.properties.putAll(other.properties);
         return merged;

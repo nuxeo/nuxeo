@@ -88,6 +88,15 @@ public class MongoDBComponent extends DefaultComponent implements MongoDBConnect
         return ComponentStartOrders.REPOSITORY - 10;
     }
 
+    @Override
+    public MongoDBConnectionConfig getConfig(String id) {
+        MongoDBConnectionConfig config = getDescriptor(XP_CONNECTION, id);
+        if (config == null) {
+            config = getDescriptor(XP_CONNECTION, DEFAULT_CONNECTION_ID);
+        }
+        return config;
+    }
+
     /**
      * @param id the connection id to retrieve.
      * @return the database configured by {@link MongoDBConnectionConfig} for the input id, or the default one if it
