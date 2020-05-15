@@ -41,6 +41,11 @@ import org.nuxeo.functionaltests.explorer.pages.artifacts.ExtensionPointArtifact
 import org.nuxeo.functionaltests.explorer.pages.artifacts.OperationArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ServiceArtifactPage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * @since 11.1
@@ -196,9 +201,25 @@ public abstract class AbstractExplorerTest extends AbstractTest {
     }
 
     protected void switchToNewWindow() {
-        for (String winHandle : driver.getWindowHandles()) {
-            driver.switchTo().window(winHandle);
+        Wait<WebDriver> wait = Locator.getFluentWait();
+        wait.until((new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                    // wait for one more window to be opened
+                    return driver.getWindowHandles().size() > 1;
+                } catch (StaleElementReferenceException e) {
+                    return null;
+                }
+            }
+        }));
+        // select last handle
+        String handle = null;
+        for (String h : driver.getWindowHandles()) {
+            handle = h;
         }
+        // switch to it
+        driver.switchTo().window(handle);
     }
 
     protected void switchBackToPreviousWindow() {
