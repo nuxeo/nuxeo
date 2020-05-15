@@ -261,7 +261,8 @@ public class NuxeoLauncher {
     private static final String OPTION_SET_ARG_NAME = "template";
 
     private static final String OPTION_SET_DESC = String.format("Set the value for a given key.\n"
-            + "The value is stored in {{%s}} by default unless a template name is provided; if so, it is then stored in the template's {{%s}} file.\n"
+            + "The value is stored in {{%s}} by default unless a template name is provided; "
+            + "if so, it is then stored in the template's {{%s}} file or {{nuxeo.NUXEO_ENVIRONMENT}} if later is defined in environment.\n"
             + "If the value is empty (''), then the property is unset.\n"
             + "This option is implicit if no '--get' or '--get-regexp' option is used and there are exactly two parameters (key value).",
             NUXEO_CONF, NUXEO_DEFAULT_CONF);

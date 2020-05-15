@@ -57,6 +57,7 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
         bsc = new BackingServiceConfigurator(configGenerator);
         assertThat(configGenerator.init()).isTrue();
         configGenerator.setProperty("nuxeo.home", nuxeoHome.getAbsolutePath());
+        configGenerator.setProperty(ServerConfigurator.PARAM_HTTP_TOMCAT_ADMIN_PORT, "8005");
 
         configGenerator.setProperty(BackingServiceConfigurator.PARAM_RETRY_POLICY_MAX_RETRIES,"5");
         configGenerator.setProperty(BackingServiceConfigurator.PARAM_RETRY_POLICY_DELAY_IN_MS,"20");
@@ -132,7 +133,6 @@ public class BackingServiceConfiguratorTest extends AbstractConfigurationTest {
     }
 
     protected Path getTemplateParentPath(String templateName) throws ConfigurationException {
-        File conf = configGenerator.getTemplateConf("backing");
-        return conf.getParentFile().toPath();
+        return configGenerator.getTemplateDirectory(templateName).toPath();
     }
 }
