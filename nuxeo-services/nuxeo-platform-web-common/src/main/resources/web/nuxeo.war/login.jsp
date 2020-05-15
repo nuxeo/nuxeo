@@ -469,9 +469,9 @@ a.mobileAppLink:hover {
            <fmt:message bundle="${messages}" key="label.login.securityError" />
          </div>
         </c:if>
-        <input class="login_input" type="text" name="user_name" id="username"
+        <input class="login_input" type="text" name="user_name" id="username" autocomplete="off"
           placeholder="<fmt:message bundle="${messages}" key="label.login.username" />"/>
-        <input class="login_input" type="password" name="user_password" id="password"
+        <input class="login_input" type="password" name="user_password" id="password" autocomplete="off"
           placeholder="<fmt:message bundle="${messages}" key="label.login.password" />">
         <% if (selectedLanguage != null) { %>
         <input type="hidden" name="language" id="language" value="<%= selectedLanguage %>" />
