@@ -164,7 +164,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
 
     @Test
     public void testOperationsAlternative() {
-        goToArtifact(OperationInfo.TYPE_NAME, "Document.Create");
+        goToArtifact(OperationInfo.TYPE_NAME, "FileManager.ImportWithMetaData");
         OperationArtifactPage apage = asPage(OperationArtifactPage.class);
         apage.checkAlternative();
     }
