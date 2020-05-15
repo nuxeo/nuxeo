@@ -5405,8 +5405,13 @@
           <configuration>
             <ignoredUnusedDeclaredDependencies>
               <artifact>org.apache.logging.log4j:log4j-api</artifact>
-              <artifact>junit:junit</artifact>
+              <artifact>org.apache.logging.log4j:log4j-core</artifact>
+              <artifact>org.apache.logging.log4j:log4j-jcl</artifact>
+              <artifact>org.apache.logging.log4j:log4j-slf4j-impl</artifact>
+              <artifact>org.apache.logging.log4j:log4j-1.2-api</artifact>
               <artifact>commons-logging:commons-logging</artifact>
+              <artifact>junit:junit</artifact>
+              <artifact>org.assertj:assertj-core</artifact>
             </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
