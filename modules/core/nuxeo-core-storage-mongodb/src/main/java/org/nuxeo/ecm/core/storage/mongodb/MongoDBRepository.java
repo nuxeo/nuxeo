@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +98,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     public static final String COUNTER_FIELD = "seq";
 
+    /**
+     * Default maximum execution time for a query.
+     *
+     * @since 11.1
+     */
+    protected static final Duration MAX_TIME_DEFAULT = Duration.ofHours(1);
+
     /** The key to use to store the id in the database. */
     protected String idKey;
 
@@ -119,6 +127,13 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected final boolean supportsTransactions;
 
+    /**
+     * Maximum execution time for a query.
+     *
+     * @since 11.1
+     */
+    protected final long maxTimeMS;
+
     public MongoDBRepository(ConnectionManager cm, MongoDBRepositoryDescriptor descriptor) {
         super(cm, descriptor.name, descriptor);
         this.descriptor = descriptor;
@@ -130,6 +145,11 @@ public class MongoDBRepository extends DBSRepositoryBase {
         MongoDatabase database = mongoClient.getDatabase(dbname);
         coll = database.getCollection(descriptor.name);
         countersColl = database.getCollection(descriptor.name + ".counters");
+        Duration maxTime = mongoService.getConfig(connectionId).maxTime;
+        if (maxTime == null) {
+            maxTime = MAX_TIME_DEFAULT;
+        }
+        maxTimeMS = maxTime.toMillis();
 
         if (Boolean.TRUE.equals(descriptor.nativeId)) {
             idKey = MONGODB_ID;
