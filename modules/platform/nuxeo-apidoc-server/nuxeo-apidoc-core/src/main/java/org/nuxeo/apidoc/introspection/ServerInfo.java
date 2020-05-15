@@ -51,8 +51,8 @@ import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.Environment;
@@ -117,7 +117,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class ServerInfo {
 
-    private static final Log log = LogFactory.getLog(ServerInfo.class);
+    private static final Logger log = LogManager.getLogger(ServerInfo.class);
 
     public static final String META_INF_MANIFEST_MF = "META-INF/MANIFEST.MF";
 

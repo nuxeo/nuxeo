@@ -22,8 +22,8 @@ package org.nuxeo.apidoc.introspection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.DocumentException;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.ComponentInfo;
@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExtensionInfoImpl extends BaseNuxeoArtifact implements ExtensionInfo {
 
-    protected static final Log log = LogFactory.getLog(ExtensionInfoImpl.class);
+    private static final Logger log = LogManager.getLogger(ExtensionInfoImpl.class);
 
     protected final String id;
 

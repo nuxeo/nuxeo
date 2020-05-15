@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -37,6 +39,8 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 
 public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleGroup {
+
+    private static final Logger log = LogManager.getLogger(BundleGroupDocAdapter.class);
 
     public static BundleGroupDocAdapter create(BundleGroup bundleGroup, CoreSession session, String containerPath) {
 
