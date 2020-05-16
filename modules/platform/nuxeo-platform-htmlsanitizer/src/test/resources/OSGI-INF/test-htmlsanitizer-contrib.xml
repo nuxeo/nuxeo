@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.htmlsanitizer.config.test">
+
+  <require>org.nuxeo.ecm.platform.htmlsanitizer.config</require>
+
+  <extension target="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService" point="antisamy">
+    <antisamy policy="antisamy-remove-everything-policy.xml" />
+  </extension>
+
+</component>

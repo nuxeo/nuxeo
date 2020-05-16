@@ -244,4 +244,20 @@ public class TestHtmlSanitizerServiceImpl {
         res = service.sanitizeString(html, null);
         assertEquals(expected, res);
     }
+
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.htmlsanitizer.test:OSGI-INF/test-htmlsanitizer-contrib.xml")
+    public void sanitizeRemoveEverything() {
+        String html = "<span>foo" //
+                + "<div>bar</div>" //
+                + "<b>baz</b>" //
+                + "<img src=\"http://img.example.com/\"/>" //
+                + "<a href=\"http://example.com/\">link</a>" //
+                + "gee</span>"; //
+        String expected = "foobarbazlinkgee";
+        HtmlSanitizerService service = Framework.getService(HtmlSanitizerService.class);
+        String res = service.sanitizeString(html, null);
+        assertEquals(expected, res);
+    }
+
 }
