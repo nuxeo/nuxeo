@@ -36,6 +36,7 @@ import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.ENDPOINT_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.PATHSTYLEACCESS_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,9 +50,9 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.binary.Binary;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
-import org.nuxeo.ecm.core.blob.binary.LazyBinary;
+import org.nuxeo.ecm.core.blob.BlobInfo;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -72,7 +73,7 @@ import com.amazonaws.services.securitytoken.model.Credentials;
  */
 public class S3DirectBatchHandler extends AbstractBatchHandler {
 
-    private static final Log log = LogFactory.getLog(S3BinaryManager.class);
+    private static final Log log = LogFactory.getLog(S3DirectBatchHandler.class);
 
     protected static final Pattern REGEX_MULTIPART_ETAG = Pattern.compile("-\\d+$");
 
@@ -245,13 +246,17 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     public boolean completeUpload(String batchId, String fileIndex, BatchFileInfo fileInfo) {
         String fileKey = fileInfo.getKey();
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucket, fileKey);
-        String etag = metadata.getETag();
-        if (isEmpty(etag)) {
+        String key = metadata.getETag();
+        if (isEmpty(key)) {
             return false;
         }
-        String newFileKey = bucketPrefix + etag;
-        String mimeType = metadata.getContentType();
-        String encoding = metadata.getContentEncoding();
+        String bucketKey = bucketPrefix + key;
+
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.mimeType = metadata.getContentType();
+        blobInfo.encoding = metadata.getContentEncoding();
+        blobInfo.filename = fileInfo.getFilename();
+        blobInfo.length = metadata.getContentLength();
 
         // server-side encryption
         String targetSSEAlgorithm;
@@ -263,30 +268,34 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
         ObjectMetadata newMetadata;
         if (metadata.getContentLength() > lowerThresholdToUseMultipartCopy()) {
-            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, newFileKey,
+            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, bucketKey,
                     targetSSEAlgorithm, true);
         } else {
-            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, newFileKey, targetSSEAlgorithm,
-                    true);
-            boolean isMultipartUpload = REGEX_MULTIPART_ETAG.matcher(etag).find();
+            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, bucketKey, targetSSEAlgorithm, true);
+            boolean isMultipartUpload = REGEX_MULTIPART_ETAG.matcher(key).find();
             if (isMultipartUpload) {
-                etag = newMetadata.getETag();
-                String previousFileKey = newFileKey;
-                newFileKey = bucketPrefix + etag;
-                newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, previousFileKey, bucket, newFileKey, true);
+                key = newMetadata.getETag();
+                String previousBucketKey = bucketKey;
+                bucketKey = bucketPrefix + key;
+                newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, previousBucketKey, bucket, bucketKey, true);
             }
         }
 
-        String filename = fileInfo.getFilename();
-        long length = newMetadata.getContentLength();
-        String digest = newMetadata.getContentMD5() != null ? newMetadata.getContentMD5() : etag;
-        Binary binary = new LazyBinary(digest, blobProviderId, null);
-        Blob blob = new BinaryBlob(binary, digest, filename, mimeType, encoding, digest, length);
+        blobInfo.key = key;
+        blobInfo.digest = defaultString(newMetadata.getContentMD5(), key);
+        Blob blob;
+        try {
+            BlobManager blobManager = Framework.getService(BlobManager.class);
+            blob = blobManager.getBlobProvider(blobProviderId).readBlob(blobInfo);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+
         Batch batch = getBatch(batchId);
         try {
-            batch.addFile(fileIndex, blob, filename, mimeType);
+            batch.addFile(fileIndex, blob, blob.getFilename(), blob.getMimeType());
         } catch (NuxeoException e) {
-            amazonS3.deleteObject(bucket, newMetadata.getETag());
+            amazonS3.deleteObject(bucket, bucketKey);
             throw e;
         }
 

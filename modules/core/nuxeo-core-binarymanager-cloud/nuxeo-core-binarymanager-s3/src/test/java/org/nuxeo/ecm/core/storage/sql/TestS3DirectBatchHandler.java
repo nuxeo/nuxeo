@@ -46,8 +46,10 @@ import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
 import org.nuxeo.ecm.automation.test.AutomationServerFeature;
+import org.nuxeo.ecm.blob.s3.S3BlobProvider;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -126,6 +128,7 @@ public class TestS3DirectBatchHandler {
     }
 
     @Test
+    @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-contrib.xml")
     @Deploy("org.nuxeo.ecm.core.storage.binarymanager.s3.tests:OSGI-INF/test-s3directupload-fail-contrib.xml")
     public void testFailsOnCopyToTransientStore() throws SdkBaseException, InterruptedException {
         try {
@@ -246,16 +249,27 @@ public class TestS3DirectBatchHandler {
         }
 
         ManagedBlob managedBlob = (ManagedBlob) handler.getBatch(batch.getKey()).getBlob(key);
-        S3BinaryManager s3BinaryManager = (S3BinaryManager) Framework.getService(BlobManager.class)
-                .getBlobProvider(managedBlob.getProviderId());
+        BlobProvider blobProvider = Framework.getService(BlobManager.class)
+                                             .getBlobProvider(managedBlob.getProviderId());
 
         // check the s3 object has been renamed to correct etag
-        assertNotNull(priviledgedS3Client.getObject(s3BinaryManager.getBucketName(),
-                s3BinaryManager.getBucketPrefix() + managedBlob.getDigest()));
+        String managedBucketName;
+        String managedBucketPrefix;
+        if (blobProvider instanceof S3BinaryManager) {
+            S3BinaryManager s3BinaryManager = (S3BinaryManager) blobProvider;
+            managedBucketName = s3BinaryManager.getBucketName();
+            managedBucketPrefix = s3BinaryManager.getBucketPrefix();
+        } else { // S3BlobProvider
+            S3BlobProvider s3BlobProvider = (S3BlobProvider) blobProvider;
+            managedBucketName = s3BlobProvider.config.bucketName;
+            managedBucketPrefix = s3BlobProvider.config.bucketPrefix;
+        }
+        assertNotNull(
+                priviledgedS3Client.getObject(managedBucketName, managedBucketPrefix + managedBlob.getDigest()));
 
         // cleanup
         removeAllFiles(priviledgedS3Client, bucketName, bucketPrefix);
-        removeAllFiles(priviledgedS3Client, s3BinaryManager.getBucketName(), s3BinaryManager.getBucketPrefix());
+        removeAllFiles(priviledgedS3Client, managedBucketName, managedBucketPrefix);
     }
 
     protected void removeAllFiles(AmazonS3 s3, String bucketName, String prefix) {
