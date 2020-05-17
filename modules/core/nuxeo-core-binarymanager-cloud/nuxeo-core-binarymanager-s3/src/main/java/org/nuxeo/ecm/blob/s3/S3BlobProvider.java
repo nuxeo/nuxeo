@@ -67,7 +67,8 @@ public class S3BlobProvider extends BlobStoreBlobProvider {
 
     private static final Logger log = LogManager.getLogger(S3BlobProvider.class);
 
-    protected S3BlobStoreConfiguration config;
+    // public for tests
+    public S3BlobStoreConfiguration config;
 
     @Override
     protected BlobStore getBlobStore(String blobProviderId, Map<String, String> properties) throws IOException {
