@@ -46,10 +46,9 @@ public class UploadFragment extends AbstractPage {
         super(driver);
     }
 
-    public UploadConfirmFragment uploadArchive(File file) {
+    public void uploadArchive(File file) {
         input.sendKeys(file.getAbsolutePath());
         Locator.scrollAndForceClick(upload);
-        return asPage(UploadConfirmFragment.class);
     }
 
 }

@@ -18,11 +18,16 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+
 import java.io.File;
 
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.explorer.UploadConfirmFragment;
 import org.nuxeo.functionaltests.explorer.UploadFragment;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -96,8 +101,21 @@ public class DistribAdminPage extends AbstractExplorerPage {
         return export;
     }
 
-    public void importPersistedDistrib(File file, String newName, String newVersion) {
-        asPage(UploadFragment.class).uploadArchive(file).confirmUpload(newName, newVersion);
+    public void importPersistedDistrib(File file, String newName, String newVersion, String failMessage) {
+        asPage(UploadFragment.class).uploadArchive(file);
+        if (failMessage != null) {
+            assertEquals("Distribution import failed", driver.findElement(By.xpath("//h1")).getText());
+            assertEquals(failMessage, driver.findElement(By.xpath("//div[@id='details']")).getText());
+        } else {
+            // avoid waiting in case of upload failure
+            try {
+                WebElement errorHeader = driver.findElement(By.xpath("//h1"));
+                assertNotEquals("Distribution import failed", errorHeader.getText());
+            } catch (NoSuchElementException e) {
+                // ok
+            }
+            asPage(UploadConfirmFragment.class).confirmUpload(newName, newVersion);
+        }
     }
 
 }

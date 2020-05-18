@@ -284,7 +284,6 @@ public class Distribution extends ModuleRoot {
         Map<String, Serializable> otherProperties = readFormData(formData);
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel, otherProperties);
-
         } catch (NuxeoException e) {
             log.error("Error during storage", e);
             if (tx != null) {
@@ -453,7 +452,7 @@ public class Distribution extends ModuleRoot {
     @POST
     @Path("uploadDistribTmp")
     @Produces("text/html")
-    public Object uploadDistribTmp() throws IOException {
+    public Object uploadDistribTmp() {
         if (!canAddDocumentation()) {
             return null;
         }
@@ -461,13 +460,17 @@ public class Distribution extends ModuleRoot {
         if (blob == null || blob.getLength() == 0) {
             return null;
         }
-        DocumentModel snap = getSnapshotManager().importTmpSnapshot(getContext().getCoreSession(), blob.getStream());
-        if (snap == null) {
-            log.error("Unable to import archive");
-            return null;
+        try {
+            DocumentModel snap = getSnapshotManager().importTmpSnapshot(getContext().getCoreSession(),
+                    blob.getStream());
+            if (snap == null) {
+                return getView("importKO").arg("message", "Unable to import archive.");
+            }
+            DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
+            return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject", snapObject);
+        } catch (IOException e) {
+            return getView("importKO").arg("message", e.getMessage());
         }
-        DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
-        return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject", snapObject);
     }
 
     @POST
