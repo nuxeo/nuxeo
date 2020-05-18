@@ -18,10 +18,18 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
+import java.io.File;
+
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.explorer.UploadFragment;
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Wait;
+
+import com.google.common.base.Function;
 
 /**
  * Page representing the administration of distributions
@@ -36,9 +44,8 @@ public class DistribAdminPage extends AbstractExplorerPage {
     @FindBy(xpath = "//h1")
     public WebElement distributionsTitle;
 
-    @Required
-    @FindBy(xpath = "//h2")
-    public WebElement uploadTitle;
+    @FindBy(linkText = "EXPORT AS ZIP")
+    public WebElement firstExportLink;
 
     public DistribAdminPage(WebDriver driver) {
         super(driver);
@@ -47,6 +54,50 @@ public class DistribAdminPage extends AbstractExplorerPage {
     @Override
     public void check() {
         checkTitle("Nuxeo Platform Explorer");
+        // check upload form is here
+        asPage(UploadFragment.class);
+    }
+
+    /**
+     * Saves current live distribution with given name and returns the version.
+     */
+    public String saveCurrentLiveDistrib(String newName) {
+        clickOn(driver.findElement(By.id("save")));
+        WebElement div = driver.findElement(By.id("stdSave"));
+        if (newName != null) {
+            WebElement nameInput = div.findElement(By.xpath(".//input[@name='name']"));
+            nameInput.clear();
+            nameInput.sendKeys(newName);
+        }
+        String version = div.findElement(By.xpath(".//span[@name='version']")).getText();
+        clickOn(driver.findElement(By.id("doSave")));
+        waitForAsyncWork();
+        return version;
+    }
+
+    /**
+     * Exports first persisted distribution and returns corresponding file.
+     */
+    public File exportFirstPersistedDistrib(File downloadDir, String filename) {
+        clickOn(firstExportLink);
+        File export = new File(downloadDir, filename);
+        // wait for download to happen
+        Wait<WebDriver> wait = getLongWait();
+        wait.until((new Function<WebDriver, Boolean>() {
+            @Override
+            public Boolean apply(WebDriver driver) {
+                try {
+                    return export.exists();
+                } catch (StaleElementReferenceException e) {
+                    return null;
+                }
+            }
+        }));
+        return export;
+    }
+
+    public void importPersistedDistrib(File file, String newName, String newVersion) {
+        asPage(UploadFragment.class).uploadArchive(file).confirmUpload(newName, newVersion);
     }
 
 }

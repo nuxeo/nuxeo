@@ -31,9 +31,9 @@
       <td>
         <div id="saveBtn">
           <form method="POST" action="${Root.path}/save">
-            <input type="button" value="Save"
+            <input type="button" value="Save" id="save"
               onclick="$('#stdSave').css('display','block');$('#saveBtn').css('display','none')">
-            <input type="button" value="Save Partial Snapshot"
+            <input type="button" value="Save Partial Snapshot" id="savePartial"
               onclick="$('#extendedSave').css('display','block');$('#saveBtn').css('display','none')">
           </form>
           <form method="GET" action="${Root.path}/json">
@@ -53,11 +53,11 @@
               </tr>
               <tr>
                 <td class="nowrap">Version</td>
-                <td>${rtSnap.version}</td>
+                <td><span name="version">${rtSnap.version}</span></td>
               </tr>
             </table>
             <i>Existing snapshot with the same name and version will be updated.</i><br/>
-            <input type="submit" value="Save"/>
+            <input type="submit" value="Save" id="doSave" class="button" />
           </form>
         </div>
         <div style="display:none" id="extendedSave">
@@ -79,8 +79,12 @@
                 <td class="nowrap">Packages prefixes</td>
                 <td><textarea rows="4" cols="30" name="packages"></textarea></td>
               </tr>
+              <tr>
+                <td class="nowrap">Version</td>
+                <td><span name="version">${rtSnap.version}</span></td>
+              </tr>
             </table>
-            <input type="submit" value="Save"/>
+            <input type="submit" value="Save" id="doSaveExtended" class="button" />
           </form>
         </div>
 
@@ -117,8 +121,8 @@
       <td>
         <p>You can use the form below to upload a distribution that has been exported as a zip:</p>
         <form method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data">
-          <input type="file" name="archive">
-          <input type="submit" value="Upload">
+          <input type="file" name="archive" id="archive">
+          <input type="submit" value="Upload" id="upload">
         </form>
       </td>
     </tr>

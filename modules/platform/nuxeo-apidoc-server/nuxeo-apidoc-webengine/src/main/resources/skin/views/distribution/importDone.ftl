@@ -1,18 +1,13 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-</@block>
-
-
-<@block name="header_scripts">
-</@block>
-
-<@block name="left">
-</@block>
+<@block name="left" />
 
 <@block name="right">
 
-  Distribution uploaded ... <a href="${Root.path}/"> Continue </a>
+  <h1>Distribution uploaded successfully</h1>
+  <div>
+    <a href="${Root.path}/">Continue</a>
+  </div>
 
 </@block>
 
