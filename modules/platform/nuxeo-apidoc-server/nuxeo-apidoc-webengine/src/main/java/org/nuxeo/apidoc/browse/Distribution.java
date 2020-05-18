@@ -335,14 +335,18 @@ public class Distribution extends ModuleRoot {
         if (bundleList != null) {
             String[] bundles = bundleList.split("\n");
             for (String bundleId : bundles) {
-                filter.addBundlePrefix(bundleId);
+                if (!StringUtils.isEmpty(bundleId)) {
+                    filter.addBundlePrefix(bundleId);
+                }
             }
         }
 
         if (pkgList != null) {
-            String[] packages = pkgList.split("\\r?\\n");
+            String[] packages = pkgList.split("\n");
             for (String pkg : packages) {
-                filter.addPackagesPrefix(pkg);
+                if (!StringUtils.isEmpty(pkg)) {
+                    filter.addPackagesPrefix(pkg);
+                }
             }
         }
 

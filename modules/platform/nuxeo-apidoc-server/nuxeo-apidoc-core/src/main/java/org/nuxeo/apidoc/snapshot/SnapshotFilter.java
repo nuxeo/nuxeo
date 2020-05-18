@@ -64,6 +64,11 @@ public class SnapshotFilter {
         return false;
     }
 
+    /**
+     * @implNote checks the operation class against package prefixes. Note some operations are actually not classes, so
+     *           it could be possible to filter on contributing component, retrieving its bundle, and checking bundle
+     *           prefixes too... (not done).
+     */
     public boolean includeOperation(OperationInfoImpl op) {
         for (String pprefix : packagesPrefixes) {
             if (op.getOperationClass().startsWith(pprefix)) {
