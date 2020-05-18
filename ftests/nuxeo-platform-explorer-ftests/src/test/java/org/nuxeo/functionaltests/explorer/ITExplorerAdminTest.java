@@ -37,14 +37,18 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.ecm.core.io.impl.DWord;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
+import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleGroupArtifactPage;
 import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -144,17 +148,39 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         return String.format("%s-%s", name, version);
     }
 
+    protected String getDistribExportName(String distribId) {
+        return String.format("nuxeo-distribution-%s.zip", distribId);
+    }
+
+    protected void checkLiveDistrib(String distribId) {
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLEGROUPS);
+        checkBundleGroups();
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLES);
+        checkBundles(false);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_COMPONENTS);
+        checkComponents(false);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_EXTENSIONPOINTS);
+        checkExtensionPoints(false);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_SERVICES);
+        checkServices(false);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_CONTRIBUTIONS);
+        checkContributions(false);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_OPERATIONS);
+        checkOperations(false);
+    }
+
     @Test
     public void testLiveDistribExportAndImport() {
         String distribName = "my-server";
         open(DistribAdminPage.URL);
-        String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName);
+        String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, false);
         String distribId = getDistribId(distribName, version);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(distribId);
+        checkLiveDistrib(distribId);
 
         // check importing it back
         open(DistribAdminPage.URL);
-        String filename = String.format("nuxeo-distribution-%s.zip", distribId);
+        String filename = getDistribExportName(distribId);
         File file = asPage(DistribAdminPage.class).exportFirstPersistedDistrib(downloadDir, filename);
 
         open(DistribAdminPage.URL);
@@ -164,6 +190,59 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
+        checkLiveDistrib(newDistribId);
+    }
+
+    protected void checkPartialDistrib(String virtualBundleGroup, String distribId) {
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLEGROUPS);
+        checkPartialBundleGroup(virtualBundleGroup);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLES);
+        checkBundles(true);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_COMPONENTS);
+        checkComponents(true);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_EXTENSIONPOINTS);
+        checkExtensionPoints(true);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_SERVICES);
+        checkServices(true);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_CONTRIBUTIONS);
+        checkContributions(true);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_OPERATIONS);
+        checkOperations(true);
+    }
+
+    // will be easier to maintain as a reference when a specific bundle group is used for explorer...
+    protected void checkPartialBundleGroup(String distribName) {
+        Locator.findElementWaitUntilEnabledAndClick(By.linkText(distribName));
+        BundleGroupArtifactPage apage = asPage(BundleGroupArtifactPage.class);
+        apage.checkDocumentationText(null);
+        apage.checkSubGroup(null);
+        apage.checkBundle("org.nuxeo.apidoc.core");
+        apage.checkBundle("org.nuxeo.apidoc.repo");
+        apage.checkBundle("org.nuxeo.apidoc.webengine");
+    }
+
+    @Test
+    public void testLivePartialDistribExportAndImport() {
+        String distribName = "my-partial-server";
+        open(DistribAdminPage.URL);
+        String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, true);
+        String distribId = getDistribId(distribName, version);
+        asPage(ExplorerHomePage.class).checkPersistedDistrib(distribId);
+        checkPartialDistrib(distribName, distribId);
+
+        // check importing it back
+        open(DistribAdminPage.URL);
+        String filename = getDistribExportName(distribId);
+        File file = asPage(DistribAdminPage.class).exportFirstPersistedDistrib(downloadDir, filename);
+
+        open(DistribAdminPage.URL);
+        String newDistribName = "partial-imported-server";
+        String newVersion = "1.0.0";
+        asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion, null);
+        open(ExplorerHomePage.URL);
+        String newDistribId = getDistribId(newDistribName, newVersion);
+        asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
+        checkPartialDistrib(distribName, newDistribId);
     }
 
     protected void createSampleZip(String sourceDirPath, String zipFilePath, boolean addMarker) throws IOException {
@@ -220,6 +299,8 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
+        // XXX: will not be able to reuse the same check method when/if apidoc export diverges from sample
+        checkPartialDistrib(newDistribName, newDistribId);
     }
 
 }

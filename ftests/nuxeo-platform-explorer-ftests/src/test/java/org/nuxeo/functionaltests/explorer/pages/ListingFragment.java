@@ -144,6 +144,9 @@ public class ListingFragment extends AbstractPage {
     public void checkListing(int expectedSize, String firstLinkText, String firstLinkURLEnd, String firstLinkDetail) {
         if (expectedSize >= 0) {
             assertEquals(expectedSize, getItems().size());
+            if (expectedSize == 0) {
+                return;
+            }
         } else {
             assertTrue(getItems().size() > 0);
         }

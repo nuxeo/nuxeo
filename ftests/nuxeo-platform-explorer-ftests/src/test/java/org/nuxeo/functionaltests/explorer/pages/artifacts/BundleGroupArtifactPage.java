@@ -62,12 +62,7 @@ public class BundleGroupArtifactPage extends ArtifactPage {
     @Override
     public void checkAlternative() {
         checkDocumentationText(null);
-        try {
-            subgroups.getText();
-            fail("no subgroups should be found");
-        } catch (NoSuchElementException e) {
-            // ok
-        }
+        checkSubGroup(null);
         checkBundle("org.nuxeo.ecm.directory");
         checkBundle("org.nuxeo.ecm.directory.api");
     }
@@ -78,7 +73,16 @@ public class BundleGroupArtifactPage extends ArtifactPage {
     }
 
     public void checkSubGroup(String id) {
-        subgroups.findElement(By.linkText(id));
+        if (id == null) {
+            try {
+                subgroups.getText();
+                fail("no subgroups should be found");
+            } catch (NoSuchElementException e) {
+                // ok
+            }
+        } else {
+            subgroups.findElement(By.linkText(id));
+        }
     }
 
     public void checkBundle(String id) {
