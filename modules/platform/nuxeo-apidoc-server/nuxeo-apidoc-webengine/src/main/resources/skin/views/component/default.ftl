@@ -46,7 +46,7 @@
   </#if>
 
   <#if nxItem.extensionPoints?size gt 0>
-  <h2>Extension points</h2>
+  <h2>Extension Points</h2>
   <ul class="nolist">
     <#list nxItem.extensionPoints as ep>
     <li><a class="tag extensions" href="${Root.path}/${distId}/viewExtensionPoint/${ep.id}">${ep.name}</a></li>
@@ -63,7 +63,7 @@
   </ul>
   </#if>
 
-  <h2>XML source</h2>
+  <h2>XML Source</h2>
   <div>
     <pre><code>${nxItem.xmlFileContent?html}</code></pre>
   </div>

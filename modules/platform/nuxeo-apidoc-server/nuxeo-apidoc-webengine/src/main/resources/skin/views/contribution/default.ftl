@@ -21,13 +21,13 @@
     </div>
   </#if>
 
-  <h2>Extension point</h2>
+  <h2>Extension Point</h2>
   Extension point
   <a class="tag extensions" href="${Root.path}/${distId}/viewExtensionPoint/${nxItem.extensionPoint}">${nxItem.extensionPoint?split("--")[1]}</a>
   of component
   <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.targetComponentName.name}">${nxItem.targetComponentName.name?replace(".*\\.","","r")}</a>.
 
-  <h2>Contributed items</h2>
+  <h2>Contributed Items</h2>
   <form method="POST" action="${Root.path}/${distId}/viewContribution/${nxItem.id}/override" target="_blank">
     <ul class="block-list">
     <#list nxItem.contributionItems as contributionItem>
@@ -61,7 +61,7 @@
   }
   </script>
 
-  <h2>XML source</h2>
+  <h2>XML Source</h2>
   <div>
     <pre><code>${nxItem.xml?html}</code></pre>
   </div>

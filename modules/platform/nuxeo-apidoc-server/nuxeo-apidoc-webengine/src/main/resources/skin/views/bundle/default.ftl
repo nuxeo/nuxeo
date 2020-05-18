@@ -59,7 +59,7 @@
     </ul>
   </#if>
 
-  <h2>Maven artifact</h2>
+  <h2>Maven Artifact</h2>
   <table class="listTable">
     <tr><th>file</th><td>${nxItem.fileName}</td></tr>
     <tr><th>groupId</th><td>${nxItem.groupId}</td></tr>
