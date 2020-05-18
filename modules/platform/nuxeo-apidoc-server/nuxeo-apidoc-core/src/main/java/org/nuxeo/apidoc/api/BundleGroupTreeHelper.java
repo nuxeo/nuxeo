@@ -52,7 +52,7 @@ public class BundleGroupTreeHelper {
     public List<BundleGroupFlatTree> getBundleGroupTree() {
         List<BundleGroupFlatTree> tree = new ArrayList<>();
 
-        List<BundleGroup> bgroups = distrib.getBundleGroups();
+        List<BundleGroup> bgroups = new ArrayList<>(distrib.getBundleGroups());
         Collections.sort(bgroups, new NuxeoArtifactComparator());
         for (BundleGroup group : bgroups) {
             browseBundleGroup(group, 0, tree);

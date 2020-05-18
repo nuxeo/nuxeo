@@ -213,7 +213,8 @@ public class ITExplorerTest extends AbstractExplorerTest {
 
     @Test
     public void testBundleGroupsAlternative() {
-        goToArtifact(BundleGroup.TYPE_NAME, "org.nuxeo.runtime");
+        // check subgroup
+        goToArtifact(BundleGroup.TYPE_NAME, "org.nuxeo.ecm.directory");
         BundleGroupArtifactPage apage = asPage(BundleGroupArtifactPage.class);
         apage.checkAlternative();
     }

@@ -112,7 +112,6 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
 
     @Override
     public String getLabel(Object obj) {
-
         String label = null;
         if (obj instanceof NuxeoArtifact) {
             NuxeoArtifact nx = (NuxeoArtifact) obj;
@@ -121,14 +120,13 @@ public class NuxeoArtifactContentProvider implements ContentProvider {
                 label = ((ExtensionPointInfo) nx).getName();
             } else if (nx.getArtifactType().equals(ExtensionInfo.TYPE_NAME)) {
                 String[] parts = label.split("--");
-                // String component = parts[0];
                 String ep = parts[1];
                 label = ep;
             } else if (nx.getArtifactType().equals(ServiceInfo.TYPE_NAME)) {
                 String[] parts = label.split("\\.");
                 label = parts[parts.length - 1];
             } else if (nx.getArtifactType().equals(BundleGroup.TYPE_NAME)) {
-                label = label.replace("grp:", "");
+                label = label.replace(BundleGroup.PREFIX, "");
             } else if (nx.getArtifactType().equals(ComponentInfo.TYPE_NAME)) {
                 if (label.startsWith("org.nuxeo.ecm.platform.")) {
                     label = label.replace("org.nuxeo.ecm.platform.", "...");

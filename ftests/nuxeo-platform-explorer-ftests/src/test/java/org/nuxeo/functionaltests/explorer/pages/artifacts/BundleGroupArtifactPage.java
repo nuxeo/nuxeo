@@ -68,8 +68,8 @@ public class BundleGroupArtifactPage extends ArtifactPage {
         } catch (NoSuchElementException e) {
             // ok
         }
-        checkBundle("org.nuxeo.runtime");
-        checkBundle("org.nuxeo.runtime.cluster");
+        checkBundle("org.nuxeo.ecm.directory");
+        checkBundle("org.nuxeo.ecm.directory.api");
     }
 
     @Override

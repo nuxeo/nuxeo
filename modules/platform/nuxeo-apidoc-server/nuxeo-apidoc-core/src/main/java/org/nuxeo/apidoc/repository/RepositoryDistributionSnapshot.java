@@ -162,7 +162,14 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public BundleGroup getBundleGroup(String groupId) {
-        return getChild(BundleGroup.class, BundleGroup.TYPE_NAME, BundleGroup.PROP_GROUP_NAME, groupId);
+        if (groupId == null) {
+            return null;
+        }
+        if (groupId.startsWith(BundleGroup.PREFIX)) {
+            return getChild(BundleGroup.class, BundleGroup.TYPE_NAME, BundleGroup.PROP_KEY, groupId);
+        } else {
+            return getChild(BundleGroup.class, BundleGroup.TYPE_NAME, BundleGroup.PROP_GROUP_NAME, groupId);
+        }
     }
 
     protected DocumentModel getBundleContainer() {
