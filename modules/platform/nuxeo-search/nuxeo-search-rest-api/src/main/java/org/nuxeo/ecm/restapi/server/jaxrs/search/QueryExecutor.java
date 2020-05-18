@@ -46,6 +46,7 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.api.QuickFilter;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.ecm.platform.search.core.SearchRequest;
 import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.impl.AbstractResource;
@@ -189,8 +190,12 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
      * @since 8.4
      */
     protected List<QuickFilter> getQuickFilters(String providerName, MultivaluedMap<String, String> queryParams) {
-        PageProviderDefinition pageProviderDefinition = pageProviderService.getPageProviderDefinition(providerName);
         String quickFilters = queryParams.getFirst(QUICK_FILTERS);
+        return getQuickFilters(providerName, quickFilters);
+    }
+
+    protected List<QuickFilter> getQuickFilters(String providerName, String quickFilters) {
+        PageProviderDefinition pageProviderDefinition = pageProviderService.getPageProviderDefinition(providerName);
         List<QuickFilter> quickFilterList = new ArrayList<>();
         if (!StringUtils.isBlank(quickFilters)) {
             String[] filters = quickFilters.split(",");
@@ -208,10 +213,13 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected List<String> getHighlights(MultivaluedMap<String, String> queryParams) {
-        String highlight = queryParams.getFirst(HIGHLIGHT);
+        return getStringList(queryParams.getFirst(HIGHLIGHT));
+    }
+
+    protected List<String> getStringList(String str) {
         List<String> highlightFields = new ArrayList<>();
-        if (!StringUtils.isBlank(highlight)) {
-            String[] fields = highlight.split(",");
+        if (!StringUtils.isBlank(str)) {
+            String[] fields = str.split(",");
             highlightFields = Arrays.asList(fields);
         }
         return highlightFields;
@@ -250,10 +258,13 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return value;
     }
 
-    protected Object[] getParameters(MultivaluedMap<String, String> queryParams) {
-        List<String> orderedParams = queryParams.get(ORDERED_PARAMS);
+    protected String[] getParameters(MultivaluedMap<String, String> queryParams) {
+        return getParameters(queryParams.get(ORDERED_PARAMS));
+    }
+
+    protected String[] getParameters(List<String> orderedParams) {
         if (orderedParams != null && !orderedParams.isEmpty()) {
-            Object[] parameters = orderedParams.toArray(new String[orderedParams.size()]);
+            String[] parameters = orderedParams.toArray(new String[orderedParams.size()]);
             // expand specific parameters
             replaceParameterPattern(parameters);
             return parameters;
@@ -280,6 +291,27 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         return props;
     }
 
+    protected SearchRequest buildSearch(MultivaluedMap<String, String> params) {
+        List<String> queryParams = null;
+
+        String[] queryParamsArr = getParameters(params);
+        if (queryParamsArr != null) {
+            queryParams = Arrays.asList(queryParamsArr);
+        }
+        Map<String, String> namedParams = getNamedParameters(params);
+        String query = getQuery(params);
+        Long pageSize = getPageSize(params);
+        Long currentPageIndex = getCurrentPageIndex(params);
+        Long offset = getCurrentPageOffset(params);
+        Long maxResults = getMaxResults(params);
+        String sortBy = params.getFirst(SORT_BY);
+        String sortOrder = params.getFirst(SORT_ORDER);
+        String quickFilters = params.getFirst(QUICK_FILTERS);
+        String highlights = params.getFirst(HIGHLIGHT);
+        return new SearchRequest(queryParams, namedParams, query, NXQL, null, pageSize, currentPageIndex,
+                offset, maxResults, sortBy, sortOrder, quickFilters, highlights);
+    }
+
     protected DocumentModelList queryByLang(String queryLanguage, MultivaluedMap<String, String> queryParams) {
         if (queryLanguage == null || !EnumUtils.isValidEnum(LangParams.class, queryLanguage)) {
             throw new IllegalParameterException("invalid query language");
@@ -288,21 +320,9 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
     }
 
     protected DocumentModelList queryByLang(MultivaluedMap<String, String> queryParams) {
-        String query = getQuery(queryParams);
-        Long pageSize = getPageSize(queryParams);
-        Long currentPageIndex = getCurrentPageIndex(queryParams);
-        Long currentPageOffset = getCurrentPageOffset(queryParams);
-        Long maxResults = getMaxResults(queryParams);
-        Map<String, String> namedParameters = getNamedParameters(queryParams);
-        Object[] parameters = getParameters(queryParams);
-        List<SortInfo> sortInfo = getSortInfo(queryParams);
-        Map<String, Serializable> props = getProperties();
-
-        DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), null,
-                namedParameters);
-
-        return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo,
-                props, searchDocumentModel, parameters);
+        SearchRequest search = buildSearch(queryParams);
+        search.setQuery(getQuery(queryParams));
+        return execute(search);
     }
 
     protected DocumentModelList queryByPageProvider(String pageProviderName,
@@ -310,22 +330,40 @@ public abstract class QueryExecutor extends AbstractResource<ResourceTypeImpl> {
         if (pageProviderName == null) {
             throw new IllegalParameterException("invalid page provider name");
         }
+        SearchRequest search = buildSearch(queryParams);
+        search.setPageProviderName(pageProviderName);
+        return execute(search);
+    }
 
-        Long pageSize = getPageSize(queryParams);
-        Long currentPageIndex = getCurrentPageIndex(queryParams);
-        Long currentPageOffset = getCurrentPageOffset(queryParams);
-        Map<String, String> namedParameters = getNamedParameters(queryParams);
-        Object[] parameters = getParameters(queryParams);
-        List<SortInfo> sortInfo = getSortInfo(queryParams);
-        List<QuickFilter> quickFilters = getQuickFilters(pageProviderName, queryParams);
-        List<String> highlights = getHighlights(queryParams);
+    protected DocumentModelList execute(SearchRequest search) {
+        String pageProviderName = search.getPageProviderName();
+        Long pageSize = search.getPageSize();
+        Long currentPageIndex = search.getCurrentPageIndex();
+        Long currentPageOffset = search.getOffset();
+        Long maxResults = search.getMaxResults();
+        Object[] parameters = getParameters(search.getQueryParams());
+        Map<String, String> namedParameters = search.getNamedParams();
+        String sortBy = search.getSortBy();
+        String sortOrder = search.getSortOrder();
+        List<SortInfo> sortInfo = getSortInfo(sortBy, sortOrder);
+
         Map<String, Serializable> props = getProperties();
 
-        DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(),
-                pageProviderName, namedParameters);
+        DocumentModel searchDocumentModel = PageProviderHelper.getSearchDocumentModel(ctx.getCoreSession(), pageProviderName,
+                namedParameters);
 
-        return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, currentPageOffset, sortInfo,
-                highlights, quickFilters, props, searchDocumentModel, parameters);
+        String query = search.getQuery();
+
+        if (query != null) {
+            return queryByLang(query, pageSize, currentPageIndex, currentPageOffset, maxResults, sortInfo, props,
+                    searchDocumentModel, parameters);
+        } else {
+            List<QuickFilter> quickFilters = getQuickFilters(search.getPageProviderName(), search.getQuickFilters());
+            List<String> highlights = getStringList(search.getHighlights());
+
+            return queryByPageProvider(pageProviderName, pageSize, currentPageIndex, currentPageOffset, sortInfo,
+                    highlights, quickFilters, props, searchDocumentModel, parameters);
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -58,6 +58,7 @@ import org.nuxeo.ecm.platform.search.core.SavedSearch;
 import org.nuxeo.ecm.platform.search.core.SavedSearchConstants;
 import org.nuxeo.ecm.platform.search.core.SavedSearchRequest;
 import org.nuxeo.ecm.platform.search.core.SavedSearchService;
+import org.nuxeo.ecm.platform.search.core.SearchRequest;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.runtime.api.Framework;
@@ -104,6 +105,15 @@ public class SearchObject extends QueryExecutor {
     }
 
     /**
+     * @since 11.1
+     */
+    @POST
+    @Path("execute")
+    public Object executeQueryByLang(SearchRequest search) {
+        return execute(search);
+    }
+
+    /**
      * @deprecated since 10.3, use {@link #doBulkActionByLang(UriInfo)} instead.
      */
     @Path("lang/{queryLanguage}/bulk")
@@ -134,6 +144,17 @@ public class SearchObject extends QueryExecutor {
             @PathParam("pageProviderName") String pageProviderName) {
         MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
         return queryByPageProvider(pageProviderName, queryParams);
+    }
+
+    /**
+     * @since 11.1
+     */
+    @POST
+    @Path("pp/{pageProviderName}/execute")
+    public Object executeQueryByPageProvider(@PathParam("pageProviderName") String pageProviderName,
+            SearchRequest search) {
+        search.setPageProviderName(pageProviderName);
+        return execute(search);
     }
 
     @GET
