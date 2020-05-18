@@ -61,6 +61,7 @@ public class RecomputeThumbnailsAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "recomputeThumbnails";
 
+    // @since 11.1
     public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
 
     @Override

@@ -165,7 +165,7 @@ public class Settings {
     /**
      * Sets the codec for a stream.
      *
-     * @since 10.2
+     * @since 11.1
      */
     public Settings setCodec(Name streamName, Codec<Record> codec) {
         Objects.requireNonNull(codec);
@@ -173,6 +173,11 @@ public class Settings {
         return this;
     }
 
+    /**
+     * Sets the codec for a stream.
+     *
+     * @since 10.2
+     */
     public Settings setCodec(String streamName, Codec<Record> codec) {
         return setCodec(Name.ofUrn(streamName), codec);
     }
@@ -186,6 +191,11 @@ public class Settings {
         return getCodec(Name.ofUrn(streamName));
     }
 
+    /**
+     * Gets the codec for a stream.
+     *
+     * @since 11.1
+     */
     public Codec<Record> getCodec(Name streamName) {
         return codecs.getOrDefault(streamName, defaultCodec);
     }
@@ -194,7 +204,7 @@ public class Settings {
      * Sets the policy for a computation, when using default as computationName this sets the default policy for all
      * computations in the processor.
      *
-     * @since 10.3
+     * @since 11.1
      */
     public Settings setPolicy(Name computationName, ComputationPolicy policy) {
         if (policy == null) {
@@ -205,6 +215,12 @@ public class Settings {
         return this;
     }
 
+    /**
+     * Sets the policy for a computation, when using default as computationName this sets the default policy for all
+     * computations in the processor.
+     *
+     * @since 10.3
+     */
     public Settings setPolicy(String computationName, ComputationPolicy policy) {
         return setPolicy(Name.ofUrn(computationName), policy);
     }
@@ -212,12 +228,17 @@ public class Settings {
     /**
      * Gets the policy for a computation.
      *
-     * @since 10.3
+     * @since 11.1
      */
     public ComputationPolicy getPolicy(Name computationName) {
         return policies.getOrDefault(computationName, defaultPolicy);
     }
 
+    /**
+     * Gets the policy for a computation.
+     *
+     * @since 10.3
+     */
     public ComputationPolicy getPolicy(String computationName) {
         return policies.getOrDefault(Name.ofUrn(computationName), defaultPolicy);
     }
@@ -237,6 +258,11 @@ public class Settings {
         return this;
     }
 
+    /**
+     * Add a filter
+     *
+     * @since 11.1
+     */
     public Settings addFilter(String streamName, RecordFilter filter) {
         return addFilter(Name.ofUrn(streamName), filter);
     }
@@ -250,6 +276,11 @@ public class Settings {
         return filters.getOrDefault(streamName, defaultFilter);
     }
 
+    /**
+     * Gets the filter chain for a stream.
+     *
+     * @since 11.1
+     */
     public RecordFilterChain getFilterChain(String streamName) {
         return filters.getOrDefault(Name.ofUrn(streamName), defaultFilter);
     }

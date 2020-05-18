@@ -62,6 +62,10 @@ public class StreamAuditEventListener implements EventListener, Synchronization 
 
     public static final String STREAM_NAME = "audit/audit";
 
+    @Deprecated
+    // @deprecated since 11.1 log config is not needed anymore
+    public static final String DEFAULT_LOG_CONFIG = "audit";
+
     @Override
     public void handleEvent(Event event) {
         AuditLogger logger = Framework.getService(AuditLogger.class);

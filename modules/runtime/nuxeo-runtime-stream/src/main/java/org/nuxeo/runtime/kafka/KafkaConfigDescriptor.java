@@ -41,6 +41,7 @@ public class KafkaConfigDescriptor implements Descriptor {
         protected Properties properties = new Properties();
     }
 
+    // @since 11.1
     @XObject("admin")
     public static class AdminProperties {
         @XNodeMap(value = "property", key = "@name", type = Properties.class, componentType = String.class)
@@ -65,6 +66,7 @@ public class KafkaConfigDescriptor implements Descriptor {
     @XNode("consumer")
     public ConsumerProperties consumerProperties = new ConsumerProperties();
 
+    // @since 11.1
     @XNode("admin")
     public AdminProperties adminProperties = new AdminProperties();
 

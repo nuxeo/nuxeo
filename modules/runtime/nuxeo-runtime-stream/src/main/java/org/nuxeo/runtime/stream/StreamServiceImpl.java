@@ -81,22 +81,12 @@ public class StreamServiceImpl extends DefaultComponent implements StreamService
 
     @Override
     public LogManager getLogManager() {
+        // TODO: returns a wrapper that don't expose the LogManager#close
         return logManager;
     }
 
     @Override
     public StreamManager getStreamManager() {
-        return streamManager;
-    }
-
-    @Override
-    public LogManager getLogManager(String name) {
-        // TODO: returns a wrapper that don't expose the LogManager#close
-        return getLogManager();
-    }
-
-    @Override
-    public StreamManager getStreamManager(String name) {
         return streamManager;
     }
 

@@ -107,6 +107,7 @@ public class StreamWorkManager extends WorkManagerImpl {
 
     protected long CACHE_LAST_METRIC_DURATION_MS = 1000;
 
+    // @since 11.1
     public static final String NAMESPACE_PREFIX = "work/";
 
     /**

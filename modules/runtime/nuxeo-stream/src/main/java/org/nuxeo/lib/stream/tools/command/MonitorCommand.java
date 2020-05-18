@@ -158,7 +158,7 @@ public class MonitorCommand extends Command {
 
     protected List<Name> getLogNames(LogManager manager, String names) {
         if (ALL_LOGS.equalsIgnoreCase(names)) {
-            return manager.listAll()
+            return manager.listAllNames()
                           .stream()
                           .filter(name -> !name.getUrn().startsWith(INTERNAL_LOG_PREFIX))
                           .filter(name -> !name.getUrn().startsWith(INPUT_STREAM))
