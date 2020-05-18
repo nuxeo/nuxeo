@@ -25,6 +25,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -40,6 +41,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -68,32 +70,41 @@ public class TestSnapshotPersist extends AbstractApidocTest {
     @Test
     public void testSnapshot() throws IOException {
         DistributionSnapshot snapshot = snapshotManager.getRuntimeSnapshot();
-        checkDistributionSnapshot(snapshot);
+        checkDistributionSnapshot(snapshot, false);
     }
 
     @Test
     public void testPersist() throws IOException {
         DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
         assertNotNull(snapshot);
-        checkDistributionSnapshot(snapshot);
+        checkDistributionSnapshot(snapshot, false);
 
         DistributionSnapshot persisted = snapshotManager.getSnapshot(snapshot.getKey(), session);
         assertNotNull(persisted);
-        checkDistributionSnapshot(persisted);
+        checkDistributionSnapshot(persisted, false);
     }
 
-    protected void checkDistributionSnapshot(DistributionSnapshot snapshot) throws IOException {
-        checkBundleGroups(snapshot);
-        checkBundles(snapshot);
-        checkComponents(snapshot);
-        checkServices(snapshot);
-        checkExtensionPoints(snapshot);
-        checkContributions(snapshot);
-        checkOperations(snapshot);
-        checkReadmes(snapshot);
+    @Test
+    public void testPersistPartial() throws IOException {
+        SnapshotFilter filter = new SnapshotFilter("apidoc");
+        filter.addBundlePrefix("org.nuxeo.apidoc");
+        DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session, "apidoc", null, filter);
+        assertNotNull(snapshot);
+        checkDistributionSnapshot(snapshot, true);
     }
 
-    protected void checkBundleGroups(DistributionSnapshot snapshot) throws IOException {
+    protected void checkDistributionSnapshot(DistributionSnapshot snapshot, boolean partial) throws IOException {
+        checkBundleGroups(snapshot, partial);
+        checkBundles(snapshot, partial);
+        checkComponents(snapshot, partial);
+        checkServices(snapshot, partial);
+        checkExtensionPoints(snapshot, partial);
+        checkContributions(snapshot, partial);
+        checkOperations(snapshot, partial);
+        checkReadmes(snapshot, partial);
+    }
+
+    protected void checkBundleGroups(DistributionSnapshot snapshot, boolean partial) throws IOException {
         StringBuilder sb = new StringBuilder();
         BundleGroupTreeHelper bgth = new BundleGroupTreeHelper(snapshot);
         List<BundleGroupFlatTree> tree = bgth.getBundleGroupTree();
@@ -105,7 +116,12 @@ public class TestSnapshotPersist extends AbstractApidocTest {
                     info.getGroup().getHierarchyPath()) //
             );
         }
-        checkContentEquals("apidoc_snapshot/bundlegroups.txt", sb.toString());
+        if (partial) {
+            // only one virtual bundle group is created in case of partial persistence
+            assertEquals("- apidoc (apidoc) *** /apidoc\n", sb.toString());
+        } else {
+            checkContentEquals("apidoc_snapshot/bundlegroups.txt", sb.toString());
+        }
     }
 
     protected String represent(NuxeoArtifact artifact) {
@@ -125,61 +141,68 @@ public class TestSnapshotPersist extends AbstractApidocTest {
         return res;
     }
 
-    protected void checkBundles(DistributionSnapshot snapshot) throws IOException {
+    protected void checkBundles(DistributionSnapshot snapshot, boolean partial) throws IOException {
         List<String> bids = snapshot.getBundleIds();
-
-        StringBuilder sb = new StringBuilder();
-        bids.forEach(bid -> sb.append(represent(snapshot.getBundle(bid))));
-
-        checkContentEquals("apidoc_snapshot/bundles.txt", sb.toString());
+        String s = bids.stream().map(snapshot::getBundle).map(this::represent).collect(Collectors.joining());
+        if (partial) {
+            checkContentEquals("apidoc_snapshot/bundles_partial.txt", s);
+        } else {
+            checkContentEquals("apidoc_snapshot/bundles.txt", s);
+        }
     }
 
-    protected void checkComponents(DistributionSnapshot snapshot) throws IOException {
+    protected void checkComponents(DistributionSnapshot snapshot, boolean partial) throws IOException {
         List<String> cids = snapshot.getComponentIds();
-
-        StringBuilder sb = new StringBuilder();
-        cids.forEach(cid -> sb.append(represent(snapshot.getComponent(cid))));
-
-        checkContentEquals("apidoc_snapshot/components.txt", sb.toString());
+        String s = cids.stream().map(snapshot::getComponent).map(this::represent).collect(Collectors.joining());
+        if (partial) {
+            checkContentEquals("apidoc_snapshot/components_partial.txt", s);
+        } else {
+            checkContentEquals("apidoc_snapshot/components.txt", s);
+        }
     }
 
-    protected void checkServices(DistributionSnapshot snapshot) throws IOException {
+    protected void checkServices(DistributionSnapshot snapshot, boolean partial) throws IOException {
         List<String> sids = snapshot.getServiceIds();
-
-        StringBuilder sb = new StringBuilder();
-        sids.forEach(sid -> sb.append(represent(snapshot.getService(sid))));
-
-        checkContentEquals("apidoc_snapshot/services.txt", sb.toString());
+        String s = sids.stream().map(snapshot::getService).map(this::represent).collect(Collectors.joining());
+        if (partial) {
+            checkContentEquals("apidoc_snapshot/services_partial.txt", s);
+        } else {
+            checkContentEquals("apidoc_snapshot/services.txt", s);
+        }
     }
 
-    protected void checkExtensionPoints(DistributionSnapshot snapshot) throws IOException {
+    protected void checkExtensionPoints(DistributionSnapshot snapshot, boolean partial) throws IOException {
         List<String> epids = snapshot.getExtensionPointIds();
-
-        StringBuilder sb = new StringBuilder();
-        epids.forEach(epid -> sb.append(represent(snapshot.getExtensionPoint(epid))));
-
-        checkContentEquals("apidoc_snapshot/extensionpoints.txt", sb.toString());
+        String s = epids.stream().map(snapshot::getExtensionPoint).map(this::represent).collect(Collectors.joining());
+        if (partial) {
+            checkContentEquals("apidoc_snapshot/extensionpoints_partial.txt", s);
+        } else {
+            checkContentEquals("apidoc_snapshot/extensionpoints.txt", s);
+        }
     }
 
-    protected void checkContributions(DistributionSnapshot snapshot) throws IOException {
+    protected void checkContributions(DistributionSnapshot snapshot, boolean partial) throws IOException {
         List<String> exids = snapshot.getContributionIds();
-
-        StringBuilder sb = new StringBuilder();
-        exids.forEach(exid -> sb.append(represent(snapshot.getContribution(exid))));
-
-        checkContentEquals("apidoc_snapshot/contributions.txt", sb.toString());
+        String s = exids.stream().map(snapshot::getContribution).map(this::represent).collect(Collectors.joining());
+        if (partial) {
+            checkContentEquals("apidoc_snapshot/contributions_partial.txt", s);
+        } else {
+            checkContentEquals("apidoc_snapshot/contributions.txt", s);
+        }
     }
 
-    protected void checkOperations(DistributionSnapshot snapshot) throws IOException {
+    protected void checkOperations(DistributionSnapshot snapshot, boolean partial) throws IOException {
         List<OperationInfo> ops = snapshot.getOperations();
-
-        StringBuilder sb = new StringBuilder();
-        ops.forEach(op -> sb.append(represent(op)));
-
-        checkContentEquals("apidoc_snapshot/operations.txt", sb.toString());
+        String s = ops.stream().map(this::represent).collect(Collectors.joining());
+        if (partial) {
+            // no operations in apidoc modules
+            assertEquals("", s);
+        } else {
+            checkContentEquals("apidoc_snapshot/operations.txt", s);
+        }
     }
 
-    protected void checkReadmes(DistributionSnapshot snapshot) throws IOException {
+    protected void checkReadmes(DistributionSnapshot snapshot, boolean partial) throws IOException {
         BundleInfo bundle = snapshot.getBundle("org.nuxeo.apidoc.core");
         assertNotNull(bundle);
 
@@ -191,11 +214,13 @@ public class TestSnapshotPersist extends AbstractApidocTest {
         assertNotNull(parentReadme);
         checkContentEquals("apidoc_snapshot/apidoc_readme.txt", parentReadme.getString());
 
-        BundleGroup bundleGroup = snapshot.getBundleGroup(bundle.getGroupId());
-        assertNotNull(bundleGroup);
-        assertNotNull(bundleGroup.getReadmes());
-        assertEquals(1, bundleGroup.getReadmes().size());
-        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", bundleGroup.getReadmes().get(0).getString());
+        if (!partial) {
+            BundleGroup bundleGroup = snapshot.getBundleGroup(bundle.getGroupId());
+            assertNotNull(bundleGroup);
+            assertNotNull(bundleGroup.getReadmes());
+            assertEquals(1, bundleGroup.getReadmes().size());
+            checkContentEquals("apidoc_snapshot/apidoc_readme.txt", bundleGroup.getReadmes().get(0).getString());
+        }
     }
 
 }
