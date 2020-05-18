@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.functionaltests.Required;
@@ -69,7 +70,16 @@ public class DistributionHomePage extends AbstractExplorerPage {
     @Override
     public void check() {
         checkTitle("Nuxeo Platform Explorer");
-        assertTrue(header.getText(), header.getText().startsWith("Browsing Distribution"));
+        checkHeader(null);
+    }
+
+    public void checkHeader(String distribId) {
+        String text = header.getText();
+        if (distribId != null) {
+            assertEquals(String.format("Browsing Distribution '%s'", distribId), text);
+        } else {
+            assertTrue(text, text.startsWith("Browsing Distribution"));
+        }
     }
 
 }

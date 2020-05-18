@@ -20,17 +20,28 @@ package org.nuxeo.functionaltests.explorer.pages;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.FluentWait;
 
 /**
  * @since 11.1
  */
 public abstract class AbstractExplorerPage extends AbstractPage {
+
+    public static final int LONG_WAIT_TIMEOUT_SECONDS = 60;
+
+    public static final int LONG_POLLING_FREQUENCY_SECONDS = 1;
 
     @Required
     @FindBy(xpath = "//div[@class='top-banner']/a")
@@ -44,6 +55,13 @@ public abstract class AbstractExplorerPage extends AbstractPage {
         Locator.scrollAndForceClick(element);
     }
 
+    public FluentWait<WebDriver> getLongWait() {
+        FluentWait<WebDriver> wait = new FluentWait<>(AbstractTest.driver);
+        wait.withTimeout(LONG_WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .pollingEvery(LONG_POLLING_FREQUENCY_SECONDS, TimeUnit.SECONDS);
+        return wait;
+    }
+
     public ExplorerHomePage goHome() {
         clickOn(homeLink);
         return asPage(ExplorerHomePage.class);
@@ -51,6 +69,17 @@ public abstract class AbstractExplorerPage extends AbstractPage {
 
     public void checkTitle(String expected) {
         assertEquals(expected, driver.getTitle());
+    }
+
+    /**
+     * Waits for indexing to be done.
+     */
+    public void waitForAsyncWork() {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("timeoutSecond", Integer.valueOf(110));
+        parameters.put("refresh", Boolean.TRUE);
+        parameters.put("waitForAudit", Boolean.TRUE);
+        RestHelper.operation("Elasticsearch.WaitForIndexing", parameters);
     }
 
     /**
