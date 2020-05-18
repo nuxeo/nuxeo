@@ -30,7 +30,7 @@
   </#if>
 
   <#if nxItem.subGroups?size gt 0>
-  <h2>Bundle subgroups</h2>
+  <h2>Bundle Subgroups</h2>
   <ul class="subbroups">
     <#list nxItem.subGroups as subGroup>
     <li>

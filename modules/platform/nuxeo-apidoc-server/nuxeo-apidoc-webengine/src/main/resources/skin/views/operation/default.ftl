@@ -63,7 +63,7 @@
   </table>
   </div>
 
-  <h2>Implementation information</h2>
+  <h2>Implementation Information</h2>
   <div class="implementation">
   <table class="listTable">
     <tr><th>Implementation class</th><td> ${nxItem.operationClass?html} </td></tr>
@@ -78,7 +78,7 @@
   </div>
 
 <#if json??>
-  <h2>JSON definition</h2>
+  <h2>JSON Definition</h2>
   <div class="json">
     <pre>${json?html}</pre>
   </div>
