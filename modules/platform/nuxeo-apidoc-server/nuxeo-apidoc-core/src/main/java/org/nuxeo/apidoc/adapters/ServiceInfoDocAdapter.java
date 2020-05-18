@@ -29,6 +29,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ServiceInfo {
 
@@ -56,6 +57,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         doc.setPropertyValue(PROP_COMPONENT_ID, si.getComponentId());
         doc.setPropertyValue(PROP_OVERRIDEN, si.isOverriden());
 
+        doc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true);
         if (exist) {
             doc = session.saveDocument(doc);
         } else {

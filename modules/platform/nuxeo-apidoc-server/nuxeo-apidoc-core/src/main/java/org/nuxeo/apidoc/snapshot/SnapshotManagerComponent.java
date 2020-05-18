@@ -67,6 +67,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
+import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -300,6 +301,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             snapDoc.setPropertyValue("nxdistribution:version", version);
             snapDoc.setPropertyValue("nxdistribution:key", name + "-" + version);
             snapDoc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, title);
+            snapDoc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true);
             snapDoc = session.saveDocument(snapDoc);
 
             DocumentModel targetContainer = session.getParentDocument(tmp.getRef());
@@ -352,7 +354,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     /**
-     * Custom Write to disable Validation Service
+     * Custom writer to disable Validation Service and thumbnail update.
      */
     protected static class SnapshotWriter extends DocumentModelWriter {
         public SnapshotWriter(CoreSession session, String parentPath) {
@@ -362,6 +364,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         @Override
         protected void beforeCreateDocument(DocumentModel doc) {
             doc.putContextData(CTX_MAP_KEY, TURN_OFF);
+            doc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true);
         }
     }
 
