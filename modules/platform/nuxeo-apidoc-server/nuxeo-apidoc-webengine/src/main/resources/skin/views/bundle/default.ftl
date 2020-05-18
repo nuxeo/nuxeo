@@ -9,6 +9,7 @@
 <div class="include-in">In bundle group <a href="${Root.path}/${distId}/viewBundleGroup/${nxItem.groupId}">${nxItem.groupId}</a></div>
 
 <div class="tabscontent">
+  <@toc />
 
   <#if nxItem.readme?has_content || nxItem.parentReadme?has_content>
     <h2>Documentation</h2>
@@ -70,6 +71,8 @@
   <div>
     <pre><code>${nxItem.manifest}</code></pre>
   </div>
+
+  <@tocTrigger />
 
 </div>
 

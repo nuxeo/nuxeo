@@ -9,6 +9,7 @@
 <h1>Bundle group <span class="componentTitle">${nxItem.name}</span></h1>
 
 <div class="tabscontent">
+  <@toc />
 
   <#if nxItem.readmes?size gt 0>
     <h2>Documentation</h2>
@@ -49,6 +50,8 @@
     </#list>
   </ul>
   </#if>
+
+  <@tocTrigger />
 
 </div>
 

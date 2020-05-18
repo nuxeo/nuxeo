@@ -519,7 +519,7 @@ header {
 /* Main Navigation */
 nav ul,
 .subnav ul {
-  margin: 0;
+  margin: 0 0 20px 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -566,9 +566,12 @@ nav li.selected a {
 .nav-box a {
   word-wrap: break-word; }
 
-h2#contribute {
-  margin-top: -8em;
-  padding-top: 8em;
+a.anchor {
+  display: block;
+  position: relative;
+  /** adjust anchor to fixed header height **/
+  top: -100px;
+  visibility: hidden;
 }
 
 /* Container */

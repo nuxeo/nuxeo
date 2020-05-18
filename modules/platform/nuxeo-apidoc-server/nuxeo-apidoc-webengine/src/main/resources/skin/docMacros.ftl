@@ -87,3 +87,18 @@
   });
 </script>
 </#macro>
+
+<#macro toc>
+  <div id="tocDiv" class="subnav">
+    <ul id="tocList">
+    </ul>
+  </div>
+</#macro>
+
+<#macro tocTrigger>
+  <script>
+    $(document).ready(function() {
+      $.fn.toc("#tocList");
+    });
+  </script>
+</#macro>

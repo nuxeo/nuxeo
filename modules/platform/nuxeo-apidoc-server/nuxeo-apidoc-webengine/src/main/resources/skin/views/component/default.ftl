@@ -9,6 +9,7 @@
 <div class="include-in bundles">In bundle <a href="${Root.path}/${distId}/viewBundle/${nxItem.bundle.id}">${nxItem.bundle.id}</a></div>
 
 <div class="tabscontent">
+  <@toc />
 
   <#if nxItem.documentationHtml?has_content>
     <h2>Documentation</h2>
@@ -66,6 +67,8 @@
   <div>
     <pre><code>${nxItem.xmlFileContent?html}</code></pre>
   </div>
+
+  <@tocTrigger />
 
 </div>
 
