@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
 
@@ -64,6 +65,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
         // TODO incoherent naming here, also schema has no types
         doc.setPropertyValue(PROP_DESCRIPTORS, xpi.getDescriptors());
 
+        doc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true);
         if (exist) {
             doc = session.saveDocument(doc);
         } else {

@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleInfo {
 
@@ -61,6 +62,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         doc.setPropertyValue(PROP_README, (Serializable) bundleInfo.getReadme());
         doc.setPropertyValue(PROP_PARENT_README, (Serializable) bundleInfo.getParentReadme());
 
+        doc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true);
         if (exist) {
             doc = session.saveDocument(doc);
         } else {
