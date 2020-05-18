@@ -601,6 +601,15 @@
                     // var s = (table.config.parsers[c].type == "text") ? ((order == 0)
                     // ? makeSortText(c) : makeSortTextDesc(c)) : ((order == 0) ?
                     // makeSortNumeric(c) : makeSortNumericDesc(c));
+
+                    // NXP-29117: fix empty operations use case, fix is inspired from
+                    // https://github.com/christianbach/tablesorter/pull/23.
+                    // If there is no parser, this column can't be sorted (It's probably empty)
+                    if ((typeof(table.config.parsers) == 'undefined') || (typeof(table.config.parsers[c]) == 'undefined')) {
+                        dynamicExp += "if(true) {";
+                        continue;
+                    }
+
                     var s = (table.config.parsers[c].type == "text") ? ((order == 0) ? makeSortFunction("text", "asc", c) : makeSortFunction("text", "desc", c)) : ((order == 0) ? makeSortFunction("numeric", "asc", c) : makeSortFunction("numeric", "desc", c));
                     var e = "e" + i;
 
@@ -611,9 +620,12 @@
 
                 }
 
-                // if value is the same keep orignal order
-                var orgOrderCol = cache.normalized[0].length - 1;
-                dynamicExp += "return a[" + orgOrderCol + "]-b[" + orgOrderCol + "];";
+                // NXP-29117: fix empty operations use case, fix is inspired from
+                if (!typeof(cache.normalized[0] == 'undefined')) {
+                    // if value is the same keep orignal order
+                    var orgOrderCol = cache.normalized[0].length - 1;
+                    dynamicExp += "return a[" + orgOrderCol + "]-b[" + orgOrderCol + "];";
+                }
 
                 for (var i = 0; i < l; i++) {
                     dynamicExp += "}; ";
