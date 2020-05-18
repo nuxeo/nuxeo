@@ -9,6 +9,7 @@
 <div class="include-in components">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.contributingComponent}">${nxItem.contributingComponent}</a></div>
 
 <div class="tabscontent">
+  <@toc />
 
   <#if nxItem.description?has_content>
     <h2>Description</h2>
@@ -82,6 +83,8 @@
     <pre>${json?html}</pre>
   </div>
 </#if>
+
+  <@tocTrigger />
 
 </div>
 </@block>

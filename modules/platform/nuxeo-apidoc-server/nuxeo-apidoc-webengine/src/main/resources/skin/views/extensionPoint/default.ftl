@@ -10,12 +10,7 @@
 <div class="include-in components">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.componentId}">${nxItem.componentId}</a></div>
 
 <div class="tabscontent">
-  <div class="subnav">
-    <ul>
-      <li><a href="#">Documentation</a></li>
-      <li><a href="#contribute">Existing Contributions</a></li>
-    </ul>
-  </div>
+  <@toc />
 
   <#if nxItem.documentationHtml?has_content>
     <h2>Documentation</h2>
@@ -33,7 +28,7 @@
   </ul>
 
   <#if nxItem.extensions?size gt 0>
-    <h2 id="contribute">Existing Contributions</h2>
+    <h2>Existing Contributions</h2>
     <input type="search" id="searchField" placeholder="Text in contributions"/>
     <input type="button" value="search" onclick="searchContrib($('#searchField').val());"/>
     <span id="searchMatchResult"></span>
@@ -91,7 +86,8 @@
     No known contributions.
   </#if>
 
-</a>
+  <@tocTrigger />
 
 </@block>
+
 </@extends>

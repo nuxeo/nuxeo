@@ -9,6 +9,7 @@
 <div class="include-in components">In component <a href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a></div>
 
 <div class="tabscontent">
+  <@toc />
 
   This contribution is part of XML component <a class="tag components" href="${Root.path}/${distId}/viewComponent/${nxItem.component.id}">${nxItem.component.id}</a>
   inside ${nxItem.component.bundle.fileName} ${nxItem.component.xmlFileName}
@@ -64,6 +65,8 @@
   <div>
     <pre><code>${nxItem.xml?html}</code></pre>
   </div>
+
+  <@tocTrigger />
 
 </div>
 
