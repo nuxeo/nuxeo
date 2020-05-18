@@ -60,7 +60,8 @@ public class OperationArtifactPage extends ArtifactPage {
     @Override
     public void checkReference() {
         checkCommon("Operation Document.AddFacet", "Operation Document.AddFacet (Add Facet)",
-                "In component org.nuxeo.ecm.core.automation.coreContrib");
+                "In component org.nuxeo.ecm.core.automation.coreContrib",
+                "Description\n" + "Parameters\n" + "Signature\n" + "Implementation Information\n" + "JSON Definition");
         checkOperationDescriptionText("Adds the facet to the document.\n" //
                 + "WARNING: The save parameter is true by default, which means the document is saved in "
                 + "the database after adding the facet. It must be set to false when the operation is used "
@@ -113,7 +114,8 @@ public class OperationArtifactPage extends ArtifactPage {
         checkCommon("Operation FileManager.ImportWithMetaData",
                 "Operation FileManager.ImportWithMetaData (FileManager.ImportWithMetaData)",
                 // Non-regression test for NXP-29025 as this previously stated "In component BuiltIn" for all chains
-                "In component org.nuxeo.ecm.core.automation.features.operations");
+                "In component org.nuxeo.ecm.core.automation.features.operations",
+                "Parameters\n" + "Signature\n" + "Implementation Information\n" + "JSON Definition");
         checkImplementationText(
                 "Implementation class org.nuxeo.ecm.automation.core.impl.OperationChainCompiler.CompiledChainImpl\n"//
                         + "Contributing component org.nuxeo.ecm.core.automation.features.operations");

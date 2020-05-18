@@ -50,6 +50,9 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
     @FindBy(xpath = "//div[contains(@class, 'documentation')]")
     public WebElement documentation;
 
+    @FindBy(xpath = "//div[@id='tocDiv']")
+    public WebElement toc;
+
     public ArtifactPage(WebDriver driver) {
         super(driver);
     }
@@ -63,10 +66,11 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
 
     public abstract void checkAlternative();
 
-    public void checkCommon(String title, String headerText, String description) {
+    public void checkCommon(String title, String headerText, String description, String toc) {
         checkTitle(title);
         checkHeaderText(headerText);
         checkDescription(description);
+        checkTableOfContents(toc);
     }
 
     protected abstract void checkSelectedTab();
@@ -81,6 +85,10 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
 
     public void checkDocumentationText(String expected) {
         checkTextIfExists(expected, documentation);
+    }
+
+    public void checkTableOfContents(String expected) {
+        checkTextIfExists(expected, toc);
     }
 
     protected void checkTextIfExists(String expected, WebElement element) {

@@ -35,7 +35,8 @@ public class ComponentArtifactPage extends ArtifactPage {
     @Override
     public void checkReference() {
         checkCommon("Component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
-                "Component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", "In bundle org.nuxeo.apidoc.repo");
+                "Component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", "In bundle org.nuxeo.apidoc.repo",
+                "Documentation\n" + "Implementation\n" + "Services\n" + "Extension Points\n" + "XML Source");
         checkRequirements(null);
         checkDocumentationText(
                 "This component handles the introspection of the current live Runtime as a distribution.\n" //
@@ -45,7 +46,8 @@ public class ComponentArtifactPage extends ArtifactPage {
     @Override
     public void checkAlternative() {
         checkCommon("Component org.nuxeo.ecm.automation.server.marshallers",
-                "Component org.nuxeo.ecm.automation.server.marshallers", "In bundle org.nuxeo.ecm.automation.io");
+                "Component org.nuxeo.ecm.automation.server.marshallers", "In bundle org.nuxeo.ecm.automation.io",
+                "Requirements\n" + "Contributions\n" + "XML Source");
         checkRequirements(List.of("org.nuxeo.ecm.platform.contentview.json.marshallers"));
         checkDocumentationText(null);
     }

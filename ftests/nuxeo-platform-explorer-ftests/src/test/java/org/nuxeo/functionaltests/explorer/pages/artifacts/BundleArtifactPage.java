@@ -48,7 +48,8 @@ public class BundleArtifactPage extends ArtifactPage {
     @Override
     public void checkReference() {
         checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core",
-                "In bundle group org.nuxeo.ecm.platform");
+                "In bundle group org.nuxeo.ecm.platform",
+                "Documentation\n" + "Components\n" + "Maven Artifact\n" + "Manifest");
         try {
             String readme = AbstractExplorerTest.getReferenceContent("data/core_readme.txt");
             String parentReadme = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
@@ -64,7 +65,8 @@ public class BundleArtifactPage extends ArtifactPage {
     @Override
     public void checkAlternative() {
         checkCommon("Bundle org.nuxeo.apidoc.webengine", "Bundle org.nuxeo.apidoc.webengine",
-                "In bundle group org.nuxeo.ecm.platform");
+                "In bundle group org.nuxeo.ecm.platform",
+                "Documentation\n" + "Requirements\n" + "Components\n" + "Maven Artifact\n" + "Manifest");
         checkGroupId("org.nuxeo.ecm.platform");
         checkArtifactId("nuxeo-apidoc-webengine");
         checkRequirements(List.of("org.nuxeo.ecm.webengine.core", "org.nuxeo.apidoc.core"));
