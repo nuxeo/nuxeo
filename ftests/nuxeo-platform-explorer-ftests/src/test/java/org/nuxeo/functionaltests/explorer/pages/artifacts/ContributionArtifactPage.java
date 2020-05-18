@@ -40,7 +40,8 @@ public class ContributionArtifactPage extends ArtifactPage {
     public void checkReference() {
         checkCommon("Contribution org.nuxeo.apidoc.adapterContrib--adapters",
                 "Contribution org.nuxeo.apidoc.adapterContrib--adapters",
-                "In component org.nuxeo.apidoc.adapterContrib");
+                "In component org.nuxeo.apidoc.adapterContrib",
+                "Documentation\n" + "Extension Point\n" + "Contributed Items\n" + "XML Source");
         checkDocumentationText("These contributions provide a mapping between live introspections "
                 + "and persisted representations of a distribution.");
     }
@@ -49,7 +50,8 @@ public class ContributionArtifactPage extends ArtifactPage {
     public void checkAlternative() {
         checkCommon("Contribution org.nuxeo.apidoc.listener.contrib--listener",
                 "Contribution org.nuxeo.apidoc.listener.contrib--listener",
-                "In component org.nuxeo.apidoc.listener.contrib");
+                "In component org.nuxeo.apidoc.listener.contrib",
+                "Documentation\n" + "Extension Point\n" + "Contributed Items\n" + "XML Source");
         checkDocumentationText("These contributions are used for latest distribution flag update "
                 + "and XML attributes extractions in extension points.");
         checkContributionItemText(1,

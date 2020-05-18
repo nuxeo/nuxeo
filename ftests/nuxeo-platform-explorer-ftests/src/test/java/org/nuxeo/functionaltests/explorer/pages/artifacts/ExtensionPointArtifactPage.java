@@ -35,7 +35,8 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
     @Override
     public void checkReference() {
         checkCommon("Extension point org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
-                "Extension point plugins", "In component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
+                "Extension point plugins", "In component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
+                "Documentation\n" + "Contribution Descriptor\n" + "Contributions");
         checkDocumentationText(
                 "A plugin can introspect and persist information related to the current runtime environment.\n" //
                         + "Sample contribution:\n" //
@@ -58,7 +59,8 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
     @Override
     public void checkAlternative() {
         checkCommon("Extension point org.nuxeo.ecm.core.schema.TypeService--doctype", "Extension point doctype",
-                "In component org.nuxeo.ecm.core.schema.TypeService");
+                "In component org.nuxeo.ecm.core.schema.TypeService",
+                "Documentation\n" + "Contribution Descriptor\n" + "Existing Contributions");
     }
 
     @Override
