@@ -310,9 +310,9 @@ pipeline {
     TEST_KAFKA_K8S_OBJECT = "${TEST_HELM_CHART_RELEASE}-kafka"
     TEST_KAFKA_PORT = '9092'
     TEST_KAFKA_POD_NAME = "${TEST_KAFKA_K8S_OBJECT}-0"
-    TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT = '1m'
+    TEST_DEFAULT_ROLLOUT_STATUS_TIMEOUT = '3m'
     // Elasticsearch and Kafka might take longer
-    TEST_LONG_ROLLOUT_STATUS_TIMEOUT = '3m'
+    TEST_LONG_ROLLOUT_STATUS_TIMEOUT = '5m'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
