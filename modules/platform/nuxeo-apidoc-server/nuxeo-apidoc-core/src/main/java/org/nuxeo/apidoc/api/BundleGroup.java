@@ -32,6 +32,11 @@ public interface BundleGroup extends NuxeoArtifact {
 
     String PROP_READMES = "files:files";
 
+    /**
+     * @since 11.1
+     */
+    String PREFIX = "grp:";
+
     String getName();
 
     List<BundleGroup> getSubGroups();

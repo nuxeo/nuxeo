@@ -50,8 +50,8 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
     private BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("name") String version,
             @JsonProperty("readmes") List<Blob> readmes) {
         this.key = key;
-        if (key.startsWith("grp:")) {
-            name = key.substring(4);
+        if (key.startsWith(BundleGroup.PREFIX)) {
+            name = key.substring(BundleGroup.PREFIX.length());
         } else {
             name = key;
         }
