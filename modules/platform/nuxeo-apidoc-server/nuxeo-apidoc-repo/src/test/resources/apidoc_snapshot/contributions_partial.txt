@@ -1,0 +1,7 @@
+NXContribution: org.nuxeo.apidoc.adapterContrib--adapters *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib/Contributions/org.nuxeo.apidoc.adapterContrib--adapters
+NXContribution: org.nuxeo.apidoc.doctypeContrib--doctype *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype
+NXContribution: org.nuxeo.apidoc.lifecycle.contrib--types *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib/Contributions/org.nuxeo.apidoc.lifecycle.contrib--types
+NXContribution: org.nuxeo.apidoc.listener.contrib--listener *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib/Contributions/org.nuxeo.apidoc.listener.contrib--listener
+NXContribution: org.nuxeo.apidoc.schemaContrib--schema *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib/Contributions/org.nuxeo.apidoc.schemaContrib--schema
+NXContribution: org.nuxeo.apidoc.test.works--queues *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues
+NXContribution: org.nuxeo.apidoc.test.works--queues1 *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues1

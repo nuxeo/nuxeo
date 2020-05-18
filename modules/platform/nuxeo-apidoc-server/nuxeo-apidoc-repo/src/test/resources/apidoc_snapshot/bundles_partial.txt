@@ -1,0 +1,2 @@
+NXBundle: org.nuxeo.apidoc.core *** /apidoc/org.nuxeo.apidoc.core
+NXBundle: org.nuxeo.apidoc.repo *** /apidoc/org.nuxeo.apidoc.repo
