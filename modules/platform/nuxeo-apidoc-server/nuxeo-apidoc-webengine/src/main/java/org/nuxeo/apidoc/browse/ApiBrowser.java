@@ -36,6 +36,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -278,6 +279,9 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path("filterComponents")
     public Object filterComponents(@FormParam("fulltext") String fulltext) {
+        if (StringUtils.isBlank(fulltext)) {
+            return getComponents();
+        }
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ComponentInfo.TYPE_NAME, fulltext);
 
@@ -306,6 +310,9 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path("filterBundles")
     public Object filterBundles(@FormParam("fulltext") String fulltext) {
+        if (StringUtils.isBlank(fulltext)) {
+            return getBundles();
+        }
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 BundleInfo.TYPE_NAME, fulltext);
         List<String> bundleIds = new ArrayList<>();
@@ -324,8 +331,10 @@ public class ApiBrowser extends DefaultObject {
     @POST
     @Produces("text/html")
     @Path("filterServices")
-    public Object filterServices() {
-        String fulltext = getContext().getForm().getFormProperty("fulltext");
+    public Object filterServices(@FormParam("fulltext") String fulltext) {
+        if (StringUtils.isBlank(fulltext)) {
+            return getServices();
+        }
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ServiceInfo.TYPE_NAME, fulltext);
         List<String> serviceIds = new ArrayList<>();
@@ -347,6 +356,9 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path("filterExtensionPoints")
     public Object filterExtensionPoints(@FormParam("fulltext") String fulltext) {
+        if (StringUtils.isBlank(fulltext)) {
+            return getExtensionPoints();
+        }
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionPointInfo.TYPE_NAME, fulltext);
         List<String> eps = artifacts.stream().map(NuxeoArtifact::getId).collect(Collectors.toList());
@@ -363,6 +375,9 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path("filterContributions")
     public Object filterContributions(@FormParam("fulltext") String fulltext) {
+        if (StringUtils.isBlank(fulltext)) {
+            return getContributions();
+        }
         List<NuxeoArtifact> artifacts = getSearcher().filterArtifact(getContext().getCoreSession(), distributionId,
                 ExtensionInfo.TYPE_NAME, fulltext);
         return getView(ApiBrowserConstants.LIST_CONTRIBUTIONS).arg("contributions", artifacts)

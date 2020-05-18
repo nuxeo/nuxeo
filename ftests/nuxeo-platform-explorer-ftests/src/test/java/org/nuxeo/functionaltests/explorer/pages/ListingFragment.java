@@ -46,6 +46,9 @@ public class ListingFragment extends AbstractPage {
     @FindBy(xpath = "//input[@class='searchFilter']")
     public WebElement searchFilter;
 
+    @FindBy(xpath = "//input[@id='filter-submit-button']")
+    public WebElement filterSubmit; // present only in some cases
+
     @Required
     @FindBy(id = "contentTable")
     public WebElement listingTable;
@@ -117,10 +120,16 @@ public class ListingFragment extends AbstractPage {
     }
 
     public ListingFragment filterOn(String filterText) {
-        RequestManager rm = new RequestManager(driver, "nxexplorerFilterOngoing", "filterEnd");
-        rm.begin();
-        searchFilter.sendKeys(filterText);
-        rm.waitForEnd();
+        // check first if fulltext search, requiring explicit submit
+        if ("fulltext-box".contentEquals(searchFilter.getAttribute("id"))) {
+            searchFilter.sendKeys(filterText);
+            Locator.scrollAndForceClick(filterSubmit);
+        } else {
+            RequestManager rm = new RequestManager(driver, "nxexplorerFilterOngoing", "filterEnd");
+            rm.begin();
+            searchFilter.sendKeys(filterText);
+            rm.waitForEnd();
+        }
         return asPage(ListingFragment.class);
     }
 

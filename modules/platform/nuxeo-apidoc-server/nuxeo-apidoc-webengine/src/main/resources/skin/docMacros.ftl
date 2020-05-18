@@ -71,11 +71,13 @@
   $(document).ready(function() {
     $("${name}")
     .tablesorter({sortList: [${sortList}], widgets: ['zebra'], cancelSelection: false})
-      <#if !searchFilter??>.tablesorterFilter({
-        filterContainer: "#filter-box",
-        filterClearContainer: "#filter-clear-button",
-        filterWaitTime: 600
-      }</#if>);
+    <#if !searchFilter??>
+    .tablesorterFilter({
+      filterContainer: "#filter-box",
+      filterClearContainer: "#filter-clear-button",
+      filterWaitTime: 600
+    })
+    </#if>
   });
 
   $('#filter-box').click(function(e) {
