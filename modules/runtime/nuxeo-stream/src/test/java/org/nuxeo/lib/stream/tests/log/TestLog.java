@@ -692,7 +692,7 @@ public abstract class TestLog {
         Name logName2 = Name.ofUrn(logName.getUrn() + "2");
         assertTrue(manager.createIfNotExists(logName2, LOG_SIZES));
 
-        List<Name> logs = manager.listAll();
+        List<Name> logs = manager.listAllNames();
         // System.out.println(logs);
         assertFalse(logs.isEmpty());
         assertTrue(logs.toString(), logs.contains(logName));

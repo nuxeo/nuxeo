@@ -197,7 +197,7 @@ public class KafkaLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<Name> listAll() {
+    public List<Name> listAllNames() {
         Set<String> allTopics = kUtils.get(defaultConfig).listTopics();
         Set<Name> names = new HashSet<>(allTopics.size());
         for (String topic : allTopics) {

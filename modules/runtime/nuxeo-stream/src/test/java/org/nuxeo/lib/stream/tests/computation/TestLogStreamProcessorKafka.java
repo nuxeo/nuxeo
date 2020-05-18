@@ -67,7 +67,7 @@ public class TestLogStreamProcessorKafka extends TestStreamProcessor {
     @After
     public void resetPrefix() {
         LogManager manager = getSameLogManager();
-        manager.listAll().forEach(manager::delete);
+        manager.listAllNames().forEach(manager::delete);
         prefix = null;
     }
 }

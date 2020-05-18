@@ -95,7 +95,7 @@ public class StreamWorkManagerTest extends AbstractWorkManagerTest {
         tracker.assertDiff(0, 0, 1, 0);
 
         // schedule again the exact same work many times
-        for (int i=0; i<10; i++) {
+        for (int i = 0; i < 10; i++) {
             service.schedule(work);
         }
 

@@ -171,13 +171,13 @@ public class UnifiedLogManager implements LogManager {
     }
 
     @Override
-    public List<Name> listAll() {
+    public List<Name> listAllNames() {
         List<Name> names = new ArrayList<>();
         if (kafkaManager != null) {
-            names.addAll(kafkaManager.listAll());
+            names.addAll(kafkaManager.listAllNames());
         }
         if (cqManager != null) {
-            names.addAll(cqManager.listAll());
+            names.addAll(cqManager.listAllNames());
         }
         return names;
     }

@@ -130,7 +130,7 @@ public class StreamMetricsComputation extends AbstractComputation {
     protected List<Name> getStreams() {
         if (streams.isEmpty()) {
             if (inputStreams == null || inputStreams.isEmpty()) {
-                streams.addAll(getManager().listAll());
+                streams.addAll(getManager().listAllNames());
                 log.debug("Use all available streams: {}", streams);
             } else {
                 inputStreams.forEach(stream -> streams.add(Name.ofUrn(stream)));
@@ -156,6 +156,7 @@ public class StreamMetricsComputation extends AbstractComputation {
     }
 
     protected LogManager getManager() {
+        // it is ok to cache a service here, hot reload will restart the computation
         if (manager == null) {
             manager = Framework.getService(StreamService.class).getLogManager();
         }

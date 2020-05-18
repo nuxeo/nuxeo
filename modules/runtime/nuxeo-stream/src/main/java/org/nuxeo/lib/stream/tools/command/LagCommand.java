@@ -68,7 +68,7 @@ public class LagCommand extends Command {
 
     protected void lag(LogManager manager) {
         log.info("# " + manager);
-        for (Name name : manager.listAll()) {
+        for (Name name : manager.listAllNames()) {
             lag(manager, name);
         }
     }

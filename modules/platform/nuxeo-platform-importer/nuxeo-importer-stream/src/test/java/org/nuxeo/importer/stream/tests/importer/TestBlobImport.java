@@ -64,7 +64,7 @@ public class TestBlobImport {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Inject
-    StreamService streamService;
+    protected StreamService streamService;
 
     protected LogManager getManager() {
         return streamService.getLogManager();

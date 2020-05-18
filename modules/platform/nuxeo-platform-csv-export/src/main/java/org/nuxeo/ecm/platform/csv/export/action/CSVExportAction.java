@@ -43,6 +43,7 @@ public class CSVExportAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "csvExport";
 
+    // @since 11.1
     public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
 
     @Override

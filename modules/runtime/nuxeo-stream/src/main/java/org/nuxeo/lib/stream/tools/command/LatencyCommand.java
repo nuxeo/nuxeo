@@ -84,7 +84,7 @@ public class LatencyCommand extends Command {
 
     protected void latency(LogManager manager, Codec<Record> codec) {
         log.info("# " + manager);
-        for (Name name : manager.listAll()) {
+        for (Name name : manager.listAllNames()) {
             latency(manager, name, codec);
         }
     }

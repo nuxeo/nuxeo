@@ -43,6 +43,7 @@ public class BulkActionDescriptor implements Descriptor {
     @XNode("@name")
     public String name;
 
+    // @since 11.1
     @XNode("@inputStream")
     public String inputStream;
 

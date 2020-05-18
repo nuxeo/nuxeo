@@ -44,10 +44,7 @@ public abstract class AbstractLogConfig implements LogConfig {
 
     @Override
     public boolean match(Name name) {
-        if (patterns.stream().anyMatch(pattern -> name.getUrn().startsWith(pattern))) {
-            return true;
-        }
-        return false;
+        return patterns.stream().anyMatch(pattern -> name.getUrn().startsWith(pattern));
     }
 
     @Override
@@ -55,10 +52,7 @@ public abstract class AbstractLogConfig implements LogConfig {
         if (patterns.stream().anyMatch(pattern -> group.getUrn().startsWith(pattern))) {
             return true;
         }
-        if (match(name)) {
-            return true;
-        }
-        return false;
+        return match(name);
     }
 
 

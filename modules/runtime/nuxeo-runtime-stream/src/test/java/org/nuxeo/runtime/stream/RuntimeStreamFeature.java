@@ -121,7 +121,7 @@ public class RuntimeStreamFeature implements RunnerFeature {
         StreamService service = Framework.getService(StreamService.class);
         service.stopProcessors();
         LogManager manager = service.getLogManager();
-        manager.listAll().forEach(manager::delete);
+        manager.listAllNames().forEach(manager::delete);
         cleanupTopics = false;
     }
 

@@ -81,7 +81,7 @@ public class TestDocumentImport {
     protected static final Log log = LogFactory.getLog(TestDocumentImport.class);
 
     @Inject
-    StreamService streamService;
+    protected StreamService streamService;
 
     @Inject
     CoreSession session;
@@ -299,7 +299,6 @@ public class TestDocumentImport {
         assertEquals(NB_PRODUCERS, ret.size());
 
         // 2. import documents into Redis
-        // DocumentModel root = session.getRootDocument();
         ConsumerPool<DocumentMessage> consumers = new ConsumerPool<>(LOG_DOC.getUrn(), getLogManager(), docCodec,
                 new RedisDocumentMessageConsumerFactory(REDIS_PREFIX), ConsumerPolicy.BOUNDED);
         List<ConsumerStatus> ret2 = consumers.start().get();

@@ -129,7 +129,7 @@ public class TrackerCommand extends Command {
 
     protected List<Name> getLogNames(LogManager manager, String names) {
         if (ALL_LOGS.equalsIgnoreCase(names)) {
-            return manager.listAll().stream().filter(name -> !INPUT_STREAM.equals(name.getName()))
+            return manager.listAllNames().stream().filter(name -> !INPUT_STREAM.equals(name.getName()))
                           .collect(Collectors.toList());
         }
         List<Name> ret = Arrays.stream(names.split(",")).map(Name::ofUrn).collect(Collectors.toList());

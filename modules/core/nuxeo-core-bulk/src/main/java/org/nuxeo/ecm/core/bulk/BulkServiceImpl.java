@@ -58,7 +58,7 @@ public class BulkServiceImpl implements BulkService {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(BulkServiceImpl.class);
 
-    // log config is not needed anymore
+    // @deprecated since 11.1 log config is not needed anymore
     @Deprecated
     public static final String BULK_LOG_MANAGER_NAME = "bulk";
 
@@ -66,14 +66,17 @@ public class BulkServiceImpl implements BulkService {
 
     public static final String COMMAND_STREAM = "bulk/command";
 
+    // @since 11.1
     public static final Name COMMAND_STREAM_NAME = Name.ofUrn(COMMAND_STREAM);
 
     public static final String STATUS_STREAM = "bulk/status";
 
+    // @since 11.1
     public static final Name STATUS_STREAM_NAME = Name.ofUrn(STATUS_STREAM);
 
     public static final String DONE_STREAM = "bulk/done";
 
+    // @since 11.1
     public static final Name DONE_STREAM_NAME = Name.ofUrn(DONE_STREAM);
 
     public static final String RECORD_CODEC = "avro";

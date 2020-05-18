@@ -36,8 +36,10 @@ public interface StreamService {
      *
      * @deprecated since 11.1 just use {@link #getLogManager()}.
      */
-    @Deprecated
-    LogManager getLogManager(String configName);
+    @Deprecated(since = "11.1")
+    default LogManager getLogManager(String configName) {
+        return getLogManager();
+    }
 
 
     /**
@@ -45,9 +47,10 @@ public interface StreamService {
      *
      * @deprecated since 11.1 just use {@link #getStreamManager()}.
      */
-    @Deprecated
-    StreamManager getStreamManager(String configName);
-
+    @Deprecated(since = "11.1")
+    default StreamManager getStreamManager(String configName) {
+        return getStreamManager();
+    }
 
     // exposed for test
     void stopProcessors();

@@ -206,7 +206,7 @@ public class ChronicleLogManager extends AbstractLogManager {
     }
 
     @Override
-    public List<Name> listAll() {
+    public List<Name> listAllNames() {
         Set<Name> names = new HashSet<>();
         for (ChronicleLogConfig config : configs) {
             try (Stream<Path> paths = Files.list(config.getBasePath())) {

@@ -56,6 +56,7 @@ public class AutomationBulkAction implements StreamProcessorTopology {
 
     public static final String ACTION_NAME = "automation";
 
+    // @since 11.1
     public static final String ACTION_FULL_NAME = "bulk/" + ACTION_NAME;
 
     public static final String OPERATION_ID = "operationId";

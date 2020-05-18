@@ -33,7 +33,7 @@ import org.nuxeo.runtime.model.Descriptor;
 
 @XObject("logConfig")
 public class LogConfigDescriptor implements Descriptor {
-
+    // @since 11.1
     public static final String SEP = ":";
 
     // @since 11.1
@@ -61,6 +61,7 @@ public class LogConfigDescriptor implements Descriptor {
         }
     }
 
+    // @since 11.1
     @XObject(value = "match")
     public static class LogMatchDescriptor implements Descriptor {
 
@@ -88,6 +89,7 @@ public class LogConfigDescriptor implements Descriptor {
     @XNodeList(value = "log", type = ArrayList.class, componentType = LogDescriptor.class)
     public List<LogDescriptor> logs = new ArrayList<>();
 
+    // @since 11.1
     @XNodeList(value = "match", type = ArrayList.class, componentType = LogMatchDescriptor.class)
     public List<LogMatchDescriptor> matches = new ArrayList<>();
 
@@ -116,6 +118,7 @@ public class LogConfigDescriptor implements Descriptor {
         return name == null && type == null;
     }
 
+    // @since 11.1
     public List<String> getPatterns() {
         return matches.stream().map(match -> match.getId()).collect(Collectors.toList());
     }

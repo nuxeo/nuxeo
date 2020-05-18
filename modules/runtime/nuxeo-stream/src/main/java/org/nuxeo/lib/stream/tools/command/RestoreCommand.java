@@ -212,7 +212,7 @@ public class RestoreCommand extends Command {
 
     protected List<Name> getLogNames(LogManager manager, String names) {
         if (ALL_LOGS.equalsIgnoreCase(names)) {
-            return manager.listAll();
+            return manager.listAllNames();
         }
         List<Name> ret = Arrays.stream(names.split(",")).map(Name::ofUrn).collect(Collectors.toList());
         for (Name name : ret) {

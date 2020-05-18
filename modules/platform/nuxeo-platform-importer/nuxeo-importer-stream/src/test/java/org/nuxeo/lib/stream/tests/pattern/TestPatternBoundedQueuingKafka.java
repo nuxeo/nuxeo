@@ -42,7 +42,7 @@ public class TestPatternBoundedQueuingKafka extends TestPatternBoundedQueuing {
     @After
     public void resetPrefix() {
         if (manager != null) {
-            manager.listAll().forEach(manager::delete);
+            manager.listAllNames().forEach(manager::delete);
         }
         prefix = null;
     }
