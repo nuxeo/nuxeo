@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.apidoc.listener.contrib">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <documentation>
+      These contributions are used for latest distribution flag update and XML attributes extractions in
+      extension points.
+    </documentation>
+
+    <listener name="latestDistributionsListener" async="false" postCommit="false"
+      class="org.nuxeo.apidoc.listener.LatestDistributionsListener">
+      <documentation>
+        Updates latest distribution flag.
+      </documentation>
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="AttributesExtractorStater" async="false" postCommit="false"
+      class="org.nuxeo.apidoc.listener.AttributesExtractorStater">
+      <documentation>
+        Listener in charge of triggering AttributesExtractorScheduler.
+      </documentation>
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+
+    <listener name="AttributesExtractorScheduler" async="false" postCommit="false"
+      class="org.nuxeo.apidoc.listener.AttributesExtractorScheduler" priority="20">
+      <description>
+        Schedules a work for XML attributes extraction.
+      </description>
+      <event>documentCreated</event>
+      <event>documentModified</event>
+    </listener>
+  </extension>
+
+</component>

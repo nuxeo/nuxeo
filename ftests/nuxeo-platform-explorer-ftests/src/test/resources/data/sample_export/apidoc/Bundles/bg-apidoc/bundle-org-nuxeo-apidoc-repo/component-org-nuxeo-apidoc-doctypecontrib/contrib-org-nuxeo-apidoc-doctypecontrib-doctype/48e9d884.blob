@@ -1,0 +1,117 @@
+<extension point="doctype" target="org.nuxeo.ecm.core.schema.TypeService">
+    <documentation>
+      These contributions provide document types that handle persistence of introspected distributions.
+    </documentation>
+
+    <doctype extends="Folder" name="NXDistribution">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+      <schema name="nxdistribution"/>
+
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+      <facet name="Folderish"/>
+
+      <subtypes>
+        <type>NXBundleGroup</type>
+        <type>NXBundle</type>
+        <type>NXOperation</type>
+        <type>Workspace</type>
+      </subtypes>
+    </doctype>
+
+    <doctype extends="OrderedFolder" name="NXBundleGroup">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+      <schema name="files"/>
+      <schema name="nxbundlegroup"/>
+
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+      <facet name="Folderish"/>
+
+      <subtypes>
+        <type>NXBundleGroup</type>
+      </subtypes>
+    </doctype>
+
+
+    <doctype extends="OrderedFolder" name="NXBundle">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+      <schema name="nxbundle"/>
+
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+      <facet name="Folderish"/>
+      <subtypes>
+        <type>NXComponent</type>
+        <type>NXService</type>
+        <type>NXExtensionPoint</type>
+        <type>NXContribution</type>
+      </subtypes>
+    </doctype>
+
+    <doctype extends="OrderedFolder" name="NXComponent">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+      <schema name="nxcomponent"/>
+
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+      <facet name="Folderish"/>
+      <subtypes>
+        <type>NXService</type>
+        <type>NXExtensionPoint</type>
+        <type>NXContribution</type>
+      </subtypes>
+    </doctype>
+
+    <doctype extends="OrderedFolder" name="NXExtensionPoint">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+      <schema name="nxextensionpoint"/>
+      <schema name="apidoccommon"/>
+
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+      <facet name="Folderish"/>
+    </doctype>
+
+    <doctype extends="Document" name="NXContribution">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+      <schema name="nxcontribution"/>
+      <schema name="apidoccommon"/>
+
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+    </doctype>
+
+    <doctype extends="Document" name="NXService">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+      <schema name="nxservice"/>
+
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+    </doctype>
+
+    <doctype extends="Document" name="NXOperation">
+      <schema name="common"/>
+      <schema name="dublincore"/>
+      <schema name="file"/>
+
+      <schema name="nxoperation"/>
+      <facet name="Commentable"/>
+      <facet name="Versionable"/>
+    </doctype>
+
+  </extension>

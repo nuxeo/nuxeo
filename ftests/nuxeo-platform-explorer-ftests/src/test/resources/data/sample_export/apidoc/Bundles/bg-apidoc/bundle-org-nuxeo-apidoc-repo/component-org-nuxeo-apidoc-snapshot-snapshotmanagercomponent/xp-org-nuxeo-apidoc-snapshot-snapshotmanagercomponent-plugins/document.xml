@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="724bc5d2-05a3-4ea4-9c44-43e192206b67">
+  <system>
+    <type>NXExtensionPoint</type>
+    <path>apidoc/Bundles/bg-apidoc/bundle-org-nuxeo-apidoc-repo/component-org-nuxeo-apidoc-snapshot-snapshotmanagercomponent/xp-org-nuxeo-apidoc-snapshot-snapshotmanagercomponent-plugins</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Versionable</facet>
+    <facet>DocumentsSizeStatistics</facet>
+    <facet>Folderish</facet>
+    <facet>NXTag</facet>
+    <facet>Orderable</facet>
+    <facet>Commentable</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="members" permission="Write" grant="true"/>
+        <entry principal="Everyone" permission="Read" grant="true"/>
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:nxextensionpoint="http://nuxeo.org/schemas/nxextensionpoint" name="nxextensionpoint">
+    <nxextensionpoint:extensionPoint>
+      <item><![CDATA[org.nuxeo.apidoc.plugin.PluginDescriptor]]></item>
+    </nxextensionpoint:extensionPoint>
+    <nxextensionpoint:epId><![CDATA[org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins]]></nxextensionpoint:epId>
+    <nxextensionpoint:documentation><![CDATA[<p>
+        A plugin can introspect and persist information related to the current runtime environment.
+      </p>
+<p>
+        Sample contribution:
+        <code>
+        <extension point="plugins" target="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent">
+            <plugin class="org.nuxeo.apidoc.seam.plugin.SeamPlugin"
+                id="seam" snapshotClass="org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot">
+                <ui>
+                    <label>Seam Components</label>
+                    <viewType>seam</viewType>
+                    <homeView>listSeamComponents</homeView>
+                    <styleClass>seam</styleClass>
+                </ui>
+            </plugin>
+        </extension>
+    </code>
+</p>
+<p>
+        The class should implement the
+        <b>org.nuxeo.apidoc.plugin.Plugin</b>
+        interface.
+      </p>
+<p>
+        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,
+        and
+        the module holding this resource should be contributed to the main webengine module as a fragment using:
+        <code>
+          Fragment-Host: org.nuxeo.apidoc.webengine
+        </code>
+</p>
+]]></nxextensionpoint:documentation>
+    <nxextensionpoint:name><![CDATA[plugins]]></nxextensionpoint:name>
+  </schema>
+  <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file"></schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:dss="http://www.nuxeo.org/dam/schemas/documentsSizeStats/" name="documents_size_statistics"></schema>
+  <schema xmlns:adc="http://nuxeo.org/schemas/nxbundle" name="apidoccommon"></schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:modified><![CDATA[2020-05-15T15:19:12.047Z]]></dc:modified>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:created><![CDATA[2020-05-15T15:19:12.047Z]]></dc:created>
+    <dc:title><![CDATA[org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins]]></dc:title>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+  </schema>
+  <schema xmlns:nxtag="http://www.nuxeo.org/ecm/schemas/facetedTag/" name="facetedTag">
+    <nxtag:tags/>
+  </schema>
+</document>

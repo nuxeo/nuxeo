@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: anahide
+Build-Jdk: 11.0.7
+Bundle-ManifestVersion: 1
+Bundle-Version: 0.0.1
+Bundle-Name: nuxeo api documentation repository
+Bundle-SymbolicName: org.nuxeo.apidoc.repo;singleton:=true
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/schema-contrib.xml, OSGI-INF/doctype-contrib
+ .xml, OSGI-INF/life-cycle-contrib.xml, OSGI-INF/snapshot-service-fram
+ ework.xml, OSGI-INF/adapter-contrib.xml, OSGI-INF/listener-contrib.xml
+

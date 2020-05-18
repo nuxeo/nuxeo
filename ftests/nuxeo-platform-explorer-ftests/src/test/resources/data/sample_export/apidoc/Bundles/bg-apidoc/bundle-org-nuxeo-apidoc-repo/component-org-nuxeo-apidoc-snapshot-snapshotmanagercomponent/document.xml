@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<document repository="default" id="863ebef9-1d49-4aab-8ab4-74029f4e91d6">
+  <system>
+    <type>NXComponent</type>
+    <path>apidoc/Bundles/bg-apidoc/bundle-org-nuxeo-apidoc-repo/component-org-nuxeo-apidoc-snapshot-snapshotmanagercomponent</path>
+    <lifecycle-state>project</lifecycle-state>
+    <lifecycle-policy>default</lifecycle-policy>
+    <facet>Versionable</facet>
+    <facet>DocumentsSizeStatistics</facet>
+    <facet>Folderish</facet>
+    <facet>NXTag</facet>
+    <facet>Orderable</facet>
+    <facet>Commentable</facet>
+    <facet>Thumbnail</facet>
+    <facet>DocumentsCountStatistics</facet>
+    <access-control>
+      <acl name="inherited">
+        <entry principal="members" permission="Write" grant="true"/>
+        <entry principal="Everyone" permission="Read" grant="true"/>
+        <entry principal="Administrator" permission="Everything" grant="true"/>
+        <entry principal="members" permission="Read" grant="true"/>
+      </acl>
+    </access-control>
+  </system>
+  <schema xmlns:thumb="http://www.nuxeo.org/ecm/schemas/thumbnail" name="thumbnail"></schema>
+  <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file">
+    <file:content>
+      <encoding></encoding>
+      <mime-type>text/xml</mime-type>
+      <filename>/OSGI-INF/snapshot-service-framework.xml</filename>
+      <data>b01c624b.blob</data>
+      <digest>a070a74b13c54dbc49df035cdce432d9</digest>
+    </file:content>
+  </schema>
+  <schema xmlns:nxcomponent="http://nuxeo.org/schemas/nxcomponent" name="nxcomponent">
+    <nxcomponent:isXML><![CDATA[false]]></nxcomponent:isXML>
+    <nxcomponent:componentName><![CDATA[org.nuxeo.apidoc.snapshot.SnapshotManagerComponent]]></nxcomponent:componentName>
+    <nxcomponent:builtInDocumentation><![CDATA[<p>
+      This component handles the introspection of the current live Runtime as a distribution.
+    </p>
+<p>
+      It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.
+    </p>
+]]></nxcomponent:builtInDocumentation>
+    <nxcomponent:services>
+      <item><![CDATA[org.nuxeo.apidoc.snapshot.SnapshotManager]]></item>
+      <item><![CDATA[org.nuxeo.apidoc.search.ArtifactSearcher]]></item>
+    </nxcomponent:services>
+    <nxcomponent:componentClass><![CDATA[org.nuxeo.apidoc.snapshot.SnapshotManagerComponent]]></nxcomponent:componentClass>
+    <nxcomponent:requirements/>
+    <nxcomponent:componentId><![CDATA[org.nuxeo.apidoc.snapshot.SnapshotManagerComponent]]></nxcomponent:componentId>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common"></schema>
+  <schema xmlns:dss="http://www.nuxeo.org/dam/schemas/documentsSizeStats/" name="documents_size_statistics">
+    <dss:innerSize><![CDATA[2009]]></dss:innerSize>
+    <dss:totalSize><![CDATA[2009]]></dss:totalSize>
+  </schema>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:modified><![CDATA[2020-05-15T15:19:12.031Z]]></dc:modified>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:created><![CDATA[2020-05-15T15:19:12.031Z]]></dc:created>
+    <dc:title><![CDATA[org.nuxeo.apidoc.snapshot.SnapshotManagerComponent]]></dc:title>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+  </schema>
+  <schema xmlns:dcs="http://www.nuxeo.org/dam/schemas/documentsCountStats/" name="documents_count_statistics">
+    <dcs:descendantsCount><![CDATA[2]]></dcs:descendantsCount>
+    <dcs:childrenCount><![CDATA[2]]></dcs:childrenCount>
+  </schema>
+  <schema xmlns:nxtag="http://www.nuxeo.org/ecm/schemas/facetedTag/" name="facetedTag">
+    <nxtag:tags/>
+  </schema>
+</document>
