@@ -86,12 +86,14 @@ public abstract class AbstractExplorerTest extends AbstractTest {
                 ApiBrowserConstants.getArtifactView(type), id));
     }
 
-    protected void checkExtensionPoints() {
+    protected void checkExtensionPoints(boolean partial) {
         ListingFragment listing = asPage(ListingFragment.class);
-        listing.checkListing(-1, "actions", "/viewExtensionPoint/org.nuxeo.ecm.platform.actions.ActionService--actions",
-                "ActionService - org.nuxeo.ecm.platform.actions.ActionService");
-
-        listing = listing.filterOn("org.nuxeo.apidoc");
+        if (!partial) {
+            listing.checkListing(-1, "actions",
+                    "/viewExtensionPoint/org.nuxeo.ecm.platform.actions.ActionService--actions",
+                    "ActionService - org.nuxeo.ecm.platform.actions.ActionService");
+            listing = listing.filterOn("org.nuxeo.apidoc");
+        }
         listing.checkListing(1, "plugins",
                 "/viewExtensionPoint/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
                 "SnapshotManagerComponent - org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
@@ -104,11 +106,13 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         apage.checkReference();
     }
 
-    protected void checkContributions() {
+    protected void checkContributions(boolean partial) {
         ListingFragment listing = asPage(ListingFragment.class);
-        listing.checkListing(-1, "cluster-config--configuration", "/viewContribution/cluster-config--configuration",
-                "configuration - org.nuxeo.runtime.cluster.ClusterService");
-        listing = listing.filterOn("org.nuxeo.apidoc");
+        if (!partial) {
+            listing.checkListing(-1, "cluster-config--configuration", "/viewContribution/cluster-config--configuration",
+                    "configuration - org.nuxeo.runtime.cluster.ClusterService");
+            listing = listing.filterOn("org.nuxeo.apidoc");
+        }
         listing.checkListing(5, "org.nuxeo.apidoc.adapterContrib--adapters",
                 "/viewContribution/org.nuxeo.apidoc.adapterContrib--adapters",
                 "adapters - org.nuxeo.ecm.core.api.DocumentAdapterService");
@@ -121,13 +125,15 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         apage.checkReference();
     }
 
-    protected void checkServices() {
+    protected void checkServices(boolean partial) {
         ListingFragment listing = asPage(ListingFragment.class);
-        listing.checkListing(-1, "ActionManager", "/viewService/org.nuxeo.ecm.platform.actions.ejb.ActionManager",
-                "org.nuxeo.ecm.platform.actions.ejb.ActionManager");
-
+        if (!partial) {
+            listing.checkListing(-1, "ActionManager", "/viewService/org.nuxeo.ecm.platform.actions.ejb.ActionManager",
+                    "org.nuxeo.ecm.platform.actions.ejb.ActionManager");
+            listing = listing.filterOn("org.nuxeo.apidoc");
+        }
         // toggle sort to check the SnapshotManager service
-        listing = listing.filterOn("org.nuxeo.apidoc").toggleSort();
+        listing = listing.toggleSort();
         listing.checkListing(2, "SnapshotManager", "/viewService/org.nuxeo.apidoc.snapshot.SnapshotManager",
                 "org.nuxeo.apidoc.snapshot.SnapshotManager");
 
@@ -139,8 +145,13 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         apage.checkReference();
     }
 
-    protected void checkOperations() {
+    protected void checkOperations(boolean partial) {
         ListingFragment listing = asPage(ListingFragment.class);
+        if (partial) {
+            listing.checkListing(0, null, null, null);
+            return;
+        }
+
         listing.checkListing(-1, "acceptComment", "/viewOperation/acceptComment", "CHAIN acceptComment");
 
         listing = listing.filterOn("Document.AddFacet");
@@ -155,12 +166,15 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         apage.checkReference();
     }
 
-    protected void checkComponents() {
+    protected void checkComponents(boolean partial) {
         ListingFragment listing = asPage(ListingFragment.class);
-        listing.checkListing(-1, "actions.ActionService", "/viewComponent/org.nuxeo.ecm.platform.actions.ActionService",
-                "JAVA org.nuxeo.ecm.platform.actions.ActionService");
-
-        listing = listing.filterOn("org.nuxeo.apidoc").toggleSort();
+        if (!partial) {
+            listing.checkListing(-1, "actions.ActionService",
+                    "/viewComponent/org.nuxeo.ecm.platform.actions.ActionService",
+                    "JAVA org.nuxeo.ecm.platform.actions.ActionService");
+            listing = listing.filterOn("org.nuxeo.apidoc");
+        }
+        listing = listing.toggleSort();
         listing.checkListing(6, "apidoc.snapshot.SnapshotManagerComponent",
                 "/viewComponent/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
                 "JAVA org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
@@ -173,11 +187,12 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         apage.checkReference();
     }
 
-    protected void checkBundles() {
+    protected void checkBundles(boolean partial) {
         ListingFragment listing = asPage(ListingFragment.class);
-        listing.checkListing(-1, "org.nuxeo.admin.center", "/viewBundle/org.nuxeo.admin.center", null);
-
-        listing = listing.filterOn("org.nuxeo.apidoc");
+        if (!partial) {
+            listing.checkListing(-1, "org.nuxeo.admin.center", "/viewBundle/org.nuxeo.admin.center", null);
+            listing = listing.filterOn("org.nuxeo.apidoc");
+        }
         listing.checkListing(3, "org.nuxeo.apidoc.core", "/viewBundle/org.nuxeo.apidoc.core", null);
 
         listing.navigateToFirstItem();

@@ -74,37 +74,37 @@ public class ITExplorerSimpleTest extends AbstractExplorerTest {
     @Test
     public void testExtensionPoints() {
         open(LiveSimplePage.URL + ApiBrowserConstants.LIST_EXTENSIONPOINTS);
-        checkExtensionPoints();
+        checkExtensionPoints(false);
     }
 
     @Test
     public void testContributions() {
         open(LiveSimplePage.URL + ApiBrowserConstants.LIST_CONTRIBUTIONS);
-        checkContributions();
+        checkContributions(false);
     }
 
     @Test
     public void testServices() {
         open(LiveSimplePage.URL + ApiBrowserConstants.LIST_SERVICES);
-        checkServices();
+        checkServices(false);
     }
 
     @Test
     public void testOperations() {
         open(LiveSimplePage.URL + ApiBrowserConstants.LIST_OPERATIONS);
-        checkOperations();
+        checkOperations(false);
     }
 
     @Test
     public void testComponents() {
         open(LiveSimplePage.URL + ApiBrowserConstants.LIST_COMPONENTS);
-        checkComponents();
+        checkComponents(false);
     }
 
     @Test
     public void testBundles() {
         open(LiveSimplePage.URL + ApiBrowserConstants.LIST_BUNDLES);
-        checkBundles();
+        checkBundles(false);
     }
 
     @Test
