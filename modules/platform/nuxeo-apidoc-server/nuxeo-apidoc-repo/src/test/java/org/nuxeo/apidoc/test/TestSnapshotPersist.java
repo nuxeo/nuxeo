@@ -88,9 +88,14 @@ public class TestSnapshotPersist extends AbstractApidocTest {
     public void testPersistPartial() throws IOException {
         SnapshotFilter filter = new SnapshotFilter("apidoc");
         filter.addBundlePrefix("org.nuxeo.apidoc");
+
         DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session, "apidoc", null, filter);
         assertNotNull(snapshot);
         checkDistributionSnapshot(snapshot, true);
+
+        DistributionSnapshot persisted = snapshotManager.getSnapshot(snapshot.getKey(), session);
+        assertNotNull(persisted);
+        checkDistributionSnapshot(persisted, true);
     }
 
     protected void checkDistributionSnapshot(DistributionSnapshot snapshot, boolean partial) throws IOException {
