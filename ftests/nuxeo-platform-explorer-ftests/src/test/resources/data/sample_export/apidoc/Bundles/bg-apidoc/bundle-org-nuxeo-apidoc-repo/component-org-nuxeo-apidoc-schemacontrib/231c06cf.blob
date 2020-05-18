@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.apidoc.schemaContrib">
+  <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+
+    <schema name="nxbundle" src="schemas/nxbundle.xsd" prefix="nxbundle" />
+    <schema name="nxbundlegroup" src="schemas/nxbundlegroup.xsd" prefix="nxbundlegroup" />
+    <schema name="nxcomponent" src="schemas/nxcomponent.xsd" prefix="nxcomponent" />
+    <schema name="nxcontribution" src="schemas/nxcontribution.xsd" prefix="nxcontribution" />
+    <schema name="nxdistribution" src="schemas/nxdistribution.xsd" prefix="nxdistribution" />
+    <schema name="nxextensionpoint" src="schemas/nxextensionpoint.xsd" prefix="nxextensionpoint" />
+    <schema name="nxservice" src="schemas/nxservice.xsd" prefix="nxservice" />
+    <schema name="nxoperation" src="schemas/nxoperation.xsd" prefix="nxop" />
+    <schema name="apidoccommon" src="schemas/apidoccommon.xsd" prefix="adc" />
+
+  </extension>
+</component>

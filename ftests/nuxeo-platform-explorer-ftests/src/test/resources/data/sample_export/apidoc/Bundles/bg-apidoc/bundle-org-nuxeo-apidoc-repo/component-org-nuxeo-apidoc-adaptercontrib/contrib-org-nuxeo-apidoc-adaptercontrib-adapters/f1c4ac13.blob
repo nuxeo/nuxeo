@@ -1,0 +1,22 @@
+<extension point="adapters" target="org.nuxeo.ecm.core.api.DocumentAdapterService">
+    <documentation>
+      These contributions provide a mapping between live introspections and persisted representations of a distribution.
+    </documentation>
+
+    <adapter class="org.nuxeo.apidoc.api.BundleGroup" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXBundleGroup"/>
+    <adapter class="org.nuxeo.apidoc.api.BundleInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXBundle"/>
+    <adapter class="org.nuxeo.apidoc.api.ComponentInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXComponent"/>
+    <adapter class="org.nuxeo.apidoc.api.ExtensionPointInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXExtensionPoint"/>
+    <adapter class="org.nuxeo.apidoc.api.ExtensionInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXContribution"/>
+    <adapter class="org.nuxeo.apidoc.api.ServiceInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXService"/>
+    <adapter class="org.nuxeo.apidoc.snapshot.DistributionSnapshot" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXDistribution"/>
+    <adapter class="org.nuxeo.apidoc.api.OperationInfo" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXOperation"/>
+    <adapter class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXBundleGroup"/>
+    <adapter class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXBundle"/>
+    <adapter class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXComponent"/>
+    <adapter class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXExtensionPoint"/>
+    <adapter class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXContribution"/>
+    <adapter class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXService"/>
+    <adapter class="org.nuxeo.apidoc.api.NuxeoArtifact" factory="org.nuxeo.apidoc.adapters.AdapterFactory" type="NXOperation"/>
+
+  </extension>
