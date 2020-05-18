@@ -229,12 +229,16 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         }
     }
 
-    public static String getReferenceContent(String path) throws IOException {
+    public static String getReferencePath(String path) throws IOException {
         URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(path);
         if (fileUrl == null) {
             throw new IllegalStateException("File not found: " + path);
         }
-        String refPath = FileUtils.getFilePathFromUrl(fileUrl);
+        return FileUtils.getFilePathFromUrl(fileUrl);
+    }
+
+    public static String getReferenceContent(String path) throws IOException {
+        String refPath = getReferencePath(path);
         return org.apache.commons.io.FileUtils.readFileToString(new File(refPath), StandardCharsets.UTF_8).trim();
     }
 

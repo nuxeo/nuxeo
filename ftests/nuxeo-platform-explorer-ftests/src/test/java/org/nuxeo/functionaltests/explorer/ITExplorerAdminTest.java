@@ -22,13 +22,24 @@ import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.nuxeo.apidoc.repository.SnapshotPersister;
+import org.nuxeo.ecm.core.io.impl.DWord;
+import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
@@ -97,6 +108,8 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
     @After
     public void after() {
         doLogout();
+        // clean up persisted distribs
+        RestHelper.deleteDocument(SnapshotPersister.Root_PATH + SnapshotPersister.Root_NAME);
     }
 
     @Override
@@ -147,7 +160,63 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(DistribAdminPage.URL);
         String newDistribName = "imported-server";
         String newVersion = "1.0.0";
-        asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion);
+        asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion, null);
+        open(ExplorerHomePage.URL);
+        String newDistribId = getDistribId(newDistribName, newVersion);
+        asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
+    }
+
+    protected void createSampleZip(String sourceDirPath, String zipFilePath, boolean addMarker) throws IOException {
+        Path p = Files.createFile(Paths.get(zipFilePath));
+        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p))) {
+            if (addMarker) {
+                ZipEntry zipEntry = new ZipEntry(".nuxeo-archive");
+                zs.putNextEntry(zipEntry);
+                zs.closeEntry();
+            }
+            // read paths from reference file as NuxeoArchiveReader requires a given order and extra info
+            List<String> lines = Files.readAllLines(Paths.get(sourceDirPath, "entries.txt"));
+            for (int i = 0; i < lines.size(); i++) {
+                String path = lines.get(i);
+                if (StringUtils.isEmpty(path)) {
+                    continue;
+                }
+                ZipEntry entry = new ZipEntry(path);
+                Path ppath = Paths.get(sourceDirPath, path);
+                if (!Files.isDirectory(ppath)) {
+                    zs.putNextEntry(entry);
+                    Files.copy(ppath, zs);
+                } else {
+                    entry.setExtra(new DWord(Integer.valueOf(lines.get(i + 1))).getBytes());
+                    zs.putNextEntry(entry);
+                    i++;
+                }
+                zs.closeEntry();
+            }
+        }
+    }
+
+    /**
+     * @implNote non-regression test for NXP-14948: sample export contains code from quota plugin
+     */
+    @Test
+    public void testSampleDistribImport() throws IOException {
+        String sourceDirPath = getReferencePath("data/sample_export");
+        File file = new File(downloadDir, "distrib-apidoc.zip");
+        createSampleZip(sourceDirPath, file.getPath(), false);
+
+        String newDistribName = "apidoc";
+        String newVersion = "1.0.0";
+        open(DistribAdminPage.URL);
+        asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion,
+                "Details: Not a valid Nuxeo Archive - no marker file found");
+
+        // add the needed ".nuxeo-archive" file at the root of the zip and retry
+        FileUtils.deleteQuietly(file);
+        createSampleZip(sourceDirPath, file.getPath(), true);
+        open(DistribAdminPage.URL);
+        asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion, null);
+
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
