@@ -22,25 +22,39 @@ import java.util.List;
 
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @since 11.1
  */
 public class ComponentArtifactPage extends ArtifactPage {
 
+    @FindBy(xpath = "//div[@class='implementation']")
+    public WebElement implementation;
+
+    @FindBy(xpath = "//div[@class='implementation']//a[@class='javadoc']")
+    public WebElement javadocLink;
+
     public ComponentArtifactPage(WebDriver driver) {
         super(driver);
     }
 
     @Override
-    public void checkReference() {
+    public void checkReference(boolean partial, boolean legacy) {
+        String toc = "Documentation\n" + "Implementation\n" + "Services\n" + "Extension Points\n" + "Contributions\n"
+                + "XML Source";
+        if (legacy) {
+            toc = "Documentation\n" + "Implementation\n" + "Services\n" + "Extension Points\n" + "XML Source";
+        }
         checkCommon("Component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
-                "Component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", "In bundle org.nuxeo.apidoc.repo",
-                "Documentation\n" + "Implementation\n" + "Services\n" + "Extension Points\n" + "XML Source");
+                "Component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", "In bundle org.nuxeo.apidoc.repo", toc);
         checkRequirements(null);
         checkDocumentationText(
                 "This component handles the introspection of the current live Runtime as a distribution.\n" //
                         + "It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.");
+        checkImplementationText("Javadoc: org.nuxeo.apidoc.snapshot.SnapshotManagerComponent");
+        checkJavadocLink("/javadoc/org/nuxeo/apidoc/snapshot/SnapshotManagerComponent.html");
     }
 
     @Override
@@ -50,12 +64,22 @@ public class ComponentArtifactPage extends ArtifactPage {
                 "Requirements\n" + "Contributions\n" + "XML Source");
         checkRequirements(List.of("org.nuxeo.ecm.platform.contentview.json.marshallers"));
         checkDocumentationText(null);
+        checkImplementationText(null);
+        checkJavadocLink(null);
     }
 
     @Override
     public void checkSelectedTab() {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header.checkSelectedTab(header.components);
+    }
+
+    public void checkImplementationText(String expected) {
+        checkTextIfExists(expected, implementation);
+    }
+
+    public void checkJavadocLink(String expected) {
+        checkJavadocLink(expected, javadocLink);
     }
 
 }

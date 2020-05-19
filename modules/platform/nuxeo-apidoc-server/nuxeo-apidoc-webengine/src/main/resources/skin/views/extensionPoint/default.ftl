@@ -1,4 +1,3 @@
-<#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
 <@block name="title">Extension point ${nxItem.id}</@block>
 
@@ -19,11 +18,10 @@
     </div>
   </#if>
 
-  <h2>Contribution Descriptor</h2>
-  <ul>
+  <h2>Contribution Descriptors</h2>
+  <ul class="descriptors">
     <#list nxItem.descriptors as descriptor>
-    <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(descriptor)}"/>
-    <li>Javadoc: <a href="${javaDocBaseUrl}/javadoc/${descriptor?replace('.','/')}.html" target="_new">${descriptor}</a>
+    <li><@javadoc descriptor true /></li>
     </#list>
   </ul>
 

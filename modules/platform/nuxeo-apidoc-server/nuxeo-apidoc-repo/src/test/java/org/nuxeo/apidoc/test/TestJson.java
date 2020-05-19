@@ -291,7 +291,7 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getName());
         assertEquals(version, smcomp.getVersion());
         assertFalse(smcomp.isXmlPureComponent());
-        checkContentEquals("OSGI-INF/snapshot-service-framework.xml", smcomp.getXmlFileContent());
+        checkContentEquals("apidoc_snapshot/legacy-snapshot-service-framework.xml", smcomp.getXmlFileContent());
 
         // check json back reference
         assertNotNull(smcomp.getBundle());

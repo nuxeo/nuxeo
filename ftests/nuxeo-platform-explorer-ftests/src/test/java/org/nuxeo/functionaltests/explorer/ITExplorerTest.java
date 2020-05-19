@@ -116,7 +116,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public void testExtensionPoints() {
         ExplorerHomePage home = goHome();
         home.clickOn(home.currentExtensionPoints);
-        checkExtensionPoints(false);
+        checkExtensionPoints(false, false);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public void testContributions() {
         ExplorerHomePage home = goHome();
         home.clickOn(home.currentContributions);
-        checkContributions(false);
+        checkContributions(false, false);
     }
 
     @Test
@@ -144,7 +144,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public void testServices() {
         ExplorerHomePage home = goHome();
         home.clickOn(home.currentServices);
-        checkServices(false);
+        checkServices(false, false);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public void testOperations() {
         ExplorerHomePage home = goHome();
         home.clickOn(home.currentOperations);
-        checkOperations(false);
+        checkOperations(false, false);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header = header.navigateTo(header.components);
         header.checkSelectedTab(header.components);
-        checkComponents(false);
+        checkComponents(false, false);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header = header.navigateTo(header.bundles);
         header.checkSelectedTab(header.bundles);
-        checkBundles(false);
+        checkBundles(false, false);
     }
 
     @Test
@@ -208,7 +208,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
         home.clickOn(home.currentDistrib);
         DistributionHomePage dhome = asPage(DistributionHomePage.class);
         dhome.clickOn(dhome.bundleGroups);
-        checkBundleGroups();
+        checkBundleGroups(false, null, false);
     }
 
     @Test

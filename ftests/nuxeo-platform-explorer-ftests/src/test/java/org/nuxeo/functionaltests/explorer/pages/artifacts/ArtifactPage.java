@@ -19,12 +19,15 @@
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.pages.AbstractExplorerPage;
 import org.openqa.selenium.By;
@@ -59,10 +62,10 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
 
     @Override
     public void check() {
-        checkReference();
+        checkReference(false, false);
     }
 
-    public abstract void checkReference();
+    public abstract void checkReference(boolean partial, boolean legacy);
 
     public abstract void checkAlternative();
 
@@ -111,6 +114,16 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
         List<WebElement> bundles = requirements.findElements(By.xpath(".//li"));
         assertEquals(ids.size(), bundles.size());
         IntStream.range(0, bundles.size()).forEach(i -> assertEquals(ids.get(i), bundles.get(i).getText()));
+    }
+
+    protected void checkJavadocLink(String expected, WebElement link) {
+        try {
+            String href = link.getAttribute("href");
+            assertFalse("Actual href: " + href, StringUtils.isBlank(expected));
+            assertTrue("Actual href: " + href, href.endsWith(expected));
+        } catch (NoSuchElementException e) {
+            assertNull(expected);
+        }
     }
 
 }

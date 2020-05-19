@@ -86,7 +86,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
                 ApiBrowserConstants.getArtifactView(type), id));
     }
 
-    protected void checkExtensionPoints(boolean partial) {
+    protected void checkExtensionPoints(boolean partial, boolean legacy) {
         ListingFragment listing = asPage(ListingFragment.class);
         if (!partial) {
             listing.checkListing(-1, "actions",
@@ -103,17 +103,18 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.checkReference();
+        apage.checkReference(partial, legacy);
     }
 
-    protected void checkContributions(boolean partial) {
+    protected void checkContributions(boolean partial, boolean legacy) {
         ListingFragment listing = asPage(ListingFragment.class);
         if (!partial) {
             listing.checkListing(-1, "cluster-config--configuration", "/viewContribution/cluster-config--configuration",
                     "configuration - org.nuxeo.runtime.cluster.ClusterService");
             listing = listing.filterOn("org.nuxeo.apidoc");
         }
-        listing.checkListing(5, "org.nuxeo.apidoc.adapterContrib--adapters",
+        int nb = legacy ? 5 : 6;
+        listing.checkListing(nb, "org.nuxeo.apidoc.adapterContrib--adapters",
                 "/viewContribution/org.nuxeo.apidoc.adapterContrib--adapters",
                 "adapters - org.nuxeo.ecm.core.api.DocumentAdapterService");
 
@@ -122,10 +123,10 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.checkReference();
+        apage.checkReference(partial, legacy);
     }
 
-    protected void checkServices(boolean partial) {
+    protected void checkServices(boolean partial, boolean legacy) {
         ListingFragment listing = asPage(ListingFragment.class);
         if (!partial) {
             listing.checkListing(-1, "ActionManager", "/viewService/org.nuxeo.ecm.platform.actions.ejb.ActionManager",
@@ -142,10 +143,10 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.checkReference();
+        apage.checkReference(partial, legacy);
     }
 
-    protected void checkOperations(boolean partial) {
+    protected void checkOperations(boolean partial, boolean legacy) {
         ListingFragment listing = asPage(ListingFragment.class);
         if (partial) {
             listing.checkListing(0, null, null, null);
@@ -163,10 +164,10 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.checkReference();
+        apage.checkReference(partial, legacy);
     }
 
-    protected void checkComponents(boolean partial) {
+    protected void checkComponents(boolean partial, boolean legacy) {
         ListingFragment listing = asPage(ListingFragment.class);
         if (!partial) {
             listing.checkListing(-1, "actions.ActionService",
@@ -184,10 +185,10 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.checkReference();
+        apage.checkReference(partial, legacy);
     }
 
-    protected void checkBundles(boolean partial) {
+    protected void checkBundles(boolean partial, boolean legacy) {
         ListingFragment listing = asPage(ListingFragment.class);
         if (!partial) {
             listing.checkListing(-1, "org.nuxeo.admin.center", "/viewBundle/org.nuxeo.admin.center", null);
@@ -200,13 +201,17 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         if (hasNavigationHeader()) {
             apage.checkSelectedTab();
         }
-        apage.checkReference();
+        apage.checkReference(partial, legacy);
     }
 
-    protected void checkBundleGroups() {
-        Locator.findElementWaitUntilEnabledAndClick(By.linkText("org.nuxeo.ecm.platform"));
+    protected void checkBundleGroups(boolean partial, String partialVirtualGroup, boolean legacy) {
+        if (partial) {
+            Locator.findElementWaitUntilEnabledAndClick(By.linkText(partialVirtualGroup));
+        } else {
+            Locator.findElementWaitUntilEnabledAndClick(By.linkText("org.nuxeo.ecm.platform"));
+        }
         BundleGroupArtifactPage apage = asPage(BundleGroupArtifactPage.class);
-        apage.checkReference();
+        apage.checkReference(partial, legacy);
     }
 
     protected String previousWindowHandle;

@@ -20,16 +20,21 @@ package org.nuxeo.apidoc.documentation;
 
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 public class JavaDocHelper {
 
-    public static final String BASE_URL = "http://community.nuxeo.com/api/";
+    public static final String BASE_URL = "https://community.nuxeo.com/api/";
 
-    public static final String DM_BASE = "nuxeo";
+    /**
+     * @since 11.1
+     */
+    public static final String BASE_URL_PROP_NAME = "nuxeo.apidoc.javadoc.url";
 
-    public static final String DEFAULT_DIST = DM_BASE;
-
-    public static final String DEFAULT_VERSION = "5.5";
+    /**
+     * @since 11.1
+     */
+    public static final String DEFAULT_DIST = "nuxeo";
 
     protected final String defaultPrefix;
 
@@ -51,14 +56,32 @@ public class JavaDocHelper {
         docVersion = version;
     }
 
-    public String getBaseUrl(String className) {
-        String base = defaultPrefix;
-        return BASE_URL + base + "/" + docVersion;
+    /**
+     * Returns the Javadoc URL for given class.
+     *
+     * @since 11.1
+     */
+    public String getUrl(String classCanonicalName) {
+        return getUrl(classCanonicalName, null);
+    }
+
+    /**
+     * Returns the Javadoc URL for given class and given inner class name (can be null).
+     *
+     * @since 11.1
+     */
+    public String getUrl(String classCanonicalName, String innerClassName) {
+        String baseUrl = Framework.getService(ConfigurationService.class).getString(BASE_URL_PROP_NAME, BASE_URL);
+        String base = String.format("%s%s/%s/javadoc", baseUrl, defaultPrefix, docVersion);
+        String classPart = classCanonicalName.replace(".", "/");
+        if (innerClassName != null) {
+            classPart = String.format("%s.%s", classPart, innerClassName);
+        }
+        return String.format("%s/%s.html", base, classPart);
     }
 
     public static JavaDocHelper getHelper(String distribName, String distribVersion) {
-        String base = DEFAULT_DIST;
-        return new JavaDocHelper(base, distribVersion);
+        return new JavaDocHelper(DEFAULT_DIST, distribVersion);
     }
 
 }

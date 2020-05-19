@@ -5,6 +5,7 @@ NXContribution: org.nuxeo.apidoc.doctypeContrib--doctype *** /grp:org.nuxeo.ecm.
 NXContribution: org.nuxeo.apidoc.lifecycle.contrib--types *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib/Contributions/org.nuxeo.apidoc.lifecycle.contrib--types
 NXContribution: org.nuxeo.apidoc.listener.contrib--listener *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib/Contributions/org.nuxeo.apidoc.listener.contrib--listener
 NXContribution: org.nuxeo.apidoc.schemaContrib--schema *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib/Contributions/org.nuxeo.apidoc.schemaContrib--schema
+NXContribution: org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Contributions/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration
 NXContribution: org.nuxeo.apidoc.test.works--queues *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues
 NXContribution: org.nuxeo.apidoc.test.works--queues1 *** /grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues1
 NXContribution: org.nuxeo.automation.scripting.classfilter--classFilter *** /grp:org.nuxeo.ecm.automation/org.nuxeo.ecm.automation.scripting/org.nuxeo.automation.scripting.classfilter/Contributions/org.nuxeo.automation.scripting.classfilter--classFilter

@@ -24,6 +24,14 @@
   <input name="fulltext" id="filter-box" type="search" placeholder="Filter ${name}" class="searchFilter" autofocus />
 </#macro>
 
+<#macro javadoc class addLabel url>
+  <#if addLabel>Javadoc: </#if>
+  <#if url??>
+    <a href="${url}" target="_blank" class="javadoc">${class}</a>
+  <#else>
+    <a href="${Root.currentDistribution.javaDocHelper.getUrl(class)}" target="_blank" class="javadoc">${class}</a>
+  </#if>
+</#macro>
 
 <#macro googleSearchFrame criterion>
 <div class="googleSearchFrame">

@@ -18,25 +18,37 @@
  */
 package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
+import static org.junit.Assert.assertEquals;
+
+import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 
 /**
  * @since 11.1
  */
 public class ExtensionPointArtifactPage extends ArtifactPage {
 
+    @Required
+    @FindBy(xpath = "//ul[@class='descriptors']")
+    public WebElement descriptors;
+
+    @Required
+    @FindBy(xpath = "//ul[@class='descriptors']//a[@class='javadoc']")
+    public WebElement javadocLink;
+
     public ExtensionPointArtifactPage(WebDriver driver) {
         super(driver);
     }
 
     @Override
-    public void checkReference() {
+    public void checkReference(boolean partial, boolean legacy) {
         checkCommon("Extension point org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
                 "Extension point plugins", "In component org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
-                "Documentation\n" + "Contribution Descriptor\n" + "Contributions");
+                "Documentation\n" + "Contribution Descriptors\n" + "Contributions");
         checkDocumentationText(
                 "A plugin can introspect and persist information related to the current runtime environment.\n" //
                         + "Sample contribution:\n" //
@@ -54,13 +66,19 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
                         + "The class should implement the org.nuxeo.apidoc.plugin.Plugin interface.\n" //
                         + "UI elements are used for rendering on webengine pages. The view type should match a webengine resource type, and the module holding this resource should be contributed to the main webengine module as a fragment using:\n" //
                         + "          Fragment-Host: org.nuxeo.apidoc.webengine");
+        checkDescriptorsText("Javadoc: org.nuxeo.apidoc.plugin.PluginDescriptor");
+        checkFirstJavadocLink("/javadoc/org/nuxeo/apidoc/plugin/PluginDescriptor.html");
     }
 
     @Override
     public void checkAlternative() {
         checkCommon("Extension point org.nuxeo.ecm.core.schema.TypeService--doctype", "Extension point doctype",
                 "In component org.nuxeo.ecm.core.schema.TypeService",
-                "Documentation\n" + "Contribution Descriptor\n" + "Existing Contributions");
+                "Documentation\n" + "Contribution Descriptors\n" + "Existing Contributions");
+        checkDescriptorsText("Javadoc: org.nuxeo.ecm.core.schema.DocumentTypeDescriptor\n"
+                + "Javadoc: org.nuxeo.ecm.core.schema.FacetDescriptor\n"
+                + "Javadoc: org.nuxeo.ecm.core.schema.ProxiesDescriptor");
+        checkFirstJavadocLink("/javadoc/org/nuxeo/ecm/core/schema/DocumentTypeDescriptor.html");
     }
 
     @Override
@@ -72,6 +90,14 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
     public void generateOverride(String contributionId) {
         WebElement li = driver.findElement(By.id(contributionId));
         clickOn(li.findElement(By.className("override")));
+    }
+
+    public void checkDescriptorsText(String expected) {
+        assertEquals(expected, descriptors.getText());
+    }
+
+    public void checkFirstJavadocLink(String expected) {
+        checkJavadocLink(expected, javadocLink);
     }
 
 }

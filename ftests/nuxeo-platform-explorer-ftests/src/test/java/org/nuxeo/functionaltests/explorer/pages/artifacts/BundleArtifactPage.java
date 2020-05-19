@@ -46,7 +46,7 @@ public class BundleArtifactPage extends ArtifactPage {
     }
 
     @Override
-    public void checkReference() {
+    public void checkReference(boolean partial, boolean legacy) {
         checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core",
                 "In bundle group org.nuxeo.ecm.platform",
                 "Documentation\n" + "Components\n" + "Maven Artifact\n" + "Manifest");
