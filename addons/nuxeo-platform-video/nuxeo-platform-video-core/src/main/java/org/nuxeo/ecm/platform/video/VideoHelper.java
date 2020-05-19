@@ -128,6 +128,8 @@ public class VideoHelper {
                     numberOfThumbnails = configuration.getStoryboardThumbnailCount();
                 }
                 parameters.put(StoryboardConverter.THUMBNAIL_NUMBER_PARAM, numberOfThumbnails);
+                parameters.put(StoryboardConverter.ORIGINAL_WIDTH_PARAM, videoDocument.getVideo().getWidth());
+                parameters.put(StoryboardConverter.ORIGINAL_HEIGHT_PARAM, videoDocument.getVideo().getHeight());
 
                 result = Framework.getService(ConversionService.class).convert(Constants.STORYBOARD_CONVERTER,
                         new SimpleBlobHolder(video), parameters);

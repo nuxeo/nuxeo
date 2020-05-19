@@ -58,6 +58,10 @@ public final class VideoInfo implements Serializable {
 
     public static final Pattern BIT_RATE_PATTERN = Pattern.compile("(\\d+)\\s+kb/s", Pattern.CASE_INSENSITIVE);
 
+    /** @since 11.1 */
+    public static final Pattern METADATA_ROTATE_PATTERN = Pattern.compile("\\s*rotate\\s*:\\s*(\\d+)\\s*",
+            Pattern.CASE_INSENSITIVE);
+
     public static final VideoInfo EMPTY_INFO = new VideoInfo(0, 0, 0, 0, null, null);
 
     public static final String DURATION = "duration";
@@ -189,6 +193,17 @@ public final class VideoInfo implements Serializable {
                 map.put(STREAM_INFO_ATTRIBUTE, matcher.group(0).trim());
                 map.put(BIT_RATE_ATTRIBUTE, bitRate);
                 streams.add(Stream.fromMap(map));
+            }
+
+            matcher = METADATA_ROTATE_PATTERN.matcher(line);
+            if (matcher.find()) {
+                long rotate = Long.parseLong(matcher.group(1));
+                if (rotate == 90 || rotate == 270) {
+                    // invert width and height
+                    long temp = width;
+                    width = height;
+                    height = temp;
+                }
             }
         }
         return new VideoInfo(duration, width, height, frameRate, format, streams);
