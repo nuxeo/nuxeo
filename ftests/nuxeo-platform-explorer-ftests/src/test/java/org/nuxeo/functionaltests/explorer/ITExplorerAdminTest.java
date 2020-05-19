@@ -41,15 +41,12 @@ import org.junit.Test;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.ecm.core.io.impl.DWord;
-import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
-import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleGroupArtifactPage;
 import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -153,21 +150,21 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         return String.format("nuxeo-distribution-%s.zip", distribId);
     }
 
-    protected void checkLiveDistrib(String distribId) {
+    protected void checkDistrib(String distribId, boolean partial, String partialVirtualGroup, boolean legacy) {
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLEGROUPS);
-        checkBundleGroups();
+        checkBundleGroups(partial, partialVirtualGroup, legacy);
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLES);
-        checkBundles(false);
+        checkBundles(partial, legacy);
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_COMPONENTS);
-        checkComponents(false);
+        checkComponents(partial, legacy);
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_EXTENSIONPOINTS);
-        checkExtensionPoints(false);
+        checkExtensionPoints(partial, legacy);
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_SERVICES);
-        checkServices(false);
+        checkServices(partial, legacy);
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_CONTRIBUTIONS);
-        checkContributions(false);
+        checkContributions(partial, legacy);
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_OPERATIONS);
-        checkOperations(false);
+        checkOperations(partial, legacy);
     }
 
     @Test
@@ -177,7 +174,7 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, false);
         String distribId = getDistribId(distribName, version);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(distribId);
-        checkLiveDistrib(distribId);
+        checkDistrib(distribId, false, null, false);
 
         // check importing it back
         open(DistribAdminPage.URL);
@@ -191,35 +188,7 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
-        checkLiveDistrib(newDistribId);
-    }
-
-    protected void checkPartialDistrib(String virtualBundleGroup, String distribId) {
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLEGROUPS);
-        checkPartialBundleGroup(virtualBundleGroup);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLES);
-        checkBundles(true);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_COMPONENTS);
-        checkComponents(true);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_EXTENSIONPOINTS);
-        checkExtensionPoints(true);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_SERVICES);
-        checkServices(true);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_CONTRIBUTIONS);
-        checkContributions(true);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_OPERATIONS);
-        checkOperations(true);
-    }
-
-    // will be easier to maintain as a reference when a specific bundle group is used for explorer...
-    protected void checkPartialBundleGroup(String distribName) {
-        Locator.findElementWaitUntilEnabledAndClick(By.linkText(distribName));
-        BundleGroupArtifactPage apage = asPage(BundleGroupArtifactPage.class);
-        apage.checkDocumentationText(null);
-        apage.checkSubGroup(null);
-        apage.checkBundle("org.nuxeo.apidoc.core");
-        apage.checkBundle("org.nuxeo.apidoc.repo");
-        apage.checkBundle("org.nuxeo.apidoc.webengine");
+        checkDistrib(distribId, false, null, false);
     }
 
     @Test
@@ -229,7 +198,7 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, true);
         String distribId = getDistribId(distribName, version);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(distribId);
-        checkPartialDistrib(distribName, distribId);
+        checkDistrib(distribId, true, distribName, false);
 
         // check importing it back
         open(DistribAdminPage.URL);
@@ -243,7 +212,7 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
-        checkPartialDistrib(distribName, newDistribId);
+        checkDistrib(distribId, true, distribName, false);
     }
 
     protected void createSampleZip(String sourceDirPath, String zipFilePath, boolean addMarker) throws IOException {
@@ -299,8 +268,7 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
-        // XXX: will not be able to reuse the same check method when/if apidoc export diverges from sample
-        checkPartialDistrib(newDistribName, newDistribId);
+        checkDistrib(newDistribId, true, newDistribName, true);
     }
 
 }

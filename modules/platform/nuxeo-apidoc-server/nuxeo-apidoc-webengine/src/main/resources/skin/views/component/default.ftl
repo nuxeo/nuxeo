@@ -1,4 +1,3 @@
-<#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
 <@block name="title">Component ${nxItem.id}</@block>
 
@@ -28,12 +27,10 @@
   </#if>
 
   <#if !nxItem.xmlPureComponent>
-  <h2>Implementation</h2>
-    <#assign componentClass=nxItem.componentClass/>
-    <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(componentClass)}"/>
-    <p>
-      Javadoc: <a href="${javaDocBaseUrl}/javadoc/${componentClass?replace('.','/')}.html" target="_new">${componentClass}</a>
-    </p>
+    <h2>Implementation</h2>
+    <div class="implementation">
+      <@javadoc nxItem.componentClass true />
+    </div>
   </#if>
 
   <#if nxItem.serviceNames?size gt 0>

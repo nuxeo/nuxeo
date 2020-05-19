@@ -1,4 +1,3 @@
-<#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
 <@block name="title">Service ${nxItem.id}</@block>
 
@@ -11,26 +10,11 @@
 <div class="tabscontent">
 
   <h2>Implementation</h2>
-  <p><b>${nxItem.id}</b></p>
-  <p><div id="shortjavadoc" class="description"></div></p>
-  <#assign javaDocBaseUrl="${Root.currentDistribution.javaDocHelper.getBaseUrl(nxItem.id)}"/>
-  <#assign urlBase="${javaDocBaseUrl}/javadoc/${nxItem.id?replace('.','/')}"/>
-  <p><a href="${urlBase}.html" target="_new">Click for full Javadoc</a></p>
+  <div class="implementation">
+    <@javadoc nxItem.id true />
+  </div>
 
 </div>
 
 </@block>
-
-<@block name="footer_scripts">
-<script type="text/javascript">
-  $(document).ready(function() {
-    $.ajax({
-      url: "${Root.path}/../../ajaxProxy?type=text&url=${urlBase?url}.type.html",
-      dataType: "text",
-      success: fixJavaDocPaths('#shortjavadoc', '${javaDocBaseUrl}')
-    });
-  });
-</script>
-</@block>
-
 </@extends>

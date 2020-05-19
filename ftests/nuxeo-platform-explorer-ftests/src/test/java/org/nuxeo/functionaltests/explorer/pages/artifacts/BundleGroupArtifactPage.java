@@ -45,15 +45,20 @@ public class BundleGroupArtifactPage extends ArtifactPage {
     }
 
     @Override
-    public void checkReference() {
-        try {
-            String expected = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
-            checkDocumentationText("ReadMe.md\n" + expected);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public void checkReference(boolean partial, boolean legacy) {
+        if (partial) {
+            checkDocumentationText(null);
+            checkSubGroup(null);
+        } else {
+            try {
+                String expected = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
+                checkDocumentationText("ReadMe.md\n" + expected);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            checkSubGroup("org.nuxeo.ecm.platform.comment");
+            checkSubGroup("org.nuxeo.ecm.platform.filemanager");
         }
-        checkSubGroup("org.nuxeo.ecm.platform.comment");
-        checkSubGroup("org.nuxeo.ecm.platform.filemanager");
         checkBundle("org.nuxeo.apidoc.core");
         checkBundle("org.nuxeo.apidoc.repo");
         checkBundle("org.nuxeo.apidoc.webengine");

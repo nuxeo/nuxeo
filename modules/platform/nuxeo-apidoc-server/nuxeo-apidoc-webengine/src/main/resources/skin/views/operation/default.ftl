@@ -66,14 +66,20 @@
   <h2>Implementation Information</h2>
   <div class="implementation">
   <table class="listTable">
-    <tr><th>Implementation class</th><td> ${nxItem.operationClass?html} </td></tr>
-    <tr><th>Contributing component</th><td>
-     <#if nxItem.contributingComponent=="BuiltIn">
-        <span class="components">${nxItem.contributingComponent?html}</span>
-     <#else>
-       <a class="components" href="${Root.path}/${distId}/viewContribution/${nxItem.contributingComponent}--operations">${nxItem.contributingComponent}</a>
-     </#if>
-     </td></tr>
+    <tr>
+      <th>Implementation Class</th>
+      <td><@javadoc nxItem.operationClass true implementationUrl /></td>
+    </tr>
+    <tr>
+      <th>Contributing Component</th>
+      <td>
+        <#if nxItem.contributingComponent=="BuiltIn">
+          <span class="components">${nxItem.contributingComponent?html}</span>
+        <#else>
+          <a class="components" href="${Root.path}/${distId}/viewContribution/${nxItem.contributingComponent}--operations">${nxItem.contributingComponent}</a>
+        </#if>
+      </td>
+    </tr>
   </table>
   </div>
 

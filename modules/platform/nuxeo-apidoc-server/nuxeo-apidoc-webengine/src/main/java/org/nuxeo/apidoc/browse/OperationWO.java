@@ -27,10 +27,15 @@ import javax.ws.rs.Produces;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.documentation.JavaDocHelper;
+import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationDocumentation;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.OperationType;
+import org.nuxeo.ecm.automation.core.impl.ChainTypeImpl;
+import org.nuxeo.ecm.automation.core.impl.OperationChainCompiler;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.model.Template;
@@ -81,13 +86,21 @@ public class OperationWO extends NuxeoArtifactWebObject {
     public Object doViewDefault() {
         Template t = (Template) super.doViewDefault();
         try {
-            OperationDocumentation opeDoc = Framework.getService(AutomationService.class)
-                                                     .getOperation(nxArtifactId)
-                                                     .getDocumentation();
+            OperationType opType = Framework.getService(AutomationService.class).getOperation(nxArtifactId);
+            OperationDocumentation opDoc = opType.getDocumentation();
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            JsonWriter.writeOperation(baos, opeDoc, true);
+            JsonWriter.writeOperation(baos, opDoc, true);
             t.arg("json", baos.toString());
+
+            if (opType instanceof ChainTypeImpl) {
+                // handle chains use case, where implementation type is an inner class
+                DistributionSnapshot dist = getSnapshotManager().getSnapshot(getDistributionId(), ctx.getCoreSession());
+                JavaDocHelper helper = JavaDocHelper.getHelper(dist.getName(), dist.getVersion());
+                String javadocUrl = helper.getUrl(OperationChainCompiler.class.getCanonicalName(), "CompiledChainImpl");
+                t.arg("implementationUrl", javadocUrl);
+            }
+
         } catch (OperationException | IOException e) {
             throw new NuxeoException(e);
         }
