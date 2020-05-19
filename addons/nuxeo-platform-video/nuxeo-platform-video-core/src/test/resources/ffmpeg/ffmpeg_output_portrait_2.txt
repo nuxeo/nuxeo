@@ -1,0 +1,6 @@
+Input #0, matroska,webm, from 'test.mkv':
+  Duration: 00:21:09.02, start: 0.000000, bitrate: 448 kb/s
+    Stream #0.0(eng): Video: h264 (High), yuv420p, 1280x720, PAR 1:1 DAR 16:9, 23.98 fps, 23.98 tbr, 1k tbn, 47.95 tbc
+    Metadata:
+      rotate          : 270
+    Stream #0.1: Audio: ac3, 48000 Hz, 5.1, s16, 448 kb/s (default)

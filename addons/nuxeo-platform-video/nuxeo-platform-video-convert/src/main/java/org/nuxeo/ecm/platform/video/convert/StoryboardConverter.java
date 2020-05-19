@@ -65,6 +65,16 @@ public class StoryboardConverter implements Converter {
 
     public static final String FFMPEG_SCREENSHOT_RESIZE_COMMAND = "ffmpeg-screenshot-resize";
 
+    /**
+     * @since 11.1
+     */
+    public static final String ORIGINAL_WIDTH_PARAM = "original_width";
+
+    /**
+     * @since 11.1
+     */
+    public static final String ORIGINAL_HEIGHT_PARAM = "original_height";
+
     public static final String WIDTH_PARAM = "width";
 
     public static final String HEIGHT_PARAM = "height";
@@ -76,12 +86,6 @@ public class StoryboardConverter implements Converter {
     @Override
     public void init(ConverterDescriptor descriptor) {
         commonParams = descriptor.getParameters();
-        if (!commonParams.containsKey(WIDTH_PARAM)) {
-            commonParams.put(WIDTH_PARAM, "130");
-        }
-        if (!commonParams.containsKey(HEIGHT_PARAM)) {
-            commonParams.put(HEIGHT_PARAM, "80");
-        }
     }
 
     @Override
@@ -118,8 +122,7 @@ public class StoryboardConverter implements Converter {
                 Blob thumbBlob = Blobs.createBlobWithExtension(".jpeg");
                 params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, thumbBlob.getFile().getAbsolutePath());
                 params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
-                params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
-                params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
+                fillWidthAndHeightParameters(params, parameters);
                 ExecResult result = cles.execCommand(FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
                 if (!result.isSuccessful()) {
                     throw result.getError();
@@ -155,5 +158,22 @@ public class StoryboardConverter implements Converter {
             numberOfThumbnails = 1;
         }
         return numberOfThumbnails;
+    }
+
+    protected void fillWidthAndHeightParameters(CmdParameters cmdParameters, Map<String, Serializable> parameters) {
+        String screenshotWidth = commonParams.getOrDefault(WIDTH_PARAM, "130");
+        String screenshotHeight = commonParams.getOrDefault(HEIGHT_PARAM, "80");
+        if (parameters.containsKey(ORIGINAL_WIDTH_PARAM) && parameters.containsKey(ORIGINAL_HEIGHT_PARAM)) {
+            long originalWidth = (long) parameters.get(ORIGINAL_WIDTH_PARAM);
+            long originalHeight = (long) parameters.get(ORIGINAL_HEIGHT_PARAM);
+            if (originalHeight > originalWidth) {
+                // invert screenshot size
+                String temp = screenshotWidth;
+                screenshotWidth = screenshotHeight;
+                screenshotHeight = temp;
+            }
+        }
+        cmdParameters.addNamedParameter(WIDTH_PARAM, screenshotWidth);
+        cmdParameters.addNamedParameter(HEIGHT_PARAM, screenshotHeight);
     }
 }
