@@ -94,14 +94,29 @@ limitations under the License.
     };
 
     S3Provider.prototype._initCredentials = function(options) {
+      var credentials = new AWS.Credentials(
+        options.awsSecretKeyId,
+        options.awsSecretAccessKey,
+        options.awsSessionToken,
+      );
+      credentials.expireTime = new Date(options.expiration);
+      credentials.refresh = function(cb) {
+        this._resource(`upload/${this.batchId}/refreshToken`)
+          .post()
+          .then(function(response) {
+            credentials.accessKeyId = response.awsSecretKeyId;
+            credentials.secretAccessKey = response.awsSecretAccessKey;
+            credentials.sessionToken = response.awsSessionToken;
+            credentials.expireTime = new Date(response.expiration);
+            cb();
+          });
+      }.bind(this);
       AWS.config.update({
         credentials: new AWS.Credentials(options.awsSecretKeyId, options.awsSecretAccessKey, options.awsSessionToken),
         region: options.region,
         s3ForcePathStyle: options.usePathStyleAccess || false,
         useAccelerateEndpoint: options.useS3Accelerate || false
       });
-
-      AWS.config.credentials.expireTime = new Date(options.expiration);
     };
 
     S3Provider.prototype._newBatch = function() {
