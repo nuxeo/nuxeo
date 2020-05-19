@@ -61,6 +61,8 @@ public class StoryboardConverter implements Converter {
 
     public static final Log log = LogFactory.getLog(StoryboardConverter.class);
 
+    /** @deprecated since 11.1, not used. */
+    @Deprecated
     public static final String FFMPEG_INFO_COMMAND = "ffmpeg-info";
 
     public static final String FFMPEG_SCREENSHOT_RESIZE_COMMAND = "ffmpeg-screenshot-resize";
@@ -85,7 +87,7 @@ public class StoryboardConverter implements Converter {
     }
 
     @Override
-    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
+    public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) {
         // Build the empty output structure
         Map<String, Serializable> properties = new HashMap<>();
         List<Blob> blobs = new ArrayList<>();
@@ -132,13 +134,7 @@ public class StoryboardConverter implements Converter {
             }
             return bh;
         } catch (IOException | CommandNotAvailable | CommandException e) {
-            String msg;
-            if (blob != null) {
-                msg = "Error extracting story board from '" + blob.getFilename() + "'";
-            } else {
-                msg = "conversion failed";
-            }
-            throw new ConversionException(msg, e);
+            throw new ConversionException("Error extracting story board from '" + blob.getFilename() + "'", e);
         }
     }
 

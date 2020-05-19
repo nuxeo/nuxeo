@@ -96,11 +96,11 @@ public final class VideoInfo implements Serializable {
         }
         Long width = (Long) map.get(WIDTH);
         if (width == null) {
-            width = 0l;
+            width = 0L;
         }
         Long height = (Long) map.get(HEIGHT);
         if (height == null) {
-            height = 0l;
+            height = 0L;
         }
         String format = (String) map.get(FORMAT);
         if (format == null) {

@@ -129,8 +129,8 @@ public class VideoHelper {
                 }
                 parameters.put(StoryboardConverter.THUMBNAIL_NUMBER_PARAM, numberOfThumbnails);
 
-                result = Framework.getService(ConversionService.class).convert(Constants.STORYBOARD_CONVERTER,
-                        new SimpleBlobHolder(video), parameters);
+                result = Framework.getService(ConversionService.class)
+                                  .convert(Constants.STORYBOARD_CONVERTER, new SimpleBlobHolder(video), parameters);
             } catch (ConversionException e) {
                 // this can happen when if the codec is not supported or not
                 // readable by ffmpeg and is recoverable by using a dummy preview
@@ -171,8 +171,8 @@ public class VideoHelper {
         parameters.put(Constants.POSITION_PARAMETER, position);
         BlobHolder result;
         try {
-            result = Framework.getService(ConversionService.class).convert(Constants.SCREENSHOT_CONVERTER,
-                    new SimpleBlobHolder(video), parameters);
+            result = Framework.getService(ConversionService.class)
+                              .convert(Constants.SCREENSHOT_CONVERTER, new SimpleBlobHolder(video), parameters);
         } catch (ConversionException e) {
             // this can happen when if the codec is not supported or not
             // readable by ffmpeg and is recoverable by using a dummy preview
@@ -209,7 +209,7 @@ public class VideoHelper {
      */
     public static void updatePreviews(DocumentModel docModel, Blob video) throws IOException {
         Double duration = (Double) docModel.getPropertyValue(VideoConstants.DURATION_PROPERTY);
-        Double position = 0.0;
+        double position = 0.0;
         if (duration != null) {
             VideoService videoService = Framework.getService(VideoService.class);
             Configuration configuration = videoService.getConfiguration();
