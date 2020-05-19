@@ -77,6 +77,13 @@ public final class NXAuthConstants {
     public static final String START_PAGE_SAVE_KEY = "Nuxeo5_Start_Page";
 
     /**
+     * Request attribute used to save original request path (ie when using the rewrite valve).
+     *
+     * @since 11.1
+     */
+    public static final String ORIGINAL_PATH_ATTRIBUTE = "ORIGINAL_PATH";
+
+    /**
      * @deprecated since 9.3
      */
     @Deprecated

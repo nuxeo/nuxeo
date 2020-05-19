@@ -38,6 +38,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_STATUS_CODE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.MOBILE_PROTOCOL;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.ORIGINAL_PATH_ATTRIBUTE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PAGE_AFTER_SWITCH;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REDIRECT_URL;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
@@ -1044,7 +1045,11 @@ public class NuxeoAuthenticationFilter implements Filter {
     }
 
     protected static String getRequestedPage(HttpServletRequest httpRequest) {
-        String path = httpRequest.getServletPath(); // use decoded and normalized servlet path
+        // use original request path if rewritten
+        String path = (String) httpRequest.getAttribute(ORIGINAL_PATH_ATTRIBUTE);
+        if (path == null) {
+            path = httpRequest.getServletPath(); // use decoded and normalized servlet path
+        }
         if (path.endsWith(SLASH_INDEX_JSP)) {
             // the welcome file (index.jsp) is present in the servlet path
             if (!httpRequest.getRequestURI().contains(SLASH_INDEX_JSP)) {
