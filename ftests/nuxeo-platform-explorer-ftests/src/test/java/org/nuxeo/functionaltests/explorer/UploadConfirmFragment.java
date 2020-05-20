@@ -66,7 +66,9 @@ public class UploadConfirmFragment extends AbstractExplorerPage {
             versionInput.sendKeys(newVersion);
         }
         Locator.scrollAndForceClick(importButton);
-        assertEquals("Distribution uploaded successfully", driver.findElement(By.xpath("//h1")).getText());
+        By headerLocator = By.xpath("//h1");
+        Locator.waitUntilElementPresent(headerLocator);
+        assertEquals("Distribution uploaded successfully", driver.findElement(headerLocator).getText());
         waitForAsyncWork();
     }
 
