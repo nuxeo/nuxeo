@@ -1,18 +1,13 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-</@block>
-
-
-<@block name="header_scripts">
-</@block>
-
-<@block name="left">
-</@block>
+<@block name="left" />
 
 <@block name="right">
 
-<h1> Distribution Snapshot persistence failed : ${message}</h1>
+  <h1>Distribution Snapshot persistence failed</h1>
+  <div id="details">
+    Details: ${message}
+  </div>
 
 </@block>
 

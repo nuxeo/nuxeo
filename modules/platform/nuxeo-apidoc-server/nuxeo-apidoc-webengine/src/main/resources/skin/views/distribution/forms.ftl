@@ -114,19 +114,14 @@
 
   </table>
 
-  <h2>Upload Distribution</h2>
-
-  <table class="Exports">
-    <tr>
-      <td>
-        <p>You can use the form below to upload a distribution that has been exported as a zip:</p>
-        <form method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data">
-          <input type="file" name="archive" id="archive">
-          <input type="submit" value="Upload" id="upload">
-        </form>
-      </td>
-    </tr>
-  </table>
+  <h1>Upload Distribution</h1>
+  <div class="box">
+    <p>You can use the form below to upload a distribution that has been exported as a zip:</p>
+    <form method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data">
+      <input type="file" name="archive" id="archive">
+      <input type="submit" value="Upload" id="upload">
+    </form>
+  </div>
 
   </@block>
 </@extends>
