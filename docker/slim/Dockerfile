@@ -32,6 +32,23 @@ RUN mkdir -p /tmp/nuxeo-distribution \
 FROM centos:7
 LABEL maintainer="Nuxeo <packagers@nuxeo.com>"
 
+ARG BUILD_TAG
+ARG SCM_REF
+ARG VERSION
+
+LABEL org.nuxeo.build-tag=$BUILD_TAG
+LABEL org.nuxeo.scm-ref=$SCM_REF
+LABEL org.nuxeo.version=$VERSION
+# Override parent ones
+LABEL org.label-schema.build-date=""
+LABEL org.label-schema.license="Apache 2.0"
+LABEL org.label-schema.name="Nuxeo Server"
+LABEL org.label-schema.vendor="Nuxeo"
+LABEL org.opencontainers.image.created=""
+LABEL org.opencontainers.image.licenses="Apache 2.0"
+LABEL org.opencontainers.image.title="Nuxeo Server"
+LABEL org.opencontainers.image.vendor="Nuxeo"
+
 RUN yum -y update && yum -y --setopt=skip_missing_names_on_install=False install \
   java-11-openjdk java-11-openjdk-devel \
   less \
