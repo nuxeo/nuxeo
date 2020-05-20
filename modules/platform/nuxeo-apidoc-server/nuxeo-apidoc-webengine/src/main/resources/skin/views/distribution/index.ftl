@@ -22,11 +22,14 @@
   Explore services, extension points, contributions, operations of the Nuxeo Platform to build your own components.
   </p>
   <p class="second">
-  The Nuxeo Platform provides Java Services declared inside components. Components are declared via XML files. Services are configurable by an extension system.
+  The Nuxeo Platform provides Java Services declared inside components.
+  Components are declared via XML files.
+  Services are configurable by an extension system.
   </p>
   <#if Root.showCurrentDistribution()>
   <p class="second">
-  Browse the running platform or a platform that has been snapshotted and saved into local Document Repository. Snapshotted platform are stored as documents and therefore can be searchable.
+  Browse the running platform or a platform that has been snapshotted and saved into local Document Repository.
+  Snapshotted platform are stored as documents and therefore can be searchable.
   </p>
   </#if>
 </div>
@@ -37,7 +40,7 @@
 <#assign rtSnap=Root.runtimeDistribution/>
 <#assign snapList=Root.listPersistedDistributions()/>
 
-<div class="">
+<div>
 
   <ul class="timeline">
   <#if Root.showCurrentDistribution()>
@@ -109,16 +112,17 @@
 
 <div class="fullspace intro center">
   <p>
-   Thanks to the Nuxeo Platform modularity, declare your service and its extensions in a given component and contribute to this extension in an other component that might come with your customisation.</p>
+   Thanks to the Nuxeo Platform modularity, declare your service and its extensions in a given component and contribute to
+   this extension in another component that might come with your customisation.</p>
   <a target="_blank" class="button" href="https://doc.nuxeo.com/x/DIAO">Read Documentation</a>
 </div>
 
 
 <#if Root.isEditor()>
   <div class="fullspace">
-    <h2>Add your distribution</h2>
+    <h2>Add Your Distribution</h2>
     <form class="box" method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data" >
-      <p>Upload your distribution that has been exported as a zip</p>
+      <p>Upload your distribution that has been exported as a zip:</p>
       <input type="file" name="archive" id="archive">
       <input type="submit" value="Upload" id="upload">
     </form>
