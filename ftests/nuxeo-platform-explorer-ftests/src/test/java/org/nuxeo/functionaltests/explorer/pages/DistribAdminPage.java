@@ -111,6 +111,7 @@ public class DistribAdminPage extends AbstractExplorerPage {
             assertEquals("Distribution import failed", driver.findElement(By.xpath("//h1")).getText());
             assertEquals(failMessage, driver.findElement(By.xpath("//div[@id='details']")).getText());
         } else {
+            waitForAsyncWork();
             // avoid waiting in case of upload failure
             try {
                 WebElement errorHeader = driver.findElement(By.xpath("//h1"));
