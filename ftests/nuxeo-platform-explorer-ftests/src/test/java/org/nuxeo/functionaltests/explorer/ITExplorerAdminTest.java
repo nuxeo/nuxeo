@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -255,8 +256,8 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
             }
             // read paths from reference file as NuxeoArchiveReader requires a given order and extra info
             List<String> lines = Files.readAllLines(Paths.get(sourceDirPath, "entries.txt"));
-            for (int i = 0; i < lines.size(); i++) {
-                String path = lines.get(i);
+            for (Iterator<String> lineIter = lines.iterator(); lineIter.hasNext();) {
+                String path = lineIter.next();
                 if (StringUtils.isEmpty(path)) {
                     continue;
                 }
@@ -266,9 +267,8 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
                     zs.putNextEntry(entry);
                     Files.copy(ppath, zs);
                 } else {
-                    entry.setExtra(new DWord(Integer.valueOf(lines.get(i + 1))).getBytes());
+                    entry.setExtra(new DWord(Integer.valueOf(lineIter.next())).getBytes());
                     zs.putNextEntry(entry);
-                    i++;
                 }
                 zs.closeEntry();
             }
