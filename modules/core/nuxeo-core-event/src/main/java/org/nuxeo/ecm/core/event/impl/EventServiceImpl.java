@@ -38,7 +38,6 @@ import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -242,13 +241,11 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
             if (!desc.acceptEvent(ename)) {
                 continue;
             }
-            SequenceTracer.start("Fire sync event " + event.getName());
             try {
                 long t0 = System.currentTimeMillis();
                 desc.asEventListener().handleEvent(event);
                 long elapsed = System.currentTimeMillis() - t0;
                 traceAddAnnotation(event, tracer, elapsed, desc.getName());
-                SequenceTracer.stop("done in " + elapsed + " ms");
                 if (stats != null) {
                     stats.logSyncExec(desc, elapsed);
                 }
@@ -261,7 +258,6 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
                 throw e;
             } catch (RuntimeException e) {
                 // get message
-                SequenceTracer.destroy("failure");
                 String message = "Exception during " + desc.getName() + " sync listener execution, ";
                 if (event.isBubbleException()) {
                     message += "other listeners will be ignored";

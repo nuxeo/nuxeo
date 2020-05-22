@@ -53,7 +53,6 @@ import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
-import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -299,7 +298,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         try {
             esa.getClient().index(request);
         } catch (ConcurrentUpdateException e) {
-            SequenceTracer.addNote("Ignore indexing of doc " + cmd.getTargetDocumentId());
             log.info("Ignore indexing of doc " + cmd.getTargetDocumentId()
                     + " a more recent version has already been indexed: " + e.getMessage());
         }

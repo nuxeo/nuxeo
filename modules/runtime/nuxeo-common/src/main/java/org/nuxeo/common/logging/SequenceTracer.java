@@ -25,7 +25,9 @@ import org.apache.commons.logging.LogFactory;
  * Helper to log information that can be displayed using plantuml to render sequence UML diagram.
  *
  * @since 8.1
+ * @deprecated since 11.1 use {@link io.opencensus.trace.Tracing} instead.
  */
+@Deprecated(since = "11.1")
 public class SequenceTracer {
 
     private static final Log log = LogFactory.getLog(SequenceTracer.class);
@@ -40,6 +42,7 @@ public class SequenceTracer {
     /**
      * Mark an event.
      */
+    @Deprecated(since = "11.1")
     public static void mark(String message) {
         if (!log.isDebugEnabled()) {
             return;
@@ -51,6 +54,7 @@ public class SequenceTracer {
     /**
      * Mark the beginning of an action
      */
+    @Deprecated(since = "11.1")
     public static void start(String message) {
         start(message, DEFAULT_COLOR);
     }
@@ -58,6 +62,7 @@ public class SequenceTracer {
     /**
      * Mark the beginning of an action
      */
+    @Deprecated(since = "11.1")
     public static void start(String message, String color) {
         if (!log.isDebugEnabled()) {
             return;
@@ -70,6 +75,7 @@ public class SequenceTracer {
     /**
      * Mark the beginning of an action initiated by the caller.
      */
+    @Deprecated(since = "11.1")
     public static void startFrom(final String callerThread, final String message) {
         startFrom(callerThread, message, DEFAULT_COLOR);
     }
@@ -77,6 +83,7 @@ public class SequenceTracer {
     /**
      * Mark the beginning of an action initiated by the caller.
      */
+    @Deprecated(since = "11.1")
     public static void startFrom(final String callerThread, final String message, final String color) {
         if (!log.isDebugEnabled()) {
             return;
@@ -108,6 +115,7 @@ public class SequenceTracer {
     /**
      * Mark the end of the previous action.
      */
+    @Deprecated(since = "11.1")
     public static void stop(String message) {
         if (!log.isDebugEnabled()) {
             return;
@@ -119,6 +127,7 @@ public class SequenceTracer {
     /**
      * Mark the last action as failure
      */
+    @Deprecated(since = "11.1")
     public static void destroy(String message) {
         if (!log.isDebugEnabled()) {
             return;
@@ -130,6 +139,7 @@ public class SequenceTracer {
     /**
      * Add a note on the current thread
      */
+    @Deprecated(since = "11.1")
     public static void addNote(String message) {
         if (!log.isDebugEnabled()) {
             return;
@@ -140,6 +150,7 @@ public class SequenceTracer {
     /**
      * Link from source to current thread.
      */
+    @Deprecated(since = "11.1")
     public static void addRelation(String source, String message) {
         if (!log.isDebugEnabled()) {
             return;
@@ -150,10 +161,12 @@ public class SequenceTracer {
     /**
      * Get the thread name sanitized for plantuml
      */
+    @Deprecated(since = "11.1")
     public static String getThreadName() {
         return sanitize(Thread.currentThread().getName());
     }
 
+    @Deprecated(since = "11.1")
     public static boolean isEnabled() {
         return log.isDebugEnabled();
     }

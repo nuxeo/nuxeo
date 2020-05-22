@@ -49,7 +49,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventServiceComponent;
@@ -925,7 +924,6 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
         Tracer tracer = Tracing.getTracer();
         try (Scope scope = tracer.spanBuilder("workmanager.awaitCompletion").startScopedSpan()) {
-            SequenceTracer.start("awaitCompletion on " + (queueId == null ? "all queues" : queueId));
             long durationInMs = TimeUnit.MILLISECONDS.convert(duration, unit);
             long deadline = getTimestampAfter(durationInMs);
             int pause = (int) Math.min(durationInMs, 500L);
@@ -933,14 +931,12 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
             do {
                 if (noScheduledOrRunningWork(queueId)) {
                     completionSynchronizer.signalCompletedWork();
-                    SequenceTracer.stop("done");
                     tracer.getCurrentSpan().setStatus(io.opencensus.trace.Status.OK);
                     return true;
                 }
                 completionSynchronizer.waitForCompletedWork(pause);
             } while (System.currentTimeMillis() < deadline);
             log.info("awaitCompletion timeout after {} ms", durationInMs);
-            SequenceTracer.destroy("timeout after " + durationInMs + " ms");
             tracer.getCurrentSpan().setStatus(io.opencensus.trace.Status.DEADLINE_EXCEEDED);
             return false;
         }
