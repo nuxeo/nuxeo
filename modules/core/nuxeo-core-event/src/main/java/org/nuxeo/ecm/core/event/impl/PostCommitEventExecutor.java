@@ -36,7 +36,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
@@ -233,7 +232,7 @@ public class PostCommitEventExecutor {
         public EventBundleRunner(List<EventListenerDescriptor> listeners, EventBundle bundle) {
             this.listeners = listeners;
             this.bundle = bundle;
-            callerThread = SequenceTracer.getThreadName();
+            callerThread = Thread.currentThread().getName();
             traceContext = Tracing.getPropagationComponent()
                                   .getBinaryFormat()
                                   .toByteArray(Tracing.getTracer().getCurrentSpan().getContext());
@@ -242,7 +241,6 @@ public class PostCommitEventExecutor {
         @Override
         public Boolean call() {
             log.debug("Events postcommit execution starting in thread: {}", () -> Thread.currentThread().getName());
-            SequenceTracer.startFrom(callerThread, "Postcommit", "#ff410f");
             long t0 = System.currentTimeMillis();
             EventStats stats = Framework.getService(EventStats.class);
             Span span = getTracingSpan("postcommit/EventBundleBulkRunner");
@@ -253,7 +251,6 @@ public class PostCommitEventExecutor {
                         continue;
                     }
                     log.debug("Events postcommit execution start for listener: {}", listener::getName);
-                    SequenceTracer.start("run listener " + listener.getName());
                     long t1 = System.currentTimeMillis();
 
                     boolean ok = false;
@@ -291,7 +288,6 @@ public class PostCommitEventExecutor {
                             }
                             log.debug("Events postcommit execution end for listener: {} in {}ms", listener::getName,
                                     () -> elapsed);
-                            SequenceTracer.stop("listener done " + elapsed + " ms");
                             span.addAnnotation("PostCommitEventExecutor#Listener " + listener.getName() + " " + elapsed + " ms");
                         }
                     }
@@ -304,7 +300,6 @@ public class PostCommitEventExecutor {
 
             long elapsed = System.currentTimeMillis() - t0;
             log.debug("Events postcommit execution finished in {}ms", elapsed);
-            SequenceTracer.stop("postcommit done" + elapsed + " ms");
             return Boolean.TRUE; // no error to report
         }
 
@@ -353,7 +348,7 @@ public class PostCommitEventExecutor {
         public EventBundleBulkRunner(List<EventListenerDescriptor> listeners, EventBundle bundle) {
             this.listeners = listeners;
             this.bundle = bundle;
-            callerThread = SequenceTracer.getThreadName();
+            callerThread = Thread.currentThread().getName();
             traceContext = Tracing.getPropagationComponent()
                                   .getBinaryFormat()
                                   .toByteArray(Tracing.getTracer().getCurrentSpan().getContext());
@@ -362,7 +357,6 @@ public class PostCommitEventExecutor {
         @Override
         public Boolean call() {
             Span span = getTracingSpan("postcommit/EventBundleBulkRunner");
-            SequenceTracer.startFrom(callerThread, "BulkPostcommit", "#ff410f");
             log.debug("Events postcommit bulk execution starting in thread: {}",
                     () -> Thread.currentThread().getName());
             long t0 = System.currentTimeMillis();
@@ -379,7 +373,6 @@ public class PostCommitEventExecutor {
                     if (filtered.isEmpty()) {
                         continue;
                     }
-                    SequenceTracer.start("run listener " + listener.getName());
                     log.debug("Events postcommit bulk execution start for listener: {}", listener::getName);
                     long t1 = System.currentTimeMillis();
                     try {
@@ -400,7 +393,6 @@ public class PostCommitEventExecutor {
                         long elapsed = System.currentTimeMillis() - t1;
                         log.debug("Events postcommit bulk execution end for listener: {} in {}ms", listener::getName,
                                 () -> elapsed);
-                        SequenceTracer.stop("listener done " + elapsed + " ms");
                         span.addAnnotation("PostCommitEventExecutor Listener " + listener.getName() + " " + elapsed + " ms");
                     }
                     if (interrupt) {
@@ -423,7 +415,6 @@ public class PostCommitEventExecutor {
                     }
                 }
                 long elapsed = System.currentTimeMillis() - t0;
-                SequenceTracer.stop("BulkPostcommit done " + elapsed + " ms");
                 log.debug("Events postcommit bulk execution finished in {}ms", elapsed);
                 span.end();
             }

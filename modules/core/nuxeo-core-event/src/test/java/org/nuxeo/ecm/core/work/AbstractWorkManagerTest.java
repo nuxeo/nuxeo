@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.WorkFailureEventListener;
@@ -64,7 +63,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.FileEventsTrackingFeature;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.trackers.files.FileEvent;
 
 import io.dropwizard.metrics5.Counter;
@@ -104,7 +102,6 @@ public abstract class AbstractWorkManagerTest {
         @Override
         public void work() {
             FileEvent.onFile(this, file, this).send();
-            SequenceTracer.mark("send event");
         }
     }
 

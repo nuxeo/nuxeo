@@ -35,7 +35,6 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.logging.SequenceTracer;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.CoreInstance;
@@ -186,7 +185,7 @@ public abstract class AbstractWork implements Work {
         this.id = id;
         progress = PROGRESS_INDETERMINATE;
         schedulingTime = System.currentTimeMillis();
-        callerThread = SequenceTracer.getThreadName();
+        callerThread = Thread.currentThread().getName();
         traceContext = Tracing.getPropagationComponent()
                               .getBinaryFormat()
                               .toByteArray(Tracing.getTracer().getCurrentSpan().getContext());
@@ -370,9 +369,6 @@ public abstract class AbstractWork implements Work {
         }
         Span span = getSpanFromContext(traceContext);
         try (Scope scope = Tracing.getTracer().withSpan(span)) {
-            if (SequenceTracer.isEnabled()) {
-                SequenceTracer.startFrom(callerThread, "Work " + getTitleOr("unknown"), " #7acde9");
-            }
             RuntimeException suppressed = null;
             int retryCount = getRetryCount(); // may be 0
             for (int i = 0; i <= retryCount; i++) {
@@ -382,14 +378,12 @@ public abstract class AbstractWork implements Work {
                     log.trace("Concurrent update", suppressed);
                 }
                 if (ExceptionUtils.hasInterruptedCause(suppressed)) {
-                    // if we're here suppressed != null so we destroy SequenceTracer
                     log.debug("No need to retry the work with id=" + getId() + ", work manager is shutting down");
                     break;
                 }
                 try {
                     runWorkWithTransaction();
                     span.setStatus(Status.OK);
-                    SequenceTracer.stop("Work done " + (completionTime - startTime) + " ms");
                     return;
                 } catch (RuntimeException e) {
                     span.addAnnotation("AbstractSession#run Failure: " + e.getMessage());
@@ -478,7 +472,6 @@ public abstract class AbstractWork implements Work {
             appendWorkToDeadLetterQueue();
             String msg = "Work failed after " + getRetryCount() + " " + (getRetryCount() == 1 ? "retry" : "retries") + ", class="
                     + getClass() + " id=" + getId() + " category=" + getCategory() + " title=" + getTitle();
-            SequenceTracer.destroy("Work failure " + (completionTime - startTime) + " ms");
             // all retries have been done, throw the exception
             throw new NuxeoException(msg, exception);
         }
