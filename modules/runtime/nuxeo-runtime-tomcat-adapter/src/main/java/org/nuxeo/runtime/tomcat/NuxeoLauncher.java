@@ -120,12 +120,8 @@ public class NuxeoLauncher implements LifecycleListener {
         } else if (home.startsWith("${catalina.base}")) {
             path = getTomcatHome() + home.substring("${catalina.base}".length());
         } else {
-            try {
-                File baseDir = loader.getBaseDir();
-                return new File(baseDir, home);
-            } catch (ReflectiveOperationException e) {
-                return null;
-            }
+            File baseDir = loader.getBaseDir();
+            return new File(baseDir, home);
         }
         return new File(path);
     }

@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -479,7 +480,7 @@ public class TestDocument {
                 Collections.singletonList(Collections.singletonMap("content", blob))));
 
         // simulate an obsolete Aged facet present on the document but not in the schema manager
-        Map<String, CompositeType> facets = getSchemaManagerFacets();
+        Map<String, CompositeType> facets = ((SchemaManagerImpl) schemaManager).facets;
         CompositeType agedFacet = facets.remove("Aged");
         try {
             // list the paths
@@ -489,19 +490,6 @@ public class TestDocument {
         } finally {
             facets.put("Aged", agedFacet);
         }
-    }
-
-    /** Gets the facets internal datastructure from the schema manager. */
-    protected Map<String, CompositeType> getSchemaManagerFacets() throws Exception {
-        java.lang.reflect.Field field = schemaManager.getClass().getDeclaredField("facets");
-        field.setAccessible(true);
-        return (Map<String, CompositeType>) field.get(schemaManager);
-    }
-
-    protected void setClearComplexPropertyBeforeSet(boolean clearComplexPropertyBeforeSet) throws Exception {
-        java.lang.reflect.Field field = schemaManager.getClass().getDeclaredField("clearComplexPropertyBeforeSet");
-        field.setAccessible(true);
-        field.set(schemaManager, Boolean.valueOf(clearComplexPropertyBeforeSet));
     }
 
     @Test
@@ -524,10 +512,10 @@ public class TestDocument {
     protected void testGetChangesClearComplexPropertyBeforeSet(boolean clearComplexPropertyBeforeSet) throws Exception {
         boolean oldClearComplexPropertyBeforeSet = schemaManager.getClearComplexPropertyBeforeSet();
         try {
-            setClearComplexPropertyBeforeSet(clearComplexPropertyBeforeSet);
+            ((SchemaManagerImpl) schemaManager).clearComplexPropertyBeforeSet = clearComplexPropertyBeforeSet;
             testGetChanges();
         } finally {
-            setClearComplexPropertyBeforeSet(oldClearComplexPropertyBeforeSet);
+            ((SchemaManagerImpl) schemaManager).clearComplexPropertyBeforeSet = oldClearComplexPropertyBeforeSet;
         }
     }
 

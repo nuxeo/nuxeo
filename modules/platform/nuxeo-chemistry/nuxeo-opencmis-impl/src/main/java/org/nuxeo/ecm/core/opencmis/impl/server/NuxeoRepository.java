@@ -57,7 +57,6 @@ import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_S
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_UPDATE_PROPERTIES_OBJECT;
 import static org.apache.chemistry.opencmis.commons.data.PermissionMapping.CAN_VIEW_CONTENT_OBJECT;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -407,15 +406,7 @@ public class NuxeoRepository {
 
         DefaultPermissionProvider permissionProvider = (DefaultPermissionProvider) Framework.getService(PermissionProvider.class);
         permissionProvider.getUserVisiblePermissionDescriptors(); // init var
-        Map<String, PermissionVisibilityDescriptor> map;
-        try {
-            Field f;
-            f = DefaultPermissionProvider.class.getDeclaredField("mergedPermissionsVisibility");
-            f.setAccessible(true);
-            map = (Map<String, PermissionVisibilityDescriptor>) f.get(permissionProvider);
-        } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        Map<String, PermissionVisibilityDescriptor> map = permissionProvider.mergedPermissionsVisibility;
         // iterate for all types regisited, not just the default ""
         for (Entry<String, PermissionVisibilityDescriptor> en : map.entrySet()) {
             for (String permission : en.getValue().getSortedItems()) {

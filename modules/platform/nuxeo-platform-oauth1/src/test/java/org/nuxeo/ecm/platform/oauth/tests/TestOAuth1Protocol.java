@@ -28,7 +28,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.security.Principal;
@@ -357,7 +356,7 @@ public class TestOAuth1Protocol {
     public void testSignedRequestTwoLegged() throws Exception {
         // create consumer
         NuxeoOAuthConsumer consumer = new NuxeoOAuthConsumer(null, CONSUMER, CONSUMER_SECRET, null);
-        setSignedFetchSupport(consumer, "Administrator");
+        consumer.signedFetchSupport = "Administrator";
         consumerRegistry.storeConsumer(consumer);
         // create request token
         tokenStore.createRequestToken(CONSUMER, CALLBACK_URL);
@@ -382,13 +381,6 @@ public class TestOAuth1Protocol {
         String tokenSecret = aToken.getTokenSecret();
 
         doTestSignedRequest(consumer, token, tokenSecret);
-    }
-
-    protected void setSignedFetchSupport(NuxeoOAuthConsumer consumer, String value)
-            throws ReflectiveOperationException {
-        Field field = consumer.getClass().getDeclaredField("signedFetchSupport");
-        field.setAccessible(true);
-        field.set(consumer, value);
     }
 
     protected void doTestSignedRequest(OAuthConsumer consumer, String token, String tokenSecret) throws Exception {
