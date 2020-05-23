@@ -29,7 +29,6 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -83,11 +82,6 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * While the binary is being used by the application, a temporarily-decrypted file is held in a temporary directory. It
  * is removed as soon as possible.
- * <p>
- * Note: if the Java Cryptographic Extension (JCE) is not configured for 256-bit key length, you may get an exception
- * "java.security.InvalidKeyException: Illegal key size or default parameters". If this is the case, go to
- * <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" >Oracle Java SE Downloads</a> and
- * download and install the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files for your JDK.
  *
  * @since 6.0
  */
@@ -164,33 +158,6 @@ public class AESBinaryManager extends LocalBinaryManager {
     protected String keyPassword;
 
     protected boolean useInsecureCipher;
-
-    public AESBinaryManager() {
-        setUnlimitedJCEPolicy();
-    }
-
-    /**
-     * By default the JRE may ship with restricted key length. Instead of having administrators download the Java
-     * Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files from
-     * http://www.oracle.com/technetwork/java/javase/downloads/index.html, we attempt to directly unrestrict the JCE
-     * using reflection.
-     * <p>
-     * This is not possible anymore since 8u102 and https://bugs.openjdk.java.net/browse/JDK-8149417
-     */
-    protected static boolean setUnlimitedJCEPolicy() {
-        try {
-            Field field = Class.forName("javax.crypto.JceSecurity").getDeclaredField("isRestricted");
-            field.setAccessible(true);
-            if (Boolean.TRUE.equals(field.get(null))) {
-                log.info("Setting JCE Unlimited Strength");
-                field.set(null, Boolean.FALSE);
-            }
-            return true;
-        } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
-            log.debug("Cannot check/set JCE Unlimited Strength", e);
-            return false;
-        }
-    }
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
