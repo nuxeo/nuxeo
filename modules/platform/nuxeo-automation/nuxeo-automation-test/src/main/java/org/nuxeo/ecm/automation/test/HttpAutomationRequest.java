@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.LOCATION;
 import static org.apache.http.HttpStatus.SC_ACCEPTED;
-import static org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.client.protocol.HttpClientContext.REDIRECT_LOCATIONS;
@@ -207,7 +207,7 @@ public class HttpAutomationRequest {
         throw new NuxeoException(object.getClass().getName() + " is not a " + klass.getName());
     }
 
-    protected String getEntityType(JsonNode node) {
+    public static String getEntityType(JsonNode node) {
         if (node == null) {
             return null;
         }
@@ -225,12 +225,27 @@ public class HttpAutomationRequest {
     }
 
     public String executeRaw() throws IOException {
+        try {
+            return executeRaw(SC_OK, request -> {
+                try {
+                    return request.getBodyEntity();
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        } catch (UncheckedIOException e) {
+            throw e.getCause();
+        }
+    }
+
+    public String executeRaw(int expectedStatusCode, Function<HttpAutomationRequest, HttpEntity> entityProvider)
+            throws IOException {
         HttpPost request = new HttpPost(session.baseURL + operationId);
         setupAutomationRequest(request);
-        request.setEntity(getBodyEntity());
+        request.setEntity(entityProvider.apply(this));
         try (CloseableHttpResponse response = session.client.execute(request);
                 InputStream stream = response.getEntity().getContent()) {
-            assertEquals(SC_OK, response.getStatusLine().getStatusCode());
+            assertEquals(expectedStatusCode, response.getStatusLine().getStatusCode());
             return IOUtils.toString(stream, UTF_8);
         }
     }
@@ -496,7 +511,7 @@ public class HttpAutomationRequest {
             HttpContext httpContext = new BasicHttpContext();
             try (CloseableHttpResponse response = session.client.execute(pollRequest, httpContext)) {
                 int statusCode = response.getStatusLine().getStatusCode();
-                if (statusCode >= SC_INTERNAL_SERVER_ERROR) {
+                if (statusCode >= SC_BAD_REQUEST) {
                     // error, finish processing
                     return responseProcessor.apply(response);
                 }
@@ -518,7 +533,7 @@ public class HttpAutomationRequest {
         throw new IOException("Polling timeout: " + pollUrl);
     }
 
-    protected HttpEntity getBodyEntity() throws IOException {
+    public HttpEntity getBodyEntity() throws IOException {
         Map<String, Object> jsonMap = new HashMap<>();
         if (input instanceof Blob || isBlobList(input)) {
             // done later

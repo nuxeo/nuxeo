@@ -19,9 +19,11 @@
 package org.nuxeo.ecm.automation.server.test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_CONFLICT;
 import static org.apache.http.HttpStatus.SC_NOT_FOUND;
 import static org.apache.http.HttpStatus.SC_NO_CONTENT;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -32,9 +34,12 @@ import static org.nuxeo.ecm.automation.test.HttpAutomationRequest.ENTITY_TYPE_EX
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -43,6 +48,8 @@ import javax.inject.Inject;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.StringEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -61,6 +68,7 @@ import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginated
 import org.nuxeo.ecm.automation.core.operations.services.query.ResultSetPaginatedQuery;
 import org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOperation;
 import org.nuxeo.ecm.automation.test.HttpAutomationClient;
+import org.nuxeo.ecm.automation.test.HttpAutomationRequest;
 import org.nuxeo.ecm.automation.test.HttpAutomationSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -68,6 +76,7 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractAutomationClientTest {
 
@@ -151,6 +160,30 @@ public abstract class AbstractAutomationClientTest {
         } finally {
             session.newRequest(JsonStackToggleDisplayOperation.ID).execute();
         }
+    }
+
+    @Test
+    public void testErrorDueToInvalidJson() throws IOException {
+        Function<HttpAutomationRequest, HttpEntity> entityCorruptor = request -> {
+            try {
+                String body;
+                try (InputStream stream = request.getBodyEntity().getContent()) {
+                    body = IOUtils.toString(stream, UTF_8);
+                }
+                // corrupt body
+                body = "{ foo " + body.substring(1);
+                return new StringEntity(body, APPLICATION_JSON);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        };
+        String res = session.newRequest(FetchDocument.ID) //
+                            .set("value", "/")
+                            .executeRaw(SC_BAD_REQUEST, entityCorruptor);
+        JsonNode node = new ObjectMapper().readTree(res);
+        assertEquals(ENTITY_TYPE_EXCEPTION, HttpAutomationRequest.getEntityType(node));
+        String message = node.get("message").asText();
+        assertTrue(message, message.contains("Unexpected character"));
     }
 
     @Test
