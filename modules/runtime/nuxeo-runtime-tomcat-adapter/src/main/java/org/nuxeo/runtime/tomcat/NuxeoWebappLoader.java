@@ -22,10 +22,7 @@
 package org.nuxeo.runtime.tomcat;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
-import org.apache.catalina.Container;
-import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 
 /**
@@ -37,24 +34,13 @@ import org.apache.catalina.loader.WebappLoader;
  */
 public class NuxeoWebappLoader extends WebappLoader {
 
-    protected File baseDir; // the baseDir from the Context (which is private..)
-
     protected void overwriteWar() {
         // File baseDir = getBaseDir();
         // remove all files
     }
 
-    public File getBaseDir() throws ReflectiveOperationException {
-        if (baseDir == null) {
-            Method m = getClass().getSuperclass().getDeclaredMethod("getContainer");
-            m.setAccessible(true);
-            Container container = (Container) m.invoke(this);
-            Method method = StandardContext.class.getDeclaredMethod("getBasePath");
-            method.setAccessible(true);
-            String path = (String) method.invoke(container);
-            baseDir = new File(path);
-        }
-        return baseDir;
+    public File getBaseDir() {
+        return getContext().getCatalinaBase();
     }
 
 }

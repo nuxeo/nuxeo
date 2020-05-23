@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -503,37 +502,13 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         return null;
     }
 
-    protected File getEclipseBundleFileUsingReflection(Bundle bundle) {
-        try {
-            Object proxy = bundle.getClass().getMethod("getLoaderProxy").invoke(bundle);
-            Object loader = proxy.getClass().getMethod("getBundleLoader").invoke(proxy);
-            URL root = (URL) loader.getClass().getMethod("findResource", String.class).invoke(loader, "/");
-            Field field = root.getClass().getDeclaredField("handler");
-            field.setAccessible(true);
-            Object handler = field.get(root);
-            Field entryField = handler.getClass().getSuperclass().getDeclaredField("bundleEntry");
-            entryField.setAccessible(true);
-            Object entry = entryField.get(handler);
-            Field fileField = entry.getClass().getDeclaredField("file");
-            fileField.setAccessible(true);
-            return (File) fileField.get(entry);
-        } catch (ReflectiveOperationException e) {
-            log.error("Cannot access to eclipse bundle system files of " + bundle.getSymbolicName());
-            return null;
-        }
-    }
-
     @Override
     public File getBundleFile(Bundle bundle) {
         File file;
         String location = bundle.getLocation();
-        String vendor = Framework.getProperty(Constants.FRAMEWORK_VENDOR);
         String name = bundle.getSymbolicName();
 
-        if ("Eclipse".equals(vendor)) { // equinox framework
-            log.debug("getBundleFile (Eclipse): {}->{}", name, location);
-            return getEclipseBundleFileUsingReflection(bundle);
-        } else if (location.startsWith("file:")) { // nuxeo osgi adapter
+        if (location.startsWith("file:")) { // nuxeo osgi adapter
             try {
                 file = org.nuxeo.common.utils.FileUtils.urlToFile(location);
             } catch (MalformedURLException e) {
