@@ -25,7 +25,6 @@ import static redis.clients.jedis.Protocol.Keyword.PUNSUBSCRIBE;
 import static redis.clients.jedis.Protocol.Keyword.SUBSCRIBE;
 import static redis.clients.jedis.Protocol.Keyword.UNSUBSCRIBE;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -203,9 +203,7 @@ public class RedisPubSubProvider extends AbstractPubSubProvider {
         // stupid Jedis has a protected flush method
         protected void flush(Client client) {
             try {
-                Method m = redis.clients.jedis.Connection.class.getDeclaredMethod("flush");
-                m.setAccessible(true);
-                m.invoke(client);
+                MethodUtils.invokeMethod(client, true, "flush");
             } catch (ReflectiveOperationException e) {
                 throw new NuxeoException(e);
             }

@@ -22,7 +22,6 @@ package org.nuxeo.runtime.reload;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.common.Environment;
@@ -530,17 +530,9 @@ public class ReloadComponent extends DefaultComponent implements ReloadService {
             log.debug("Clear JarFileFactory caches for jars={}", jarLocations);
             Class<?> jarFileFactory = Class.forName("sun.net.www.protocol.jar.JarFileFactory");
 
-            Field factoryInstanceField = jarFileFactory.getDeclaredField("instance");
-            factoryInstanceField.setAccessible(true);
-            Object factoryInstance = factoryInstanceField.get(null);
-
-            Field fileCacheField = jarFileFactory.getDeclaredField("fileCache");
-            fileCacheField.setAccessible(true);
-            Map<String, JarFile> fileCache = (Map<String, JarFile>) fileCacheField.get(null);
-
-            Field urlCacheField = jarFileFactory.getDeclaredField("urlCache");
-            urlCacheField.setAccessible(true);
-            Map<JarFile, URL> urlCache = (Map<JarFile, URL>) urlCacheField.get(null);
+            Object factoryInstance = FieldUtils.readStaticField(jarFileFactory, "instance", true);
+            Map<String, JarFile> fileCache = (Map<String, JarFile>) FieldUtils.readStaticField(jarFileFactory, "fileCache", true);
+            Map<JarFile, URL> urlCache = (Map<JarFile, URL>) FieldUtils.readStaticField(jarFileFactory, "urlCache", true);
 
             synchronized (factoryInstance) {
                 // collect keys of cache

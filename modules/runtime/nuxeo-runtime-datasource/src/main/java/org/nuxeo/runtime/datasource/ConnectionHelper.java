@@ -18,14 +18,13 @@
  */
 package org.nuxeo.runtime.datasource;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.JDBCUtils;
@@ -56,17 +55,15 @@ public class ConnectionHelper {
         // now try Apache DBCP unwrap (standard or Tomcat), to skip datasource wrapping layers
         // this needs accessToUnderlyingConnectionAllowed=true in the pool config
         try {
-            Method m = connection.getClass().getMethod("getInnermostDelegate");
-            m.setAccessible(true); // needed, method of inner private class
             @SuppressWarnings("resource") // not ours to close
-            Connection delegate = (Connection) m.invoke(connection);
+            Connection delegate = (Connection) MethodUtils.invokeMethod(connection, true, "getInnermostDelegate");
             if (delegate == null) {
                 log.error("Cannot access underlying connection, you must use "
                         + "accessToUnderlyingConnectionAllowed=true in the pool configuration");
             } else {
                 connection = delegate;
             }
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             // ignore missing method, connection not coming from Apache pool
         }
         return connection;

@@ -22,11 +22,10 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.platform.commandline.executor.service.executors.ShellExecutor;
@@ -44,36 +43,11 @@ public class TestShellExecutor {
         }
 
         try {
-            Class<?> processEnvironmentClass = Class.forName("java.lang.ProcessEnvironment");
-            Field theEnvironmentField = processEnvironmentClass.getDeclaredField("theEnvironment");
-            theEnvironmentField.setAccessible(true);
-            Map<String, String> env = (Map<String, String>) theEnvironmentField.get(null);
-            env.putAll(newenv);
-            Field theCaseInsensitiveEnvironmentField = processEnvironmentClass.getDeclaredField(
-                    "theCaseInsensitiveEnvironment");
-            theCaseInsensitiveEnvironmentField.setAccessible(true);
-            Map<String, String> cienv = (Map<String, String>) theCaseInsensitiveEnvironmentField.get(null);
-            cienv.putAll(newenv);
-        } catch (NoSuchFieldException e) {
-            try {
-                Class<?>[] classes = Collections.class.getDeclaredClasses();
-                Map<String, String> env = System.getenv();
-                for (Class<?> cl : classes) {
-                    if ("java.util.Collections$UnmodifiableMap".equals(cl.getName())) {
-                        Field field = cl.getDeclaredField("m");
-                        field.setAccessible(true);
-                        Object obj = field.get(env);
-                        Map<String, String> map = (Map<String, String>) obj;
-                        map.clear();
-                        map.putAll(newenv);
-                    }
-                }
-            } catch (Exception e2) {
-                e2.printStackTrace();
-                fail("Unable to modify environment variables");
-            }
-        } catch (Exception e1) {
-            e1.printStackTrace();
+            Map<String, String> env = System.getenv(); // a Collections.UnmodifiableMap
+            Map<String, String> map = (Map<String, String>) FieldUtils.readField(env, "m", true);
+            map.clear();
+            map.putAll(newenv);
+        } catch (ReflectiveOperationException e) {
             fail("Unable to modify environment variables");
         }
     }

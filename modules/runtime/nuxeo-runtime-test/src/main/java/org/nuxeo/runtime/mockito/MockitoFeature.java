@@ -17,8 +17,7 @@ package org.nuxeo.runtime.mockito;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import java.lang.reflect.Field;
-
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.mockito.configuration.IMockitoConfiguration;
 import org.mockito.internal.configuration.GlobalConfiguration;
 import org.nuxeo.runtime.api.DefaultServiceProvider;
@@ -50,11 +49,8 @@ public class MockitoFeature implements RunnerFeature {
         provider.uninstallSelf();
     }
 
-    protected void cleanupThread() throws NoSuchFieldException, SecurityException, IllegalArgumentException,
-            IllegalAccessException {
-        Field f = GlobalConfiguration.class.getDeclaredField("globalConfiguration");
-        f.setAccessible(true);
-        ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) f.get(null);
+    protected void cleanupThread() throws ReflectiveOperationException {
+        ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) FieldUtils.readStaticField(GlobalConfiguration.class, "globalConfiguration", true);
         holder.remove();
     }
 }

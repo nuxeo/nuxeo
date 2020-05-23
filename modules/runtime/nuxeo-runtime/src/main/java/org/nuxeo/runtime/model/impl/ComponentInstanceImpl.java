@@ -19,12 +19,12 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
@@ -32,7 +32,6 @@ import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.Adaptable;
 import org.nuxeo.runtime.model.Component;
-import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
@@ -123,14 +122,12 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 ((Component) instance).activate(this);
             } else if (instance != this) {
                 // try by reflection
-                Method meth = instance.getClass().getDeclaredMethod("activate", ComponentContext.class);
-                meth.setAccessible(true);
-                meth.invoke(instance, this);
+                MethodUtils.invokeMethod(instance, true, "activate", this);
             }
             registerServices();
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
-        } catch (SecurityException | IllegalAccessException | InvocationTargetException e) {
+        } catch (ReflectiveOperationException e) {
             handleError("Failed to activate component: " + getName(), e);
         }
     }
@@ -145,13 +142,11 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 ((Component) instance).deactivate(this);
             } else if (instance != this) {
                 // try by reflection
-                Method meth = instance.getClass().getDeclaredMethod("deactivate", ComponentContext.class);
-                meth.setAccessible(true);
-                meth.invoke(instance, this);
+                MethodUtils.invokeMethod(instance, true, "deactivate", this);
             }
         } catch (NoSuchMethodException e) {
-            // ignore this exception since the activate method is not mandatory
-        } catch (SecurityException | IllegalAccessException | InvocationTargetException e) {
+            // ignore this exception since the deactivate method is not mandatory
+        } catch (ReflectiveOperationException e) {
             handleError("Failed to deactivate component: " + getName(), e);
         }
     }
@@ -184,9 +179,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
     public void reload() {
         // activate the implementation instance
         try {
-            Method meth = instance.getClass().getDeclaredMethod("reload", ComponentContext.class);
-            meth.setAccessible(true);
-            meth.invoke(instance, this);
+            MethodUtils.invokeMethod(instance, true, "reload", this);
         } catch (NoSuchMethodException e) {
             // ignore this exception since the reload method is not mandatory
         } catch (ReflectiveOperationException e) {
@@ -216,9 +209,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
             } else if (instance != this) {
                 // try by reflection, avoiding stack overflow
                 try {
-                    Method meth = instance.getClass().getDeclaredMethod("registerExtension", Extension.class);
-                    meth.setAccessible(true);
-                    meth.invoke(instance, extension);
+                    MethodUtils.invokeMethod(instance, true, "registerExtension", extension);
                 } catch (ReflectiveOperationException e) {
                     handleError("Error registering " + extension.getComponent().getName(), e);
                 }
@@ -240,9 +231,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } else if (instance != this) {
             // try by reflection, avoiding stack overflow
             try {
-                Method meth = instance.getClass().getDeclaredMethod("unregisterExtension", Extension.class);
-                meth.setAccessible(true);
-                meth.invoke(instance, extension);
+                MethodUtils.invokeMethod(instance, true, "unregisterExtension", extension);
             } catch (ReflectiveOperationException e) {
                 handleError("Error unregistering " + extension.getComponent().getName(), e);
             }

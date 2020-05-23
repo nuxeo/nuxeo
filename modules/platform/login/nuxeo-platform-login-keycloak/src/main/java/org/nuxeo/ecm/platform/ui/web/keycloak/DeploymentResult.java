@@ -19,13 +19,12 @@
 
 package org.nuxeo.ecm.platform.ui.web.keycloak;
 
-import java.lang.reflect.Field;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.RequestFacade;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.KeycloakDeployment;
 import org.keycloak.adapters.tomcat.CatalinaHttpFacade;
@@ -91,10 +90,8 @@ public class DeploymentResult {
      */
     private Request unwrapRequest(RequestFacade requestFacade) {
         try {
-            Field f = requestFacade.getClass().getDeclaredField("request");
-            f.setAccessible(true); // grant access to (protected) field
-            return (Request) f.get(requestFacade);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return (Request) FieldUtils.readField(requestFacade, "request", true);
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
