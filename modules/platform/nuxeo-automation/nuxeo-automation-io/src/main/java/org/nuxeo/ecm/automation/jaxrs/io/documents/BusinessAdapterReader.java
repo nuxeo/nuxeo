@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io.documents;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -42,6 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
@@ -100,11 +103,11 @@ public class BusinessAdapterReader implements MessageBodyReader<BusinessAdapter>
 
     public BusinessAdapter readRequest0(String content, MultivaluedMap<String, String> headers) throws IOException {
         ObjectCodecService codecService = Framework.getService(ObjectCodecService.class);
-
         try (JsonParser jp = factory.createParser(content)) {
             JsonNode inputNode = jp.readValueAsTree();
-
             return (BusinessAdapter) codecService.readNode(inputNode, getCoreSession());
+        } catch (JsonProcessingException e) {
+            throw new WebApplicationException(e, SC_BAD_REQUEST);
         }
 
     }
