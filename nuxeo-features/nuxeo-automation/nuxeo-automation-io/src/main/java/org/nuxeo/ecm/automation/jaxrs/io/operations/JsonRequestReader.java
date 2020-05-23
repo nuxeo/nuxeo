@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io.operations;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -30,7 +32,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
@@ -38,6 +39,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -115,7 +117,7 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
         // LE)
         String content = IOUtils.toString(in, "UTF-8");
         if (content.isEmpty()) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+            throw new WebApplicationException(SC_BAD_REQUEST);
         }
         return readRequest(content, headers, session);
     }
@@ -133,10 +135,11 @@ public class JsonRequestReader implements MessageBodyReader<ExecutionRequest> {
 
     public ExecutionRequest readRequest0(String content, MultivaluedMap<String, String> headers, CoreSession session)
             throws IOException {
-
-        JsonParser jp = factory.createJsonParser(content);
-
-        return readRequest(jp, headers, session);
+        try (JsonParser jp = factory.createJsonParser(content)) {
+            return readRequest(jp, headers, session);
+        } catch (JsonProcessingException e) {
+            throw new WebApplicationException(e, SC_BAD_REQUEST);
+        }
     }
 
     /**
