@@ -62,7 +62,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public abstract class RepositoryInitializationHandler {
 
-    private static RepositoryInitializationHandler instance;
+    protected static RepositoryInitializationHandler instance;
 
     public static RepositoryInitializationHandler getInstance() {
         return instance;

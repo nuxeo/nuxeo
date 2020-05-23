@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.core.scheduler;
 
 import javax.inject.Inject;
-import java.lang.reflect.Field;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,10 +47,8 @@ public class EventJobFactoryTest {
     private SchedulerService schedulerService;
 
     @Test
-    public void test() throws ReflectiveOperationException, SchedulerException {
-        Field schedulerField = SchedulerServiceImpl.class.getDeclaredField("scheduler");
-        schedulerField.setAccessible(true);
-        Scheduler scheduler = (Scheduler) schedulerField.get(schedulerService);
+    public void test() throws SchedulerException {
+        Scheduler scheduler = ((SchedulerServiceImpl) schedulerService).scheduler;
 
         // job without the DisallowConcurrentExecution annotation
         JobKey jobKey = new JobKey("testSchedulerMultipleExecutions", "nuxeo");

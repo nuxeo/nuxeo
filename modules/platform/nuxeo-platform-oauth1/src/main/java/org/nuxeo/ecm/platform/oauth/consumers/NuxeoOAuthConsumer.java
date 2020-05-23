@@ -60,7 +60,8 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
 
     protected String description;
 
-    protected String signedFetchSupport = SIGNEDFETCH_NONE;
+    // public for tests
+    public String signedFetchSupport = SIGNEDFETCH_NONE;
 
     protected String dedicatedLogin;
 

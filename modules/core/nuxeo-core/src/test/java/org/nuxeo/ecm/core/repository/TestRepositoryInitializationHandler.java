@@ -21,8 +21,6 @@ package org.nuxeo.ecm.core.repository;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.lang.reflect.Field;
-
 import org.junit.After;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -37,9 +35,7 @@ public class TestRepositoryInitializationHandler {
 
     @After
     public void tearDown() throws Exception {
-        Field field = RepositoryInitializationHandler.class.getDeclaredField("instance");
-        field.setAccessible(true);
-        field.set(null, null);
+        RepositoryInitializationHandler.instance = null;
     }
 
     protected RepositoryInitializationHandler getTail() {

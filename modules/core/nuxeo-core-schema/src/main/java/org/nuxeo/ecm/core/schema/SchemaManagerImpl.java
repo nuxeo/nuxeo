@@ -102,7 +102,8 @@ public class SchemaManagerImpl implements SchemaManager {
     protected PrefetchInfo prefetchInfo;
 
     /** Effective clearComplexPropertyBeforeSet flag. */
-    protected boolean clearComplexPropertyBeforeSet;
+    // public for tests
+    public boolean clearComplexPropertyBeforeSet;
 
     /**
      * Effective allowVersionWriteForDublinCore flag.
@@ -117,7 +118,8 @@ public class SchemaManagerImpl implements SchemaManager {
     protected final Map<String, Schema> prefixToSchema = new HashMap<>();
 
     /** Effective facets. */
-    protected Map<String, CompositeType> facets = new HashMap<>();
+    // public for tests
+    public Map<String, CompositeType> facets = new HashMap<>();
 
     protected Set<String> noPerDocumentQueryFacets = new HashSet<>();
 
