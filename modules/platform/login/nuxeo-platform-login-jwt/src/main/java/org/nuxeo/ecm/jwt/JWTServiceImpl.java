@@ -22,7 +22,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -246,8 +246,13 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
             }
             return null; // invalid
         }
-        Object payload = getFieldValue(jwt, "payload"); // com.auth0.jwt.impl.PayloadImpl
-        Map<String, JsonNode> tree = getFieldValue(payload, "tree");
+        Map<String, JsonNode> tree;
+        try {
+            Object payload = FieldUtils.readField(jwt, "payload", true); // com.auth0.jwt.impl.PayloadImpl
+            tree = (Map<String, JsonNode>) FieldUtils.readField(payload, "tree", true);
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
         return tree.entrySet().stream().collect(toMap(Entry::getKey, e -> nodeToValue(e.getValue())));
     }
 
@@ -279,8 +284,8 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
             // Jackson doesn't seem to have an easy way to do this, other than checking each possible type
             Object value;
             try {
-                value = getFieldValue(node, "_value");
-            } catch (NuxeoException e) {
+                value = FieldUtils.readField(node, "_value", true);
+            } catch (ReflectiveOperationException e) {
                 log.warn("Cannot extract primitive value from JsonNode: " + node.getClass().getName());
                 value = null;
             }
@@ -302,17 +307,6 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
             return null;
         }
         return Algorithm.HMAC512(secret);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static <T> T getFieldValue(Object object, String name) {
-        try {
-            Field field = object.getClass().getDeclaredField(name);
-            field.setAccessible(true);
-            return (T) field.get(object);
-        } catch (ReflectiveOperationException | SecurityException | IllegalArgumentException e) {
-            throw new NuxeoException(e);
-        }
     }
 
 }

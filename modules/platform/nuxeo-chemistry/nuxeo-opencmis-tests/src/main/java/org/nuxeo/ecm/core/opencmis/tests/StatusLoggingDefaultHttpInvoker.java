@@ -18,7 +18,6 @@
  */
 package org.nuxeo.ecm.core.opencmis.tests;
 
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Map;
 
@@ -28,6 +27,7 @@ import org.apache.chemistry.opencmis.client.bindings.spi.http.HttpInvoker;
 import org.apache.chemistry.opencmis.client.bindings.spi.http.Output;
 import org.apache.chemistry.opencmis.client.bindings.spi.http.Response;
 import org.apache.chemistry.opencmis.commons.impl.UrlBuilder;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 /**
  * HTTP Invoker that notes the last status returned.
@@ -38,19 +38,10 @@ public class StatusLoggingDefaultHttpInvoker implements HttpInvoker {
 
     protected final DefaultHttpInvoker invoker;
 
-    protected Method invokeMethod;
-
     public StatusLoggingDefaultHttpInvoker() {
         // we delegate instead of subclassing because the method we're
         // interested in overriding (invoke) is private...
         invoker = new DefaultHttpInvoker();
-        for (Method m : invoker.getClass().getDeclaredMethods()) {
-            if (m.getName().equals("invoke")) {
-                invokeMethod = m;
-                invokeMethod.setAccessible(true);
-                break;
-            }
-        }
     }
 
     @Override
@@ -81,14 +72,12 @@ public class StatusLoggingDefaultHttpInvoker implements HttpInvoker {
 
     protected Response invoke(UrlBuilder url, String method, String contentType, Map<String, String> headers,
             Output writer, BindingSession session, BigInteger offset, BigInteger length) {
-        Response response;
         try {
-            response = (Response) invokeMethod.invoke(invoker, url, method, contentType, headers, writer, session,
-                    offset, length);
+            return (Response) MethodUtils.invokeMethod(invoker, true, "invoke", url, method, contentType, headers,
+                    writer, session, offset, length);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-        return response;
     }
 
 }

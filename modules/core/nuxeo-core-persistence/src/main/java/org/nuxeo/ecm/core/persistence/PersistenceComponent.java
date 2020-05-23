@@ -18,11 +18,11 @@
  */
 package org.nuxeo.ecm.core.persistence;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.dialect.Oracle10gDialect;
@@ -59,12 +59,11 @@ public class PersistenceComponent extends DefaultComponent
     // to set it before Hibernate's classloading which we can't control.
     protected static void registerOracle12DialectResolver() {
         try {
-            Field f = DialectFactory.class.getDeclaredField("DIALECT_RESOLVERS");
-            f.setAccessible(true);
-            DialectResolverSet resolvers = (DialectResolverSet) f.get(null);
+            DialectResolverSet resolvers = (DialectResolverSet) FieldUtils.readStaticField(DialectFactory.class,
+                    "DIALECT_RESOLVERS", true);
             resolvers.addResolverAtFirst(new BasicDialectResolver("Oracle", 18, Oracle10gDialect.class));
             resolvers.addResolverAtFirst(new BasicDialectResolver("Oracle", 12, Oracle10gDialect.class));
-        } catch (ReflectiveOperationException | SecurityException e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Cannot patch Hibernate to support Oracle 12", e);
         }
     }

@@ -44,6 +44,7 @@ import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.UserTransaction;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
@@ -55,16 +56,8 @@ public class TransactionHelper {
 
     private static final Log log = LogFactory.getLog(TransactionHelper.class);
 
-    private static final Field GERONIMO_TRANSACTION_TIMEOUT_FIELD;
-    static {
-        try {
-            GERONIMO_TRANSACTION_TIMEOUT_FIELD = org.apache.geronimo.transaction.manager.TransactionImpl.class.getDeclaredField(
-                    "timeout");
-            GERONIMO_TRANSACTION_TIMEOUT_FIELD.setAccessible(true);
-        } catch (NoSuchFieldException | SecurityException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+    private static final Field GERONIMO_TRANSACTION_TIMEOUT_FIELD = FieldUtils.getField(
+            org.apache.geronimo.transaction.manager.TransactionImpl.class, "timeout", true);
 
     /**
      * Thread pool used to execute code in a separate transactional context.

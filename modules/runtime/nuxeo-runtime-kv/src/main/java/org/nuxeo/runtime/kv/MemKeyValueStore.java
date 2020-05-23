@@ -18,7 +18,6 @@
  */
 package org.nuxeo.runtime.kv;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +25,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
 
 import net.jodah.expiringmap.ExpiringMap;
 
@@ -43,10 +44,8 @@ public class MemKeyValueStore extends AbstractKeyValueStoreProvider {
     public MemKeyValueStore() {
         map = ExpiringMap.builder().expiration(Integer.MAX_VALUE, TimeUnit.DAYS).variableExpiration().build();
         try {
-            Field field = map.getClass().getDeclaredField("writeLock");
-            field.setAccessible(true);
-            writeLock = (Lock) field.get(map);
-        } catch (ReflectiveOperationException | SecurityException e) {
+            writeLock = (Lock) FieldUtils.readField(map, "writeLock", true);
+        } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }

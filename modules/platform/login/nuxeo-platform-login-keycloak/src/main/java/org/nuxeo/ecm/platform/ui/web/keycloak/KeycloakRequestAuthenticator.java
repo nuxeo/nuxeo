@@ -105,6 +105,7 @@ public class KeycloakRequestAuthenticator extends RequestAuthenticator {
             return false;
         }
         try {
+            // XXX buggy, this class doesn't extend FormAuthenticator
             Method method = FormAuthenticator.class.getDeclaredMethod("forwardToErrorPage", Request.class,
                     HttpServletResponse.class, LoginConfig.class);
             method.setAccessible(true);
