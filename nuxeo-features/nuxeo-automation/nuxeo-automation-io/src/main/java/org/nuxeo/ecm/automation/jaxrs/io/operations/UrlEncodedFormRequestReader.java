@@ -18,6 +18,8 @@
  */
 package org.nuxeo.ecm.automation.jaxrs.io.operations;
 
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -30,7 +32,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * Reads {@link ExecutionRequest} from a urlencoded POST (Needed for OAuth calls)
@@ -90,11 +92,10 @@ public class UrlEncodedFormRequestReader implements MessageBodyReader<ExecutionR
         if (jsonString == null) {
             return null;
         }
-        JsonParser jp = factory.createJsonParser(jsonString);
-        try {
+        try (JsonParser jp = factory.createParser(jsonString)) {
             return JsonRequestReader.readRequest(jp, httpHeaders, getCoreSession());
-        } catch (IOException e) {
-            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        } catch (JsonProcessingException e) {
+            throw new WebApplicationException(e, SC_BAD_REQUEST);
         }
     }
 
