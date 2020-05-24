@@ -21,6 +21,8 @@ package org.nuxeo.ecm.directory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -126,16 +128,39 @@ public class DirectoryCSVLoader {
         }
     }
 
-    @SuppressWarnings("resource")
     protected static InputStream getResource(String name) {
-        InputStream in = DirectoryCSVLoader.class.getClassLoader().getResourceAsStream(name);
+        InputStream in = open(DirectoryCSVLoader.class.getClassLoader().getResource(name));
         if (in == null) {
-            in = Framework.getResourceLoader().getResourceAsStream(name);
+            in = open(Framework.getResourceLoader().getResource(name));
             if (in == null) {
                 throw new DirectoryException("Data file not found: " + name);
             }
         }
         return in;
+    }
+
+    /**
+     * Gets the {@link InputStream} from a {@link URL}, avoiding JAR caches.
+     *
+     * @since 11.1
+     */
+    protected static InputStream open(URL url) {
+        if (url == null) {
+            return null;
+        }
+        URLConnection con;
+        try {
+            con = url.openConnection();
+        } catch (IOException e) {
+            return null;
+        }
+        // avoid using caches, as hot-reload may change underlying JARs
+        con.setUseCaches(false);
+        try {
+            return con.getInputStream();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 }
