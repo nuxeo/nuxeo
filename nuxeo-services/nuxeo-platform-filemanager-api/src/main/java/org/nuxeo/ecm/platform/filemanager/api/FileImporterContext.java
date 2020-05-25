@@ -45,6 +45,11 @@ public class FileImporterContext {
 
     protected boolean persistDocument;
 
+    /**
+     * @since 11.1
+     */
+    protected boolean byPassSecurityCheck;
+
     public static Builder builder(CoreSession session, Blob blob, String parentPath) {
         return new Builder(session, blob, parentPath);
     }
@@ -58,6 +63,7 @@ public class FileImporterContext {
         excludeOneToMany = builder.excludeOneToMany;
         fileName = builder.fileName;
         persistDocument = builder.persistDocument;
+        byPassSecurityCheck = builder.byPassSecurityCheck;
     }
 
     public CoreSession getSession() {
@@ -92,6 +98,13 @@ public class FileImporterContext {
         return persistDocument;
     }
 
+    /**
+     * @since 11.1
+     */
+    public boolean isByPassSecurityCheck() {
+        return byPassSecurityCheck;
+    }
+
     public static class Builder {
 
         protected final CoreSession session;
@@ -109,6 +122,8 @@ public class FileImporterContext {
         protected boolean excludeOneToMany;
 
         protected boolean persistDocument = true;
+
+        protected boolean byPassSecurityCheck;
 
         public Builder(CoreSession session, Blob blob, String parentPath) {
             this.session = session;
@@ -164,6 +179,17 @@ public class FileImporterContext {
          */
         public Builder persistDocument(boolean persistDocument) {
             this.persistDocument = persistDocument;
+            return this;
+        }
+
+        /**
+         * Whether to bypass the security check.
+         * <p>
+         * Defaults to {@code false}.
+         * @since 11.1
+         */
+        public Builder byPassSecurityCheck(boolean byPassSecurityCheck) {
+            this.byPassSecurityCheck = byPassSecurityCheck;
             return this;
         }
 

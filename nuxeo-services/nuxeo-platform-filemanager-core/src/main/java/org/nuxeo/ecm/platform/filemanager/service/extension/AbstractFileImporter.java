@@ -209,7 +209,10 @@ public abstract class AbstractFileImporter implements FileImporter {
         if (targetDocType == null) {
             targetDocType = getDefaultDocType();
         }
-        doSecurityCheck(session, path, targetDocType);
+
+        if (!context.isByPassSecurityCheck()) {
+            doSecurityCheck(session, path, targetDocType);
+        }
 
         Blob blob = context.getBlob();
         String filename = FileManagerUtils.fetchFileName(
