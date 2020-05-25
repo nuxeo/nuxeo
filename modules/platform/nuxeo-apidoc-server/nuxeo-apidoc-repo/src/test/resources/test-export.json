@@ -817,7 +817,7 @@
       "@type": "NXOperation",
       "aliases": [],
       "category": "Chain",
-      "contributingComponent": "BuiltIn",
+      "contributingComponent": "org.nuxeo.ecm.core.automation.features.operations",
       "description": null,
       "label": "AttachFiles",
       "name": "AttachFiles",
