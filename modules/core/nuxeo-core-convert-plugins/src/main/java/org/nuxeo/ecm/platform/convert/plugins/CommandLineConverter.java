@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -91,8 +92,9 @@ public class CommandLineConverter extends CommandLineBasedConverter {
         String tmpDir = getTmpDirectory(parameters);
         Path tmpDirPath = tmpDir != null ? Paths.get(tmpDir) : null;
         try {
-            Path outDirPath = tmpDirPath != null ? Files.createTempDirectory(tmpDirPath, null)
-                    : Framework.createTempDirectory(null);
+            String prefix = String.format("clc-%s-", FileUtils.getSafeFilename(getCommandName(blobHolder, parameters)));
+            Path outDirPath = tmpDirPath != null ? Files.createTempDirectory(tmpDirPath, prefix)
+                    : Framework.createTempDirectory(prefix);
 
             Map<String, String> cmdStringParams = new HashMap<>();
             cmdStringParams.put(OUT_DIR_PATH_KEY, outDirPath.toString());
