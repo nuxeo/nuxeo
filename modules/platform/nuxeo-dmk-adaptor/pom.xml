@@ -6,7 +6,6 @@
     <version>11.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-dmk-adaptor</artifactId>
   <name>Nuxeo DMK Adaptor</name>
 
