@@ -6,7 +6,6 @@
     <version>11.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-platform-lang-ext</artifactId>
   <name>Nuxeo EP Language Extensions</name>
   <description>The Nuxeo Language Extensions package.</description>
