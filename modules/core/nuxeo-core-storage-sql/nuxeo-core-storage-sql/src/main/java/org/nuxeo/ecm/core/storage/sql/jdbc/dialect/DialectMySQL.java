@@ -397,6 +397,34 @@ public class DialectMySQL extends Dialect {
     }
 
     @Override
+    public String getInsertOnConflictDoNothingSql(List<Column> columns, List<Serializable> values,
+            List<Column> outColumns, List<Serializable> outValues) {
+        Column keyColumn = columns.get(0);
+        Table table = keyColumn.getTable();
+        StringBuilder sql = new StringBuilder();
+        sql.append("INSERT IGNORE INTO ");
+        sql.append(table.getQuotedName());
+        sql.append(" (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+        }
+        sql.append(") VALUES (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(")");
+        return sql.toString();
+    }
+
+    @Override
     public String getSQLStatementsFilename() {
         return "nuxeovcs/mysql.sql.txt";
     }

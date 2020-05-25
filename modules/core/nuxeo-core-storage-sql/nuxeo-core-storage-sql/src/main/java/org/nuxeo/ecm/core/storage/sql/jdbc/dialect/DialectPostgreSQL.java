@@ -937,6 +937,36 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
+    public String getInsertOnConflictDoNothingSql(List<Column> columns, List<Serializable> values,
+            List<Column> outColumns, List<Serializable> outValues) {
+        Column keyColumn = columns.get(0);
+        Table table = keyColumn.getTable();
+        StringBuilder sql = new StringBuilder();
+        sql.append("INSERT INTO ");
+        sql.append(table.getQuotedName());
+        sql.append(" (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append(columns.get(i).getQuotedName());
+        }
+        sql.append(") VALUES (");
+        for (int i = 0; i < columns.size(); i++) {
+            if (i != 0) {
+                sql.append(", ");
+            }
+            sql.append("?");
+            outColumns.add(columns.get(i));
+            outValues.add(values.get(i));
+        }
+        sql.append(") ON CONFLICT (");
+        sql.append(keyColumn.getQuotedName());
+        sql.append(") DO NOTHING");
+        return sql.toString();
+    }
+
+    @Override
     public String getMatchMixinType(Column mixinsColumn, String mixin, boolean positive, String[] returnParam) {
         returnParam[0] = mixin;
         String sql = "ARRAY[?]::varchar[] <@ " + mixinsColumn.getFullQuotedName();

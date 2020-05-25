@@ -837,28 +837,43 @@ public class SQLKeyValueStore extends AbstractKeyValueStoreProvider {
                     }
                 }
             } else if (expected == null) {
-                // set value if no document already exists: regular insert
-                try (PreparedStatement ps = connection.prepareStatement(insertSQL)) {
-                    Long longValue = value instanceof Long ? (Long) value : null;
-                    String stringValue = value instanceof String ? (String) value : null;
-                    byte[] bytesValue = value instanceof byte[] ? (byte[]) value : null;
-                    setToPreparedStatement(insertSQL, ps, Arrays.asList(keyCol, longCol, stringCol, bytesCol, ttlCol),
-                            Arrays.asList(key, longValue, stringValue, bytesValue, ttlToStorage(ttl)));
-                    boolean set;
-                    try {
-                        ps.executeUpdate();
-                        set = true;
-                    } catch (SQLException e) {
-                        if (!dialect.isConcurrentUpdateException(e)) {
-                            throw e;
+                // set value if no document already exists: regular insert detecting duplicate row
+                Long longValue = value instanceof Long ? (Long) value : null;
+                String stringValue = value instanceof String ? (String) value : null;
+                byte[] bytesValue = value instanceof byte[] ? (byte[]) value : null;
+                Long ttlValue = ttlToStorage(ttl);
+                List<Column> psColumns = new ArrayList<>();
+                List<Serializable> psValues = new ArrayList<>();
+                String insertOnConflictDoNothingSql = dialect.getInsertOnConflictDoNothingSql(
+                        Arrays.asList(keyCol, longCol, stringCol, bytesCol, ttlCol),
+                        Arrays.asList(key, longValue, stringValue, bytesValue, ttlValue), psColumns, psValues);
+                boolean set;
+                if (insertOnConflictDoNothingSql != null) {
+                    try (PreparedStatement ps = connection.prepareStatement(insertOnConflictDoNothingSql)) {
+                        setToPreparedStatement(insertOnConflictDoNothingSql, ps, psColumns, psValues);
+                        int count = ps.executeUpdate();
+                        set = count == 1;
+                    }
+                } else {
+                    try (PreparedStatement ps = connection.prepareStatement(insertSQL)) {
+                        setToPreparedStatement(insertSQL, ps,
+                                Arrays.asList(keyCol, longCol, stringCol, bytesCol, ttlCol),
+                                Arrays.asList(key, longValue, stringValue, bytesValue, ttlValue));
+                        try {
+                            ps.executeUpdate();
+                            set = true;
+                        } catch (SQLException e) {
+                            if (!dialect.isConcurrentUpdateException(e)) {
+                                throw e;
+                            }
+                            set = false;
                         }
-                        set = false;
                     }
-                    if (logger.isLogEnabled()) {
-                        logger.log("  -> " + (set ? "SET" : "FAILED"));
-                    }
-                    return set;
                 }
+                if (logger.isLogEnabled()) {
+                    logger.log("  -> " + (set ? "SET" : "FAILED"));
+                }
+                return set;
             } else if (value == null) {
                 // delete if previous value exists
                 String sql;
