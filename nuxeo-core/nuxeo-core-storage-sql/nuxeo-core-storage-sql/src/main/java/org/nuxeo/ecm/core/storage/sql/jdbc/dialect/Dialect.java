@@ -1016,6 +1016,20 @@ public abstract class Dialect {
             List<Serializable> outValues);
 
     /**
+     * Gets the SQL string for an INSERT ... ON CONFLICT DO NOTHING expression.
+     *
+     * @param columns the columns to insert (first one being the key column)
+     * @param values the values to insert (first one being the key value)
+     * @param outColumns the columns to use in the prepared statement
+     * @param outValues the values to use in the prepared statement
+     * @since 11.1
+     */
+    public String getInsertOnConflictDoNothingSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues) {
+        return null;
+    }
+
+    /**
      * Gets the name of the file containing the SQL statements.
      */
     public abstract String getSQLStatementsFilename();
