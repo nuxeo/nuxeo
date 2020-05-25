@@ -6,7 +6,6 @@
     <version>11.1-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.binary.metadata</groupId>
   <artifactId>nuxeo-binary-metadata</artifactId>
   <name>Nuxeo Binary Metadata</name>
   <description>Nuxeo Binary Metadata</description>
