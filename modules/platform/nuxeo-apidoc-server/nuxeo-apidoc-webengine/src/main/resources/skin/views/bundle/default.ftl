@@ -67,10 +67,12 @@
     <tr><th>version</th><td>${nxItem.artifactVersion}</td></tr>
   </table>
 
-  <h2>Manifest</h2>
-  <div>
-    <pre><code>${nxItem.manifest}</code></pre>
-  </div>
+  <#if nxItem.manifest?has_content>
+    <h2>Manifest</h2>
+    <div>
+      <pre><code>${nxItem.manifest}</code></pre>
+    </div>
+  </#if>
 
   <@tocTrigger />
 
