@@ -148,6 +148,10 @@ public abstract class DatabaseHelper {
                 // Skip mssql 2012 system table
                 continue;
             }
+            if ("sys_config".equals(tableName)) {
+                // Skip MySQL system table
+                continue;
+            }
             if ("ACLR_USER_USERS".equals(tableName)) {
                 // skip nested table that is dropped by the main table
                 continue;

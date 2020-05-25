@@ -546,6 +546,17 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getUpsertSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
             List<Serializable> outValues) {
+        return getMergeSql(columns, values, outColumns, outValues, true);
+    }
+
+    @Override
+    public String getInsertOnConflictDoNothingSql(List<Column> columns, List<Serializable> values,
+            List<Column> outColumns, List<Serializable> outValues) {
+        return getMergeSql(columns, values, outColumns, outValues, false);
+    }
+
+    protected String getMergeSql(List<Column> columns, List<Serializable> values, List<Column> outColumns,
+            List<Serializable> outValues, boolean updateWhenMatched) {
         Column keyColumn = columns.get(0);
         Table table = keyColumn.getTable();
         StringBuilder sql = new StringBuilder();
@@ -573,15 +584,17 @@ public class DialectSQLServer extends Dialect {
         sql.append(keyColumn.getQuotedName());
         sql.append(" = source.");
         sql.append(keyColumn.getQuotedName());
-        sql.append(" WHEN MATCHED THEN UPDATE SET ");
-        for (int i = 1; i < columns.size(); i++) {
-            if (i != 1) {
-                sql.append(", ");
+        if (updateWhenMatched) {
+            sql.append(" WHEN MATCHED THEN UPDATE SET ");
+            for (int i = 1; i < columns.size(); i++) {
+                if (i != 1) {
+                    sql.append(", ");
+                }
+                sql.append(columns.get(i).getQuotedName());
+                sql.append(" = ?");
+                outColumns.add(columns.get(i));
+                outValues.add(values.get(i));
             }
-            sql.append(columns.get(i).getQuotedName());
-            sql.append(" = ?");
-            outColumns.add(columns.get(i));
-            outValues.add(values.get(i));
         }
         sql.append(" WHEN NOT MATCHED THEN INSERT (");
         for (int i = 0; i < columns.size(); i++) {
