@@ -82,9 +82,6 @@ public class TestPictureConversions {
     @Inject
     protected TransactionalFeature txFeature;
 
-    @Inject
-    protected CoreFeature coreFeature;
-
     @Test
     public void iHaveDefaultPictureConversionsOrder() {
         String[] defaultPictureConversionsOrder = new String[] { "Thumbnail", "Small", "Medium", "FullHD",
@@ -199,10 +196,6 @@ public class TestPictureConversions {
 
     @Test
     public void pictureConversionsAlwaysHaveExtensions() throws IOException {
-        if (coreFeature.getStorageConfiguration().isVCSPostgreSQL()) {
-            // NXP-28878: temporarily ignore against PostgreSQL
-            return;
-        }
         DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
         // Use a small image so the biggest conversions will have the same result and it will be fetched from the cache
         picture.setPropertyValue("file:content", (Serializable) getCatBlob());
