@@ -190,26 +190,6 @@ public class RestESDocumentsTest extends BaseTest {
         assertEquals(coll2.getName(), page.get(1).getName());
     }
 
-    @Test
-    public void iCanPerformESQLPageProviderOperationOnRepository() throws Exception {
-        try (OperationContext ctx = new OperationContext(session)) {
-            Map<String, Object> params = new HashMap<>();
-            String providerName = "default_search";
-
-            params.put("providerName", providerName);
-            Map<String, String> namedParameters = new HashMap<>();
-            namedParameters.put("defaults:dc_nature_agg", "[\"article\"]");
-            Properties namedProperties = new Properties(namedParameters);
-            params.put("namedParameters", namedProperties);
-            PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) automationService.run(ctx,
-                    DocumentPageProviderOperation.ID, params);
-
-            // test page size
-            assertEquals(20, result.getPageSize());
-            assertEquals(11, result.size());
-        }
-    }
-
     /**
      * @since 8.10
      */
