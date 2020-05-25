@@ -21,7 +21,9 @@ package org.nuxeo.ecm.platform.convert.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +58,12 @@ public class TestCommandLineConverter extends BaseConverterTest {
 
         Blob mainBlob = result.getBlob();
         assertEquals("hello.png", mainBlob.getFilename());
+
+        // NXP-29067: make sure the parent path is prefixed with the command line name
+        File file = mainBlob.getFile();
+        assertNotNull(file);
+        String parentPath = file.getParent();
+        assertTrue(parentPath, parentPath.contains("clc-pdftoimage-"));
     }
 
 }
