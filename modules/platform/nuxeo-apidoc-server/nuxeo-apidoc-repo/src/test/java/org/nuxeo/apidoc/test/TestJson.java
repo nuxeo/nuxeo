@@ -33,6 +33,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -92,6 +93,7 @@ public class TestJson extends AbstractApidocTest {
     protected void canSerializeAndReadBack(DistributionSnapshot snap) throws IOException {
         try (ByteArrayOutputStream sink = new ByteArrayOutputStream()) {
             snap.writeJson(sink);
+            checkSnapshot(snap, false);
             try (OutputStream file = Files.newOutputStream(Paths.get(FeaturesRunner.getBuildDirectory() + "/test.json"),
                     StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)) {
                 file.write(sink.toByteArray());
@@ -99,7 +101,7 @@ public class TestJson extends AbstractApidocTest {
             try (ByteArrayInputStream source = new ByteArrayInputStream(sink.toByteArray())) {
                 DistributionSnapshot snapshot = snap.readJson(source);
                 assertNotNull(snapshot);
-                assertNotNull(snapshot.getBundle("org.nuxeo.apidoc.repo"));
+                checkSnapshot(snapshot, false);
             }
         }
     }
@@ -244,25 +246,63 @@ public class TestJson extends AbstractApidocTest {
         assertNotNull(readme);
         checkContentEquals("apidoc_snapshot/apidoc_readme.txt", readme.getString());
 
-        // check bundle group
-        BundleGroup group = snapshot.getBundleGroup(bundle.getGroupId());
+        // check introspected bundle group
+        BundleGroup group = bundle.getBundleGroup();
         assertNotNull(group);
         assertEquals("grp:org.nuxeo.ecm.platform", group.getId());
         assertEquals("org.nuxeo.ecm.platform", group.getName());
         assertEquals(BundleGroup.TYPE_NAME, group.getArtifactType());
+        assertEquals("/grp:org.nuxeo.ecm.platform", group.getHierarchyPath());
         assertEquals("unknown", group.getVersion());
-        assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), group.getBundleIds());
+        if (legacy) {
+            assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), group.getBundleIds());
+        } else {
+            assertTrue(group.getBundleIds().size() > 1);
+            assertTrue(group.getBundleIds().contains("org.nuxeo.apidoc.core"));
+            assertTrue(group.getBundleIds().contains("org.nuxeo.apidoc.repo"));
+        }
         assertEquals(List.of(), group.getParentIds());
         List<Blob> readmes = group.getReadmes();
         assertNotNull(readmes);
         assertEquals(1, readmes.size());
         checkContentEquals("apidoc_snapshot/apidoc_readme.txt", readmes.get(0).getString());
-        assertEquals(List.of(), group.getSubGroups());
         if (legacy) {
-            assertEquals("unknown", group.getVersion());
+            assertEquals(List.of(), group.getSubGroups());
         } else {
-            assertEquals(bundle.getVersion(), group.getVersion());
+            List<String> sgids = group.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList());
+            assertTrue(sgids.size() > 0);
+            assertTrue(sgids.contains("grp:org.nuxeo.ecm.directory"));
         }
+        assertEquals("unknown", group.getVersion());
+
+        // check bundle group from maven group id
+        BundleGroup mvnGroup = snapshot.getBundleGroup(bundle.getGroupId());
+        assertNotNull(mvnGroup);
+        assertEquals("grp:org.nuxeo.ecm.platform", mvnGroup.getId());
+        assertEquals("org.nuxeo.ecm.platform", mvnGroup.getName());
+        assertEquals(BundleGroup.TYPE_NAME, mvnGroup.getArtifactType());
+        assertEquals("unknown", mvnGroup.getVersion());
+        assertEquals("/grp:org.nuxeo.ecm.platform", mvnGroup.getHierarchyPath());
+        if (legacy) {
+            assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), mvnGroup.getBundleIds());
+        } else {
+            assertTrue(mvnGroup.getBundleIds().size() > 1);
+            assertTrue(mvnGroup.getBundleIds().contains("org.nuxeo.apidoc.core"));
+            assertTrue(mvnGroup.getBundleIds().contains("org.nuxeo.apidoc.repo"));
+        }
+        assertEquals(List.of(), mvnGroup.getParentIds());
+        List<Blob> mvnReadmes = mvnGroup.getReadmes();
+        assertNotNull(mvnReadmes);
+        assertEquals(1, mvnReadmes.size());
+        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", mvnReadmes.get(0).getString());
+        if (legacy) {
+            assertEquals(List.of(), mvnGroup.getSubGroups());
+        } else {
+            List<String> sgids = group.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList());
+            assertTrue(sgids.size() > 0);
+            assertTrue(sgids.contains("grp:org.nuxeo.ecm.directory"));
+        }
+        assertEquals("unknown", mvnGroup.getVersion());
 
         // check components
         List<ComponentInfo> components = bundle.getComponents();
@@ -292,7 +332,11 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getName());
         assertEquals(version, smcomp.getVersion());
         assertFalse(smcomp.isXmlPureComponent());
-        checkContentEquals("apidoc_snapshot/legacy-snapshot-service-framework.xml", smcomp.getXmlFileContent());
+        if (legacy) {
+            checkContentEquals("apidoc_snapshot/legacy-snapshot-service-framework.xml", smcomp.getXmlFileContent());
+        } else {
+            checkContentEquals("OSGI-INF/snapshot-service-framework.xml", smcomp.getXmlFileContent());
+        }
         assertEquals(List.of(), smcomp.getRequirements());
         assertEquals(Long.valueOf(58), smcomp.getRegistrationOrder());
 
@@ -401,7 +445,11 @@ public class TestJson extends AbstractApidocTest {
 
         // check extensions
         assertNotNull(smcomp.getExtensions());
-        assertEquals(0, smcomp.getExtensions().size());
+        if (legacy) {
+            assertEquals(0, smcomp.getExtensions().size());
+        } else {
+            assertEquals(1, smcomp.getExtensions().size());
+        }
 
         // check another component with contributions
         ComponentInfo smcont = snapshot.getComponent("org.nuxeo.apidoc.doctypeContrib");
@@ -458,7 +506,9 @@ public class TestJson extends AbstractApidocTest {
         // check operations
         List<OperationInfo> operations = snapshot.getOperations();
         assertNotNull(operations);
-        assertEquals(2, operations.size());
+        if (legacy) {
+            assertEquals(2, operations.size());
+        }
         OperationInfo op = operations.get(0);
         assertNotNull(op);
         assertEquals(OperationInfo.TYPE_NAME, op.getArtifactType());

@@ -79,6 +79,15 @@ public interface BundleInfo extends NuxeoArtifact {
     String getArtifactVersion();
 
     /**
+     * Returns the corresponding bundle group.
+     * <p>
+     * Can differ from corresponding id returned by {@link #getGroupId()} depending on maven introspection.
+     *
+     * @since 11.1
+     */
+    BundleGroup getBundleGroup();
+
+    /**
      * @since 11.1
      */
     Blob getReadme();
