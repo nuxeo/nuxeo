@@ -20,6 +20,7 @@ package org.nuxeo.apidoc.adapters;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,7 +139,16 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
     @Override
     public List<String> getParentIds() {
-        throw new UnsupportedOperationException();
+        List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
+        Collections.reverse(parents);
+        List<String> res = new ArrayList<>();
+        for (DocumentModel doc : parents) {
+            BundleGroup bgroup = doc.getAdapter(BundleGroup.class);
+            if (bgroup != null) {
+                res.add(bgroup.getId());
+            }
+        }
+        return res;
     }
 
     @Override

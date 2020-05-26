@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -108,6 +109,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public String getGroupId() {
         return safeGet(PROP_ARTIFACT_GROUP_ID);
+    }
+
+    @Override
+    public BundleGroup getBundleGroup() {
+        return getCoreSession().getParentDocument(doc.getRef()).getAdapter(BundleGroup.class);
     }
 
     @Override

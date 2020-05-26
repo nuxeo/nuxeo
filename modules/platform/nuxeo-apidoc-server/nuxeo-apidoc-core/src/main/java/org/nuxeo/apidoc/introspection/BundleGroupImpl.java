@@ -48,6 +48,7 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     @JsonCreator
     private BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("version") String version,
+            @JsonProperty("parentIds") List<String> parentIds, @JsonProperty("bundleIds") List<String> bundleIds,
             @JsonProperty("readmes") List<Blob> readmes) {
         this.key = key;
         if (key.startsWith(BundleGroup.PREFIX)) {
@@ -56,13 +57,20 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
             name = key;
         }
         this.version = version;
+        if (parentIds != null) {
+            this.parentIds.addAll(parentIds);
+        }
+        if (bundleIds != null) {
+            this.bundleIds.addAll(bundleIds);
+        }
         if (readmes != null) {
             this.readmes.addAll(readmes);
         }
+        // subgroups not restored from json
     }
 
     public BundleGroupImpl(String key, String version) {
-        this(key, version, Collections.emptyList());
+        this(key, version, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
 
     void addParent(String bgId) {

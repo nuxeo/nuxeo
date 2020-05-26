@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public interface BundleGroup extends NuxeoArtifact {
 
     String TYPE_NAME = "NXBundleGroup";
@@ -39,6 +41,7 @@ public interface BundleGroup extends NuxeoArtifact {
 
     String getName();
 
+    @JsonIgnore
     List<BundleGroup> getSubGroups();
 
     List<String> getBundleIds();
