@@ -56,7 +56,9 @@ public class TestLogChronicle extends TestLog {
 
     @Before
     public void skipWindowsThatDoNotCleanTempFolder() {
-        org.junit.Assume.assumeFalse(IS_WIN);
+        // NXP-29161 - https://stackoverflow.com/questions/58733295/why-does-chronicle-queue-hold-on-to-files-for-a-second-after-close
+        // beware: not all tests actually work on Windows
+        // org.junit.Assume.assumeFalse(IS_WIN);
     }
 
     @After
@@ -74,6 +76,10 @@ public class TestLogChronicle extends TestLog {
 
     @Test
     public void deleteInvalidPath() throws Exception {
+        if (IS_WIN) {
+            // HACK for Windows JUnit test
+            return;
+        }
         final int NB_QUEUES = 5;
         Name fooLog = Name.ofUrn("test/foo");
         ChronicleLogManager manager = (ChronicleLogManager) createManager();
@@ -135,6 +141,10 @@ public class TestLogChronicle extends TestLog {
     @SuppressWarnings("FutureReturnValueIgnored")
     @Test
     public void testConcurrentFileRetentions() throws Exception {
+        if (IS_WIN) {
+            // HACK for Windows JUnit test
+            return;
+        }
         final int NB_APPENDERS = 5;
         final int RETENTION_CYCLES = 3; // retention is 3s
         final int NB_MSG = 5;
@@ -191,6 +201,10 @@ public class TestLogChronicle extends TestLog {
 
     @Test
     public void testRecoverAfterExpirationOfRetention() throws Exception {
+        if (IS_WIN) {
+            // HACK for Windows JUnit test
+            return;
+        }
         KeyValueMessage msg1 = KeyValueMessage.of("id1");
         KeyValueMessage msg2 = KeyValueMessage.of("id2");
         KeyValueMessage msg3 = KeyValueMessage.of("id3");

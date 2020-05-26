@@ -47,6 +47,10 @@ public class ChronicleRetentionListener implements StoreFileListener {
 
     protected long purgedStamp;
 
+    // NXP-29161 https://stackoverflow.com/questions/58733295/why-does-chronicle-queue-hold-on-to-files-for-a-second-after-close
+    protected final static String OS = System.getProperty("os.name").toLowerCase();
+    public final static boolean IS_WIN = OS.startsWith("win");
+
     public ChronicleRetentionListener(ChronicleRetentionDuration retention) {
         this.retention = retention;
     }
@@ -91,6 +95,12 @@ public class ChronicleRetentionListener implements StoreFileListener {
         log.info("Deleting Chronicle file: {} according to retention: {}", file::getAbsolutePath, () -> retention);
         try {
             queue.release(store);
+            // NXP-29161 https://stackoverflow.com/questions/58733295/why-does-chronicle-queue-hold-on-to-files-for-a-second-after-close
+            if (IS_WIN) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {}
+            }
             Files.delete(file.toPath());
             queue.refreshDirectlyListing();
             log.debug(file + " deleted");
