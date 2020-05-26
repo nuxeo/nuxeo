@@ -385,23 +385,21 @@ public class TransactionHelper {
                 }
                 try {
                     ut.commit();
-                } catch (RollbackException | HeuristicRollbackException | HeuristicMixedException e) {
-                    String msg = "Unable to commit";
-                    // messages from org.apache.geronimo.transaction.manager.TransactionImpl.commit
-                    switch (e.getMessage()) {
-                    case "Unable to commit: transaction marked for rollback":
-                        // don't log as error, this happens if there's a ConcurrentUpdateException
-                        // at transaction end inside VCS
-                        isRollbackDuringCommit = true;
-                        // $FALL-THROUGH$
-                    case "Unable to commit: Transaction timeout":
-                        // don't log either
-                        log.debug(msg, e);
-                        break;
-                    default:
-                        log.error(msg, e);
-                    }
+                } catch (HeuristicRollbackException | HeuristicMixedException e) {
                     throw new TransactionRuntimeException(e.getMessage(), e);
+                } catch (RollbackException e) {
+                    // from org.apache.geronimo.transaction.manager.TransactionImpl.commit
+                    Throwable cause = e.getCause();
+                    String msg;
+                    if (cause != null && "Transaction has timed out".equals(cause.getMessage())) {
+                        msg = "Unable to commit: Transaction timeout";
+                    } else {
+                        // this happens if there's a ConcurrentUpdateException at transaction end inside VCS
+                        isRollbackDuringCommit = true;
+                        msg = e.getMessage();
+                    }
+                    log.debug("Unable to commit", e);
+                    throw new TransactionRuntimeException(msg, e);
                 }
             } else if (status == Status.STATUS_MARKED_ROLLBACK) {
                 if (log.isDebugEnabled()) {
