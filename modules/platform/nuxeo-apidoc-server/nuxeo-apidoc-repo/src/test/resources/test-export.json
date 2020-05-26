@@ -8,20 +8,12 @@
         "@type": "NXBundleGroup",
         "bundleIds": [
           "org.nuxeo.apidoc.core",
-          "org.nuxeo.apidoc.repo",
-          "org.nuxeo.directory.mongodb",
-          "org.nuxeo.ecm.actions",
-          "org.nuxeo.ecm.platform.api",
-          "org.nuxeo.ecm.platform.commandline.executor",
-          "org.nuxeo.ecm.platform.content.template",
-          "org.nuxeo.ecm.platform.dublincore",
-          "org.nuxeo.ecm.platform.forms.layout.export",
-          "org.nuxeo.ecm.platform.login",
-          "org.nuxeo.ecm.platform.web.common",
-          "org.nuxeo.osgi.app"
+          "org.nuxeo.apidoc.repo"
         ],
-        "id": "grp:org.nuxeo.ecm.platform",
-        "parentIds": [],
+        "id": "grp:org.nuxeo.apidoc",
+        "parentIds": [
+          "grp:org.nuxeo.ecm.platform"
+        ],
         "readmes": [
           {
             "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree:\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n    - Operations\n\nThe Nuxeo Distribution can be:\n\n - live: in memory (meaning runtime introspection)\n - persisted: saved in Nuxeo Repository as a tree of Documents\n\nThe following documentation items are also extracted:\n\n - documentation that is built-in Nuxeo Runtime descriptors\n - readme files that may be embedded inside the jar\n\n## What it can be used for\n\n - browse you distribution\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 3 bundles:\n\n - nuxeo-apidoc-core: for the low level API on the live runtime\n - nuxeo-apidoc-repo: for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine: for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
@@ -33,9 +25,9 @@
           }
         ],
         "version": "unknown",
-        "hierarchyPath": "/grp:org.nuxeo.ecm.platform",
-        "key": "grp:org.nuxeo.ecm.platform",
-        "name": "org.nuxeo.ecm.platform"
+        "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc",
+        "key": "grp:org.nuxeo.apidoc",
+        "name": "org.nuxeo.apidoc"
       },
       "bundleId": "org.nuxeo.apidoc.core",
       "deploymentOrder": 3,
@@ -61,7 +53,7 @@
       },
       "requirements": [],
       "components": [],
-      "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.core",
+      "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.core",
       "id": "org.nuxeo.apidoc.core",
       "version": "11.1-SNAPSHOT"
     },
@@ -73,20 +65,12 @@
         "@type": "NXBundleGroup",
         "bundleIds": [
           "org.nuxeo.apidoc.core",
-          "org.nuxeo.apidoc.repo",
-          "org.nuxeo.directory.mongodb",
-          "org.nuxeo.ecm.actions",
-          "org.nuxeo.ecm.platform.api",
-          "org.nuxeo.ecm.platform.commandline.executor",
-          "org.nuxeo.ecm.platform.content.template",
-          "org.nuxeo.ecm.platform.dublincore",
-          "org.nuxeo.ecm.platform.forms.layout.export",
-          "org.nuxeo.ecm.platform.login",
-          "org.nuxeo.ecm.platform.web.common",
-          "org.nuxeo.osgi.app"
+          "org.nuxeo.apidoc.repo"
         ],
-        "id": "grp:org.nuxeo.ecm.platform",
-        "parentIds": [],
+        "id": "grp:org.nuxeo.apidoc",
+        "parentIds": [
+          "grp:org.nuxeo.ecm.platform"
+        ],
         "readmes": [
           {
             "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree:\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n    - Operations\n\nThe Nuxeo Distribution can be:\n\n - live: in memory (meaning runtime introspection)\n - persisted: saved in Nuxeo Repository as a tree of Documents\n\nThe following documentation items are also extracted:\n\n - documentation that is built-in Nuxeo Runtime descriptors\n - readme files that may be embedded inside the jar\n\n## What it can be used for\n\n - browse you distribution\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 3 bundles:\n\n - nuxeo-apidoc-core: for the low level API on the live runtime\n - nuxeo-apidoc-repo: for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine: for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
@@ -98,9 +82,9 @@
           }
         ],
         "version": "unknown",
-        "hierarchyPath": "/grp:org.nuxeo.ecm.platform",
-        "key": "grp:org.nuxeo.ecm.platform",
-        "name": "org.nuxeo.ecm.platform"
+        "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc",
+        "key": "grp:org.nuxeo.apidoc",
+        "name": "org.nuxeo.apidoc"
       },
       "bundleId": "org.nuxeo.apidoc.repo",
       "deploymentOrder": 21,
@@ -163,11 +147,11 @@
                 }
               ],
               "documentationHtml": "<p/>\nThese contributions are used for latest distribution flag update and XML attributes extractions in\nextension points.\n<p/>",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib/Contributions/org.nuxeo.apidoc.listener.contrib--listener",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib/Contributions/org.nuxeo.apidoc.listener.contrib--listener",
               "version": "11.1-SNAPSHOT"
             }
           ],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib",
+          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib",
           "registrationOrder": 5,
           "requirements": [],
           "services": [],
@@ -303,11 +287,11 @@
                 }
               ],
               "documentationHtml": "<p/>\nThese contributions provide a mapping between live introspections and persisted representations of a distribution.\n<p/>",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib/Contributions/org.nuxeo.apidoc.adapterContrib--adapters",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib/Contributions/org.nuxeo.apidoc.adapterContrib--adapters",
               "version": "11.1-SNAPSHOT"
             }
           ],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib",
+          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib",
           "registrationOrder": 11,
           "requirements": [],
           "services": [],
@@ -332,14 +316,14 @@
               "documentation": "<p>\n        A plugin can introspect and persist information related to the current runtime environment.\n      </p>\n<p>\n        Sample contribution:\n        <code>\n        <extension point=\"plugins\" target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n            <plugin class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n                id=\"seam\" snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n                <ui>\n                    <label>Seam Components</label>\n                    <viewType>seam</viewType>\n                    <homeView>listSeamComponents</homeView>\n                    <styleClass>seam</styleClass>\n                </ui>\n            </plugin>\n        </extension>\n    </code>\n</p>\n<p>\n        The class should implement the\n        <b>org.nuxeo.apidoc.plugin.Plugin</b>\n        interface.\n      </p>\n<p>\n        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\n        and\n        the module holding this resource should be contributed to the main webengine module as a fragment using:\n        <code>\n          Fragment-Host: org.nuxeo.apidoc.webengine\n        </code>\n</p>\n",
               "name": "plugins",
               "documentationHtml": "<p/>\n<p>\nA plugin can introspect and persist information related to the current runtime environment.\n</p>\n<p>\nSample contribution:\n<p/><pre><code>        &lt;extension point=\"plugins\" target=\"org.nuxeo.apidoc.snapshot.SnapshotManagerComponent\">\n            &lt;plugin class=\"org.nuxeo.apidoc.seam.plugin.SeamPlugin\"\n                id=\"seam\" snapshotClass=\"org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot\">\n                &lt;ui>\n                    &lt;label>Seam Components&lt;/label>\n                    &lt;viewType>seam&lt;/viewType>\n                    &lt;homeView>listSeamComponents&lt;/homeView>\n                    &lt;styleClass>seam&lt;/styleClass>\n                &lt;/ui>\n            &lt;/plugin>\n        &lt;/extension>\n</code></pre><p/>\n</p>\n<p>\nThe class should implement the\n<b>org.nuxeo.apidoc.plugin.Plugin</b>\ninterface.\n</p>\n<p>\nUI elements are used for rendering on webengine pages. The view type should match a webengine resource type,\nand\nthe module holding this resource should be contributed to the main webengine module as a fragment using:\n<p/><pre><code>          Fragment-Host: org.nuxeo.apidoc.webengine\n</code></pre><p/>\n</p>",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/ExtensionPoints/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/ExtensionPoints/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
               "id": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
               "label": "plugins (org.nuxeo.apidoc.snapshot.SnapshotManagerComponent)",
               "version": "11.1-SNAPSHOT"
             }
           ],
           "extensions": [],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
+          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
           "registrationOrder": 58,
           "requirements": [],
           "services": [
@@ -348,7 +332,7 @@
               "id": "org.nuxeo.apidoc.snapshot.SnapshotManager",
               "overriden": false,
               "componentId": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager",
               "version": "11.1-SNAPSHOT"
             },
             {
@@ -356,7 +340,7 @@
               "id": "org.nuxeo.apidoc.search.ArtifactSearcher",
               "overriden": false,
               "componentId": "org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.search.ArtifactSearcher",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.search.ArtifactSearcher",
               "version": "11.1-SNAPSHOT"
             }
           ],
@@ -443,11 +427,11 @@
                 }
               ],
               "documentationHtml": "<p/>\nThese contributions provide document types that handle persistence of introspected distributions.\n<p/>",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype",
               "version": "11.1-SNAPSHOT"
             }
           ],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib",
+          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib",
           "registrationOrder": 83,
           "requirements": [],
           "services": [],
@@ -485,11 +469,11 @@
                 }
               ],
               "documentationHtml": "",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib/Contributions/org.nuxeo.apidoc.lifecycle.contrib--types",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib/Contributions/org.nuxeo.apidoc.lifecycle.contrib--types",
               "version": "11.1-SNAPSHOT"
             }
           ],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib",
+          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib",
           "registrationOrder": 107,
           "requirements": [],
           "services": [],
@@ -583,11 +567,11 @@
                 }
               ],
               "documentationHtml": "",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib/Contributions/org.nuxeo.apidoc.schemaContrib--schema",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib/Contributions/org.nuxeo.apidoc.schemaContrib--schema",
               "version": "11.1-SNAPSHOT"
             }
           ],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib",
+          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib",
           "registrationOrder": 162,
           "requirements": [
             "org.nuxeo.ecm.core.CoreExtensions"
@@ -627,7 +611,7 @@
                 }
               ],
               "documentationHtml": "",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues",
               "version": "11.1-SNAPSHOT"
             },
             {
@@ -651,11 +635,11 @@
                 }
               ],
               "documentationHtml": "",
-              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues1",
+              "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues1",
               "version": "11.1-SNAPSHOT"
             }
           ],
-          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works",
+          "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works",
           "registrationOrder": 187,
           "requirements": [],
           "services": [],
@@ -664,12 +648,12 @@
           "xmlPureComponent": true
         }
       ],
-      "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo",
+      "hierarchyPath": "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo",
       "id": "org.nuxeo.apidoc.repo",
       "version": "11.1-SNAPSHOT"
     }
   ],
-  "creationDate": 1590490139928,
+  "creationDate": 1590508140070,
   "key": "Nuxeo-unknown",
   "name": "Nuxeo",
   "operations": [

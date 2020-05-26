@@ -20,9 +20,6 @@ package org.nuxeo.functionaltests.explorer.pages.artifacts;
 
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-
-import org.nuxeo.functionaltests.explorer.AbstractExplorerTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -54,21 +51,17 @@ public class BundleGroupArtifactPage extends ArtifactPage {
             checkCommon(title, title, null, "Bundles");
             checkDocumentationText(null);
             checkSubGroup(null);
+            checkBundle("org.nuxeo.apidoc.core");
+            checkBundle("org.nuxeo.apidoc.repo");
+            checkBundle("org.nuxeo.apidoc.webengine");
         } else {
             checkCommon("Bundle group org.nuxeo.ecm.platform", "Bundle group org.nuxeo.ecm.platform", null,
-                    "Documentation\n" + "Bundle Subgroups\n" + "Bundles");
-            try {
-                String expected = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
-                checkDocumentationText("ReadMe.md\n" + expected);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                    "Bundle Subgroups\n" + "Bundles");
+            checkDocumentationText(null);
             checkSubGroup("org.nuxeo.ecm.platform.comment");
             checkSubGroup("org.nuxeo.ecm.platform.filemanager");
+            checkBundle("org.nuxeo.ecm.platform.api");
         }
-        checkBundle("org.nuxeo.apidoc.core");
-        checkBundle("org.nuxeo.apidoc.repo");
-        checkBundle("org.nuxeo.apidoc.webengine");
     }
 
     @Override

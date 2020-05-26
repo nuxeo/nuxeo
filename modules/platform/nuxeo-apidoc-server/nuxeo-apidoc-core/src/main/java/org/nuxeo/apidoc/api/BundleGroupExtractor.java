@@ -23,8 +23,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -54,6 +56,11 @@ public class BundleGroupExtractor {
     protected final Map<String, BundleGroup> groups = new LinkedHashMap<>();
 
     public static final String VIRTUAL_BUNDLE_GROUP = BundleGroup.PREFIX + "org.nuxeo.misc";
+
+    protected static final List<String> BLACKLIST_SUFFIX = List.of("test", "tests");
+
+    protected static final List<String> BLACKLIST = List.of("org", "org.nuxeo", "org.nuxeo.ecm",
+            "org.nuxeo.ecm.platform", "com", "com.nuxeo");
 
     public BundleGroupExtractor(Map<String, BundleInfo> bundles, String version) {
         this.bundles = bundles;
@@ -98,17 +105,22 @@ public class BundleGroupExtractor {
         for (String mvnGroupName : mvnGroupNames) {
             List<String> artifactIds = mavenGroups.get(mvnGroupName);
             Collections.sort(artifactIds);
-            List<String> subGroups = new ArrayList<>();
+            Set<String> subGroups = new LinkedHashSet<>();
             for (String id : artifactIds) {
-                if (id.endsWith(".api")) {
-                    String grp = BundleGroup.PREFIX + id.substring(0, id.length() - 4);
-                    if (grp.equals(mvnGroupName)) {
+                if (id.contains(".")) {
+                    String suffix = id.substring(id.lastIndexOf(".") + 1);
+                    if (BLACKLIST_SUFFIX.contains(suffix.toLowerCase())) {
+                        continue;
+                    }
+                    String grpName = id.substring(0, id.lastIndexOf("."));
+                    String grp = BundleGroup.PREFIX + grpName;
+                    if (grp.equals(mvnGroupName) || BLACKLIST.contains(grpName.toLowerCase())) {
                         continue;
                     }
                     subGroups.add(grp);
                 }
             }
-            if (subGroups.size() < 2) {
+            if (subGroups.size() < 1) {
                 // no need to split the maven group into subGroups
             } else {
                 for (String grp : subGroups) {
@@ -118,7 +130,7 @@ public class BundleGroupExtractor {
                             grpArtifactIds.add(aid);
                         }
                     }
-                    if (grpArtifactIds.size() > 0) {
+                    if (grpArtifactIds.size() > 1) {
                         for (String aid : grpArtifactIds) {
                             artifactIds.remove(aid);
                         }
@@ -153,6 +165,7 @@ public class BundleGroupExtractor {
             if (aid.startsWith(BundleGroup.PREFIX)) {
                 BundleGroupImpl newGroup = buildBundleGroup(aid, version, false);
                 bGroup.add(newGroup);
+                newGroup.setParentGroup(bGroup);
                 newGroup.addParent(bGroup.getId());
                 groups.put(aid, newGroup);
             } else {

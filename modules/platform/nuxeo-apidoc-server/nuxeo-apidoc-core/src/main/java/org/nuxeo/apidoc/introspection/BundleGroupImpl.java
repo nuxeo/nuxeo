@@ -44,6 +44,8 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
 
     protected final String version;
 
+    protected BundleGroup parentGroup;
+
     protected final List<String> parentIds = new ArrayList<>();
 
     protected final List<Blob> readmes = new ArrayList<>();
@@ -68,7 +70,7 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
         if (readmes != null) {
             this.readmes.addAll(readmes);
         }
-        // subgroups not restored from json
+        // parent group and subgroups not restored from json
     }
 
     public BundleGroupImpl(String key, String version) {
@@ -111,6 +113,18 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
         return bundleIds.stream()
                         .sorted()
                         .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+    }
+
+    @Override
+    public BundleGroup getParentGroup() {
+        return parentGroup;
+    }
+
+    /**
+     * @since 11.1
+     */
+    public void setParentGroup(BundleGroup parentGroup) {
+        this.parentGroup = parentGroup;
     }
 
     @Override

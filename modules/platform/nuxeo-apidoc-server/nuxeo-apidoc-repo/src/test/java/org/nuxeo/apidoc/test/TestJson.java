@@ -216,7 +216,8 @@ public class TestJson extends AbstractApidocTest {
 
         assertEquals("org.nuxeo.apidoc.repo", bundle.getBundleId());
         assertEquals("org.nuxeo.ecm.platform", bundle.getGroupId());
-        assertEquals("/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo", bundle.getHierarchyPath());
+        assertEquals("/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo",
+                bundle.getHierarchyPath());
         assertEquals("org.nuxeo.apidoc.repo", bundle.getId());
         assertNull(bundle.getReadme());
         assertEquals("Manifest-Version: 1.0\n" //
@@ -249,31 +250,21 @@ public class TestJson extends AbstractApidocTest {
         // check introspected bundle group
         BundleGroup group = bundle.getBundleGroup();
         assertNotNull(group);
-        assertEquals("grp:org.nuxeo.ecm.platform", group.getId());
-        assertEquals("org.nuxeo.ecm.platform", group.getName());
+        assertEquals("grp:org.nuxeo.apidoc", group.getId());
+        assertEquals("org.nuxeo.apidoc", group.getName());
         assertEquals(BundleGroup.TYPE_NAME, group.getArtifactType());
-        assertEquals("/grp:org.nuxeo.ecm.platform", group.getHierarchyPath());
+        assertEquals("/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc", group.getHierarchyPath());
         assertEquals("unknown", group.getVersion());
-        if (legacy) {
-            assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), group.getBundleIds());
-        } else {
-            assertTrue(group.getBundleIds().size() > 1);
-            assertTrue(group.getBundleIds().contains("org.nuxeo.apidoc.core"));
-            assertTrue(group.getBundleIds().contains("org.nuxeo.apidoc.repo"));
-        }
-        assertEquals(List.of(), group.getParentIds());
+        assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), group.getBundleIds());
+        assertEquals(List.of("grp:org.nuxeo.ecm.platform"), group.getParentIds());
         List<Blob> readmes = group.getReadmes();
         assertNotNull(readmes);
         assertEquals(1, readmes.size());
         checkContentEquals("apidoc_snapshot/apidoc_readme.txt", readmes.get(0).getString());
-        if (legacy) {
-            assertEquals(List.of(), group.getSubGroups());
-        } else {
-            List<String> sgids = group.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList());
-            assertTrue(sgids.size() > 0);
-            assertTrue(sgids.contains("grp:org.nuxeo.ecm.directory"));
-        }
+        assertEquals(List.of(), group.getSubGroups());
         assertEquals("unknown", group.getVersion());
+        assertNotNull(group.getParentGroup());
+        assertEquals("grp:org.nuxeo.ecm.platform", group.getParentGroup().getId());
 
         // check bundle group from maven group id
         BundleGroup mvnGroup = snapshot.getBundleGroup(bundle.getGroupId());
@@ -284,25 +275,32 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("unknown", mvnGroup.getVersion());
         assertEquals("/grp:org.nuxeo.ecm.platform", mvnGroup.getHierarchyPath());
         if (legacy) {
-            assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), mvnGroup.getBundleIds());
+            assertEquals(List.of(), mvnGroup.getBundleIds());
         } else {
             assertTrue(mvnGroup.getBundleIds().size() > 1);
-            assertTrue(mvnGroup.getBundleIds().contains("org.nuxeo.apidoc.core"));
-            assertTrue(mvnGroup.getBundleIds().contains("org.nuxeo.apidoc.repo"));
+            assertFalse(mvnGroup.getBundleIds().contains("org.nuxeo.apidoc.core"));
+            assertFalse(mvnGroup.getBundleIds().contains("org.nuxeo.apidoc.repo"));
         }
         assertEquals(List.of(), mvnGroup.getParentIds());
         List<Blob> mvnReadmes = mvnGroup.getReadmes();
         assertNotNull(mvnReadmes);
-        assertEquals(1, mvnReadmes.size());
-        checkContentEquals("apidoc_snapshot/apidoc_readme.txt", mvnReadmes.get(0).getString());
         if (legacy) {
-            assertEquals(List.of(), mvnGroup.getSubGroups());
+            assertEquals(0, mvnReadmes.size());
         } else {
-            List<String> sgids = group.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList());
-            assertTrue(sgids.size() > 0);
+            assertEquals(1, mvnReadmes.size());
+            checkContentEquals("apidoc_snapshot/apidoc_readme.txt", mvnReadmes.get(0).getString());
+        }
+        if (legacy) {
+            assertEquals(List.of("grp:org.nuxeo.apidoc"),
+                    mvnGroup.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList()));
+        } else {
+            List<String> sgids = mvnGroup.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList());
+            assertTrue(sgids.size() > 1);
             assertTrue(sgids.contains("grp:org.nuxeo.ecm.directory"));
+            assertTrue(sgids.contains("grp:org.nuxeo.apidoc"));
         }
         assertEquals("unknown", mvnGroup.getVersion());
+        assertNull(mvnGroup.getParentGroup());
 
         // check components
         List<ComponentInfo> components = bundle.getComponents();
@@ -326,7 +324,7 @@ public class TestJson extends AbstractApidocTest {
                 + "It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.\n" //
                 + "</p>", smcomp.getDocumentationHtml());
         assertEquals(
-                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
+                "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
                 smcomp.getHierarchyPath());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getId());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", smcomp.getName());
@@ -351,7 +349,7 @@ public class TestJson extends AbstractApidocTest {
         assertEquals(ServiceInfo.TYPE_NAME, service.getArtifactType());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", service.getComponentId());
         assertEquals(
-                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager",
+                "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Services/org.nuxeo.apidoc.snapshot.SnapshotManager",
                 service.getHierarchyPath());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManager", service.getId());
         assertEquals(version, service.getVersion());
@@ -368,7 +366,7 @@ public class TestJson extends AbstractApidocTest {
         assertEquals(ExtensionPointInfo.TYPE_NAME, xp.getArtifactType());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent", xp.getComponentId());
         assertEquals(
-                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/ExtensionPoints/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
+                "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/ExtensionPoints/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins",
                 xp.getHierarchyPath());
         assertEquals("org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--plugins", xp.getId());
         assertEquals("plugins (org.nuxeo.apidoc.snapshot.SnapshotManagerComponent)", xp.getLabel());
@@ -473,7 +471,7 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("", ext.getContributionItems().get(0).getDocumentation());
         assertEquals("org.nuxeo.ecm.core.schema.TypeService--doctype", ext.getExtensionPoint());
         assertEquals(
-                "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype",
+                "/grp:org.nuxeo.ecm.platform/grp:org.nuxeo.apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib/Contributions/org.nuxeo.apidoc.doctypeContrib--doctype",
                 ext.getHierarchyPath());
         assertEquals(new ComponentName("service:org.nuxeo.ecm.core.schema.TypeService"), ext.getTargetComponentName());
         assertEquals(version, ext.getVersion());
