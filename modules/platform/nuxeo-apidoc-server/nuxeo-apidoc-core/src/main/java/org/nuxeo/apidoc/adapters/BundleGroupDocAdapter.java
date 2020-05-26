@@ -138,6 +138,11 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     }
 
     @Override
+    public BundleGroup getParentGroup() {
+        return getCoreSession().getParentDocument(doc.getRef()).getAdapter(BundleGroup.class);
+    }
+
+    @Override
     public List<String> getParentIds() {
         List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
         Collections.reverse(parents);

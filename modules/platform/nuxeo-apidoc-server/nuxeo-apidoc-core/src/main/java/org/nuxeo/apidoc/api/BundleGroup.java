@@ -46,6 +46,12 @@ public interface BundleGroup extends NuxeoArtifact {
 
     List<String> getBundleIds();
 
+    /**
+     * @since 11.1
+     */
+    @JsonIgnore
+    BundleGroup getParentGroup();
+
     List<String> getParentIds();
 
     /**
