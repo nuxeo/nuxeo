@@ -121,7 +121,7 @@ public class H2Fulltext {
         try (Statement st = conn.createStatement()) {
             st.execute("CREATE SCHEMA IF NOT EXISTS " + FT_SCHEMA);
             st.execute("CREATE TABLE IF NOT EXISTS " + FT_TABLE
-                    + "(NAME VARCHAR, SCHEMA VARCHAR, TABLE VARCHAR, COLUMNS VARCHAR, "
+                    + "(NAME VARCHAR, SCHEMA VARCHAR, \"TABLE\" VARCHAR, COLUMNS VARCHAR, "
                     + "ANALYZER VARCHAR, PRIMARY KEY(NAME))");
             // BBB migrate old table without the "NAME" column
             try (ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE " + "TABLE_SCHEMA = '"
@@ -167,13 +167,13 @@ public class H2Fulltext {
         if (indexName == null) {
             indexName = DEFAULT_INDEX_NAME;
         }
-        columns = columns.replace("(", "").replace(")", "").replace(" ", "");
+        columns = columns.replace("ROW (", "").replace("(", "").replace(")", "").replace(" ", "");
         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM " + FT_TABLE + " WHERE NAME = ?")) {
             ps.setString(1, indexName);
             ps.execute();
         }
         try (PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO " + FT_TABLE + "(NAME, SCHEMA, TABLE, COLUMNS, ANALYZER) VALUES(?, ?, ?, ?, ?)")) {
+                "INSERT INTO " + FT_TABLE + "(NAME, SCHEMA, \"TABLE\", COLUMNS, ANALYZER) VALUES(?, ?, ?, ?, ?)")) {
             ps.setString(1, indexName);
             ps.setString(2, schema);
             ps.setString(3, table);
@@ -311,7 +311,7 @@ public class H2Fulltext {
 
         // find schema, table and analyzer
         try (PreparedStatement ps = conn.prepareStatement(
-                "SELECT SCHEMA, TABLE, ANALYZER FROM " + FT_TABLE + " WHERE NAME = ?")) {
+                "SELECT SCHEMA, \"TABLE\", ANALYZER FROM " + FT_TABLE + " WHERE NAME = ?")) {
             ps.setString(1, indexName);
             try (ResultSet res = ps.executeQuery()) {
                 if (!res.next()) {
@@ -323,9 +323,8 @@ public class H2Fulltext {
             }
         }
 
-        int type = getPrimaryKeyType(meta, schema, table);
         SimpleResultSet rs = new SimpleResultSet();
-        rs.addColumn(COL_KEY, type, 0, 0);
+        rs.addColumn(COL_KEY, Types.VARCHAR, 0, 0);
 
         if (meta.getURL().startsWith("jdbc:columnlist:")) {
             // this is just to query the result set columns
@@ -352,7 +351,7 @@ public class H2Fulltext {
 
             try (IndexReader reader = DirectoryReader.open(writer.getDirectory())) {
                 IndexSearcher searcher = new IndexSearcher(reader);
-                Collector collector = new ResultSetCollector(rs, reader, type);
+                Collector collector = new ResultSetCollector(rs, reader);
                 searcher.search(queryBuilder.build(), collector);
             }
         } catch (SQLException | ParseException | IOException e) {
@@ -366,14 +365,11 @@ public class H2Fulltext {
 
         protected IndexReader reader;
 
-        protected int type;
-
         protected int docBase;
 
-        public ResultSetCollector(SimpleResultSet rs, IndexReader reader, int type) {
+        public ResultSetCollector(SimpleResultSet rs, IndexReader reader) {
             this.rs = rs;
             this.reader = reader;
-            this.type = type;
         }
 
         @Override
@@ -395,36 +391,7 @@ public class H2Fulltext {
         public void collect(int docID) throws IOException {
             docID += docBase;
             Document doc = reader.document(docID, Collections.singleton(FIELD_KEY));
-            Object key;
-            try {
-                key = asObject(doc.get(FIELD_KEY), type);
-                rs.addRow(key);
-            } catch (SQLException e) {
-                throw new IOException(e);
-            }
-        }
-    }
-
-    private static int getPrimaryKeyType(DatabaseMetaData meta, String schema, String table) throws SQLException {
-        // find primary key name
-        String primaryKeyName = null;
-        try (ResultSet rs = meta.getPrimaryKeys(null, schema, table)) {
-            while (rs.next()) {
-                if (primaryKeyName != null) {
-                    throw new SQLException("Can only index primary keys on one column for " + schema + '.' + table);
-                }
-                primaryKeyName = rs.getString("COLUMN_NAME");
-            }
-            if (primaryKeyName == null) {
-                throw new SQLException("No primary key for " + schema + '.' + table);
-            }
-        }
-        // find primary key type
-        try (ResultSet rs = meta.getColumns(null, schema, table, primaryKeyName)) {
-            if (!rs.next()) {
-                throw new SQLException("Could not find primary key");
-            }
-            return rs.getInt("DATA_TYPE");
+            rs.addRow(doc.get(FIELD_KEY));
         }
     }
 
@@ -573,24 +540,6 @@ public class H2Fulltext {
         }
     }
 
-    // simple cases only, used for primary key
-    private static Object asObject(String string, int type) throws SQLException {
-        switch (type) {
-        case Types.BIGINT:
-            return Long.valueOf(string);
-        case Types.INTEGER:
-        case Types.SMALLINT:
-        case Types.TINYINT:
-            return Integer.valueOf(string);
-        case Types.LONGVARCHAR:
-        case Types.CHAR:
-        case Types.VARCHAR:
-            return string;
-        default:
-            throw new SQLException("Unsupport data type for primary key: " + type);
-        }
-    }
-
     /**
      * Trigger used to update the lucene index upon row change.
      */
@@ -666,7 +615,7 @@ public class H2Fulltext {
 
             // find columns configured for indexing
             try (PreparedStatement ps = conn.prepareStatement(
-                    "SELECT NAME, COLUMNS, ANALYZER FROM " + FT_TABLE + " WHERE SCHEMA = ? AND TABLE = ?")) {
+                    "SELECT NAME, COLUMNS, ANALYZER FROM " + FT_TABLE + " WHERE SCHEMA = ? AND \"TABLE\" = ?")) {
                 ps.setString(1, schema);
                 ps.setString(2, table);
                 try (ResultSet rs = ps.executeQuery()) {
