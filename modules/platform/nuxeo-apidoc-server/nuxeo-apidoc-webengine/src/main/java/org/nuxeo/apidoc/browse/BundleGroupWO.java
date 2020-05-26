@@ -18,8 +18,8 @@
  */
 package org.nuxeo.apidoc.browse;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
@@ -38,23 +38,17 @@ public class BundleGroupWO extends NuxeoArtifactWebObject {
     }
 
     public List<BundleWO> getBundles() {
-        List<BundleWO> result = new ArrayList<>();
-
-        BundleGroup group = getTargetBundleGroup();
-        for (String bid : group.getBundleIds()) {
-            result.add((BundleWO) ctx.newObject("bundle", bid));
-        }
-        return result;
+        return getTargetBundleGroup().getBundleIds()
+                                     .stream()
+                                     .map(bid -> (BundleWO) ctx.newObject("bundle", bid))
+                                     .collect(Collectors.toList());
     }
 
     public List<BundleGroupWO> getSubGroups() {
-        List<BundleGroupWO> result = new ArrayList<>();
-
-        BundleGroup group = getTargetBundleGroup();
-        for (BundleGroup bg : group.getSubGroups()) {
-            result.add((BundleGroupWO) ctx.newObject("bundleGroup", bg.getId()));
-        }
-        return result;
+        return getTargetBundleGroup().getSubGroups()
+                                     .stream()
+                                     .map(bg -> (BundleGroupWO) ctx.newObject("bundleGroup", bg.getId()))
+                                     .collect(Collectors.toList());
     }
 
 }

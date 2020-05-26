@@ -6,7 +6,7 @@
 <#include "/docMacros.ftl">
 
 <h1>Bundle <span class="componentTitle">${nxItem.id}</span></h1>
-<div class="include-in">In bundle group <a href="${Root.path}/${distId}/viewBundleGroup/${nxItem.groupId}">${nxItem.groupId}</a></div>
+<div class="include-in">In bundle group <a href="${Root.path}/${distId}/viewBundleGroup/${nxItem.bundleGroup.id}">${nxItem.bundleGroup.name}</a></div>
 
 <div class="tabscontent">
   <@toc />
