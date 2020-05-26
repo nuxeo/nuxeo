@@ -250,6 +250,7 @@ public class TestJson extends AbstractApidocTest {
         assertEquals("grp:org.nuxeo.ecm.platform", group.getId());
         assertEquals("org.nuxeo.ecm.platform", group.getName());
         assertEquals(BundleGroup.TYPE_NAME, group.getArtifactType());
+        assertEquals("unknown", group.getVersion());
         assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), group.getBundleIds());
         assertEquals(List.of(), group.getParentIds());
         List<Blob> readmes = group.getReadmes();

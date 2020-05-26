@@ -47,7 +47,7 @@ public class BundleGroupImpl extends BaseNuxeoArtifact implements BundleGroup {
     protected final List<Blob> readmes = new ArrayList<>();
 
     @JsonCreator
-    private BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("name") String version,
+    private BundleGroupImpl(@JsonProperty("id") String key, @JsonProperty("version") String version,
             @JsonProperty("readmes") List<Blob> readmes) {
         this.key = key;
         if (key.startsWith(BundleGroup.PREFIX)) {
