@@ -319,8 +319,11 @@ public class DialectH2 extends Dialect {
 
     @Override
     public boolean isConcurrentUpdateException(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
+        // recent versions of H2 throw a SQLException whose cause,
+        // an IllegalStateException, is not itself a SQLException
+        Throwable cause;
+        while ((cause = t.getCause()) != null && cause instanceof SQLException) {
+            t = cause;
         }
         if (t instanceof SQLException) {
             String sqlState = ((SQLException) t).getSQLState();
