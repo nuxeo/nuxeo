@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.assertj.core.api.Assertions;
 import org.h2.tools.Server;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.datasource.PooledDataSourceRegistry.PooledDataSource;
@@ -55,16 +54,6 @@ public class TestValidateConnectionH2 {
 
     @Inject
     PooledDataSourceRegistry registry;
-
-    @Test
-    public void testNoValidation() throws SQLException {
-        try {
-            testPooled("no-valid");
-            throw new AssertionError("didn't caught connection error");
-        } catch (ReportException cause) {
-            Assert.assertEquals(cause.site, CaughtSite.ON_USE);
-        }
-    }
 
     public static class CaptureValidationErrors implements LogCaptureFeature.Filter {
 
