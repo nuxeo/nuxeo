@@ -112,8 +112,18 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     }
 
     @Override
+    public void setGroupId(String groupId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public BundleGroup getBundleGroup() {
         return getCoreSession().getParentDocument(doc.getRef()).getAdapter(BundleGroup.class);
+    }
+
+    @Override
+    public void setBundleGroup(BundleGroup bundleGroup) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

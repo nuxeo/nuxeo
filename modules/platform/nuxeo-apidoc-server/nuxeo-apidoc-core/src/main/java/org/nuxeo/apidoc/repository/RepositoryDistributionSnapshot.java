@@ -23,10 +23,12 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -184,16 +186,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public List<BundleGroup> getBundleGroups() {
-        List<BundleGroup> grps = new ArrayList<>();
         String query = QueryHelper.select(BundleGroup.TYPE_NAME, doc, NXQL.ECM_PARENTID, getBundleContainer().getId());
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel child : docs) {
-            BundleGroup bg = child.getAdapter(BundleGroup.class);
-            if (bg != null) {
-                grps.add(bg);
-            }
-        }
-        return grps;
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(BundleGroup.class))
+                   .filter(Objects::nonNull)
+                   .sorted(Comparator.comparing(BundleGroup::getId))
+                   .collect(Collectors.toList());
     }
 
     @Override
@@ -251,12 +250,6 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                                                                                   .map(NuxeoArtifact::getId)
                                                                                   .sorted()
                                                                                   .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<String> getBundleGroupChildren(String groupId) {
-        BundleGroup bg = getChild(BundleGroup.class, BundleGroup.TYPE_NAME, BundleGroup.PROP_KEY, groupId);
-        return bg.getBundleIds();
     }
 
     public List<String> getBundleGroupIds() {

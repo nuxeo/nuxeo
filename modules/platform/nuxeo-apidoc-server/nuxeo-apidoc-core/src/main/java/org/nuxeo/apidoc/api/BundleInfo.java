@@ -72,7 +72,19 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String getLocation();
 
+    /**
+     * Returns the corresponding maven group id.
+     * <p>
+     * Can differ from corresponding id returned by {@link #getBundleGroup()} depending on maven introspection.
+     *
+     * @since 11.1
+     */
     String getGroupId();
+
+    /**
+     * @since 11.1
+     */
+    void setGroupId(String groupId);
 
     String getArtifactId();
 
@@ -86,6 +98,11 @@ public interface BundleInfo extends NuxeoArtifact {
      * @since 11.1
      */
     BundleGroup getBundleGroup();
+
+    /**
+     * @since 11.1
+     */
+    void setBundleGroup(BundleGroup bundleGroup);
 
     /**
      * @since 11.1

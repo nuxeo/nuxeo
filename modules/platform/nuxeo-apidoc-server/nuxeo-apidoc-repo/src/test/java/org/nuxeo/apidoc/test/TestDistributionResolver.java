@@ -193,11 +193,6 @@ public class TestDistributionResolver {
                 }
 
                 @Override
-                public List<String> getBundleGroupChildren(String groupId) {
-                    return null;
-                }
-
-                @Override
                 public BundleGroup getBundleGroup(String groupId) {
                     return null;
                 }
