@@ -33,16 +33,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
+import org.nuxeo.apidoc.api.BundleGroupExtractor;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifactComparator;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
@@ -69,10 +70,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
 
-    private static final Logger log = LogManager.getLogger(RuntimeSnapshot.class);
-
-    public static final String VIRTUAL_BUNDLE_GROUP = BundleGroup.PREFIX + "org.nuxeo.misc";
-
     protected final Date created;
 
     protected final Date released;
@@ -92,10 +89,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected final Map<String, ExtensionPointInfo> extensionPoints = new LinkedHashMap<>();
 
     protected final Map<String, ExtensionInfo> contributions = new LinkedHashMap<>();
-
-    protected final Map<String, List<String>> mavenGroups = new HashMap<>();
-
-    protected final Map<String, List<String>> mavenSubGroups = new HashMap<>();
 
     protected List<BundleGroup> parentBundleGroups = new ArrayList<>();
 
@@ -155,21 +148,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         }
         for (BundleInfo bInfo : distributionBundles) {
             bundles.put(bInfo.getId(), bInfo);
-
-            String groupId = bInfo.getGroupId();
-            if (groupId != null) {
-                groupId = BundleGroup.PREFIX + groupId;
-            }
-            String artifactId = bInfo.getArtifactId();
-            if (groupId == null || artifactId == null) {
-                groupId = VIRTUAL_BUNDLE_GROUP;
-                ((BundleInfoImpl) bInfo).setGroupId(groupId);
-            }
-            if (!mavenGroups.containsKey(groupId)) {
-                mavenGroups.put(groupId, new ArrayList<String>());
-            }
-            mavenGroups.get(groupId).add(bInfo.getId());
-
             for (ComponentInfo cInfo : bInfo.getComponents()) {
                 components2Bundles.put(cInfo.getId(), bInfo.getId());
                 if (!cInfo.isXmlPureComponent()) {
@@ -202,76 +180,9 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             }
         }
 
-        // post process bundle groups
-        List<String> mvnGroupNames = new ArrayList<>();
-        mvnGroupNames.addAll(mavenGroups.keySet());
-
-        for (String mvnGroupName : mvnGroupNames) {
-            List<String> artifactIds = mavenGroups.get(mvnGroupName);
-            Collections.sort(artifactIds);
-            List<String> subGroups = new ArrayList<>();
-            for (String id : artifactIds) {
-                if (id.endsWith(".api")) {
-                    String grp = BundleGroup.PREFIX + id.substring(0, id.length() - 4);
-                    if (grp.equals(mvnGroupName)) {
-                        continue;
-                    }
-                    subGroups.add(grp);
-                }
-            }
-            if (subGroups.size() < 2) {
-                // no need to split the maven group into subGroups
-            } else {
-                for (String grp : subGroups) {
-                    List<String> grpArtifactIds = new ArrayList<>();
-                    for (String aid : artifactIds) {
-                        if (aid.startsWith(grp) || (BundleGroup.PREFIX + aid).startsWith(grp)) {
-                            grpArtifactIds.add(aid);
-                        }
-                    }
-                    if (grpArtifactIds.size() > 0) {
-                        for (String aid : grpArtifactIds) {
-                            artifactIds.remove(aid);
-                        }
-                        mavenSubGroups.put(grp, grpArtifactIds);
-                        artifactIds.add(grp);
-                    }
-                }
-            }
-        }
-
-        for (String grpId : mavenGroups.keySet()) {
-            buildBundleGroup(grpId, version, true);
-        }
-
-    }
-
-    protected BundleGroupImpl buildBundleGroup(String id, String version, boolean isParent) {
-        BundleGroupImpl bGroup = new BundleGroupImpl(id, version);
-        for (String aid : getBundleGroupChildren(id)) {
-            if (aid.startsWith(BundleGroup.PREFIX)) {
-                BundleGroupImpl newGroup = buildBundleGroup(aid, version, false);
-                bGroup.add(newGroup);
-                newGroup.addParent(bGroup.getId());
-                bundleGroups.put(aid, newGroup);
-            } else {
-                bGroup.add(aid);
-                BundleInfo bi = getBundle(aid);
-                if (bi instanceof BundleInfoImpl) {
-                    ((BundleInfoImpl) bi).setBundleGroup(bGroup);
-                }
-                try {
-                    bGroup.addReadme(bi.getParentReadme());
-                } catch (IOException e) {
-                    log.error("Error setting readme on bundle group", e);
-                }
-            }
-        }
-        if (isParent) {
-            parentBundleGroups.add(bGroup);
-        }
-        bundleGroups.put(id, bGroup);
-        return bGroup;
+        BundleGroupExtractor bge = new BundleGroupExtractor(bundles, version);
+        parentBundleGroups.addAll(bge.getRoots());
+        bundleGroups.putAll(bge.getGroups());
     }
 
     @Override
@@ -286,7 +197,10 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     @Override
     public List<BundleGroup> getBundleGroups() {
-        return Collections.unmodifiableList(parentBundleGroups);
+        return parentBundleGroups.stream()
+                                 .sorted(new NuxeoArtifactComparator())
+                                 .collect(Collectors.collectingAndThen(Collectors.toList(),
+                                         Collections::unmodifiableList));
     }
 
     @Override
@@ -304,7 +218,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     protected void browseBundleGroup(BundleGroup group, int level, List<BundleGroupFlatTree> tree) {
         BundleGroupFlatTree info = new BundleGroupFlatTree(group, level);
         tree.add(info);
-
         for (BundleGroup subGroup : group.getSubGroups()) {
             browseBundleGroup(subGroup, level + 1, tree);
         }
@@ -383,27 +296,6 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     @Override
     public ExtensionInfo getContribution(String id) {
         return contributions.get(id);
-    }
-
-    public List<String> getBundleGroupIds() {
-        List<String> grpIds = new ArrayList<>();
-        grpIds.addAll(mavenGroups.keySet());
-        Collections.sort(grpIds);
-        return grpIds;
-    }
-
-    @Override
-    public List<String> getBundleGroupChildren(String groupId) {
-        List<String> res = mavenSubGroups.get(groupId);
-        if (res == null) {
-            res = mavenGroups.get(groupId);
-        }
-
-        if (res != null) {
-            return res;
-        } else {
-            return new ArrayList<>();
-        }
     }
 
     @Override

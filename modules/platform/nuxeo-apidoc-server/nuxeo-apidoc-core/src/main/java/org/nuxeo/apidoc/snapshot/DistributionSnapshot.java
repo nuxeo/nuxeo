@@ -108,6 +108,9 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
      */
     List<BundleInfo> getBundles();
 
+    /**
+     * Returns the list of parent group bundles.
+     */
     @JsonIgnore
     List<BundleGroup> getBundleGroups();
 
@@ -146,8 +149,6 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
     List<ExtensionInfo> getContributions();
 
     ExtensionInfo getContribution(String id);
-
-    List<String> getBundleGroupChildren(String groupId);
 
     OperationInfo getOperation(String id);
 

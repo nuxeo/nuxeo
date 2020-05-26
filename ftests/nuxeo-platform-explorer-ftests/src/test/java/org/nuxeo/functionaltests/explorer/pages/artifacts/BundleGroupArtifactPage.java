@@ -47,9 +47,16 @@ public class BundleGroupArtifactPage extends ArtifactPage {
     @Override
     public void checkReference(boolean partial, boolean legacy) {
         if (partial) {
+            String title = "Bundle group my-partial-server";
+            if (legacy) {
+                title = "Bundle group apidoc";
+            }
+            checkCommon(title, title, null, "Bundles");
             checkDocumentationText(null);
             checkSubGroup(null);
         } else {
+            checkCommon("Bundle group org.nuxeo.ecm.platform", "Bundle group org.nuxeo.ecm.platform", null,
+                    "Documentation\n" + "Bundle Subgroups\n" + "Bundles");
             try {
                 String expected = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
                 checkDocumentationText("ReadMe.md\n" + expected);
@@ -66,6 +73,7 @@ public class BundleGroupArtifactPage extends ArtifactPage {
 
     @Override
     public void checkAlternative() {
+        checkCommon("Bundle group org.nuxeo.ecm.directory", "Bundle group org.nuxeo.ecm.directory", null, "Bundles");
         checkDocumentationText(null);
         checkSubGroup(null);
         checkBundle("org.nuxeo.ecm.directory");
