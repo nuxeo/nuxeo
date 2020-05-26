@@ -95,7 +95,7 @@
       "deploymentOrder": 3,
       "fileName": "main",
       "groupId": "org.nuxeo.ecm.platform",
-      "location": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-core/bin/main",
+      "location": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-core/bin/main",
       "manifest": "Manifest-Version: 1.0\nBundle-SymbolicName: org.nuxeo.apidoc.core;singleton:=true\nBundle-Name: nuxeo api documentation server\nBundle-Version: 0.0.1\nBundle-ManifestVersion: 1\nBundle-Vendor: Nuxeo\n",
       "parentReadme": {
         "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree:\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n    - Operations\n\nThe Nuxeo Distribution can be:\n\n - live: in memory (meaning runtime introspection)\n - persisted: saved in Nuxeo Repository as a tree of Documents\n\nThe following documentation items are also extracted:\n\n - documentation that is built-in Nuxeo Runtime descriptors\n - readme files that may be embedded inside the jar\n\n## What it can be used for\n\n - browse you distribution\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 3 bundles:\n\n - nuxeo-apidoc-core: for the low level API on the live runtime\n - nuxeo-apidoc-repo: for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine: for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
@@ -214,7 +214,7 @@
       "deploymentOrder": 21,
       "fileName": "main",
       "groupId": "org.nuxeo.ecm.platform",
-      "location": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main",
+      "location": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main",
       "manifest": "Manifest-Version: 1.0\nBundle-ManifestVersion: 1\nBundle-Name: nuxeo api documentation repository\nBundle-SymbolicName: org.nuxeo.apidoc.repo;singleton:=true\nBundle-Version: 0.0.1\nBundle-Vendor: Nuxeo\nNuxeo-Component: OSGI-INF/schema-contrib.xml,\n  OSGI-INF/doctype-contrib.xml,\n  OSGI-INF/life-cycle-contrib.xml,\n  OSGI-INF/snapshot-service-framework.xml,\n  OSGI-INF/adapter-contrib.xml,\n  OSGI-INF/listener-contrib.xml\n",
       "parentReadme": {
         "content": "## About nuxeo-apidoc-server\n\nThis modules provides an API to browse the Nuxeo distribution tree:\n\n    - BundleGroup (maven group or artificial grouping)\n      - Bundle\n        - Component\n          - Service\n          - Extension Points\n          - Contributions\n    - Operations\n\nThe Nuxeo Distribution can be:\n\n - live: in memory (meaning runtime introspection)\n - persisted: saved in Nuxeo Repository as a tree of Documents\n\nThe following documentation items are also extracted:\n\n - documentation that is built-in Nuxeo Runtime descriptors\n - readme files that may be embedded inside the jar\n\n## What it can be used for\n\n - browse you distribution\n - check that a given contribution is deployed\n - play with Nuxeo Runtime\n\n## Parameters\n - `org.nuxeo.apidoc.site.mode`: Enable the site mode with a more user friendly design\n - `org.nuxeo.apidoc.hide.current.distribution`: Hide current distribution from the distribution listing\n - `org.nuxeo.apidoc.hide.seam.components`: Hide Seam components introspection (moved to nuxeo-apidoc-jsf since 11.1)\n\n## Modules\n\nThis plugin is composed of 3 bundles:\n\n - nuxeo-apidoc-core: for the low level API on the live runtime\n - nuxeo-apidoc-repo: for the persistence of exported content on the Nuxeo repository\n - nuxeo-apidoc-webengine: for JAX-RS API and Webview\n\nAs of Nuxeo 11.1, the JSF part (including Seam components introspection and display) have been moved to a dedicated package,\nwithin the JSF UI GitHub repository, with an additional nuxeo-apidoc-jsf module.\n",
@@ -280,7 +280,7 @@
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/listener-contrib.xml",
+          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/listener-contrib.xml",
           "xmlPureComponent": true
         },
         {
@@ -420,7 +420,7 @@
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/adapter-contrib.xml",
+          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/adapter-contrib.xml",
           "xmlPureComponent": true
         },
         {
@@ -469,7 +469,7 @@
             }
           ],
           "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/snapshot-service-framework.xml",
+          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/snapshot-service-framework.xml",
           "xmlPureComponent": false
         },
         {
@@ -560,7 +560,7 @@
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/doctype-contrib.xml",
+          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/doctype-contrib.xml",
           "xmlPureComponent": true
         },
         {
@@ -602,7 +602,7 @@
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/life-cycle-contrib.xml",
+          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/life-cycle-contrib.xml",
           "xmlPureComponent": true
         },
         {
@@ -702,7 +702,7 @@
           ],
           "services": [],
           "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/schema-contrib.xml",
+          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main/OSGI-INF/schema-contrib.xml",
           "xmlPureComponent": true
         },
         {
@@ -768,7 +768,7 @@
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
-          "xmlFileName": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/test/apidoc-works-test-contrib.xml",
+          "xmlFileName": "/home/user/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/test/apidoc-works-test-contrib.xml",
           "xmlPureComponent": true
         }
       ],
