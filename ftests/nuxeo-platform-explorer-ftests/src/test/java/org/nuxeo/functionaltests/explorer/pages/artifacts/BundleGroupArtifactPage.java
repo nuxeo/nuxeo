@@ -44,9 +44,9 @@ public class BundleGroupArtifactPage extends ArtifactPage {
     @Override
     public void checkReference(boolean partial, boolean legacy) {
         if (partial) {
-            String title = "Bundle group my-partial-server";
+            String title = "Bundle Group my-partial-server";
             if (legacy) {
-                title = "Bundle group apidoc";
+                title = "Bundle Group apidoc";
             }
             checkCommon(title, title, null, "Bundles");
             checkDocumentationText(null);
@@ -55,7 +55,7 @@ public class BundleGroupArtifactPage extends ArtifactPage {
             checkBundle("org.nuxeo.apidoc.repo");
             checkBundle("org.nuxeo.apidoc.webengine");
         } else {
-            checkCommon("Bundle group org.nuxeo.ecm.platform", "Bundle group org.nuxeo.ecm.platform", null,
+            checkCommon("Bundle Group org.nuxeo.ecm.platform", "Bundle Group org.nuxeo.ecm.platform", null,
                     "Bundle Subgroups\n" + "Bundles");
             checkDocumentationText(null);
             checkSubGroup("org.nuxeo.ecm.platform.comment");
@@ -66,7 +66,8 @@ public class BundleGroupArtifactPage extends ArtifactPage {
 
     @Override
     public void checkAlternative() {
-        checkCommon("Bundle group org.nuxeo.ecm.directory", "Bundle group org.nuxeo.ecm.directory", null, "Bundles");
+        checkCommon("Bundle Group org.nuxeo.ecm.directory", "Bundle Group org.nuxeo.ecm.directory",
+                "In bundle group org.nuxeo.ecm.platform", "Bundles");
         checkDocumentationText(null);
         checkSubGroup(null);
         checkBundle("org.nuxeo.ecm.directory");

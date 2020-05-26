@@ -1,12 +1,15 @@
 <#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
-<@block name="title">Bundle group ${nxItem.name}</@block>
+<@block name="title">Bundle Group ${nxItem.name}</@block>
 
 <@block name="right">
 <#include "/docMacros.ftl">
 <#assign nestedLevel=0/>
 
-<h1>Bundle group <span class="componentTitle">${nxItem.name}</span></h1>
+<h1>Bundle Group <span class="componentTitle">${nxItem.name}</span></h1>
+<#if nxItem.parentGroup??>
+  <div class="include-in">In bundle group <a href="${Root.path}/${distId}/viewBundleGroup/${nxItem.parentGroup.id}">${nxItem.parentGroup.name}</a></div>
+</#if>
 
 <div class="tabscontent">
   <@toc />
