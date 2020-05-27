@@ -18,11 +18,18 @@
  */
 package org.nuxeo.ecm.core.opencmis.bindings;
 
+import java.util.function.Supplier;
+
+import org.apache.chemistry.opencmis.commons.data.ExtensionsData;
+import org.apache.chemistry.opencmis.commons.data.FailedToDeleteData;
+import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.support.wrapper.ConformanceCmisServiceWrapper;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -58,12 +65,52 @@ public class NuxeoCmisServiceWrapper extends ConformanceCmisServiceWrapper {
             return new CmisRuntimeException(e.getMessage(), e);
         } else if (e instanceof QueryParseException) {
             return new CmisInvalidArgumentException(e.getMessage(), e);
+        } else if (e instanceof ConcurrentUpdateException) {
+            return new CmisUpdateConflictException(e.getMessage(), e);
         } else {
             // should not happen if the connector works correctly
             // it's alarming enough to log the exception
             LOG.warn(e.toString(), e);
             return new CmisRuntimeException(e.getMessage(), e);
         }
+    }
+
+    protected void runWithRetryOnConflict(Runnable runnable) {
+        runWithRetryOnConflict(() -> {
+            runnable.run();
+            return null;
+        });
+    }
+
+    protected <R> R runWithRetryOnConflict(Supplier<R> supplier) {
+        try {
+            return supplier.get();
+        } catch (CmisUpdateConflictException e) {
+            // retry once
+            TransactionHelper.setTransactionRollbackOnly();
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+            return supplier.get();
+        }
+    }
+
+    @Override
+    public void deleteObject(String repositoryId, String objectId, Boolean allVersions, ExtensionsData extension) {
+        runWithRetryOnConflict(() -> super.deleteObject(repositoryId, objectId, allVersions, extension));
+    }
+
+    @Override
+    public void deleteObjectOrCancelCheckOut(String repositoryId, String objectId, Boolean allVersions,
+            ExtensionsData extension) {
+        runWithRetryOnConflict(
+                () -> super.deleteObjectOrCancelCheckOut(repositoryId, objectId, allVersions, extension));
+    }
+
+    @Override
+    public FailedToDeleteData deleteTree(String repositoryId, String folderId, Boolean allVersions,
+            UnfileObject unfileObjects, Boolean continueOnFailure, ExtensionsData extension) {
+        return runWithRetryOnConflict(() -> super.deleteTree(repositoryId, folderId, allVersions, unfileObjects,
+                continueOnFailure, extension));
     }
 
 }
