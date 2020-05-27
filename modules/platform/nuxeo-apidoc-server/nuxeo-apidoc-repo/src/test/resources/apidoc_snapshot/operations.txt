@@ -126,6 +126,7 @@ NXOperation: op:DocumentMultivaluedProperty.addItem *** /op:DocumentMultivaluedP
 NXOperation: op:Event.Fire *** /op:Event.Fire
 NXOperation: op:Favorite.Fetch *** /op:Favorite.Fetch
 NXOperation: op:Favorite.GetDocuments *** /op:Favorite.GetDocuments
+NXOperation: op:FileManager.CreateFolder *** /op:FileManager.CreateFolder
 NXOperation: op:FileManager.Import *** /op:FileManager.Import
 NXOperation: op:FileManager.ImportWithMetaData *** /op:FileManager.ImportWithMetaData
 NXOperation: op:FileManager.ImportWithProperties *** /op:FileManager.ImportWithProperties
