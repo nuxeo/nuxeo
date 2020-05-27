@@ -647,27 +647,6 @@ pipeline {
       }
     }
 
-    stage('Deploy Maven artifacts') {
-      steps {
-        setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Deploy Maven artifacts
-          ----------------------------------------"""
-          sh "mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy"
-        }
-      }
-      post {
-        success {
-          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'SUCCESS')
-        }
-        failure {
-          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'FAILURE')
-        }
-      }
-    }
-
     stage('Upload Nuxeo Packages') {
       when {
         allOf {
@@ -797,34 +776,6 @@ pipeline {
         }
         failure {
           setGitHubBuildStatus('nuxeo/preview', 'Deploy nuxeo preview', 'FAILURE')
-        }
-      }
-    }
-
-    stage('JSF pipeline') {
-      when {
-        expression {
-          // only trigger JSF pipeline if the target branch is master or a maintenance branch
-          return CHANGE_TARGET ==~ 'master|\\d+\\.\\d+'
-        }
-      }
-      steps {
-        container('maven') {
-          echo """
-          ----------------------------------------
-          Build JSF pipeline
-          ----------------------------------------
-          Parameters:
-            NUXEO_BRANCH: ${CHANGE_BRANCH}
-            NUXEO_COMMIT_SHA: ${GIT_COMMIT}
-            NUXEO_VERSION: ${VERSION}
-          """
-          build job: "/nuxeo/nuxeo-jsf-ui-status/${CHANGE_TARGET}",
-            parameters: [
-              string(name: 'NUXEO_BRANCH', value: "${CHANGE_BRANCH}"),
-              string(name: 'NUXEO_COMMIT_SHA', value: "${GIT_COMMIT}"),
-              string(name: 'NUXEO_VERSION', value: "${VERSION}"),
-            ], propagate: false, wait: false
         }
       }
     }
