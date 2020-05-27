@@ -63,10 +63,11 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
 
     protected final List<ExtensionInfo> extensions = new ArrayList<>();
 
-    /**
-     * @since 11.1
-     */
+    /** @since 11.1 */
     protected final List<String> requirements = new ArrayList<>();
+
+    /** @since 11.1 */
+    protected Long registrationOrder;
 
     protected URL xmlFileUrl;
 
@@ -259,4 +260,15 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
     public void addRequirement(String requirement) {
         requirements.add(requirement);
     }
+
+    @Override
+    public Long getRegistrationOrder() {
+        return registrationOrder;
+    }
+
+    @Override
+    public void setRegistrationOrder(Long registrationOrder) {
+        this.registrationOrder = registrationOrder;
+    }
+
 }

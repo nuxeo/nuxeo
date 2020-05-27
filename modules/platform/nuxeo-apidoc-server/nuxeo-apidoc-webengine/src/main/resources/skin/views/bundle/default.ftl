@@ -48,6 +48,11 @@
     </ul>
   </#if>
 
+  <h2>Deployment Order</h2>
+  <div id="deploymentOrder">
+    ${nxItem.deploymentOrder}
+  </div>
+
   <h2>Components</h2>
   <#if nxItem.components?size == 0>
     No components.

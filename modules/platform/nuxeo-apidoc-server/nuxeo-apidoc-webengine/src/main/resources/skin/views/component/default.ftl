@@ -26,6 +26,11 @@
     </ul>
   </#if>
 
+  <h2>Registration Order</h2>
+  <div id="registrationOrder">
+    ${nxItem.registrationOrder}
+  </div>
+
   <#if !nxItem.xmlPureComponent>
     <h2>Implementation</h2>
     <div class="implementation">

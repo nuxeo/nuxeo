@@ -53,6 +53,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         doc.setPropertyValue(PROP_BUNDLE_ID, bundleInfo.getId());
         doc.setPropertyValue(PROP_JAR_NAME, bundleInfo.getFileName());
         doc.setPropertyValue(PROP_REQUIREMENTS, (Serializable) bundleInfo.getRequirements());
+        doc.setPropertyValue(PROP_DEPLOYMENT_ORDER, bundleInfo.getDeploymentOrder());
         String manifest = bundleInfo.getManifest();
         if (manifest != null) {
             Blob manifestBlob = Blobs.createBlob(manifest);
@@ -152,6 +153,16 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public Blob getParentReadme() {
         return safeGet(PROP_PARENT_README);
+    }
+
+    @Override
+    public Long getDeploymentOrder() {
+        return safeGet(PROP_DEPLOYMENT_ORDER);
+    }
+
+    @Override
+    public void setDeploymentOrder(Long order) {
+        throw new UnsupportedOperationException();
     }
 
 }

@@ -8,7 +8,7 @@
 <@block name="right">
 <#include "/docMacros.ftl">
 
-<h1>${bundleIds?size} Bundles</h1>
+<h1>${bundles?size} Bundles</h1>
 
 <div class="tabscontent">
 
@@ -18,15 +18,21 @@
       <th>
         <@tableFilterArea "bundle"/>
       </th>
+      <th>
+        Deployment Order
+      </th>
     </tr>
   </thead>
   <tbody>
-    <#list bundleIds as bundleId>
+    <#list bundles as bundle>
     <tr>
       <td>
         <div>
-          <h4><a title="Bundle Name" href="${Root.path}/${distId}/viewBundle/${bundleId}" class="itemLink">${bundleId}</a></h4>
+          <h4><a title="Bundle Name" href="${Root.path}/${distId}/viewBundle/${bundle.id}" class="itemLink">${bundle.label}</a></h4>
         </div>
+      </td>
+      <td>
+        ${bundle.order}
       </td>
     </tr>
     </#list>

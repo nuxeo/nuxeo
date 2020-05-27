@@ -30,7 +30,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -233,7 +232,8 @@ public class TestJson extends AbstractApidocTest {
         Blob parentReadme = bundle.getParentReadme();
         assertNotNull(parentReadme);
         checkContentEquals("apidoc_snapshot/apidoc_readme.txt", parentReadme.getString());
-        assertEquals(Collections.emptyList(), bundle.getRequirements());
+        assertEquals(List.of(), bundle.getRequirements());
+        assertEquals(Long.valueOf(21), bundle.getDeploymentOrder());
         assertEquals(version, bundle.getVersion());
         // check readme on core bundle instead
         BundleInfo coreBundle = snapshot.getBundle("org.nuxeo.apidoc.core");
@@ -292,6 +292,8 @@ public class TestJson extends AbstractApidocTest {
         assertEquals(version, smcomp.getVersion());
         assertFalse(smcomp.isXmlPureComponent());
         checkContentEquals("apidoc_snapshot/legacy-snapshot-service-framework.xml", smcomp.getXmlFileContent());
+        assertEquals(List.of(), smcomp.getRequirements());
+        assertEquals(Long.valueOf(58), smcomp.getRegistrationOrder());
 
         // check json back reference
         assertNotNull(smcomp.getBundle());

@@ -137,8 +137,16 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(ApiBrowserConstants.LIST_BUNDLES)
     public Object getBundles() {
-        List<String> bundleIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()).getBundleIds();
-        return getView(ApiBrowserConstants.LIST_BUNDLES).arg("bundleIds", bundleIds)
+        DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
+        List<String> bundleIds = snapshot.getBundleIds();
+        List<ArtifactLabel> bundles = new ArrayList<>();
+        for (String bid : bundleIds) {
+            BundleInfo bi = snapshot.getBundle(bid);
+            ArtifactLabel label = new ArtifactLabel(bid, bid, null);
+            label.setOrder(bi.getDeploymentOrder());
+            bundles.add(label);
+        }
+        return getView(ApiBrowserConstants.LIST_BUNDLES).arg("bundles", bundles)
                                                         .arg(Distribution.DIST_ID,
                                                                 ctx.getProperty(Distribution.DIST_ID));
     }
@@ -147,22 +155,20 @@ public class ApiBrowser extends DefaultObject {
     @Produces("text/html")
     @Path(ApiBrowserConstants.LIST_COMPONENTS)
     public Object getComponents() {
-        List<String> javaComponentIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
-                                                            .getJavaComponentIds();
-        List<ArtifactLabel> javaLabels = new ArrayList<>();
-        for (String id : javaComponentIds) {
-            javaLabels.add(ArtifactLabel.createLabelFromComponent(id));
-        }
+        DistributionSnapshot snapshot = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
+        List<String> javaComponentIds = snapshot.getJavaComponentIds();
+        List<ArtifactLabel> javaLabels = javaComponentIds.stream()
+                                                         .map(ArtifactLabel::createLabelFromComponent)
+                                                         .sorted()
+                                                         .collect(Collectors.toList());
+        javaLabels.stream().forEach(l -> l.setOrder(snapshot.getComponent(l.getId()).getRegistrationOrder()));
 
-        List<String> xmlComponentIds = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession())
-                                                           .getXmlComponentIds();
-        List<ArtifactLabel> xmlLabels = new ArrayList<>();
-        for (String id : xmlComponentIds) {
-            xmlLabels.add(ArtifactLabel.createLabelFromComponent(id));
-        }
-
-        Collections.sort(javaLabels);
-        Collections.sort(xmlLabels);
+        List<String> xmlComponentIds = snapshot.getXmlComponentIds();
+        List<ArtifactLabel> xmlLabels = xmlComponentIds.stream()
+                                                       .map(ArtifactLabel::createLabelFromComponent)
+                                                       .sorted()
+                                                       .collect(Collectors.toList());
+        xmlLabels.stream().forEach(l -> l.setOrder(snapshot.getComponent(l.getId()).getRegistrationOrder()));
 
         return getView(ApiBrowserConstants.LIST_COMPONENTS).arg("javaComponents", javaLabels)
                                                            .arg("xmlComponents", xmlLabels)

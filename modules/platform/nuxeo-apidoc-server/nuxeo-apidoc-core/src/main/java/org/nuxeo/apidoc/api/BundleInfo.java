@@ -39,24 +39,19 @@ public interface BundleInfo extends NuxeoArtifact {
 
     String PROP_JAR_NAME = "nxbundle:jarName";
 
-    /**
-     * @since 11.1
-     */
+    /** @since 11.1 */
     String PROP_README = "nxbundle:readme";
 
-    /**
-     * @since 11.1
-     */
+    /** @since 11.1 */
     String PROP_PARENT_README = "nxbundle:parentReadme";
 
-    /**
-     * @since 11.1
-     */
+    /** @since 11.1 */
     String PROP_REQUIREMENTS = "nxbundle:requirements";
 
-    /**
-     * @since 11.1
-     */
+    /** @since 11.1 */
+    String PROP_DEPLOYMENT_ORDER = "nxbundle:deploymentOrder";
+
+    /** @since 11.1 */
     String RUNTIME_CONFIG_BUNDLE = "org.nuxeo.ecm.config";
 
     @JsonManagedReference("bundle")
@@ -67,6 +62,8 @@ public interface BundleInfo extends NuxeoArtifact {
     String getBundleId();
 
     /**
+     * Returns the requirements set in the bundle MANIFEST.
+     *
      * @since 11.1
      */
     List<String> getRequirements();
@@ -90,5 +87,19 @@ public interface BundleInfo extends NuxeoArtifact {
      * @since 11.1
      */
     Blob getParentReadme();
+
+    /**
+     * Returns the deployment order as indicated by the runtime context.
+     *
+     * @since 11.1
+     */
+    Long getDeploymentOrder();
+
+    /**
+     * Sets the deployment order according to runtime context.
+     *
+     * @since 11.1
+     */
+    void setDeploymentOrder(Long order);
 
 }

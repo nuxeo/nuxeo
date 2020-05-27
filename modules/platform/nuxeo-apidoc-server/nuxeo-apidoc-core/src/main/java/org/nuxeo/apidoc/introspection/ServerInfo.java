@@ -171,7 +171,7 @@ public class ServerInfo {
 
     public void addBundle(List<BundleInfo> someBundles) {
         for (BundleInfo bundle : someBundles) {
-            bundles.put(bundle.getId(), bundle);
+            addBundle(bundle);
         }
     }
 
@@ -330,6 +330,9 @@ public class ServerInfo {
         List<ExtensionInfoImpl> contribRegistry = new ArrayList<>();
 
         Collection<RegistrationInfo> registrations = runtime.getComponentManager().getRegistrations();
+        // this list is actually ordered by deployment order (including component requirements) - we can deduce bundle
+        // range ordering from it depending on contained registrations
+        long registrationOrder = 0;
         for (RegistrationInfo ri : registrations) {
             String cname = ri.getName().getName();
             Bundle bundle = ri.getContext().getBundle();
@@ -352,6 +355,8 @@ public class ServerInfo {
             }
 
             ComponentInfoImpl component = new ComponentInfoImpl(binfo, cname);
+            component.setRegistrationOrder(registrationOrder++);
+
             if (ri.getExtensionPoints() != null) {
                 for (ExtensionPoint xp : ri.getExtensionPoints()) {
                     ExtensionPointInfoImpl xpinfo = new ExtensionPointInfoImpl(component, xp.getName());
@@ -407,13 +412,20 @@ public class ServerInfo {
             server.addBundle(binfo);
         }
 
-        // now register the bundles that contains no components !!!
+        // post process all bundles to:
+        // - register bundles that contain no components
+        // - set the deployment order as held by the runtime context
         Bundle[] allbundles = runtime.getContext().getBundle().getBundleContext().getBundles();
+        long bindex = 0;
         for (Bundle bundle : allbundles) {
+            BundleInfo bi;
             if (!server.bundles.containsKey(bundle.getSymbolicName())) {
-                BundleInfo bi = computeBundleInfo(bundle);
+                bi = computeBundleInfo(bundle);
                 server.addBundle(bi);
+            } else {
+                bi = server.bundles.get(bundle.getSymbolicName());
             }
+            bi.setDeploymentOrder(bindex++);
         }
 
         // associate contrib to XP

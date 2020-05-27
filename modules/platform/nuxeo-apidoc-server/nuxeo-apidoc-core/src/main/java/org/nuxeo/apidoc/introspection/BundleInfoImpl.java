@@ -42,6 +42,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     protected String manifest;
 
+    /** @since 11.1 */
     protected final List<String> requirements = new ArrayList<>();
 
     protected String groupId;
@@ -55,6 +56,9 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
     protected Blob readme;
 
     protected Blob parentReadme;
+
+    /** @since 11.1 */
+    protected Long deploymentOrder;
 
     @JsonCreator
     private BundleInfoImpl(@JsonProperty("bundleId") String bundleId, @JsonProperty("fileName") String fileName,
@@ -209,6 +213,16 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     public void setParentReadme(Blob parentReadme) {
         this.parentReadme = parentReadme;
+    }
+
+    @Override
+    public Long getDeploymentOrder() {
+        return deploymentOrder;
+    }
+
+    @Override
+    public void setDeploymentOrder(Long deploymentOrder) {
+        this.deploymentOrder = deploymentOrder;
     }
 
 }

@@ -72,6 +72,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
         doc.setPropertyValue(PROP_IS_XML, Boolean.valueOf(componentInfo.isXmlPureComponent()));
         doc.setPropertyValue(PROP_SERVICES, (Serializable) componentInfo.getServiceNames());
         doc.setPropertyValue(PROP_REQUIREMENTS, (Serializable) componentInfo.getRequirements());
+        doc.setPropertyValue(PROP_REGISTRATION_ORDER, componentInfo.getRegistrationOrder());
 
         Blob xmlBlob = Blobs.createBlob(componentInfo.getXmlFileContent(), "text/xml", null,
                 componentInfo.getXmlFileName());
@@ -207,6 +208,16 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public List<String> getRequirements() {
         return safeGet(PROP_REQUIREMENTS);
+    }
+
+    @Override
+    public Long getRegistrationOrder() {
+        return safeGet(PROP_REGISTRATION_ORDER);
+    }
+
+    @Override
+    public void setRegistrationOrder(Long order) {
+        throw new UnsupportedOperationException();
     }
 
 }
