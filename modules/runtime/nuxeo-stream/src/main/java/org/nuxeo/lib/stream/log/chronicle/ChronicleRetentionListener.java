@@ -99,7 +99,10 @@ public class ChronicleRetentionListener implements StoreFileListener {
             if (IS_WIN) {
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException ie) {}
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                }
             }
             Files.delete(file.toPath());
             queue.refreshDirectlyListing();

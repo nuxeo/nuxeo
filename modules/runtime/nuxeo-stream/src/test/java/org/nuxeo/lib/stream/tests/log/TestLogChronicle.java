@@ -32,7 +32,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -54,13 +53,6 @@ public class TestLogChronicle extends TestLog {
 
     protected Path basePath;
 
-    @Before
-    public void skipWindowsThatDoNotCleanTempFolder() {
-        // NXP-29161 - https://stackoverflow.com/questions/58733295/why-does-chronicle-queue-hold-on-to-files-for-a-second-after-close
-        // beware: not all tests actually work on Windows
-        // org.junit.Assume.assumeFalse(IS_WIN);
-    }
-
     @After
     public void resetBasePath() {
         basePath = null;
@@ -76,10 +68,8 @@ public class TestLogChronicle extends TestLog {
 
     @Test
     public void deleteInvalidPath() throws Exception {
-        if (IS_WIN) {
-            // HACK for Windows JUnit test
-            return;
-        }
+        org.junit.Assume.assumeFalse(IS_WIN);
+
         final int NB_QUEUES = 5;
         Name fooLog = Name.ofUrn("test/foo");
         ChronicleLogManager manager = (ChronicleLogManager) createManager();
@@ -141,10 +131,8 @@ public class TestLogChronicle extends TestLog {
     @SuppressWarnings("FutureReturnValueIgnored")
     @Test
     public void testConcurrentFileRetentions() throws Exception {
-        if (IS_WIN) {
-            // HACK for Windows JUnit test
-            return;
-        }
+        org.junit.Assume.assumeFalse(IS_WIN);
+
         final int NB_APPENDERS = 5;
         final int RETENTION_CYCLES = 3; // retention is 3s
         final int NB_MSG = 5;
@@ -201,10 +189,8 @@ public class TestLogChronicle extends TestLog {
 
     @Test
     public void testRecoverAfterExpirationOfRetention() throws Exception {
-        if (IS_WIN) {
-            // HACK for Windows JUnit test
-            return;
-        }
+        org.junit.Assume.assumeFalse(IS_WIN);
+
         KeyValueMessage msg1 = KeyValueMessage.of("id1");
         KeyValueMessage msg2 = KeyValueMessage.of("id2");
         KeyValueMessage msg3 = KeyValueMessage.of("id3");
