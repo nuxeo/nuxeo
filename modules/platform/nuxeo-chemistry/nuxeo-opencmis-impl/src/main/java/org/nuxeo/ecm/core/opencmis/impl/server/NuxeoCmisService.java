@@ -852,7 +852,11 @@ public class NuxeoCmisService extends AbstractCmisService
         if (!doc.isFolder()) {
             throw new CmisInvalidArgumentException("Not a folder: " + folderId);
         }
-        coreSession.removeDocument(new IdRef(folderId));
+        try {
+            coreSession.removeDocument(new IdRef(folderId));
+        } catch (ConcurrentUpdateException e) {
+            throw new CmisUpdateConflictException(e.getMessage(), e);
+        }
         save();
         // TODO returning null fails in opencmis 0.1.0 due to
         // org.apache.chemistry.opencmis.client.runtime.PersistentFolderImpl.deleteTree
@@ -1181,7 +1185,7 @@ public class NuxeoCmisService extends AbstractCmisService
             try {
                 doc = coreSession.saveDocument(doc);
             } catch (ConcurrentUpdateException e) {
-                throw new CmisUpdateConflictException(e.getMessage());
+                throw new CmisUpdateConflictException(e.getMessage(), e);
             }
             NuxeoPropertyData.validateBlobDigest(doc, callContext);
             save();
@@ -1222,7 +1226,7 @@ public class NuxeoCmisService extends AbstractCmisService
         try {
             coreSession.saveDocument(doc);
         } catch (ConcurrentUpdateException e) {
-            throw new CmisUpdateConflictException(e.getMessage());
+            throw new CmisUpdateConflictException(e.getMessage(), e);
         }
     }
 
@@ -2057,16 +2061,20 @@ public class NuxeoCmisService extends AbstractCmisService
         DocumentRef docRef = doc.getRef();
         // find last version
         DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
-        if (verRef == null) {
-            if (errorOnCancelCheckOutOfDraftVersion && "0.0".equals(doc.getVersionLabel())) {
-                throw new CmisVersioningException("Cannot cancelCheckOut of draft version due to configuration");
+        try {
+            if (verRef == null) {
+                if (errorOnCancelCheckOutOfDraftVersion && "0.0".equals(doc.getVersionLabel())) {
+                    throw new CmisVersioningException("Cannot cancelCheckOut of draft version due to configuration");
+                }
+                // delete
+                coreSession.removeDocument(docRef);
+            } else {
+                // restore and keep checked in
+                coreSession.restoreToVersion(docRef, verRef, true, true);
+                doc.removeLock();
             }
-            // delete
-            coreSession.removeDocument(docRef);
-        } else {
-            // restore and keep checked in
-            coreSession.restoreToVersion(docRef, verRef, true, true);
-            doc.removeLock();
+        } catch (ConcurrentUpdateException e) {
+            throw new CmisUpdateConflictException(e.getMessage(), e);
         }
         save();
     }
@@ -2192,7 +2200,11 @@ public class NuxeoCmisService extends AbstractCmisService
                 throw new CmisConstraintException("Cannot delete non-empty folder: " + objectId);
             }
         }
-        coreSession.removeDocument(doc.getRef());
+        try {
+            coreSession.removeDocument(doc.getRef());
+        } catch (ConcurrentUpdateException e) {
+            throw new CmisUpdateConflictException(e.getMessage(), e);
+        }
         save();
     }
 
