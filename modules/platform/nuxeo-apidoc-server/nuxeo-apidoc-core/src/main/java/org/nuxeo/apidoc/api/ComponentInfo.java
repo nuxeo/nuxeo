@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import org.nuxeo.runtime.model.ComponentManager;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -39,10 +41,11 @@ public interface ComponentInfo extends NuxeoArtifact {
 
     String PROP_BUILT_IN_DOC = "nxcomponent:builtInDocumentation";
 
-    /**
-     * @since 11.1
-     */
+    /** @since 11.1 */
     String PROP_REQUIREMENTS = "nxcomponent:requirements";
+
+    /** @since 11.1 */
+    String PROP_REGISTRATION_ORDER = "nxcomponent:registrationOrder";
 
     String PROP_IS_XML = "nxcomponent:isXML";
 
@@ -85,8 +88,24 @@ public interface ComponentInfo extends NuxeoArtifact {
     String getXmlFileContent() throws IOException;
 
     /**
+     * Returns the requirements set in the component declaration.
+     *
      * @since 11.1
      */
     List<String> getRequirements();
+
+    /**
+     * Returns the registration order as indicated by {@link ComponentManager}.
+     *
+     * @since 11.1
+     */
+    Long getRegistrationOrder();
+
+    /**
+     * Sets the registration order as indicated by {@link ComponentManager}.
+     *
+     * @since 11.1
+     */
+    void setRegistrationOrder(Long order);
 
 }

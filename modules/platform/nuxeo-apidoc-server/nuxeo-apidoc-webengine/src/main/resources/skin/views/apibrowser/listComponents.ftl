@@ -18,6 +18,9 @@
       <th>
         <@tableFilterArea "component"/>
       </th>
+      <th>
+        Registration Order
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -31,6 +34,9 @@
             <span title="Component ID">${component.id}</span>
           </div>
       </td>
+      <td>
+        ${component.order}</span>
+      </td>
     </tr>
     </#list>
     <#list xmlComponents as component>
@@ -43,6 +49,9 @@
             <span title="Component ID">${component.id}</span>
           </div>
         </div>
+      </td>
+      <td>
+        ${component.order}</span>
       </td>
     </tr>
     </#list>

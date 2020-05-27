@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.AbstractExplorerTest;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
@@ -38,6 +39,10 @@ import org.openqa.selenium.support.FindBy;
 public class BundleArtifactPage extends ArtifactPage {
 
     @Required
+    @FindBy(xpath = "//div[@id='deploymentOrder']")
+    public WebElement deploymentOrder;
+
+    @Required
     @FindBy(xpath = "//table[@class='listTable']")
     public WebElement mavenDetails;
 
@@ -49,7 +54,7 @@ public class BundleArtifactPage extends ArtifactPage {
     public void checkReference(boolean partial, boolean legacy) {
         checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core",
                 "In bundle group org.nuxeo.ecm.platform",
-                "Documentation\n" + "Components\n" + "Maven Artifact\n" + "Manifest");
+                "Documentation\n" + "Deployment Order\n" + "Components\n" + "Maven Artifact\n" + "Manifest");
         try {
             String readme = AbstractExplorerTest.getReferenceContent("data/core_readme.txt");
             String parentReadme = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
@@ -60,16 +65,18 @@ public class BundleArtifactPage extends ArtifactPage {
         checkGroupId("org.nuxeo.ecm.platform");
         checkArtifactId("nuxeo-apidoc-core");
         checkRequirements(null);
+        checkDeploymentOrder(!legacy);
     }
 
     @Override
     public void checkAlternative() {
         checkCommon("Bundle org.nuxeo.apidoc.webengine", "Bundle org.nuxeo.apidoc.webengine",
-                "In bundle group org.nuxeo.ecm.platform",
-                "Documentation\n" + "Requirements\n" + "Components\n" + "Maven Artifact\n" + "Manifest");
+                "In bundle group org.nuxeo.ecm.platform", "Documentation\n" + "Requirements\n" + "Deployment Order\n"
+                        + "Components\n" + "Maven Artifact\n" + "Manifest");
         checkGroupId("org.nuxeo.ecm.platform");
         checkArtifactId("nuxeo-apidoc-webengine");
         checkRequirements(List.of("org.nuxeo.ecm.webengine.core", "org.nuxeo.apidoc.core"));
+        checkDeploymentOrder(true);
     }
 
     @Override
@@ -88,6 +95,10 @@ public class BundleArtifactPage extends ArtifactPage {
         WebElement artifactId = mavenDetails.findElement(By.xpath(".//tr[3]//td"));
         assertNotNull(artifactId);
         assertEquals(id, artifactId.getText());
+    }
+
+    public void checkDeploymentOrder(boolean set) {
+        assertEquals(!set, StringUtils.isBlank(deploymentOrder.getText()));
     }
 
 }

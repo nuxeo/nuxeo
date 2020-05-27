@@ -92,6 +92,7 @@
         "version": "unknown"
       },
       "bundleId": "org.nuxeo.apidoc.core",
+      "deploymentOrder": 3,
       "fileName": "main",
       "groupId": "org.nuxeo.ecm.platform",
       "location": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-core/bin/main",
@@ -210,6 +211,7 @@
         "version": "unknown"
       },
       "bundleId": "org.nuxeo.apidoc.repo",
+      "deploymentOrder": 21,
       "fileName": "main",
       "groupId": "org.nuxeo.ecm.platform",
       "location": "/home/anahide/ws/nuxeo/modules/platform/nuxeo-apidoc-server/nuxeo-apidoc-repo/bin/main",
@@ -274,6 +276,7 @@
             }
           ],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.listener.contrib",
+          "registrationOrder": 5,
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
@@ -413,6 +416,7 @@
             }
           ],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.adapterContrib",
+          "registrationOrder": 11,
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
@@ -444,6 +448,7 @@
           ],
           "extensions": [],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent",
+          "registrationOrder": 58,
           "requirements": [],
           "services": [
             {
@@ -551,6 +556,7 @@
             }
           ],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.doctypeContrib",
+          "registrationOrder": 83,
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
@@ -592,6 +598,7 @@
             }
           ],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.lifecycle.contrib",
+          "registrationOrder": 107,
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
@@ -689,6 +696,7 @@
             }
           ],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib",
+          "registrationOrder": 162,
           "requirements": [
             "org.nuxeo.ecm.core.CoreExtensions"
           ],
@@ -756,6 +764,7 @@
             }
           ],
           "hierarchyPath": "/grp:org.nuxeo.ecm.platform/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works",
+          "registrationOrder": 187,
           "requirements": [],
           "services": [],
           "version": "11.1-SNAPSHOT",
@@ -768,7 +777,7 @@
       "version": "11.1-SNAPSHOT"
     }
   ],
-  "creationDate": 1589390644368,
+  "creationDate": 1590597632591,
   "key": "Nuxeo-unknown",
   "name": "Nuxeo",
   "operations": [
