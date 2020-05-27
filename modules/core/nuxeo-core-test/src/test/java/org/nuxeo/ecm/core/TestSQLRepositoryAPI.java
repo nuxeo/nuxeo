@@ -4244,7 +4244,8 @@ public class TestSQLRepositoryAPI {
         DocumentModel file3 = session.createDocumentModel("/", "file3", "File");
         file3 = session.createDocument(file3);
         session.save();
-        nextTransaction();
+        // wait for async completion before deletes
+        waitForAsyncCompletion();
 
         // start some changes
         // modify file1 title
@@ -4387,7 +4388,6 @@ public class TestSQLRepositoryAPI {
     }
 
     @Test
-    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-29006")
     public void testBinaryGC() throws Exception {
         // GC binaries from previous tests
         Thread.sleep(3 * 1000);
@@ -4399,7 +4399,8 @@ public class TestSQLRepositoryAPI {
             addBinary(str, str + "2");
         }
         session.save();
-        nextTransaction();
+        // wait for async completion before deletes
+        waitForAsyncCompletion();
 
         BinaryManagerStatus status = runBinariesGC(true, false);
         assertEquals(4, status.numBinaries); // ABC, DEF, GHI, JKL
