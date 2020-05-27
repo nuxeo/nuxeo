@@ -127,7 +127,8 @@ public class TestBundleGroupExtractor {
         assertEquals(List.of(), common.getParentIds());
         BundleGroup connect = rootsIt.next();
         assertEquals("grp:org.nuxeo.connect", connect.getId());
-        assertEquals(List.of(), connect.getSubGroups());
+        assertEquals(List.of("grp:org.nuxeo.connect.client"),
+                connect.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList()));
         assertEquals(List.of(), connect.getParentIds());
         BundleGroup core = rootsIt.next();
         assertEquals("grp:org.nuxeo.ecm.core", core.getId());
@@ -136,8 +137,8 @@ public class TestBundleGroupExtractor {
         BundleGroup platform = rootsIt.next();
         assertEquals("grp:org.nuxeo.ecm.platform", platform.getId());
         assertEquals(
-                List.of("grp:org.nuxeo.apidoc", "grp:org.nuxeo.connect", "grp:org.nuxeo.ecm.directory",
-                        "grp:org.nuxeo.ecm.platform.restapi", "grp:org.nuxeo.ecm.relations"),
+                List.of("grp:org.nuxeo.apidoc", "grp:org.nuxeo.ecm.directory", "grp:org.nuxeo.ecm.platform.restapi",
+                        "grp:org.nuxeo.ecm.relations"),
                 platform.getSubGroups().stream().map(BundleGroup::getId).collect(Collectors.toList()));
         assertEquals(List.of(), platform.getParentIds());
         BundleGroup runtime = rootsIt.next();
@@ -146,16 +147,17 @@ public class TestBundleGroupExtractor {
         assertEquals(List.of(), runtime.getParentIds());
 
         Map<String, BundleGroup> groups = bge.getGroups();
-        assertEquals(9, groups.size());
+        assertEquals(10, groups.size());
         assertEquals(
                 List.of("grp:org.nuxeo.ecm.core", "grp:org.nuxeo.common", "grp:org.nuxeo.apidoc",
-                        "grp:org.nuxeo.connect", "grp:org.nuxeo.ecm.directory", "grp:org.nuxeo.ecm.platform.restapi",
-                        "grp:org.nuxeo.ecm.relations", "grp:org.nuxeo.ecm.platform", "grp:org.nuxeo.runtime"),
+                        "grp:org.nuxeo.ecm.directory", "grp:org.nuxeo.ecm.platform.restapi",
+                        "grp:org.nuxeo.ecm.relations", "grp:org.nuxeo.ecm.platform", "grp:org.nuxeo.runtime",
+                        "grp:org.nuxeo.connect.client", "grp:org.nuxeo.connect"),
                 groups.values().stream().map(BundleGroup::getId).collect(Collectors.toList()));
         assertEquals(List.of("org.nuxeo.common"), groups.get("grp:org.nuxeo.common").getBundleIds());
-        // FIXME: org.nuxeo.connect.client is missing
-        assertEquals(List.of("org.nuxeo.connect.client.wrapper", "org.nuxeo.connect.update"),
-                groups.get("grp:org.nuxeo.connect").getBundleIds());
+        assertEquals(List.of("org.nuxeo.connect.update"), groups.get("grp:org.nuxeo.connect").getBundleIds());
+        assertEquals(List.of("org.nuxeo.connect.client", "org.nuxeo.connect.client.wrapper"),
+                groups.get("grp:org.nuxeo.connect.client").getBundleIds());
         assertEquals(
                 List.of("org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.ecm.core.bulk",
                         "org.nuxeo.ecm.core.io", "org.nuxeo.ecm.platform.el"),
