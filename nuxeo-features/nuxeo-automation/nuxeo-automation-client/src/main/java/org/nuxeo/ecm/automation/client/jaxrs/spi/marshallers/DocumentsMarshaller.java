@@ -92,6 +92,8 @@ public class DocumentsMarshaller implements JsonMarshaller<Documents> {
                 docs.setCurrentPageIndex(jp.getIntValue());
             } else if ("entries".equals(key)) {
                 readDocumentEntries(jp, docs);
+            } else if ("aggregations".equals(key)) {
+                docs.setHasAggregates(true);
             }
             tok = jp.nextToken();
         }

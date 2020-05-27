@@ -35,6 +35,8 @@ public class PaginableDocuments extends Documents {
 
     protected int resultsCount;
 
+    protected boolean hasAggregates;
+
     public PaginableDocuments() {
     }
 
@@ -77,5 +79,13 @@ public class PaginableDocuments extends Documents {
 
     public void setResultsCount(int resultsCount) {
         this.resultsCount = resultsCount;
+    }
+
+    public boolean hasAggregates() {
+        return hasAggregates;
+    }
+
+    public void setHasAggregates(boolean hasAggregates) {
+        this.hasAggregates = hasAggregates;
     }
 }

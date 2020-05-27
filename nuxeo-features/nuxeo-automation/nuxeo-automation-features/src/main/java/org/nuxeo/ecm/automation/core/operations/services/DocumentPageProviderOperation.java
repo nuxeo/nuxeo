@@ -38,6 +38,10 @@ import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.automation.core.util.PageProviderHelper;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * Operation to execute a query or a named provider with support for Pagination.
  *
@@ -127,6 +131,17 @@ public class DocumentPageProviderOperation {
 
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) PageProviderHelper.getPageProvider(session, def,
                 namedParameters, sortBy, sortOrder, targetPageSize, targetPage, highlights, quickFilters, parameters);
+
+        HttpServletRequest request = (HttpServletRequest) context.get("request");
+        if (request != null) {
+            String skipAggregates = request.getHeader(PageProvider.SKIP_AGGREGATES_PROP);
+            if (skipAggregates != null) {
+                Map<String, Serializable> props = pp.getProperties();
+                props.put(PageProvider.SKIP_AGGREGATES_PROP,
+                        Boolean.parseBoolean(request.getHeader(PageProvider.SKIP_AGGREGATES_PROP)));
+                pp.setProperties(props);
+            }
+        }
 
         PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(pp, documentLinkBuilder);
 
