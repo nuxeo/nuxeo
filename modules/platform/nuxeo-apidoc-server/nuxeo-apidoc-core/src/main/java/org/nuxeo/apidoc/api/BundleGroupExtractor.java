@@ -127,8 +127,16 @@ public class BundleGroupExtractor {
                     }
                     if (grpArtifactIds.size() > 1) {
                         artifactIds.removeAll(grpArtifactIds);
-                        mavenSubGroups.put(grp, grpArtifactIds);
-                        artifactIds.add(grp);
+                        if (mavenGroups.containsKey(grp)) {
+                            mavenGroups.get(grp).addAll(grpArtifactIds);
+                        } else {
+                            if (mavenSubGroups.containsKey(grp)) {
+                                mavenSubGroups.get(grp).addAll(grpArtifactIds);
+                            } else {
+                                mavenSubGroups.put(grp, grpArtifactIds);
+                            }
+                            artifactIds.add(grp);
+                        }
                     }
                 }
             }
