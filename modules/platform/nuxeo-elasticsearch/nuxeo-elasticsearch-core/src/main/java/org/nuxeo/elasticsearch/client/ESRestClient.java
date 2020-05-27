@@ -21,6 +21,7 @@ package org.nuxeo.elasticsearch.client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -55,6 +56,11 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ESClient;
 
+import io.opencensus.common.Scope;
+import io.opencensus.trace.AttributeValue;
+import io.opencensus.trace.Span;
+import io.opencensus.trace.Tracing;
+
 /**
  * @since 9.3
  */
@@ -78,7 +84,7 @@ public class ESRestClient implements ESClient {
         ClusterHealthStatus healthStatus;
         Response response;
         try {
-            response = performRequest(
+            response = performRequestWithTracing(
                     new Request("GET", String.format("/_cluster/health/%s?wait_for_status=yellow&timeout=%ds",
                             getIndexesAsString(indexNames), timeoutSecond)));
             try (InputStream is = response.getEntity().getContent()) {
@@ -108,7 +114,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public ClusterHealthStatus getHealthStatus(String[] indexNames) {
-        Response response = performRequest(
+        Response response = performRequestWithTracing(
                 new Request("GET", String.format("/_cluster/health/%s", getIndexesAsString(indexNames))));
         try (InputStream is = response.getEntity().getContent()) {
                 Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
@@ -120,22 +126,22 @@ public class ESRestClient implements ESClient {
 
     @Override
     public void refresh(String indexName) {
-        performRequest(new Request("POST", "/" + indexName + "/_refresh"));
+        performRequestWithTracing(new Request("POST", "/" + indexName + "/_refresh"));
     }
 
     @Override
     public void flush(String indexName) {
-        performRequest(new Request("POST", "/" + indexName + "/_flush?wait_if_ongoing=true"));
+        performRequestWithTracing(new Request("POST", "/" + indexName + "/_flush?wait_if_ongoing=true"));
     }
 
     @Override
     public void optimize(String indexName) {
-        performRequest(new Request("POST", "/" + indexName + "/_forcemerge?max_num_segments=1"));
+        performRequestWithTracing(new Request("POST", "/" + indexName + "/_forcemerge?max_num_segments=1"));
     }
 
     @Override
     public boolean indexExists(String indexName) {
-        Response response = performRequest(new Request("HEAD", "/" + indexName));
+        Response response = performRequestWithTracing(new Request("HEAD", "/" + indexName));
         switch (response.getStatusLine().getStatusCode()) {
         case HttpStatus.SC_OK:
             return true;
@@ -148,7 +154,8 @@ public class ESRestClient implements ESClient {
 
     @Override
     public boolean mappingExists(String indexName, String type) {
-        Response response = performRequest(new Request("HEAD", String.format("/%s/_mapping/%s", indexName, type)));
+        Response response = performRequestWithTracing(
+                new Request("HEAD", String.format("/%s/_mapping/%s", indexName, type)));
         switch (response.getStatusLine().getStatusCode()) {
         case HttpStatus.SC_OK:
             return true;
@@ -182,7 +189,7 @@ public class ESRestClient implements ESClient {
     public void createIndex(String indexName, String jsonSettings) {
         Request request = new Request("PUT", "/" + indexName + "?timeout=" + CREATE_INDEX_TIMEOUT);
         request.setJsonEntity(jsonSettings);
-        Response response = performRequest(request);
+        Response response = performRequestWithTracing(request);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new NuxeoException("Fail to create index: " + indexName + " :" + response);
         }
@@ -192,7 +199,7 @@ public class ESRestClient implements ESClient {
     public void createMapping(String indexName, String type, String jsonMapping) {
         Request request = new Request("PUT", String.format("/%s/%s/_mapping", indexName, type));
         request.setJsonEntity(jsonMapping);
-        Response response = performRequest(request);
+        Response response = performRequestWithTracing(request);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new NuxeoException(String.format("Fail to create mapping on %s/%s: %s", indexName, type, response));
         }
@@ -206,9 +213,15 @@ public class ESRestClient implements ESClient {
         }
     }
 
+    protected Response performRequestWithTracing(Request request) {
+        try (Scope ignored = getScopedSpan("elastic" + request.getEndpoint(), request.toString())) {
+            return performRequest(request);
+        }
+    }
+
     @Override
     public String getNodesInfo() {
-        Response response = performRequest(new Request("GET", "/_nodes/_all"));
+        Response response = performRequestWithTracing(new Request("GET", "/_nodes/_all"));
         try {
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
@@ -218,7 +231,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public String getNodesStats() {
-        Response response = performRequest(new Request("GET", "/_nodes/stats"));
+        Response response = performRequestWithTracing(new Request("GET", "/_nodes/stats"));
         try {
             return EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
@@ -228,7 +241,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public boolean aliasExists(String aliasName) {
-        Response response = performRequest(new Request("HEAD", String.format("/_alias/%s", aliasName)));
+        Response response = performRequestWithTracing(new Request("HEAD", String.format("/_alias/%s", aliasName)));
         switch (response.getStatusLine().getStatusCode()) {
         case HttpStatus.SC_OK:
             return true;
@@ -244,7 +257,7 @@ public class ESRestClient implements ESClient {
         if (!aliasExists(aliasName)) {
             return null;
         }
-        Response response = performRequest(new Request("GET", String.format("/_alias/%s", aliasName)));
+        Response response = performRequestWithTracing(new Request("GET", String.format("/_alias/%s", aliasName)));
         try (InputStream is = response.getEntity().getContent()) {
             Map<String, Object> map = XContentHelper.convertToMap(XContentType.JSON.xContent(), is, true);
             if (map.size() != 1) {
@@ -270,7 +283,8 @@ public class ESRestClient implements ESClient {
     }
 
     protected void deleteAlias(String aliasName) {
-        Response response = performRequest(new Request("DELETE", String.format("/_all/_alias/%s", aliasName)));
+        Response response = performRequestWithTracing(
+                new Request("DELETE", String.format("/_all/_alias/%s", aliasName)));
         int code = response.getStatusLine().getStatusCode();
         if (code != HttpStatus.SC_OK) {
             throw new IllegalStateException(String.format("Deleting %s alias: %s", aliasName, response));
@@ -278,7 +292,8 @@ public class ESRestClient implements ESClient {
     }
 
     protected void createAlias(String aliasName, String indexName) {
-        Response response = performRequest(new Request("PUT", String.format("/%s/_alias/%s", indexName, aliasName)));
+        Response response = performRequestWithTracing(
+                new Request("PUT", String.format("/%s/_alias/%s", indexName, aliasName)));
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new NuxeoException("Fail to create alias: " + indexName + " :" + response);
         }
@@ -286,7 +301,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public BulkResponse bulk(BulkRequest request) {
-        try {
+        try (Scope ignored = getScopedSpan("elastic/_bulk", "actions: " + request.numberOfActions())) {
             return client.bulk(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -304,7 +319,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public SearchResponse search(SearchRequest request) {
-        try {
+        try (Scope ignored = getScopedSpan("elastic/_search", request.toString())) {
             return client.search(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -313,7 +328,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public SearchResponse searchScroll(SearchScrollRequest request) {
-        try {
+        try (Scope ignored = getScopedSpan("elastic/_scroll", request.toString())) {
             return client.scroll(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -322,7 +337,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public GetResponse get(GetRequest request) {
-        try {
+        try (Scope ignored = getScopedSpan("elastic/_get", request.toString())) {
             return client.get(request, RequestOptions.DEFAULT);
         } catch (IOException e) {
             throw new NuxeoException(e);
@@ -331,7 +346,7 @@ public class ESRestClient implements ESClient {
 
     @Override
     public IndexResponse index(IndexRequest request) {
-        try {
+        try (Scope ignored = getScopedSpan("elastic/_index", request.toString())) {
             return client.index(request, RequestOptions.DEFAULT);
         } catch (ElasticsearchStatusException e) {
             if (RestStatus.CONFLICT.equals(e.status())) {
@@ -341,6 +356,15 @@ public class ESRestClient implements ESClient {
         } catch (IOException e) {
             throw new NuxeoException(e);
         }
+    }
+
+    protected Scope getScopedSpan(String name, String request) {
+        Scope scope = Tracing.getTracer().spanBuilder(name).setSpanKind(Span.Kind.CLIENT).startScopedSpan();
+        Map<String, AttributeValue> map = new HashMap<>();
+        map.put("thread", AttributeValue.stringAttributeValue(Thread.currentThread().getName()));
+        map.put("request", AttributeValue.stringAttributeValue(request));
+        Tracing.getTracer().getCurrentSpan().putAttributes(map);
+        return scope;
     }
 
     @Override
