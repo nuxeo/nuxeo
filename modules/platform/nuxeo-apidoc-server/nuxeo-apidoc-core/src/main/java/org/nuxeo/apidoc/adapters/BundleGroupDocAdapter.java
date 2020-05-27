@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +41,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleGroup {
@@ -82,16 +86,14 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
     @Override
     public List<String> getBundleIds() {
-        List<String> bundles = new ArrayList<>();
-        String query = QueryHelper.select(BundleInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel child : docs) {
-            BundleInfo bi = child.getAdapter(BundleInfo.class);
-            if (bi != null && !bi.getId().equals(getId())) {
-                bundles.add(bi.getId());
-            }
-        }
-        return bundles;
+        String query = QueryHelper.select(BundleInfo.TYPE_NAME, doc, NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(BundleInfo.class))
+                   .filter(Objects::nonNull)
+                   .map(BundleInfo::getId)
+                   .filter(Predicate.not(Predicate.isEqual(getId())))
+                   .collect(Collectors.toList());
     }
 
     private String getKey() {
@@ -105,16 +107,12 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
 
     @Override
     public List<BundleGroup> getSubGroups() {
-        List<BundleGroup> grps = new ArrayList<>();
-        String query = QueryHelper.select(TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel child : docs) {
-            BundleGroup grp = child.getAdapter(BundleGroup.class);
-            if (grp != null) {
-                grps.add(grp);
-            }
-        }
-        return grps;
+        String query = QueryHelper.select(TYPE_NAME, doc, NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(BundleGroup.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     @Override
@@ -145,15 +143,12 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     @Override
     public List<String> getParentIds() {
         List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
-        Collections.reverse(parents);
-        List<String> res = new ArrayList<>();
-        for (DocumentModel doc : parents) {
-            BundleGroup bgroup = doc.getAdapter(BundleGroup.class);
-            if (bgroup != null) {
-                res.add(bgroup.getId());
-            }
-        }
-        return res;
+        return parents.stream()
+                      .sorted(Collections.reverseOrder())
+                      .map(doc -> doc.getAdapter(BundleGroup.class))
+                      .filter(Objects::nonNull)
+                      .map(BundleGroup::getId)
+                      .collect(Collectors.toList());
     }
 
     @Override
@@ -162,12 +157,11 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
         List<Map<String, Serializable>> files = (List<Map<String, Serializable>>) safeGet(PROP_READMES, null);
         List<Blob> res = new ArrayList<>();
         if (files != null) {
-            for (Map<String, Serializable> item : files) {
-                Serializable blob = item.get("file");
-                if (blob instanceof Blob) {
-                    res.add((Blob) blob);
-                }
-            }
+            return files.stream()
+                        .map(item -> item.get("file"))
+                        .filter(blob -> blob instanceof Blob)
+                        .map(Blob.class::cast)
+                        .collect(Collectors.toList());
         }
         return res;
     }

@@ -36,13 +36,13 @@ import org.nuxeo.apidoc.introspection.BundleInfoImpl;
  */
 public class TestBundleGroupExtractor {
 
-    class MockBundle {
+    protected static class MockBundle {
 
-        String id;
+        protected String id;
 
-        String groupId;
+        protected String groupId;
 
-        String artifactId;
+        protected String artifactId;
 
         public MockBundle(String id, String groupId, String artifactId) {
             super();

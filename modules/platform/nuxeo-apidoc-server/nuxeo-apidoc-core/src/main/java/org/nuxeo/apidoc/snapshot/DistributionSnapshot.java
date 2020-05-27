@@ -93,6 +93,11 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
     String PROP_RELEASED = "nxdistribution:released";
 
     /**
+     * @since 11.1
+     */
+    String PROP_CREATED = "dc:created";
+
+    /**
      * Returns a key, combining {@link #getName()} and {@link #getVersion()}.
      */
     String getKey();

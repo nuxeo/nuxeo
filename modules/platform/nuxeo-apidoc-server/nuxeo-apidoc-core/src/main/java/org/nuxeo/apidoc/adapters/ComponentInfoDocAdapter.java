@@ -21,8 +21,9 @@ package org.nuxeo.apidoc.adapters;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +42,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ComponentInfo {
@@ -110,30 +112,22 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public List<ExtensionPointInfo> getExtensionPoints() {
-        List<ExtensionPointInfo> xps = new ArrayList<>();
-        String query = QueryHelper.select(ExtensionPointInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel child : docs) {
-            ExtensionPointInfo xp = child.getAdapter(ExtensionPointInfo.class);
-            if (xp != null) {
-                xps.add(xp);
-            }
-        }
-        return xps;
+        String query = QueryHelper.select(ExtensionPointInfo.TYPE_NAME, doc, NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(ExtensionPointInfo.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     @Override
     public List<ExtensionInfo> getExtensions() {
-        List<ExtensionInfo> contribs = new ArrayList<>();
-        String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel child : docs) {
-            ExtensionInfo xp = child.getAdapter(ExtensionInfo.class);
-            if (xp != null) {
-                contribs.add(xp);
-            }
-        }
-        return contribs;
+        String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, doc, NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(ExtensionInfo.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     @Override
@@ -193,16 +187,12 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public List<ServiceInfo> getServices() {
-        List<ServiceInfo> result = new ArrayList<>();
-        String query = QueryHelper.select(ServiceInfo.TYPE_NAME, doc);
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel siDoc : docs) {
-            ServiceInfo si = siDoc.getAdapter(ServiceInfo.class);
-            if (si != null) {
-                result.add(si);
-            }
-        }
-        return result;
+        String query = QueryHelper.select(ServiceInfo.TYPE_NAME, doc, NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(ServiceInfo.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     @Override
