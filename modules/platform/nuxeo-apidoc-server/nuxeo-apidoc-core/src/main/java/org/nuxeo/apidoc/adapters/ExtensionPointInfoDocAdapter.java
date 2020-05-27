@@ -18,8 +18,9 @@
  */
 package org.nuxeo.apidoc.adapters;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +39,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
@@ -101,21 +103,18 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
 
     @Override
     public List<ExtensionInfo> getExtensions() {
-        List<ExtensionInfo> result = new ArrayList<>();
         // find root doc for distribution
         DocumentModel dist = doc;
         while (!DistributionSnapshot.TYPE_NAME.equals(dist.getType())) {
             dist = getCoreSession().getParentDocument(dist.getRef());
         }
-        String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, dist, ExtensionInfo.PROP_EXTENSION_POINT, getId());
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel contribDoc : docs) {
-            ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
-            if (contrib != null) {
-                result.add(contrib);
-            }
-        }
-        return result;
+        String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, dist, ExtensionInfo.PROP_EXTENSION_POINT, getId(),
+                NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(ExtensionInfo.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     @Override

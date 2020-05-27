@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -100,14 +101,11 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     protected <T> T getParentNuxeoArtifact(Class<T> artifactClass) {
         List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
-        for (DocumentModel parent : parents) {
-            T result = parent.getAdapter(artifactClass);
-            if (result != null) {
-                return result;
-            }
-        }
-        log.error("Parent artifact not found ");
-        return null;
+        return parents.stream()
+                      .map(doc -> doc.getAdapter(artifactClass))
+                      .filter(Objects::nonNull)
+                      .findFirst()
+                      .orElse(null);
     }
 
     protected <T> T safeGet(String xPath) {

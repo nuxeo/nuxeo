@@ -21,15 +21,13 @@ package org.nuxeo.apidoc.repository;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -55,7 +53,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -114,16 +111,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     }
 
     public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
-        List<DistributionSnapshot> result = new ArrayList<>();
-        String query = "SELECT * FROM " + TYPE_NAME + " where " + QueryHelper.NOT_DELETED + " AND ecm:isVersion = 0";
+        String query = String.format("SELECT * FROM %s where %s AND %s", TYPE_NAME, QueryHelper.NOT_DELETED,
+                QueryHelper.NOT_VERSION);
         DocumentModelList docs = session.query(query);
-        for (DocumentModel child : docs) {
-            DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
-            if (ob != null) {
-                result.add(ob);
-            }
-        }
-        return result;
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(DistributionSnapshot.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     public RepositoryDistributionSnapshot(DocumentModel doc) {
@@ -131,27 +125,20 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     }
 
     protected <T> List<T> getChildren(Class<T> adapter, String docType) {
-        List<T> result = new ArrayList<>();
-        String query = QueryHelper.select(docType, doc);
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel child : docs) {
-            T ob = child.getAdapter(adapter);
-            if (ob != null) {
-                result.add(ob);
-            }
-        }
-        return result;
+        String query = QueryHelper.select(docType, doc, NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream().map(doc -> doc.getAdapter(adapter)).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     protected <T> T getChild(Class<T> adapter, String docType, String idField, String id) {
-        String query = QueryHelper.select(docType, doc) + " AND " + idField + " = " + NXQL.escapeString(id);
+        String query = QueryHelper.select(docType, doc, idField, id);
         DocumentModelList docs = getCoreSession().query(query);
         if (docs.isEmpty()) {
-            log.error("Unable to find " + docType + " for id " + id);
+            log.error(String.format("Unable to find %s with id '%s'", docType, id));
         } else if (docs.size() == 1) {
             return docs.get(0).getAdapter(adapter);
         } else {
-            log.error("multiple match for " + docType + " for id " + id);
+            log.error(String.format("Multiple match for %s with id '%s'", docType, id));
             return docs.get(0).getAdapter(adapter);
         }
         return null;
@@ -261,46 +248,30 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public List<String> getServiceIds() {
-        Set<String> ids = new HashSet<>();
         String query = QueryHelper.select(ComponentInfo.TYPE_NAME, doc);
         DocumentModelList components = getCoreSession().query(query);
-        for (DocumentModel componentDoc : components) {
-            ComponentInfo ci = componentDoc.getAdapter(ComponentInfo.class);
-            if (ci != null) {
-                ids.addAll(ci.getServiceNames());
-            }
-        }
-        return ids.stream().sorted().collect(Collectors.toList());
+        return components.stream()
+                         .map(doc -> doc.getAdapter(ComponentInfo.class))
+                         .filter(Objects::nonNull)
+                         .map(ComponentInfo::getServiceNames)
+                         .flatMap(Collection::stream)
+                         .sorted()
+                         .collect(Collectors.toList());
     }
 
     @Override
     public String getName() {
-        try {
-            return (String) doc.getPropertyValue(PROP_NAME);
-        } catch (PropertyException e) {
-            log.error("Error while reading nxdistribution:name", e);
-            return "!unknown!";
-        }
+        return safeGet(PROP_NAME, "!unknown!");
     }
 
     @Override
     public String getVersion() {
-        try {
-            return (String) doc.getPropertyValue(PROP_VERSION);
-        } catch (PropertyException e) {
-            log.error("Error while reading nxdistribution:version", e);
-            return "!unknown!";
-        }
+        return safeGet(PROP_VERSION, "!unknown!");
     }
 
     @Override
     public String getKey() {
-        try {
-            return (String) doc.getPropertyValue(PROP_KEY);
-        } catch (PropertyException e) {
-            log.error("Error while reading nxdistribution:key", e);
-            return "!unknown!";
-        }
+        return safeGet(PROP_KEY, "!unknown!");
     }
 
     @Override
@@ -315,10 +286,10 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public ServiceInfo getService(String id) {
-        // Select only not overriden ticket and old imported NXService without overriden value
-        String query = QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc()) + " AND " + ServiceInfo.PROP_CLASS_NAME
-                + " = " + NXQL.escapeString(id) + " AND (" + ServiceInfo.PROP_OVERRIDEN + " = 0 OR "
-                + ServiceInfo.PROP_OVERRIDEN + " is NULL)";
+        // Select only not overridden ticket and old imported NXService without overridden value
+        String query = String.format("%s AND (%s = 0 OR %s is NULL)",
+                QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc(), ServiceInfo.PROP_CLASS_NAME, id),
+                ServiceInfo.PROP_OVERRIDEN, ServiceInfo.PROP_OVERRIDEN);
         DocumentModelList docs = getCoreSession().query(query);
         if (docs.size() > 1) {
             throw new AssertionError("Multiple services found for " + id);
@@ -346,22 +317,14 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public Date getCreationDate() {
-        try {
-            Calendar cal = (Calendar) getDoc().getPropertyValue("dc:created");
-            return cal == null ? null : cal.getTime();
-        } catch (PropertyException e) {
-            return null;
-        }
+        Calendar cal = safeGet(PROP_CREATED);
+        return cal == null ? null : cal.getTime();
     }
 
     @Override
     public Date getReleaseDate() {
-        try {
-            Calendar cal = (Calendar) getDoc().getPropertyValue("nxdistribution:released");
-            return cal == null ? getCreationDate() : cal.getTime();
-        } catch (PropertyException e) {
-            return null;
-        }
+        Calendar cal = safeGet(PROP_RELEASED);
+        return cal == null ? getCreationDate() : cal.getTime();
     }
 
     @Override
@@ -374,21 +337,21 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
             id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
         }
-        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc()) + " AND " + OperationInfo.PROP_NAME + " = "
-                + NXQL.escapeString(id) + " OR " + OperationInfo.PROP_ALIASES + " = " + NXQL.escapeString(id);
+        String query = String.format("%s OR %s = %s",
+                QueryHelper.select(OperationInfo.TYPE_NAME, getDoc(), OperationInfo.PROP_NAME, id),
+                OperationInfo.PROP_ALIASES, NXQL.escapeString(id));
         DocumentModelList docs = getCoreSession().query(query);
         return docs.isEmpty() ? null : docs.get(0).getAdapter(OperationInfo.class);
     }
 
     @Override
     public List<OperationInfo> getOperations() {
-        List<OperationInfo> result = new ArrayList<>();
-        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc());
-        DocumentModelList docs = getCoreSession().query(query + QueryHelper.ORDER_BY_POS);
-        for (DocumentModel doc : docs) {
-            result.add(doc.getAdapter(OperationInfo.class));
-        }
-        return result;
+        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc(), NXQL.ECM_POS);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(OperationInfo.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
     }
 
     public JavaDocHelper getJavaDocHelper() {
@@ -401,38 +364,23 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public void cleanPreviousArtifacts() {
         String query = QueryHelper.select("Document", getDoc());
-        List<DocumentRef> refs = new ArrayList<>();
         DocumentModelList docs = getCoreSession().query(query);
-        for (DocumentModel doc : docs) {
-            refs.add(doc.getRef());
-        }
-        getCoreSession().removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
+        getCoreSession().removeDocuments(docs.stream().map(doc -> doc.getRef()).toArray(size -> new DocumentRef[size]));
     }
 
     @Override
     public boolean isLatestFT() {
-        try {
-            return (Boolean) doc.getPropertyValue(PROP_LATEST_FT);
-        } catch (PropertyException e) {
-            log.error("Error while reading nxdistribution:latestFT", e);
-            return false;
-        }
+        return safeGet(PROP_LATEST_FT);
     }
 
     @Override
     public boolean isLatestLTS() {
-        try {
-            return (Boolean) doc.getPropertyValue(PROP_LATEST_LTS);
-        } catch (PropertyException e) {
-            log.error("Error while reading nxdistribution:latestLTS", e);
-            return false;
-        }
+        return safeGet(PROP_LATEST_LTS);
     }
 
     @Override
     public List<String> getAliases() {
-        @SuppressWarnings("unchecked")
-        List<String> aliases = (List<String>) doc.getPropertyValue(PROP_ALIASES);
+        List<String> aliases = safeGet(PROP_ALIASES);
         if (isLatestLTS()) {
             aliases.add("latestLTS");
         } else if (isLatestFT()) {
@@ -443,7 +391,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
     @Override
     public boolean isHidden() {
-        return Boolean.TRUE.equals(doc.getPropertyValue(PROP_HIDE));
+        return Boolean.TRUE.equals(safeGet(PROP_HIDE));
     }
 
     @Override

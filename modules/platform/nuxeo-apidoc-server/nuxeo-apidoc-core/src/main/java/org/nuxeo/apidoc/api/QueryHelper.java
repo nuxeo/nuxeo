@@ -35,21 +35,36 @@ public class QueryHelper {
     /**
      * @since 11.1
      */
-    public static final String ORDER_BY_POS = " ORDER BY ecm:pos";
+    public static final String NOT_VERSION = NXQL.ECM_ISVERSION + " = 0";
 
     /**
      * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString()
      */
     public static String select(String type, DocumentModel doc) {
-        return "SELECT * FROM " + type + " WHERE " + NXQL.ECM_PATH + " STARTSWITH "
-                + NXQL.escapeString(doc.getPathAsString()) + " AND " + NOT_DELETED;
+        return String.format("SELECT * FROM %s WHERE %s STARTSWITH %s AND %s", type, NXQL.ECM_PATH,
+                NXQL.escapeString(doc.getPathAsString()), NOT_DELETED);
+    }
+
+    /**
+     * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString() ORDER BY [...]
+     *
+     * @since 11.1
+     */
+    public static String select(String type, DocumentModel doc, String order) {
+        return String.format("%s ORDER BY %s", select(type, doc), order);
     }
 
     /**
      * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString AND prop = value
      */
     public static String select(String type, DocumentModel doc, String prop, String value) {
-        return select(type, doc) + " AND " + prop + " = " + NXQL.escapeString(value);
+        return String.format("%s AND %s = %s", select(type, doc), prop, NXQL.escapeString(value));
     }
 
+    /**
+     * SELECT * FROM type WHERE ecm:path STARTSWITH doc.getPathAsString AND prop = value ORDER BY [...]
+     */
+    public static String select(String type, DocumentModel doc, String prop, String value, String order) {
+        return String.format("%s AND %s = %s ORDER BY %s", select(type, doc), prop, NXQL.escapeString(value), order);
+    }
 }

@@ -19,8 +19,9 @@
 package org.nuxeo.apidoc.adapters;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -90,15 +91,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
 
     @Override
     public List<ComponentInfo> getComponents() {
-        List<ComponentInfo> components = new ArrayList<>();
         List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
-        for (DocumentModel child : children) {
-            ComponentInfo comp = child.getAdapter(ComponentInfo.class);
-            if (comp != null) {
-                components.add(comp);
-            }
-        }
-        return components;
+        return children.stream()
+                       .map(doc -> doc.getAdapter(ComponentInfo.class))
+                       .filter(Objects::nonNull)
+                       .collect(Collectors.toList());
     }
 
     @Override
