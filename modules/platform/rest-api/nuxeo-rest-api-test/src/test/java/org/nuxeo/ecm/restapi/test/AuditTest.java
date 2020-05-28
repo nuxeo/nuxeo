@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,8 @@ import org.nuxeo.ecm.restapi.server.jaxrs.enrichers.AuditJsonEnricher;
 import org.nuxeo.jaxrs.test.CloseableClientResponse;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -74,7 +73,10 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 public class AuditTest extends BaseTest {
 
     @Inject
-    AuditLogger auditLogger;
+    protected AuditLogger auditLogger;
+
+    @Inject
+    protected TransactionalFeature transactionalFeature;
 
     @Test
     public void shouldRetrieveAllLogEntriesAsJson() throws Exception {
@@ -175,25 +177,12 @@ public class AuditTest extends BaseTest {
         DocumentModel doc = RestServerInit.getFile(1, session);
 
         List<LogEntry> logEntries = new ArrayList<>();
-        LogEntry logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("firstEvent");
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("secondEvent");
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("Two");
-        logEntry.setEventId("firstEvent");
-        logEntries.add(logEntry);
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", null, null));
+        logEntries.add(buildLogEntry(doc, "One", "secondEvent", null, null));
+        logEntries.add(buildLogEntry(doc, "Two", "firstEvent", null, null));
         auditLogger.addLogEntries(logEntries);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        transactionalFeature.nextTransaction();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.add("category", "One");
@@ -225,28 +214,12 @@ public class AuditTest extends BaseTest {
         ZonedDateTime secondDate = firstDate.plusDays(10);
 
         List<LogEntry> logEntries = new ArrayList<>();
-        LogEntry logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("firstEvent");
-        logEntry.setEventDate(DateUtils.toDate(firstDate));
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("secondEvent");
-        logEntry.setEventDate(DateUtils.toDate(firstDate));
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("firstEvent");
-        logEntry.setEventDate(DateUtils.toDate(secondDate));
-        logEntries.add(logEntry);
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", null, firstDate));
+        logEntries.add(buildLogEntry(doc, "One", "secondEvent", null, firstDate));
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", null, secondDate));
         auditLogger.addLogEntries(logEntries);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        transactionalFeature.nextTransaction();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
@@ -304,38 +277,13 @@ public class AuditTest extends BaseTest {
         ZonedDateTime secondDate = firstDate.plusDays(10);
 
         List<LogEntry> logEntries = new ArrayList<>();
-        LogEntry logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("firstEvent");
-        logEntry.setPrincipalName("bender");
-        logEntry.setEventDate(DateUtils.toDate(firstDate));
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("secondEvent");
-        logEntry.setPrincipalName("leela");
-        logEntry.setEventDate(DateUtils.toDate(firstDate));
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("firstEvent");
-        logEntry.setPrincipalName("leela");
-        logEntry.setEventDate(DateUtils.toDate(secondDate));
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("thirdEvent");
-        logEntry.setPrincipalName("leela");
-        logEntry.setEventDate(DateUtils.toDate(secondDate));
-        logEntries.add(logEntry);
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", "bender", firstDate));
+        logEntries.add(buildLogEntry(doc, "One", "secondEvent", "leela", firstDate));
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", "leela", secondDate));
+        logEntries.add(buildLogEntry(doc, "One", "thirdEvent", "leela", secondDate));
         auditLogger.addLogEntries(logEntries);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        transactionalFeature.nextTransaction();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
@@ -380,40 +328,15 @@ public class AuditTest extends BaseTest {
         DocumentModel doc = RestServerInit.getFile(1, session);
 
         List<LogEntry> logEntries = new ArrayList<>();
-        LogEntry logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("firstEvent");
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("secondEvent");
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("thirdEvent");
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("fourthEvent");
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("fifthEvent");
-        logEntries.add(logEntry);
-        logEntry = auditLogger.newLogEntry();
-        logEntry.setDocUUID(doc.getRef());
-        logEntry.setCategory("One");
-        logEntry.setEventId("sixthEvent");
-        logEntries.add(logEntry);
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", null, null));
+        logEntries.add(buildLogEntry(doc, "One", "secondEvent", null, null));
+        logEntries.add(buildLogEntry(doc, "One", "thirdEvent", null, null));
+        logEntries.add(buildLogEntry(doc, "One", "fourthEvent", null, null));
+        logEntries.add(buildLogEntry(doc, "One", "fifthEvent", null, null));
+        logEntries.add(buildLogEntry(doc, "One", "sixthEvent", null, null));
         auditLogger.addLogEntries(logEntries);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
+        transactionalFeature.nextTransaction();
 
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.putSingle("category", "One");
@@ -480,7 +403,7 @@ public class AuditTest extends BaseTest {
      * @since 8.3
      */
     @Test
-    public void shouldEnrichWithLatestDocumentLogEntries() throws JsonProcessingException, IOException {
+    public void shouldEnrichWithLatestDocumentLogEntries() throws IOException {
         DocumentModel doc = RestServerInit.getFile(1, session);
 
         Map<String, String> headers = new HashMap<>();
@@ -507,6 +430,17 @@ public class AuditTest extends BaseTest {
             result.add(elements.next());
         }
         return result;
+    }
+
+    protected LogEntry buildLogEntry(DocumentModel documentModel, String category, String eventId, String principalName,
+            ZonedDateTime eventDate) {
+        LogEntry logEntry = auditLogger.newLogEntry();
+        logEntry.setDocUUID(documentModel.getRef());
+        logEntry.setCategory(category);
+        logEntry.setEventId(eventId);
+        logEntry.setPrincipalName(principalName);
+        logEntry.setEventDate(DateUtils.toDate(eventDate));
+        return logEntry;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2013-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,15 +122,12 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
             if (!StringUtils.isBlank(sortOrder)) {
                 orders = sortOrder.split(",");
             }
-            if (sorts != null) {
-                // clear potential default sort infos first
-                pp.setSortInfos(null);
-                for (int i = 0; i < sorts.length; i++) {
-                    String sort = sorts[i];
-                    boolean sortAscending = (orders != null && orders.length > i
-                            && "asc".equals(orders[i].toLowerCase())) ? true : false;
-                    pp.addSortInfo(sort, sortAscending);
-                }
+            // clear potential default sort infos first
+            pp.setSortInfos(null);
+            for (int i = 0; i < sorts.length; i++) {
+                String sort = sorts[i];
+                boolean sortAscending = orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase());
+                pp.addSortInfo(sort, sortAscending);
             }
         }
         return getPaginableEntries(pp);
