@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2017 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,15 @@
  */
 package org.nuxeo.ecm.platform.oauth2.openid;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
  */
 public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implements OpenIDConnectProviderRegistry {
 
-    protected static final Log log = LogFactory.getLog(OpenIDConnectProviderRegistryImpl.class);
+    protected static final Logger log = LogManager.getLogger(OpenIDConnectProviderRegistryImpl.class);
 
     public static final String PROVIDER_EP = "providers";
 
@@ -58,12 +58,12 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
             OpenIDConnectProviderDescriptor provider = (OpenIDConnectProviderDescriptor) contribution;
 
             if (provider.getClientId() == null || provider.getClientSecret() == null) {
-                log.info("OpenId provider for " + provider.getName()
-                        + " is disabled because clientId and/or clientSecret are empty (component id = "
-                        + contributor.getName().toString() + ")");
+                log.info(
+                        "OpenId provider for {} is disabled because clientId and/or clientSecret are empty (component id = {})",
+                        provider::getName, contributor::getName);
                 provider.setEnabled(false);
             }
-            log.info("OpenId provider for " + provider.getName() + " will be registred at application startup");
+            log.info("OpenId provider for {} will be registred at application startup", provider::getName);
             // delay registration because data sources may not be available
             // at this point
             register(PROVIDER_EP, provider);
@@ -77,13 +77,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
 
     @Override
     public Collection<OpenIDConnectProvider> getEnabledProviders() {
-        List<OpenIDConnectProvider> result = new ArrayList<>();
-        for (OpenIDConnectProvider provider : getProviders()) {
-            if (provider.isEnabled()) {
-                result.add(provider);
-            }
-        }
-        return result;
+        return getProviders().stream().filter(OpenIDConnectProvider::isEnabled).collect(Collectors.toList());
     }
 
     @Override
@@ -117,13 +111,14 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
                         provider.getTokenServerURL(), provider.getAuthorizationServerURL(), provider.getClientId(),
                         provider.getClientSecret(), Arrays.asList(provider.getScopes()));
             } else {
-                log.warn("Provider " + provider.getName()
-                        + " is already in the Database, XML contribution  won't overwrite it");
+                log.warn("Provider {} is already in the Database, XML contribution  won't overwrite it",
+                        provider::getName);
             }
             providers.put(provider.getName(),
                     new OpenIDConnectProvider(oauth2Provider, provider.getAccessTokenKey(), provider.getUserInfoURL(),
                             provider.getUserInfoClass(), provider.getIcon(), provider.isEnabled(), redirectUriResolver,
-                            provider.getUserResolverClass(), provider.getUserMapper(), provider.getAuthenticationMethod()));
+                            provider.getUserResolverClass(), provider.getUserMapper(),
+                            provider.getAuthenticationMethod()));
 
             // contribute icon and link to the Login Screen
             LoginScreenHelper.registerSingleProviderLoginScreenConfig(provider.getName(), provider.getIcon(),
