@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -417,6 +418,64 @@ public class AuditTest extends BaseTest {
             assertEquals(2, auditNodes.size());
             assertEquals("documentModified", auditNodes.get(0).get("eventId").asText());
             assertEquals("documentCreated", auditNodes.get(1).get("eventId").asText());
+        }
+    }
+
+    @Test
+    public void shouldHandleSortingAndPagination() throws Exception {
+        DocumentModel doc = RestServerInit.getFile(1, session);
+
+        List<LogEntry> logEntries = new ArrayList<>();
+        logEntries.add(buildLogEntry(doc, "Two", "secondEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "Two", "firstEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "One", "secondEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "One", "thirdEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "One", "thirdEvent", "james", null));
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", "james", null));
+        auditLogger.addLogEntries(logEntries);
+
+        transactionalFeature.nextTransaction();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("principalName", "james");
+        queryParams.putSingle("sortBy", "category,eventId");
+        queryParams.putSingle("sortOrder", "asc,desc");
+        queryParams.putSingle("pageSize", "5");
+
+        queryParams.putSingle("currentPageIndex", "0");
+        makeSortAndPaginationCallAndVerify(doc, queryParams, //
+                List.of("One", "One", "One", "One", "One"), //
+                List.of("thirdEvent", "thirdEvent", "secondEvent", "firstEvent", "firstEvent"));
+
+        queryParams.putSingle("currentPageIndex", "1");
+        makeSortAndPaginationCallAndVerify(doc, queryParams, //
+                List.of("Two", "Two", "Two", "Two", "Two"), //
+                List.of("thirdEvent", "thirdEvent", "thirdEvent", "thirdEvent", "secondEvent"));
+
+        queryParams.putSingle("currentPageIndex", "2");
+        makeSortAndPaginationCallAndVerify(doc, queryParams, //
+                List.of("Two"), //
+                List.of("firstEvent"));
+    }
+
+    protected void makeSortAndPaginationCallAndVerify(DocumentModel doc, MultivaluedMap<String, String> queryParams,
+            List<String> expectedCategories, List<String> expectedEvents) throws Exception {
+        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+                "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> nodes = getLogEntries(node);
+
+            List<String> categories = nodes.stream().map(n -> n.get("category").asText()).collect(Collectors.toList());
+            assertEquals(expectedCategories, categories);
+
+            List<String> events = nodes.stream().map(n -> n.get("eventId").asText()).collect(Collectors.toList());
+            assertEquals(expectedEvents, events);
         }
     }
 

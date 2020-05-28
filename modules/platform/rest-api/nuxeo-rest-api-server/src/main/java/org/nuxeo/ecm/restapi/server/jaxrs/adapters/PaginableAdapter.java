@@ -19,7 +19,9 @@
 package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +33,7 @@ import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -114,22 +117,24 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) ctx.getCoreSession());
-        PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), null,
-                pageSize, currentPageIndex, props, getParams());
+        List<SortInfo> sortInfos = null;
         if (!StringUtils.isBlank(sortBy)) {
             String[] sorts = sortBy.split(",");
             String[] orders = null;
             if (!StringUtils.isBlank(sortOrder)) {
                 orders = sortOrder.split(",");
             }
-            // clear potential default sort infos first
-            pp.setSortInfos(null);
+
+            sortInfos = new ArrayList<>(sorts.length);
             for (int i = 0; i < sorts.length; i++) {
                 String sort = sorts[i];
                 boolean sortAscending = orders != null && orders.length > i && "asc".equals(orders[i].toLowerCase());
-                pp.addSortInfo(sort, sortAscending);
+                sortInfos.add(new SortInfo(sort, sortAscending));
             }
         }
+        PageProvider<T> pp = (PageProvider<T>) pps.getPageProvider("", ppDefinition, getSearchDocument(), sortInfos,
+                pageSize, currentPageIndex, props, getParams());
+
         return getPaginableEntries(pp);
     }
 
