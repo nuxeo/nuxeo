@@ -108,19 +108,12 @@
           </index>
         </fulltext>
 <#else>
-        <!-- for H2 (Lucene Analyzer): -->
+        <!-- for H2 -->
         <fulltext disabled="${nuxeo.vcs.fulltext.disabled}"
                   storedInBlob="${nuxeo.vcs.fulltext.storedInBlob}"
-                  searchDisabled="${nuxeo.vcs.fulltext.search.disabled}"
-                  analyzer="org.apache.lucene.analysis.standard.StandardAnalyzer">
+                  searchDisabled="true">
           <index name="default">
             <!-- all props implied -->
-          </index>
-          <index name="title">
-            <field>dc:title</field>
-          </index>
-          <index name="description">
-            <field>dc:description</field>
           </index>
         </fulltext>
 </#if>

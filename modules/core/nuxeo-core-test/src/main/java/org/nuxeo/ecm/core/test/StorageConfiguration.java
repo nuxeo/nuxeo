@@ -264,6 +264,19 @@ public class StorageConfiguration {
         }
     }
 
+    /**
+     * Checks if the database supports fulltext search.
+     *
+     * @since 11.1
+     */
+    public boolean supportsFulltextSearch() {
+        if (isVCS()) {
+            return databaseHelper.supportsFulltextSearch();
+        } else { // isDBS
+            return true;
+        }
+    }
+
     public List<String> getExternalBundles() {
         if (isDBSExternal()) {
             return Arrays.asList(String.format("org.nuxeo.ecm.core.storage.%s", coreType),

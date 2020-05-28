@@ -10,11 +10,9 @@
   <extension target="org.nuxeo.ecm.core.storage.sql.RepositoryService"
     point="repository">
     <repository name="other">
-      <repository>
-        <indexing>
-          <fulltext disabled="true" />
-        </indexing>
-      </repository>
+      <indexing>
+        <fulltext disabled="true" searchDisabled="true"/>
+      </indexing>
     </repository>
   </extension>
 
