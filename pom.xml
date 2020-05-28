@@ -1452,12 +1452,12 @@
 
       <!-- Language extensions -->
       <dependency>
-        <groupId>org.nuxeo</groupId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-lang-ext</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.nuxeo</groupId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-lang-ext-incomplete</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -1628,7 +1628,7 @@
 
       <!-- Binary Metadata -->
       <dependency>
-        <groupId>org.nuxeo.binary.metadata</groupId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-binary-metadata</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>
@@ -1780,7 +1780,7 @@
 
       <!-- DMK -->
       <dependency>
-        <groupId>org.nuxeo</groupId>
+        <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-dmk-adaptor</artifactId>
         <version>${nuxeo.platform.version}</version>
       </dependency>

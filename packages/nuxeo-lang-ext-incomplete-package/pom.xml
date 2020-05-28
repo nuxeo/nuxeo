@@ -12,7 +12,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo</groupId>
+      <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-lang-ext-incomplete</artifactId>
     </dependency>
   </dependencies>
