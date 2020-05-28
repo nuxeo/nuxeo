@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -827,6 +828,7 @@ public class SearchTest extends BaseTest {
 
     @Test
     public void iCanExecuteDefaultSavedSearch() throws IOException {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
         // this saved search uses ecm:fulltext so some databases doing async fulltext indexing will need a pause
         coreFeature.getStorageConfiguration().waitForFulltextIndexing();
 

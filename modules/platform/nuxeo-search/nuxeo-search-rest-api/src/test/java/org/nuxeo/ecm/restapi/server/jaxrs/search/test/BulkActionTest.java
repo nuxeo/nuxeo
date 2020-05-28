@@ -22,6 +22,7 @@ package org.nuxeo.ecm.restapi.server.jaxrs.search.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.bulk.message.BulkStatus.State.COMPLETED;
 
 import java.time.Duration;
@@ -40,6 +41,7 @@ import org.nuxeo.ecm.core.bulk.BulkService;
 import org.nuxeo.ecm.core.bulk.CoreBulkFeature;
 import org.nuxeo.ecm.core.bulk.message.BulkStatus;
 import org.nuxeo.ecm.core.bulk.action.SetPropertiesAction;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.restapi.server.jaxrs.search.test.bulk.RemoveDocumentAction;
@@ -67,6 +69,9 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 @Deploy("org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.restapi.test:bulk-actions-test-contrib.xml")
 public class BulkActionTest extends BaseTest {
+
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Inject
     protected BulkService bulkService;
@@ -157,6 +162,8 @@ public class BulkActionTest extends BaseTest {
 
     @Test
     public void testExecuteBulkActionWithSavedSearch() throws Exception {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+
         String savedSearchId = RestServerInit.getSavedSearchId(3, session);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         testExecuteBulkAction("search/saved/" + savedSearchId, queryParams);

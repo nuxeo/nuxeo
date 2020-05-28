@@ -84,6 +84,9 @@ public class TestDocumentImport {
     protected StreamService streamService;
 
     @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
     CoreSession session;
 
     @Rule
@@ -257,12 +260,13 @@ public class TestDocumentImport {
 
         assertEquals(nbFiles, nbPicture + nbText + nbVideo);
 
-        docs = session.query("SELECT * FROM Document WHERE ecm:fulltext='youknowforsearchtag'");
-        assertFalse(docs.isEmpty());
+        if (coreFeature.getStorageConfiguration().supportsFulltextSearch()) {
+            docs = session.query("SELECT * FROM Document WHERE ecm:fulltext='youknowforsearchtag'");
+            assertFalse(docs.isEmpty());
 
-        docs = session.query("SELECT * FROM Document WHERE ecm:fulltext='foobar'");
-        assertEquals(nbText, docs.totalSize());
-
+            docs = session.query("SELECT * FROM Document WHERE ecm:fulltext='foobar'");
+            assertEquals(nbText, docs.totalSize());
+        }
     }
 
     @Ignore("Only to work on perf")

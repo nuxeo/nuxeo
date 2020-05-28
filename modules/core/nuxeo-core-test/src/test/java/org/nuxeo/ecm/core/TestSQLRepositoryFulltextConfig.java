@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -26,6 +27,7 @@ import java.util.TimeZone;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.TestSQLRepositoryFulltextConfig.IgnoreNonVCS;
@@ -72,6 +74,11 @@ public class TestSQLRepositoryFulltextConfig {
 
     @Inject
     protected CoreSession session;
+
+    @Before
+    public void checkSupportsFulltextSearch() {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+    }
 
     protected void waitForAsyncCompletion() {
         nextTransaction();

@@ -151,6 +151,7 @@ public class SuggestionServiceTest {
     public void testDefaultSuggestionConfigurationWithKeyword() throws SuggestionException {
         assumeTrue("No multiple fulltext indexes",
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
 
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();
@@ -254,6 +255,7 @@ public class SuggestionServiceTest {
     public void testDefaultSuggestionConfigurationWithUsersAndGroups() throws SuggestionException {
         assumeTrue("No multiple fulltext indexes",
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
 
         // build a suggestion context
         NuxeoPrincipal admin = session.getPrincipal();

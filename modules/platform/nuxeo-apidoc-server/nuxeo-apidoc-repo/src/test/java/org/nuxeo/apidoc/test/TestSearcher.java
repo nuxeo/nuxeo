@@ -29,12 +29,10 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -81,12 +79,6 @@ public class TestSearcher {
 
         List<String> componentIds = persistent.getComponentIds();
         assertNotEquals(0, componentIds.size());
-
-        // Is fulltext ready
-        DocumentModel dist = ((RepositoryDistributionSnapshot) persistent).getDoc();
-        String query = String.format("select * from Document where ecm:fulltext = 'a*' and ecm:path STARTSWITH '%s'",
-                dist.getPathAsString());
-        assertNotEquals(0, session.query(query));
 
         List<NuxeoArtifact> artifacts = searcher.searchArtifact(session, persistent.getKey(), "related");
         assertNotEquals(0, artifacts.size());

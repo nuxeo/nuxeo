@@ -20,6 +20,7 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -84,6 +85,8 @@ public class DocumentListTest extends BaseTest {
 
     @Test
     public void iCanSearchInFullTextForDocuments() throws Exception {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+
         // Given a note with "nuxeo" in its description
         DocumentModel note = RestServerInit.getNote(0, session);
         note.setPropertyValue("dc:description", "nuxeo one platform to rule them all");

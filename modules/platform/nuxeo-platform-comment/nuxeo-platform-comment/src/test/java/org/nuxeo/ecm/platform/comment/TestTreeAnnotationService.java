@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_RESOURCES;
@@ -464,6 +465,8 @@ public class TestTreeAnnotationService {
 
     @Test
     public void shouldFindAnnotatedFileByFullTextSearch() {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+
         DocumentModel firstDocToAnnotation = createDocumentModel("anotherFile1");
         DocumentModel secondDocToAnnotation = createDocumentModel("anotherFile2");
         Map<DocumentRef, List<Annotation>> mapAnnotationsByDocRef = createAnnotationsAndRepliesForFullTextSearch(

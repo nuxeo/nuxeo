@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -186,6 +187,8 @@ public class TestCoreDirectory {
 
     @Test
     public void queryWithFilter() {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+
         Map<String, Serializable> usernamefilter = ImmutableMap.<String, Serializable> builder() //
                                                                .put("username", CoreDirectoryInit.DOC_ID_USER1) //
                                                                .build();

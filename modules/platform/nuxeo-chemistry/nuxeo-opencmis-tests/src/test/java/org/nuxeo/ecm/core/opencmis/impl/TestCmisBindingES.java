@@ -31,13 +31,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 @Deploy("org.nuxeo.ecm.webengine.core")
 @Deploy("org.nuxeo.ecm.core.persistence")
 @Deploy("org.nuxeo.ecm.platform.uidgen.core")
-@Deploy("org.nuxeo.elasticsearch.core")
-@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
-@Deploy("org.nuxeo.elasticsearch.seqgen")
-@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
-@Deploy("org.nuxeo.elasticsearch.audit")
-@Deploy("org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml")
-@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/elasticsearch-test-contrib.xml")
 public class TestCmisBindingES extends TestCmisBinding {
 
     @Override

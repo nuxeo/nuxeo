@@ -179,6 +179,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ CmisFeature.class, CmisFeatureConfiguration.class })
+@Deploy("org.nuxeo.elasticsearch.core")
+@Deploy("org.nuxeo.elasticsearch.core.test:elasticsearch-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.seqgen")
+@Deploy("org.nuxeo.elasticsearch.seqgen.test:elasticsearch-seqgen-index-test-contrib.xml")
+@Deploy("org.nuxeo.elasticsearch.audit")
+@Deploy("org.nuxeo.elasticsearch.audit.test:elasticsearch-audit-index-test-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/elasticsearch-test-contrib.xml")
 @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml")
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestCmisBinding extends TestCmisBindingBase {
@@ -1420,7 +1427,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(supportsProxies() ? 7 : 6, res.getNumItems().intValue()); // 5 docs, 1 version, 1 proxy
         statement = "SELECT * FROM cmis:folder";
         res = query(statement);
-        assertEquals(returnsRootInFolderQueries() ? 5 : 4, res.getNumItems().intValue());
+        assertEquals(4, res.getNumItems().intValue());
 
         statement = "SELECT cmis:objectId, dc:description" //
                 + " FROM File" //
@@ -1485,7 +1492,8 @@ public class TestCmisBinding extends TestCmisBindingBase {
      * Wait for async worker completion then wait for indexing completion
      */
     public void waitForIndexing() throws Exception {
-        if (!useElasticsearch()) {
+        // checks whether the repository itself supports fulltext search
+        if (!useElasticsearch() && supportsRepositoryFulltextSearch()) {
             return;
         }
         TransactionHelper.commitOrRollbackTransaction();
@@ -2318,7 +2326,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(1, res.getNumItems().intValue());
         assertEquals("new titleone", getString(res.getObjects().get(0), PropertyIds.NAME));
 
-        if (supportsMultipleFulltextIndexes()) {
+        if (supportsMultipleFulltextIndexes() && supportsRepositoryFulltextSearch()) {
             // specific query for title index (the description token do not
             // match)
             statement = "SELECT cmis:name FROM File WHERE CONTAINS('nx:title:descriptionone')";
@@ -3677,29 +3685,6 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
-    // deploy a security policy with a query transformer not expressible as a query
-    @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib.xml")
-    public void testQueryWithSecurityPolicyNotExpressibleInQuery() throws Exception {
-        assumeFalse("Testing case where NXQL query transformers are not supported", supportsNXQLQueryTransformers());
-
-        DocumentModel doc = coreSession.getDocument(new PathRef("/testfolder1/testfile1"));
-        doc.setPropertyValue("dc:title", "SECRET should not be listed");
-        coreSession.saveDocument(doc);
-        coreSession.save();
-        nextTransaction();
-        waitForIndexing();
-
-        // check that queries fail
-        try {
-            query("SELECT cmis:objectId FROM File");
-            fail("Should be denied due to security policy");
-        } catch (CmisRuntimeException e) {
-            String msg = e.getMessage();
-            assertTrue(msg, msg.contains("Security policy"));
-        }
-    }
-
-    @Test
     // deploy a security policy with a CMISQL query transformer
     @Deploy("org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/security-policy-contrib2.xml")
     public void testQueryWithSecurityPolicyAndCMISQLQueryTransformer() throws Exception {
@@ -3714,9 +3699,9 @@ public class TestCmisBinding extends TestCmisBindingBase {
         waitForIndexing();
 
         ObjectList res = query("SELECT cmis:objectId FROM File");
-        assertEquals(2, res.getNumItems().intValue());
+        assertEquals(3, res.getNumItems().intValue());
         res = query("SELECT cmis:objectId FROM File WHERE dc:title <> 'something'");
-        assertEquals(2, res.getNumItems().intValue());
+        assertEquals(3, res.getNumItems().intValue());
     }
 
     @Test
