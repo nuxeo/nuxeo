@@ -217,7 +217,9 @@ public class EmbeddedFunctions {
      * @param string1 the first string
      * @param string2 the second string
      * @return a string with extracted words
+     * @deprecated unused
      */
+    @Deprecated(since = "11.1")
     public static String parseFullText(String string1, String string2) {
         Set<String> set = new HashSet<>();
         set.addAll(parseFullText(string1));
@@ -227,6 +229,8 @@ public class EmbeddedFunctions {
         return join(words, ' ');
     }
 
+    /** @deprecated unused */
+    @Deprecated(since = "11.1")
     protected static Set<String> parseFullText(String string) {
         if (string == null) {
             return Collections.emptySet();
@@ -247,7 +251,9 @@ public class EmbeddedFunctions {
      * @param fulltext the fulltext, space-separated words
      * @param query a list of space-separated words
      * @return {@code true} if all the words are in the fulltext
+     * @deprecated unused
      */
+    @Deprecated(since = "11.1")
     protected static boolean matchesFullText(String fulltext, String query) {
         if (fulltext == null || query == null) {
             return false;
@@ -299,6 +305,8 @@ public class EmbeddedFunctions {
 
     private static final Set<String> stopWords = new HashSet<>(split(STOPWORDS, ' '));
 
+    /** @deprecated unused */
+    @Deprecated(since = "11.1")
     public static final String parseWord(String string) {
         int len = string.length();
         if (len < 3) {
@@ -360,6 +368,8 @@ public class EmbeddedFunctions {
         return set;
     }
 
+    /** @deprecated unused */
+    @Deprecated(since = "11.1")
     private static final String join(Collection<String> strings, char sep) {
         if (strings == null || strings.isEmpty()) {
             return "";

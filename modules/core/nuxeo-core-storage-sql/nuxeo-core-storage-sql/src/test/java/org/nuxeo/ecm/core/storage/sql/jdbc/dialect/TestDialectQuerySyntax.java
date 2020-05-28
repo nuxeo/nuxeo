@@ -201,32 +201,6 @@ public class TestDialectQuerySyntax {
     }
 
     @Test
-    public void testH2() throws Exception {
-        dialect = new DialectH2(metadata, repositoryDescriptor);
-        assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
-        assertDialectFT("foo", "foo");
-        assertDialectFT("FOO", "FOO");
-        assertDialectFT("foo", "foo :");
-        assertDialectFT("foo", "foo :)");
-        assertDialectFT("foo", "foo -+-");
-        assertDialectFT("(foo AND bar)", "foo bar");
-        assertDialectFT("(foo NOT bar)", "foo -bar");
-        assertDialectFT("(bar NOT foo)", "-foo bar");
-        assertDialectFT("(foo OR bar)", "foo OR bar");
-        assertDialectFT("foo", "foo OR -bar");
-        assertDialectFT("((foo AND bar) OR baz)", "foo bar OR baz");
-        assertDialectFT("((bar NOT foo) OR baz)", "-foo bar OR baz");
-        assertDialectFT("((foo NOT bar) OR baz)", "foo -bar OR baz");
-        assertDialectFT("\"foo bar\"", "\"foo bar\"");
-        assertDialectFT("(\"foo bar\" AND baz)", "\"foo bar\" baz");
-        assertDialectFT("(\"foo bar\" OR baz)", "\"foo bar\" OR baz");
-        assertDialectFT("((\"foo bar\" AND baz) OR \"gee man\")", "\"foo bar\" baz OR \"gee man\"");
-        assertDialectFT("(\"foo bar\" NOT \"gee man\")", "\"foo bar\" -\"gee man\"");
-        assertDialectFT("foo*", "foo*");
-        assertDialectFT("(foo AND bar*)", "foo bar*");
-    }
-
-    @Test
     public void testPostgreSQLPhraseBreak() throws Exception {
         assertPGPhraseBreak("foo", "foo");
         assertPGPhraseBreak("[foo AND bar]", "\"foo bar\"");

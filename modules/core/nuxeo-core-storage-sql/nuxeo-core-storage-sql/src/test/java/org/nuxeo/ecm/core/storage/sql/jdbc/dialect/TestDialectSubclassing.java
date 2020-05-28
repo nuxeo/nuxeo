@@ -53,6 +53,7 @@ public class TestDialectSubclassing {
         metadata = getDatabaseMetaData();
         connection = getConnection();
         repositoryDescriptor = new RepositoryDescriptor();
+        repositoryDescriptor.getFulltextDescriptor().setFulltextSearchDisabled(true);
     }
 
     protected DatabaseMetaData getDatabaseMetaData() throws SQLException {

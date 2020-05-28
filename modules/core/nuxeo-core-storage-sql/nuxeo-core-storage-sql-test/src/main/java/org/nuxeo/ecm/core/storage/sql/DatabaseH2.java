@@ -139,6 +139,11 @@ public class DatabaseH2 extends DatabaseHelper {
     }
 
     @Override
+    public boolean supportsFulltextSearch() {
+        return false;
+    }
+
+    @Override
     public boolean supportsClustering() {
         return true;
     }

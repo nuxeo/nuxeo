@@ -26,24 +26,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityService;
-import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
-import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCLogger;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
-import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,17 +52,13 @@ public class DialectH2 extends Dialect {
 
     protected static final String DEFAULT_USERS_SEPARATOR = ",";
 
-    private static final String DEFAULT_FULLTEXT_ANALYZER = "org.apache.lucene.analysis.standard.StandardAnalyzer";
-
-    protected final String fulltextAnalyzer;
-
     protected final String usersSeparator;
 
     public DialectH2(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
-        fulltextAnalyzer = repositoryDescriptor == null ? null
-                : repositoryDescriptor.getFulltextAnalyzer() == null ? DEFAULT_FULLTEXT_ANALYZER
-                        : repositoryDescriptor.getFulltextAnalyzer();
+        if (!fulltextSearchDisabled) {
+            throw new NuxeoException("Fulltext search cannot be enabled with H2");
+        }
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
@@ -205,50 +197,18 @@ public class DialectH2 extends Dialect {
     @Override
     public String getCreateFulltextIndexSql(String indexName, String quotedIndexName, Table table, List<Column> columns,
             Model model) {
-        String columnNames = columns.stream()
-                                    .map(column -> "'" + column.getPhysicalName() + "'")
-                                    .collect(Collectors.joining(", "));
-        String fullIndexName = String.format("PUBLIC_%s_%s", table.getPhysicalName(), indexName);
-        return String.format("CALL NXFT_CREATE_INDEX('%s', 'PUBLIC', '%s', (%s), '%s')", fullIndexName,
-                table.getPhysicalName(), columnNames, fulltextAnalyzer);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String getDialectFulltextQuery(String query) {
-        query = query.replace("%", "*");
-        FulltextQuery ft = FulltextQueryAnalyzer.analyzeFulltextQuery(query);
-        if (ft == null) {
-            return "DONTMATCHANYTHINGFOREMPTYQUERY";
-        }
-        return FulltextQueryAnalyzer.translateFulltext(ft, "OR", "AND", "NOT", "\"");
+        throw new UnsupportedOperationException();
     }
 
-    // SELECT ..., 1 as nxscore
-    // FROM ... LEFT JOIN NXFT_SEARCH('default', ?) nxfttbl
-    // .................. ON hierarchy.id = nxfttbl.KEY
-    // WHERE ... AND nxfttbl.KEY IS NOT NULL
-    // ORDER BY nxscore DESC
     @Override
     public FulltextMatchInfo getFulltextScoredMatchInfo(String fulltextQuery, String indexName, int nthMatch,
             Column mainColumn, Model model, Database database) {
-        String phftname = database.getTable(Model.FULLTEXT_TABLE_NAME).getPhysicalName();
-        String fullIndexName = "PUBLIC_" + phftname + "_" + indexName;
-        String nthSuffix = nthMatch == 1 ? "" : String.valueOf(nthMatch);
-        String tableAlias = "_NXFTTBL" + nthSuffix;
-        String quotedTableAlias = openQuote() + tableAlias + closeQuote();
-        FulltextMatchInfo info = new FulltextMatchInfo();
-        info.joins = Collections.singletonList( //
-                new Join(Join.LEFT, //
-                        String.format("NXFT_SEARCH('%s', ?)", fullIndexName), tableAlias, // alias
-                        fulltextQuery, // param
-                        String.format("%s.KEY", quotedTableAlias), // on1
-                        mainColumn.getFullQuotedName() // on2
-                ));
-        info.whereExpr = String.format("%s.KEY IS NOT NULL", quotedTableAlias);
-        info.scoreExpr = "1";
-        info.scoreAlias = "_NXSCORE" + nthSuffix;
-        info.scoreCol = new Column(mainColumn.getTable(), null, ColumnType.DOUBLE, null);
-        return info;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -258,7 +218,7 @@ public class DialectH2 extends Dialect {
 
     @Override
     public int getFulltextIndexedColumns() {
-        return 2;
+        return 0;
     }
 
     @Override
@@ -376,12 +336,9 @@ public class DialectH2 extends Dialect {
         for (String perm : permissions) {
             permsList.add("('" + perm + "')");
         }
-        properties.put("fulltextEnabled", Boolean.valueOf(!fulltextDisabled));
-        properties.put("fulltextSearchEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("readPermissions", String.join(", ", permsList));
         properties.put("h2Functions", "org.nuxeo.ecm.core.storage.sql.db.H2Functions");
-        properties.put("h2Fulltext", "org.nuxeo.ecm.core.storage.sql.db.H2Fulltext");
         properties.put("usersSeparator", getUsersSeparator());
         return properties;
     }

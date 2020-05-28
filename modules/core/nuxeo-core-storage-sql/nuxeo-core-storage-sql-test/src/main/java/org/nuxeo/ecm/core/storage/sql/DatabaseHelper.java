@@ -268,6 +268,11 @@ public abstract class DatabaseHelper {
         return true;
     }
 
+    /** @since 11.1 */
+    public boolean supportsFulltextSearch() {
+        return true;
+    }
+
     public boolean supportsXA() {
         return true;
     }
