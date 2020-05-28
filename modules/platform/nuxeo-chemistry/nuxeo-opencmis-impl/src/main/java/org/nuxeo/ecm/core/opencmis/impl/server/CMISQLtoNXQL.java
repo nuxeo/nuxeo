@@ -135,6 +135,8 @@ public class CMISQLtoNXQL {
 
     protected boolean skipDeleted = true;
 
+    protected boolean hasContains;
+
     // ----- passed to IterableQueryResult -----
 
     /** The real columns, CMIS name mapped to NXQL. */
@@ -267,6 +269,7 @@ public class CMISQLtoNXQL {
             GeneratingWalker generator = new GeneratingWalker();
             generator.walkPredicate(whereNode);
             whereClauses.add(generator.buf.toString());
+            hasContains = generator.hasContains;
         }
 
         // ORDER BY clause
@@ -571,6 +574,8 @@ public class CMISQLtoNXQL {
 
         public StringBuilder buf = new StringBuilder();
 
+        boolean hasContains;
+
         @Override
         public Boolean walkNot(Tree opNode, Tree node) {
             buf.append("NOT ");
@@ -757,6 +762,7 @@ public class CMISQLtoNXQL {
             buf.append(indexName);
             buf.append(" = ");
             buf.append(NXQL.escapeString(statement));
+            hasContains = true;
             return null;
         }
 

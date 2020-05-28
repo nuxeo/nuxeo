@@ -114,9 +114,11 @@ public class TestFulltextEnabled {
         Assert.assertEquals(1, esRet.totalSize());
 
         // binary fulltext is also searcheable with VCS
-        sleepForFulltext();
-        DocumentModelList coreRet = session.query(nxql);
-        Assert.assertEquals(1, coreRet.totalSize());
+        if (coreFeature.getStorageConfiguration().supportsFulltextSearch()) {
+            sleepForFulltext();
+            DocumentModelList coreRet = session.query(nxql);
+            Assert.assertEquals(1, coreRet.totalSize());
+        }
     }
 
     @Test
@@ -129,9 +131,11 @@ public class TestFulltextEnabled {
         Assert.assertEquals(1, esRet.totalSize());
 
         // binary fulltext is also searcheable with VCS
-        sleepForFulltext();
-        DocumentModelList coreRet = session.query(nxql);
-        Assert.assertEquals(1, coreRet.totalSize());
+        if (coreFeature.getStorageConfiguration().supportsFulltextSearch()) {
+            sleepForFulltext();
+            DocumentModelList coreRet = session.query(nxql);
+            Assert.assertEquals(1, coreRet.totalSize());
+        }
     }
 
     protected DocumentModel createFileWithBlob() throws Exception {

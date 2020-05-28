@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -92,6 +93,11 @@ public class TestSQLRepositoryFulltextQuery {
 
     @Inject
     protected CoreSession session;
+
+    @Before
+    public void checkSupportsFulltextSearch() {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+    }
 
     protected boolean isDBS() {
         return coreFeature.getStorageConfiguration().isDBS();

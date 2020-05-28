@@ -30,6 +30,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT;
 import static org.nuxeo.ecm.core.storage.BaseDocument.RELATED_TEXT_ID;
@@ -740,6 +741,8 @@ public class TestTreeCommentManager extends AbstractTestCommentManager {
 
     @Test
     public void shouldFindCommentedFileByFullTextSearch() {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+
         DocumentModel firstDocToComment = createDocumentModel("anotherFile1");
         DocumentModel secondDocToComment = createDocumentModel("anotherFile2");
         Map<DocumentRef, List<Comment>> mapCommentsByDocRef = createCommentsAndRepliesForFullTextSearch(

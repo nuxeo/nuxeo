@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -1578,7 +1579,9 @@ public class NuxeoCmisService extends AbstractCmisService
      */
     public IterableQueryResult queryAndFetch(String query, boolean searchAllVersions,
             Map<String, PropertyDefinition<?>> typeInfo) {
-        if (repository.supportsJoins()) {
+        String queryUpper = query.toUpperCase(Locale.ENGLISH);
+        boolean hasJoin = queryUpper.contains(" JOIN ");
+        if (repository.supportsJoins() && hasJoin) {
             if (repository.supportsProxies()) {
                 throw new CmisRuntimeException(
                         "Server configuration error: cannot supports joins and proxies at the same time");
@@ -1596,9 +1599,11 @@ public class NuxeoCmisService extends AbstractCmisService
                 throw new CmisInvalidArgumentException(e.getMessage(), e);
             }
 
+            boolean useElasticsearch = repository.useElasticsearch()
+                    || converter.hasContains && repository.hasRepositoryFulltextSearchDisabled();
             IterableQueryResult it;
             try {
-                if (repository.useElasticsearch()) {
+                if (useElasticsearch) {
                     ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
                     NxQueryBuilder qb = new NxQueryBuilder(coreSession).nxql(nxql)
                                                                        .limit(1000)
@@ -1648,7 +1653,9 @@ public class NuxeoCmisService extends AbstractCmisService
      */
     public PartialList<Map<String, Serializable>> queryProjection(String query, long limit, long offset,
             boolean searchAllVersions, Map<String, PropertyDefinition<?>> typeInfo) {
-        if (repository.supportsJoins()) {
+        String queryUpper = query.toUpperCase(Locale.ENGLISH);
+        boolean hasJoin = queryUpper.contains(" JOIN ");
+        if (repository.supportsJoins() && hasJoin) {
             if (repository.supportsProxies()) {
                 throw new CmisRuntimeException(
                         "Server configuration error: cannot supports joins and proxies at the same time");
@@ -1666,9 +1673,11 @@ public class NuxeoCmisService extends AbstractCmisService
                 throw new CmisInvalidArgumentException(e.getMessage(), e);
             }
 
+            boolean useElasticsearch = repository.useElasticsearch()
+                    || converter.hasContains && repository.hasRepositoryFulltextSearchDisabled();
             PartialList<Map<String, Serializable>> pl;
             try {
-                if (repository.useElasticsearch()) {
+                if (useElasticsearch) {
                     ElasticSearchService ess = Framework.getService(ElasticSearchService.class);
                     NxQueryBuilder qb = new NxQueryBuilder(coreSession).nxql(nxql)
                                                                        .limit((int) limit)

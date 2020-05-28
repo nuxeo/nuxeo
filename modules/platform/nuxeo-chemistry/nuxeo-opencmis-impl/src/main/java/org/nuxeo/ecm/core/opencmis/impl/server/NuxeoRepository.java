@@ -98,6 +98,7 @@ import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.opencmis.impl.util.TypeManagerImpl;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -159,6 +160,8 @@ public class NuxeoRepository {
 
     protected boolean useElasticsearch;
 
+    protected boolean repositoryFulltextSearchDisabled;
+
     protected Map<CmisVersion, TypeManagerImpl> typeManagerByCmisVersion = new HashMap<>();
 
     public NuxeoRepository(String repositoryId, String rootFolderId) {
@@ -173,6 +176,9 @@ public class NuxeoRepository {
         if (Framework.isBooleanPropertyTrue(ELASTICSEARCH_PROP)) {
             setUseElasticsearch(true);
         }
+        repositoryFulltextSearchDisabled = Framework.getService(RepositoryService.class)
+                                                    .getRepository(repositoryId)
+                                                    .getFulltextConfiguration().fulltextSearchDisabled;
     }
 
     public void setSupportsJoins(boolean supportsJoins) {
@@ -197,6 +203,10 @@ public class NuxeoRepository {
 
     public boolean useElasticsearch() {
         return useElasticsearch;
+    }
+
+    public boolean hasRepositoryFulltextSearchDisabled() {
+        return repositoryFulltextSearchDisabled;
     }
 
     public String getId() {

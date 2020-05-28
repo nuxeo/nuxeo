@@ -67,9 +67,9 @@ public class TestSQLBinariesIndexingOverride {
 
     @Before
     public void setUp() throws Exception {
-        assumeTrue(coreFeature.getStorageConfiguration().isVCS());
-        // SQL Server fulltext indexes can't easily be updated by Nuxeo
-        assumeTrue(!coreFeature.getStorageConfiguration().isVCSSQLServer());
+        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
+        assumeTrue("fulltext search not supported", storageConfiguration.supportsFulltextSearch());
+        assumeTrue("multiple fulltext indexes not supported", storageConfiguration.supportsMultipleFulltextIndexes());
 
         // cannot be done through @Deploy, because the framework variables
         // about repository configuration aren't ready yet

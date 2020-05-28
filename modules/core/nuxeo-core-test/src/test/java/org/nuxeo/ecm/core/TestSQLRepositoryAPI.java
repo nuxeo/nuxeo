@@ -4946,8 +4946,14 @@ public class TestSQLRepositoryAPI {
         reopenSession();
         doc = session.getDocument(doc.getRef());
 
-        // the system change token has been updated and written (+ 1 another change for fulltext)
-        assertEquals("2-0", doc.getChangeToken());
+        // the system change token has been updated and written
+        String expectedChangeToken;
+        if (coreFeature.getStorageConfiguration().supportsFulltextSearch()) {
+            expectedChangeToken = "2-0";
+        } else {
+            expectedChangeToken = "1-0";
+        }
+        assertEquals(expectedChangeToken, doc.getChangeToken());
     }
 
     @Test

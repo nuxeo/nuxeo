@@ -204,6 +204,10 @@ public abstract class TestCmisBindingBase {
         return coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes();
     }
 
+    protected boolean supportsRepositoryFulltextSearch() {
+        return coreFeature.getStorageConfiguration().supportsFulltextSearch();
+    }
+
     protected void nextTransaction() {
         txFeature.nextTransaction();
     }

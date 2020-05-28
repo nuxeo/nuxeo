@@ -20,12 +20,14 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -64,6 +66,11 @@ public class TestSQLBinariesIndexing {
     protected DocumentRef docRef;
 
     protected BlockingWork blockingWork;
+
+    @Before
+    public void checkSupportsFulltextSearch() {
+        assumeTrue("fulltext search not supported", coreFeature.getStorageConfiguration().supportsFulltextSearch());
+    }
 
     protected void waitForFulltextIndexing() {
         nextTransaction();
