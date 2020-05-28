@@ -214,7 +214,8 @@ public class ESRestClientFactory implements ESClientFactory {
                 sslContextBuilder.loadTrustMaterial(trustStore, null);
             }
             if (keyStore != null) {
-                sslContextBuilder.loadKeyMaterial(keyStore, null);
+                sslContextBuilder.loadKeyMaterial(keyStore,
+                        StringUtils.isBlank(keyStorePassword) ? null : keyStorePassword.toCharArray());
             }
             return sslContextBuilder.build();
         } catch (GeneralSecurityException | IOException e) {
