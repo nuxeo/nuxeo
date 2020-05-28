@@ -88,7 +88,10 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
     protected void registerPendingProviders() {
         List<OpenIDConnectProviderDescriptor> providers = getDescriptors(PROVIDER_EP);
         for (OpenIDConnectProviderDescriptor provider : providers) {
-            registerOpenIdProvider(provider);
+            // former registry discarded disabled providers
+            if (provider.isEnabled()) {
+                registerOpenIdProvider(provider);
+            }
         }
     }
 
