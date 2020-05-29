@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.nuxeo.ecm.platform</groupId>
     <artifactId>nuxeo-platform-parent</artifactId>
-    <version>11.1-SNAPSHOT</version>
+    <version>11.1.34</version>
   </parent>
   <artifactId>nuxeo-platform-rendition-parent</artifactId>
   <name>Nuxeo Platform Rendition Parent</name>
