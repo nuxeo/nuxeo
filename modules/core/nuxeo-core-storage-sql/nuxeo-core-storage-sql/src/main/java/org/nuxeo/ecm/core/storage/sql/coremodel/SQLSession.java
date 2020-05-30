@@ -50,15 +50,12 @@ import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.Access;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -74,7 +71,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author Florent Guillaume
  */
-public class SQLSession implements Session<QueryFilter> {
+public class SQLSession extends BaseSession {
 
     protected final Log log = LogFactory.getLog(SQLSession.class);
 
@@ -94,8 +91,6 @@ public class SQLSession implements Session<QueryFilter> {
      */
     public static final String COPY_FINDFREENAME_DISABLED_PROP = "nuxeo.vcs.copy.findFreeName.disabled";
 
-    private final Repository repository;
-
     private final org.nuxeo.ecm.core.storage.sql.Session session;
 
     private Document root;
@@ -105,8 +100,8 @@ public class SQLSession implements Session<QueryFilter> {
     private final boolean copyFindFreeNameDisabled;
 
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session, Repository repository) {
+        super(repository);
         this.session = session;
-        this.repository = repository;
         Node rootNode = session.getRootNode();
         root = newDocument(rootNode);
         negativeAclAllowed = Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
@@ -153,10 +148,6 @@ public class SQLSession implements Session<QueryFilter> {
     @Override
     public String getRepositoryName() {
         return repository.getName();
-    }
-
-    protected DocumentBlobManager getDocumentBlobManager() {
-        return Framework.getService(DocumentBlobManager.class);
     }
 
     protected String idToString(Serializable id) {
@@ -257,7 +248,7 @@ public class SQLSession implements Session<QueryFilter> {
 
     protected void notifyDocumentBlobManagerAfterCopy(Node node) {
         Document doc = newDocument(node);
-        getDocumentBlobManager().notifyAfterCopy(doc);
+        notifyAfterCopy(doc);
     }
 
     @Override
@@ -715,67 +706,12 @@ public class SQLSession implements Session<QueryFilter> {
         session.requireReadAclsUpdate();
     }
 
-    protected void checkNegativeAcl(ACP acp) {
-        if (negativeAclAllowed) {
-            return;
-        }
-        if (acp == null) {
-            return;
-        }
-        for (ACL acl : acp.getACLs()) {
-            if (acl.getName().equals(ACL.INHERITED_ACL)) {
-                continue;
-            }
-            for (ACE ace : acl.getACEs()) {
-                if (ace.isGranted()) {
-                    continue;
-                }
-                String permission = ace.getPermission();
-                if (permission.equals(SecurityConstants.EVERYTHING)
-                        && ace.getUsername().equals(SecurityConstants.EVERYONE)) {
-                    continue;
-                }
-                // allow Write, as we're sure it doesn't include Read/Browse
-                if (permission.equals(SecurityConstants.WRITE)) {
-                    continue;
-                }
-                throw new IllegalArgumentException("Negative ACL not allowed: " + ace);
-            }
-        }
-    }
-
-    @Override
-    public ACP getMergedACP(Document doc) {
-        Document base = doc.isVersion() ? doc.getSourceDocument() : doc;
-        if (base == null) {
-            return null;
-        }
-        ACP acp = getACP(base);
-        if (doc.getParent() == null) {
-            return acp;
-        }
-        // get inherited acls only if no blocking inheritance ACE exists in the top level acp.
-        ACL acl = null;
-        if (acp == null || acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) != Access.DENY) {
-            acl = getInheritedACLs(doc);
-        }
-        if (acp == null) {
-            if (acl == null) {
-                return null;
-            }
-            acp = new ACPImpl();
-        }
-        if (acl != null) {
-            acp.addACL(acl);
-        }
-        return acp;
-    }
-
     /*
      * ----- internal methods -----
      */
 
-    protected ACP getACP(Document doc) {
+    @Override
+    public ACP getACP(Document doc) {
         Node node = ((SQLDocument) doc).getNode();
         ACLRow[] aclrows = (ACLRow[]) node.getCollectionProperty(Model.ACL_PROP).getValue();
         return aclRowsToACP(aclrows);
@@ -905,27 +841,6 @@ public class SQLSession implements Session<QueryFilter> {
         String group = null; // XXX all in user for now
         aclrows.add(new ACLRow(aclrows.size(), name, ace.isGranted(), ace.getPermission(), user, group,
                 ace.getCreator(), ace.getBegin(), ace.getEnd(), ace.getLongStatus()));
-    }
-
-    protected ACL getInheritedACLs(Document doc) {
-        doc = doc.getParent();
-        ACL merged = null;
-        while (doc != null) {
-            ACP acp = getACP(doc);
-            if (acp != null) {
-                ACL acl = acp.getMergedACLs(ACL.INHERITED_ACL);
-                if (merged == null) {
-                    merged = acl;
-                } else {
-                    merged.addAll(acl);
-                }
-                if (acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) == Access.DENY) {
-                    break;
-                }
-            }
-            doc = doc.getParent();
-        }
-        return merged;
     }
 
     @Override
