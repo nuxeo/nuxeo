@@ -116,13 +116,10 @@ import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.Access;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobInfo;
-import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.DocumentBlobManager;
+import org.nuxeo.ecm.core.model.BaseSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
@@ -163,14 +160,12 @@ import com.codahale.metrics.Timer;
  *
  * @since 5.9.4
  */
-public class DBSSession implements Session<QueryFilter> {
+public class DBSSession extends BaseSession {
 
     private static final Log log = LogFactory.getLog(DBSSession.class);
 
     protected static final Set<String> KEYS_RETENTION_HOLD_AND_PROXIES = new HashSet<>(Arrays.asList(KEY_RETAIN_UNTIL,
             KEY_HAS_LEGAL_HOLD, KEY_IS_RETENTION_ACTIVE, KEY_IS_PROXY, KEY_PROXY_TARGET_ID, KEY_PROXY_IDS));
-
-    protected final DBSRepository repository;
 
     protected final DBSTransactionState transaction;
 
@@ -195,7 +190,7 @@ public class DBSSession implements Session<QueryFilter> {
     protected boolean isLatestVersionDisabled = false;
 
     public DBSSession(DBSRepository repository) {
-        this.repository = repository;
+        super(repository);
         transaction = new DBSTransactionState(repository, this);
         FulltextConfiguration fulltextConfiguration = repository.getFulltextConfiguration();
         fulltextStoredInBlob = fulltextConfiguration != null && fulltextConfiguration.fulltextStoredInBlob;
@@ -248,16 +243,8 @@ public class DBSSession implements Session<QueryFilter> {
         transaction.rollback();
     }
 
-    protected BlobManager getBlobManager() {
-        return repository.getBlobManager();
-    }
-
-    protected DocumentBlobManager getDocumentBlobManager() {
-        return Framework.getService(DocumentBlobManager.class);
-    }
-
     protected String getRootId() {
-        return repository.getRootId();
+        return ((DBSRepository) repository).getRootId();
     }
 
     /*
@@ -685,7 +672,7 @@ public class DBSSession implements Session<QueryFilter> {
         docState.put(KEY_HAS_LEGAL_HOLD, null);
 
         if (TRUE.equals(versionState.get(KEY_IS_RECORD))) {
-            getDocumentBlobManager().notifyAfterCopy(doc);
+            notifyAfterCopy(doc);
         }
     }
 
@@ -804,7 +791,7 @@ public class DBSSession implements Session<QueryFilter> {
             copy.put(KEY_RETAIN_UNTIL, null);
             copy.put(KEY_HAS_LEGAL_HOLD, null);
             DBSDocument doc = getDocument(copy);
-            getDocumentBlobManager().notifyAfterCopy(doc);
+            notifyAfterCopy(doc);
         }
         return copy.getId();
     }
@@ -1319,69 +1306,19 @@ public class DBSSession implements Session<QueryFilter> {
         return false;
     }
 
-    // TODO move logic higher
     @Override
-    public ACP getMergedACP(Document doc) {
-        Document base = doc.isVersion() ? doc.getSourceDocument() : doc;
-        if (base == null) {
-            return null;
-        }
-        ACP acp = getACP(base);
-        if (doc.getParent() == null) {
-            return acp;
-        }
-        // get inherited ACLs only if no blocking inheritance ACE exists
-        // in the top level ACP.
-        ACL acl = null;
-        if (acp == null || acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) != Access.DENY) {
-            acl = getInheritedACLs(doc);
-        }
-        if (acp == null) {
-            if (acl == null) {
-                return null;
-            }
-            acp = new ACPImpl();
-        }
-        if (acl != null) {
-            acp.addACL(acl);
-        }
-        return acp;
-    }
-
-    protected ACL getInheritedACLs(Document doc) {
-        doc = doc.getParent();
-        ACL merged = null;
-        while (doc != null) {
-            ACP acp = getACP(doc);
-            if (acp != null) {
-                ACL acl = acp.getMergedACLs(ACL.INHERITED_ACL);
-                if (merged == null) {
-                    merged = acl;
-                } else {
-                    merged.addAll(acl);
-                }
-                if (acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) == Access.DENY) {
-                    break;
-                }
-            }
-            doc = doc.getParent();
-        }
-        return merged;
-    }
-
-    protected ACP getACP(Document doc) {
+    public ACP getACP(Document doc) {
         State state = transaction.getStateForRead(doc.getUUID());
         return memToAcp(state.get(KEY_ACP));
     }
 
     @Override
     public void setACP(Document doc, ACP acp, boolean overwrite) {
+        if (!overwrite && acp == null) {
+            return;
+        }
         checkNegativeAcl(acp);
         if (!overwrite) {
-            if (acp == null) {
-                return;
-            }
-            // merge with existing
             acp = updateACP(getACP(doc), acp);
         }
         String id = doc.getUUID();
@@ -1390,65 +1327,6 @@ public class DBSSession implements Session<QueryFilter> {
 
         // update read acls
         transaction.updateTreeReadAcls(id);
-    }
-
-    protected void checkNegativeAcl(ACP acp) {
-        if (acp == null) {
-            return;
-        }
-        for (ACL acl : acp.getACLs()) {
-            if (acl.getName().equals(ACL.INHERITED_ACL)) {
-                continue;
-            }
-            for (ACE ace : acl.getACEs()) {
-                if (ace.isGranted()) {
-                    continue;
-                }
-                String permission = ace.getPermission();
-                if (permission.equals(SecurityConstants.EVERYTHING)
-                        && ace.getUsername().equals(SecurityConstants.EVERYONE)) {
-                    continue;
-                }
-                // allow Write, as we're sure it doesn't include Read/Browse
-                if (permission.equals(SecurityConstants.WRITE)) {
-                    continue;
-                }
-                throw new IllegalArgumentException("Negative ACL not allowed: " + ace);
-            }
-        }
-    }
-
-    /**
-     * Returns the merge of two ACPs.
-     */
-    // TODO move to ACPImpl
-    protected static ACP updateACP(ACP curAcp, ACP addAcp) {
-        if (curAcp == null) {
-            return addAcp;
-        }
-        ACP newAcp = curAcp.clone();
-        Map<String, ACL> acls = new HashMap<>();
-        for (ACL acl : newAcp.getACLs()) {
-            String name = acl.getName();
-            if (ACL.INHERITED_ACL.equals(name)) {
-                throw new IllegalStateException(curAcp.toString());
-            }
-            acls.put(name, acl);
-        }
-        for (ACL acl : addAcp.getACLs()) {
-            String name = acl.getName();
-            if (ACL.INHERITED_ACL.equals(name)) {
-                continue;
-            }
-            ACL curAcl = acls.get(name);
-            if (curAcl != null) {
-                // TODO avoid duplicates
-                curAcl.addAll(acl);
-            } else {
-                newAcp.addACL(acl);
-            }
-        }
-        return newAcp;
     }
 
     protected static Serializable acpToMem(ACP acp) {
@@ -1556,12 +1434,11 @@ public class DBSSession implements Session<QueryFilter> {
             } else {
                 // fulltext is actually the blob key
                 // now retrieve the actual fulltext from the blob content
-                DocumentBlobManager blobManager = Framework.getService(DocumentBlobManager.class);
                 try {
                     BlobInfo blobInfo = new BlobInfo();
                     blobInfo.key = fulltext;
                     String xpath = BaseDocument.FULLTEXT_BINARYTEXT_PROP;
-                    Blob blob = blobManager.readBlob(blobInfo, doc, xpath);
+                    Blob blob = getDocumentBlobManager().readBlob(blobInfo, doc, xpath);
                     fulltext = blob.getString();
                 } catch (IOException e) {
                     throw new PropertyException("Cannot read fulltext blob for doc: " + id, e);
@@ -1724,8 +1601,8 @@ public class DBSSession implements Session<QueryFilter> {
         }
 
         // query the repository
-        PartialList<Map<String, Serializable>> projections = repository.queryAndFetch(evaluator, repoOrderByClause,
-                distinctDocuments, repoLimit, repoOffset, countUpTo);
+        PartialList<Map<String, Serializable>> projections = ((DBSRepository) repository).queryAndFetch(evaluator,
+                repoOrderByClause, distinctDocuments, repoLimit, repoOffset, countUpTo);
 
         for (Map<String, Serializable> proj : projections) {
             if (proj.containsKey(keyTag)) {
@@ -1896,7 +1773,7 @@ public class DBSSession implements Session<QueryFilter> {
         selectClause.add(new Reference(NXQL.ECM_UUID));
         sqlQuery = new DBSQueryOptimizer().optimize(sqlQuery);
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, sqlQuery, null, fulltextSearchDisabled);
-        return repository.scroll(evaluator, batchSize, keepAliveSeconds);
+        return ((DBSRepository) repository).scroll(evaluator, batchSize, keepAliveSeconds);
     }
 
     @Override
@@ -1910,12 +1787,12 @@ public class DBSSession implements Session<QueryFilter> {
         }
         DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, sqlQuery, queryFilter.getPrincipals(),
                 fulltextSearchDisabled);
-        return repository.scroll(evaluator, batchSize, keepAliveSeconds);
+        return ((DBSRepository) repository).scroll(evaluator, batchSize, keepAliveSeconds);
     }
 
     @Override
     public ScrollResult<String> scroll(String scrollId) {
-        return repository.scroll(scrollId);
+        return ((DBSRepository) repository).scroll(scrollId);
     }
 
     private String countUpToAsString(long countUpTo) {
@@ -2236,7 +2113,7 @@ public class DBSSession implements Session<QueryFilter> {
 
     @Override
     public LockManager getLockManager() {
-        return repository.getLockManager();
+        return ((DBSRepository) repository).getLockManager();
     }
 
     /**
