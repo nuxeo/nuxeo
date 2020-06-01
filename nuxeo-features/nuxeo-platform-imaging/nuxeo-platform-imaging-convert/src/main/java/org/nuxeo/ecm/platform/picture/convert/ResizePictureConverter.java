@@ -57,7 +57,8 @@ public class ResizePictureConverter implements Converter {
         Serializable w = parameters.get(OPTION_RESIZE_WIDTH);
         int width = ConverterUtils.getInteger(w);
         Serializable d = parameters.get(OPTION_RESIZE_DEPTH);
-        int depth = ConverterUtils.getInteger(d);
+        // -depth 0 leads to "convert: image depth not supported"
+        int depth = d == null ? -1 : ConverterUtils.getInteger(d);
         // use the registered conversion format
         String format = (String) parameters.get(CONVERSION_FORMAT);
         for (Blob source : sources) {
