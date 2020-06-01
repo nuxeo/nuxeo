@@ -90,7 +90,7 @@ public class JaegerReporter extends AbstractMetricsReporter {
         float samplerProbability = Float.parseFloat(options.getOrDefault(SAMPLER_PROB, DEFAULT_SAMPLER_PROB));
         if (samplerProbability >= 0.999) {
             builder.setSampler(Samplers.alwaysSample());
-        } else if (samplerProbability <= 0.001) {
+        } else if (samplerProbability < 0) {
             builder.setSampler(Samplers.neverSample());
         } else {
             builder.setSampler(Samplers.probabilitySampler(samplerProbability));
