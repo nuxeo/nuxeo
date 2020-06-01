@@ -104,7 +104,7 @@ public class TestPictureResize {
 
     @Ignore(value = "NXP-29089")
     @Test
-    public void testResizerForDoc() throws Exception{
+    public void testResizerForDoc() throws Exception {
         // TODO: NXP-27622
         assumeFalse(SystemUtils.IS_OS_MAC);
 
