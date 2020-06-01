@@ -2281,6 +2281,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>stax2-api</artifactId>
+        <version>4.2</version>
+      </dependency>
+      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>jsr250-api</artifactId>
         <version>1.0</version>
@@ -3493,15 +3498,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>woodstox-core-asl</artifactId>
-        <version>4.2.0</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.xml.stream</groupId>
-            <artifactId>stax-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>com.fasterxml.woodstox</groupId>
+        <artifactId>woodstox-core</artifactId>
+        <version>6.2.1</version>
       </dependency>
 
       <dependency>
@@ -3644,7 +3643,7 @@
             <artifactId>json-jena</artifactId>
           </exclusion>
           <exclusion>
-            <!-- conflicts with woodstox-core-asl needed by jaxws-rt -->
+            <!-- conflicts with woodstox-core needed by jackson-dataformat-xml -->
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>wstx-asl</artifactId>
           </exclusion>
@@ -4519,6 +4518,10 @@
         <artifactId>chemistry-opencmis-commons-impl</artifactId>
         <version>${chemistry.opencmis.version}</version>
         <exclusions>
+          <exclusion>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-rt</artifactId>
@@ -5744,6 +5747,12 @@
                   <exclude>commons-beanutils:commons-beanutils-core</exclude>
                 </excludes>
                 <message>commons-beanutils:commons-beanutils-core must not be used, use commons-beanutils:commons-beanutils instead</message>
+              </bannedDependencies>
+              <bannedDependencies>
+                <excludes>
+                  <exclude>org.codehaus.woodstox:woodstox-core-asl</exclude>
+                </excludes>
+                <message>org.codehaus.woodstox:woodstox-core-asl must not be used, use com.fasterxml.woodstox:woodstox-core instead</message>
               </bannedDependencies>
             </rules>
             <skip>false</skip>
