@@ -61,7 +61,7 @@
   <extension target="org.nuxeo.ecm.automation.server.BatchManager" point="handlers">
     <batchHandler>
       <name>s3</name>
-      <class>org.nuxeo.ecm.core.storage.sql.MockedS3DirectBatchHandler</class>
+      <class>org.nuxeo.ecm.core.storage.sql.S3DirectBatchHandler</class>
       <property name="transientStore">s3DUTransientStore</property>
       <!-- this is the name of the source blobProvider used to create the lazy binary -->
       <property name="blobProvider">s3DUBlobProviderSource</property>

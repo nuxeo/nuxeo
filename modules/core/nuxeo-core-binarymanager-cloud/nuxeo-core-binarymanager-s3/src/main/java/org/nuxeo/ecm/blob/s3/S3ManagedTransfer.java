@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,22 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Contributors:
- *     pierre
  */
-package org.nuxeo.ecm.core.storage.sql;
+package org.nuxeo.ecm.blob.s3;
+
+import com.amazonaws.services.s3.transfer.TransferManager;
 
 /**
- * Mocked S3 Direct Upload handler to be tested.
+ * S3 transfers relying on {@link TransferManager}.
  *
- * @since 10.2
+ * @since 11.2
  */
-public class MockedS3DirectBatchHandler extends S3DirectBatchHandler {
+public interface S3ManagedTransfer {
 
-    @Override
-    protected long lowerThresholdToUseMultipartCopy() {
-        return TestS3DirectBatchHandler.MULTIPART_THRESHOLD + 1;
-    }
+    /**
+     * Returns the {@link TransferManager}.
+     *
+     * @since 11.2
+     */
+    TransferManager getTransferManager();
 
 }
