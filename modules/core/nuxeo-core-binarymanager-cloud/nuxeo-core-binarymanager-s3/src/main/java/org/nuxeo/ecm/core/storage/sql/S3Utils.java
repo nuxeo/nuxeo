@@ -60,7 +60,7 @@ public class S3Utils {
      *
      * @since 11.1
      */
-    public static final long MULTIPART_COPY_PART_SIZE_DEFAULT = 5L * 1024 * 1024; // 5 MB
+    public static final long MULTIPART_COPY_PART_SIZE_DEFAULT = 100L * 1024 * 1024; // 100 MB
 
     /**
      * @deprecated since 11.1, use {@link #MULTIPART_COPY_PART_SIZE_DEFAULT} instead
