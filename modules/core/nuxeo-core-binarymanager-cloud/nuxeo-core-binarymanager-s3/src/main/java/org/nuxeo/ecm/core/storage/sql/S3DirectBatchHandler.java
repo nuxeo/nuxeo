@@ -53,10 +53,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
+import org.nuxeo.ecm.blob.s3.S3ManagedTransfer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
@@ -309,6 +311,11 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     /** @since 11.1 */
     protected TransferManager createTransferManager(AmazonS3 amazonS3) {
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
+        if (blobProvider instanceof S3ManagedTransfer) {
+            return ((S3ManagedTransfer) blobProvider).getTransferManager();
+        }
+
         long multipartCopyPartSize = MULTIPART_COPY_PART_SIZE_DEFAULT;
         ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         if (configurationService != null) {
