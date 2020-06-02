@@ -416,7 +416,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     }
 
     @Test
-    public void testTerminateTaskPermissions()  throws IOException {
+    public void testTerminateTaskPermissions() throws IOException {
         final String createdWorkflowInstanceId;
         DocumentModel note = RestServerInit.getNote(0, session);
 
@@ -425,7 +425,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId(), headers)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             ArrayNode runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
-                    .get(RunnableWorkflowJsonEnricher.NAME);
+                                                               .get(RunnableWorkflowJsonEnricher.NAME);
             // We can start both default workflow on the note
             assertEquals(2, runnableWorkflowModels.size());
         }
@@ -926,8 +926,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             ArrayNode workflowsNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
                                                       .get(RunningWorkflowJsonEnricher.NAME);
             assertEquals(1, workflowsNode.size());
-            ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(0).get(
-                    DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
+            ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(
+                    0).get(DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
             assertEquals(1, attachedDocumentIdsNode.size());
             assertEquals(note.getId(), attachedDocumentIdsNode.get(0).get("id").textValue());
         }
@@ -1099,8 +1099,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      */
     @Test
     public void testWorkflowCleanUpDisabling() throws Exception {
-        Framework.getProperties().put(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY,
-                "true");
+        Framework.getProperties()
+                 .put(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY, "true");
         try {
             createWorkflowsThenWaitForCleanup();
             DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
@@ -1151,9 +1151,10 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // Create a task not related to a workflow instance
-        List<Task> tasks = Framework.getService(TaskService.class).createTask(session,
-                session.getPrincipal(), note, "testNoWorkflowTask",
-                singletonList("user:Administrator"), false, null, null, null, Collections.emptyMap(), null);
+        List<Task> tasks = Framework.getService(TaskService.class)
+                                    .createTask(session, session.getPrincipal(), note, "testNoWorkflowTask",
+                                            singletonList("user:Administrator"), false, null, null, null,
+                                            Collections.emptyMap(), null);
         assertEquals(1, tasks.size());
         Task task = tasks.get(0);
         txFeature.nextTransaction();
