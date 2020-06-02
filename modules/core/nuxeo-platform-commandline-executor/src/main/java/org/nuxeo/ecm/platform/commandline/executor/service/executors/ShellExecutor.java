@@ -41,6 +41,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -69,7 +70,12 @@ public class ShellExecutor implements Executor {
     public ExecResult exec(CommandLineDescriptor cmdDesc, CmdParameters params, EnvironmentDescriptor env) {
         String commandLine = cmdDesc.getCommand() + " " + String.join(" ", cmdDesc.getParametersString());
         try {
-            log.debug("Running system command: {}", commandLine);
+            log.debug("Running system command: {} with parameters: {}", () -> commandLine,
+                    () -> params.getParameters()
+                                .entrySet()
+                                .stream()
+                                .map(e -> String.format("%s=%s", e.getKey(), e.getValue().getValue()))
+                                .collect(Collectors.joining(", ")));
             long t0 = System.currentTimeMillis();
             ExecResult res = exec1(cmdDesc, params, env);
             long t1 = System.currentTimeMillis();
