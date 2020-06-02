@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package type="addon" name="saml2-authentication" version="@VERSION@">
   <title>SAML 2.0 Authentication</title>
-  <description>The Nuxeo SAML 2.0 addon allows to let your users authenticate against a SAML identity provider, potentially offering Web SSO with other systems that would also integrate with the same provider.</description>
+  <description>The Nuxeo SAML 2.0 addon allows users to authenticate against a SAML identity provider, potentially supporting Web-based SSO with other systems that also integrate with the same provider.</description>
   <vendor>Nuxeo</vendor>
   <platforms>
     <platform>server-@VERSION@</platform>

@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-platform-importer" version="@VERSION@">
   <title>Bulk document importer</title>
   <description>
-    <p>The Nuxeo Bulk Document Importer addon enables mass document import in a Nuxeo repository. You can reach import rates up to thousands of documents per second. It is configurable so that you can map XML files to document metadata and choose document types that are used for the creation process.</p>
+    <p>The Nuxeo Bulk Document Importer addon enables large-scale document imports into a Nuxeo repository. It is configurable to map XML files to document metadata and document types.</p>
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

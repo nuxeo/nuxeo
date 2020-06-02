@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package type="addon" name="easyshare" version="@VERSION@">
   <title>EasyShare</title>
-  <description>The EasyShare package is an addon for the Nuxeo Platform that enables filesharing from the repository for a limited time with a simple link, thus allowing external users to access the content without requiring a login.</description>
+  <description>The EasyShare addon enables filesharing from the repository for a limited period utilizing a simple hyperlink, which allows external users to access Nuxeo content without requiring an account or login.</description>
   <vendor>Nuxeo</vendor>
   <platforms>
     <platform>server-@VERSION@</platform>

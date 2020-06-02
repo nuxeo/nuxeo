@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package type="addon" name="openid-authentication" version="@VERSION@">
   <title>OpenID Authentication</title>
-  <description>The OpenID Authentication addon allows you to use the decentralized authentication protocol of OpenID on your Nuxeo Platform instance. It can handle Amazon login, GitHub, Google, Google+, LinkedIn and Facebook.</description>
+  <description>The OpenID Authentication addon allows you to use the decentralized authentication protocol of OpenID on your Nuxeo Platform instance. It supports login credentials from Amazon, GitHub, Google, Google+, LinkedIn and Facebook.</description>
   <vendor>Nuxeo</vendor>
   <platforms>
     <platform>server-@VERSION@</platform>

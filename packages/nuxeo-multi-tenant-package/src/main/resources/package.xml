@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package type="addon" name="nuxeo-multi-tenant" version="@VERSION@">
   <title>Nuxeo Multi Tenant</title>
-  <description>The Nuxeo Multi-tenant addon enables to have domains, or tenants, that are independent from each other, with their own users and vocabulary values, as well as a low level fiter on content depending on tenant id.
+  <description>The Nuxeo Multi-Tenant addon supports multiple domains, or tenants, that are independent of each other, with their own users and vocabulary values, as well as low-level filters on content based on tenant ID.
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

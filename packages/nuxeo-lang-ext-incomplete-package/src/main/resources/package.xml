@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package type="addon" name="marketplace-lang-ext-incomplete" version="@VERSION@">
   <title>Nuxeo Platform Additional Languages</title>
-  <description>The Nuxeo Platform Additional Languages addon provides languages that were not sufficiently translated (95%) to be included in the default distribution of the Nuxeo Platform. More information about how to translate the Nuxeo Platform at https://doc.nuxeo.com/nxdoc/how-to-translate-the-nuxeo-platform/.</description>
+  <description>The Nuxeo Platform Additional Languages addon provides a set of additional languages (95% complete) to be included in the default distribution of the Nuxeo Platform. More information about how to translate the Nuxeo Platform is available at https://doc.nuxeo.com/nxdoc/how-to-translate-the-nuxeo-platform/.</description>
   <vendor>Nuxeo</vendor>
   <platforms>
     <platform>server-@VERSION@</platform>
