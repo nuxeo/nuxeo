@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2015-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2015-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ public class DirectoryEntryJsonReader extends EntityJsonReader<DirectoryEntry> {
                     entry = session.getEntry(id);
                 }
                 if (entry == null) {
-                    entry = BaseSession.createEntryModel(null, schema, id, new HashMap<String, Object>());
+                    entry = BaseSession.createEntryModel(schema, id, new HashMap<>());
                 }
                 ParameterizedType genericType = TypeUtils.parameterize(List.class, Property.class);
                 try (Closeable resource = ctx.wrap().with(DEFAULT_SCHEMA_NAME, schema).open()) {
