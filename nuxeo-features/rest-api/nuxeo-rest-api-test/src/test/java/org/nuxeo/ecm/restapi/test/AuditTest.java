@@ -24,10 +24,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.MultivaluedMap;
@@ -463,6 +466,65 @@ public class AuditTest extends BaseTest {
         }
     }
 
+    @Test
+    public void shouldHandleSortingAndPagination() throws Exception {
+        DocumentModel doc = RestServerInit.getFile(1, session);
+
+        List<LogEntry> logEntries = new ArrayList<>();
+        logEntries.add(buildLogEntry(doc, "Two", "secondEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "Two", "firstEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "Two", "thirdEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "One", "secondEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "One", "thirdEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "One", "thirdEvent", "james"));
+        logEntries.add(buildLogEntry(doc, "One", "firstEvent", "james"));
+        auditLogger.addLogEntries(logEntries);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.putSingle("principalName", "james");
+        queryParams.putSingle("sortBy", "category,eventId");
+        queryParams.putSingle("sortOrder", "asc,desc");
+        queryParams.putSingle("pageSize", "5");
+
+        queryParams.putSingle("currentPageIndex", "0");
+        makeSortAndPaginationCallAndVerify(doc, queryParams, //
+                Arrays.asList("One", "One", "One", "One", "One"), //
+                Arrays.asList("thirdEvent", "thirdEvent", "secondEvent", "firstEvent", "firstEvent"));
+
+        queryParams.putSingle("currentPageIndex", "1");
+        makeSortAndPaginationCallAndVerify(doc, queryParams, //
+                Arrays.asList("Two", "Two", "Two", "Two", "Two"), //
+                Arrays.asList("thirdEvent", "thirdEvent", "thirdEvent", "thirdEvent", "secondEvent"));
+
+        queryParams.putSingle("currentPageIndex", "2");
+        makeSortAndPaginationCallAndVerify(doc, queryParams, //
+                Collections.singletonList("Two"), //
+                Collections.singletonList("firstEvent"));
+    }
+
+    protected void makeSortAndPaginationCallAndVerify(DocumentModel doc, MultivaluedMap<String, String> queryParams,
+            List<String> expectedCategories, List<String> expectedEvents) throws Exception {
+        try (CloseableClientResponse response = getResponse(BaseTest.RequestType.GET,
+                "id/" + doc.getId() + "/@" + AuditAdapter.NAME, queryParams)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            List<JsonNode> nodes = getLogEntries(node);
+
+            List<String> categories = nodes.stream().map(n -> n.get("category").asText()).collect(Collectors.toList());
+            assertEquals(expectedCategories, categories);
+
+            List<String> events = nodes.stream().map(n -> n.get("eventId").asText()).collect(Collectors.toList());
+            assertEquals(expectedEvents, events);
+        }
+    }
+
     @Override
     protected List<JsonNode> getLogEntries(JsonNode node) {
         assertEquals("logEntries", node.get("entity-type").asText());
@@ -473,6 +535,16 @@ public class AuditTest extends BaseTest {
             result.add(elements.next());
         }
         return result;
+    }
+
+    protected LogEntry buildLogEntry(DocumentModel documentModel, String category, String eventId,
+            String principalName) {
+        LogEntry logEntry = auditLogger.newLogEntry();
+        logEntry.setDocUUID(documentModel.getRef());
+        logEntry.setCategory(category);
+        logEntry.setEventId(eventId);
+        logEntry.setPrincipalName(principalName);
+        return logEntry;
     }
 
 }
