@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-csv" version="@VERSION@">
   <title>Nuxeo CSV</title>
   <description>
-    <p>The Nuxeo CSV addon adds the ability to bulk-import hundred thousands of documents with their metadata through CSV files to the Nuxeo repository.</p>
+    <p>The Nuxeo CSV addon supports the bulk import of documents and metadata with CSV files to the Nuxeo repository.</p>
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

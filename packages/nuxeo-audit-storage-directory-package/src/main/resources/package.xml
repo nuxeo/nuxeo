@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-audit-storage-directory" version="@VERSION@">
   <title>Nuxeo Audit Storage Directory Marketplace Package</title>
   <description>
-    <p>This add-on enables to specify one or several storages for the Nuxeo Audit logs.</p>
+    <p>This addon allows the administrator to specify where to write and store the Nuxeo Audit logs.</p>
     <p>For additional information please read <a href="https://github.com/nuxeo/nuxeo-audit-storage-directory">documentation</a></p>
   </description>
   <vendor>Nuxeo</vendor>

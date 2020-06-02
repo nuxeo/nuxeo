@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-quota" version="@VERSION@">
   <title>Nuxeo Quota</title>
   <description>
-   The Nuxeo Quota addon enables users to define a maximum size for the domains and workspaces they manage and provide some statistics about storage space use in the application.
+   The Nuxeo Quota addon enables users to define a maximum size for the domains and workspaces they manage, and provides application storage space statistics.
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package type="addon" name="nuxeo-wopi" version="@VERSION@">
-  <title>Nuxeo WOPI</title>
+  <title>Nuxeo Office Online Integration</title>
   <description>
-    <p>The Nuxeo WOPI addon adds the ability to view/edit Microsoft Office documents through Office Online.</p>
+    <p>The Nuxeo Office Online addon allows users to open and edit Office document in a Microsoft-native web interface. Files are stored in Nuxeo, so they can leverage Nuxeo Platform features like versioning and locking. They can also be viewed, edited or co-authored by users. The Office Online integration is based on the Web Application Open Platform Interface (WOPI) protocol provided by Microsoft. This functionality requires a separately licensed Microsoft Office365 account and subscription.</p>
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-liveconnect" version="@VERSION@">
   <title>Nuxeo Live Connect</title>
   <description>
-    <p>The Nuxeo Live Connect addon allows users to reference their files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows to those external ressources, benefit from full-text search and edit metadata as if they were stored in the Nuxeo repository.</p>
+    <p>The Nuxeo Live Connect addon allows users to reference files stored on most common EFSS systems (Dropbox, Box, Google Drive, One Drive). User can then apply business workflows, perform full-text searches, and edit metadata for Live Connect content as if it were stored in the Nuxeo repository.</p>
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

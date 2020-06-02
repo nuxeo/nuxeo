@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-imap-connector" version="@VERSION@">
   <title>Nuxeo IMAP Connector</title>
   <description>
-    The Nuxeo IMAP Connector addon allows to fetch emails from an IMAP mailbox and import them as Documents in the Nuxeo Repository.
+    The Nuxeo IMAP Connector addon allows users to import emails from an IMAP mailbox into the Nuxeo repository.
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

@@ -2,7 +2,7 @@
 <package type="addon" name="nuxeo-tree-snapshot" version="@VERSION@">
   <title>Nuxeo Tree Snapshot</title>
   <description>
-    <p>Nuxeo Tree Snapshot brings the possibility to snapshot and version a whole folder and its content in a single step and to recover the state of a folder for a given version.</p>
+    <p>Nuxeo Tree Snapshot "snapshots" and versions an entire folder and its contents in a single step. The folder and its contents can then be recovered for a given version.</p>
   </description>
   <vendor>Nuxeo</vendor>
   <platforms>

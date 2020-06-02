@@ -3,11 +3,7 @@
   <title>Platform Explorer</title>
   <description>
     <p>
-      The Platform Explorer addon provides a Web Interface and a Java API to browse any Nuxeo distribution: BundleGroups
-      (Maven group or artificial grouping), Bundles, Components, Services, Extension Points, Operations and
-      Contributions. It is the addon used behind http://explorer.nuxeo.com. It can be seen as an introspection tool to
-      automatically generate documentation. It can be particularly useful if you are a software vendor that builds a
-      solution on top of the Nuxeo Platform.
+      The Platform Explorer addon provides a Web interface and a Java API to browse any Nuxeo distribution: bundled groups (Maven group or artificial grouping), bundles, components, services, extension points, operations and contributions. It is the addon used behind http://explorer.nuxeo.com. It can be seen as a tool to generate documentation automatically. It can be particularly useful if you are a software vendor that builds a solution on top of the Nuxeo Platform.
     </p>
   </description>
   <home-page>http://doc.nuxeo.com/x/VoVH</home-page>
