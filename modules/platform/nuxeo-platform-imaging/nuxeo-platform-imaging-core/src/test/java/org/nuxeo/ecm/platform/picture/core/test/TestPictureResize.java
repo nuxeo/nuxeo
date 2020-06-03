@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.platform.picture.core.test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assume.assumeFalse;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,8 +80,6 @@ public class TestPictureResize {
 
     @Test
     public void testResizer() throws Exception {
-        // TODO: NXP-27622
-        assumeFalse(SystemUtils.IS_OS_MAC);
         Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg");
 
         ctx.setInput(source);
@@ -102,9 +98,6 @@ public class TestPictureResize {
 
     @Test
     public void testResizerForDoc() throws Exception {
-        // TODO: NXP-27622
-        assumeFalse(SystemUtils.IS_OS_MAC);
-
         DocumentModel pictureDoc = session.createDocumentModel("/", "testpicture", "Picture");
         Blob source = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"), "image/jpeg");
         pictureDoc.setPropertyValue("file:content", (Serializable) source);
