@@ -20,8 +20,10 @@
 package org.nuxeo.ecm.directory.io;
 
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertiesJsonReader.DEFAULT_SCHEMA_NAME;
+import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertiesJsonReader.FALLBACK_RESOLVER;
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.directory.DirectoryEntryResolver.PARAM_DIRECTORY;
 import static org.nuxeo.ecm.directory.io.DirectoryEntryJsonWriter.ENTITY_TYPE;
 
 import java.io.Closeable;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -38,9 +41,11 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.io.marshallers.json.EntityJsonReader;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentPropertiesJsonReader;
+import org.nuxeo.ecm.core.io.registry.context.WrappedContext;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryEntryResolver;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -100,7 +105,7 @@ public class DirectoryEntryJsonReader extends EntityJsonReader<DirectoryEntry> {
                     entry = BaseSession.createEntryModel(schema, id, new HashMap<>());
                 }
                 ParameterizedType genericType = TypeUtils.parameterize(List.class, Property.class);
-                try (Closeable resource = ctx.wrap().with(DEFAULT_SCHEMA_NAME, schema).open()) {
+                try (Closeable resource = openWrappedContext(directory)) {
                     List<Property> properties = readEntity(List.class, genericType, propsNode);
                     for (Property property : properties) {
                         entry.setPropertyValue(property.getName(), property.getValue());
@@ -110,5 +115,24 @@ public class DirectoryEntryJsonReader extends EntityJsonReader<DirectoryEntry> {
             }
         }
         return null;
+    }
+
+    /**
+     * Wraps and opens the current {@link org.nuxeo.ecm.core.io.registry.context.RenderingContext} with the directory
+     * schema and the parent resolver in case of hierarchical vocabulary.
+     */
+    protected Closeable openWrappedContext(Directory directory) {
+        String directorySchema = directory.getSchema();
+        String directoryName = directory.getName();
+
+        WrappedContext specializedContext = ctx.wrap().with(DEFAULT_SCHEMA_NAME, directorySchema);
+        if (directorySchema.endsWith("xvocabulary")) {
+            // create dynamically a resolver for parent field because the schema can't hold the directory name
+            // for the resolver definition
+            DirectoryEntryResolver resolver = new DirectoryEntryResolver();
+            resolver.configure(Map.of(PARAM_DIRECTORY, directoryName));
+            specializedContext.with(FALLBACK_RESOLVER + "parent", resolver);
+        }
+        return specializedContext.open();
     }
 }
