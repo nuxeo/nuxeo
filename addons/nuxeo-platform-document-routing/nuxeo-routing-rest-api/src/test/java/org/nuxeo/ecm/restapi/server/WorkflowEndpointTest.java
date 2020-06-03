@@ -49,6 +49,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -58,7 +59,9 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.EventImpl;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.MarshallingConstants;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -73,6 +76,7 @@ import org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowInsta
 import org.nuxeo.ecm.platform.routing.test.WorkflowFeature;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.jaxrs.io.RestConstants;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.TaskAdapter;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.adapter.WorkflowAdapter;
@@ -118,6 +122,9 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
 
     @Inject
     protected TransactionalFeature txFeature;
+
+    @Inject
+    protected UserManager userManager;
 
     @Test
     public void testAdapter() throws IOException {
@@ -415,7 +422,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
     }
 
     @Test
-    public void testTerminateTaskPermissions()  throws IOException {
+    public void testTerminateTaskPermissions() throws IOException {
         final String createdWorkflowInstanceId;
         DocumentModel note = RestServerInit.getNote(0, session);
 
@@ -424,7 +431,7 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         try (CloseableClientResponse response = getResponse(RequestType.GET, "/id/" + note.getId(), headers)) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             ArrayNode runnableWorkflowModels = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
-                    .get(RunnableWorkflowJsonEnricher.NAME);
+                                                               .get(RunnableWorkflowJsonEnricher.NAME);
             // We can start both default workflow on the note
             assertEquals(2, runnableWorkflowModels.size());
         }
@@ -926,8 +933,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
             ArrayNode workflowsNode = (ArrayNode) node.get(RestConstants.CONTRIBUTOR_CTX_PARAMETERS)
                                                       .get(RunningWorkflowJsonEnricher.NAME);
             assertEquals(1, workflowsNode.size());
-            ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(0).get(
-                    DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
+            ArrayNode attachedDocumentIdsNode = (ArrayNode) workflowsNode.get(
+                    0).get(DocumentRouteWriter.ATTACHED_DOCUMENT_IDS);
             assertEquals(1, attachedDocumentIdsNode.size());
             assertEquals(note.getId(), attachedDocumentIdsNode.get(0).get("id").textValue());
         }
@@ -1098,8 +1105,8 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
      */
     @Test
     public void testWorkflowCleanUpDisabling() throws Exception {
-        Framework.getProperties().put(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY,
-                "true");
+        Framework.getProperties()
+                 .put(DocumentRoutingWorkflowInstancesCleanup.CLEANUP_WORKFLOW_INSTANCES_PROPERTY, "true");
         try {
             createWorkflowsThenWaitForCleanup();
             DocumentModelList cancelled = session.query(CANCELLED_WORKFLOWS);
@@ -1150,9 +1157,10 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
         DocumentModel note = RestServerInit.getNote(0, session);
 
         // Create a task not related to a workflow instance
-        List<Task> tasks = Framework.getService(TaskService.class).createTask(session,
-                session.getPrincipal(), note, "testNoWorkflowTask",
-                singletonList("user:Administrator"), false, null, null, null, Collections.emptyMap(), null);
+        List<Task> tasks = Framework.getService(TaskService.class)
+                                    .createTask(session, session.getPrincipal(), note, "testNoWorkflowTask",
+                                            singletonList("user:Administrator"), false, null, null, null,
+                                            Collections.emptyMap(), null);
         assertEquals(1, tasks.size());
         Task task = tasks.get(0);
         txFeature.nextTransaction();
@@ -1391,6 +1399,58 @@ public class WorkflowEndpointTest extends RoutingRestBaseTest {
                 "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + createdMainWorkflowInstanceId + "/task")) {
             JsonNode node = mapper.readTree(response.getEntityInputStream());
             assertEquals(0, node.get("entries").size());
+        }
+
+    }
+
+    /*
+     * NXP-29171
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.restapi.server.routing.test:test-specific-task-request-unmarshalling.xml")
+    public void testSpecificTaskRequestWithFetchedGroup() throws IOException {
+        DocumentModel note = RestServerInit.getNote(0, session);
+
+        // create workflow as Administrator
+        String workflowInstanceId;
+        try (CloseableClientResponse response = getResponse(RequestType.POST, "/workflow",
+                getCreateAndStartWorkflowBodyContent("confirm", singletonList(note.getId())))) {
+            assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            workflowInstanceId = node.get("id").textValue();
+        }
+
+        // get tasks for child WF
+        String taskId;
+        try (CloseableClientResponse response = getResponse(RequestType.GET,
+                "/id/" + note.getId() + "/@" + WorkflowAdapter.NAME + "/" + workflowInstanceId + "/task")) {
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+            assertEquals(1, node.get("entries").size());
+            taskId = node.get("entries").get(0).get("id").textValue();
+        }
+
+        NuxeoGroup group = userManager.getGroup("administrators");
+
+        String groupJson = MarshallerHelper.objectToJson(group, RenderingContext.CtxBuilder.get());
+        String body = String.format("{\"entity-type\":\"task\", \"id\":\"%s\", \"variables\":{\"assignees\":[%s]}}",
+                taskId, groupJson);
+        // assign it with a fetched entity
+        try (CloseableClientResponse response = getResponse(RequestType.PUT, "/task/" + taskId + "/confirm", body)) {
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+            JsonNode node = mapper.readTree(response.getEntityInputStream());
+
+            JsonNode nodeVariables = node.get("variables");
+            assertNotNull(nodeVariables);
+
+            JsonNode nodeAssignees = nodeVariables.get("assignees");
+            assertNotNull(nodeAssignees);
+            assertTrue(nodeAssignees.isArray());
+
+            ArrayNode arrayAssignees = (ArrayNode) nodeAssignees;
+            assertEquals("Number of assignees is wrong", 1, arrayAssignees.size());
+            assertEquals("group:administrators", arrayAssignees.get(0).textValue());
         }
 
     }
