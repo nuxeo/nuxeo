@@ -93,6 +93,9 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
 
     public static final String DEFAULT_SCHEMA_NAME = "DEFAULT_SCHEMA_NAME";
 
+    /** @since 11.2 */
+    public static final String FALLBACK_RESOLVER = "resolver.";
+
     @Inject
     private SchemaManager schemaManager;
 
@@ -193,6 +196,10 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         if (jn.isObject()) {
             ObjectResolver resolver = type.getObjectResolver();
             if (resolver == null) {
+                // fallback on resolver present in rendering context (for example xvocabulary parent field)
+                resolver = ctx.getParameter(FALLBACK_RESOLVER + property.getName());
+            }
+            if (resolver == null) {
                 // Let's assume it is a blob of which content has to be stored in a string property.
                 if (type.getSuperType() instanceof StringType) {
                     Blob blob = readEntity(Blob.class, Blob.class, jn);
@@ -200,14 +207,17 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
                         return blob.getString();
                     }
                 }
-                log.info("Unable to parse the property {}", property::getXPath);
-                return null;
+                throw new MarshallingException("Unable to parse the property " +  property.getXPath());
             }
             Object object = null;
             for (Class<?> clazz : resolver.getManagedClasses()) {
-                object = readEntity(clazz, clazz, jn);
-                if (object != null) {
-                    break;
+                try {
+                    object = readEntity(clazz, clazz, jn);
+                    if (object != null) {
+                        break;
+                    }
+                } catch (MarshallingException e) {
+                    log.info("Unable to read the entity - {}", e::getMessage, () -> e);
                 }
             }
             if (object == null) {
