@@ -57,7 +57,9 @@
               </tr>
             </table>
             <i>Existing snapshot with the same name and version will be updated.</i><br/>
-            <input type="submit" value="Save" id="doSave" class="button" onclick="$.fn.clickButton(this)" />
+            <input type="submit" value="Save" id="doSave" class="button primary" onclick="$.fn.clickButton(this)" />
+            <input type="button" value="Cancel" id="save"
+              onclick="$('#stdSave').css('display','none');$('#saveBtn').css('display','block')">
           </form>
         </div>
         <div style="display:none" id="extendedSave">
@@ -84,7 +86,9 @@
                 <td><span name="version">${rtSnap.version}</span></td>
               </tr>
             </table>
-            <input type="submit" value="Save" id="doSaveExtended" class="button" onclick="$.fn.clickButton(this)" />
+            <input type="submit" value="Save" id="doSaveExtended" class="button primary" onclick="$.fn.clickButton(this)" />
+            <input type="button" value="Cancel" id="save"
+              onclick="$('#extendedSave').css('display','none');$('#saveBtn').css('display','block')">
           </form>
         </div>
 
