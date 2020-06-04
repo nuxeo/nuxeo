@@ -57,7 +57,7 @@
               </tr>
             </table>
             <i>Existing snapshot with the same name and version will be updated.</i><br/>
-            <input type="submit" value="Save" id="doSave" class="button" />
+            <input type="submit" value="Save" id="doSave" class="button" onclick="$.fn.clickButton(this)" />
           </form>
         </div>
         <div style="display:none" id="extendedSave">
@@ -88,7 +88,7 @@
                 <td><span name="version">${rtSnap.version}</span></td>
               </tr>
             </table>
-            <input type="submit" value="Save" id="doSaveExtended" class="button" />
+            <input type="submit" value="Save" id="doSaveExtended" class="button" onclick="$.fn.clickButton(this)" />
           </form>
         </div>
 
@@ -111,7 +111,11 @@
           </#if>
         </td>
         <td>
-          <p><a class="button" href="${Root.path}/download/${distrib.key}">Export as zip</a></p>
+          <p>
+            <a class="button" href="${Root.path}/download/${distrib.key}" onclick="$.fn.clickButton(this)">
+              Export as zip
+            </a>
+          </p>
         </td>
       </tr>
     </#list>
@@ -123,7 +127,7 @@
     <p>You can use the form below to upload a distribution that has been exported as a zip:</p>
     <form method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data">
       <input type="file" name="archive" id="archive">
-      <input type="submit" value="Upload" id="upload">
+      <input type="submit" value="Upload" id="upload" onclick="$.fn.clickButton(this)">
     </form>
   </div>
 
