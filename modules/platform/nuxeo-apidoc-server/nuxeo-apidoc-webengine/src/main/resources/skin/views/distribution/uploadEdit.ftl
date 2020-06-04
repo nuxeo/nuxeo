@@ -39,7 +39,7 @@
       </tr>
       <tr>
         <td colspan="2">
-          <input type="submit" value="Import bundles" id="doImport" />
+          <input type="submit" value="Import bundles" id="doImport" onclick="$.fn.clickButton(this)" />
         </td>
       </tr>
     </table>

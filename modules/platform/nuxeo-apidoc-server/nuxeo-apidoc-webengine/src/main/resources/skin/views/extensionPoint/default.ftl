@@ -68,11 +68,12 @@
         </div>
         <div class="block-title">
           <a class="components" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}">
-          ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
+            ${contrib.component.bundle.fileName} ${contrib.component.xmlFileName}
           </a>
           &nbsp;
-          <a class="override button" href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?contributionId=${contrib.id}" target="_blank">
-          Override
+          <a class="override button" onclick="$.fn.clickButton(this)"
+            href="${Root.path}/${distId}/viewComponent/${contrib.component.id}/override/?contributionId=${contrib.id}" target="_blank">
+            Override
           </a>
         </div>
       </li>

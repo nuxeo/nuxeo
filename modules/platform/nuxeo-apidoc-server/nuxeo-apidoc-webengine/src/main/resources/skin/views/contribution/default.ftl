@@ -47,8 +47,8 @@
       </li>
     </#list>
     </ul>
-    <input id="overrideStart" type="button" value="Generate Override" onclick="toggleOverrideForm(true)"/>
-    <input id="overrideGen" style="display:none" type="submit" value="Generate XML file" class="button primary"/>
+    <input id="overrideStart" type="button" value="Generate Override" onclick="toggleOverrideForm(true)" />
+    <input id="overrideGen" style="display:none" type="submit" value="Generate XML file" class="button primary" onclick="$.fn.clickButton(this)" />
     <input id="overrideCancel" style="display:none" type="button" value="Cancel" onclick="toggleOverrideForm(false)" />
   </form>
   <script>

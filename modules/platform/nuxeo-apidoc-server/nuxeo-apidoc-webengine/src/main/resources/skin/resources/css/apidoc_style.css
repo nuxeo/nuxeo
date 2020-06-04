@@ -371,12 +371,12 @@ button, input, select, textarea {
   color: #333e49; }
 
 ::-moz-selection {
-  background: #00adff;
+  background: #0079b3;
   color: #fff;
   text-shadow: none; }
 
 ::selection {
-  background: #00adff;
+  background: #0079b3;
   color: #fff;
   text-shadow: none; }
 
@@ -1044,7 +1044,8 @@ input[type="search"] {
   padding: .3em 1em;
   text-align: center;
   vertical-align: baseline;
-  display: inline-block; }
+  display: inline-block;
+}
 
 .button.primary,
 a.button.primary {
@@ -1072,12 +1073,27 @@ input[type="submit"]:hover,
 input[type="reset"]:hover,
 input[type="button"]:hover {
   border-color: #0079b3;
-  color: #0079b3; }
+  color: #0079b3;
+}
+
+.button.clicked,
+a.button.clicked,
+input[type="submit"].clicked,
+input[type="reset"].clicked,
+input[type="button"].clicked {
+  background-color: #0079b3;
+  color: #fff;
+}
 
 .button.primary:hover,
 a.button.primary:hover {
   background-color: #0079b3;
   color: #fff;
+}
+
+.button.primary.clicked,
+a.button.primary.clicked {
+  background-color: #0079b3;
 }
 
 .distributions {
