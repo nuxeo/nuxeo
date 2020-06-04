@@ -78,6 +78,7 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -443,8 +444,12 @@ public class Distribution extends ModuleRoot {
         }
         Blob blob = getContext().getForm().getFirstBlob();
 
-        getSnapshotManager().importSnapshot(getContext().getCoreSession(), blob.getStream());
-        getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
+        try {
+            getSnapshotManager().importSnapshot(getContext().getCoreSession(), blob.getStream());
+            getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
+        } catch (IOException | IllegalArgumentException | NuxeoException e) {
+            return getView("importKO").arg("message", e.getMessage());
+        }
 
         return getView("index");
     }
@@ -460,17 +465,21 @@ public class Distribution extends ModuleRoot {
         if (blob == null || blob.getLength() == 0) {
             return null;
         }
+        Template view;
         try {
             DocumentModel snap = getSnapshotManager().importTmpSnapshot(getContext().getCoreSession(),
                     blob.getStream());
             if (snap == null) {
-                return getView("importKO").arg("message", "Unable to import archive.");
+                view = getView("importKO").arg("message", "Unable to import archive.");
+            } else {
+                DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
+                view = getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject", snapObject);
             }
-            DistributionSnapshot snapObject = snap.getAdapter(DistributionSnapshot.class);
-            return getView("uploadEdit").arg("tmpSnap", snap).arg("snapObject", snapObject);
-        } catch (IOException e) {
-            return getView("importKO").arg("message", e.getMessage());
+        } catch (IOException | IllegalArgumentException | NuxeoException e) {
+            view = getView("importKO").arg("message", e.getMessage());
         }
+
+        return view;
     }
 
     @POST
@@ -487,9 +496,17 @@ public class Distribution extends ModuleRoot {
         String pathSegment = formData.getString("pathSegment");
         String title = formData.getString("title");
 
-        getSnapshotManager().validateImportedSnapshot(getContext().getCoreSession(), name, version, pathSegment, title);
-        getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
-        return getView("importDone");
+        Template view;
+        try {
+            getSnapshotManager().validateImportedSnapshot(getContext().getCoreSession(), name, version, pathSegment,
+                    title);
+            getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
+            view = getView("importDone");
+        } catch (IllegalArgumentException | NuxeoException e) {
+            view = getView("importKO").arg("message", e.getMessage());
+        }
+
+        return view;
     }
 
     @GET
