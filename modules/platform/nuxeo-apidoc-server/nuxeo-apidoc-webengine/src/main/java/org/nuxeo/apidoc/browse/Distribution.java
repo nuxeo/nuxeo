@@ -272,52 +272,7 @@ public class Distribution extends ModuleRoot {
     @Produces("text/html")
     public Object doSave() throws NamingException, NotSupportedException, SystemException, RollbackException,
             HeuristicMixedException, HeuristicRollbackException, ParseException {
-        if (!canAddDocumentation()) {
-            return null;
-        }
-        FormData formData = getContext().getForm();
-        String distribLabel = formData.getString("name");
-
-        log.info("Start Snapshot...");
-        boolean startedTx = false;
-        UserTransaction tx = TransactionHelper.lookupUserTransaction();
-        if (tx != null && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            tx.begin();
-            startedTx = true;
-        }
-
-        Map<String, Serializable> otherProperties = readFormData(formData);
-        try {
-            getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel, otherProperties);
-        } catch (NuxeoException e) {
-            log.error("Error during storage", e);
-            if (tx != null) {
-                tx.rollback();
-            }
-            return getView("savedKO").arg("message", e.getMessage());
-        }
-        log.info("Snapshot saved.");
-        if (tx != null && startedTx) {
-            tx.commit();
-        }
-
-        String redirectUrl = getContext().getBaseURL() + getPath();
-        log.debug("Path => " + redirectUrl);
-        return getView("saved");
-    }
-
-    protected Map<String, Serializable> readFormData(FormData formData) {
-        Map<String, Serializable> properties = new HashMap<>();
-
-        // Release date
-        String released = formData.getString("released");
-        if (StringUtils.isNotBlank(released)) {
-            LocalDate date = LocalDate.parse(released);
-            Instant instant = date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
-            properties.put(PROP_RELEASED, java.util.Date.from(instant));
-        }
-
-        return properties;
+        return performSave(null);
     }
 
     @POST
@@ -325,10 +280,6 @@ public class Distribution extends ModuleRoot {
     @Produces("text/html")
     public Object doSaveExtended() throws NamingException, NotSupportedException, SystemException, SecurityException,
             RollbackException, HeuristicMixedException, HeuristicRollbackException {
-        if (!canAddDocumentation()) {
-            return null;
-        }
-
         FormData formData = getContext().getForm();
 
         String distribLabel = formData.getString("name");
@@ -353,7 +304,28 @@ public class Distribution extends ModuleRoot {
                   .forEach(pkg -> filter.addNuxeoPackagePrefix(pkg));
         }
 
-        Map<String, Serializable> otherProperties = readFormData(formData);
+        return performSave(filter);
+    }
+
+    protected Map<String, Serializable> readFormData(FormData formData) {
+        Map<String, Serializable> properties = new HashMap<>();
+
+        // Release date
+        String released = formData.getString("released");
+        if (StringUtils.isNotBlank(released)) {
+            LocalDate date = LocalDate.parse(released);
+            Instant instant = date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
+            properties.put(PROP_RELEASED, java.util.Date.from(instant));
+        }
+
+        return properties;
+    }
+
+    protected Object performSave(SnapshotFilter filter) throws NamingException, NotSupportedException, SystemException,
+            SecurityException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
+        if (!canAddDocumentation()) {
+            return null;
+        }
 
         log.info("Start Snapshot...");
         boolean startedTx = false;
@@ -362,9 +334,11 @@ public class Distribution extends ModuleRoot {
             tx.begin();
             startedTx = true;
         }
+
+        FormData formData = getContext().getForm();
         try {
-            getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel, otherProperties,
-                    filter);
+            getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), formData.getString("name"),
+                    readFormData(formData), filter);
         } catch (NuxeoException e) {
             log.error("Error during storage", e);
             if (tx != null) {
@@ -373,9 +347,12 @@ public class Distribution extends ModuleRoot {
             return getView("savedKO").arg("message", e.getMessage());
         }
         log.info("Snapshot saved.");
+
         if (tx != null && startedTx) {
             tx.commit();
         }
+        String redirectUrl = getContext().getBaseURL() + getPath();
+        log.debug("Path => " + redirectUrl);
         return getView("saved");
     }
 
