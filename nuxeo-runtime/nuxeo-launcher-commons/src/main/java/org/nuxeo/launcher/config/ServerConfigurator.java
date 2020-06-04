@@ -18,6 +18,9 @@
  */
 package org.nuxeo.launcher.config;
 
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -620,8 +623,11 @@ public abstract class ServerConfigurator {
             nxInstance.packages.add(info);
             pkgTemplates.addAll(info.templates);
         }
-        // templates
         nxInstance.config = new ConfigurationInfo();
+        // profiles
+        nxInstance.config.profiles.addAll(
+                Arrays.asList(generator.getEnvironment(NUXEO_PROFILES, "").split(TEMPLATE_SEPARATOR)));
+        // templates
         nxInstance.config.dbtemplate = generator.extractDatabaseTemplateName();
         String userTemplates = generator.getUserTemplates();
         StringTokenizer st = new StringTokenizer(userTemplates, ",");

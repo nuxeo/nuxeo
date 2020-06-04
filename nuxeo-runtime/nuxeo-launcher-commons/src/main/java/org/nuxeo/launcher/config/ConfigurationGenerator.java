@@ -104,8 +104,12 @@ import freemarker.template.TemplateException;
  */
 public class ConfigurationGenerator {
 
+    /** @since 11.1 */
+    public static final String NUXEO_PROFILES = "NUXEO_PROFILES";
+
     /**
      * @since 6.0
+     * @implNote also used for profiles
      */
     public static final String TEMPLATE_SEPARATOR = ",";
 
@@ -458,12 +462,20 @@ public class ConfigurationGenerator {
         backingServicesConfigurator = new BackingServiceConfigurator(this);
         String homeInfo = "Nuxeo home:          " + nuxeoHome.getPath();
         String confInfo = "Nuxeo configuration: " + nuxeoConf.getPath();
+        String nuxeoProfiles = getEnvironment(NUXEO_PROFILES);
+        String profilesInfo = "Nuxeo profiles:      " + nuxeoProfiles;
         if (quiet) {
             log.debug(homeInfo);
             log.debug(confInfo);
+            if (StringUtils.isNotBlank(nuxeoProfiles)) {
+                log.debug(profilesInfo);
+            }
         } else {
             log.info(homeInfo);
             log.info(confInfo);
+            if (StringUtils.isNotBlank(nuxeoProfiles)) {
+                log.info(profilesInfo);
+            }
         }
     }
 
@@ -652,7 +664,12 @@ public class ConfigurationGenerator {
      */
     protected void includeTemplates() throws IOException {
         includedTemplates.clear();
-        List<File> orderedTemplates = includeTemplates(getUserTemplates());
+        String templates = getUserTemplates();
+        String profiles = getEnvironment(NUXEO_PROFILES);
+        if (StringUtils.isNotBlank(profiles)) {
+            templates += TEMPLATE_SEPARATOR + profiles;
+        }
+        List<File> orderedTemplates = includeTemplates(templates);
         includedTemplates.clear();
         includedTemplates.addAll(orderedTemplates);
         log.debug(includedTemplates);
@@ -722,7 +739,7 @@ public class ConfigurationGenerator {
             String envVarName = matcher.group("envparam");
             String defaultValue = matcher.group("defaultvalue");
 
-            String envValue = getEnvironmentVariableValue(envVarName);
+            String envValue = getEnvironment(envVarName);
 
             String result;
             if (booleanValue) {
@@ -2109,10 +2126,20 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return the value of an environment variable. Overriden for testing.
+     * @return the value of an environment variable
      * @since 9.1
+     * @apiNote exists to be overridden by tests
      */
-    protected String getEnvironmentVariableValue(String key) {
+    protected String getEnvironment(String key) {
         return System.getenv(key);
+    }
+
+    /**
+     * @return the value of an environment variable
+     * @since 11.1
+     * @see #getEnvironment(String)
+     */
+    protected String getEnvironment(String key, String defaultValue) {
+        return StringUtils.defaultString(getEnvironment(key), defaultValue);
     }
 }

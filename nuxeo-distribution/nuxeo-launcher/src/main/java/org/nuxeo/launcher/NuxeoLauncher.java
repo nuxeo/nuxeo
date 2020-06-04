@@ -2769,6 +2769,10 @@ public abstract class NuxeoLauncher {
             log.info(String.format("- %s (version: %s - id: %s - state: %s)", pkg.name, pkg.version, pkg.id,
                     pkg.state.getLabel()));
         }
+        log.info("** Profiles:");
+        for (String profile : info.config.profiles) {
+            log.info("Profile: " + profile);
+        }
         // nuxeo.conf
         log.info("** Templates:");
         log.info("Database template: " + info.config.dbtemplate);

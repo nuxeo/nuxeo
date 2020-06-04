@@ -50,6 +50,10 @@ public class ConfigurationInfo {
     @XmlElement(name = "template")
     public List<String> usertemplates = new ArrayList<>();
 
+    @XmlElementWrapper(name = "profiles")
+    @XmlElement(name = "profile")
+    public List<String> profiles = new ArrayList<>();
+
     @XmlElementWrapper(name = "keyvals")
     @XmlElement(name = "keyval")
     public List<KeyValueInfo> keyvals = new ArrayList<>();
