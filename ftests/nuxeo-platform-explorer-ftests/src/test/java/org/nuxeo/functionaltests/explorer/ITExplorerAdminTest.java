@@ -41,12 +41,14 @@ import org.junit.Test;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.ecm.core.io.impl.DWord;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.drivers.FirefoxDriverProvider;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.proxy.ProxyManager;
 import org.nuxeo.runtime.api.Framework;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -173,7 +175,7 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(DistribAdminPage.URL);
         String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, false);
         String distribId = getDistribId(distribName, version);
-        asPage(ExplorerHomePage.class).checkPersistedDistrib(distribId);
+        asPage(DistribAdminPage.class).checkPersistedDistrib(distribId);
         checkDistrib(distribId, false, null, false);
 
         // check importing it back
@@ -185,6 +187,8 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         String newDistribName = "imported-server";
         String newVersion = "1.0.0";
         asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion, null);
+        // NXP-29154: check redirection to admin page
+        asPage(DistribAdminPage.class);
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
@@ -197,7 +201,7 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(DistribAdminPage.URL);
         String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, true);
         String distribId = getDistribId(distribName, version);
-        asPage(ExplorerHomePage.class).checkPersistedDistrib(distribId);
+        asPage(DistribAdminPage.class).checkPersistedDistrib(distribId);
         checkDistrib(distribId, true, distribName, false);
 
         // check importing it back
@@ -205,11 +209,13 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         String filename = getDistribExportName(distribId);
         File file = asPage(DistribAdminPage.class).exportFirstPersistedDistrib(downloadDir, filename);
 
-        open(DistribAdminPage.URL);
+        // import it from the home page this time
+        open(ExplorerHomePage.URL);
         String newDistribName = "partial-imported-server";
         String newVersion = "1.0.0";
-        asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion, null);
-        open(ExplorerHomePage.URL);
+        asPage(ExplorerHomePage.class).importPersistedDistrib(file, newDistribName, newVersion, null);
+        // NXP-29154: check redirection to home page
+        asPage(ExplorerHomePage.class);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
         checkDistrib(distribId, true, distribName, false);
@@ -262,7 +268,8 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         // add the needed ".nuxeo-archive" file at the root of the zip and retry
         FileUtils.deleteQuietly(file);
         createSampleZip(sourceDirPath, file.getPath(), true);
-        open(DistribAdminPage.URL);
+
+        Locator.scrollAndForceClick(driver.findElement(By.linkText("RETRY")));
         asPage(DistribAdminPage.class).importPersistedDistrib(file, newDistribName, newVersion, null);
 
         open(ExplorerHomePage.URL);

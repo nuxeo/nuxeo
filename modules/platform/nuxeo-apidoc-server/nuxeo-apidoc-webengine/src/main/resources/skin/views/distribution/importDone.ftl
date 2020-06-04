@@ -6,7 +6,8 @@
 
   <h1>Distribution uploaded successfully</h1>
   <div>
-    <a href="${Root.path}/">Continue</a>
+    <#assign view=This.getRedirectViewPostUpload(source) />
+    <a href="${Root.path}/${view}" class="button">Continue</a>
   </div>
 
 </@block>

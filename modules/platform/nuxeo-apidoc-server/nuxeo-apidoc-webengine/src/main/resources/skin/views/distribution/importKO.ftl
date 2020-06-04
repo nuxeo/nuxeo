@@ -8,6 +8,10 @@
   <div id="details">
     Details: ${message}
   </div>
+  <div>
+    <#assign view=This.getRedirectViewPostUpload(source) />
+    <a href="${Root.path}/${view}" class="button">Retry</a>
+  </div>
 
 </@block>
 

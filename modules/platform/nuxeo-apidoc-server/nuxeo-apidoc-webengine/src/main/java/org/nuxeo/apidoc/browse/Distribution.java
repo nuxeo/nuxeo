@@ -94,6 +94,10 @@ public class Distribution extends ModuleRoot {
 
     public static final String DIST_ID = "distId";
 
+    public static final String VIEW_INDEX = "index";
+
+    public static final String VIEW_ADMIN = "_admin";
+
     protected static final Pattern VERSION_REGEX = Pattern.compile("^(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-.*)?$",
             Pattern.CASE_INSENSITIVE);
 
@@ -155,7 +159,7 @@ public class Distribution extends ModuleRoot {
     @GET
     @Produces("text/html")
     public Object doGet() {
-        return getView("index").arg("hideNav", Boolean.TRUE);
+        return getView(VIEW_INDEX).arg("hideNav", Boolean.TRUE);
     }
 
     @Path(ApiBrowserConstants.DISTRIBUTION_ALIAS_LATEST)
@@ -333,6 +337,7 @@ public class Distribution extends ModuleRoot {
         }
 
         FormData formData = getContext().getForm();
+        String source = formData.getString("source");
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), formData.getString("name"),
                     readFormData(formData), filter);
@@ -341,7 +346,7 @@ public class Distribution extends ModuleRoot {
             if (tx != null) {
                 tx.rollback();
             }
-            return getView("savedKO").arg("message", e.getMessage());
+            return getView("savedKO").arg("message", e.getMessage()).arg("source", source);
         }
         log.info("Snapshot saved.");
 
@@ -350,7 +355,7 @@ public class Distribution extends ModuleRoot {
         }
         String redirectUrl = getContext().getBaseURL() + getPath();
         log.debug("Path => " + redirectUrl);
-        return getView("saved");
+        return getView("saved").arg("source", source);
     }
 
     /**
@@ -419,16 +424,18 @@ public class Distribution extends ModuleRoot {
         if (!canAddDocumentation()) {
             return null;
         }
-        Blob blob = getContext().getForm().getFirstBlob();
+        FormData formData = getContext().getForm();
+        Blob blob = formData.getFirstBlob();
+        String source = formData.getString("source");
 
         try {
             getSnapshotManager().importSnapshot(getContext().getCoreSession(), blob.getStream());
             getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
         } catch (IOException | IllegalArgumentException | NuxeoException e) {
-            return getView("importKO").arg("message", e.getMessage());
+            return getView("importKO").arg("message", e.getMessage()).arg("source", source);
         }
 
-        return getView("index");
+        return getView(getRedirectViewPostUpload(source));
     }
 
     @POST
@@ -438,7 +445,8 @@ public class Distribution extends ModuleRoot {
         if (!canAddDocumentation()) {
             return null;
         }
-        Blob blob = getContext().getForm().getFirstBlob();
+        FormData formData = getContext().getForm();
+        Blob blob = formData.getFirstBlob();
         if (blob == null || blob.getLength() == 0) {
             return null;
         }
@@ -456,6 +464,7 @@ public class Distribution extends ModuleRoot {
             view = getView("importKO").arg("message", e.getMessage());
         }
 
+        view.arg("source", formData.getString("source"));
         return view;
     }
 
@@ -483,7 +492,20 @@ public class Distribution extends ModuleRoot {
             view = getView("importKO").arg("message", e.getMessage());
         }
 
+        view.arg("source", formData.getString("source"));
         return view;
+    }
+
+    /**
+     * Returns the view to redirect to depending on source upload page.
+     *
+     * @since 11.1
+     */
+    public String getRedirectViewPostUpload(String source) {
+        if ("admin".equals(source)) {
+            return VIEW_ADMIN;
+        }
+        return "";
     }
 
     @GET
