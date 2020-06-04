@@ -328,7 +328,6 @@ public class Distribution extends ModuleRoot {
             return null;
         }
 
-        log.info("Start Snapshot...");
         boolean startedTx = false;
         UserTransaction tx = TransactionHelper.lookupUserTransaction();
         if (tx != null && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
@@ -348,13 +347,10 @@ public class Distribution extends ModuleRoot {
             }
             return getView("savedKO").arg("message", e.getMessage()).arg("source", source);
         }
-        log.info("Snapshot saved.");
 
         if (tx != null && startedTx) {
             tx.commit();
         }
-        String redirectUrl = getContext().getBaseURL() + getPath();
-        log.debug("Path => " + redirectUrl);
         return getView("saved").arg("source", source);
     }
 
