@@ -57,6 +57,7 @@
               </tr>
             </table>
             <i>Existing snapshot with the same name and version will be updated.</i><br/>
+            <input type="hidden" name="source" value="admin">
             <input type="submit" value="Save" id="doSave" class="button primary" onclick="$.fn.clickButton(this)" />
             <input type="button" value="Cancel" id="save"
               onclick="$('#stdSave').css('display','none');$('#saveBtn').css('display','block')">
@@ -90,6 +91,7 @@
                 <td><span name="version">${rtSnap.version}</span></td>
               </tr>
             </table>
+            <input type="hidden" name="source" value="admin">
             <input type="submit" value="Save" id="doSaveExtended" class="button primary" onclick="$.fn.clickButton(this)" />
             <input type="button" value="Cancel" id="save"
               onclick="$('#extendedSave').css('display','none');$('#saveBtn').css('display','block')">
@@ -101,7 +103,7 @@
 
     <#list snapList as distrib>
       <tr>
-        <td><a class="button" href="${Root.path}/${distrib.key}/">${distrib.name}</a></td>
+        <td><a class="distrib button" href="${Root.path}/${distrib.key}/">${distrib.name}</a></td>
         <td>${distrib.version}</td>
         <td>${distrib.creationDate?datetime}</td>
         <td>${distrib.releaseDate?datetime}</td>
@@ -131,6 +133,7 @@
     <p>You can use the form below to upload a distribution that has been exported as a zip:</p>
     <form method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data">
       <input type="file" name="archive" id="archive">
+      <input type="hidden" name="source" value="admin">
       <input type="submit" value="Upload" id="upload" onclick="$.fn.clickButton(this)">
     </form>
   </div>

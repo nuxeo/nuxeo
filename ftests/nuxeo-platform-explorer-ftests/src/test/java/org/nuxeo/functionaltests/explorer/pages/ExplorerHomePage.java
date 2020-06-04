@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Required;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -72,13 +71,6 @@ public class ExplorerHomePage extends AbstractExplorerPage {
         assertEquals(
                 String.format("%s%s%s/", AbstractTest.NUXEO_URL, URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT),
                 currentDistrib.getAttribute("href"));
-    }
-
-    public void checkPersistedDistrib(String distribId) {
-        String xpath = String.format("//a[@class='distrib' and contains(@href, '%s%s')]", URL, distribId);
-        WebElement distrib = driver.findElement(By.xpath(xpath));
-        clickOn(distrib);
-        asPage(DistributionHomePage.class).checkHeader(distribId);
     }
 
 }

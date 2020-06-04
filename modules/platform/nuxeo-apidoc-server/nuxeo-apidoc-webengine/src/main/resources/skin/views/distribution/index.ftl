@@ -124,6 +124,7 @@
     <form class="box" method="POST" action="${Root.path}/uploadDistribTmp" enctype="multipart/form-data" >
       <p>Upload your distribution that has been exported as a zip:</p>
       <input type="file" name="archive" id="archive">
+      <input type="hidden" name="source" value="home">
       <input type="submit" value="Upload" id="upload" onclick="$.fn.clickButton(this)">
     </form>
   </div>
