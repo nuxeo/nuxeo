@@ -53,7 +53,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @TransactionalConfig(autoStart = false)
 public abstract class TestLocalBlobStoreTxAbstract extends TestAbstractBlobStore {
 
-    protected static final int JOIN_TIMEOUT = 5_000; // 5s, increase this when debugging
+    protected static final int JOIN_TIMEOUT = 10_000; // 10s, increase this when debugging
 
     protected Path dir;
 
