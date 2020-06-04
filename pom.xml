@@ -6003,6 +6003,7 @@
               <licenseMerge>EPL 2.0
                 |Eclipse Public License - v 2.0</licenseMerge>
               <licenseMerge>EPL 1.0 + MPL 2.0
+                |MPL 2.0 or EPL 1.0
                 |The H2 License, Version 1.0</licenseMerge>
               <licenseMerge>LGPL 2.1
                 |GNU Lesser General Public License, 2.1
