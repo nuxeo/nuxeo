@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2019 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2011-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -45,16 +44,14 @@ import java.util.function.Function;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
-    Map<String, String> env = new HashMap<>();
+    protected Map<String, String> env = new HashMap<>();
 
     @Override
     @Before
@@ -72,8 +69,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
         };
         assertTrue(configGenerator.init());
-        log.debug(
-                "Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
+        log.debug("Test with {}",
+                () -> configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
     }
 
     @Test
@@ -127,8 +124,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     private void testAddress(String bindAddress, String expectedLoopback) throws ConfigurationException {
         configGenerator.setProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS, bindAddress);
-        log.debug(
-                "Test with " + configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
+        log.debug("Test with {}",
+                () -> configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
         configGenerator.init(true);
         assertEquals("Bad loop back URL", expectedLoopback,
                 configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_LOOPBACK_URL));
@@ -156,8 +153,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     /**
      * According to {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}: <br>
-     * <q>{@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
-     * {@link ConfigurationGenerator#PARAM_FORCE_GENERATION} cannot be unset</q>
+     * <q>{@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and {@link ConfigurationGenerator#PARAM_FORCE_GENERATION}
+     * cannot be unset</q>
      *
      * <pre>
      * nuxeo.templates=default,common,testinclude
@@ -394,7 +391,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testCheckJavaVersionCompliant() throws Exception {
-        LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN);
+        LogCaptureAppender logCaptureAppender = new LogCaptureAppender(Level.WARN, ConfigurationGenerator.class);
+        logCaptureAppender.start();
         Logger rootLogger = LoggerContext.getContext(false).getRootLogger();
         rootLogger.addAppender(logCaptureAppender);
         try {
@@ -439,6 +437,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
                         ce.getMessage());
             }
         } finally {
+            logCaptureAppender.stop();
             rootLogger.removeAppender(logCaptureAppender);
         }
     }
@@ -468,8 +467,9 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testEnvironmentVariableInTemplates() {
-        configGenerator.getUserConfig().setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
-                "${env:NUXEO_DB_TYPE:default},docker,${env:NUXEO_DB_HOST:docker}");
+        configGenerator.getUserConfig()
+                       .setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME,
+                               "${env:NUXEO_DB_TYPE:default},docker,${env:NUXEO_DB_HOST:docker}");
         assertEquals("default,docker,10.0.0.1", String.join(",", configGenerator.getTemplateList()));
     }
 
@@ -506,7 +506,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testCheckEncoding() throws Exception {
         Path tempFile = Files.createTempFile("", "");
         // Test UTF8
-        Files.write(tempFile, "nuxéo".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+        Files.writeString(tempFile, "nuxéo", StandardCharsets.UTF_8, StandardOpenOption.CREATE);
         try {
             Charset charset = ConfigurationGenerator.checkFileCharset(tempFile.toFile());
             assertEquals(StandardCharsets.UTF_8, charset);
@@ -514,7 +514,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
             Files.deleteIfExists(tempFile);
         }
         // test ISO_8859_1
-        Files.write(tempFile, "nuxéo".getBytes(StandardCharsets.ISO_8859_1), StandardOpenOption.CREATE);
+        Files.writeString(tempFile, "nuxéo", StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE);
         try {
             Charset charset = ConfigurationGenerator.checkFileCharset(tempFile.toFile());
             assertEquals(StandardCharsets.ISO_8859_1, charset);
@@ -522,50 +522,13 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
             Files.deleteIfExists(tempFile);
         }
         // test US_ASCII
-        Files.write(tempFile, "nuxeo".getBytes(StandardCharsets.US_ASCII), StandardOpenOption.CREATE);
+        Files.writeString(tempFile, "nuxeo", StandardCharsets.US_ASCII, StandardOpenOption.CREATE);
         try {
             Charset charset = ConfigurationGenerator.checkFileCharset(tempFile.toFile());
             assertEquals(StandardCharsets.US_ASCII, charset);
         } finally {
             Files.deleteIfExists(tempFile);
         }
-    }
-
-    private static class LogCaptureAppender extends AbstractAppender {
-
-        private final List<String> messages = new ArrayList<>();
-
-        private final Level level;
-
-        public LogCaptureAppender(Level level) {
-            super(LogCaptureAppender.class.getName(), null, null);
-            this.level = level;
-        }
-
-        @Override
-        public void append(LogEvent event) {
-            if ("org.nuxeo.launcher.config.ConfigurationGenerator".equals(event.getLoggerName())
-                    && level.equals(event.getLevel())) {
-                messages.add(event.getMessage().getFormattedMessage());
-            }
-        }
-
-        public boolean isEmpty() {
-            return messages.isEmpty();
-        }
-
-        public String get(int i) {
-            return messages.get(i);
-        }
-
-        public int size() {
-            return messages.size();
-        }
-
-        public void clear() {
-            messages.clear();
-        }
-
     }
 
 }
