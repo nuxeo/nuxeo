@@ -20,14 +20,18 @@
 package org.nuxeo.launcher.config;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.function.Predicate.isEqual;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_FAIL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_NOFAIL;
 import static org.nuxeo.launcher.config.ConfigurationGenerator.JVMCHECK_PROP;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +50,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,8 +58,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     protected Map<String, String> env = new HashMap<>();
 
-    @Override
     @Before
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         env.put("NUXEO_DB_HOST", "10.0.0.1");
@@ -63,7 +68,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator = new ConfigurationGenerator() {
 
             @Override
-            protected String getEnvironmentVariableValue(String key) {
+            protected String getEnvironment(String key) {
                 return env.get(key);
             }
 
@@ -71,6 +76,13 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(configGenerator.init());
         log.debug("Test with {}",
                 () -> configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_BIND_ADDRESS));
+    }
+
+    @After
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        env.clear();
     }
 
     @Test
@@ -529,6 +541,24 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         } finally {
             Files.deleteIfExists(tempFile);
         }
+    }
+
+    @Test
+    public void testIncludeProfile() {
+        String profileToTest = "testprofile";
+        assertFalse("Profile should not be included", isTemplateIncluded(profileToTest));
+        assertNotEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
+
+        env.put(NUXEO_PROFILES, profileToTest);
+
+        configGenerator.init(true);
+
+        assertTrue("Profile should be included", isTemplateIncluded(profileToTest));
+        assertEquals("true", configGenerator.getUserConfig().getProperty("nuxeo.profile.added.by.test"));
+    }
+
+    protected boolean isTemplateIncluded(String template) {
+        return configGenerator.getIncludedTemplates().stream().map(File::getName).anyMatch(isEqual(template));
     }
 
 }

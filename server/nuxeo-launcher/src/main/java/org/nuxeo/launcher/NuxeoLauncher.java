@@ -2298,6 +2298,10 @@ public class NuxeoLauncher {
         for (PackageInfo pkg : info.packages) {
             log.info("- {} (version: {} - id: {}} - state: {})", pkg.name, pkg.version, pkg.id, pkg.state.getLabel());
         }
+        log.info("** Profiles:");
+        for (String profile : info.config.profiles) {
+            log.info("Profile: {}", profile);
+        }
         // nuxeo.conf
         log.info("** Templates:");
         log.info("Database template: {}", info.config.dbtemplate);

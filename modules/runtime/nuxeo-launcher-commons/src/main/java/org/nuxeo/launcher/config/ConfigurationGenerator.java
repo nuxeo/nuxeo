@@ -64,6 +64,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -110,9 +111,15 @@ public class ConfigurationGenerator {
     private static final Logger log = LogManager.getLogger(ConfigurationGenerator.class);
 
     /** @since 11.1 */
-    public static final String NUXEO_ENVIRONMENT = System.getenv("NUXEO_ENVIRONMENT");
+    public static final String NUXEO_ENVIRONMENT = "NUXEO_ENVIRONMENT";
 
-    /** @since 6.0 */
+    /** @since 11.1 */
+    public static final String NUXEO_PROFILES = "NUXEO_PROFILES";
+
+    /**
+     * @since 6.0
+     * @implNote also used for profiles
+     */
     public static final String TEMPLATE_SEPARATOR = ",";
 
     /**
@@ -132,7 +139,7 @@ public class ConfigurationGenerator {
     public static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
 
     /** @since 11.1 */
-    public static final String NUXEO_ENVIRONMENT_CONF = String.format("nuxeo.%s", NUXEO_ENVIRONMENT);
+    public static final String NUXEO_ENVIRONMENT_CONF_FORMAT = "nuxeo.%s";
 
     /**
      * Absolute or relative PATH to the user chosen templates (comma separated list)
@@ -422,6 +429,10 @@ public class ConfigurationGenerator {
         backingServicesConfigurator = new BackingServiceConfigurator(this);
         log.log(logLevel, "Nuxeo home:          {}", nuxeoHome::getPath);
         log.log(logLevel, "Nuxeo configuration: {}", nuxeoConf::getPath);
+        String nuxeoProfiles = getEnvironment(NUXEO_PROFILES);
+        if (StringUtils.isNotBlank(nuxeoProfiles)) {
+            log.log(logLevel, "Nuxeo profiles:      {}", nuxeoProfiles);
+        }
     }
 
     public boolean isConfigurable() {
@@ -621,7 +632,12 @@ public class ConfigurationGenerator {
      */
     protected void includeTemplates() throws IOException {
         includedTemplates.clear();
-        List<File> orderedTemplates = includeTemplates(getUserTemplates());
+        String templates = getUserTemplates();
+        String profiles = getEnvironment(NUXEO_PROFILES);
+        if (StringUtils.isNotBlank(profiles)) {
+            templates += TEMPLATE_SEPARATOR + profiles;
+        }
+        List<File> orderedTemplates = includeTemplates(templates);
         includedTemplates.clear();
         includedTemplates.addAll(orderedTemplates);
         log.debug(includedTemplates);
@@ -691,7 +707,7 @@ public class ConfigurationGenerator {
             String envVarName = matcher.group("envparam");
             String defaultValue = matcher.group("defaultvalue");
 
-            String envValue = getEnvironmentVariableValue(envVarName);
+            String envValue = getEnvironment(envVarName);
 
             String result;
             if (booleanValue) {
@@ -1658,10 +1674,11 @@ public class ConfigurationGenerator {
             throws ConfigurationException, IOException {
         File templateDir = getTemplateDirectory(template);
         File templateConf;
-        if (StringUtils.isBlank(NUXEO_ENVIRONMENT)) {
+        String nuxeoEnv = getEnvironment(NUXEO_ENVIRONMENT, "");
+        if (nuxeoEnv.isBlank()) {
             templateConf = new File(templateDir, NUXEO_DEFAULT_CONF);
         } else {
-            templateConf = new File(templateDir, NUXEO_ENVIRONMENT_CONF);
+            templateConf = new File(templateDir, String.format(NUXEO_ENVIRONMENT_CONF_FORMAT, nuxeoEnv));
         }
         Properties templateProperties = loadTrimmedProperties(templateConf);
         Map<String, String> oldValues = new HashMap<>();
@@ -1850,11 +1867,11 @@ public class ConfigurationGenerator {
      * <p/>
      * This method assumes {@code nuxeo.defaults} exists and is readable.
      */
-    protected static Properties loadNuxeoDefaults(File directory) throws IOException {
+    protected Properties loadNuxeoDefaults(File directory) throws IOException {
         // load nuxeo.defaults
         Properties properties = loadTrimmedProperties(new File(directory, NUXEO_DEFAULT_CONF));
         // load nuxeo.NUXEO_ENVIRONMENT
-        File nuxeoDefaultsEnv = new File(directory, NUXEO_ENVIRONMENT_CONF);
+        File nuxeoDefaultsEnv = new File(directory, getNuxeoEnvironmentConfName());
         if (nuxeoDefaultsEnv.exists()) {
             loadTrimmedProperties(properties, nuxeoDefaultsEnv);
         }
@@ -2032,10 +2049,28 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @return the value of an environment variable. Overriden for testing.
+     * @return the value of an environment variable
      * @since 9.1
+     * @apiNote exists to be overridden by tests
      */
-    protected String getEnvironmentVariableValue(String key) {
+    protected String getEnvironment(String key) {
         return System.getenv(key);
+    }
+
+    /**
+     * @return the value of an environment variable
+     * @since 11.1
+     * @see #getEnvironment(String)
+     */
+    protected String getEnvironment(String key, String defaultValue) {
+        return Objects.requireNonNullElse(getEnvironment(key), defaultValue);
+    }
+
+    /**
+     * @return the nuxeo.defaults file for current {@code NUXEO_ENVIRONMENT}
+     * @since 11.1
+     */
+    protected String getNuxeoEnvironmentConfName() {
+        return String.format(NUXEO_ENVIRONMENT_CONF_FORMAT, getEnvironment(NUXEO_ENVIRONMENT));
     }
 }

@@ -20,6 +20,8 @@
 package org.nuxeo.launcher.config;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.NUXEO_PROFILES;
+import static org.nuxeo.launcher.config.ConfigurationGenerator.TEMPLATE_SEPARATOR;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -141,8 +143,9 @@ public class ServerConfigurator {
      */
     protected void parseAndCopy(Properties config) throws IOException, TemplateException, ConfigurationException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
+        String nuxeoEnvironmentConf = generator.getNuxeoEnvironmentConfName();
         final FilenameFilter filter = (dir, name) -> !ConfigurationGenerator.NUXEO_DEFAULT_CONF.equals(name)
-                && !ConfigurationGenerator.NUXEO_ENVIRONMENT_CONF.equals(name);
+                && !nuxeoEnvironmentConf.equals(name);
         final TextTemplate templateParser = new TextTemplate(config);
         templateParser.setKeepEncryptedAsVar(true);
         templateParser.setTrim(true);
@@ -614,8 +617,11 @@ public class ServerConfigurator {
             nxInstance.packages.add(info);
             pkgTemplates.addAll(info.templates);
         }
-        // templates
         nxInstance.config = new ConfigurationInfo();
+        // profiles
+        nxInstance.config.profiles.addAll(
+                Arrays.asList(generator.getEnvironment(NUXEO_PROFILES, "").split(TEMPLATE_SEPARATOR)));
+        // templates
         nxInstance.config.dbtemplate = generator.extractDatabaseTemplateName();
         String userTemplates = generator.getUserTemplates();
         StringTokenizer st = new StringTokenizer(userTemplates, ",");
