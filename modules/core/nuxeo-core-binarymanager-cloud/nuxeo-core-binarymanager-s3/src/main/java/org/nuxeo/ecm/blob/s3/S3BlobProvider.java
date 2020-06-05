@@ -31,7 +31,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.amazonaws.services.s3.transfer.TransferManager;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +63,7 @@ import com.amazonaws.services.s3.model.StorageClass;
  *
  * @since 11.1
  */
-public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTransfer {
+public class S3BlobProvider extends BlobStoreBlobProvider {
 
     private static final Logger log = LogManager.getLogger(S3BlobProvider.class);
 
@@ -106,11 +105,6 @@ public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTr
 
     protected S3BlobStoreConfiguration getConfiguration(Map<String, String> properties) throws IOException {
         return new S3BlobStoreConfiguration(properties);
-    }
-
-    @Override
-    public TransferManager getTransferManager() {
-        return config.transferManager;
     }
 
     @Override

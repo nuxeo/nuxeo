@@ -34,9 +34,6 @@ import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_PREFIX_PROPE
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.BUCKET_REGION_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.ENDPOINT_PROPERTY;
 import static org.nuxeo.ecm.core.storage.sql.S3BinaryManager.PATHSTYLEACCESS_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3Utils.MULTIPART_COPY_PART_SIZE_DEFAULT;
-import static org.nuxeo.ecm.core.storage.sql.S3Utils.MULTIPART_COPY_PART_SIZE_PROPERTY;
-import static org.nuxeo.ecm.core.storage.sql.S3Utils.NON_MULTIPART_COPY_MAX_SIZE;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,21 +41,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.amazonaws.services.s3.model.CopyObjectRequest;
-import com.amazonaws.services.s3.transfer.Copy;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
-import org.nuxeo.ecm.blob.s3.S3ManagedTransfer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
@@ -72,7 +63,6 @@ import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.Credentials;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Batch Handler allowing direct S3 upload.
@@ -254,38 +244,15 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         if (isEmpty(key)) {
             return false;
         }
-        String bucketKey = bucketPrefix + key;
 
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.mimeType = metadata.getContentType();
         blobInfo.encoding = metadata.getContentEncoding();
         blobInfo.filename = fileInfo.getFilename();
         blobInfo.length = metadata.getContentLength();
-
-        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileKey, bucket, bucketKey);
-        // server-side encryption
-        if (useServerSideEncryption) { // TODO KMS
-            // SSE-S3
-            ObjectMetadata newObjectMetadata = new ObjectMetadata();
-            newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
-            copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
-        }
-
-        TransferManager transferManager = createTransferManager(amazonS3);
-        Copy copy = transferManager.copy(copyObjectRequest, amazonS3, null);
-        try {
-            copy.waitForCompletion();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new NuxeoException(e);
-        } finally {
-            amazonS3.deleteObject(bucket, fileKey);
-        }
-
-        ObjectMetadata newMetadata = amazonS3.getObjectMetadata(bucket, bucketKey);
-
         blobInfo.key = key;
-        blobInfo.digest = defaultString(newMetadata.getContentMD5(), key);
+        blobInfo.digest = defaultString(metadata.getContentMD5(), key);
+
         Blob blob;
         try {
             BlobManager blobManager = Framework.getService(BlobManager.class);
@@ -298,35 +265,11 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         try {
             batch.addFile(fileIndex, blob, blob.getFilename(), blob.getMimeType());
         } catch (NuxeoException e) {
-            amazonS3.deleteObject(bucket, bucketKey);
+            amazonS3.deleteObject(bucket, bucketPrefix + key);
             throw e;
         }
 
         return true;
-    }
-
-    protected long lowerThresholdToUseMultipartCopy() {
-        return NON_MULTIPART_COPY_MAX_SIZE;
-    }
-
-    /** @since 11.1 */
-    protected TransferManager createTransferManager(AmazonS3 amazonS3) {
-        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
-        if (blobProvider instanceof S3ManagedTransfer) {
-            return ((S3ManagedTransfer) blobProvider).getTransferManager();
-        }
-
-        long multipartCopyPartSize = MULTIPART_COPY_PART_SIZE_DEFAULT;
-        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService != null) {
-            multipartCopyPartSize = configurationService.getLong(MULTIPART_COPY_PART_SIZE_PROPERTY,
-                    multipartCopyPartSize);
-        }
-        return TransferManagerBuilder.standard()
-                .withS3Client(amazonS3)
-                .withMultipartCopyThreshold(lowerThresholdToUseMultipartCopy())
-                .withMultipartCopyPartSize(multipartCopyPartSize)
-                .build();
     }
 
     /** @since 11.1 */

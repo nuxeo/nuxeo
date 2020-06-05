@@ -52,7 +52,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
 import org.nuxeo.ecm.blob.AbstractBinaryGarbageCollector;
 import org.nuxeo.ecm.blob.AbstractCloudBinaryManager;
-import org.nuxeo.ecm.blob.s3.S3ManagedTransfer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -102,7 +101,7 @@ import com.amazonaws.services.s3.transfer.Upload;
  * Because the BLOB length can be accessed independently of the binary stream, it is also cached in a simple text file
  * if accessed before the stream.
  */
-public class S3BinaryManager extends AbstractCloudBinaryManager implements S3ManagedTransfer {
+public class S3BinaryManager extends AbstractCloudBinaryManager {
 
     private static final Log log = LogFactory.getLog(S3BinaryManager.class);
 
@@ -411,11 +410,6 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
         abortOldUploads();
     }
 
-    @Override
-    public TransferManager getTransferManager() {
-        return transferManager;
-    }
-
     protected void removeBinary(String digest) {
         amazonS3.deleteObject(bucketName, bucketNamePrefix + digest);
     }
@@ -575,7 +569,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager implements S3Man
                 newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
                 copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
             }
-            Copy copy = getTransferManager().copy(copyObjectRequest, amazonS3, null);
+            Copy copy = transferManager.copy(copyObjectRequest, amazonS3, null);
             try {
                 copy.waitForCompletion();
             } catch (InterruptedException e) {
