@@ -31,6 +31,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.BundleInfoImpl;
@@ -38,6 +39,7 @@ import org.nuxeo.apidoc.introspection.ComponentInfoImpl;
 import org.nuxeo.apidoc.introspection.ExtensionInfoImpl;
 import org.nuxeo.apidoc.introspection.ExtensionPointInfoImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
+import org.nuxeo.apidoc.introspection.PackageInfoImpl;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.introspection.ServiceInfoImpl;
 import org.nuxeo.apidoc.plugin.PluginSnapshot;
@@ -160,6 +162,23 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
     List<OperationInfo> getOperations();
 
     /**
+     * Returns the package with given name (version not included).
+     * <p>
+     * Uses the package name instead of the id to simplify API, taking into account the fact that a single version of a
+     * package can be installed in a distribution at a given time.
+     *
+     * @since 11.1
+     */
+    PackageInfo getPackage(String name);
+
+    /**
+     * Returns the list of all packages, sorted by id.
+     *
+     * @since 11.1
+     */
+    List<PackageInfo> getPackages();
+
+    /**
      * @since 8.3
      */
     @JsonIgnore
@@ -225,6 +244,7 @@ public interface DistributionSnapshot extends DistributionSnapshotDesc {
               .addAbstractTypeMapping(ExtensionInfo.class, ExtensionInfoImpl.class)
               .addAbstractTypeMapping(OperationInfo.class, OperationInfoImpl.class)
               .addAbstractTypeMapping(ServiceInfo.class, ServiceInfoImpl.class)
+              .addAbstractTypeMapping(PackageInfo.class, PackageInfoImpl.class)
               .addAbstractTypeMapping(Blob.class, StringBlobReader.class);
         mapper.registerModule(module);
         mapper.addMixIn(OperationDocumentation.Param.class, OperationDocParamMixin.class);

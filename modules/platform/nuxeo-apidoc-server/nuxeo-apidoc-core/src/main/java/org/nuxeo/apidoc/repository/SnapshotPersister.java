@@ -33,6 +33,7 @@ import org.nuxeo.apidoc.adapters.ComponentInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ExtensionPointInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.OperationInfoDocAdapter;
+import org.nuxeo.apidoc.adapters.PackageInfoDocAdapter;
 import org.nuxeo.apidoc.adapters.ServiceInfoDocAdapter;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -40,6 +41,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
@@ -63,6 +65,9 @@ public class SnapshotPersister {
     public static final String Operation_Root_NAME = "Automation";
 
     public static final String Bundle_Root_NAME = "Bundles";
+
+    /** @since 11.1 */
+    public static final String PACKAGE_ROOT_NAME = "Packages";
 
     public static final String Read_Grp = "Everyone";
 
@@ -123,6 +128,9 @@ public class SnapshotPersister {
 
         DocumentModel opContainer = getSubRoot(session, distribContainer.getDoc(), Operation_Root_NAME);
         persistOperations(snapshot, snapshot.getOperations(), session, label, opContainer, filter);
+
+        DocumentModel packagesContainer = getSubRoot(session, distribContainer.getDoc(), PACKAGE_ROOT_NAME);
+        persistPackages(snapshot, snapshot.getPackages(), session, label, packagesContainer, filter);
 
         // handle plugins persistence
         for (Plugin<?> plugin : plugins) {
@@ -238,6 +246,15 @@ public class SnapshotPersister {
     protected DocumentModel createBundleGroupDoc(BundleGroup bundleGroup, CoreSession session, String label,
             DocumentModel parent) {
         return BundleGroupDocAdapter.create(bundleGroup, session, parent.getPathAsString()).getDoc();
+    }
+
+    protected void persistPackages(DistributionSnapshot snapshot, List<PackageInfo> packages, CoreSession session,
+            String label, DocumentModel parent, SnapshotFilter filter) {
+        for (PackageInfo pkg : packages) {
+            if (filter == null || filter.includePackage(pkg)) {
+                PackageInfoDocAdapter.create(pkg, session, parent.getPathAsString());
+            }
+        }
     }
 
 }

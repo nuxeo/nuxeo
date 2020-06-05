@@ -40,6 +40,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
@@ -350,6 +351,23 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         DocumentModelList docs = getCoreSession().query(query);
         return docs.stream()
                    .map(doc -> doc.getAdapter(OperationInfo.class))
+                   .filter(Objects::nonNull)
+                   .collect(Collectors.toList());
+    }
+
+    @Override
+    public PackageInfo getPackage(String name) {
+        String query = QueryHelper.select(PackageInfo.TYPE_NAME, getDoc(), PackageInfo.PROP_PACKAGE_NAME, name);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.isEmpty() ? null : docs.get(0).getAdapter(PackageInfo.class);
+    }
+
+    @Override
+    public List<PackageInfo> getPackages() {
+        String query = QueryHelper.select(PackageInfo.TYPE_NAME, getDoc(), PackageInfo.PROP_PACKAGE_ID);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.stream()
+                   .map(doc -> doc.getAdapter(PackageInfo.class))
                    .filter(Objects::nonNull)
                    .collect(Collectors.toList());
     }

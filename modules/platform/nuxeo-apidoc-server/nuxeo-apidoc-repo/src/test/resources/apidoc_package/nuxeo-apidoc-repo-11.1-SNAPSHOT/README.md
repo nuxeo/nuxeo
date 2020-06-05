@@ -1,0 +1,1 @@
+Mock jar for tests
