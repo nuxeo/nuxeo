@@ -55,15 +55,34 @@ public class H2Functions extends EmbeddedFunctions {
         return isInTree(conn, id, baseId);
     }
 
+    /**
+     * @deprecated since 11.3, unused
+     */
+    @Deprecated
     public static boolean isInTreeLong(Connection conn, Long id, Long baseId) throws SQLException {
         return isInTree(conn, id, baseId);
     }
 
+    /**
+     * Compatibility signature without {@code disableVersionACL} parameter
+     */
     public static boolean isAccessAllowedString(Connection conn, String id, String principals, String permissions)
             throws SQLException {
         return isAccessAllowed(conn, id, split(principals), split(permissions));
     }
 
+    /**
+     * @since 11.3
+     */
+    public static boolean isAccessAllowed2(Connection conn, String id, String principals, String permissions,
+            boolean disableVersionACL) throws SQLException {
+        return isAccessAllowed(conn, id, split(principals), split(permissions), disableVersionACL);
+    }
+
+    /**
+     * @deprecated since 11.3, unused
+     */
+    @Deprecated
     public static boolean isAccessAllowedLong(Connection conn, Long id, String principals, String permissions)
             throws SQLException {
         return isAccessAllowed(conn, id, split(principals), split(permissions));

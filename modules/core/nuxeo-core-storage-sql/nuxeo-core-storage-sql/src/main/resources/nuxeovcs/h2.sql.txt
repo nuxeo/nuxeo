@@ -25,6 +25,8 @@ CREATE ALIAS IF NOT EXISTS NX_IN_TREE FOR "${h2Functions}.isInTreeString";
 
 CREATE ALIAS IF NOT EXISTS NX_ACCESS_ALLOWED FOR "${h2Functions}.isAccessAllowedString";
 
+CREATE ALIAS IF NOT EXISTS NX_ACCESS_ALLOWED2 FOR "${h2Functions}.isAccessAllowed2";
+
 #IF: clusteringEnabled
 CREATE ALIAS IF NOT EXISTS NX_CLUSTER_INVAL FOR "${h2Functions}.clusterInvalidateString";
 
