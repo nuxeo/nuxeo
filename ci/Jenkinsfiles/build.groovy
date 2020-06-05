@@ -396,8 +396,7 @@ pipeline {
           ----------------------------------------
           """
           sh """
-            git add .
-            git commit -m "Release ${VERSION}"
+            git commit -a -m "Release ${VERSION}"
           """
         }
       }
@@ -643,7 +642,8 @@ pipeline {
             git config credential.helper store
 
             # Git tag
-            jx step tag -v ${VERSION}
+            git tag -a v${VERSION} -m "Release ${VERSION}"
+            git push origin v${VERSION}
           """
         }
       }
