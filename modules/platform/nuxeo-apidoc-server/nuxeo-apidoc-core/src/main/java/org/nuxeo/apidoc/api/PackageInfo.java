@@ -18,7 +18,13 @@
  */
 package org.nuxeo.apidoc.api;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
+
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Represents a Nuxeo package.
@@ -44,6 +50,10 @@ public interface PackageInfo extends NuxeoArtifact {
     String PROP_CONFLICTS = "nxpackage:conflicts";
 
     String PROP_PACKAGE_TYPE = "nxpackage:type";
+
+    String CONNECT_URL_PROP_NAME = "org.nuxeo.apidoc.connect.url";
+
+    String DEFAULT_CONNECT_URL = "https://connect.nuxeo.com/nuxeo/site/";
 
     /**
      * @see org.nuxeo.connect.update.Package#getId()
@@ -93,5 +103,36 @@ public interface PackageInfo extends NuxeoArtifact {
      * @see org.nuxeo.connect.update.Package#getConflicts()
      */
     List<String> getConflicts();
+
+    /**
+     * Returns the corresponding URL for this package on the marketplace.
+     * <p>
+     * URLs are in the form:
+     * https://connect.nuxeo.com/nuxeo/site/marketplace/package/platform-explorer?version=11.1.0-SNAPSHOT
+     * <p>
+     * Base URL can be configured on the {@link ConfigurationService}, see {@link #CONNECT_URL_PROP_NAME}.
+     *
+     * @param checkValidity if true, the URL will be checked and null will be returned if the URL is not valid.
+     */
+    public static String getMarketplaceURL(PackageInfo pkg, boolean checkValidity) {
+        if (pkg == null) {
+            return null;
+        }
+        String baseUrl = Framework.getService(ConfigurationService.class)
+                                  .getString(CONNECT_URL_PROP_NAME, DEFAULT_CONNECT_URL);
+        String url = String.format("%smarketplace/package/%s?version=%s", baseUrl, pkg.getName(), pkg.getVersion());
+        if (checkValidity) {
+            try {
+                HttpURLConnection huc = (HttpURLConnection) new URL(url).openConnection();
+                huc.setRequestMethod("HEAD");
+                if (HttpURLConnection.HTTP_OK != huc.getResponseCode()) {
+                    return null;
+                }
+            } catch (IOException e) {
+                return null;
+            }
+        }
+        return url;
+    }
 
 }
