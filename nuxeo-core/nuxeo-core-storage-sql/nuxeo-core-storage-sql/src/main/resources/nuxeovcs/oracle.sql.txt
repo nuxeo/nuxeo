@@ -25,6 +25,7 @@
 #   INTO READ_ACL_PERMISSIONS VALUES ('ReadWrite')
 #   INTO READ_ACL_PERMISSIONS VALUES ('Everything')
 # ${usersSeparator} default to '|'
+# ${disableVersionACL} true or false
 
 # Conditions used:
 # sequenceEnabled
@@ -122,8 +123,25 @@ CREATE FUNCTION NX_ACCESS_ALLOWED(id ${idTypeParam}, users NX_STRING_TABLE, perm
 RETURN NUMBER IS
   curid hierarchy.id%TYPE := id;
   newid hierarchy.id%TYPE;
+  isver INTEGER;
   first BOOLEAN := TRUE;
 BEGIN
+  IF ${disableVersionACL} THEN
+    -- if it's a version, ignore its ACL and find the live doc
+    BEGIN
+      SELECT isversion INTO isver FROM hierarchy WHERE hierarchy.id = curid;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+    IF isver = 1 THEN
+      BEGIN
+        SELECT versionableid INTO curid FROM versions WHERE versions.id = curid;
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+        curid := NULL;
+      END;
+      first := FALSE;
+    END IF;
+  END IF;
   WHILE curid IS NOT NULL LOOP
     FOR r IN (SELECT * FROM acls WHERE acls.id = curid ORDER BY acls.pos) LOOP
       IF r.permission MEMBER OF permissions AND r.user MEMBER OF users THEN
@@ -774,11 +792,28 @@ IS
   curid acls.id%TYPE := id;
   newid acls.id%TYPE;
   acl NCLOB := NULL;
+  isver INTEGER;
   first BOOLEAN := TRUE;
   sep VARCHAR2(1) := '${usersSeparator}';
   read_permissions NX_STRING_TABLE;
 BEGIN
   SELECT permission BULK COLLECT INTO read_permissions FROM aclr_permission;
+  IF ${disableVersionACL} THEN
+    -- if it's a version, ignore its ACL and find the live doc
+    BEGIN
+      SELECT isversion INTO isver FROM hierarchy WHERE hierarchy.id = curid;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN NULL;
+    END;
+    IF isver = 1 THEN
+      BEGIN
+        SELECT versionableid INTO curid FROM versions WHERE versions.id = curid;
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+        curid := NULL;
+      END;
+      first := FALSE;
+    END IF;
+  END IF;
   WHILE curid IS NOT NULL LOOP
     FOR r in (SELECT * FROM acls
                 WHERE permission MEMBER OF read_permissions

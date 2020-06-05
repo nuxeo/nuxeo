@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -87,6 +88,8 @@ public class DialectSQLServer extends Dialect {
 
     protected boolean pathOptimizationsEnabled;
 
+    protected final boolean disableVersionACL;
+
     /** 9 = SQL Server 2005, 10 = SQL Server 2008, 11 = SQL Server 2012 / Azure */
     protected int majorVersion;
 
@@ -125,6 +128,7 @@ public class DialectSQLServer extends Dialect {
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
         pathOptimizationsEnabled = repositoryDescriptor != null && repositoryDescriptor.getPathOptimizationsEnabled();
+        disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
         String idt = repositoryDescriptor == null ? null : repositoryDescriptor.idType;
         if (idt == null || "".equals(idt) || "varchar".equalsIgnoreCase(idt)) {
             idType = DialectIdType.VARCHAR;
@@ -658,6 +662,7 @@ public class DialectSQLServer extends Dialect {
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
+        properties.put("disableVersionACL", Boolean.valueOf(disableVersionACL));
         String[] permissions = NXCore.getSecurityService().getPermissionsToCheck(SecurityConstants.BROWSE);
         List<String> permsList = new LinkedList<>();
         for (String perm : permissions) {

@@ -20,6 +20,7 @@
 # ${readPermissions} ('Browse'), ('Read'), ('ReadProperties'), ('ReadRemove'), ('ReadWrite'), ('Everything')
 # ${usersSeparator} default is ",", but it depends on the configuration
 # ${unlogged} empty or "UNLOGGED" if postgresql >= 9.1
+# ${disableVersionACL} true or false
 
 # Conditions used:
 # sequenceEnabled
@@ -79,8 +80,16 @@ DECLARE
   curid ${idType} := id;
   newid ${idType};
   r record;
+  isver boolean;
   first boolean := true;
 BEGIN
+  IF ${disableVersionACL} THEN
+    SELECT isversion INTO isver FROM hierarchy WHERE hierarchy.id = curid;
+    IF isver THEN
+      SELECT versionableid INTO curid FROM versions WHERE versions.id = curid;
+      first := false;
+    END IF;
+  END IF;
   WHILE curid IS NOT NULL LOOP
     FOR r in SELECT acls.grant, acls.permission, acls.user FROM acls WHERE acls.id = curid ORDER BY acls.pos LOOP
       IF r.permission = ANY(permissions) AND r.user = ANY(users) THEN
@@ -551,11 +560,20 @@ AS $$
 DECLARE
   curid ${idType} := id;
   newid ${idType};
+  isver boolean;
   first boolean := true;
   read_acl varchar(${readAclMaxSize});
   ret varchar(${readAclMaxSize});
   pos integer;
 BEGIN
+  IF ${disableVersionACL} THEN
+    -- If it's a version, ignore its ACL and find the live doc.
+    SELECT isversion INTO isver FROM hierarchy WHERE hierarchy.id = curid;
+    IF isver THEN
+      SELECT versionableid INTO curid FROM versions WHERE versions.id = curid;
+      first := false;
+    END IF;
+  END IF;
   WHILE curid IS NOT NULL LOOP
     SELECT nx_get_local_read_acl(curid) INTO read_acl;
     IF read_acl IS NOT NULL THEN
