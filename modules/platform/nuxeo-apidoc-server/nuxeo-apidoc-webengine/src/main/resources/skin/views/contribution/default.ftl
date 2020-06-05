@@ -39,7 +39,7 @@
           <input id="${contributionItem.id}" type="checkbox" name="${contributionItem.id}" value="${contributionItem.id}" style="display:none" checked/>
           <label for="${contributionItem.id}">${contributionItem.label}</label>
         </div>
-        <#if nxItem.documentationHtml?has_content>
+        <#if contributionItem.documentation?has_content>
           <div class="block-description">
             ${contributionItem.documentation}
           </div>
