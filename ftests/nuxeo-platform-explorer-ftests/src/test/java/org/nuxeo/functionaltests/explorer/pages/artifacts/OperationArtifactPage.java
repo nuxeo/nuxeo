@@ -155,7 +155,7 @@ public class OperationArtifactPage extends ArtifactPage {
     }
 
     public void checkJavadocLink(String expected) {
-        checkJavadocLink(expected, javadocLink);
+        checkLink(expected, javadocLink);
     }
 
     public void checkJsonText(String expected) {

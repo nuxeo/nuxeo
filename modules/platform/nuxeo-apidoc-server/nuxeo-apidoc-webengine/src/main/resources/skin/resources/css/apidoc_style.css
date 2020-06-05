@@ -447,7 +447,8 @@ h2 a, h2 a:link, h2 a:active, h2 a:visited, h2 a:hover {
 *.extensions,
 *.contributions,
 *.services,
-*.operations {
+*.operations,
+*.packages {
   background: transparent url('../images/bundle.png') no-repeat scroll left 59% / 16px ;
   padding-left: 1.3rem;
 }
@@ -466,6 +467,9 @@ h2 a, h2 a:link, h2 a:active, h2 a:visited, h2 a:hover {
 }
 *.operations {
   background-image: url('../images/operation.png');
+}
+*.packages {
+  background-image: url('../images/package.png');
 }
 
 /* Header style */

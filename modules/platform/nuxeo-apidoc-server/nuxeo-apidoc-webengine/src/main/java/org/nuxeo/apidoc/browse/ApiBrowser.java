@@ -49,6 +49,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -113,6 +114,8 @@ public class ApiBrowser extends DefaultObject {
             stats.put("services", snap.getServiceIds().size());
             stats.put("xps", snap.getExtensionPointIds().size());
             stats.put("contribs", snap.getComponentIds().size());
+            stats.put("operations", snap.getOperations().size());
+            stats.put("packages", snap.getPackages().size());
             return getView("indexSimple").arg(Distribution.DIST_ID, ctx.getProperty(Distribution.DIST_ID))
                                          .arg("bundleIds", snap.getBundleIds())
                                          .arg("stats", stats);
@@ -526,6 +529,12 @@ public class ApiBrowser extends DefaultObject {
         return wo;
     }
 
+    /** @since 11.1 */
+    @Path(ApiBrowserConstants.VIEW_PACKAGE + "/{pkgId}")
+    public Resource viewPackage(@PathParam("pkgId") String pkgId) {
+        return ctx.newObject(PackageWO.TYPE, pkgId);
+    }
+
     @Path("viewArtifact/{id}")
     public Object viewArtifact(@PathParam("id") String id) {
         DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
@@ -581,6 +590,19 @@ public class ApiBrowser extends DefaultObject {
 
     protected String sanitize(String value) {
         return Framework.getService(HtmlSanitizerService.class).sanitizeString(value, null);
+    }
+
+    /** @since 11.1 */
+    @GET
+    @Produces("text/html")
+    @Path(ApiBrowserConstants.LIST_PACKAGES)
+    public Object listPackages() {
+        DistributionSnapshot snap = getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession());
+        List<PackageInfo> packages = snap.getPackages();
+        return getView(ApiBrowserConstants.LIST_PACKAGES).arg("packages", packages)
+                                                         .arg(Distribution.DIST_ID,
+                                                                 ctx.getProperty(Distribution.DIST_ID))
+                                                         .arg("hideNav", Boolean.valueOf(false));
     }
 
 }

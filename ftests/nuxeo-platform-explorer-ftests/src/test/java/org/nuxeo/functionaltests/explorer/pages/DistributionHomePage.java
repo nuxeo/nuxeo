@@ -63,6 +63,10 @@ public class DistributionHomePage extends AbstractExplorerPage {
     @FindBy(xpath = "//div[@class='tabscontent']//a[text()='Operations']")
     public WebElement operations;
 
+    @Required
+    @FindBy(xpath = "//div[@class='tabscontent']//a[text()='Packages']")
+    public WebElement packages;
+
     public DistributionHomePage(WebDriver driver) {
         super(driver);
     }

@@ -74,7 +74,7 @@ public class ServiceArtifactPage extends ArtifactPage {
     }
 
     public void checkJavadocLink(String expected) {
-        checkJavadocLink(expected, javadocLink);
+        checkLink(expected, javadocLink);
     }
 
 }

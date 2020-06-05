@@ -165,6 +165,8 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         checkContributions(partial, legacy);
         open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_OPERATIONS);
         checkOperations(partial, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_PACKAGES);
+        checkPackages(partial, legacy);
     }
 
     @Test

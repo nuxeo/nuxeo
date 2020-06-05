@@ -116,7 +116,7 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
         IntStream.range(0, bundles.size()).forEach(i -> assertEquals(ids.get(i), bundles.get(i).getText()));
     }
 
-    protected void checkJavadocLink(String expected, WebElement link) {
+    protected void checkLink(String expected, WebElement link) {
         try {
             String href = link.getAttribute("href");
             assertFalse("Actual href: " + href, StringUtils.isBlank(expected));

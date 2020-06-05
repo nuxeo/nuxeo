@@ -76,8 +76,12 @@
                 <td><textarea rows="4" cols="30" name="bundles"></textarea></td>
               </tr>
               <tr>
-                <td class="nowrap">Packages prefixes</td>
-                <td><textarea rows="4" cols="30" name="packages"></textarea></td>
+                <td class="nowrap">JAVA Packages prefixes</td>
+                <td><textarea rows="4" cols="30" name="javaPackages"></textarea></td>
+              </tr>
+              <tr>
+                <td class="nowrap">Nuxeo Packages prefixes</td>
+                <td><textarea rows="4" cols="30" name="nxPackages"></textarea></td>
               </tr>
               <tr>
                 <td class="nowrap">Version</td>

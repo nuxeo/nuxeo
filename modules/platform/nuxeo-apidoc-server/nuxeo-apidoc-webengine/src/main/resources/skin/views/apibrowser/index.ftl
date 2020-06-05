@@ -33,6 +33,9 @@
     <li class="operationstree">
       <a href="${Root.path}/${distId}/listOperations">Operations</a>
     </li>
+    <li class="packagestree">
+      <a href="${Root.path}/${distId}/listPackages">Packages</a>
+    </li>
     <#list Root.getPluginMenu() as plugin>
       <li class="${plugin.getStyleClass()}tree">
         <a href="${Root.path}/${distId}/${plugin.getViewType()}/${plugin.getHomeView()}">${plugin.getLabel()}</a>

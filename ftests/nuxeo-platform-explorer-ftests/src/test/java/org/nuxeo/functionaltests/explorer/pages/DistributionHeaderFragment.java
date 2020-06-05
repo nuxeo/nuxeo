@@ -58,6 +58,10 @@ public class DistributionHeaderFragment extends AbstractExplorerPage {
     @FindBy(linkText = "Bundles")
     public WebElement bundles;
 
+    @Required
+    @FindBy(linkText = "Packages")
+    public WebElement packages;
+
     public DistributionHeaderFragment(WebDriver driver) {
         super(driver);
     }
@@ -80,6 +84,7 @@ public class DistributionHeaderFragment extends AbstractExplorerPage {
         checkUnselectedTab(operations);
         checkUnselectedTab(components);
         checkUnselectedTab(bundles);
+        checkUnselectedTab(packages);
     }
 
     public void checkSelectedTab(WebElement element) {

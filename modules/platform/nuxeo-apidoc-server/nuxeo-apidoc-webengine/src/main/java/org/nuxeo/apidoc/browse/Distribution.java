@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,9 @@ public class Distribution extends ModuleRoot {
         } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_OPERATIONS)
                 || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_OPERATION)) {
             point = ApiBrowserConstants.LIST_OPERATIONS;
+        } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.LIST_PACKAGES)
+                || ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_PACKAGE)) {
+            point = ApiBrowserConstants.LIST_PACKAGES;
         } else if (ApiBrowserConstants.check(url, ApiBrowserConstants.VIEW_DOCUMENTATION)) {
             point = ApiBrowserConstants.VIEW_DOCUMENTATION;
         }
@@ -328,25 +332,24 @@ public class Distribution extends ModuleRoot {
 
         String distribLabel = formData.getString("name");
         String bundleList = formData.getString("bundles");
-        String pkgList = formData.getString("packages");
+        String javaPkgList = formData.getString("javaPackages");
+        String nxPkgList = formData.getString("nxPackages");
         SnapshotFilter filter = new SnapshotFilter(distribLabel);
 
         if (bundleList != null) {
-            String[] bundles = bundleList.split("\n");
-            for (String bundleId : bundles) {
-                if (!StringUtils.isEmpty(bundleId)) {
-                    filter.addBundlePrefix(bundleId);
-                }
-            }
+            Arrays.stream(bundleList.split("\n"))
+                  .filter(StringUtils::isNotBlank)
+                  .forEach(bid -> filter.addBundlePrefix(bid));
         }
-
-        if (pkgList != null) {
-            String[] packages = pkgList.split("\n");
-            for (String pkg : packages) {
-                if (!StringUtils.isEmpty(pkg)) {
-                    filter.addPackagesPrefix(pkg);
-                }
-            }
+        if (javaPkgList != null) {
+            Arrays.stream(javaPkgList.split("\n"))
+                  .filter(StringUtils::isNotBlank)
+                  .forEach(pkg -> filter.addPackagesPrefix(pkg));
+        }
+        if (nxPkgList != null) {
+            Arrays.stream(nxPkgList.split("\n"))
+                  .filter(StringUtils::isNotBlank)
+                  .forEach(pkg -> filter.addNuxeoPackagePrefix(pkg));
         }
 
         Map<String, Serializable> otherProperties = readFormData(formData);
