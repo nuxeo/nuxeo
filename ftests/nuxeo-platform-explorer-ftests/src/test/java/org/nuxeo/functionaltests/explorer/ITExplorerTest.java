@@ -220,6 +220,15 @@ public class ITExplorerTest extends AbstractExplorerTest {
     }
 
     @Test
+    public void testPackages() {
+        ExplorerHomePage home = goHome();
+        home.clickOn(home.currentDistrib);
+        DistributionHomePage dhome = asPage(DistributionHomePage.class);
+        dhome.clickOn(dhome.packages);
+        checkPackages(false, false);
+    }
+
+    @Test
     public void testOverrideContribution() throws IOException {
         goToArtifact(ExtensionInfo.TYPE_NAME, "org.nuxeo.apidoc.listener.contrib--listener");
         ContributionArtifactPage apage = asPage(ContributionArtifactPage.class);

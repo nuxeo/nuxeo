@@ -64,12 +64,21 @@
     </ul>
   </#if>
 
+  <#if nxItem.packages?size gt 0>
+    <h2>Packages</h2>
+    <ul class="nolist packages">
+      <#list nxItem.packages as pkg>
+      <li><a class="tag packages" href="${Root.path}/${distId}/viewPackage/${pkg}">${pkg}</a></li>
+      </#list>
+    </ul>
+  </#if>
+
   <h2>Maven Artifact</h2>
   <table class="listTable">
-    <tr><th>file</th><td>${nxItem.fileName}</td></tr>
-    <tr><th>groupId</th><td>${nxItem.groupId}</td></tr>
-    <tr><th>artifactId</th><td>${nxItem.artifactId}</td></tr>
-    <tr><th>version</th><td>${nxItem.artifactVersion}</td></tr>
+    <tr><th>File</th><td>${nxItem.fileName}</td></tr>
+    <tr><th>Group Id</th><td>${nxItem.groupId}</td></tr>
+    <tr><th>Artifact Id</th><td>${nxItem.artifactId}</td></tr>
+    <tr><th>Version</th><td>${nxItem.artifactVersion}</td></tr>
   </table>
 
   <#if nxItem.manifest?has_content>

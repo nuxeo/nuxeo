@@ -1,4 +1,3 @@
-<#setting url_escaping_charset="ISO-8859-1">
 <@extends src="base.ftl">
 <@block name="title">Operation ${nxItem.name}</@block>
 

@@ -17,30 +17,38 @@
       You can use this screen to browse your distribution.
     </p>
 
-    <table>
+    <table id="stats">
       <tr>
-        <td> Number of Bundles</td>
-        <td> ${stats.bundles}</td>
+        <td>Number of <a href="${Root.path}/${distId}/listBundles">Bundles</a></td>
+        <td>${stats.bundles}</td>
       </tr>
       <tr>
-        <td> Number of Java Components</td>
-        <td> ${stats.jComponents}</td>
+        <td>Number of <a href="${Root.path}/${distId}/listComponents">Java Components</a></td>
+        <td>${stats.jComponents}</td>
       </tr>
       <tr>
-        <td> Number of XML Components</td>
-        <td> ${stats.xComponents}</td>
+        <td>Number of <a href="${Root.path}/${distId}/listComponents">XML Components</a></td>
+        <td>${stats.xComponents}</td>
       </tr>
       <tr>
-        <td> Number of Services</td>
-        <td> ${stats.services}</td>
+        <td>Number of <a href="${Root.path}/${distId}/listServices">Services</a></td>
+        <td>${stats.services}</td>
       </tr>
       <tr>
-        <td> Number of Extension Points</td>
-        <td> ${stats.xps}</td>
+        <td>Number of <a href="${Root.path}/${distId}/listExtensionPoints">Extension Points</a></td>
+        <td>${stats.xps}</td>
       </tr>
       <tr>
-        <td> Number of Contributions</td>
-        <td> ${stats.contribs}</td>
+        <td>Number of <a href="${Root.path}/${distId}/listContributions">Contributions</a></td>
+        <td>${stats.contribs}</td>
+      </tr>
+      <tr>
+        <td>Number of <a href="${Root.path}/${distId}/listOperations">Operations</a></td>
+        <td>${stats.operations}</td>
+      </tr>
+      <tr>
+        <td>Number of <a href="${Root.path}/${distId}/listPackages">Packages</a></td>
+        <td>${stats.packages}</td>
       </tr>
     </table>
 

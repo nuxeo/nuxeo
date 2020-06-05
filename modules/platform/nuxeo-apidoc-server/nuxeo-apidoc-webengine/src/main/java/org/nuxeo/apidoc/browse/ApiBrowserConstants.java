@@ -24,6 +24,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 
 /**
@@ -71,6 +72,12 @@ public class ApiBrowserConstants {
 
     public static final String VIEW_OPERATION = "viewOperation";
 
+    /** @since 11.1 */
+    public static final String LIST_PACKAGES = "listPackages";
+
+    /** @since 11.1 */
+    public static final String VIEW_PACKAGE = "viewPackage";
+
     public static final String VIEW_DOCUMENTATION = "documentation";
 
     public static final boolean check(String url, String view) {
@@ -103,6 +110,9 @@ public class ApiBrowserConstants {
             break;
         case OperationInfo.TYPE_NAME:
             view = ApiBrowserConstants.VIEW_OPERATION;
+            break;
+        case PackageInfo.TYPE_NAME:
+            view = ApiBrowserConstants.VIEW_PACKAGE;
             break;
         default:
             break;

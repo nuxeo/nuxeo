@@ -97,7 +97,7 @@ public class ExtensionPointArtifactPage extends ArtifactPage {
     }
 
     public void checkFirstJavadocLink(String expected) {
-        checkJavadocLink(expected, javadocLink);
+        checkLink(expected, javadocLink);
     }
 
 }

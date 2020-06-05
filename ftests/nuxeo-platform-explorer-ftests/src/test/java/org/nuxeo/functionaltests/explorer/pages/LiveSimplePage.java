@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
@@ -40,6 +41,10 @@ public class LiveSimplePage extends AbstractExplorerPage {
     @FindBy(xpath = "//h1")
     public WebElement header;
 
+    @Required
+    @FindBy(xpath = "//table[@id='stats']")
+    public WebElement stats;
+
     public LiveSimplePage(WebDriver driver) {
         super(driver);
     }
@@ -48,6 +53,17 @@ public class LiveSimplePage extends AbstractExplorerPage {
     public void check() {
         checkTitle("Nuxeo Platform Explorer");
         assertTrue(header.getText(), header.getText().startsWith("Your current Nuxeo Distribution is"));
+        String statsContent = stats.getText();
+        assertNotNull(statsContent);
+        assertTrue(statsContent.contains("Number of Bundles"));
+        assertTrue(statsContent.contains("Number of Java Components"));
+        assertTrue(statsContent.contains("Number of XML Components"));
+        assertTrue(statsContent.contains("Number of Services"));
+        assertTrue(statsContent.contains("Number of Services"));
+        assertTrue(statsContent.contains("Number of Extension Points"));
+        assertTrue(statsContent.contains("Number of Contributions"));
+        assertTrue(statsContent.contains("Number of Operations"));
+        assertTrue(statsContent.contains("Number of Packages"));
     }
 
 }
