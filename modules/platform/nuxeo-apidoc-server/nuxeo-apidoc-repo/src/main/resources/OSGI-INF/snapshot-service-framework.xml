@@ -54,7 +54,9 @@
   </extension-point>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
-    <property name="nuxeo.apidoc.javadoc.url">${nuxeo.apidoc.javadoc.url:=https://community.nuxeo.com/api/}</property>
+    <property name="org.nuxeo.apidoc.javadoc.url">
+      ${org.nuxeo.apidoc.javadoc.url:=https://community.nuxeo.com/api/}
+    </property>
     <property name="org.nuxeo.apidoc.connect.url">
       ${org.nuxeo.apidoc.connect.url:=https://connect.nuxeo.com/nuxeo/site/}
     </property>
