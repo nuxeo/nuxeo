@@ -29,7 +29,7 @@ public class JavaDocHelper {
     /**
      * @since 11.1
      */
-    public static final String BASE_URL_PROP_NAME = "nuxeo.apidoc.javadoc.url";
+    public static final String BASE_URL_PROP_NAME = "org.nuxeo.apidoc.javadoc.url";
 
     /**
      * @since 11.1
