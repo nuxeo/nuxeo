@@ -3,7 +3,7 @@
 
   <require>org.nuxeo.apidoc.listener.contrib</require>
 
-<!--
+  <documentation>
 
       Extension point defining event listeners.
 
@@ -12,10 +12,7 @@
 
       Example listener:
       <code>
-    <listener async="false"
-        class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener"
-        enabled="true" name="mylistener" postCommit="false"
-        priority="50" retryCount="1">
+    <listener async="false" class="org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener" enabled="true" name="mylistener" postCommit="false" priority="50" retryCount="1">
         <event>documentCreated</event>
         <event>documentModified</event>
     </listener>
@@ -62,7 +59,7 @@
       The default is 1.
     
 
--->
+  </documentation>
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
