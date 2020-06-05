@@ -25,6 +25,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -93,6 +94,12 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
         }
 
+        if (adapterClassName.equals(PackageInfo.class.getSimpleName())) {
+            if (doc.getType().equals(PackageInfo.TYPE_NAME)) {
+                return new PackageInfoDocAdapter(doc);
+            }
+        }
+
         if (adapterClassName.equals(NuxeoArtifact.class.getSimpleName())) {
             if (doc.getType().equals(ServiceInfo.TYPE_NAME)) {
                 return new ServiceInfoDocAdapter(doc);
@@ -114,6 +121,9 @@ public class AdapterFactory implements DocumentAdapterFactory {
             }
             if (doc.getType().equals(OperationInfo.TYPE_NAME)) {
                 return new OperationInfoDocAdapter(doc);
+            }
+            if (doc.getType().equals(PackageInfo.TYPE_NAME)) {
+                return new PackageInfoDocAdapter(doc);
             }
         }
 

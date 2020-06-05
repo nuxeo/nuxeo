@@ -45,6 +45,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifactComparator;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.plugin.Plugin;
@@ -98,6 +99,8 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected final List<OperationInfo> operations = new ArrayList<>();
 
+    protected final Map<String, PackageInfo> packages = new HashMap<>();
+
     protected JavaDocHelper jdocHelper;
 
     protected boolean pluginSnapshotsInitialized = false;
@@ -115,12 +118,13 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
             @JsonProperty("creationDate") Date created, @JsonProperty("releaseDate") Date released,
             @JsonProperty("bundles") List<BundleInfo> bundles,
             @JsonProperty("operations") List<OperationInfo> operations,
+            @JsonProperty("packages") List<PackageInfo> packages,
             @JsonProperty("pluginSnapshots") Map<String, PluginSnapshot<?>> pluginSnapshots) {
         this.created = created;
         this.released = released;
         this.name = name;
         this.version = version;
-        index(bundles);
+        index(bundles, packages);
         if (operations != null) {
             this.operations.addAll(operations);
         }
@@ -137,12 +141,16 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
         ServerInfo serverInfo = ServerInfo.build();
         this.name = serverInfo.getName();
         this.version = serverInfo.getVersion();
-        index(new ArrayList<>(serverInfo.getBundles()));
+        index(serverInfo.getBundles(), serverInfo.getPackages());
         initOperations();
         initPluginSnapshots();
     }
 
-    protected void index(List<BundleInfo> distributionBundles) {
+    protected void index(List<BundleInfo> distributionBundles, List<PackageInfo> packages) {
+        if (packages != null) {
+            packages.stream().forEach(pkg -> this.packages.put(pkg.getName(), pkg));
+        }
+
         if (distributionBundles == null) {
             return;
         }
@@ -413,6 +421,16 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
     public List<OperationInfo> getOperations() {
         initOperations();
         return operations;
+    }
+
+    @Override
+    public PackageInfo getPackage(String name) {
+        return packages.get(name);
+    }
+
+    @Override
+    public List<PackageInfo> getPackages() {
+        return Collections.unmodifiableList(new ArrayList<>(packages.values()));
     }
 
     public JavaDocHelper getJavaDocHelper() {

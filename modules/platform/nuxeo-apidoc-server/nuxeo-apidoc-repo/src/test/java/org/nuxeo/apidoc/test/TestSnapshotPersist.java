@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleGroupFlatTree;
 import org.nuxeo.apidoc.api.BundleGroupTreeHelper;
@@ -40,17 +39,15 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-@RunWith(FeaturesRunner.class)
-@Features(RuntimeSnaphotFeature.class)
 public class TestSnapshotPersist extends AbstractApidocTest {
 
     @Inject
@@ -63,7 +60,12 @@ public class TestSnapshotPersist extends AbstractApidocTest {
     protected CoreFeature coreFeature;
 
     @Before
-    public void checkIsVCSH2() {
+    public void init() throws PackageException, IOException {
+        checkIsVCSH2();
+        mockPackageServices();
+    }
+
+    protected void checkIsVCSH2() {
         assumeTrue(coreFeature.getStorageConfiguration().isVCSH2());
     }
 
@@ -107,6 +109,7 @@ public class TestSnapshotPersist extends AbstractApidocTest {
         checkContributions(snapshot, partial);
         checkOperations(snapshot, partial);
         checkReadmes(snapshot, partial);
+        checkPackages(snapshot, partial);
     }
 
     protected void checkBundleGroups(DistributionSnapshot snapshot, boolean partial) throws IOException {
@@ -130,18 +133,21 @@ public class TestSnapshotPersist extends AbstractApidocTest {
     }
 
     protected String represent(NuxeoArtifact artifact) {
-        List<String> requirements = null;
+        List<String> details = null;
         if (artifact instanceof BundleInfo) {
-            requirements = ((BundleInfo) artifact).getRequirements();
+            details = ((BundleInfo) artifact).getRequirements();
         }
         if (artifact instanceof ComponentInfo) {
-            requirements = ((ComponentInfo) artifact).getRequirements();
+            details = ((ComponentInfo) artifact).getRequirements();
+        }
+        if (artifact instanceof PackageInfo) {
+            details = ((PackageInfo) artifact).getBundles();
         }
         String res = String.format("%s: %s *** %s%s\n", //
                 artifact.getArtifactType(), //
                 artifact.getId(), //
                 artifact.getHierarchyPath(), //
-                (requirements != null && requirements.size() > 0) ? " *** " + requirements : ""//
+                (details != null && details.size() > 0) ? " *** " + details : "" //
         );
         return res;
     }
@@ -226,6 +232,12 @@ public class TestSnapshotPersist extends AbstractApidocTest {
             assertEquals(1, bundleGroup.getReadmes().size());
             checkContentEquals("apidoc_snapshot/apidoc_readme.txt", bundleGroup.getReadmes().get(0).getString());
         }
+    }
+
+    protected void checkPackages(DistributionSnapshot snapshot, boolean partial) throws IOException {
+        List<PackageInfo> packages = snapshot.getPackages();
+        String s = packages.stream().map(this::represent).collect(Collectors.joining());
+        checkContentEquals("apidoc_snapshot/packages.txt", s);
     }
 
 }

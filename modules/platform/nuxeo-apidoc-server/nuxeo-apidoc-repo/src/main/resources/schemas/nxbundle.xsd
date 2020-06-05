@@ -17,6 +17,7 @@
 
   <xs:element name="requirements" type="nxbundle:stringList" />
   <xs:element name="deploymentOrder" type="xs:integer" />
+  <xs:element name="packages" type="nxbundle:stringList" />
 
   <xs:element name="readme" type="nxbundle:content" />
   <xs:element name="parentReadme" type="nxbundle:content" />

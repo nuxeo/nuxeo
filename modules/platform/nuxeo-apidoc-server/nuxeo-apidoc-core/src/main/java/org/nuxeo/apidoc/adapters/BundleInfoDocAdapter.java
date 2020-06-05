@@ -56,6 +56,7 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
         doc.setPropertyValue(PROP_JAR_NAME, bundleInfo.getFileName());
         doc.setPropertyValue(PROP_REQUIREMENTS, (Serializable) bundleInfo.getRequirements());
         doc.setPropertyValue(PROP_DEPLOYMENT_ORDER, bundleInfo.getDeploymentOrder());
+        doc.setPropertyValue(PROP_PACKAGES, (Serializable) bundleInfo.getPackages());
         String manifest = bundleInfo.getManifest();
         if (manifest != null) {
             Blob manifestBlob = Blobs.createBlob(manifest);
@@ -136,6 +137,11 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public List<String> getRequirements() {
         return safeGet(PROP_REQUIREMENTS);
+    }
+
+    @Override
+    public List<String> getPackages() {
+        return safeGet(PROP_PACKAGES);
     }
 
     @Override

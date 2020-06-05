@@ -36,6 +36,7 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
@@ -200,6 +201,16 @@ public class TestDistributionResolver {
                 @Override
                 public BundleInfo getBundle(String id) {
                     return null;
+                }
+
+                @Override
+                public PackageInfo getPackage(String id) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public List<PackageInfo> getPackages() {
+                    throw new UnsupportedOperationException();
                 }
 
                 @Override

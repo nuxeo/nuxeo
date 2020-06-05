@@ -3,7 +3,8 @@
 
   <extension target="org.nuxeo.ecm.core.api.DocumentAdapterService" point="adapters">
     <documentation>
-      These contributions provide a mapping between live introspections and persisted representations of a distribution.
+      These contributions provide a mapping between live introspections and persisted representations of a
+      distribution.
     </documentation>
 
     <adapter type="NXBundleGroup" class="org.nuxeo.apidoc.api.BundleGroup"
@@ -22,6 +23,9 @@
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXOperation" class="org.nuxeo.apidoc.api.OperationInfo"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXPackage" class="org.nuxeo.apidoc.api.PackageInfo"
+      factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+
     <adapter type="NXBundleGroup" class="org.nuxeo.apidoc.api.NuxeoArtifact"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXBundle" class="org.nuxeo.apidoc.api.NuxeoArtifact"
@@ -35,6 +39,8 @@
     <adapter type="NXService" class="org.nuxeo.apidoc.api.NuxeoArtifact"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
     <adapter type="NXOperation" class="org.nuxeo.apidoc.api.NuxeoArtifact"
+      factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
+    <adapter type="NXPackage" class="org.nuxeo.apidoc.api.NuxeoArtifact"
       factory="org.nuxeo.apidoc.adapters.AdapterFactory" />
 
   </extension>

@@ -22,6 +22,7 @@ package org.nuxeo.apidoc.introspection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.nuxeo.apidoc.api.BaseNuxeoArtifact;
 import org.nuxeo.apidoc.api.BundleGroup;
@@ -61,6 +62,9 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
 
     /** @since 11.1 */
     protected Long deploymentOrder;
+
+    /** @since 11.1 */
+    protected final List<String> packages = new ArrayList<>();
 
     @JsonCreator
     private BundleInfoImpl(@JsonProperty("bundleId") String bundleId, @JsonProperty("fileName") String fileName,
@@ -130,6 +134,20 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         this.requirements.clear();
         if (requirements != null) {
             this.requirements.addAll(requirements);
+        }
+    }
+
+    @Override
+    public List<String> getPackages() {
+        return packages.stream()
+                       .sorted()
+                       .collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
+    }
+
+    public void setPackages(List<String> packages) {
+        this.packages.clear();
+        if (packages != null) {
+            this.packages.addAll(packages);
         }
     }
 

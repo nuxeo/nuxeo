@@ -28,17 +28,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.PropertyResourceBundle;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -50,13 +52,22 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BundleInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.connect.data.DownloadablePackage;
+import org.nuxeo.connect.packages.PackageManager;
+import org.nuxeo.connect.update.LocalPackage;
+import org.nuxeo.connect.update.PackageDependency;
+import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.connect.update.PackageUpdateService;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
@@ -135,6 +146,8 @@ public class ServerInfo {
 
     protected final Map<String, BundleInfo> bundles = new HashMap<>();
 
+    protected final Map<String, PackageInfoImpl> packages = new HashMap<>();
+
     protected final List<Class<?>> allSpi = new ArrayList<>();
 
     public ServerInfo(String name, String version) {
@@ -143,10 +156,10 @@ public class ServerInfo {
     }
 
     public ServerInfo(@JsonProperty("name") String name, @JsonProperty("version") String version,
-            @JsonProperty("bundles") Set<BundleInfo> bundles) {
+            @JsonProperty("bundles") List<BundleInfo> bundles) {
         this(name, version);
-        for (BundleInfo bundle : bundles) {
-            this.bundles.put(bundle.getBundleId(), bundle);
+        if (bundles != null) {
+            bundles.forEach(bundle -> this.bundles.put(bundle.getBundleId(), bundle));
         }
     }
 
@@ -159,10 +172,8 @@ public class ServerInfo {
     }
 
     public List<BundleInfo> getBundles() {
-        List<BundleInfo> res = new ArrayList<>(bundles.values());
         // order by name for deterministic processing
-        res.sort(Comparator.comparing(BundleInfo::getId));
-        return res;
+        return bundles.values().stream().sorted(Comparator.comparing(BundleInfo::getId)).collect(Collectors.toList());
     }
 
     public void addBundle(BundleInfo bundle) {
@@ -179,16 +190,69 @@ public class ServerInfo {
         return bundles.get(id);
     }
 
+    /**
+     * Registers package by name.
+     *
+     * @implNote Uses name instead of id as only one given version of the package should be installed at any time.
+     * @since 11.1
+     */
+    public void addPackage(PackageInfoImpl pkg) {
+        packages.put(pkg.getName(), pkg);
+    }
+
+    /**
+     * Returns registered packages.
+     *
+     * @since 11.1
+     */
+    public List<PackageInfo> getPackages() {
+        return packages.values().stream().sorted(Comparator.comparing(PackageInfo::getId)).collect(Collectors.toList());
+    }
+
     public static ServerInfo build() {
         return build(Framework.getProperty(Environment.DISTRIBUTION_NAME, "Nuxeo"),
                 Framework.getProperty(Environment.DISTRIBUTION_VERSION, "unknown"));
+
     }
 
-    protected static BundleInfoImpl computeBundleInfo(Bundle bundle) {
+    /**
+     * Retrieves standard package info and parses contained jars to extract bundle name.
+     *
+     * @implNote: code partly copy/pasted from {@link DeploymentPreprocessor#processManifest} internal method;
+     * @since 11.1
+     */
+    protected static PackageInfoImpl computePackageInfo(LocalPackage pkg, Map<String, List<LocalPackage>> pkgByBundle) {
+        var bundles = new ArrayList<String>();
+        for (File jar : FileUtils.listFiles(pkg.getData().getRoot(), new String[] { "jar" }, true)) {
+            Manifest mf = JarUtils.getManifest(jar);
+            if (mf != null) {
+                Attributes attrs = mf.getMainAttributes();
+                String id = attrs.getValue("Bundle-SymbolicName");
+                if (id == null) {
+                    continue;
+                }
+                int p = id.indexOf(';');
+                if (p > -1) { // remove properties part if any
+                    id = id.substring(0, p);
+                }
+                pkgByBundle.computeIfAbsent(id, k -> new ArrayList<>()).add(pkg);
+            }
+        }
+        return new PackageInfoImpl(pkg.getId(), pkg.getName(), pkg.getVersion().toString(), pkg.getTitle(),
+                pkg.getType().toString(), computeDependencies(pkg.getDependencies()),
+                computeDependencies(pkg.getOptionalDependencies()), computeDependencies(pkg.getConflicts()), bundles);
+    }
+
+    protected static List<String> computeDependencies(PackageDependency[] deps) {
+        return Arrays.stream(deps).map(PackageDependency::toString).collect(Collectors.toList());
+    }
+
+    protected static BundleInfoImpl computeBundleInfo(Bundle bundle, Map<String, List<LocalPackage>> pkgByBundle) {
         RuntimeService runtime = Framework.getRuntime();
         BundleInfoImpl binfo = new BundleInfoImpl(bundle.getSymbolicName());
         binfo.setFileName(runtime.getBundleFile(bundle).getName());
         binfo.setLocation(bundle.getLocation());
+
         if (!(bundle instanceof BundleImpl)) {
             return binfo;
         }
@@ -269,7 +333,35 @@ public class ServerInfo {
         } catch (IOException | ParserConfigurationException | SAXException | XPathException | NuxeoException e) {
             log.error(e, e);
         }
+
+        if (pkgByBundle.containsKey(binfo.getId())) {
+            List<String> packages = pkgByBundle.get(binfo.getId())
+                                               .stream()
+                                               .map(LocalPackage::getName)
+                                               .collect(Collectors.toList());
+            binfo.setPackages(packages);
+        }
         return binfo;
+    }
+
+    /**
+     * Retrieve bundle name from manifest.
+     *
+     * @implNote: code copy/pasted from {@link DeploymentPreprocessor#processManifest} internal method.
+     * @since 11.1
+     */
+    protected static String getBundleName(String mforig) throws IOException {
+        if (mforig == null) {
+            return null;
+        }
+        Manifest mf = new Manifest(new ByteArrayInputStream(mforig.getBytes()));
+        Attributes attrs = mf.getMainAttributes();
+        String id = attrs.getValue("Bundle-SymbolicName");
+        int p = id.indexOf(';');
+        if (p > -1) { // remove properties part if any
+            id = id.substring(0, p);
+        }
+        return id;
     }
 
     /**
@@ -326,6 +418,23 @@ public class ServerInfo {
         BundleInfoImpl configVirtualBundle = new BundleInfoImpl(BundleInfo.RUNTIME_CONFIG_BUNDLE);
         server.addBundle(configVirtualBundle);
 
+        // get package link with bundles
+        Map<String, List<LocalPackage>> pkgByBundle = new HashMap<>();
+        PackageManager pman = Framework.getService(PackageManager.class);
+        PackageUpdateService pus = Framework.getService(PackageUpdateService.class);
+        if (pman != null) {
+            List<DownloadablePackage> installedPackages = pman.listInstalledPackages();
+            installedPackages.stream().map(DownloadablePackage::getId).map(packId -> {
+                try {
+                    return pus.getPackage(packId);
+                } catch (PackageException e) {
+                    return null;
+                }
+            }).filter(Objects::nonNull).forEach(pkg -> {
+                server.addPackage(computePackageInfo(pkg, pkgByBundle));
+            });
+        }
+
         Map<String, ExtensionPointInfoImpl> xpRegistry = new HashMap<>();
         List<ExtensionInfoImpl> contribRegistry = new ArrayList<>();
 
@@ -350,7 +459,7 @@ public class ServerInfo {
                 if (server.bundles.containsKey(bundle.getSymbolicName())) {
                     binfo = (BundleInfoImpl) server.bundles.get(bundle.getSymbolicName());
                 } else {
-                    binfo = computeBundleInfo(bundle);
+                    binfo = computeBundleInfo(bundle, pkgByBundle);
                 }
             }
 
@@ -415,17 +524,21 @@ public class ServerInfo {
         // post process all bundles to:
         // - register bundles that contain no components
         // - set the deployment order as held by the runtime context
+        // - try to match the bundle to a package
         Bundle[] allbundles = runtime.getContext().getBundle().getBundleContext().getBundles();
         long bindex = 0;
         for (Bundle bundle : allbundles) {
             BundleInfo bi;
             if (!server.bundles.containsKey(bundle.getSymbolicName())) {
-                bi = computeBundleInfo(bundle);
+                bi = computeBundleInfo(bundle, pkgByBundle);
                 server.addBundle(bi);
             } else {
                 bi = server.bundles.get(bundle.getSymbolicName());
             }
             bi.setDeploymentOrder(bindex++);
+            if (!bi.getPackages().isEmpty()) {
+                bi.getPackages().forEach(pkgName -> server.packages.get(pkgName).addBundle(bi.getId()));
+            }
         }
 
         // associate contrib to XP

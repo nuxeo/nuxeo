@@ -20,6 +20,7 @@
         <type>NXBundleGroup</type>
         <type>NXBundle</type>
         <type>NXOperation</type>
+        <type>NXPackage</type>
         <type>Workspace</type>
       </subtypes>
     </doctype>
@@ -113,6 +114,15 @@
       <schema name="file" />
 
       <schema name="nxoperation" />
+      <facet name="Commentable" />
+      <facet name="Versionable" />
+    </doctype>
+
+    <doctype name="NXPackage" extends="Document">
+      <schema name="common" />
+      <schema name="dublincore" />
+
+      <schema name="nxpackage" />
       <facet name="Commentable" />
       <facet name="Versionable" />
     </doctype>

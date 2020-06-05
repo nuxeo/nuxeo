@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,12 +47,15 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.plugin.PluginSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.JsonPrettyPrinter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
+import org.nuxeo.connect.update.PackageException;
+import org.nuxeo.connect.update.PackageType;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.model.ComponentName;
@@ -70,6 +74,11 @@ public class TestJson extends AbstractApidocTest {
 
     @Inject
     protected SnapshotManager snapshotManager;
+
+    @Before
+    public void initMocks() throws PackageException, IOException {
+        mockPackageServices();
+    }
 
     @Test
     public void canSerializeRuntimeAndReadBack() throws IOException {
@@ -457,7 +466,7 @@ public class TestJson extends AbstractApidocTest {
         ExtensionInfo ext = smcont.getExtensions().get(0);
         assertEquals(ExtensionInfo.TYPE_NAME, ext.getArtifactType());
         assertNotNull(ext.getContributionItems());
-        assertEquals(8, ext.getContributionItems().size());
+        assertEquals(9, ext.getContributionItems().size());
         assertEquals("\n" //
                 + "      These contributions provide document types that handle persistence of introspected distributions.\n" //
                 + "    \n", ext.getDocumentation());
@@ -525,6 +534,28 @@ public class TestJson extends AbstractApidocTest {
         assertEquals(2, op.getParams().size());
         assertEquals(List.of("void", "blob", "document", "blob"), op.getSignature());
         assertEquals(List.of(), op.getAliases());
+
+        // check packages (mocked in tests)
+        List<PackageInfo> packages = snapshot.getPackages();
+        assertNotNull(packages);
+        assertEquals(1, packages.size());
+        PackageInfo pkg = packages.get(0);
+        assertNotNull(pkg);
+        assertEquals(PackageInfo.TYPE_NAME, pkg.getArtifactType());
+        assertEquals(List.of("org.nuxeo.apidoc.core", "org.nuxeo.apidoc.repo"), pkg.getBundles());
+        assertEquals("platform-explorer-mock-1.0.1", pkg.getId());
+        assertEquals("platform-explorer-mock", pkg.getName());
+        assertEquals("1.0.1", pkg.getVersion());
+        assertEquals("Platform Explorer Mock", pkg.getTitle());
+        assertEquals(PackageType.ADDON.toString(), pkg.getPackageType());
+        assertEquals(List.of("platform-explorer-base"), pkg.getDependencies());
+        assertEquals(List.of(), pkg.getOptionalDependencies());
+        assertEquals(List.of(), pkg.getConflicts());
+
+        // check package retrieval through API
+        PackageInfo pkg2 = snapshot.getPackage("platform-explorer-mock");
+        assertNotNull(pkg2);
+        assertEquals("platform-explorer-mock-1.0.1", pkg2.getId());
     }
 
 }

@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.snapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 
 public class SnapshotFilter {
@@ -29,7 +30,9 @@ public class SnapshotFilter {
 
     protected final List<String> bundlePrefixes = new ArrayList<>();
 
-    protected final List<String> packagesPrefixes = new ArrayList<>();
+    protected final List<String> javaPackagePrefixes = new ArrayList<>();
+
+    protected final List<String> nxpackagePrefixes = new ArrayList<>();
 
     public SnapshotFilter(String groupName) {
         bundleGroupName = groupName;
@@ -48,11 +51,21 @@ public class SnapshotFilter {
     }
 
     public List<String> getPackagesPrefixes() {
-        return packagesPrefixes;
+        return javaPackagePrefixes;
     }
 
     public void addPackagesPrefix(String packagesPrefix) {
-        packagesPrefixes.add(packagesPrefix);
+        javaPackagePrefixes.add(packagesPrefix);
+    }
+
+    /** @since 11.1 */
+    public List<String> getNuxeoPackagesPrefixes() {
+        return nxpackagePrefixes;
+    }
+
+    /** @since 11.1 */
+    public void addNuxeoPackagePrefix(String packagePrefix) {
+        nxpackagePrefixes.add(packagePrefix);
     }
 
     public boolean includeBundleId(String bundleId) {
@@ -70,11 +83,34 @@ public class SnapshotFilter {
      *           prefixes too... (not done).
      */
     public boolean includeOperation(OperationInfoImpl op) {
-        for (String pprefix : packagesPrefixes) {
+        for (String pprefix : javaPackagePrefixes) {
             if (op.getOperationClass().startsWith(pprefix)) {
                 return true;
             }
         }
         return false;
     }
+
+    /**
+     * Checks the Nuxeo packages bundles against Nuxeo packages prefix, as well as included bundles against bundle
+     * prefixes.
+     *
+     * @since 11.1
+     */
+    public boolean includePackage(PackageInfo pkg) {
+        for (String pprefix : nxpackagePrefixes) {
+            if (pkg.getId().startsWith(pprefix)) {
+                return true;
+            }
+        }
+        for (String bundle : pkg.getBundles()) {
+            for (String bprefix : bundlePrefixes) {
+                if (bundle.startsWith(bprefix)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
