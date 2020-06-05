@@ -50,8 +50,10 @@
     <permission name="Unlock" />
 
     <permission name="Remove">
+      <documentation>
+        NXP-10929: necessary to follow the "delete" transition when Trash is enabled: include WriteLifeCycle
+      </documentation>
       <include>RemoveChildren</include>
-      <!-- NXP-10929: necessary to follow the "delete" transition when Trash is enabled -->
       <include>WriteLifeCycle</include>
     </permission>
 
@@ -76,12 +78,17 @@
 
     <permission name="WriteSecurity" />
 
-    <!-- special permission given to administrators: god-level access -->
-    <permission name="Everything" />
+    <permission name="Everything">
+      <documentation>
+        Special permission given to administrators: god-level access
+      </documentation>
+    </permission>
 
-    <!-- deprecated - was used only for a single customer
-      project before pluggable permission definitions -->
-    <permission name="RestrictedRead" />
+    <permission name="RestrictedRead">
+      <documentation>
+        Deprecated - was used only for a single customer project before pluggable permission definitions
+      </documentation>
+    </permission>
 
     <permission name="MakeRecord" />
     <permission name="SetRetention" />

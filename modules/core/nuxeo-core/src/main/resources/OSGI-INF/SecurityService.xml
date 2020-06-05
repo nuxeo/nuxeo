@@ -92,9 +92,10 @@
       handle backward compatibility with deprecated permissions:
       <code>
         <permission name="ReadVersion">
-          <!-- The Version permission is deprecated
-            since it's name is ambiguous, use
-            ReadPermission instead -->
+          <documentation>
+            The Version permission is deprecated since its name is ambiguous,
+            use ReadPermission instead.
+          </documentation>
           <alias>Version</alias>
         </permission>
       </code>
