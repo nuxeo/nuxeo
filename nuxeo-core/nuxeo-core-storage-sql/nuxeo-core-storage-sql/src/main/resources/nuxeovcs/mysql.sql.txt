@@ -10,6 +10,7 @@
 
 # Variables used:
 # ${idType} VARCHAR(36)
+# ${disableVersionACL} true or false
 
 ############################################################
 
@@ -53,11 +54,19 @@ BEGIN
   DECLARE allusers VARCHAR(10000) DEFAULT CONCAT('|',users,'|');
   DECLARE allperms VARCHAR(10000) DEFAULT CONCAT('|',perms,'|');
   DECLARE first BOOLEAN DEFAULT TRUE;
+  DECLARE isver BOOLEAN;
   DECLARE curid ${idType} DEFAULT id;
   DECLARE newid ${idType};
   DECLARE gr BIT;
   DECLARE pe VARCHAR(1000);
   DECLARE us VARCHAR(1000);
+  IF ${disableVersionACL} THEN
+    SELECT isversion INTO isver FROM hierarchy WHERE hierarchy.id = curid;
+    IF isver THEN
+      SELECT versionableid INTO curid FROM versions WHERE versions.id = curid;
+      SET first = FALSE;
+    END IF;
+  END IF;
   WHILE curid IS NOT NULL DO
     BEGIN
       DECLARE done BOOLEAN DEFAULT FALSE;

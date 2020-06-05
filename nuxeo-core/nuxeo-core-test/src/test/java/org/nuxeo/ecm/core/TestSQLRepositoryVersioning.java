@@ -481,55 +481,6 @@ public class TestSQLRepositoryVersioning {
         assertEquals("desc 1", last.getProperty("dublincore", "description"));
     }
 
-    // security on versions, see TestLocalAPIWithCustomVersioning
-    @Test
-    public void testVersionSecurity() {
-        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
-        folder = session.createDocument(folder);
-        ACP acp = new ACPImpl();
-        ACE ace = new ACE("princ1", "perm1", true);
-        ACL acl = new ACLImpl("acl1", false);
-        acl.add(ace);
-        acp.addACL(acl);
-        session.setACP(folder.getRef(), acp, true);
-        DocumentModel file = session.createDocumentModel("/folder", "file", "File");
-        file = session.createDocument(file);
-        // set security
-        acp = new ACPImpl();
-        ace = new ACE("princ2", "perm2", true);
-        acl = new ACLImpl("acl2", false);
-        acl.add(ace);
-        acp.addACL(acl);
-        session.setACP(file.getRef(), acp, true);
-        session.save();
-
-        DocumentModel proxy = session.publishDocument(file, folder);
-        DocumentModel version = session.getLastDocumentVersion(file.getRef());
-        session.save();
-
-        // check security on version
-        acp = session.getACP(version.getRef());
-        ACL[] acls = acp.getACLs();
-        assertEquals(2, acls.length);
-        acl = acls[0];
-        assertEquals(1, acl.size());
-        assertEquals("princ2", acl.get(0).getUsername());
-        acl = acls[1];
-        assertEquals(1 + 3, acl.size()); // 1 + 3 root defaults
-        assertEquals("princ1", acl.get(0).getUsername());
-
-        // remove live document (there's a proxy so the version stays)
-        session.removeDocument(file.getRef());
-        session.save();
-        // recheck security on version (works because we're administrator)
-        acp = session.getACP(version.getRef());
-        assertNull(acp);
-        // check proxy still accessible (in another session)
-        try (CloseableCoreSession session2 = openSessionAs(SecurityConstants.ADMINISTRATOR)) {
-            session2.getDocument(proxy.getRef());
-        }
-    }
-
     @Test
     public void testVersionRemoval() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");

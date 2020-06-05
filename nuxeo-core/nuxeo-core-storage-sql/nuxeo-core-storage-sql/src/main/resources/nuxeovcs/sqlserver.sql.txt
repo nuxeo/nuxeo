@@ -23,6 +23,8 @@
 # ${idSequenceName}
 # ${readPermissions} SELECT 'Browse'  UNION ALL   SELECT 'Read'  UNION ALL   SELECT 'ReadProperties'  UNION ALL   SELECT 'ReadRemove'  UNION ALL   SELECT 'ReadWrite'  UNION ALL   SELECT 'Everything' ;
 # ${usersSeparator} Used to store aclr default is "|", but it depends on the configuration. Note that array parameters always use "|" separator.
+# ${disableVersionACL} true or false
+
 # Conditions used:
 # sequenceEnabled
 # fulltextEnabled
@@ -126,6 +128,7 @@ RETURNS TINYINT AS
 BEGIN
   DECLARE @allusers NVARCHAR(${readAclMaxSize});
   DECLARE @allperms NVARCHAR(${readAclMaxSize});
+  DECLARE @isver TINYINT;
   DECLARE @first TINYINT;
   DECLARE @curid ${idType};
   DECLARE @newid ${idType};
@@ -136,6 +139,14 @@ BEGIN
   SET @allperms = N'|' + @perms + N'|';
   SET @first = 1;
   SET @curid = @id;
+  IF '${disableVersionACL}' = 'true' BEGIN
+    -- if it's a version, ignore its ACL and find the live doc
+    SET @isver = (SELECT isversion FROM hierarchy WHERE id = @curid);
+    IF @isver = 1 BEGIN
+      SET @curid = (SELECT versionableid FROM versions WHERE id = @curid);
+      SET @first = 0;
+    END;
+  END;
   WHILE @curid IS NOT NULL BEGIN
     DECLARE @cur CURSOR;
     SET @cur = CURSOR FAST_FORWARD FOR
@@ -832,10 +843,19 @@ BEGIN
   DECLARE @newid ${idType};
   DECLARE @read_acl NVARCHAR(${readAclMaxSize});
   DECLARE @ret NVARCHAR(${readAclMaxSize});
+  DECLARE @isver TINYINT;
   DECLARE @first TINYINT;
   DECLARE @pos INT;
   SET @curid = @id;
   SET @first = 1;
+  IF '${disableVersionACL}' = 'true' BEGIN
+    -- if it's a version, ignore its ACL and find the live doc
+    SET @isver = (SELECT isversion FROM hierarchy WHERE id = @curid);
+    IF @isver = 1 BEGIN
+      SET @curid = (SELECT versionableid FROM versions WHERE id = @curid);
+      SET @first = 0;
+    END;
+  END;
   WHILE @curid IS NOT NULL BEGIN
     SET @read_acl = (SELECT dbo.nx_get_local_read_acl(@curid));
     IF @read_acl IS NOT NULL
@@ -915,8 +935,6 @@ BEGIN
   INSERT INTO @output (acl_id)
     SELECT acl_id FROM hierarchy_read_acl r
     JOIN hierarchy h ON r.id = h.id
-    -- do not use orphan version
-    WHERE h.isversion IS NULL
     GROUP BY acl_id
     HAVING dbo.NX_ACCESS_ALLOWED(max(r.id), @users, @permissions) = 1;
   RETURN;
@@ -993,9 +1011,7 @@ BEGIN
       FROM aclr_user AS u, inserted AS NEW
       JOIN hierarchy_read_acl AS r ON NEW.acl_id = r.acl_id
       JOIN hierarchy AS h ON r.id = h.id
-      -- do not use orphan version
-      WHERE h.isversion IS NULL AND
-        NOT EXISTS (SELECT 1 FROM aclr_user_map WHERE user_id=u.user_id AND acl_id = NEW.acl_id)
+      WHERE NOT EXISTS (SELECT 1 FROM aclr_user_map WHERE user_id=u.user_id AND acl_id = NEW.acl_id)
       GROUP BY u.user_id, u.principals, NEW.acl_id
       HAVING dbo.NX_ACCESS_ALLOWED(max(h.id), u.principals, @permissions) = 1
   END TRY

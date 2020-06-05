@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.core.tests.version.acl.legacy" version="1.0.0">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.version.acl.disabled">legacy</property>
+  </extension>
+
+</component>

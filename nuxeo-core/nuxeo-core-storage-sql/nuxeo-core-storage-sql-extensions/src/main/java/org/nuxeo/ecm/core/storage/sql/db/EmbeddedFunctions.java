@@ -115,12 +115,23 @@ public class EmbeddedFunctions {
      * @param id the id of the document
      * @param principals the allowed identities
      * @param permissions the allowed permissions
+     * @deprecated since 11.3, unused
      */
+    @Deprecated
     public static boolean isAccessAllowed(Serializable id, Set<String> principals, Set<String> permissions)
             throws SQLException {
         try (Connection conn = DriverManager.getConnection("jdbc:default:connection")) {
             return isAccessAllowed(conn, id, principals, permissions);
         }
+    }
+
+    /**
+     * @deprecated since 11.3, use other signature
+     */
+    @Deprecated
+    public static boolean isAccessAllowed(Connection conn, Serializable id, Set<String> principals,
+            Set<String> permissions) throws SQLException {
+        return isAccessAllowed(conn, id, principals, permissions, true);
     }
 
     /**
@@ -132,82 +143,93 @@ public class EmbeddedFunctions {
      * @param id the id of the document
      * @param principals the allowed identities
      * @param permissions the allowed permissions
+     * @param disableVersionACL whether ACLs on a version are disabled
+     * @since 11.3
      */
     public static boolean isAccessAllowed(Connection conn, Serializable id, Set<String> principals,
-            Set<String> permissions) throws SQLException {
-        if (isLogEnabled()) {
-            logDebug("isAccessAllowed " + id + " " + principals + " " + permissions);
-        }
-        try (PreparedStatement ps1 = conn.prepareStatement(
+            Set<String> permissions, boolean disableVersionACL) throws SQLException {
+        try (PreparedStatement psAcl = conn.prepareStatement(
                 "SELECT \"GRANT\", \"PERMISSION\", \"USER\" FROM \"ACLS\" WHERE ID = ? AND (STATUS IS NULL OR STATUS = 1) ORDER BY POS");
-                PreparedStatement ps2 = conn.prepareStatement("SELECT PARENTID FROM HIERARCHY WHERE ID = ?")) {
-            boolean first = true;
-            do {
-                /*
-                 * Check permissions at this level.
-                 */
-                ps1.setObject(1, id);
-                try (ResultSet rs = ps1.executeQuery()) {
-                    while (rs.next()) {
-                        boolean grant = rs.getShort(1) != 0;
-                        String permission = rs.getString(2);
-                        String user = rs.getString(3);
-                        if (isLogEnabled()) {
-                            logDebug(" -> " + user + " " + permission + " " + grant);
-                        }
-                        if (principals.contains(user) && permissions.contains(permission)) {
-                            if (isLogEnabled()) {
-                                logDebug(" => " + grant);
-                            }
-                            return grant;
-                        }
+                PreparedStatement psHier = conn.prepareStatement(
+                        "SELECT PARENTID, ISVERSION FROM HIERARCHY WHERE ID = ?");
+                PreparedStatement psVer = conn.prepareStatement("SELECT VERSIONABLEID FROM VERSIONS WHERE ID = ?")) {
+            RowInfo rowInfo = null; // info about the row for the current id
+            if (disableVersionACL) {
+                // if it's a version, ignore its ACL and find the live doc
+                rowInfo = getRowInfo(psHier, psVer, id);
+                if (rowInfo.isVersion) {
+                    id = rowInfo.versionableId;
+                    if (id == null) {
+                        return false;
                     }
+                    rowInfo = null;
                 }
-                /*
-                 * Nothing conclusive found, repeat on the parent.
-                 */
-                ps2.setObject(1, id);
-                Serializable newId;
-                try (ResultSet rs = ps2.executeQuery()) {
-                    if (rs.next()) {
-                        newId = (Serializable) rs.getObject(1);
-                        if (rs.wasNull()) {
-                            newId = null;
-                        }
-                    } else {
-                        // no such id
-                        newId = null;
-                    }
-                }
-                if (first && newId == null) {
-                    // there is no parent for the first level
-                    // we may have a version on our hands, find the live doc
-                    try (PreparedStatement ps3 = conn.prepareStatement(
-                            "SELECT VERSIONABLEID FROM VERSIONS WHERE ID = ?")) {
-                        ps3.setObject(1, id);
-                        try (ResultSet rs = ps3.executeQuery()) {
-                            if (rs.next()) {
-                                newId = (Serializable) rs.getObject(1);
-                                if (rs.wasNull()) {
-                                    newId = null;
-                                }
-                            } else {
-                                // no such id
-                                newId = null;
-                            }
-                        }
-                    }
-                }
-                first = false;
-                id = newId;
-            } while (id != null);
-            /*
-             * We reached the root, deny access.
-             */
-            if (isLogEnabled()) {
-                logDebug(" => false (root)");
             }
+            do {
+                // check permissions at this level
+                Boolean access = getAccess(psAcl, id, principals, permissions);
+                if (access != null) {
+                    return access;
+                }
+                // nothing conclusive found, repeat on the parent
+                if (rowInfo == null) {
+                    rowInfo = getRowInfo(psHier, psVer, id);
+                }
+                if (rowInfo.isVersion) {
+                    id = rowInfo.versionableId;
+                } else {
+                    id = rowInfo.parentId;
+                }
+                rowInfo = null;
+            } while (id != null);
+            // we've reached the root or a placeless document, deny access
             return false;
+        }
+    }
+
+    protected static class RowInfo {
+
+        public Serializable parentId;
+
+        public boolean isVersion;
+
+        public Serializable versionableId;
+    }
+
+    protected static RowInfo getRowInfo(PreparedStatement psHier, PreparedStatement psVer, Serializable id)
+            throws SQLException {
+        psHier.setObject(1, id);
+        try (ResultSet rs = psHier.executeQuery()) {
+            RowInfo rowInfo = new RowInfo();
+            if (rs.next()) {
+                rowInfo.parentId = (Serializable) rs.getObject(1);
+                rowInfo.isVersion = rs.getBoolean(2);
+                if (rowInfo.isVersion) {
+                    psVer.setObject(1, id);
+                    try (ResultSet rs2 = psVer.executeQuery()) {
+                        if (rs2.next()) {
+                            rowInfo.versionableId = (Serializable) rs2.getObject(1);
+                        }
+                    }
+                }
+            }
+            return rowInfo;
+        }
+    }
+
+    protected static Boolean getAccess(PreparedStatement psAcl, Serializable id, Set<String> principals,
+            Set<String> permissions) throws SQLException {
+        psAcl.setObject(1, id);
+        try (ResultSet rs = psAcl.executeQuery()) {
+            while (rs.next()) {
+                boolean grant = rs.getShort(1) != 0;
+                String permission = rs.getString(2);
+                String user = rs.getString(3);
+                if (principals.contains(user) && permissions.contains(permission)) {
+                    return grant;
+                }
+            }
+            return null; // no grant nor deny -- NOSONAR
         }
     }
 
