@@ -26,18 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class SnapshotResolverHelper {
 
     protected static final String[] capaliases = { "cap", "Nuxeo Platform", "Nuxeo cap", "Nuxeo DM", "dm" };
 
     public static String findBestMatch(List<DistributionSnapshot> snaps, String distributionId) {
 
-        if (distributionId == null || "".equals(distributionId.trim())) {
+        if (StringUtils.isBlank(distributionId)) {
             return null;
         }
-        // if ("current".equalsIgnoreCase((distributionId.trim()))) {
-        // return "current";
-        // }
 
         // exact match
         for (DistributionSnapshot snap : snaps) {
@@ -77,10 +76,12 @@ public class SnapshotResolverHelper {
             int idx = potentialVersions.indexOf(version);
 
             String targetVersion = null;
-            if (idx == potentialVersions.size() - 1) {
-                targetVersion = potentialVersions.get(idx - 1);
-            } else if (idx < potentialVersions.size() - 1) {
-                targetVersion = potentialVersions.get(idx + 1);
+            if (idx > 0) {
+                if (idx == potentialVersions.size() - 1) {
+                    targetVersion = potentialVersions.get(idx - 1);
+                } else if (idx < potentialVersions.size() - 1) {
+                    targetVersion = potentialVersions.get(idx + 1);
+                }
             }
 
             if (targetVersion != null) {

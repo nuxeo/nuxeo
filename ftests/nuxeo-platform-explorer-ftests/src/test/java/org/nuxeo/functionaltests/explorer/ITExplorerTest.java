@@ -31,6 +31,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
@@ -110,6 +111,30 @@ public class ITExplorerTest extends AbstractExplorerTest {
         header = asPage(DistributionHeaderFragment.class);
         header.checkTitle("All Services");
         header.checkSelectedTab(header.services);
+    }
+
+    @Test
+    public void testHomePageCurrentDistrib() {
+        open(String.format("%s%s/", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT));
+        // current live distrib redirection
+        asPage(DistributionHomePage.class).check();
+    }
+
+    @Test
+    public void testHomePageLatestDistrib() {
+        open(String.format("%s%s/", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_LATEST));
+        // current live distrib redirection
+        asPage(DistributionHomePage.class).check();
+    }
+
+    /**
+     * Non-regression test for NXP-29193.
+     */
+    @Test
+    public void testHomePageInvalidDistrib() {
+        open(String.format("%s%s/", ExplorerHomePage.URL, "foo-10.10"));
+        // current live distrib redirection
+        asPage(DistributionHomePage.class).check();
     }
 
     @Test

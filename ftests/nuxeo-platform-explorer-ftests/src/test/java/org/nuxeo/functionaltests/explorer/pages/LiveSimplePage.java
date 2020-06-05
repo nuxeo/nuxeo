@@ -34,7 +34,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class LiveSimplePage extends AbstractExplorerPage {
 
-    public static final String URL = String.format("/site/distribution/%s/",
+    public static final String URL = String.format("%s%s/", ExplorerHomePage.URL,
             ApiBrowserConstants.DISTRIBUTION_ALIAS_ADM);
 
     @Required
