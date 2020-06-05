@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -54,6 +55,8 @@ public class DialectH2 extends Dialect {
 
     protected final String usersSeparator;
 
+    protected final boolean disableVersionACL;
+
     public DialectH2(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
         if (!fulltextSearchDisabled) {
@@ -62,6 +65,7 @@ public class DialectH2 extends Dialect {
         usersSeparator = repositoryDescriptor == null ? null
                 : repositoryDescriptor.usersSeparatorKey == null ? DEFAULT_USERS_SEPARATOR
                         : repositoryDescriptor.usersSeparatorKey;
+        disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
     }
 
     @Override
@@ -241,7 +245,7 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getSecurityCheckSql(String idColumnName) {
-        return String.format("NX_ACCESS_ALLOWED(%s, ?, ?)", idColumnName);
+        return String.format("NX_ACCESS_ALLOWED2(%s, ?, ?, %s)", idColumnName, disableVersionACL);
     }
 
     @Override

@@ -50,6 +50,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.FulltextConfiguration;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.BaseSession.VersionAclMode;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
@@ -104,6 +105,8 @@ public class DialectPostgreSQL extends Dialect {
 
     protected final boolean collectionUniqueConstraintEnabled;
 
+    protected final boolean disableVersionACL;
+
     protected String usersSeparator;
 
     protected final DialectIdType idType;
@@ -128,6 +131,7 @@ public class DialectPostgreSQL extends Dialect {
                 && repositoryDescriptor.getChildNameUniqueConstraintEnabled();
         collectionUniqueConstraintEnabled = repositoryDescriptor != null
                 && repositoryDescriptor.getCollectionUniqueConstraintEnabled();
+        disableVersionACL = VersionAclMode.getConfiguration() == VersionAclMode.DISABLED;
         int major, minor;
         try {
             major = metadata.getDatabaseMajorVersion();
@@ -1203,6 +1207,7 @@ public class DialectPostgreSQL extends Dialect {
         properties.put("proxiesEnabled", Boolean.valueOf(proxiesEnabled));
         properties.put("softDeleteEnabled", Boolean.valueOf(softDeleteEnabled));
         properties.put("arrayColumnsEnabled", Boolean.valueOf(arrayColumnsEnabled));
+        properties.put("disableVersionACL", Boolean.valueOf(disableVersionACL));
         if (!fulltextSearchDisabled) {
             Table ft = database.getTable(Model.FULLTEXT_TABLE_NAME);
             FulltextConfiguration fti = model.getFulltextConfiguration();
