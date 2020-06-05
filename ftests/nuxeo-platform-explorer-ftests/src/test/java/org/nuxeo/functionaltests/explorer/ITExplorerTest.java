@@ -18,6 +18,8 @@
 package org.nuxeo.functionaltests.explorer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
@@ -263,6 +265,23 @@ public class ITExplorerTest extends AbstractExplorerTest {
         switchToNewWindow();
         String expected = AbstractExplorerTest.getReferenceContent("data/override_reference.xml");
         assertEquals(expected, driver.getPageSource());
+        switchBackToPreviousWindow();
+    }
+
+    /**
+     * Non-regression test for NXP-19766.
+     */
+    @Test
+    public void testOverrideContributionWithXMLComments() throws Exception {
+        goToArtifact(ExtensionInfo.TYPE_NAME, "org.nuxeo.ecm.platform.comment.defaultPermissions--permissions");
+        ContributionArtifactPage apage = asPage(ContributionArtifactPage.class);
+        apage.toggleGenerateOverride();
+        storeWindowHandle();
+        apage.doGenerateOverride();
+        switchToNewWindow();
+        String generatedXML = driver.getPageSource();
+        assertNotNull(generatedXML);
+        assertFalse(generatedXML.contains("parsererror"));
         switchBackToPreviousWindow();
     }
 

@@ -4,9 +4,9 @@
   <require>${contribution.component.id}</require>
 
 <#if ep.documentation?has_content>
-<!--
+  <documentation>
 ${ep.documentation}
--->
+  </documentation>
 </#if>
 
   <extension target="${ep.componentId}" point="${ep.name}">
