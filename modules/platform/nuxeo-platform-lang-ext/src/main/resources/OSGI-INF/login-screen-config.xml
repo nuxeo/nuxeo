@@ -15,6 +15,7 @@
         <locale>fr_FR</locale><!-- French - France -->
         <locale>id_ID</locale><!-- Indonesian - Indonesia -->
         <locale>it_IT</locale><!-- Italian - Italy -->
+        <locale>ja</locale><!-- Japanese (Gregorian calendar) - Japan -->
         <locale>ja_JP</locale><!-- Japanese (Gregorian calendar) - Japan -->
         <locale>nl</locale><!-- Dutch - Netherlands -->
         <locale>nl_NL</locale><!-- Dutch - Netherlands -->
