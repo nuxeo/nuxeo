@@ -40,6 +40,7 @@ import org.nuxeo.lib.stream.computation.Watermark;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogLag;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.LogRecord;
 import org.nuxeo.lib.stream.log.LogTailer;
 import org.nuxeo.lib.stream.log.Name;
@@ -64,6 +65,8 @@ public abstract class TestTools {
 
     protected Record targetRecord;
 
+    protected LogOffset targetOffset;
+
     public abstract String getManagerOptions();
 
     @Before
@@ -76,14 +79,17 @@ public abstract class TestTools {
             Name logName2 = Name.ofUrn(LOG_NAME_2);
             manager.createIfNotExists(logName, LOG_SIZE);
             LogAppender<Record> appender = manager.getAppender(logName);
+            LogOffset offset = null;
             for (int i = 0; i < NB_RECORD; i++) {
                 String key = "key" + i;
                 String value = "Some value for " + i;
                 Record record = Record.of(key, value.getBytes(UTF_8));
-                appender.append(i % LOG_SIZE, record);
                 if (i == NB_RECORD / 2) {
                     targetRecord = record;
+                    // this is the offset just before targetRecord
+                    targetOffset = offset;
                 }
+                offset = appender.append(i % LOG_SIZE, record);
                 // needed because some tests expect different watermark to work
                 Thread.sleep(2);
             }
@@ -167,7 +173,7 @@ public abstract class TestTools {
     }
 
     @Test
-    public void testPositionOnPartition() {
+    public void testPositionOnPartition() throws InterruptedException {
         run(String.format("position %s --to-end --log-name %s --group anotherGroup", getManagerOptions(), LOG_NAME));
         List<LogLag> lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
         assertEquals(0, lags.get(0).lag());
@@ -176,6 +182,14 @@ public abstract class TestTools {
                 LOG_NAME));
         lags = getManager().getLagPerPartition(Name.ofUrn(LOG_NAME), Name.ofUrn("anotherGroup"));
         assertTrue(lags.get(0).lag() > 0);
+        // then go to a specific offset
+        run(String.format("position %s --log-name %s --partition 0 --to-offset %d --group anotherGroup", getManagerOptions(),
+                LOG_NAME, targetOffset.offset()));
+        try (LogTailer<Record> tailer = getManager().createTailer(Name.ofUrn("anotherGroup"), Name.ofUrn(LOG_NAME))) {
+            LogRecord<Record> rec = tailer.read(DEF_TIMEOUT);
+            assertNotNull(rec);
+            assertEquals(targetRecord, rec.message());
+        }
     }
 
     @Test
