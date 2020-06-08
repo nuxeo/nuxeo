@@ -22,19 +22,34 @@ properties([
   disableConcurrentBuilds(),
 ])
 
+void getCurrentVersion() {
+  return readMavenPom().getVersion()
+}
+
+void getReleaseVersion(version) {
+  return version.replace('-SNAPSHOT', '')
+}
+
+void getLatestVersion() {
+  return 'latest'
+}
+
 pipeline {
 
   agent {
     label 'jenkins-nuxeo-platform-11'
   }
 
-  environment {
-    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true'
-    CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
-  }
-
   parameters {
     string(name: 'BUILD_VERSION', defaultValue: '', description: 'Version of the Nuxeo Server build to promote')
+  }
+
+  environment {
+    CURRENT_VERSION = getCurrentVersion()
+    RELEASE_VERSION = getReleaseVersion(CURRENT_VERSION)
+    LATEST_VERSION = getLatestVersion()
+    MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true'
+    CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
   }
 
   stages {
@@ -47,6 +62,13 @@ pipeline {
             currentBuild.description = "Missing required parameter BUILD_VERSION, aborting build."
             error(currentBuild.description)
           }
+          echo """
+          ----------------------------------------
+          Build version:   ${params.BUILD_VERSION}
+          Current version: ${CURRENT_VERSION}
+          Release version: ${RELEASE_VERSION}
+          ----------------------------------------
+          """
         }
       }
     }
@@ -71,44 +93,41 @@ pipeline {
       steps {
         container('maven') {
           script {
-            def buildVersion = params.BUILD_VERSION
-            def currentVersion = readMavenPom().getVersion()
-            def releaseVersion = currentVersion.replace('-SNAPSHOT', '')
             echo """
             -------------------------------------------------
-            Release nuxeo-parent POM ${releaseVersion} from build ${buildVersion}
+            Release nuxeo-parent POM ${RELEASE_VERSION} from build ${params.BUILD_VERSION}
             -------------------------------------------------
             """
             sh """
-              git checkout v${buildVersion}
+              git checkout v${params.BUILD_VERSION}
 
-              mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${releaseVersion} -DgenerateBackupPoms=false
+              mvn ${MAVEN_ARGS} -f parent/pom.xml versions:set -DnewVersion=${RELEASE_VERSION} -DgenerateBackupPoms=false
               mvn ${MAVEN_ARGS} -f parent/pom.xml validate
 
-              git commit -a -m "Release ${releaseVersion}"
-              git tag -a v${releaseVersion} -m "Release ${releaseVersion}"
+              git commit -a -m "Release ${RELEASE_VERSION}"
+              git tag -a v${RELEASE_VERSION} -m "Release ${RELEASE_VERSION}"
             """
 
             // increment minor version
-            def newVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1+1/e' <<< ${currentVersion}").trim()
+            def nextVersion = sh(returnStdout: true, script: "perl -pe 's/\\b(\\d+)(?=\\D*\$)/\$1+1/e' <<< ${CURRENT_VERSION}").trim()
             echo """
             ---------------------------------------------------------
-            Update master version from ${currentVersion} to ${newVersion}
+            Update master version from ${CURRENT_VERSION} to ${nextVersion}
             ---------------------------------------------------------
             """
             sh """
               git checkout master
 
               # root POM
-              mvn ${MAVEN_ARGS} -Pdistrib,docker versions:set -DnewVersion=${newVersion} -DgenerateBackupPoms=false
-              perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${newVersion}</nuxeo.platform.version>|' pom.xml
-              perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${newVersion}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
+              mvn ${MAVEN_ARGS} -Pdistrib,docker versions:set -DnewVersion=${nextVersion} -DgenerateBackupPoms=false
+              perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${nextVersion}</nuxeo.platform.version>|' pom.xml
+              perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${nextVersion}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
 
               # nuxeo-parent POM
-              perl -i -pe 's|<version>.*?</version>|<version>${newVersion}</version>|' parent/pom.xml
+              perl -i -pe 's|<version>.*?</version>|<version>${nextVersion}</version>|' parent/pom.xml
               mvn ${MAVEN_ARGS} -f parent/pom.xml validate
 
-              git commit -a -m "Release ${releaseVersion}, update ${currentVersion} to ${newVersion}"
+              git commit -a -m "Release ${RELEASE_VERSION}, update ${CURRENT_VERSION} to ${nextVersion}"
             """
 
             if (env.DRY_RUN != "true") {
@@ -196,7 +215,7 @@ pipeline {
     success {
       script {
         if (env.DRY_RUN != "true") {
-          currentBuild.description = "Release ${releaseVersion} from build ${buildVersion}"
+          currentBuild.description = "Release ${RELEASE_VERSION} from build ${params.BUILD_VERSION}"
         }
       }
     }
