@@ -34,6 +34,31 @@ void getLatestVersion() {
   return 'latest'
 }
 
+void dockerPull(String image) {
+  sh "docker pull ${image}"
+}
+
+void dockerTag(String image, String tag) {
+  sh "docker tag ${image} ${tag}"
+}
+
+void dockerPush(String image) {
+  sh "docker push ${image}"
+}
+
+void promoteDockerImage(String imageName, String buildVersion, String releaseVersion, String latestVersion) {
+  String buildImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${buildVersion}"
+  dockerPull(buildImage)
+
+  String releaseImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
+  dockerTag(buildImage, releaseImage)
+  dockerPush(releaseImage)
+
+  String latestImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
+  dockerTag(buildImage, latestImage)
+  dockerPush(latestImage)
+}
+
 pipeline {
 
   agent {
@@ -50,6 +75,10 @@ pipeline {
     LATEST_VERSION = getLatestVersion()
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true'
     CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
+    PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
+    DOCKER_NAMESPACE = 'nuxeo'
+    NUXEO_IMAGE_NAME = 'nuxeo'
+    SLIM_IMAGE_NAME = 'slim'
   }
 
   stages {
@@ -199,16 +228,24 @@ pipeline {
       }
     }
 
-    // TODO NXP-29096: promote Docker images
-    // stage('Promote Docker images') {
-    //   when {
-    //     not {
-    //       environment name: 'DRY_RUN', value: 'true'
-    //     }
-    //   }
-    //   steps {
-    //   }
-    // }
+    stage('Promote Docker images') {
+      when {
+        not {
+          environment name: 'DRY_RUN', value: 'true'
+        }
+      }
+      steps {
+        container('maven') {
+          echo """
+          -----------------------------------------------
+          Tag Docker images with version ${RELEASE_VERSION} and ${LATEST_VERSION}
+          -----------------------------------------------
+          """
+          promoteDockerImage("${SLIM_IMAGE_NAME}", "${params.BUILD_VERSION}", "${RELEASE_VERSION}", "${LATEST_VERSION}")
+          promoteDockerImage("${NUXEO_IMAGE_NAME}", "${params.BUILD_VERSION}", "${RELEASE_VERSION}", "${LATEST_VERSION}")
+        }
+      }
+    }
 
   }
   post {
