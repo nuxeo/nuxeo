@@ -39,6 +39,7 @@
       <property name="socket.timeout">50000</property>
       <!-- this blob provider is used for transient storage -->
       <property name="transient">true</property>
+      <property name="keyStrategy">${nuxeo.core.blobstore.keyStrategy}</property>
     </blobprovider>
   </extension>
 
@@ -61,6 +62,7 @@
       <property name="socket.timeout">50000</property>
       <!-- this blob provider is used for transient storage -->
       <property name="transient">true</property>
+      <property name="keyStrategy">${nuxeo.core.blobstore.keyStrategy}</property>
     </blobprovider>
   </extension>
 
