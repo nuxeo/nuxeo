@@ -109,7 +109,7 @@ pipeline {
 
               git commit -a -m "Release ${releaseVersion}, update ${currentVersion} to ${newVersion}"
             """
-            
+
             if (env.DRY_RUN != "true") {
               sh """
                 jx step git credentials
@@ -123,19 +123,25 @@ pipeline {
       }
     }
 
+    stage('Deploy nuxeo-parent POM') {
+      when {
+        not {
+          environment name: 'DRY_RUN', value: 'true'
+        }
+      }
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Deploy nuxeo-parent POM
+          ----------------------------------------"""
+          sh "mvn ${MAVEN_ARGS} -f parent/pom.xml deploy"
+        }
+      }
+    }
+
     // TODO: promote Maven artifacts form staging to production
     // stage('Promote Maven artifacts') {
-    //   when {
-    //     not {
-    //       environment name: 'DRY_RUN', value: 'true'
-    //     }
-    //   }
-    //   steps {
-    //   }
-    // }
-
-    // TODO NXP-29214: deploy the nuxeo-parent POM to packages.nuxeo.com
-    // stage('Deploy Maven artifacts') {
     //   when {
     //     not {
     //       environment name: 'DRY_RUN', value: 'true'
