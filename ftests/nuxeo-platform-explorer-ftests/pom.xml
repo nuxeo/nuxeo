@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo.ftests</groupId>
     <artifactId>nuxeo-ftests</artifactId>
-    <version>11.1-SNAPSHOT</version>
+    <version>11.1.43</version>
   </parent>
 
   <artifactId>nuxeo-platform-explorer-ftests</artifactId>
