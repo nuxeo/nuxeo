@@ -5,6 +5,7 @@ s3binaries.target=.
 # mandatory
 nuxeo.s3storage.bucket=
 nuxeo.core.binarymanager=org.nuxeo.ecm.core.storage.sql.S3BinaryManager
+nuxeo.core.blobstore.keyStrategy=managed
 
 # usually taken from system environement
 nuxeo.s3storage.awsid=
