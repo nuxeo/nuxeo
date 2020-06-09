@@ -30,6 +30,7 @@ pipeline {
 
   environment {
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true'
+    CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
   }
 
   parameters {
@@ -151,16 +152,33 @@ pipeline {
     //   }
     // }
 
-    // TODO NXP-28888: upload Nuxeo packages to Connect prod
-    // stage('Upload Nuxeo packages') {
-    //   when {
-    //     not {
-    //       environment name: 'DRY_RUN', value: 'true'
-    //     }
-    //   }
-    //   steps {
-    //   }
-    // }
+    stage('Upload Nuxeo Packages') {
+      when {
+        not {
+          environment name: 'DRY_RUN', value: 'true'
+        }
+      }
+      steps {
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Upload Nuxeo Packages to ${CONNECT_PROD_URL}
+          ----------------------------------------"""
+          withCredentials([usernameColonPassword(credentialsId: 'connect-prod', variable: 'CONNECT_PASS')]) {
+            sh """
+              # Fetch Nuxeo packages with Maven
+              mvn ${MAVEN_ARGS} -f ci/release/pom.xml process-resources
+
+              # Upload Nuxeo packages
+              PACKAGES_TO_UPLOAD="ci/release/target/nuxeo-*-package-*.zip"
+              for file in \$PACKAGES_TO_UPLOAD ; do
+                curl --fail -i -u "$CONNECT_PASS" -F package=@\$(ls \$file) "$CONNECT_PROD_URL"/site/marketplace/upload?batch=true ;
+              done
+            """
+          }
+        }
+      }
+    }
 
     // TODO NXP-29096: promote Docker images
     // stage('Promote Docker images') {
