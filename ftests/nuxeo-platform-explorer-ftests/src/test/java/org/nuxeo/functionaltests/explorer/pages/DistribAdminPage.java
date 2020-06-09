@@ -77,7 +77,9 @@ public class DistribAdminPage extends AbstractExplorerPage {
         String version = div.findElement(By.xpath(".//span[@name='version']")).getText();
         clickOn(driver.findElement(By.id(partial ? "doSaveExtended" : "doSave")));
         waitForAsyncWork();
-        Locator.scrollAndForceClick(driver.findElement(By.linkText("CONTINUE")));
+        By continueBy = By.linkText("CONTINUE");
+        Locator.waitUntilElementPresent(continueBy);
+        Locator.waitUntilEnabledAndClick(driver.findElement(continueBy));
         return version;
     }
 
