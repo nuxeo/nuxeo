@@ -24,6 +24,7 @@
       <property name="connection.retry">${nuxeo.s3storage.connection.retry}</property>
       <property name="connection.timeout">${nuxeo.s3storage.connection.timeout}</property>
       <property name="socket.timeout">${nuxeo.s3storage.socket.timeout}</property>
+      <property name="keyStrategy">${nuxeo.core.blobstore.keyStrategy}</property>
     </blobprovider>
   </extension>
 

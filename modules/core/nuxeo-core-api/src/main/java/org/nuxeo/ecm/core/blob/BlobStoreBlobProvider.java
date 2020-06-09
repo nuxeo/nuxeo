@@ -43,6 +43,15 @@ import org.nuxeo.runtime.api.Framework;
  */
 public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
 
+    /** @since 11.2 */
+    public static final String KEY_STRATEGY_PROPERTY = "keyStrategy";
+
+    /** @since 11.2 */
+    public static final String RANDOM_KEY_STRATEGY = "random";
+
+    /** @since 11.2 */
+    public static final String DIGEST_KEY_STRATEGY = "digest";
+
     public BlobStore store;
 
     @Override
@@ -53,13 +62,19 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
 
     protected abstract BlobStore getBlobStore(String blobProviderId, Map<String, String> properties) throws IOException;
 
-    protected KeyStrategy getKeyStrategy() {
+    /** @since 11.2 */
+    public KeyStrategy getKeyStrategy() {
         boolean hasDigest = properties.get(DIGEST_ALGORITHM_PROPERTY) != null;
         KeyStrategy keyStrategy;
         if (isRecordMode() && !hasDigest) {
             keyStrategy = KeyStrategyDocId.instance();
         } else {
-            keyStrategy = new KeyStrategyDigest(getDigestAlgorithm());
+            String strKeyStrategy = properties.getOrDefault(KEY_STRATEGY_PROPERTY, DIGEST_KEY_STRATEGY);
+            if (RANDOM_KEY_STRATEGY.equals(strKeyStrategy)) {
+                keyStrategy = KeyStrategyRandom.instance();
+            } else {
+                keyStrategy = new KeyStrategyDigest(getDigestAlgorithm());
+            }
         }
         return keyStrategy;
     }
