@@ -414,10 +414,10 @@ public class S3BlobStore extends AbstractBlobStore {
                 // can't check digest if we have a byte range
                 return true;
             }
-            String expectedDigest = getKeyStrategy().getDigestFromKey(objectKey);
-            if (expectedDigest != null) {
-                checkDigest(expectedDigest, download, dest);
-            }
+            // String expectedDigest = getKeyStrategy().getDigestFromKey(objectKey);
+            // if (expectedDigest != null) {
+            //    checkDigest(expectedDigest, download, dest);
+            // }
             // else nothing to compare to, key is not digest-based
             return true;
         } catch (AmazonServiceException e) {

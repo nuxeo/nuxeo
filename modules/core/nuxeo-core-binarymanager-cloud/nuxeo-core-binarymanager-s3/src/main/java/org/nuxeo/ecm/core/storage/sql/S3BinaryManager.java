@@ -659,18 +659,18 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
                     // can't easily check the decrypted digest
                     return true;
                 }
-                if (!digest.equals(download.getObjectMetadata().getETag())) {
+                // if (!digest.equals(download.getObjectMetadata().getETag())) {
                     // if our digest algorithm is not MD5 (so the ETag can never match),
                     // or in case of a multipart upload (where the ETag may not be the MD5),
                     // check manually the object integrity
                     // TODO this is costly and it should possible to deactivate it
-                    String currentDigest = new DigestUtils(getDigestAlgorithm()).digestAsHex(file);
-                    if (!currentDigest.equals(digest)) {
-                        String msg = "Invalid S3 object digest, expected=" + digest + " actual=" + currentDigest;
-                        log.error(msg);
-                        throw new IOException(msg);
-                    }
-                }
+                    // String currentDigest = new DigestUtils(getDigestAlgorithm()).digestAsHex(file);
+                    // if (!currentDigest.equals(digest)) {
+                        // String msg = "Invalid S3 object digest, expected=" + digest + " actual=" + currentDigest;
+                        // log.error(msg);
+                    // throw new IOException(msg);
+                    // }
+                // }
                 return true;
             } catch (AmazonClientException e) {
                 if (!isMissingKey(e)) {

@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
@@ -240,18 +241,14 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
     public boolean completeUpload(String batchId, String fileIndex, BatchFileInfo fileInfo) {
         String fileKey = fileInfo.getKey();
         ObjectMetadata metadata = amazonS3.getObjectMetadata(bucket, fileKey);
-        String key = metadata.getETag();
-        if (isEmpty(key)) {
-            return false;
-        }
-
+        String key = StringUtils.removeStart(fileKey, bucketPrefix);
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.mimeType = metadata.getContentType();
         blobInfo.encoding = metadata.getContentEncoding();
         blobInfo.filename = fileInfo.getFilename();
         blobInfo.length = metadata.getContentLength();
         blobInfo.key = key;
-        blobInfo.digest = defaultString(metadata.getContentMD5(), key);
+        blobInfo.digest = defaultString(metadata.getContentMD5(), metadata.getETag());
 
         Blob blob;
         try {
@@ -265,7 +262,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         try {
             batch.addFile(fileIndex, blob, blob.getFilename(), blob.getMimeType());
         } catch (NuxeoException e) {
-            amazonS3.deleteObject(bucket, bucketPrefix + key);
+            amazonS3.deleteObject(bucket, fileKey);
             throw e;
         }
 
