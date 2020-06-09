@@ -22,7 +22,7 @@ import java.io.File;
 
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.pages.AbstractPage;
+import org.nuxeo.functionaltests.explorer.pages.AbstractExplorerPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -32,7 +32,7 @@ import org.openqa.selenium.support.FindBy;
  *
  * @since 11.1
  */
-public class UploadFragment extends AbstractPage {
+public class UploadFragment extends AbstractExplorerPage {
 
     @Required
     @FindBy(xpath = "//input[@id='archive']")
@@ -42,6 +42,11 @@ public class UploadFragment extends AbstractPage {
     @FindBy(xpath = "//input[@id='upload']")
     public WebElement upload;
 
+    @Override
+    public void check() {
+        // NOOP
+    }
+
     public UploadFragment(WebDriver driver) {
         super(driver);
     }
@@ -49,6 +54,7 @@ public class UploadFragment extends AbstractPage {
     public void uploadArchive(File file) {
         input.sendKeys(file.getAbsolutePath());
         Locator.scrollAndForceClick(upload);
+        waitForAsyncWork();
     }
 
 }
