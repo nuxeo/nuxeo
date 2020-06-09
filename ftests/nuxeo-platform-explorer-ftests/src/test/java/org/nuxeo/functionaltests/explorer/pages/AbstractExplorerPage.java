@@ -98,20 +98,24 @@ public abstract class AbstractExplorerPage extends AbstractPage {
      */
     public void importPersistedDistrib(File file, String newName, String newVersion, String failMessage) {
         asPage(UploadFragment.class).uploadArchive(file);
+        By headerBy = By.xpath("//h1");
         if (failMessage != null) {
-            assertEquals("Distribution import failed", driver.findElement(By.xpath("//h1")).getText());
+            Locator.waitUntilElementPresent(headerBy);
+            assertEquals("Distribution import failed", driver.findElement(headerBy).getText());
             assertEquals(failMessage, driver.findElement(By.xpath("//div[@id='details']")).getText());
         } else {
             waitForAsyncWork();
             // avoid waiting in case of upload failure
             try {
-                WebElement errorHeader = driver.findElement(By.xpath("//h1"));
+                WebElement errorHeader = driver.findElement(headerBy);
                 assertNotEquals("Distribution import failed", errorHeader.getText());
             } catch (NoSuchElementException e) {
                 // ok
             }
             asPage(UploadConfirmFragment.class).confirmUpload(newName, newVersion);
-            Locator.scrollAndForceClick(driver.findElement(By.linkText("CONTINUE")));
+            By continueBy = By.linkText("CONTINUE");
+            Locator.waitUntilElementPresent(continueBy);
+            Locator.waitUntilEnabledAndClick(driver.findElement(continueBy));
         }
     }
 
