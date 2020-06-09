@@ -373,7 +373,7 @@ pipeline {
             mvn ${MAVEN_ARGS} -Pdistrib,docker versions:set -DnewVersion=${VERSION} -DgenerateBackupPoms=false
             perl -i -pe 's|<nuxeo.platform.version>.*?</nuxeo.platform.version>|<nuxeo.platform.version>${VERSION}</nuxeo.platform.version>|' pom.xml
             perl -i -pe 's|org.nuxeo.ecm.product.version=.*|org.nuxeo.ecm.product.version=${VERSION}|' server/nuxeo-nxr-server/src/main/resources/templates/nuxeo.defaults
-            
+
             # nuxeo-parent POM
             # only replace the first <version> occurence
             perl -i -pe '!\$x && s|<version>.*?</version>|<version>${VERSION}</version>| && (\$x=1)' parent/pom.xml
@@ -650,6 +650,40 @@ pipeline {
             git tag -a v${VERSION} -m "Release ${VERSION}"
             git push origin v${VERSION}
           """
+        }
+      }
+    }
+
+    stage('Deploy Maven artifacts') {
+      when {
+        allOf {
+          not {
+            branch 'PR-*'
+          }
+          not {
+            environment name: 'DRY_RUN', value: 'true'
+          }
+        }
+      }
+      steps {
+        setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'PENDING')
+        container('maven') {
+          echo """
+          ----------------------------------------
+          Deploy Maven artifacts
+          ----------------------------------------"""
+          sh """
+            mvn ${MAVEN_ARGS} -Pdistrib -DskipTests deploy
+            mvn ${MAVEN_ARGS} -f parent/pom.xml deploy
+          """
+        }
+      }
+      post {
+        success {
+          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'SUCCESS')
+        }
+        failure {
+          setGitHubBuildStatus('platform/deploy', 'Deploy Maven artifacts', 'FAILURE')
         }
       }
     }
