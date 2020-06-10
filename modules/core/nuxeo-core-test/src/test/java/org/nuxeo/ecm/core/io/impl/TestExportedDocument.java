@@ -56,6 +56,20 @@ public class TestExportedDocument {
     protected CoreSession session;
 
     @Test
+    public void testRequiresCDATA() {
+        ExportedDocumentImpl ed = new ExportedDocumentImpl();
+        assertFalse(ed.requiresCDATA(null));
+        assertFalse(ed.requiresCDATA(""));
+        assertFalse(ed.requiresCDATA("hello world"));
+        assertFalse(ed.requiresCDATA(">[]()~^_!"));
+        assertFalse(ed.requiresCDATA(" hello "));
+        assertTrue(ed.requiresCDATA("0<1"));
+        assertTrue(ed.requiresCDATA("r&b"));
+        assertTrue(ed.requiresCDATA("hello\tworld"));
+        assertTrue(ed.requiresCDATA("hello\nworld"));
+    }
+
+    @Test
     public void testExportedDocument() throws Exception {
 
         DocumentModel model = session.createDocumentModel("/", "myfile", "File");
@@ -97,7 +111,7 @@ public class TestExportedDocument {
                 "  <schema xmlns:common=\"http://www.nuxeo.org/ecm/schemas/common/\" name=\"common\"></schema>" + //
                 "  <schema xmlns:dc=\"http://www.nuxeo.org/ecm/schemas/dublincore/\" name=\"dublincore\">" + //
                 "    <dc:description><![CDATA[foo\nbar]]></dc:description>" + //
-                "    <dc:title><![CDATA[hello world]]></dc:title>" + //
+                "    <dc:title>hello world</dc:title>" + //
                 "  </schema>" + //
                 "  <schema xmlns:file=\"http://www.nuxeo.org/ecm/schemas/file/\" name=\"file\"></schema>" + //
                 "  <schema xmlns:files=\"http://www.nuxeo.org/ecm/schemas/files/\" name=\"files\">" + //
@@ -107,8 +121,8 @@ public class TestExportedDocument {
                 "    <relatedtext:relatedtextresources/>" + //
                 "  </schema>" + //
                 "  <schema xmlns:uid=\"http://project.nuxeo.com/geide/schemas/uid/\" name=\"uid\">" + //
-                "    <uid:major_version><![CDATA[0]]></uid:major_version>" + //
-                "    <uid:minor_version><![CDATA[0]]></uid:minor_version>" + //
+                "    <uid:major_version>0</uid:major_version>" + //
+                "    <uid:minor_version>0</uid:minor_version>" + //
                 "  </schema>" + //
                 "</document>" + //
                 "";
