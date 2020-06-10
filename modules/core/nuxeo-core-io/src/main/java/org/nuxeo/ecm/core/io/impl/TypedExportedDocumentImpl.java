@@ -125,7 +125,7 @@ public class TypedExportedDocumentImpl extends ExportedDocumentImpl {
             } else {
                 element.addAttribute(TYPE_ATTRIBUTE, COMPLEX_TYPE_ID);
                 if (value != null) {
-                    readComplex(element, ctype, (Map<Object, Object>) value, inlineBlobs);
+                    readComplex(element, ctype, (Map<String, Object>) value, inlineBlobs);
                 }
             }
         } else if (type.isListType()) {

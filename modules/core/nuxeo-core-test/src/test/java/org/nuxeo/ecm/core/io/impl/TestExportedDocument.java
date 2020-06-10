@@ -22,6 +22,8 @@
 package org.nuxeo.ecm.core.io.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,77 +31,88 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import javax.inject.Inject;
+
 import org.dom4j.io.XMLWriter;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.ExportedDocument;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * Tests ExportedDocument using fake DocumentModel class.
  */
 @RunWith(FeaturesRunner.class)
-@Features(RuntimeFeature.class)
+@Features(CoreFeature.class)
 public class TestExportedDocument {
 
-    protected Mockery jmcontext = new JUnit4Mockery();
+    @Inject
+    protected CoreSession session;
 
     @Test
     public void testExportedDocument() throws Exception {
 
-        final DocumentModel model = jmcontext.mock(DocumentModel.class);
-        jmcontext.checking(new Expectations() {
-            {
-                atLeast(1).of(model).getId();
-                will(returnValue("My id"));
-                atLeast(1).of(model).getType();
-                will(returnValue("My type"));
-                atLeast(1).of(model).getRef();
-                will(returnValue(new IdRef("My id")));
-                atLeast(1).of(model).getName();
-                will(returnValue(null));
-                atLeast(1).of(model).getCurrentLifeCycleState();
-                will(returnValue(null));
-                atLeast(1).of(model).getLifeCyclePolicy();
-                will(returnValue(null));
-                atLeast(1).of(model).getACP();
-                will(returnValue(null));
-                atLeast(1).of(model).getSchemas();
-                will(returnValue(new String[0]));
-                atLeast(1).of(model).getRepositoryName();
-                will(returnValue(null));
-                atLeast(1).of(model).getPath();
-                will(returnValue(new Path("my-path")));
-                atLeast(1).of(model).getPathAsString();
-                will(returnValue("/my/path/"));
-                atLeast(1).of(model).getFacets();
-            }
-        });
+        DocumentModel model = session.createDocumentModel("/", "myfile", "File");
+        model.setPropertyValue("dc:title", "hello world");
+        model.setPropertyValue("dc:description", "foo\nbar");
+        model = session.createDocument(model);
 
         ExportedDocument exportedDoc = new ExportedDocumentImpl(model);
 
-        assertEquals("My id", exportedDoc.getId());
-        assertEquals("My type", exportedDoc.getType());
-        assertEquals("my-path", exportedDoc.getPath().toString());
+        assertEquals(model.getId(), exportedDoc.getId());
+        assertEquals("File", exportedDoc.getType());
+        assertEquals("myfile", exportedDoc.getPath().toString());
 
         // Check XML output.
         Writer writer = new StringWriter();
         XMLWriter xmlWriter = new XMLWriter(writer);
         xmlWriter.write(exportedDoc.getDocument());
 
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                + "<document id=\"My id\"><system><type>My type</type>"
-                + "<path>my-path</path><access-control/></system></document>", writer.toString());
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + //
+                "<document repository=\"test\" id=\"" + model.getId() + "\">" + //
+                "  <system>" + //
+                "    <type>File</type>" + //
+                "    <path>myfile</path>" + //
+                "    <lifecycle-state>project</lifecycle-state>" + //
+                "    <lifecycle-policy>default</lifecycle-policy>" + //
+                "    <facet>Commentable</facet>" + //
+                "    <facet>Downloadable</facet>" + //
+                "    <facet>HasRelatedText</facet>" + //
+                "    <facet>Publishable</facet>" + //
+                "    <facet>Versionable</facet>" + //
+                "    <access-control>" + //
+                "      <acl name=\"inherited\">" + //
+                "        <entry principal=\"administrators\" permission=\"Everything\" grant=\"true\"/>" + //
+                "        <entry principal=\"Administrator\" permission=\"Everything\" grant=\"true\"/>" + //
+                "        <entry principal=\"members\" permission=\"Read\" grant=\"true\"/>" + //
+                "      </acl>" + //
+                "    </access-control>" + //
+                "  </system>" + //
+                "  <schema xmlns:common=\"http://www.nuxeo.org/ecm/schemas/common/\" name=\"common\"></schema>" + //
+                "  <schema xmlns:dc=\"http://www.nuxeo.org/ecm/schemas/dublincore/\" name=\"dublincore\">" + //
+                "    <dc:description><![CDATA[foo\nbar]]></dc:description>" + //
+                "    <dc:title><![CDATA[hello world]]></dc:title>" + //
+                "  </schema>" + //
+                "  <schema xmlns:file=\"http://www.nuxeo.org/ecm/schemas/file/\" name=\"file\"></schema>" + //
+                "  <schema xmlns:files=\"http://www.nuxeo.org/ecm/schemas/files/\" name=\"files\">" + //
+                "    <files:files/>" + //
+                "  </schema>" + //
+                "  <schema xmlns:relatedtext=\"http://www.nuxeo.org/ecm/schemas/relatedtext/\" name=\"relatedtext\">" + //
+                "    <relatedtext:relatedtextresources/>" + //
+                "  </schema>" + //
+                "  <schema xmlns:uid=\"http://project.nuxeo.com/geide/schemas/uid/\" name=\"uid\">" + //
+                "    <uid:major_version><![CDATA[0]]></uid:major_version>" + //
+                "    <uid:minor_version><![CDATA[0]]></uid:minor_version>" + //
+                "  </schema>" + //
+                "</document>" + //
+                "";
+        assertEquals(expected.replace("  ", ""), writer.toString());
 
         // Check ZIP output.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
