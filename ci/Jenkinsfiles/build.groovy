@@ -117,8 +117,8 @@ void dockerDeploy(String imageName) {
   String fullImageName = "${dockerNamespace}/${imageName}"
   String fixedVersionInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
   String latestInternalImage = "${DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
-  String fixedVersionPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
-  String latestPublicImage = "${PUBLIC_DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
+  String fixedVersionPublicImage = "${NUXEO_DOCKER_REGISTRY}/${fullImageName}:${VERSION}"
+  String latestPublicImage = "${NUXEO_DOCKER_REGISTRY}/${fullImageName}:${DOCKER_TAG}"
 
   dockerPull(fixedVersionInternalImage)
   echo "Push ${latestInternalImage}"
@@ -318,7 +318,7 @@ pipeline {
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
     // waiting for https://jira.nuxeo.com/browse/NXBT-3068 to put it in Global EnvVars
-    PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
+    NUXEO_DOCKER_REGISTRY = 'docker-private.packages.nuxeo.com'
     MAVEN_OPTS = "$MAVEN_OPTS -Xms2g -Xmx3g -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
     MAVEN_ARGS = getMavenArgs()
     VERSION = getVersion()
@@ -746,7 +746,7 @@ pipeline {
           ----------------------------------------
           Image tag: ${VERSION}
           """
-          echo "Push Docker images to public Docker registry ${PUBLIC_DOCKER_REGISTRY}"
+          echo "Push Docker images to Docker registry ${NUXEO_DOCKER_REGISTRY}"
           dockerDeploy("${SLIM_IMAGE_NAME}")
           dockerDeploy("${NUXEO_IMAGE_NAME}")
         }
