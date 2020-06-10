@@ -165,7 +165,9 @@
     <Connector port="${nuxeo.server.ajp.port}" protocol="AJP/1.3"
                address="${nuxeo.bind.address}"
                secretRequired="${nuxeo.server.ajp.secretRequired}"
+<#if "${nuxeo.server.ajp.secretRequired}" == "true">
                secret="${nuxeo.server.ajp.secret}"
+</#if>
                redirectPort="${nuxeo.server.https.port}" />
 </#if>
 
