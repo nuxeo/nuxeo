@@ -23,6 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
+import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME;
+import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_TYPE_NAME;
 
 import java.io.File;
 import java.net.URL;
@@ -370,6 +373,19 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
             // branch not executed is now in canceled state
             assertEquals("canceled", children.get(2).getCurrentLifeCycleState());
         }
+    }
+
+    @Test
+    public void testOrphanTasksDeletion() {
+        DocumentModel route = session.createDocumentModel("/default-domain/workspaces", "dummyRoute",
+                DOCUMENT_ROUTE_DOCUMENT_TYPE);
+        route = session.createDocument(route);
+        DocumentModel task = session.createDocumentModel("/default-domain/workspaces", "dummyTask", TASK_TYPE_NAME);
+        task.setPropertyValue(TASK_PROCESS_ID_PROPERTY_NAME, route.getId());
+        task = session.createDocument(task);
+        session.removeDocument(route.getRef());
+        waitForAsyncExec();
+        assertFalse(session.exists(task.getRef()));
     }
 
     protected void setPermissionToUser(DocumentModel doc, String username, String... perms) {
