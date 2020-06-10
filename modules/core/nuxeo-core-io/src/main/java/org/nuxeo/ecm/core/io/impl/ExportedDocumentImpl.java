@@ -20,11 +20,15 @@ package org.nuxeo.ecm.core.io.impl;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import org.apache.commons.codec.binary.Base64;
@@ -246,14 +250,19 @@ public class ExportedDocumentImpl implements ExportedDocument {
 
     protected void readFacets(Element element, DocumentModel doc) {
         // facets
-        for (String facet : doc.getFacets()) {
+        List<String> facets = new ArrayList<>(doc.getFacets());
+        // sort for deterministic order
+        Collections.sort(facets);
+        for (String facet : facets) {
             element.addElement(ExportConstants.FACET_TAG).addText(facet);
         }
     }
 
     protected void readDocumentSchemas(Element element, DocumentModel doc, boolean inlineBlobs) throws IOException {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        String[] schemaNames = doc.getSchemas();
+        List<String> schemaNames = new ArrayList<>(Arrays.asList(doc.getSchemas()));
+        // sort for deterministic order
+        Collections.sort(schemaNames);
         for (String schemaName : schemaNames) {
             Element schemaElement = element.addElement(ExportConstants.SCHEMA_TAG).addAttribute("name", schemaName);
             Schema schema = schemaManager.getSchema(schemaName);
@@ -264,7 +273,10 @@ public class ExportedDocumentImpl implements ExportedDocument {
             }
             schemaElement.addNamespace(targetNs.prefix, targetNs.uri);
             DataModel dataModel = doc.getDataModel(schemaName);
-            for (Field field : schema.getFields()) {
+            List<Field> fields = new ArrayList<>(schema.getFields());
+            // sort for deterministic order
+            fields.sort(Comparator.comparing(field -> field.getName().getLocalName()));
+            for (Field field : fields) {
                 Object value = dataModel.getData(field.getName().getLocalName());
                 readProperty(schemaElement, targetNs, field, value, inlineBlobs);
             }
@@ -295,7 +307,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
             if (TypeConstants.isContentType(ctype)) {
                 readBlob(element, ctype, (Blob) value, inlineBlobs);
             } else {
-                readComplex(element, ctype, (Map<Object, Object>) value, inlineBlobs);
+                readComplex(element, ctype, (Map<String, Object>) value, inlineBlobs);
             }
         } else if (type.isListType()) {
             if (value instanceof List) {
@@ -326,12 +338,13 @@ public class ExportedDocumentImpl implements ExportedDocument {
         element.addElement(ExportConstants.BLOB_DIGEST).addText(blob.getDigest() != null ? blob.getDigest() : "");
     }
 
-    protected final void readComplex(Element element, ComplexType ctype, Map<Object, Object> map, boolean inlineBlobs)
+    protected final void readComplex(Element element, ComplexType ctype, Map<String, Object> map, boolean inlineBlobs)
             throws IOException {
-        Iterator<Map.Entry<Object, Object>> it = map.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Object, Object> entry = it.next();
-            readProperty(element, ctype.getNamespace(), ctype.getField(entry.getKey().toString()), entry.getValue(),
+        List<Entry<String, Object>> entries = new ArrayList<>(map.entrySet());
+        // sort for deterministic order
+        entries.sort(Comparator.comparing(Entry::getKey));
+        for (Entry<String, Object> entry : entries) {
+            readProperty(element, ctype.getNamespace(), ctype.getField(entry.getKey()), entry.getValue(),
                     inlineBlobs);
         }
     }
