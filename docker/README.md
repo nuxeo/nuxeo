@@ -5,16 +5,16 @@ Nuxeo provides ready to use Docker images:
 - The [slim](#slim-nuxeoslim) image.
 - The [nuxeo](#nuxeo-nuxeonuxeo) image.
 
-These images are pushed to our [public Docker regsitry](https://packages.nuxeo.com/#browse/search/docker). To pull an image, run:
+These images are pushed to our Docker registry. To pull an image, run:
 
 ```bash
-docker pull docker.packages.nuxeo.com/IMAGE_NAME:TAG
+docker pull DOCKER_REGISTRY/IMAGE_NAME:TAG
 ```
 
 For instance, to pull the latest version of the `nuxeo/slim` image, run:
 
 ```bash
-docker pull docker.packages.nuxeo.com/nuxeo/slim:latest
+docker pull DOCKER_REGISTRY/nuxeo/slim:latest
 ```
 
 ## Disclaimer
@@ -120,10 +120,10 @@ For instance, to run a container from the `nuxeo/slim` image built locally, run:
 docker run -it -p 8080:8080 nuxeo/slim:latest
 ```
 
-To pull the `nuxeo/slim` image from our public Docker regsitry and run a container from it, run:
+To pull the `nuxeo/slim` image from our Docker regsitry and run a container from it, run:
 
 ```bash
-docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/slim:latest
+docker run -it -p 8080:8080 DOCKER_REGISTRY/nuxeo/slim:latest
 ```
 
 ## Inspect an Image

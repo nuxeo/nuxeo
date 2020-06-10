@@ -47,14 +47,14 @@ void dockerPush(String image) {
 }
 
 void promoteDockerImage(String imageName, String buildVersion, String releaseVersion, String latestVersion) {
-  String buildImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${buildVersion}"
+  String buildImage = "${NUXEO_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${buildVersion}"
   dockerPull(buildImage)
 
-  String releaseImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
+  String releaseImage = "${NUXEO_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${releaseVersion}"
   dockerTag(buildImage, releaseImage)
   dockerPush(releaseImage)
 
-  String latestImage = "${PUBLIC_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
+  String latestImage = "${NUXEO_DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/${imageName}:${latestVersion}"
   dockerTag(buildImage, latestImage)
   dockerPush(latestImage)
 }
@@ -75,7 +75,7 @@ pipeline {
     LATEST_VERSION = getLatestVersion()
     MAVEN_ARGS = '-B -nsu -Dnuxeo.skip.enforcer=true'
     CONNECT_PROD_URL = 'https://connect.nuxeo.com/nuxeo'
-    PUBLIC_DOCKER_REGISTRY = 'docker.packages.nuxeo.com'
+    NUXEO_DOCKER_REGISTRY = 'docker-private.packages.nuxeo.com'
     DOCKER_NAMESPACE = 'nuxeo'
     NUXEO_IMAGE_NAME = 'nuxeo'
     SLIM_IMAGE_NAME = 'slim'
