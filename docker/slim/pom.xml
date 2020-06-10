@@ -51,11 +51,11 @@
             </goals>
             <configuration>
               <repository>nuxeo/slim</repository>
-              <tag>${nuxeo.platform.version}</tag>
+              <tag>latest</tag>
               <buildArgs>
                 <BUILD_TAG>local-nuxeo-nuxeo</BUILD_TAG>
                 <GIT_COMMIT>built-locally</GIT_COMMIT>
-                <VERSION>${project.version}</VERSION>
+                <VERSION>latest</VERSION>
               </buildArgs>
               <pullNewerImage>false</pullNewerImage>
             </configuration>

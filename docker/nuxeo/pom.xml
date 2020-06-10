@@ -34,9 +34,9 @@
             </goals>
             <configuration>
               <repository>nuxeo/nuxeo</repository>
-              <tag>${nuxeo.platform.version}</tag>
+              <tag>latest</tag>
               <buildArgs>
-                <BASE_IMAGE>nuxeo/slim:${nuxeo.platform.version}</BASE_IMAGE>
+                <BASE_IMAGE>nuxeo/slim:latest</BASE_IMAGE>
               </buildArgs>
               <pullNewerImage>false</pullNewerImage>
             </configuration>

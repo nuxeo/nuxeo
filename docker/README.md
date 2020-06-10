@@ -11,10 +11,10 @@ These images are pushed to our [public Docker regsitry](https://packages.nuxeo.c
 docker pull docker.packages.nuxeo.com/IMAGE_NAME:TAG
 ```
 
-For instance, to pull the latest 11.1-SNAPSHOT version of the `nuxeo/slim` image, run:
+For instance, to pull the latest version of the `nuxeo/slim` image, run:
 
 ```bash
-docker pull docker.packages.nuxeo.com/nuxeo/slim:11.1-SNAPSHOT
+docker pull docker.packages.nuxeo.com/nuxeo/slim:latest
 ```
 
 ## Disclaimer
@@ -78,7 +78,7 @@ This requires to:
 It also requires the following environment variables:
 
 - `DOCKER_REGISTRY`: the Docker registry to push the images to.
-- `VERSION`: the image tag, for instance `11.1-SNAPSHOT`.
+- `VERSION`: the image tag, for instance `latest`.
 
 To build the `nuxeo/slim` image, run:
 
@@ -103,13 +103,13 @@ mvn -nsu -f slim/pom.xml process-resources
 Then run:
 
 ```bash
-docker build -t nuxeo/slim:11.1-SNAPSHOT -f slim/Dockerfile slim
+docker build -t nuxeo/slim:latest -f slim/Dockerfile slim
 ```
 
 To build the `nuxeo/nuxeo` image, run:
 
 ```bash
-docker build -t nuxeo/nuxeo:11.1-SNAPSHOT -f nuxeo/Dockerfile --build-arg BASE_IMAGE=nuxeo/slim:11.1-SNAPSHOT nuxeo
+docker build -t nuxeo/nuxeo:latest -f nuxeo/Dockerfile --build-arg BASE_IMAGE=nuxeo/slim:latest nuxeo
 ```
 
 ## Run an Image
@@ -117,13 +117,13 @@ docker build -t nuxeo/nuxeo:11.1-SNAPSHOT -f nuxeo/Dockerfile --build-arg BASE_I
 For instance, to run a container from the `nuxeo/slim` image built locally, run:
 
 ```bash
-docker run -it -p 8080:8080 nuxeo/slim:11.1-SNAPSHOT
+docker run -it -p 8080:8080 nuxeo/slim:latest
 ```
 
 To pull the `nuxeo/slim` image from our public Docker regsitry and run a container from it, run:
 
 ```bash
-docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/slim:11.1-SNAPSHOT
+docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/slim:latest
 ```
 
 ## Inspect an Image
@@ -131,13 +131,13 @@ docker run -it -p 8080:8080 docker.packages.nuxeo.com/nuxeo/slim:11.1-SNAPSHOT
 To inspect the different layers included in an image, you can run for instance:
 
 ```bash
-docker history nuxeo/slim:11.1-SNAPSHOT
+docker history nuxeo/slim:latest
 ```
 
 The [dive](https://github.com/wagoodman/dive) tool is also very good for exploring an image, its layer contents and discovering ways to shrink the image size:
 
 ```bash
-dive nuxeo/slim:11.1-SNAPSHOT
+dive nuxeo/slim:latest
 ```
 
 ## Configure an Image at Runtime
@@ -161,7 +161,7 @@ nuxeo.db.port=5432
 you can run:
 
 ```bash
-docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/slim:11.1-SNAPSHOT
+docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgresql.conf nuxeo/slim:latest
 ```
 
 ### Environment Variables
@@ -181,7 +181,7 @@ The value of `JAVA_OPTS` is appended to the `JAVA_OPTS` property defined in `nux
 For instance, to make the Nuxeo Launcher display the JVM settings in the console, run:
 
 ```bash
-docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/slim:11.1-SNAPSHOT
+docker run -it -p 8080:8080 -e JAVA_OPTS=-XshowSettings:vm nuxeo/slim:latest
 ```
 
 #### NUXEO_CLID
@@ -191,7 +191,7 @@ The value of `NUXEO_CLID` is copied to `/var/lib/nuxeo/instance.clid` at startup
 For instance, to run a container with a registered Nuxeo instance:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:11.1-SNAPSHOT
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:latest
 ```
 
 #### NUXEO_PACKAGES
@@ -201,5 +201,5 @@ docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:11.1-SNAPSHOT
 For instance, to run a container with the `nuxeo-web-ui` and `nuxeo-drive` packages installed:
 
 ```bash
-docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/slim:11.1-SNAPSHOT
+docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> -e NUXEO_PACKAGES="nuxeo-web-ui nuxeo-drive" nuxeo/slim:latest
 ```
