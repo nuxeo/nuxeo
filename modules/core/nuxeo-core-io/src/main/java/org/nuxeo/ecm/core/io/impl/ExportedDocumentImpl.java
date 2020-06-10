@@ -297,11 +297,13 @@ public class ExportedDocumentImpl implements ExportedDocument {
         if (type.isSimpleType()) {
             // use CDATA to avoid any bad interaction between content and envelope
             String encodedValue = type.encode(value);
-            if (encodedValue != null) {
+            if (requiresCDATA(encodedValue)) {
                 // workaround embedded CDATA
-                encodedValue = encodedValue.replaceAll("]]>", "]]]]><![CDATA[>");
+                encodedValue = encodedValue.replace("]]>", "]]]]><![CDATA[>");
+                element.addCDATA(encodedValue);
+            } else {
+                element.addText(encodedValue);
             }
-            element.addCDATA(encodedValue);
         } else if (type.isComplexType()) {
             ComplexType ctype = (ComplexType) type;
             if (TypeConstants.isContentType(ctype)) {
@@ -318,6 +320,20 @@ public class ExportedDocumentImpl implements ExportedDocument {
                 throw new IllegalArgumentException("A value of list type is neither list neither array: " + value);
             }
         }
+    }
+
+    protected boolean requiresCDATA(String s) {
+        if (s == null) {
+            return false;
+        }
+        int len = s.length();
+        for (int i = 0; i < len; i++) {
+            char c = s.charAt(i);
+            if (c < ' ' || c > '~' || c == '<' || c == '&') {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected final void readBlob(Element element, ComplexType ctype, Blob blob, boolean inlineBlobs)
