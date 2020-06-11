@@ -36,6 +36,8 @@ import io.dropwizard.metrics5.graphite.GraphiteSender;
 import io.dropwizard.metrics5.graphite.GraphiteUDP;
 
 /**
+ * Reports metrics to Graphite.
+ *
  * @since 11.1
  */
 public class GraphiteReporter extends AbstractMetricsReporter {
@@ -52,9 +54,6 @@ public class GraphiteReporter extends AbstractMetricsReporter {
 
     protected String prefix;
 
-    public GraphiteReporter() {
-    }
-
     @Override
     public void init(long pollInterval, Map<String, String> options) {
         super.init(pollInterval, options);
@@ -68,7 +67,8 @@ public class GraphiteReporter extends AbstractMetricsReporter {
     public void start(MetricRegistry registry, MetricFilter filter, Set<MetricAttribute> deniedExpansions) {
         GraphiteSender graphite;
         if (getOptionAsBoolean("udp", false)) {
-            log.warn("Connecting to graphite in UDP {} reporting every {}s with prefix: {}", address, pollInterval, prefix);
+            log.warn("Connecting to graphite in UDP {} reporting every {}s with prefix: {}", address, pollInterval,
+                    prefix);
             graphite = new GraphiteUDP(address);
         } else {
             log.warn("Connecting to graphite {} reporting every {}s with prefix: {}", address, pollInterval, prefix);

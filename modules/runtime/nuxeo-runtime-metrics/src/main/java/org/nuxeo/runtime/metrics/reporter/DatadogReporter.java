@@ -42,6 +42,8 @@ import io.dropwizard.metrics5.MetricFilter;
 import io.dropwizard.metrics5.MetricRegistry;
 
 /**
+ * Reports metrics to Datadog.
+ *
  * @since 11.1
  */
 public class DatadogReporter extends AbstractMetricsReporter {
@@ -142,8 +144,7 @@ public class DatadogReporter extends AbstractMetricsReporter {
                 default:
                     return false;
                 }
-            }).collect(Collectors.toCollection(() -> EnumSet.noneOf(
-                                                             NuxeoDatadogReporter.Expansion.class)));
+            }).collect(Collectors.toCollection(() -> EnumSet.noneOf(NuxeoDatadogReporter.Expansion.class)));
         }
     }
 

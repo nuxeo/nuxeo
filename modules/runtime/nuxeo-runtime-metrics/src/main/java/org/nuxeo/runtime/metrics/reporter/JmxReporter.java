@@ -30,6 +30,8 @@ import io.dropwizard.metrics5.MetricFilter;
 import io.dropwizard.metrics5.MetricRegistry;
 
 /**
+ * Reports metrics to JMX.
+ *
  * @since 11.1
  */
 public class JmxReporter extends AbstractMetricsReporter {

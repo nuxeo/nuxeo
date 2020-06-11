@@ -31,6 +31,8 @@ import io.dropwizard.metrics5.MetricRegistry;
 import io.opencensus.contrib.zpages.ZPageHandlers;
 
 /**
+ * Expose zPages endpoint to control tracing.
+ *
  * @since 11.1
  */
 public class ZPageReporter extends AbstractMetricsReporter {
@@ -49,8 +51,8 @@ public class ZPageReporter extends AbstractMetricsReporter {
             log.debug("Already activated");
             return;
         }
-        log.warn("Creating ZPage reporter");
         int port = Integer.parseInt(options.getOrDefault(PORT, DEFAULT_PORT));
+        log.warn("Creating ZPage reporter on port: {}", port);
         try {
             ZPageHandlers.startHttpServerAndRegisterAll(port);
         } catch (IOException e) {
