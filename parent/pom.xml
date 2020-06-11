@@ -9,6 +9,6 @@
   <artifactId>nuxeo-parent</artifactId>
   <packaging>pom</packaging>
   <name>Nuxeo Parent</name>
-  <version>11.1-SNAPSHOT</version>
+  <version>11.1</version>
 
 </project>
