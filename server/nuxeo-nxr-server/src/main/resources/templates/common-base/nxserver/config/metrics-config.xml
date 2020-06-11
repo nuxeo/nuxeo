@@ -85,6 +85,16 @@
       <option name="port">${tracing.zpage.port}</option>
     </reporter>
 
+    <reporter enabled="${tracing.datadog.enabled}" name="datadogTrace"
+      class="org.nuxeo.runtime.metrics.reporter.DatadogTraceReporter">
+      <option name="url">${tracing.datadog.url}</option>
+      <option name="service">${tracing.datadog.service}</option>
+      <option name="timeout">${tracing.datadog.timeout}</option>
+      <option name="maxAttributes">${tracing.attributes.max}</option>
+      <option name="maxAnnotations">${tracing.annotations.max}</option>
+      <option name="samplerProbability">${tracing.sampler.probability}</option>
+    </reporter>
+
   </extension>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">

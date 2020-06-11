@@ -24,18 +24,64 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.Map;
 
 import org.nuxeo.runtime.api.Framework;
+
+import io.opencensus.trace.Tracing;
+import io.opencensus.trace.config.TraceConfig;
+import io.opencensus.trace.config.TraceParams;
+import io.opencensus.trace.samplers.Samplers;
 
 /**
  * @since 11.1
  */
 public abstract class AbstractMetricsReporter implements MetricsReporter {
 
+    public static final String URL_OPTION = "url";
+
+    public static final String TIMEOUT_OPTION = "timeout";
+
+    public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
+
+    public static final String SERVICE_OPTION = "service";
+
+    public static final String DEFAULT_SERVICE = "nuxeo";
+
+    public static final String MAX_ATTRIBUTES_OPTION = "maxAttributes";
+
+    public static final String DEFAULT_MAX_ATTRIBUTES = "128";
+
+    public static final String MAX_ANNOTATIONS_OPTION = "maxAnnotations";
+
+    public static final String DEFAULT_MAX_ANNOTATIONS = "128";
+
+    public static final String SAMPLER_PROB_OPTION = "samplerProbability";
+
+    public static final String DEFAULT_SAMPLER_PROB = "0.1";
+
     protected Map<String, String> options;
 
     protected long pollInterval;
+
+    public void enableTracing() {
+        TraceConfig traceConfig = Tracing.getTraceConfig();
+        TraceParams activeTraceParams = traceConfig.getActiveTraceParams();
+        TraceParams.Builder builder = activeTraceParams.toBuilder();
+        int maxAttributes = Integer.parseInt(options.getOrDefault(MAX_ATTRIBUTES_OPTION, DEFAULT_MAX_ATTRIBUTES));
+        int maxAnnotations = Integer.parseInt(options.getOrDefault(MAX_ANNOTATIONS_OPTION, DEFAULT_MAX_ANNOTATIONS));
+        builder.setMaxNumberOfAttributes(maxAttributes).setMaxNumberOfAnnotations(maxAnnotations);
+        float samplerProbability = Float.parseFloat(options.getOrDefault(SAMPLER_PROB_OPTION, DEFAULT_SAMPLER_PROB));
+        if (samplerProbability >= 0.999) {
+            builder.setSampler(Samplers.alwaysSample());
+        } else if (samplerProbability < 0) {
+            builder.setSampler(Samplers.neverSample());
+        } else {
+            builder.setSampler(Samplers.probabilitySampler(samplerProbability));
+        }
+        traceConfig.updateActiveTraceParams(builder.build());
+    }
 
     @Override
     public void init(long pollInterval, Map<String, String> options) {
@@ -98,7 +144,7 @@ public abstract class AbstractMetricsReporter implements MetricsReporter {
         if (isBlank(value)) {
             return defaultValue;
         }
-        return Integer.valueOf(value);
+        return Integer.parseInt(value);
     }
 
     protected boolean getOptionAsBoolean(String name, boolean defaultValue) {
@@ -106,7 +152,7 @@ public abstract class AbstractMetricsReporter implements MetricsReporter {
         if (isBlank(value)) {
             return defaultValue;
         }
-        return Boolean.valueOf(value);
+        return Boolean.parseBoolean(value);
     }
 
 }

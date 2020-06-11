@@ -18,6 +18,7 @@
  */
 package org.nuxeo.runtime.metrics.reporter;
 
+import java.net.MalformedURLException;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,33 +30,43 @@ import io.dropwizard.metrics5.MetricAttribute;
 import io.dropwizard.metrics5.MetricFilter;
 import io.dropwizard.metrics5.MetricRegistry;
 import io.opencensus.common.Duration;
-import io.opencensus.exporter.trace.zipkin.ZipkinExporterConfiguration;
-import io.opencensus.exporter.trace.zipkin.ZipkinTraceExporter;
+import io.opencensus.exporter.trace.datadog.DatadogTraceConfiguration;
+import io.opencensus.exporter.trace.datadog.DatadogTraceExporter;
 
 /**
- * Reports traces to Zipkin.
+ * Reports traces to Datadog agent.
  *
  * @since 11.1
  */
-public class ZipkinReporter extends AbstractMetricsReporter {
+public class DatadogTraceReporter extends AbstractMetricsReporter {
 
-    private static final Logger log = LogManager.getLogger(ZipkinReporter.class);
+    private static final Logger log = LogManager.getLogger(DatadogTraceReporter.class);
+
+    protected static final String TYPE_OPTION = "type";
+
+    protected static final String DEFAULT_TYPE = "web";
 
     protected boolean activated;
 
     @Override
     public void start(MetricRegistry registry, MetricFilter filter, Set<MetricAttribute> deniedExpansions) {
-        log.warn("Creating Zipkin reporter");
+        log.warn("Creating Datadog Trace reporter");
         String url = options.get(URL_OPTION);
+        String service = options.getOrDefault(SERVICE_OPTION, DEFAULT_SERVICE);
+        String type = options.getOrDefault(TYPE_OPTION, DEFAULT_TYPE);
         Duration timeout = Duration.create(
                 DurationUtils.parsePositive(options.get(TIMEOUT_OPTION), DEFAULT_TIMEOUT).getSeconds(), 0);
-        String service = options.getOrDefault(SERVICE_OPTION, DEFAULT_SERVICE);
-        ZipkinExporterConfiguration configuration = ZipkinExporterConfiguration.builder()
-                                                                               .setServiceName(service)
-                                                                               .setV2Url(url)
-                                                                               .setDeadline(timeout)
-                                                                               .build();
-        ZipkinTraceExporter.createAndRegister(configuration);
+        DatadogTraceConfiguration config = DatadogTraceConfiguration.builder()
+                                                                    .setAgentEndpoint(url)
+                                                                    .setService(service)
+                                                                    .setType(type)
+                                                                    .setDeadline(timeout)
+                                                                    .build();
+        try {
+            DatadogTraceExporter.createAndRegister(config);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
         activated = true;
         enableTracing();
     }
@@ -64,7 +75,7 @@ public class ZipkinReporter extends AbstractMetricsReporter {
     public void stop() {
         log.debug("Stop reporting");
         if (activated) {
-            ZipkinTraceExporter.unregister();
+            DatadogTraceExporter.unregister();
             activated = false;
         }
     }

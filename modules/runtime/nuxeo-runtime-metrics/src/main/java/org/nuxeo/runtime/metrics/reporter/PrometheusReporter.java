@@ -36,6 +36,8 @@ import io.opencensus.metrics.Metrics;
 import io.prometheus.client.exporter.HTTPServer;
 
 /**
+ * Reports metrics to Prometheus.
+ *
  * @since 11.1
  */
 public class PrometheusReporter extends AbstractMetricsReporter {
@@ -69,7 +71,7 @@ public class PrometheusReporter extends AbstractMetricsReporter {
         try {
             server = new HTTPServer(port, true);
         } catch (IOException e) {
-            throw new RuntimeException("Cannot start Prometheus on port " + port, e);
+            throw new IllegalArgumentException("Cannot start Prometheus on port " + port, e);
         }
     }
 

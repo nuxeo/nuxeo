@@ -247,7 +247,7 @@ metrics.graphite.udp=false
 metrics.graphite.pollInterval=30
 metrics.graphite.prefix=
 
-## Datadog reporter
+## Datadog metrics reporter
 metrics.datadog.enabled=false
 metrics.datadog.pollInterval=60
 metrics.datadog.apiKey=
@@ -264,18 +264,26 @@ metrics.prometheus.port=9090
 ## Open tracing
 tracing.attributes.max=128
 tracing.annotations.max=128
-tracing.sampler.probability=0.1
+tracing.sampler.probability=0
 
 ## Jaeger reporter
 tracing.jaeger.enabled=false
 tracing.jaeger.url=
 tracing.jaeger.timeout=10s
+tracing.jaeger.service=nuxeo
 
 # Zipkin reporter
 tracing.zipkin.enabled=false
 tracing.zipkin.url=
 tracing.zipkin.timeout=10s
+tracing.zipkin.service=nuxeo
 
 # ZPage reporter
 tracing.zpage.enabled=false
 tracing.zpage.port=8887
+
+# Datadog trace reporter
+tracing.datadog.enabled=false
+tracing.datadog.url=http://localhost:8126/v0.3/traces
+tracing.datadog.service=nuxeo
+tracing.datadog.timeout=10s
