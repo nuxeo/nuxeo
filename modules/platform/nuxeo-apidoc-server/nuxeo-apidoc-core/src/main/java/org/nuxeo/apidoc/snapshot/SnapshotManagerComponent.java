@@ -90,10 +90,6 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
      */
     public static final String XP_PLUGINS = "plugins";
 
-    public static final String RUNTIME = "current";
-
-    public static final String RUNTIME_ADM = "adm";
-
     protected volatile DistributionSnapshot runtimeSnapshot;
 
     protected static final String IMPORT_TMP = "tmpImport";
@@ -116,7 +112,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public DistributionSnapshot getSnapshot(String key, CoreSession session) {
-        if (key == null || RUNTIME.equals(key) || RUNTIME_ADM.equals(key)) {
+        if (key == null || DISTRIBUTION_ALIAS_CURRENT.equals(key) || DISTRIBUTION_ALIAS_ADM.equals(key)) {
             return getRuntimeSnapshot();
         }
         DistributionSnapshot snap = getPersistentSnapshots(session).get(key);

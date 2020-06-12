@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.http.HttpStatus;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.JavaScriptErrorCollector;
@@ -92,7 +93,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
     }
 
     protected void goToArtifact(String type, String id) {
-        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT,
+        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT,
                 ApiBrowserConstants.getArtifactView(type), id));
     }
 

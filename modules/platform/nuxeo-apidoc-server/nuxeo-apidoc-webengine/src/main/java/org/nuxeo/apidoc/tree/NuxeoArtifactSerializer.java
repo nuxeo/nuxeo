@@ -21,6 +21,7 @@ package org.nuxeo.apidoc.tree;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.ui.tree.JSonTreeSerializer;
 import org.nuxeo.ecm.webengine.ui.tree.TreeItem;
@@ -51,9 +52,9 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
         String distId = ds.getKey().replace(" ", "%20");
         if (ds.isLive()) {
             if (useEmbeddedMode(ctx)) {
-                distId = ApiBrowserConstants.DISTRIBUTION_ALIAS_ADM;
+                distId = SnapshotManager.DISTRIBUTION_ALIAS_ADM;
             } else {
-                distId = ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT;
+                distId = SnapshotManager.DISTRIBUTION_ALIAS_CURRENT;
             }
         }
         String url = ctx.getRoot().getURL() + "/" + distId + "/";

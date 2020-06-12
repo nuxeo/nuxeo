@@ -64,7 +64,6 @@ import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
 import org.nuxeo.apidoc.worker.ExtractXmlAttributesWorker;
 import org.nuxeo.common.Environment;
@@ -175,7 +174,7 @@ public class Distribution extends ModuleRoot {
         return getView(VIEW_INDEX).arg("hideNav", Boolean.TRUE);
     }
 
-    @Path(ApiBrowserConstants.DISTRIBUTION_ALIAS_LATEST)
+    @Path(SnapshotManager.DISTRIBUTION_ALIAS_LATEST)
     public Resource getLatest() {
         List<DistributionSnapshot> snaps = listPersistedDistributions();
         Optional<DistributionSnapshot> distribution = snaps.stream()
@@ -184,11 +183,11 @@ public class Distribution extends ModuleRoot {
                                                                                .startsWith("nuxeo platform"))
                                                            .findFirst();
 
-        String latest = ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT;
+        String latest = SnapshotManager.DISTRIBUTION_ALIAS_CURRENT;
         if (distribution.isPresent()) {
             latest = distribution.get().getKey();
         }
-        return ctx.newObject("redirectWO", ApiBrowserConstants.DISTRIBUTION_ALIAS_LATEST, latest);
+        return ctx.newObject("redirectWO", SnapshotManager.DISTRIBUTION_ALIAS_LATEST, latest);
     }
 
     @Path("{distributionId}")
@@ -204,21 +203,21 @@ public class Distribution extends ModuleRoot {
                                        .filter(s -> s.getVersion().equals(finalDistributionId))
                                        .findFirst()
                                        .map(DistributionSnapshot::getKey)
-                                       .orElse(ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT);
+                                       .orElse(SnapshotManager.DISTRIBUTION_ALIAS_CURRENT);
 
             return ctx.newObject("redirectWO", finalDistributionId, distribution);
         }
 
         String orgDistributionId = distributionId;
         Boolean embeddedMode = Boolean.FALSE;
-        if (ApiBrowserConstants.DISTRIBUTION_ALIAS_ADM.equals(distributionId)) {
+        if (SnapshotManager.DISTRIBUTION_ALIAS_ADM.equals(distributionId)) {
             embeddedMode = Boolean.TRUE;
         } else {
             snaps.add(getSnapshotManager().getRuntimeSnapshot());
             distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
         }
         if (distributionId == null || "".equals(distributionId)) {
-            distributionId = ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT;
+            distributionId = SnapshotManager.DISTRIBUTION_ALIAS_CURRENT;
         }
 
         if (!orgDistributionId.equals(distributionId)) {
@@ -233,10 +232,6 @@ public class Distribution extends ModuleRoot {
 
     public List<DistributionSnapshotDesc> getAvailableDistributions() {
         return getSnapshotManager().getAvailableDistributions(ctx.getCoreSession());
-    }
-
-    public String getRuntimeDistributionName() {
-        return SnapshotManagerComponent.RUNTIME;
     }
 
     public DistributionSnapshot getRuntimeDistribution() {

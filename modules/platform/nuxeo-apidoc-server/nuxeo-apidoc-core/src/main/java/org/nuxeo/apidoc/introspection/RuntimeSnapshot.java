@@ -107,7 +107,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected final Map<String, PluginSnapshot<?>> pluginSnapshots = new HashMap<>();
 
-    protected final List<String> aliases = new LinkedList<>(Collections.singletonList("current"));
+    protected final List<String> aliases = new LinkedList<>(Collections.singletonList(SnapshotManager.DISTRIBUTION_ALIAS_CURRENT));
 
     public static RuntimeSnapshot build() {
         return new RuntimeSnapshot();

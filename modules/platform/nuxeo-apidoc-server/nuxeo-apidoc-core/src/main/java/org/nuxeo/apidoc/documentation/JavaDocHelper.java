@@ -43,7 +43,7 @@ public class JavaDocHelper {
     public JavaDocHelper(String prefix, String version) {
         defaultPrefix = prefix;
 
-        if (version.equalsIgnoreCase("current")) {
+        if (SnapshotManager.DISTRIBUTION_ALIAS_CURRENT.equals(version)) {
             SnapshotManager sm = Framework.getService(SnapshotManager.class);
             version = sm.getRuntimeSnapshot().getVersion();
         }
