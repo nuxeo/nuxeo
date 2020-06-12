@@ -377,6 +377,10 @@ pipeline {
             # nuxeo-parent POM
             # only replace the first <version> occurence
             perl -i -pe '!\$x && s|<version>.*?</version>|<version>${VERSION}</version>| && (\$x=1)' parent/pom.xml
+
+            # nuxeo-promote-packages POM
+            # only replace the first <version> occurence
+            perl -i -pe '!\$x && s|<version>.*?</version>|<version>${VERSION}</version>| && (\$x=1)' ci/release/pom.xml
           """
         }
       }
