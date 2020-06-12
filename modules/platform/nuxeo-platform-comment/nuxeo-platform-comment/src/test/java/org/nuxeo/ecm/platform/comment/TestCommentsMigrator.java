@@ -73,7 +73,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.test.CapturingEventListener;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.sql.IgnorePostgreSQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -94,7 +93,6 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.migration.MigrationService;
 import org.nuxeo.runtime.migration.MigrationService.MigrationContext;
 import org.nuxeo.runtime.migration.MigrationService.Migrator;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -405,7 +403,6 @@ public class TestCommentsMigrator {
         assertEquals(MIGRATION_STATE_SECURED, migrator.probeState());
     }
 
-    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-29004")
     @Test
     @LogCaptureFeature.FilterOn(logLevel = "WARN")
     @Deploy("org.nuxeo.ecm.platform.comment.tests:OSGI-INF/disable-removing-comment-children-listener.xml")
@@ -424,8 +421,10 @@ public class TestCommentsMigrator {
         commentWithRemovedParent.setPropertyValue(COMMENT_PARENT_ID_PROPERTY, fileToCommentAndRemove.getId());
         commentWithRemovedParent = propertyCommentManager.createComment(fileToCommentAndRemove,
                 commentWithRemovedParent);
-        session.removeDocument(fileToCommentAndRemove.getRef());
 
+        // wait for asynchronous completion before removal to avoid ConcurrentUpdateException
+        transactionalFeature.nextTransaction();
+        session.removeDocument(fileToCommentAndRemove.getRef());
         transactionalFeature.nextTransaction();
 
         Migrator migrator = new CommentsMigrator();
