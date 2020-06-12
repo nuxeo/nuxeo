@@ -54,11 +54,20 @@
   </extension-point>
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      URL base for Javadoc Links.
+    </documentation>
     <property name="org.nuxeo.apidoc.javadoc.url">
-      ${org.nuxeo.apidoc.javadoc.url:=https://community.nuxeo.com/api/}
+      https://community.nuxeo.com/api/
     </property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      URL base for Connect Links (for Marketplace Packages).
+    </documentation>
     <property name="org.nuxeo.apidoc.connect.url">
-      ${org.nuxeo.apidoc.connect.url:=https://connect.nuxeo.com/nuxeo/site/}
+      https://connect.nuxeo.com/nuxeo/site/
     </property>
   </extension>
 
