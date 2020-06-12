@@ -16,7 +16,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.functionaltests.explorer;
+package org.nuxeo.functionaltests.explorer.pages;
 
 import static org.junit.Assert.fail;
 

@@ -16,7 +16,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.functionaltests.explorer;
+package org.nuxeo.functionaltests.explorer.testing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

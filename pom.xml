@@ -2105,6 +2105,11 @@
         <type>zip</type>
       </dependency>
       <dependency>
+        <groupId>org.nuxeo.ftests</groupId>
+        <artifactId>nuxeo-explorer-ftests-base</artifactId>
+        <version>${nuxeo.platform.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.packages</groupId>
         <artifactId>nuxeo-platform-explorer-package</artifactId>
         <version>${nuxeo.platform.version}</version>
