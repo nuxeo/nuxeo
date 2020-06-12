@@ -43,6 +43,14 @@ public class UploadConfirmFragment extends AbstractExplorerPage {
     public WebElement versionInput;
 
     @Required
+    @FindBy(xpath = "//input[@name='pathSegment']")
+    public WebElement pathSegmentInput;
+
+    @Required
+    @FindBy(xpath = "//input[@name='title']")
+    public WebElement titleInput;
+
+    @Required
     @FindBy(xpath = "//input[@id='doImport']")
     public WebElement importButton;
 
@@ -59,6 +67,12 @@ public class UploadConfirmFragment extends AbstractExplorerPage {
         if (newName != null) {
             nameInput.clear();
             nameInput.sendKeys(newName);
+            // will have an impact on persisted path, to ease up cleanup
+            pathSegmentInput.clear();
+            pathSegmentInput.sendKeys(newName);
+            // just for display in tests
+            titleInput.clear();
+            titleInput.sendKeys(newName);
         }
         if (newVersion != null) {
             versionInput.clear();

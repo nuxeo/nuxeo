@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.apidoc.api.BundleGroup;
 import org.nuxeo.apidoc.api.BundleInfo;
@@ -51,11 +53,29 @@ import org.nuxeo.functionaltests.explorer.pages.artifacts.ServiceArtifactPage;
 import org.nuxeo.functionaltests.explorer.testing.AbstractExplorerTest;
 
 /**
- * Test explorer "adm" "simple" webengine pages.
+ * Test explorer webengine pages.
  *
  * @since 11.1
  */
 public class ITExplorerTest extends AbstractExplorerTest {
+
+    protected static String liveVersion;
+
+    /**
+     * Since 11.2, the live distrib can only be seen by admins --> init one for tests
+     */
+    @BeforeClass
+    public static void initPersistedDistrib() {
+        loginAsAdmin();
+        open(DistribAdminPage.URL);
+        liveVersion = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(null, false);
+        doLogout();
+    }
+
+    @AfterClass
+    public static void cleanupPersistedDistrib() {
+        cleanupPersistedDistributions();
+    }
 
     @Before
     public void before() {
@@ -89,32 +109,9 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public void testHomePageLiveDistrib() {
         ExplorerHomePage home = goHome();
         home.check();
+        home.checkCurrentDistrib();
         UploadFragment.checkCannotSee();
-
-        home.goHome().clickOn(home.currentDistrib);
-        DistributionHomePage dhome = asPage(DistributionHomePage.class);
-        dhome.check();
-
-        DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
-        home = header.goHome();
-        home.clickOn(home.currentExtensionPoints);
-        header.checkTitle("All Extension Points");
-        header.checkSelectedTab(header.extensionPoints);
-
-        header.goHome().clickOn(home.currentContributions);
-        header = asPage(DistributionHeaderFragment.class);
-        header.checkTitle("All Contributions");
-        header.checkSelectedTab(header.contributions);
-
-        header.goHome().clickOn(home.currentOperations);
-        header = asPage(DistributionHeaderFragment.class);
-        header.checkTitle("All Operations");
-        header.checkSelectedTab(header.operations);
-
-        header.goHome().clickOn(home.currentServices);
-        header = asPage(DistributionHeaderFragment.class);
-        header.checkTitle("All Services");
-        header.checkSelectedTab(header.services);
+        checkHomeLiveDistrib();
     }
 
     @Test
@@ -144,7 +141,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testExtensionPoints() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentExtensionPoints);
+        home.clickOn(home.firstExtensionPoints);
         checkExtensionPoints(false, false);
     }
 
@@ -158,7 +155,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testContributions() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentContributions);
+        home.clickOn(home.firstContributions);
         checkContributions(false, false);
     }
 
@@ -172,7 +169,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testServices() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentServices);
+        home.clickOn(home.firstServices);
         checkServices(false, false);
     }
 
@@ -186,7 +183,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testOperations() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentOperations);
+        home.clickOn(home.firstOperations);
         checkOperations(false, false);
     }
 
@@ -200,7 +197,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testComponents() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentExtensionPoints);
+        home.clickOn(home.firstExtensionPoints);
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header = header.navigateTo(header.components);
         header.checkSelectedTab(header.components);
@@ -217,7 +214,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testBundles() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentExtensionPoints);
+        home.clickOn(home.firstExtensionPoints);
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
         header = header.navigateTo(header.bundles);
         header.checkSelectedTab(header.bundles);

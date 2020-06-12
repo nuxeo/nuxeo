@@ -23,7 +23,7 @@
     </tr>
 
     <tr>
-      <td><a class="button" href="${Root.path}/current/">${rtSnap.name}</a></td>
+      <td><a class="button currentDistrib" href="${Root.path}/current/">${rtSnap.name}</a></td>
       <td>${rtSnap.version}</td>
       <td>${rtSnap.creationDate?datetime}</td>
       <td>-</td>

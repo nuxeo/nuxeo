@@ -18,18 +18,13 @@
  */
 package org.nuxeo.functionaltests.explorer.nomode;
 
-import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
-
 import java.io.File;
 import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.apidoc.browse.ApiBrowserConstants;
-import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.functionaltests.Locator;
-import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.UploadFragment;
@@ -51,17 +46,12 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
     @After
     public void after() {
         doLogout();
-        // clean up persisted distribs
-        RestHelper.deleteDocument(SnapshotPersister.Root_PATH + SnapshotPersister.Root_NAME);
+        cleanupPersistedDistributions();
     }
 
     @Override
     protected void doLogin() {
         loginAsAdmin();
-    }
-
-    protected void loginAsAdmin() {
-        getLoginPage().login(ADMINISTRATOR, ADMINISTRATOR);
     }
 
     /**
@@ -84,34 +74,9 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
     public void testHomePageLiveDistrib() {
         ExplorerHomePage home = goHome();
         home.check();
+        home.checkCurrentDistrib();
         UploadFragment.checkCanSee();
-    }
-
-    protected String getDistribId(String name, String version) {
-        return String.format("%s-%s", name, version);
-    }
-
-    protected String getDistribExportName(String distribId) {
-        return String.format("nuxeo-distribution-%s.zip", distribId);
-    }
-
-    protected void checkDistrib(String distribId, boolean partial, String partialVirtualGroup, boolean legacy) {
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLEGROUPS);
-        checkBundleGroups(partial, partialVirtualGroup, legacy);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLES);
-        checkBundles(partial, legacy);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_COMPONENTS);
-        checkComponents(partial, legacy);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_EXTENSIONPOINTS);
-        checkExtensionPoints(partial, legacy);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_SERVICES);
-        checkServices(partial, legacy);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_CONTRIBUTIONS);
-        checkContributions(partial, legacy);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_OPERATIONS);
-        checkOperations(partial, legacy);
-        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_PACKAGES);
-        checkPackages(partial, legacy);
+        checkHomeLiveDistrib();
     }
 
     protected String checkLiveDistribExport(String distribName) {
@@ -189,7 +154,7 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
     public void testSampleDistribImport() throws IOException {
         File zip = createSampleZip(false);
 
-        String newDistribName = "apidoc";
+        String newDistribName = "apidoc-imported";
         String newVersion = "1.0.0";
         open(DistribAdminPage.URL);
         asPage(DistribAdminPage.class).importPersistedDistrib(zip, newDistribName, newVersion,
@@ -204,7 +169,7 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
         open(ExplorerHomePage.URL);
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
-        checkDistrib(newDistribId, true, newDistribName, true);
+        checkDistrib(newDistribId, true, SAMPLE_BUNDLE_GROUP, true);
     }
 
 }

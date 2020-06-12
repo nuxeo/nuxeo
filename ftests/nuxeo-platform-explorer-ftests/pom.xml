@@ -15,6 +15,7 @@
   <modules>
     <module>explorer-ftests-base</module>
     <module>explorer-ftests-nomode</module>
+    <module>explorer-ftests-sitemode</module>
   </modules>
 
 </project>

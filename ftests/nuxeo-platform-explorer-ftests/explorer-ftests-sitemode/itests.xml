@@ -1,0 +1,21 @@
+<project name="ftests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <import file="${out.dir}/../../../itests.xml" />
+
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat">
+    <!-- prevent nuxeoctl from reaching Connect -->
+    <antcall target="set-conf">
+      <param name="name" value="org.nuxeo.connect.server.reachable" />
+      <param name="value" value="false" />
+    </antcall>
+    <!-- activate site mode -->
+    <antcall target="set-conf">
+      <param name="name" value="org.nuxeo.apidoc.site.mode" />
+      <param name="value" value="true" />
+    </antcall>
+  </target>
+
+</project>
