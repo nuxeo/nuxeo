@@ -32,12 +32,6 @@ import org.nuxeo.apidoc.api.ServiceInfo;
  */
 public class ApiBrowserConstants {
 
-    public static final String DISTRIBUTION_ALIAS_CURRENT = "current";
-
-    public static final String DISTRIBUTION_ALIAS_LATEST = "latest";
-
-    public static final String DISTRIBUTION_ALIAS_ADM = "adm";
-
     public static final String PROPERTY_SITE_MODE = "org.nuxeo.apidoc.site.mode";
 
     public static final String PROPERTY_HIDE_CURRENT_DISTRIBUTION = "org.nuxeo.apidoc.hide.current.distribution";

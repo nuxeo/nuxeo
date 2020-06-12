@@ -33,7 +33,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
-import org.nuxeo.apidoc.browse.ApiBrowserConstants;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
@@ -116,14 +116,14 @@ public class ITExplorerTest extends AbstractExplorerTest {
 
     @Test
     public void testHomePageCurrentDistrib() {
-        open(String.format("%s%s/", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_CURRENT));
+        open(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT));
         // current live distrib redirection
         asPage(DistributionHomePage.class).check();
     }
 
     @Test
     public void testHomePageLatestDistrib() {
-        open(String.format("%s%s/", ExplorerHomePage.URL, ApiBrowserConstants.DISTRIBUTION_ALIAS_LATEST));
+        open(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_LATEST));
         // current live distrib redirection
         asPage(DistributionHomePage.class).check();
     }

@@ -29,6 +29,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
 
 public class TestDistributionResolver {
@@ -53,7 +54,7 @@ public class TestDistributionResolver {
             String version = id.replace(name + "-", "");
             when(snap.getVersion()).thenReturn(version);
             if (id.startsWith("server-11.1.1")) {
-                when(snap.getAliases()).thenReturn(List.of("current"));
+                when(snap.getAliases()).thenReturn(List.of(SnapshotManager.DISTRIBUTION_ALIAS_CURRENT));
             } else {
                 when(snap.getAliases()).thenReturn(List.of());
             }
@@ -93,7 +94,7 @@ public class TestDistributionResolver {
         check("server-11.1.1", "server-11.1.2");
         check("server-11.1.1", "server-11.1.2-SNAPSHOT");
         check("server-11.1.1", "server-11.2-SNAPSHOT");
-        check("server-11.1.1", "current");
+        check("server-11.1.1", SnapshotManager.DISTRIBUTION_ALIAS_CURRENT);
         check(null, "my-server-11.1-SNAPSHOT"); // non-regression test for NXP-29193
     }
 

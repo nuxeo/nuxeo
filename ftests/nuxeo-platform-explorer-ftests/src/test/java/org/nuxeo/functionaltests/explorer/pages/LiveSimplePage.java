@@ -21,7 +21,7 @@ package org.nuxeo.functionaltests.explorer.pages;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.nuxeo.apidoc.browse.ApiBrowserConstants;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -35,7 +35,7 @@ import org.openqa.selenium.support.FindBy;
 public class LiveSimplePage extends AbstractExplorerPage {
 
     public static final String URL = String.format("%s%s/", ExplorerHomePage.URL,
-            ApiBrowserConstants.DISTRIBUTION_ALIAS_ADM);
+            SnapshotManager.DISTRIBUTION_ALIAS_ADM);
 
     @Required
     @FindBy(xpath = "//h1")

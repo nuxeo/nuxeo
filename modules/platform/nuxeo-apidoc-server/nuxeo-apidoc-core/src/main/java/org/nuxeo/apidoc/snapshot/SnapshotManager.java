@@ -35,6 +35,32 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface SnapshotManager {
 
     /**
+     * Name alias for the current "live" distribution retrieval.
+     *
+     * @since 11.2
+     */
+    public static String DISTRIBUTION_ALIAS_CURRENT = "current";
+
+    /**
+     * Name alias for the current "live" distribution retrieval.
+     * <p>
+     * Alternative to {@link #DISTRIBUTION_ALIAS_CURRENT} for the distribution to be displayed in "admin" embedded mode
+     * without showing explorer headers and such.
+     *
+     * @since 11.2
+     */
+    public static String DISTRIBUTION_ALIAS_ADM = "adm";
+
+    /**
+     * Name alias for the "latest" available distribution.
+     * <p>
+     * Distributions are filtered with name starting with "nuxeo platform" (case-insensitive check).
+     *
+     * @since 11.2
+     */
+    public static String DISTRIBUTION_ALIAS_LATEST = "latest";
+
+    /**
      * Initializes the web context, as potentially needed by plugins.
      *
      * @since 11.1
