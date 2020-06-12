@@ -18,6 +18,7 @@
  */
 package org.nuxeo.functionaltests.explorer;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.io.File;
@@ -53,6 +54,10 @@ import com.google.common.base.Function;
  */
 public abstract class AbstractExplorerTest extends AbstractTest {
 
+    protected static String READER_USERNAME = TEST_USERNAME;
+
+    protected static String MANAGER_USERNAME = "apidocmanager";
+
     protected void doLogin() {
         getLoginPage().login(TEST_USERNAME, TEST_PASSWORD);
     }
@@ -63,14 +68,18 @@ public abstract class AbstractExplorerTest extends AbstractTest {
     }
 
     protected void open(String url) {
-        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
-        driver.get(NUXEO_URL + url);
-        check404();
+        openAndCheck(url, false);
     }
 
-    protected void check404() {
-        assertFalse("404 on URL: '" + driver.getCurrentUrl(),
-                driver.getTitle().contains(String.valueOf(HttpStatus.SC_NOT_FOUND)));
+    protected void openAndCheck(String url, boolean checkIs404) {
+        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
+        driver.get(NUXEO_URL + url);
+        if (checkIs404) {
+            assertEquals("404 - Resource Not Found", driver.getTitle());
+        } else {
+            assertFalse("404 on URL: '" + driver.getCurrentUrl(),
+                    driver.getTitle().contains(String.valueOf(HttpStatus.SC_NOT_FOUND)));
+        }
     }
 
     protected ExplorerHomePage goHome() {
@@ -114,7 +123,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
                     "configuration - org.nuxeo.runtime.cluster.ClusterService");
             listing = listing.filterOn("org.nuxeo.apidoc");
         }
-        int nb = legacy ? 5 : 7;
+        int nb = legacy ? 5 : 8;
         listing.checkListing(nb, "org.nuxeo.apidoc.adapterContrib--adapters",
                 "/viewContribution/org.nuxeo.apidoc.adapterContrib--adapters",
                 "adapters - org.nuxeo.ecm.core.api.DocumentAdapterService");

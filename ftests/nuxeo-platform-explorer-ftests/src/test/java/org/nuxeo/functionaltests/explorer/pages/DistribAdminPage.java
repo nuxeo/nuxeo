@@ -18,12 +18,16 @@
  */
 package org.nuxeo.functionaltests.explorer.pages;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.UploadFragment;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -55,8 +59,7 @@ public class DistribAdminPage extends AbstractExplorerPage {
     @Override
     public void check() {
         checkTitle("Nuxeo Platform Explorer");
-        // check upload form is here
-        asPage(UploadFragment.class);
+        UploadFragment.checkCanSee();
     }
 
     /**
@@ -102,6 +105,26 @@ public class DistribAdminPage extends AbstractExplorerPage {
             }
         }));
         return export;
+    }
+
+    public void checkCanSave() {
+        assertTrue(driver.findElement(By.id("savePartial")).isEnabled());
+        assertTrue(driver.findElement(By.id("save")).isEnabled());
+    }
+
+    public void checkCannotSave() {
+        // check we're an explorer page still
+        checkTitle("Nuxeo Platform Explorer");
+        try {
+            driver.findElement(By.id("savePartial"));
+            fail("Should not be able to save partial");
+        } catch (NoSuchElementException e) {
+        }
+        try {
+            driver.findElement(By.id("save"));
+            fail("Should not be able to save");
+        } catch (NoSuchElementException e) {
+        }
     }
 
 }

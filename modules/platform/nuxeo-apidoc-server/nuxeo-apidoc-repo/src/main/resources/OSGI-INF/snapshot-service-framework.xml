@@ -71,4 +71,16 @@
     </property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Default groups for application managers and readers.
+    </documentation>
+    <property name="org.nuxeo.apidoc.apidocmanagers.group">
+      ApidocManagers
+    </property>
+    <property name="org.nuxeo.apidoc.apidocreaders.group">
+      Everyone
+    </property>
+  </extension>
+
 </component>

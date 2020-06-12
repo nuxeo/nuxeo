@@ -40,19 +40,27 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
+import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.PackageInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.introspection.BundleGroupImpl;
 import org.nuxeo.apidoc.introspection.OperationInfoImpl;
 import org.nuxeo.apidoc.plugin.Plugin;
+import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 
 public class SnapshotPersister {
 
@@ -69,21 +77,15 @@ public class SnapshotPersister {
     /** @since 11.1 */
     public static final String PACKAGE_ROOT_NAME = "Packages";
 
-    public static final String Read_Grp = "Everyone";
-
-    public static final String Write_Grp = "members";
+    /** @since 11.2 */
+    public static final String ROOT_TYPE_NAME = "Workspace";
 
     public DocumentModel getSubRoot(CoreSession session, DocumentModel root, String name) {
-
         DocumentRef rootRef = new PathRef(root.getPathAsString() + name);
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, root.getPathAsString(), name, false);
-        creator.runUnrestricted();
-        // flush caches
-        session.save();
-        return session.getDocument(creator.getRootRef());
+        return createRoot(session, root.getPathAsString(), name, false);
     }
 
     public DocumentModel getDistributionRoot(CoreSession session) {
@@ -91,11 +93,33 @@ public class SnapshotPersister {
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, Root_PATH, Root_NAME, true);
-        creator.runUnrestricted();
+        return CoreInstance.doPrivileged(session.getRepositoryName(), privilegedSession -> {
+            return createRoot(privilegedSession, Root_PATH, Root_NAME, true);
+        });
+    }
+
+    /**
+     * Creates a workspace folder and returns it.
+     *
+     * @since 11.2
+     */
+    public static DocumentModel createRoot(CoreSession session, String parentPath, String name, boolean setAcl) {
+        DocumentModel root = session.createDocumentModel(parentPath, name, ROOT_TYPE_NAME);
+        root.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, name);
+        root = session.createDocument(root);
+
+        if (setAcl) {
+            ACL acl = new ACLImpl();
+            acl.add(new ACE(SecurityHelper.getApidocReadersGroup(), SecurityConstants.READ, true));
+            acl.add(new ACE(SecurityHelper.getApidocManagersGroup(), SecurityConstants.WRITE, true));
+            ACP acp = root.getACP();
+            acp.addACL(acl);
+            session.setACP(root.getRef(), acp, true);
+        }
+
         // flush caches
         session.save();
-        return session.getDocument(creator.getRootRef());
+        return session.getDocument(root.getRef());
     }
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label,

@@ -118,6 +118,10 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
 
     @Override
     protected void doLogin() {
+        loginAsAdmin();
+    }
+
+    protected void loginAsAdmin() {
         getLoginPage().login(ADMINISTRATOR, ADMINISTRATOR);
     }
 
@@ -134,14 +138,14 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         open(DistribAdminPage.URL);
         DistribAdminPage page = asPage(DistribAdminPage.class);
         page.check();
+        page.checkCanSave();
     }
 
     @Test
     public void testHomePageLiveDistrib() {
         ExplorerHomePage home = goHome();
         home.check();
-        // check upload form is here for admin
-        asPage(UploadFragment.class);
+        UploadFragment.checkCanSee();
     }
 
     protected String getDistribId(String name, String version) {
@@ -171,15 +175,16 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         checkPackages(partial, legacy);
     }
 
-    @Test
-    public void testLiveDistribExportAndImport() {
-        String distribName = "my-server";
+    protected String checkLiveDistribExport(String distribName) {
         open(DistribAdminPage.URL);
         String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, false);
         String distribId = getDistribId(distribName, version);
         asPage(DistribAdminPage.class).checkPersistedDistrib(distribId);
         checkDistrib(distribId, false, null, false);
+        return distribId;
+    }
 
+    protected void checkLiveDistribImport(String distribId) {
         // check importing it back
         open(DistribAdminPage.URL);
         String filename = getDistribExportName(distribId);
@@ -198,14 +203,22 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
     }
 
     @Test
-    public void testLivePartialDistribExportAndImport() {
-        String distribName = "my-partial-server";
+    public void testLiveDistribExportAndImport() {
+        String distribName = "my-server";
+        String distribId = checkLiveDistribExport(distribName);
+        checkLiveDistribImport(distribId);
+    }
+
+    protected String checkLivePartialDistribExport(String distribName) {
         open(DistribAdminPage.URL);
         String version = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(distribName, true);
         String distribId = getDistribId(distribName, version);
         asPage(DistribAdminPage.class).checkPersistedDistrib(distribId);
         checkDistrib(distribId, true, distribName, false);
+        return distribId;
+    }
 
+    protected void checkLivePartialDistribImport(String distribName, String distribId) {
         // check importing it back
         open(DistribAdminPage.URL);
         String filename = getDistribExportName(distribId);
@@ -221,6 +234,13 @@ public class ITExplorerAdminTest extends AbstractExplorerTest {
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
         checkDistrib(distribId, true, distribName, false);
+    }
+
+    @Test
+    public void testLivePartialDistribExportAndImport() {
+        String distribName = "my-partial-server";
+        String distribId = checkLivePartialDistribExport(distribName);
+        checkLivePartialDistribImport(distribName, distribId);
     }
 
     protected void createSampleZip(String sourceDirPath, String zipFilePath, boolean addMarker) throws IOException {

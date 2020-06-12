@@ -59,6 +59,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.apidoc.plugin.Plugin;
+import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
@@ -102,14 +103,22 @@ public class Distribution extends ModuleRoot {
     protected static final Pattern VERSION_REGEX = Pattern.compile("^(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-.*)?$",
             Pattern.CASE_INSENSITIVE);
 
-    // handle errors
     @Override
     public Object handleError(Throwable t) {
         if (t instanceof WebResourceNotFoundException) {
-            return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
+            return show404();
         } else {
             return super.handleError(t);
         }
+    }
+
+    /**
+     * Displays a customized 404 page.
+     *
+     * @since 11.2
+     */
+    public Object show404() {
+        return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
     }
 
     protected SnapshotManager getSnapshotManager() {
@@ -327,8 +336,8 @@ public class Distribution extends ModuleRoot {
 
     protected Object performSave(SnapshotFilter filter) throws NamingException, NotSupportedException, SystemException,
             SecurityException, RollbackException, HeuristicMixedException, HeuristicRollbackException {
-        if (!canAddDocumentation()) {
-            return null;
+        if (!canSave()) {
+            return show404();
         }
 
         boolean startedTx = false;
@@ -386,6 +395,10 @@ public class Distribution extends ModuleRoot {
     @GET
     @Path("download/{distributionId}")
     public Response downloadDistrib(@PathParam("distributionId") String distribId) throws IOException {
+        if (!canImportOrExportDistributions()) {
+            return Response.status(404).build();
+        }
+
         File tmp = getExportTmpFile();
         tmp.createNewFile();
         OutputStream out = new FileOutputStream(tmp);
@@ -406,22 +419,21 @@ public class Distribution extends ModuleRoot {
      * @since 8.3
      */
     @GET
-    @Path("_admin")
+    @Path(VIEW_ADMIN)
     public Object getForms() {
         NuxeoPrincipal principal = getContext().getPrincipal();
-        if (SecurityHelper.canEditDocumentation(principal)) {
+        if (SecurityHelper.canManageDistributions(principal)) {
             return getView("forms").arg("hideNav", Boolean.TRUE);
-        } else {
-            return Response.status(401).build();
         }
+        return show404();
     }
 
     @POST
     @Path("uploadDistrib")
     @Produces("text/html")
     public Object uploadDistrib() throws IOException {
-        if (!canAddDocumentation()) {
-            return null;
+        if (!canImportOrExportDistributions()) {
+            return show404();
         }
         FormData formData = getContext().getForm();
         Blob blob = formData.getFirstBlob();
@@ -441,8 +453,8 @@ public class Distribution extends ModuleRoot {
     @Path("uploadDistribTmp")
     @Produces("text/html")
     public Object uploadDistribTmp() {
-        if (!canAddDocumentation()) {
-            return null;
+        if (!canImportOrExportDistributions()) {
+            return show404();
         }
         FormData formData = getContext().getForm();
         Blob blob = formData.getFirstBlob();
@@ -471,8 +483,8 @@ public class Distribution extends ModuleRoot {
     @Path("uploadDistribTmpValid")
     @Produces("text/html")
     public Object uploadDistribTmpValid() {
-        if (!canAddDocumentation()) {
-            return null;
+        if (!canImportOrExportDistributions()) {
+            return show404();
         }
 
         FormData formData = getContext().getForm();
@@ -513,7 +525,7 @@ public class Distribution extends ModuleRoot {
     public Object reindex() {
         NuxeoPrincipal nxPrincipal = getContext().getPrincipal();
         if (!nxPrincipal.isAdministrator()) {
-            return Response.status(404).build();
+            return show404();
         }
 
         CoreSession coreSession = getContext().getCoreSession();
@@ -533,25 +545,23 @@ public class Distribution extends ModuleRoot {
     }
 
     public boolean isEmbeddedMode() {
-        Boolean embed = (Boolean) getContext().getProperty("embeddedMode", Boolean.FALSE);
-        return embed != null && embed;
+        return Boolean.TRUE.equals(getContext().getProperty("embeddedMode", Boolean.FALSE));
     }
 
     public boolean isEditor() {
-        if (isEmbeddedMode() || isSiteMode()) {
-            return false;
-        }
-        NuxeoPrincipal principal = getContext().getPrincipal();
-        return SecurityHelper.canEditDocumentation(principal);
+        return !isSiteMode() && canImportOrExportDistributions();
     }
 
-    public boolean canAddDocumentation() {
-        NuxeoPrincipal principal = getContext().getPrincipal();
-        return !isEmbeddedMode() && SecurityHelper.canEditDocumentation(principal);
+    protected boolean canSave() {
+        return !isEmbeddedMode() && SecurityHelper.canSnapshotLiveDistribution(getContext().getPrincipal());
     }
 
-    public static boolean showCurrentDistribution() {
-        return !(Framework.isBooleanPropertyTrue(ApiBrowserConstants.PROPERTY_SITE_MODE) || isSiteMode());
+    protected boolean canImportOrExportDistributions() {
+        return !isEmbeddedMode() && SecurityHelper.canManageDistributions(getContext().getPrincipal());
+    }
+
+    public boolean showCurrentDistribution() {
+        return !(Framework.isBooleanPropertyTrue(ApiBrowserConstants.PROPERTY_HIDE_CURRENT_DISTRIBUTION) || isSiteMode());
     }
 
     public static boolean isSiteMode() {
