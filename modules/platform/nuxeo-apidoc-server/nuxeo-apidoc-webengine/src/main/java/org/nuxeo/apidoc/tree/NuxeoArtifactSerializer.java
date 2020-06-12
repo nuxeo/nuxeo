@@ -41,7 +41,7 @@ public class NuxeoArtifactSerializer extends JSonTreeSerializer {
     }
 
     protected static boolean useEmbeddedMode(WebContext ctx) {
-        return ((Boolean) ctx.getProperty("embeddedMode", Boolean.FALSE)).booleanValue();
+        return ((Boolean) ctx.getProperty(ApiBrowserConstants.EMBEDDED_MODE_MARKER, Boolean.FALSE)).booleanValue();
     }
 
     @Override

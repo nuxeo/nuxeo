@@ -54,6 +54,7 @@ import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.apidoc.search.ArtifactSearcher;
 import org.nuxeo.apidoc.search.ArtifactSearcherImpl;
+import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -68,6 +69,7 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveReader;
 import org.nuxeo.ecm.core.io.impl.plugins.NuxeoArchiveWriter;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
+import org.nuxeo.runtime.RuntimeServiceException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -100,6 +102,9 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public DistributionSnapshot getRuntimeSnapshot() {
+        if (isSiteMode()) {
+            throw new RuntimeServiceException("Live runtime cannot be snapshotted.");
+        }
         if (runtimeSnapshot == null) {
             synchronized (this) {
                 if (runtimeSnapshot == null) {
@@ -112,11 +117,14 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public DistributionSnapshot getSnapshot(String key, CoreSession session) {
-        if (key == null || DISTRIBUTION_ALIAS_CURRENT.equals(key) || DISTRIBUTION_ALIAS_ADM.equals(key)) {
+        if (RuntimeSnapshot.LIVE_ALIASES.contains(key)) {
+            if (!canSeeRuntimeSnapshot(session)) {
+                throw new RuntimeServiceException("Live runtime cannot be snapshotted.");
+            }
             return getRuntimeSnapshot();
         }
         DistributionSnapshot snap = getPersistentSnapshots(session).get(key);
-        if (snap == null) {
+        if (snap == null && canSeeRuntimeSnapshot(session)) {
             DistributionSnapshot rtsnap = getRuntimeSnapshot();
             if (rtsnap.getKey().equals(key)) {
                 return rtsnap;
@@ -160,11 +168,20 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         return names;
     }
 
+    protected boolean canSeeRuntimeSnapshot(CoreSession session) {
+        if (!isSiteMode()) {
+            return SecurityHelper.canSnapshotLiveDistribution(session.getPrincipal());
+        }
+        return false;
+    }
+
     @Override
     public List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session) {
         List<DistributionSnapshotDesc> names = new ArrayList<>();
         names.addAll(getPersistentSnapshots(session).values());
-        names.add(0, getRuntimeSnapshot());
+        if (canSeeRuntimeSnapshot(session)) {
+            names.add(0, getRuntimeSnapshot());
+        }
         return names;
     }
 
@@ -182,6 +199,9 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     @Override
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name,
             Map<String, Serializable> properties, SnapshotFilter filter) {
+        if (!canSeeRuntimeSnapshot(session)) {
+            throw new RuntimeServiceException("Live runtime cannot be snapshotted.");
+        }
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
         DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter, properties, getPlugins());
         addPersistentSnapshot(snap.getKey(), snap);
@@ -194,7 +214,9 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
         List<DistributionSnapshot> distribs = new ArrayList<>();
         distribs.addAll(getPersistentSnapshots(session).values());
-        distribs.add(getRuntimeSnapshot());
+        if (canSeeRuntimeSnapshot(session)) {
+            distribs.add(getRuntimeSnapshot());
+        }
 
         for (DistributionSnapshot snap : distribs) {
 
@@ -339,8 +361,16 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public void initWebContext(HttpServletRequest request) {
-        for (Plugin<?> plugin : getPlugins()) {
-            plugin.initWebContext(getRuntimeSnapshot(), request);
+        if (isSiteMode()) {
+            return;
+        }
+        try {
+            DistributionSnapshot rsnap = getRuntimeSnapshot();
+            for (Plugin<?> plugin : getPlugins()) {
+                plugin.initWebContext(rsnap, request);
+            }
+        } catch (RuntimeServiceException e) {
+            log.warn("Illegal access to runtime snapshot", e);
         }
     }
 
@@ -410,6 +440,11 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             return (T) searcher;
         }
         return null;
+    }
+
+    @Override
+    public boolean isSiteMode() {
+        return Framework.isBooleanPropertyTrue(PROPERTY_SITE_MODE);
     }
 
 }

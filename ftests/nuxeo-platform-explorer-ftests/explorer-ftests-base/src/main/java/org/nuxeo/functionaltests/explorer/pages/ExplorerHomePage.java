@@ -79,17 +79,21 @@ public class ExplorerHomePage extends AbstractExplorerPage {
     public void checkFirstPersistedDistrib(String name, String version) {
         assertEquals(String.format("%s %s", name, version), firstPersistedDistrib.getText());
         assertEquals(version, firstPersistedDistribVersion.getText());
-        assertEquals(String.format("%s%s%s-%s/", AbstractTest.NUXEO_URL, URL, name, version),
+        assertEquals(String.format("%s%s%s-%s/", AbstractTest.NUXEO_URL, URL, name.replaceAll(" ", "%20"), version),
                 firstPersistedDistrib.getAttribute("href"));
     }
 
-    public void checkNoDistrib() {
+    public void checkNoCurrentDistrib() {
         try {
             currentDistrib.getText();
             fail("No current distrib should be found");
         } catch (NoSuchElementException e) {
             // ok
         }
+    }
+
+    public void checkNoDistrib() {
+        checkNoCurrentDistrib();
         try {
             firstPersistedDistrib.getText();
             fail("No distrib should be found");

@@ -33,7 +33,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -41,19 +41,19 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @Features(RuntimeSnaphotFeature.class)
 public class TestBrowse {
 
-    protected SnapshotManager getSnapshotManager() {
-        return Framework.getService(SnapshotManager.class);
-    }
+    @Inject
+    protected SnapshotManager manager;
 
     @Inject
-    SnapshotManager manager;
+    protected CoreSession session;
 
     @Test
     public void testIntrospection() {
+        assertFalse(manager.isSiteMode());
+        DistributionSnapshot runtimeSnapshot = manager.getRuntimeSnapshot();
+        assertNotNull(runtimeSnapshot);
 
         String cid = "org.nuxeo.ecm.core.lifecycle.LifeCycleService";
-        DistributionSnapshot runtimeSnapshot = getSnapshotManager().getRuntimeSnapshot();
-
         ComponentInfo ci = runtimeSnapshot.getComponent(cid);
         assertNotNull(ci);
 
@@ -66,6 +66,15 @@ public class TestBrowse {
 
         Collection<ExtensionInfo> contribs = epi.getExtensions();
         assertFalse(contribs.isEmpty());
+    }
+
+    @Test
+    public void testGetSnapshot() {
+        assertFalse(manager.isSiteMode());
+        DistributionSnapshot snapshot = manager.getSnapshot(SnapshotManager.DISTRIBUTION_ALIAS_CURRENT, session);
+        assertNotNull(snapshot);
+        snapshot = manager.getSnapshot(SnapshotManager.DISTRIBUTION_ALIAS_ADM, session);
+        assertNotNull(snapshot);
     }
 
 }

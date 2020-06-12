@@ -65,21 +65,19 @@ public class ITExplorerAdminSiteModeTest extends AbstractExplorerSiteModeTest {
         open(DistribAdminPage.URL);
         DistribAdminPage page = asPage(DistribAdminPage.class);
         page.check();
-        // TODO NXP-29050: API protected but form still visible
-        page.checkCanSave();
+        page.checkCannotSave();
     }
 
     @Test
     public void testHomePageCurrentDistrib() {
-        open(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT));
-        // current live distrib redirection
-        asPage(DistributionHomePage.class).check();
+        // since 11.2: cannot see current live distrib anymore
+        openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT), true);
     }
 
     @Test
     public void testHomePageLatestDistrib() {
         open(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_LATEST));
-        // current live distrib redirection
+        // persisted distrib redirection
         asPage(DistributionHomePage.class).check();
     }
 

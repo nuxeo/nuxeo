@@ -17,8 +17,6 @@
  */
 package org.nuxeo.functionaltests.explorer.nomode;
 
-import static org.junit.Assume.assumeTrue;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +53,6 @@ public class ITExplorerNoInitTest extends AbstractExplorerTest {
         open(ExplorerHomePage.URL);
         ExplorerHomePage home = asPage(ExplorerHomePage.class);
         home.check();
-        assumeTrue("TODO NXP-29050: current live distrib not correctly protected", false);
         if (isAdmin) {
             home.checkCurrentDistrib();
         } else {

@@ -17,8 +17,6 @@
  */
 package org.nuxeo.functionaltests.explorer.sitemode;
 
-import static org.junit.Assume.assumeTrue;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +54,6 @@ public class ITExplorerNoInitSiteModeTest extends AbstractExplorerTest {
         ExplorerHomePage home = asPage(ExplorerHomePage.class);
         home.check();
         home.checkNoDistrib();
-        assumeTrue("TODO NXP-29050: current live distrib not correctly protected", false);
         openAndCheck(LiveSimplePage.URL, true);
         openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT), true);
         openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_LATEST), true);

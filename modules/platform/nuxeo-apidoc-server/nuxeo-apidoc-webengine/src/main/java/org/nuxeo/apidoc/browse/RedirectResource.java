@@ -27,9 +27,12 @@ import javax.ws.rs.core.Response;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 
-@WebObject(type = "redirectWO")
+@WebObject(type = RedirectResource.TYPE)
 @Produces("text/html")
 public class RedirectResource extends DefaultObject {
+
+    /** @since 11.2 */
+    public static final String TYPE = "redirectWO";
 
     protected String orgDistributionId = null;
 

@@ -83,7 +83,6 @@ public abstract class NuxeoArtifactWebObject extends DefaultObject {
     }
 
     @Produces("text/html")
-
     public Object doViewDefault() {
         NuxeoArtifact nxItem = getNxArtifact();
         return getView("default").arg("nxItem", nxItem);

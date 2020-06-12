@@ -1,16 +1,8 @@
 <@extends src="base.ftl">
 
-  <@block name="stylesheets">
-  </@block>
+<@block name="right">
 
-  <@block name="header_scripts">
-  </@block>
-
-  <@block name="right">
   <h1>Distributions</h1>
-
-    <#assign rtSnap=Root.runtimeDistribution/>
-    <#assign snapList=Root.listPersistedDistributions()/>
 
   <table class="tablesorter distributions">
     <tr>
@@ -22,6 +14,8 @@
       <th>Actions</th>
     </tr>
 
+    <#if Root.showRuntimeSnapshot()>
+    <#assign rtSnap=Root.runtimeDistribution/>
     <tr>
       <td><a class="button currentDistrib" href="${Root.path}/current/">${rtSnap.name}</a></td>
       <td>${rtSnap.version}</td>
@@ -100,8 +94,9 @@
 
       </td>
     </tr>
+    </#if>
 
-    <#list snapList as distrib>
+    <#list Root.listPersistedDistributions() as distrib>
       <tr>
         <td><a class="distrib button" href="${Root.path}/${distrib.key}/">${distrib.name}</a></td>
         <td>${distrib.version}</td>
@@ -138,5 +133,6 @@
     </form>
   </div>
 
-  </@block>
+</@block>
+
 </@extends>

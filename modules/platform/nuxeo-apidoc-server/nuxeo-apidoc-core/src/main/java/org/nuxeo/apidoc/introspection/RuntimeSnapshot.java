@@ -71,6 +71,10 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSnapshot {
 
+    /** @since 11.2 */
+    public static final List<String> LIVE_ALIASES = List.of(SnapshotManager.DISTRIBUTION_ALIAS_CURRENT,
+            SnapshotManager.DISTRIBUTION_ALIAS_ADM);
+
     protected final Date created;
 
     protected final Date released;
@@ -107,7 +111,7 @@ public class RuntimeSnapshot extends BaseNuxeoArtifact implements DistributionSn
 
     protected final Map<String, PluginSnapshot<?>> pluginSnapshots = new HashMap<>();
 
-    protected final List<String> aliases = new LinkedList<>(Collections.singletonList(SnapshotManager.DISTRIBUTION_ALIAS_CURRENT));
+    protected final List<String> aliases = new LinkedList<>(LIVE_ALIASES);
 
     public static RuntimeSnapshot build() {
         return new RuntimeSnapshot();

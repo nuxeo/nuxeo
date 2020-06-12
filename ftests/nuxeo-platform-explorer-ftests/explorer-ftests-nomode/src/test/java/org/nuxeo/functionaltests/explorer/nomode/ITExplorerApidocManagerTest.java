@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
+import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
+import org.nuxeo.functionaltests.explorer.pages.UploadFragment;
 
 /**
  * Tests features for {@link SecurityHelper#APIDOC_MANAGERS_GROUP} members.
@@ -54,13 +56,32 @@ public class ITExplorerApidocManagerTest extends ITExplorerAdminTest {
         getLoginPage().login(MANAGER_USERNAME, TEST_PASSWORD);
     }
 
+    @Override
+    @Test
+    public void testDistribAdminPage() {
+        open(DistribAdminPage.URL);
+        DistribAdminPage page = asPage(DistribAdminPage.class);
+        page.check();
+        // since 11.2: cannot save anymore
+        page.checkCannotSave();
+    }
+
+    @Override
+    @Test
+    public void testHomePageLiveDistrib() {
+        ExplorerHomePage home = goHome();
+        home.check();
+        // since 11.2: cannot see current live distrib anymore
+        home.checkNoCurrentDistrib();
+        UploadFragment.checkCanSee();
+    }
+
     @Test
     @Override
     public void testLiveDistribExportAndImport() {
         String distribName = "my-server";
         open(DistribAdminPage.URL);
-        // TODO NXP-29050: API protected but form still visible
-        asPage(DistribAdminPage.class).checkCanSave();
+        asPage(DistribAdminPage.class).checkCannotSave();
         // log as admin to perform export of live distrib first
         doLogout();
         loginAsAdmin();
@@ -75,8 +96,7 @@ public class ITExplorerApidocManagerTest extends ITExplorerAdminTest {
     public void testLivePartialDistribExportAndImport() {
         String distribName = "my-partial-server";
         open(DistribAdminPage.URL);
-        // TODO NXP-29050: API protected but form still visible
-        asPage(DistribAdminPage.class).checkCanSave();
+        asPage(DistribAdminPage.class).checkCannotSave();
         // log as admin to perform export of live distrib first
         doLogout();
         loginAsAdmin();

@@ -36,8 +36,8 @@ public class ITExplorerSimpleTest extends AbstractExplorerTest {
 
     @Before
     public void before() {
-        RestHelper.createUserIfDoesNotExist(READER_USERNAME, TEST_PASSWORD, null, null, null, null, null);
-        doLogin();
+        // since 11.2: need to be an admin to browse "simple" pages
+        loginAsAdmin();
     }
 
     @After

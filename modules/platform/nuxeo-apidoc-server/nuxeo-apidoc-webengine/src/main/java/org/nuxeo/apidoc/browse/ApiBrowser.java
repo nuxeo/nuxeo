@@ -63,8 +63,10 @@ import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-@WebObject(type = "apibrowser")
+@WebObject(type = ApiBrowser.TYPE)
 public class ApiBrowser extends DefaultObject {
+
+    public static final String TYPE = "apibrowser";
 
     protected String distributionId;
 

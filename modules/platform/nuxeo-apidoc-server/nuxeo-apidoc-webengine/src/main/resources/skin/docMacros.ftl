@@ -28,7 +28,7 @@
   <#if addLabel>Javadoc: </#if>
   <#if url??>
     <a href="${url}" target="_blank" class="javadoc">${class}</a>
-  <#else>
+  <#elseif Root.currentDistribution != null>
     <a href="${Root.currentDistribution.javaDocHelper.getUrl(class)}" target="_blank" class="javadoc">${class}</a>
   </#if>
 </#macro>
