@@ -20,6 +20,9 @@ package org.nuxeo.functionaltests.explorer.testing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.nuxeo.functionaltests.Constants.ADMINISTRATOR;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,10 +32,14 @@ import java.nio.file.Path;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
+import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.JavaScriptErrorCollector;
 import org.nuxeo.functionaltests.Locator;
+import org.nuxeo.functionaltests.RestHelper;
+import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
+import org.nuxeo.functionaltests.explorer.pages.DistributionHomePage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.ListingFragment;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
@@ -43,6 +50,7 @@ import org.nuxeo.functionaltests.explorer.pages.artifacts.ExtensionPointArtifact
 import org.nuxeo.functionaltests.explorer.pages.artifacts.OperationArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.PackageArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ServiceArtifactPage;
+import org.nuxeo.functionaltests.pages.LoginPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -59,21 +67,29 @@ public abstract class AbstractExplorerTest extends AbstractTest {
 
     protected static String MANAGER_USERNAME = "apidocmanager";
 
-    protected void doLogin() {
-        getLoginPage().login(TEST_USERNAME, TEST_PASSWORD);
+    public static LoginPage getLoginPageStatic() {
+        return get(NUXEO_URL + "/logout", LoginPage.class);
     }
 
-    protected void doLogout() {
+    protected static void loginAsAdmin() {
+        getLoginPageStatic().login(ADMINISTRATOR, ADMINISTRATOR);
+    }
+
+    protected void doLogin() {
+        getLoginPageStatic().login(TEST_USERNAME, TEST_PASSWORD);
+    }
+
+    protected static void doLogout() {
         // logout avoiding JS error check
         driver.get(NUXEO_URL + "/logout");
     }
 
-    protected void open(String url) {
+    protected static void open(String url) {
         openAndCheck(url, false);
     }
 
-    protected void openAndCheck(String url, boolean checkIs404) {
-        JavaScriptErrorCollector.from(driver).ignore(ignores).checkForErrors();
+    protected static void openAndCheck(String url, boolean checkIs404) {
+        JavaScriptErrorCollector.from(driver).checkForErrors();
         driver.get(NUXEO_URL + url);
         if (checkIs404) {
             assertEquals("404 - Resource Not Found", driver.getTitle());
@@ -81,6 +97,22 @@ public abstract class AbstractExplorerTest extends AbstractTest {
             assertFalse("404 on URL: '" + driver.getCurrentUrl(),
                     driver.getTitle().contains(String.valueOf(HttpStatus.SC_NOT_FOUND)));
         }
+    }
+
+    protected static void cleanupPersistedDistributions() {
+        RestHelper.deleteDocument(SnapshotPersister.Root_PATH + SnapshotPersister.Root_NAME);
+    }
+
+    protected static void cleanupPersistedDistribution(String name) {
+        RestHelper.deleteDocument(SnapshotPersister.Root_PATH + SnapshotPersister.Root_NAME + "/" + name);
+    }
+
+    protected String getDistribId(String name, String version) {
+        return String.format("%s-%s", name, version);
+    }
+
+    protected String getDistribExportName(String distribId) {
+        return String.format("nuxeo-distribution-%s.zip", distribId);
     }
 
     protected ExplorerHomePage goHome() {
@@ -95,6 +127,53 @@ public abstract class AbstractExplorerTest extends AbstractTest {
     protected void goToArtifact(String type, String id) {
         open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT,
                 ApiBrowserConstants.getArtifactView(type), id));
+    }
+
+    public void checkHomeLiveDistrib() {
+        ExplorerHomePage home = asPage(ExplorerHomePage.class);
+        home.clickOn(home.currentDistrib);
+        DistributionHomePage dhome = asPage(DistributionHomePage.class);
+        dhome.check();
+
+        DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
+        home = header.goHome();
+        home.clickOn(home.firstExtensionPoints);
+        header.checkTitle("All Extension Points");
+        header.checkSelectedTab(header.extensionPoints);
+
+        header.goHome().clickOn(home.firstContributions);
+        header = asPage(DistributionHeaderFragment.class);
+        header.checkTitle("All Contributions");
+        header.checkSelectedTab(header.contributions);
+
+        header.goHome().clickOn(home.firstOperations);
+        header = asPage(DistributionHeaderFragment.class);
+        header.checkTitle("All Operations");
+        header.checkSelectedTab(header.operations);
+
+        header.goHome().clickOn(home.firstServices);
+        header = asPage(DistributionHeaderFragment.class);
+        header.checkTitle("All Services");
+        header.checkSelectedTab(header.services);
+    }
+
+    protected void checkDistrib(String distribId, boolean partial, String partialVirtualGroup, boolean legacy) {
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLEGROUPS);
+        checkBundleGroups(partial, partialVirtualGroup, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_BUNDLES);
+        checkBundles(partial, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_COMPONENTS);
+        checkComponents(partial, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_EXTENSIONPOINTS);
+        checkExtensionPoints(partial, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_SERVICES);
+        checkServices(partial, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_CONTRIBUTIONS);
+        checkContributions(partial, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_OPERATIONS);
+        checkOperations(partial, legacy);
+        open(ExplorerHomePage.URL + distribId + "/" + ApiBrowserConstants.LIST_PACKAGES);
+        checkPackages(partial, legacy);
     }
 
     protected void checkExtensionPoints(boolean partial, boolean legacy) {
@@ -239,6 +318,16 @@ public abstract class AbstractExplorerTest extends AbstractTest {
                 apage.checkSelectedTab();
             }
             apage.checkReference(partial, legacy);
+        }
+    }
+
+    protected void checkLiveJson(boolean check404) {
+        openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, "json"), check404);
+        if (!check404) {
+            String content = driver.findElementByTagName("pre").getText();
+            assertNotNull(content);
+            content = content.trim();
+            assertTrue(content.startsWith("{") && content.endsWith("}"));
         }
     }
 

@@ -1,9 +1,5 @@
 <@extends src="base.ftl">
 
-<@block name="stylesheets">
-</@block>
-
-
 <@block name="header_scripts">
 <script>
   $(function() {
@@ -13,6 +9,7 @@
 </@block>
 
 <@block name="right">
+
 <div class="explorer-home">
 <div class="fullspace intro">
   <a class="image-link" title="Relation between Bundles, Services, Extension Points, Contributions, Operations in Nuxeo Platform" href="${skinPath}/images/platform-explorer.png">
@@ -37,13 +34,11 @@
 <div>
 <h2>Available Platforms</h2>
 
-<#assign rtSnap=Root.runtimeDistribution/>
-<#assign snapList=Root.listPersistedDistributions()/>
-
 <div>
 
   <ul class="timeline">
   <#if Root.showCurrentDistribution()>
+    <#assign rtSnap=Root.runtimeDistribution/>
     <li>
       <time class="time" datetime="2013-04-10 18:30">
         <span class="date">${rtSnap.creationDate?date}</span>
@@ -53,7 +48,7 @@
       <div class="timebox">
         <div class="box-title">
           <div>
-            <a class="distrib" href="${Root.path}/current/">
+            <a class="currentDistrib" href="${Root.path}/current/">
               <span class="number">${rtSnap.name}</span>
               <span class="detail">${rtSnap.version}</span>
             </a>
@@ -71,8 +66,8 @@
     </li>
   </#if>
 
-  <#list snapList as distrib>
-    <li>
+  <#list Root.listPersistedDistributions() as distrib>
+    <li class="persistedDistrib">
       <time class="time" datetime="2013-04-10 18:30">
         <span class="date">${distrib.releaseDate?date}</span>
         <#if distrib.latestFT >

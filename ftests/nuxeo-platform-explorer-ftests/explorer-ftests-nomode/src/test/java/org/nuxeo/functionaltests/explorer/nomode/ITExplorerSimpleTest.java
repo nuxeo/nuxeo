@@ -28,7 +28,7 @@ import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
 import org.nuxeo.functionaltests.explorer.testing.AbstractExplorerTest;
 
 /**
- * Test explorer main webengine pages.
+ * Test explorer "adm" "simple" webengine pages.
  *
  * @since 11.1
  */

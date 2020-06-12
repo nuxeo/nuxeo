@@ -58,6 +58,8 @@ public abstract class AbstractExplorerDownloadTest extends AbstractExplorerTest 
 
     public static File downloadDir;
 
+    public static String SAMPLE_BUNDLE_GROUP = "apidoc";
+
     /**
      * Updates the firefox profile to ease up testing of downloaded distribution.
      * <p>
