@@ -15,7 +15,7 @@
  *     Nuxeo
  *     Anahide Tchertchian
  */
-package org.nuxeo.functionaltests.explorer;
+package org.nuxeo.functionaltests.explorer.nomode;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,6 +25,7 @@ import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.ListingFragment;
 import org.nuxeo.functionaltests.explorer.pages.LiveSimplePage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
+import org.nuxeo.functionaltests.explorer.testing.AbstractExplorerTest;
 
 /**
  * Test explorer main webengine pages.

@@ -30,8 +30,6 @@ import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.RestHelper;
-import org.nuxeo.functionaltests.explorer.UploadConfirmFragment;
-import org.nuxeo.functionaltests.explorer.UploadFragment;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;

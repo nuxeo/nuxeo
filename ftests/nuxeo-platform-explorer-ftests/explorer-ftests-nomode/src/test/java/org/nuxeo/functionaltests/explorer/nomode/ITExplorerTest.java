@@ -15,7 +15,7 @@
  *     Nuxeo
  *     Anahide Tchertchian
  */
-package org.nuxeo.functionaltests.explorer;
+package org.nuxeo.functionaltests.explorer.nomode;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -39,6 +39,7 @@ import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHeaderFragment;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHomePage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
+import org.nuxeo.functionaltests.explorer.pages.UploadFragment;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.BundleGroupArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ComponentArtifactPage;
@@ -46,6 +47,7 @@ import org.nuxeo.functionaltests.explorer.pages.artifacts.ContributionArtifactPa
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ExtensionPointArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.OperationArtifactPage;
 import org.nuxeo.functionaltests.explorer.pages.artifacts.ServiceArtifactPage;
+import org.nuxeo.functionaltests.explorer.testing.AbstractExplorerTest;
 
 /**
  * Test explorer "adm" "simple" webengine pages.

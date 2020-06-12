@@ -16,7 +16,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.functionaltests.explorer;
+package org.nuxeo.functionaltests.explorer.nomode;
 
 import org.junit.After;
 import org.junit.Before;
