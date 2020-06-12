@@ -455,7 +455,7 @@ public class TestJson extends AbstractApidocTest {
         if (legacy) {
             assertEquals(0, smcomp.getExtensions().size());
         } else {
-            assertEquals(1, smcomp.getExtensions().size());
+            assertEquals(2, smcomp.getExtensions().size());
         }
 
         // check another component with contributions
