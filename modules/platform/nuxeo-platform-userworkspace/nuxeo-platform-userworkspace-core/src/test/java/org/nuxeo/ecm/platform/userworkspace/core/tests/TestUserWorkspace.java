@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.trash.TrashService;
-import org.nuxeo.ecm.core.storage.sql.IgnorePostgreSQL;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -59,10 +58,10 @@ import org.nuxeo.ecm.platform.userworkspace.core.service.AbstractUserWorkspaceIm
 import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceDescriptor;
 import org.nuxeo.ecm.platform.userworkspace.core.service.UserWorkspaceServiceImplComponent;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -90,6 +89,9 @@ public class TestUserWorkspace {
     @Inject
     protected UserManager userManager;
 
+    @Inject
+    protected TransactionalFeature txFeature;
+
     @Test
     public void testRestrictedAccess() {
         CoreSession userSession = coreFeature.getCoreSession("toto");
@@ -106,7 +108,6 @@ public class TestUserWorkspace {
         userSession.save();
     }
 
-    @ConditionalIgnoreRule.Ignore(condition = IgnorePostgreSQL.class, cause = "NXP-29051")
     @Test
     public void testMultiDomains() {
         ACE ace = new ACE("Everyone", "Read", true);
@@ -145,6 +146,8 @@ public class TestUserWorkspace {
         assertNotNull(uw);
         assertTrue(uw.getPathAsString(), uw.getPathAsString().startsWith("/default-domain"));
 
+        // wait for asynchronous completion before removal to avoid ConcurrentUpdateException
+        txFeature.nextTransaction();
         // now delete the default-domain
         session.removeDocument(new PathRef("/default-domain"));
         session.save();
