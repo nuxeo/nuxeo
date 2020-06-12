@@ -35,7 +35,7 @@ public class ITExplorerSimpleTest extends AbstractExplorerTest {
 
     @Before
     public void before() {
-        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
+        RestHelper.createUserIfDoesNotExist(READER_USERNAME, TEST_PASSWORD, null, null, null, null, null);
         doLogin();
     }
 

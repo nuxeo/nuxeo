@@ -21,7 +21,7 @@ package org.nuxeo.apidoc.plugin;
 import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
-import org.nuxeo.apidoc.repository.UnrestrictedRootCreator;
+import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -83,11 +83,7 @@ public abstract class AbstractPlugin<T extends NuxeoArtifact> implements Plugin<
         if (session.exists(rootRef)) {
             return session.getDocument(rootRef);
         }
-        UnrestrictedRootCreator creator = new UnrestrictedRootCreator(session, root.getPathAsString(), name, false);
-        creator.runUnrestricted();
-        // flush caches
-        session.save();
-        return session.getDocument(creator.getRootRef());
+        return SnapshotPersister.createRoot(session, root.getPathAsString(), name, false);
     }
 
     @Override

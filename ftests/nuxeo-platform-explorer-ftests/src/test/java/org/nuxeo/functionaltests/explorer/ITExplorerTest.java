@@ -56,7 +56,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
 
     @Before
     public void before() {
-        RestHelper.createUser(TEST_USERNAME, TEST_PASSWORD, null, null, null, null, "members");
+        RestHelper.createUserIfDoesNotExist(READER_USERNAME, TEST_PASSWORD, null, null, null, null, null);
         doLogin();
     }
 
@@ -79,15 +79,14 @@ public class ITExplorerTest extends AbstractExplorerTest {
      */
     @Test
     public void testDistribAdminPage() {
-        open(DistribAdminPage.URL);
-        assertEquals("", driver.getTitle());
-        assertEquals("", driver.getPageSource());
+        openAndCheck(DistribAdminPage.URL, true);
     }
 
     @Test
     public void testHomePageLiveDistrib() {
         ExplorerHomePage home = goHome();
         home.check();
+        UploadFragment.checkCannotSee();
 
         home.goHome().clickOn(home.currentDistrib);
         DistributionHomePage dhome = asPage(DistributionHomePage.class);

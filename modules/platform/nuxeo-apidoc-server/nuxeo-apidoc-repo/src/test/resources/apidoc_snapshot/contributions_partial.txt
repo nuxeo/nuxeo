@@ -5,5 +5,6 @@ NXContribution: org.nuxeo.apidoc.listener.contrib--listener *** /apidoc/org.nuxe
 NXContribution: org.nuxeo.apidoc.schemaContrib--schema *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.schemaContrib/Contributions/org.nuxeo.apidoc.schemaContrib--schema
 NXContribution: org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Contributions/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration
 NXContribution: org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration1 *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Contributions/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration1
+NXContribution: org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration2 *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent/Contributions/org.nuxeo.apidoc.snapshot.SnapshotManagerComponent--configuration2
 NXContribution: org.nuxeo.apidoc.test.works--queues *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues
 NXContribution: org.nuxeo.apidoc.test.works--queues1 *** /apidoc/org.nuxeo.apidoc.repo/org.nuxeo.apidoc.test.works/Contributions/org.nuxeo.apidoc.test.works--queues1

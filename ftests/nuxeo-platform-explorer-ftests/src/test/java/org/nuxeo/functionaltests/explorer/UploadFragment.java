@@ -18,11 +18,16 @@
  */
 package org.nuxeo.functionaltests.explorer;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 
+import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.explorer.pages.AbstractExplorerPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -55,6 +60,19 @@ public class UploadFragment extends AbstractExplorerPage {
         input.sendKeys(file.getAbsolutePath());
         Locator.scrollAndForceClick(upload);
         waitForAsyncWork();
+    }
+
+    public static void checkCanSee() {
+        AbstractTest.asPage(UploadFragment.class);
+    }
+
+    public static void checkCannotSee() {
+        try {
+            AbstractTest.driver.findElement(By.xpath("//input[@id='upload']"));
+            fail("Should not be able to upload");
+        } catch (NoSuchElementException e) {
+            // ok
+        }
     }
 
 }
