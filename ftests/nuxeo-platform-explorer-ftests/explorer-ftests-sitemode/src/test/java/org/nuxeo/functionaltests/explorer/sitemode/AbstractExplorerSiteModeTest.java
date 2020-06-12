@@ -33,7 +33,7 @@ import org.nuxeo.functionaltests.explorer.testing.AbstractExplorerDownloadTest;
  */
 public class AbstractExplorerSiteModeTest extends AbstractExplorerDownloadTest {
 
-    protected static final String DISTRIB_NAME = "apidoc-sitemode";
+    protected static final String DISTRIB_NAME = "Nuxeo Platform Site Mode";
 
     protected static final String DISTRIB_VERSION = "1.0.1";
 

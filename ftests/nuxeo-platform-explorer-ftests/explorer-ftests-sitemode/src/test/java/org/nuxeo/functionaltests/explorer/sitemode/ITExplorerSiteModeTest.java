@@ -64,9 +64,8 @@ public class ITExplorerSiteModeTest extends AbstractExplorerSiteModeTest {
 
     @Test
     public void testHomePageCurrentDistrib() {
-        open(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT));
-        // persisted distrib redirection
-        asPage(DistributionHomePage.class).check();
+        // since 11.2: does not redirect to current live distrib anymore, only available to admins
+        openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT), true);
     }
 
     @Test
@@ -84,7 +83,7 @@ public class ITExplorerSiteModeTest extends AbstractExplorerSiteModeTest {
         UploadFragment.checkCannotSee();
 
         String distribId = getDistribId(DISTRIB_NAME, DISTRIB_VERSION);
-        home.checkPersistedDistrib(distribId);
+        asPage(ExplorerHomePage.class).checkPersistedDistrib(distribId);
         checkDistrib(distribId, true, SAMPLE_BUNDLE_GROUP, true);
     }
 

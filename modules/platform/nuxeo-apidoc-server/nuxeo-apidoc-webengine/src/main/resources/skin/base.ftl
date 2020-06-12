@@ -44,9 +44,11 @@
         <img src="${skinPath}/images/nuxeo.png">
         <span>Platform Explorer</span>
       </a>
+      <#if Root.currentDistribution != null>
       <span>
         / <a href="/nuxeo/site/distribution/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
       </span>
+      </#if>
       <div class="login">
         <#include "nxlogin.ftl">
       </div>

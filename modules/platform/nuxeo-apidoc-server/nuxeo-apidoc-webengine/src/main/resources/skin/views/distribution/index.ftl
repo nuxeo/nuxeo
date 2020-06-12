@@ -23,7 +23,7 @@
   Components are declared via XML files.
   Services are configurable by an extension system.
   </p>
-  <#if Root.showCurrentDistribution()>
+  <#if Root.showRuntimeSnapshot()>
   <p class="second">
   Browse the running platform or a platform that has been snapshotted and saved into local Document Repository.
   Snapshotted platform are stored as documents and therefore can be searchable.
@@ -37,7 +37,7 @@
 <div>
 
   <ul class="timeline">
-  <#if Root.showCurrentDistribution()>
+  <#if Root.showRuntimeSnapshot()>
     <#assign rtSnap=Root.runtimeDistribution/>
     <li>
       <time class="time" datetime="2013-04-10 18:30">

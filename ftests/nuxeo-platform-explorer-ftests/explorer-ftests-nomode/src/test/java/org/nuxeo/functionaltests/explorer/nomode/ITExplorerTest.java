@@ -36,6 +36,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
@@ -59,6 +60,8 @@ import org.nuxeo.functionaltests.explorer.testing.AbstractExplorerTest;
  */
 public class ITExplorerTest extends AbstractExplorerTest {
 
+    protected static String LIVE_NAME = "Nuxeo Platform";
+
     protected static String liveVersion;
 
     /**
@@ -68,7 +71,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public static void initPersistedDistrib() {
         loginAsAdmin();
         open(DistribAdminPage.URL);
-        liveVersion = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(null, false);
+        liveVersion = asPage(DistribAdminPage.class).saveCurrentLiveDistrib(LIVE_NAME, false);
         doLogout();
     }
 
@@ -109,22 +112,21 @@ public class ITExplorerTest extends AbstractExplorerTest {
     public void testHomePageLiveDistrib() {
         ExplorerHomePage home = goHome();
         home.check();
-        home.checkCurrentDistrib();
+        home.checkNoCurrentDistrib();
         UploadFragment.checkCannotSee();
-        checkHomeLiveDistrib();
     }
 
     @Test
     public void testHomePageCurrentDistrib() {
-        open(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT));
-        // current live distrib redirection
-        asPage(DistributionHomePage.class).check();
+        // since 11.2: does not redirect to current live distrib anymore, only available to admins
+        openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT), true);
     }
 
     @Test
     public void testHomePageLatestDistrib() {
+        // since 11.2: does not redirect to current live distrib anymore, only to first persisted distrib named "nuxeo
+        // platform" and alike (if it exists)
         open(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_LATEST));
-        // current live distrib redirection
         asPage(DistributionHomePage.class).check();
     }
 
@@ -133,9 +135,12 @@ public class ITExplorerTest extends AbstractExplorerTest {
      */
     @Test
     public void testHomePageInvalidDistrib() {
-        open(String.format("%s%s/", ExplorerHomePage.URL, "foo-10.10"));
-        // current live distrib redirection
-        asPage(DistributionHomePage.class).check();
+        openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, "foo-10.10"), true);
+    }
+
+    protected void goToArtifact(String type, String id) {
+        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, getDistribId(LIVE_NAME, liveVersion),
+                ApiBrowserConstants.getArtifactView(type), id));
     }
 
     @Test
@@ -231,7 +236,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testBundleGroups() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentDistrib);
+        home.clickOn(home.firstPersistedDistrib);
         DistributionHomePage dhome = asPage(DistributionHomePage.class);
         dhome.clickOn(dhome.bundleGroups);
         checkBundleGroups(false, null, false);
@@ -248,7 +253,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
     @Test
     public void testPackages() {
         ExplorerHomePage home = goHome();
-        home.clickOn(home.currentDistrib);
+        home.clickOn(home.firstPersistedDistrib);
         DistributionHomePage dhome = asPage(DistributionHomePage.class);
         dhome.clickOn(dhome.packages);
         checkPackages(false, false);

@@ -33,7 +33,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
-import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.JavaScriptErrorCollector;
 import org.nuxeo.functionaltests.Locator;
@@ -124,19 +123,25 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         return true;
     }
 
-    protected void goToArtifact(String type, String id) {
-        open(String.format("%s%s/%s/%s", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT,
-                ApiBrowserConstants.getArtifactView(type), id));
-    }
-
     public void checkHomeLiveDistrib() {
         ExplorerHomePage home = asPage(ExplorerHomePage.class);
         home.clickOn(home.currentDistrib);
         DistributionHomePage dhome = asPage(DistributionHomePage.class);
         dhome.check();
+        checkFirstDistrib();
+    }
 
+    public void checkHomeFirstPersistedDistrib() {
+        ExplorerHomePage home = asPage(ExplorerHomePage.class);
+        home.goHome().clickOn(home.firstPersistedDistrib);
+        DistributionHomePage dhome = asPage(DistributionHomePage.class);
+        dhome.check();
+        checkFirstDistrib();
+    }
+
+    public void checkFirstDistrib() {
         DistributionHeaderFragment header = asPage(DistributionHeaderFragment.class);
-        home = header.goHome();
+        ExplorerHomePage home = header.goHome();
         home.clickOn(home.firstExtensionPoints);
         header.checkTitle("All Extension Points");
         header.checkSelectedTab(header.extensionPoints);

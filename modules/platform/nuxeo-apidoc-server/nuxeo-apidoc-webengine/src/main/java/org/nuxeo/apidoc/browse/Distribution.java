@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,6 +56,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.export.ArchiveFile;
+import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.apidoc.plugin.Plugin;
 import org.nuxeo.apidoc.security.SecurityHelper;
@@ -95,6 +95,8 @@ public class Distribution extends ModuleRoot {
 
     public static final String DIST_ID = "distId";
 
+    protected static final String DIST = "distribution";
+
     public static final String VIEW_INDEX = "index";
 
     public static final String VIEW_ADMIN = "_admin";
@@ -117,10 +119,10 @@ public class Distribution extends ModuleRoot {
      * @since 11.2
      */
     public Object show404() {
-        return Response.status(404).entity(getTemplate("error/error_404.ftl")).type("text/html").build();
+        return Response.status(404).entity(getTemplate("views/error404/error_404.ftl")).type("text/html").build();
     }
 
-    protected SnapshotManager getSnapshotManager() {
+    protected static SnapshotManager getSnapshotManager() {
         return Framework.getService(SnapshotManager.class);
     }
 
@@ -176,58 +178,59 @@ public class Distribution extends ModuleRoot {
 
     @Path(SnapshotManager.DISTRIBUTION_ALIAS_LATEST)
     public Resource getLatest() {
-        List<DistributionSnapshot> snaps = listPersistedDistributions();
-        Optional<DistributionSnapshot> distribution = snaps.stream()
-                                                           .filter(snap -> snap.getName()
-                                                                               .toLowerCase()
-                                                                               .startsWith("nuxeo platform"))
-                                                           .findFirst();
-
-        String latest = SnapshotManager.DISTRIBUTION_ALIAS_CURRENT;
-        if (distribution.isPresent()) {
-            latest = distribution.get().getKey();
-        }
-        return ctx.newObject("redirectWO", SnapshotManager.DISTRIBUTION_ALIAS_LATEST, latest);
+        return listPersistedDistributions().stream()
+                                           .filter(snap -> snap.getName().toLowerCase().startsWith("nuxeo platform"))
+                                           .findFirst()
+                                           .map(distribution -> ctx.newObject(RedirectResource.TYPE,
+                                                   SnapshotManager.DISTRIBUTION_ALIAS_LATEST, distribution.getKey()))
+                                           .orElseGet(() -> ctx.newObject(Resource404.TYPE));
     }
 
     @Path("{distributionId}")
     public Resource viewDistribution(@PathParam("distributionId") String distributionId) {
-        if (distributionId == null || "".equals(distributionId)) {
+        if (StringUtils.isBlank(distributionId)) {
             return this;
+        }
+        if (isSiteMode() && RuntimeSnapshot.LIVE_ALIASES.contains(distributionId)) {
+            return ctx.newObject(Resource404.TYPE);
         }
 
         List<DistributionSnapshot> snaps = getSnapshotManager().listPersistentSnapshots((ctx.getCoreSession()));
         if (distributionId.matches(VERSION_REGEX.toString())) {
             String finalDistributionId = distributionId;
-            String distribution = snaps.stream()
-                                       .filter(s -> s.getVersion().equals(finalDistributionId))
-                                       .findFirst()
-                                       .map(DistributionSnapshot::getKey)
-                                       .orElse(SnapshotManager.DISTRIBUTION_ALIAS_CURRENT);
-
-            return ctx.newObject("redirectWO", finalDistributionId, distribution);
+            return snaps.stream()
+                        .filter(s -> s.getVersion().equals(finalDistributionId))
+                        .findFirst()
+                        .map(distribution -> ctx.newObject(RedirectResource.TYPE, finalDistributionId,
+                                distribution.getKey()))
+                        .orElseGet(() -> ctx.newObject(Resource404.TYPE));
         }
 
+        boolean showRuntimeSnapshot = showRuntimeSnapshot();
         String orgDistributionId = distributionId;
         Boolean embeddedMode = Boolean.FALSE;
         if (SnapshotManager.DISTRIBUTION_ALIAS_ADM.equals(distributionId)) {
+            if (!showRuntimeSnapshot) {
+                return ctx.newObject(Resource404.TYPE);
+            }
             embeddedMode = Boolean.TRUE;
         } else {
-            snaps.add(getSnapshotManager().getRuntimeSnapshot());
+            if (showRuntimeSnapshot) {
+                snaps.add(getRuntimeDistribution());
+            }
             distributionId = SnapshotResolverHelper.findBestMatch(snaps, distributionId);
         }
-        if (distributionId == null || "".equals(distributionId)) {
-            distributionId = SnapshotManager.DISTRIBUTION_ALIAS_CURRENT;
+        if (StringUtils.isBlank(distributionId)) {
+            return ctx.newObject(Resource404.TYPE);
         }
-
         if (!orgDistributionId.equals(distributionId)) {
-            return ctx.newObject("redirectWO", orgDistributionId, distributionId);
+            return ctx.newObject(RedirectResource.TYPE, orgDistributionId, distributionId);
         }
 
-        ctx.setProperty("embeddedMode", embeddedMode);
-        ctx.setProperty("distribution", getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()));
+        ctx.setProperty(ApiBrowserConstants.EMBEDDED_MODE_MARKER, embeddedMode);
+        ctx.setProperty(DIST, getSnapshotManager().getSnapshot(distributionId, ctx.getCoreSession()));
         ctx.setProperty(DIST_ID, distributionId);
-        return ctx.newObject("apibrowser", distributionId, embeddedMode);
+        return ctx.newObject(ApiBrowser.TYPE, distributionId, embeddedMode);
     }
 
     public List<DistributionSnapshotDesc> getAvailableDistributions() {
@@ -266,13 +269,7 @@ public class Distribution extends ModuleRoot {
     }
 
     public DistributionSnapshot getCurrentDistribution() {
-        String distId = (String) ctx.getProperty(DIST_ID);
-        DistributionSnapshot currentDistribution = (DistributionSnapshot) ctx.getProperty("currentDistribution");
-        if (currentDistribution == null || !currentDistribution.getKey().equals(distId)) {
-            currentDistribution = getSnapshotManager().getSnapshot(distId, ctx.getCoreSession());
-            ctx.setProperty("currentDistribution", currentDistribution);
-        }
-        return currentDistribution;
+        return (DistributionSnapshot) ctx.getProperty(DIST);
     }
 
     @POST
@@ -370,9 +367,12 @@ public class Distribution extends ModuleRoot {
     @Path("json")
     @Produces("application/json")
     public Object getJson() throws IOException {
+        if (!showRuntimeSnapshot()) {
+            return show404();
+        }
         // init potential resources depending on request
         getSnapshotManager().initWebContext(getContext().getRequest());
-        DistributionSnapshot snap = getSnapshotManager().getRuntimeSnapshot();
+        DistributionSnapshot snap = getRuntimeDistribution();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         snap.writeJson(out);
         return out.toString();
@@ -539,8 +539,12 @@ public class Distribution extends ModuleRoot {
         return Response.ok().build();
     }
 
+    public boolean isSiteMode() {
+        return getSnapshotManager().isSiteMode();
+    }
+
     public boolean isEmbeddedMode() {
-        return Boolean.TRUE.equals(getContext().getProperty("embeddedMode", Boolean.FALSE));
+        return Boolean.TRUE.equals(getContext().getProperty(ApiBrowserConstants.EMBEDDED_MODE_MARKER, Boolean.FALSE));
     }
 
     public boolean isEditor() {
@@ -548,23 +552,28 @@ public class Distribution extends ModuleRoot {
     }
 
     protected boolean canSave() {
-        return !isEmbeddedMode() && SecurityHelper.canSnapshotLiveDistribution(getContext().getPrincipal());
+        return !isEmbeddedMode() && !isSiteMode()
+                && SecurityHelper.canSnapshotLiveDistribution(getContext().getPrincipal());
     }
 
     protected boolean canImportOrExportDistributions() {
         return !isEmbeddedMode() && SecurityHelper.canManageDistributions(getContext().getPrincipal());
     }
 
-    public boolean showCurrentDistribution() {
-        return !(Framework.isBooleanPropertyTrue(ApiBrowserConstants.PROPERTY_HIDE_CURRENT_DISTRIBUTION) || isSiteMode());
+    /**
+     * Returns true if the current {@link RuntimeSnapshot} can be seen by user.
+     *
+     * @since 11.2
+     */
+    public boolean showRuntimeSnapshot() {
+        return !isSiteMode() && SecurityHelper.canSnapshotLiveDistribution(getContext().getPrincipal());
     }
 
-    public static boolean isSiteMode() {
-        return Framework.isBooleanPropertyTrue(ApiBrowserConstants.PROPERTY_SITE_MODE);
-    }
-
-    public static boolean isRunningFunctionalTests() {
-        return !StringUtils.isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
+    /**
+     * @since 11.2
+     */
+    public boolean isRunningFunctionalTests() {
+        return !StringUtils.isBlank(Framework.getProperty(ApiBrowserConstants.PROPERTY_TESTER_NAME));
     }
 
     /**

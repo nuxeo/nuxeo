@@ -29,8 +29,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.plugin.Plugin;
+import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.RuntimeServiceException;
 
 public interface SnapshotManager {
 
@@ -60,6 +62,8 @@ public interface SnapshotManager {
      */
     public static String DISTRIBUTION_ALIAS_LATEST = "latest";
 
+    public static String PROPERTY_SITE_MODE = "org.nuxeo.apidoc.site.mode";
+
     /**
      * Initializes the web context, as potentially needed by plugins.
      *
@@ -67,10 +71,24 @@ public interface SnapshotManager {
      */
     void initWebContext(HttpServletRequest request);
 
+    /**
+     * Returns the current runtime live snapshot.
+     *
+     * @throws RuntimeServiceException if the runtime live snapshot should not be made available (see
+     *             {@link #isSiteMode()}.
+     */
     DistributionSnapshot getRuntimeSnapshot();
 
     void addPersistentSnapshot(String key, DistributionSnapshot snapshot);
 
+    /**
+     * Returns the distribution with given key or alias.
+     * <p>
+     * Can return null if distribution with given key is not found.
+     *
+     * @throws RuntimeServiceException if key is one of the live runtime aliases, while it should not be made available
+     *             (see {@link #isSiteMode()}.
+     */
     DistributionSnapshot getSnapshot(String key, CoreSession session);
 
     List<DistributionSnapshot> readPersistentSnapshots(CoreSession session);
@@ -89,10 +107,28 @@ public interface SnapshotManager {
 
     void importSnapshot(CoreSession session, InputStream is) throws IOException;
 
+    /**
+     * Persists the runtime snapshot.
+     *
+     * @throws RuntimeServiceException if the runtime snapshot should not be accessed (see {@link #isSiteMode()} and
+     *             {@link SecurityHelper#canSnapshotLiveDistribution(org.nuxeo.ecm.core.api.NuxeoPrincipal)}
+     */
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session);
 
+    /**
+     * Persists the runtime snapshot with given properties.
+     *
+     * @throws RuntimeServiceException if the runtime snapshot should not be accessed (see {@link #isSiteMode()} and
+     *             {@link SecurityHelper#canSnapshotLiveDistribution(org.nuxeo.ecm.core.api.NuxeoPrincipal)}
+     */
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties);
 
+    /**
+     * Persists the runtime snapshot with given properties and filter.
+     *
+     * @throws RuntimeServiceException if the runtime snapshot should not be accessed (see {@link #isSiteMode()} and
+     *             {@link SecurityHelper#canSnapshotLiveDistribution(org.nuxeo.ecm.core.api.NuxeoPrincipal)}
+     */
     DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, Map<String, Serializable> properties,
             SnapshotFilter filter);
 
@@ -113,5 +149,12 @@ public interface SnapshotManager {
      * @since 11.1
      */
     Plugin<?> getPlugin(String id);
+
+    /**
+     * Returns true if site mode is enabled: this will prevent access to the live distribution.
+     *
+     * @since 11.2
+     */
+    boolean isSiteMode();
 
 }
