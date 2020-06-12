@@ -186,10 +186,20 @@ public class RestHelper {
     // User & Group Services
     // ---------------------
 
+    /**
+     * Creates the user.
+     *
+     * @throws NuxeoClientRemoteException if the user already exists.
+     */
     public static String createUser(String username, String password) {
         return createUser(username, password, null, null, null, null, null);
     }
 
+    /**
+     * Creates the user.
+     *
+     * @throws NuxeoClientRemoteException if the user already exists.
+     */
     public static String createUser(String username, String password, String firstName, String lastName, String company,
             String email, String group) {
 
@@ -213,6 +223,19 @@ public class RestHelper {
         return userId;
     }
 
+    /**
+     * Creates the user if it does not exist yet.
+     *
+     * @since 11.2
+     */
+    public static String createUserIfDoesNotExist(String username, String password, String firstName, String lastName,
+            String company, String email, String group) {
+        if (userExists(username)) {
+            return username;
+        }
+        return createUser(username, password, firstName, lastName, company, email, group);
+    }
+
     public static void deleteUser(String username) {
         try {
             CLIENT.userManager().deleteUser(username);
@@ -232,10 +255,20 @@ public class RestHelper {
         return exists(() -> CLIENT.userManager().fetchUser(username));
     }
 
+    /**
+     * Creates the group.
+     *
+     * @throws NuxeoClientRemoteException if the group already exists.
+     */
     public static void createGroup(String name, String label) {
         createGroup(name, label, null, null);
     }
 
+    /**
+     * Creates the group.
+     *
+     * @throws NuxeoClientRemoteException if the group already exists.
+     */
     public static void createGroup(String name, String label, String[] members, String[] subGroups) {
         Group group = new Group();
         group.setGroupName(name);
@@ -249,6 +282,17 @@ public class RestHelper {
 
         CLIENT.userManager().createGroup(group);
         groupsToDelete.add(name);
+    }
+
+    /**
+     * Creates the group if it does not exist.
+     *
+     * @since 11.2
+     */
+    public static void createGroupIfDoesNotExist(String name, String label, String[] members, String[] subGroups) {
+        if (!groupExists(name)) {
+            createGroup(name, label, members, subGroups);
+        }
     }
 
     public static void deleteGroup(String name) {
