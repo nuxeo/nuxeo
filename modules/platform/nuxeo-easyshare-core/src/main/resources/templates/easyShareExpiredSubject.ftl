@@ -1,1 +1,1 @@
-EasyShare folder ${docFolder.name} has expired
+EasyShare folder ${docShare.name} has expired
