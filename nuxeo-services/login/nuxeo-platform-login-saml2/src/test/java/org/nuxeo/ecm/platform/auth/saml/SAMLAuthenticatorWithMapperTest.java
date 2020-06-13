@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.auth.saml;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,6 +62,7 @@ import org.opensaml.xml.util.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.util.HashMap;
+import java.util.Locale;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -100,7 +102,7 @@ public class SAMLAuthenticatorWithMapperTest {
     @Test
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testRetrieveIdentityDefaultSettings() throws Exception {
-        initAuthProvider(null);
+        initAuthProvider(getParamMap(true, true));
 
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
                 "text/html");
@@ -113,7 +115,7 @@ public class SAMLAuthenticatorWithMapperTest {
         assertEquals("user@dummy", principal.getEmail());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testUserDoesNotExistAndNoCreation() throws Exception {
         initAuthProvider(getParamMap(false, false));
@@ -123,10 +125,10 @@ public class SAMLAuthenticatorWithMapperTest {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
-        assertEquals("user@dummy",info.getUserName());
+        assertNull(info);
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
-        assertEquals("user@dummy", principal.getEmail());
+        assertNull(principal);
     }
 
     @Test
@@ -171,6 +173,7 @@ public class SAMLAuthenticatorWithMapperTest {
         when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         when(request.getAttribute("javax.servlet.request.X509Certificate")).thenReturn(null);
         when(request.isSecure()).thenReturn(false);
+        when(request.getLocale()).thenReturn(Locale.ENGLISH);
         // when(request.getAttribute(SAMLConstants.LOCAL_ENTITY_ID)).thenReturn(null);
         return request;
     }

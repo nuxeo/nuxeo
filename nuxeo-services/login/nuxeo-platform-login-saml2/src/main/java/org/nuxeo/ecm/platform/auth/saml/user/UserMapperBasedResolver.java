@@ -55,10 +55,10 @@ public class UserMapperBasedResolver implements UserResolver {
             mapperName = parameters.get(USER_RESOLVER_MAPPING);
         }
         if (parameters.containsKey(USER_RESOLVER_CREATE_IF_NEEDED)) {
-            createIfNeeded = Boolean.getBoolean(parameters.get(USER_RESOLVER_CREATE_IF_NEEDED));
+            createIfNeeded = Boolean.parseBoolean(parameters.get(USER_RESOLVER_CREATE_IF_NEEDED));
         }
         if (parameters.containsKey(USER_RESOLVER_UPDATE)) {
-            update = Boolean.getBoolean(parameters.get(USER_RESOLVER_UPDATE));
+            update = Boolean.parseBoolean(parameters.get(USER_RESOLVER_UPDATE));
         }
     }
 
