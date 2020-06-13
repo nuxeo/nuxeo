@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.platform.auth.saml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -73,14 +75,13 @@ public class SAMLAuthenticatorWithMapperTest {
 
     private SAMLAuthenticationProvider samlAuth;
 
-    protected void initAuthProvider(boolean disableUserResolver) throws URISyntaxException {
+    protected void initAuthProvider(boolean noCreateOrUpdate) throws URISyntaxException {
         String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
         Map<String, String> params = new HashMap<>();
         params.put("metadata", metadata);
-        if (disableUserResolver) {
-            params.put("userResolverCreateIfNeeded", "false");
-            params.put("userResolverUpdate", "false");
-        }
+        String createOrUpdate = String.valueOf(!noCreateOrUpdate);
+        params.put("userResolverCreateIfNeeded", createOrUpdate);
+        params.put("userResolverUpdate", createOrUpdate);
         params = Collections.unmodifiableMap(params);
 
         samlAuth = new SAMLAuthenticationProvider();
@@ -103,7 +104,7 @@ public class SAMLAuthenticatorWithMapperTest {
         assertEquals("user@dummy", principal.getEmail());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testUserDoesNotExistAndNoCreation() throws Exception {
         initAuthProvider(true);
@@ -113,10 +114,10 @@ public class SAMLAuthenticatorWithMapperTest {
         HttpServletResponse resp = mock(HttpServletResponse.class);
 
         UserIdentificationInfo info = samlAuth.handleRetrieveIdentity(req, resp);
-        assertEquals("user@dummy", info.getUserName());
+        assertNull(info);
 
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
-        assertEquals("user@dummy", principal.getEmail());
+        assertNull(principal);
     }
 
     @Test
@@ -161,6 +162,7 @@ public class SAMLAuthenticatorWithMapperTest {
         when(request.getRequestURL()).thenReturn(new StringBuffer(url));
         when(request.getAttribute("javax.servlet.request.X509Certificate")).thenReturn(null);
         when(request.isSecure()).thenReturn(false);
+        when(request.getLocale()).thenReturn(Locale.ENGLISH);
         // when(request.getAttribute(SAMLConstants.LOCAL_ENTITY_ID)).thenReturn(null);
         return request;
     }
