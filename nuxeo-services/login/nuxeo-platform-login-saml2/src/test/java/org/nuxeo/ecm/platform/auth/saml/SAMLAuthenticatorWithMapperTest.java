@@ -79,22 +79,22 @@ public class SAMLAuthenticatorWithMapperTest {
     private SAMLAuthenticationProvider samlAuth;
 
     private void initAuthProvider(Map<String, String> params) throws URISyntaxException {
-    	String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
-    	Map<String, String> newParams = new ImmutableMap.Builder<String, String>()
-    	        .put("metadata", metadata)
-    	        .putAll(params == null ? new HashMap<String, String>() : params)
-    	        .build();
-    	
-    	samlAuth = new SAMLAuthenticationProvider();
-    	samlAuth.initPlugin(newParams);
+        String metadata = getClass().getResource("/idp-meta.xml").toURI().getPath();
+        Map<String, String> newParams = new ImmutableMap.Builder<String, String>()
+                .put("metadata", metadata)
+                .putAll(params == null ? new HashMap<String, String>() : params)
+                .build();
+
+        samlAuth = new SAMLAuthenticationProvider();
+        samlAuth.initPlugin(newParams);
     }
-    
+
     private Map<String, String> getParamMap(boolean createIfNeeded, boolean update) {
-    	Map<String, String> resultMap = new HashMap<String, String>();
-    	resultMap.put("userResolverCreateIfNeeded", new Boolean(createIfNeeded).toString());
-    	resultMap.put("userResolverUpdate", new Boolean(update).toString());
-    	
-    	return resultMap;
+        Map<String, String> resultMap = new HashMap<String, String>();
+        resultMap.put("userResolverCreateIfNeeded", new Boolean(createIfNeeded).toString());
+        resultMap.put("userResolverUpdate", new Boolean(update).toString());
+
+        return resultMap;
     }
 
     @Test
@@ -112,7 +112,7 @@ public class SAMLAuthenticatorWithMapperTest {
         NuxeoPrincipal principal = userManager.getPrincipal("user@dummy");
         assertEquals("user@dummy", principal.getEmail());
     }
-    
+
     @Test(expected = NullPointerException.class)
     @Deploy("org.nuxeo.ecm.platform.login.saml2:OSGI-INF/usermapper-contribs.xml")
     public void testUserDoesNotExistAndNoCreation() throws Exception {
@@ -141,7 +141,7 @@ public class SAMLAuthenticatorWithMapperTest {
             user.setPropertyValue(userManager.getUserEmailField(), "user@dummy");
             user = userManager.createUser(user);
         }
-        
+
         HttpServletRequest req = getMockRequest("/saml-response.xml", "POST", "http://localhost:8080/login",
                 "text/html");
         HttpServletResponse resp = mock(HttpServletResponse.class);
