@@ -141,7 +141,7 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
 
         public JWTBuilderImpl() {
             builder = JWT.create();
-            // default Nuxeo issuer, checked during validation
+            // default Nuxeo issuer
             builder.withIssuer(NUXEO_ISSUER);
             // default to current principal as subject
             String subject = NuxeoPrincipal.getCurrent().getActingUser();
@@ -234,9 +234,7 @@ public class JWTServiceImpl extends DefaultComponent implements JWTService {
             log.debug("secret not configured, cannot verify token");
             return null; // no secret
         }
-        JWTVerifier verifier = JWT.require(algorithm) //
-                                  .withIssuer(NUXEO_ISSUER)
-                                  .build();
+        JWTVerifier verifier = JWT.require(algorithm).build();
         DecodedJWT jwt;
         try {
             jwt = verifier.verify(token);
