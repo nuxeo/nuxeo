@@ -133,14 +133,4 @@ public class TestJWTService {
         assertNull(service.verifyToken(token));
     }
 
-    @Test
-    @Deploy("org.nuxeo.ecm.jwt.tests:OSGI-INF/test-jwt-config.xml")
-    public void testCorruptedTokenBadIssuer() throws Exception {
-        String token = JWT.create() //
-                          .withIssuer("badissuer")
-                          .withSubject(USERNAME)
-                          .sign(Algorithm.HMAC512(SECRET));
-        assertNull(service.verifyToken(token));
-    }
-
 }
