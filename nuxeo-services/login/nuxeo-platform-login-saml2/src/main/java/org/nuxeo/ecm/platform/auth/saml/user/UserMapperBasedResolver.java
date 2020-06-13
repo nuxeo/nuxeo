@@ -36,15 +36,15 @@ import org.nuxeo.usermapper.service.UserMapperService;
 public class UserMapperBasedResolver implements UserResolver {
 
     protected static final String USER_RESOLVER_MAPPING = "userResolverMapping";
-    
+
     protected static final String USER_RESOLVER_CREATE_IF_NEEDED = "userResolverCreateIfNeeded";
-    
+
     protected static final String USER_RESOLVER_UPDATE = "userResolverUpdate";
 
     protected static final String DEFAULT_USER_MAPPER_CONFIG = "saml";
 
     protected String mapperName = DEFAULT_USER_MAPPER_CONFIG;
-    
+
     protected boolean createIfNeeded = true;
 
     protected boolean update = true;
@@ -55,10 +55,10 @@ public class UserMapperBasedResolver implements UserResolver {
             mapperName = parameters.get(USER_RESOLVER_MAPPING);
         }
         if (parameters.containsKey(USER_RESOLVER_CREATE_IF_NEEDED)) {
-        	createIfNeeded = Boolean.getBoolean(parameters.get(USER_RESOLVER_CREATE_IF_NEEDED));
+            createIfNeeded = Boolean.getBoolean(parameters.get(USER_RESOLVER_CREATE_IF_NEEDED));
         }
         if (parameters.containsKey(USER_RESOLVER_UPDATE)) {
-        	update = Boolean.getBoolean(parameters.get(USER_RESOLVER_UPDATE));
+            update = Boolean.getBoolean(parameters.get(USER_RESOLVER_UPDATE));
         }
     }
 
@@ -66,7 +66,7 @@ public class UserMapperBasedResolver implements UserResolver {
     public String findOrCreateNuxeoUser(SAMLCredential userInfo) {
         NuxeoPrincipal principal = Framework.getService(UserMapperService.class).getOrCreateAndUpdateNuxeoPrincipal(
                 mapperName, userInfo, createIfNeeded, update, null);
-        
+
         if (principal != null) {
             return principal.getName();
         }
