@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.core.bulk.scroll.contrib.test">
   <extension point="scroll" target="org.nuxeo.ecm.core.scroll.service">
-    <scroll type="generic" name="myFileScroll" class="org.nxueo.ecm.core.scroll.MyFileScroll" />
+    <scroll type="generic" name="myFileScroll" class="org.nuxeo.ecm.core.scroll.MyFileScroll" />
   </extension>
 </component>
