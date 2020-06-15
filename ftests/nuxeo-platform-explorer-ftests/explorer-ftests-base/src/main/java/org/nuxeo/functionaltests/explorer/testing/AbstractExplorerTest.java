@@ -21,15 +21,15 @@ package org.nuxeo.functionaltests.explorer.testing;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
-import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.JavaScriptErrorCollector;
 import org.nuxeo.functionaltests.Locator;
@@ -277,17 +277,20 @@ public abstract class AbstractExplorerTest extends AbstractTest {
         }
     }
 
-    public static String getReferencePath(String path) throws IOException {
-        URL fileUrl = Thread.currentThread().getContextClassLoader().getResource(path);
-        if (fileUrl == null) {
-            throw new IllegalStateException("File not found: " + path);
+    /**
+     * @since 11.2
+     */
+    public static String getReferenceContent(Path path) throws IOException {
+        try (InputStream stream = getReferenceStream(path)) {
+            return IOUtils.toString(stream, StandardCharsets.UTF_8).trim();
         }
-        return FileUtils.getFilePathFromUrl(fileUrl);
     }
 
-    public static String getReferenceContent(String path) throws IOException {
-        String refPath = getReferencePath(path);
-        return org.apache.commons.io.FileUtils.readFileToString(new File(refPath), StandardCharsets.UTF_8).trim();
+    /**
+     * @since 11.2
+     */
+    public static InputStream getReferenceStream(Path path) throws IOException {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(path.toString());
     }
 
 }
