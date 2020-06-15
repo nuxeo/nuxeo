@@ -69,6 +69,7 @@ import org.nuxeo.runtime.test.runner.TransactionalFeature;
 @Deploy("org.nuxeo.ecm.platform.userworkspace.types")
 @Deploy("org.nuxeo.ecm.platform.userworkspace.core")
 @Deploy("org.nuxeo.ecm.platform.collections.core")
+@Deploy("org.nuxeo.ecm.platform.web.common")
 public class TestUserWorkspace {
 
     @Inject
@@ -379,6 +380,7 @@ public class TestUserWorkspace {
     /**
      * @since 10.3
      */
+    @Test
     public void testCollectionsAreInUserWorkspace() {
         CoreSession userSession = coreFeature.getCoreSession("toto");
         DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession);
