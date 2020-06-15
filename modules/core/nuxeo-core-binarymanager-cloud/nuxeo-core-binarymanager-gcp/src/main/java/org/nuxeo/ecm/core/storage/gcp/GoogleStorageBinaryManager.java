@@ -116,7 +116,7 @@ public class GoogleStorageBinaryManager extends AbstractCloudBinaryManager {
             credentials.refreshIfExpired();
 
             storage = StorageOptions.newBuilder()
-                                    .setCredentials(GoogleCredentials.create(credentials.refreshAccessToken()))
+                                    .setCredentials(credentials)
                                     .setProjectId(projectId)
                                     .build()
                                     .getService();
