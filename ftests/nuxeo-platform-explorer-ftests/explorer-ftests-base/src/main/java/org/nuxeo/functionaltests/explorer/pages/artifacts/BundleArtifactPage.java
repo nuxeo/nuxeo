@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,8 +69,8 @@ public class BundleArtifactPage extends ArtifactPage {
         }
         checkCommon("Bundle org.nuxeo.apidoc.core", "Bundle org.nuxeo.apidoc.core", groupTitle, toc);
         try {
-            String readme = AbstractExplorerTest.getReferenceContent("data/core_readme.txt");
-            String parentReadme = AbstractExplorerTest.getReferenceContent("data/apidoc_readme.txt");
+            String readme = AbstractExplorerTest.getReferenceContent(Paths.get("data/core_readme.txt"));
+            String parentReadme = AbstractExplorerTest.getReferenceContent(Paths.get("data/apidoc_readme.txt"));
             checkDocumentationText("ReadMe.md\n" + readme + "\nParent Documentation: ReadMe.md\n" + parentReadme);
         } catch (IOException e) {
             throw new RuntimeException(e);

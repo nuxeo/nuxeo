@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import org.junit.After;
 import org.junit.Before;
@@ -264,7 +265,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
         storeWindowHandle();
         apage.doGenerateOverride();
         switchToNewWindow();
-        String expected = AbstractExplorerTest.getReferenceContent("data/override_reference.xml");
+        String expected = AbstractExplorerTest.getReferenceContent(Paths.get("data/override_reference.xml"));
         assertEquals(expected, driver.getPageSource());
         switchBackToPreviousWindow();
     }
@@ -293,7 +294,7 @@ public class ITExplorerTest extends AbstractExplorerTest {
         storeWindowHandle();
         apage.generateOverride("org.nuxeo.apidoc.listener.contrib--listener");
         switchToNewWindow();
-        String expected = AbstractExplorerTest.getReferenceContent("data/override_xp_reference.xml");
+        String expected = AbstractExplorerTest.getReferenceContent(Paths.get("data/override_xp_reference.xml"));
         assertEquals(expected, driver.getPageSource());
         switchBackToPreviousWindow();
     }

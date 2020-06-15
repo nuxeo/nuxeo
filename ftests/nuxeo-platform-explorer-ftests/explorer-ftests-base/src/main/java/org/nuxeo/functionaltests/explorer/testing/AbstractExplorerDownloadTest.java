@@ -22,6 +22,8 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -94,7 +97,7 @@ public abstract class AbstractExplorerDownloadTest extends AbstractExplorerTest 
     }
 
     protected static File createSampleZip(boolean addMarker) throws IOException {
-        String sourceDirPath = getReferencePath("data/sample_export");
+        String sourceDirPath = "data/sample_export";
         File zip = new File(downloadDir, "distrib-apidoc.zip");
         FileUtils.deleteQuietly(zip);
         Path p = Files.createFile(Paths.get(zip.getPath()));
@@ -105,20 +108,27 @@ public abstract class AbstractExplorerDownloadTest extends AbstractExplorerTest 
                 zs.closeEntry();
             }
             // read paths from reference file as NuxeoArchiveReader requires a given order and extra info
-            List<String> lines = Files.readAllLines(Paths.get(sourceDirPath, "entries.txt"));
+            Path epath = Paths.get(sourceDirPath, "entries.txt");
+            List<String> lines;
+            try (InputStream stream = AbstractExplorerTest.getReferenceStream(epath)) {
+                lines =IOUtils.readLines(stream, StandardCharsets.UTF_8);
+            }
             for (Iterator<String> lineIter = lines.iterator(); lineIter.hasNext();) {
                 String path = lineIter.next();
                 if (StringUtils.isEmpty(path)) {
                     continue;
                 }
                 ZipEntry entry = new ZipEntry(path);
-                Path ppath = Paths.get(sourceDirPath, path);
-                if (!Files.isDirectory(ppath)) {
-                    zs.putNextEntry(entry);
-                    Files.copy(ppath, zs);
-                } else {
+                if (path.endsWith("/")) {
+                    // directory entry case
                     entry.setExtra(new DWord(Integer.valueOf(lineIter.next())).getBytes());
                     zs.putNextEntry(entry);
+                } else {
+                    zs.putNextEntry(entry);
+                    Path ppath = Paths.get(sourceDirPath, path);
+                    try (InputStream stream = getReferenceStream(ppath)) {
+                        IOUtils.copy(stream, zs);
+                    }
                 }
                 zs.closeEntry();
             }
