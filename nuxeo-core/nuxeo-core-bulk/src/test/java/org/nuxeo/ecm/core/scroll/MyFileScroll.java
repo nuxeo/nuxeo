@@ -16,7 +16,7 @@
  * Contributors:
  *     bdelbosc
  */
-package org.nxueo.ecm.core.scroll;
+package org.nuxeo.ecm.core.scroll;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.scroll.Scroll;
 import org.nuxeo.ecm.core.api.scroll.ScrollRequest;
-import org.nuxeo.ecm.core.scroll.GenericScrollRequest;
 
 /**
  * Scroll lines of a file, the scroll query is the path of the file.
