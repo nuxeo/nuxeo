@@ -102,6 +102,8 @@ public class TestUserWorkspaceHierarchy {
 
     protected static final String FOLDER_TYPE = "Folder";
 
+    protected static final String FILE_CONTENT_PROPERTY = "file:content";
+
     protected static final String SYNC_ROOT_ID_PREFIX = "userWorkspaceSyncRootFactory#test#";
 
     protected static final String SYNC_ROOT_PARENT_ID = "userWorkspaceSyncRootParentFactory#";
@@ -211,8 +213,8 @@ public class TestUserWorkspaceHierarchy {
         userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1);
 
         userWorkspace1ItemId = TOP_LEVEL_ID_PREFIX + userWorkspace1.getId();
-        userWorkspace1ItemPath = "/" + userWorkspace1ItemId;
-        syncRootParentItemPath = userWorkspace1ItemPath + "/" + SYNC_ROOT_PARENT_ID;
+        userWorkspace1ItemPath = "/" + userWorkspace1ItemId; // NOSONAR
+        syncRootParentItemPath = userWorkspace1ItemPath + "/" + SYNC_ROOT_PARENT_ID; // NOSONAR
 
         // Populate test user workspace
         user1Folder1 = createFolder(session1, userWorkspace1.getPathAsString(), "user1Folder1", FOLDER_TYPE);
@@ -468,9 +470,9 @@ public class TestUserWorkspaceHierarchy {
         assertEquals(lastContributor, fileItem.getLastContributor());
         assertEquals("nxfile/test/" + doc.getId() + "/blobholder:0/" + name, fileItem.getDownloadURL());
         assertEquals("MD5", fileItem.getDigestAlgorithm());
-        assertEquals(((org.nuxeo.ecm.core.api.Blob) doc.getPropertyValue("file:content")).getDigest(),
+        assertEquals(((org.nuxeo.ecm.core.api.Blob) doc.getPropertyValue(FILE_CONTENT_PROPERTY)).getDigest(),
                 fileItem.getDigest());
-        assertEquals(((org.nuxeo.ecm.core.api.Blob) doc.getPropertyValue("file:content")).getLength(),
+        assertEquals(((org.nuxeo.ecm.core.api.Blob) doc.getPropertyValue(FILE_CONTENT_PROPERTY)).getLength(),
                 fileItem.getSize());
     }
 
@@ -493,7 +495,7 @@ public class TestUserWorkspaceHierarchy {
         DocumentModel file = session.createDocumentModel(path, name, type);
         org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(content);
         blob.setFilename(fileName);
-        file.setPropertyValue("file:content", (Serializable) blob);
+        file.setPropertyValue(FILE_CONTENT_PROPERTY, (Serializable) blob);
         file = session.createDocument(file);
         return file;
     }
