@@ -25,8 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
-import static org.nuxeo.ecm.core.test.StorageConfiguration.CORE_MONGODB;
-import static org.nuxeo.ecm.core.test.StorageConfiguration.CORE_PROPERTY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -76,6 +74,7 @@ import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.TransactionalFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -139,6 +138,9 @@ public class TestUserWorkspaceHierarchy {
     @Inject
     protected HttpAutomationClient automationClient;
 
+    @Inject
+    protected TransactionalFeature txFeature;
+
     protected CoreSession session1;
 
     protected DocumentModel userWorkspace1;
@@ -171,9 +173,6 @@ public class TestUserWorkspaceHierarchy {
 
     @BeforeClass
     public static void checkBackend() {
-        // NXP-29001: temporarily ignore against MongoDB
-        assumeFalse(CORE_MONGODB.equals(System.getProperty(CORE_PROPERTY)));
-
         // NXP-15969: temporarily ignore under MySQL
         assumeFalse(DatabaseHelper.DATABASE instanceof DatabaseMySQL);
     }
@@ -257,6 +256,9 @@ public class TestUserWorkspaceHierarchy {
         // Delete test user workspace
         session.removeDocument(userWorkspace1.getRef());
 
+        // Wait for asynchronous completion before resetting permissions to avoid ConcurrentUpdateException against
+        // MongoDB
+        txFeature.nextTransaction();
         // Reset test user permissions on the root document
         resetPermissions(session.getRootDocument(), USER_1);
 
