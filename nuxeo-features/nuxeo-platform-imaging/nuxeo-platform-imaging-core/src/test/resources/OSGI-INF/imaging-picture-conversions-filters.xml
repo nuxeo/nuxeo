@@ -17,6 +17,12 @@
       </filters>
     </pictureConversion>
 
+    <pictureConversion id="subjectFilteredConversion" maxSize="200">
+      <filters>
+        <filter-id>subjectFilter</filter-id>
+      </filters>
+    </pictureConversion>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -31,6 +37,12 @@
     <filter id="unauthorized">
       <rule grant="false">
         <condition>#{currentDocument.dc.rights == "Unauthorized"}</condition>
+      </rule>
+    </filter>
+
+    <filter id="subjectFilter">
+      <rule grant="true">
+        <condition>#{nx:arrayContains(currentDocument.dc.subjects, "art/paint")}</condition>
       </rule>
     </filter>
 

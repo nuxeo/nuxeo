@@ -18,17 +18,28 @@
  */
 package org.nuxeo.ecm.platform.el;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.el.ELContext;
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toMap;
 
 public class ExpressionContext extends ELContext {
+
+    private static final Map<String, Method> DEFAULT_FUNCTIONS = //
+            Stream.of(Functions.class.getMethods())
+                    .filter(m -> Modifier.isStatic(m.getModifiers()))
+                    .collect(collectingAndThen(toMap(m -> "nx:" + m.getName(), Function.identity()), Collections::unmodifiableMap));
 
     private static class MyVariableMapper extends VariableMapper {
 
@@ -56,7 +67,13 @@ public class ExpressionContext extends ELContext {
 
         @Override
         public Method resolveFunction(String prefix, String localName) {
-            return map.get(prefix + ":" + localName);
+            String key = prefix + ":" + localName;
+            return map.getOrDefault(key, DEFAULT_FUNCTIONS.get(key));
+        }
+
+        @Override
+        public void mapFunction(String prefix, String localName, Method method) {
+            map.put(prefix + ":" + localName, method);
         }
     }
 

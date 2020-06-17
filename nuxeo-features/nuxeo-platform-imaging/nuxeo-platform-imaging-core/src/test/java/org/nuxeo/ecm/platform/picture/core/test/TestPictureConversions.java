@@ -203,6 +203,32 @@ public class TestPictureConversions {
         assertNull(multiviewPicture.getView("anotherSmallConversion"));
     }
 
+    /**
+     * NXP-28918
+     */
+    @Test
+    @Deploy("org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-picture-conversions-filters.xml")
+    public void shouldFilterPictureConversionWithArrayProperty() throws IOException {
+        DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
+        Blob blob = Blobs.createBlob(FileUtils.getResourceFileFromContext("images/test.jpg"));
+        blob.setFilename("MyTest.jpg");
+        blob.setMimeType("image/jpeg");
+        picture.setPropertyValue("file:content", (Serializable) blob);
+        picture = session.createDocument(picture);
+
+        MultiviewPicture multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        assertEquals(5, multiviewPicture.getViews().length);
+        assertNull(multiviewPicture.getView("subjectFilteredConversion"));
+
+        picture.setPropertyValue("file:content", (Serializable) blob);
+        picture.setPropertyValue("dc:subjects", new String[] { "art/paint" });
+        picture = session.saveDocument(picture);
+
+        multiviewPicture = picture.getAdapter(MultiviewPicture.class);
+        assertEquals(6, multiviewPicture.getViews().length);
+        assertNotNull(multiviewPicture.getView("subjectFilteredConversion"));
+    }
+
     @Test
     public void pictureConversionsAlwaysHaveExtensions() throws IOException {
         DocumentModel picture = session.createDocumentModel("/", "picture", "Picture");
