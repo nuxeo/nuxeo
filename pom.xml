@@ -194,8 +194,8 @@
     <!-- Convenient property; prefer use of the right property (runtime/core/...) -->
     <nuxeo.platform.version>10.10-HF29-SNAPSHOT</nuxeo.platform.version>
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
-    <org.apache.log4j.version>2.11.1</org.apache.log4j.version>
-    <org.slf4j.version>1.7.21</org.slf4j.version>
+    <org.apache.log4j.version>2.13.3</org.apache.log4j.version>
+    <org.slf4j.version>1.7.30</org.slf4j.version>
     <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
     <gatling.version>2.3.1</gatling.version>
     <gatling-plugin.version>2.2.4</gatling-plugin.version>
