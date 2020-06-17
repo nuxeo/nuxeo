@@ -22,6 +22,7 @@
 package org.nuxeo.platform.el;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -104,6 +105,93 @@ public class TestExpressionEvaluator {
         assertNotNull(value);
         value = evaluatorUnderTest.evaluateExpression(context, "${list.get(0).sampleValue}", String.class);
         assertNotNull(value);
+    }
+
+    /**
+     * NXP-28918
+     */
+    @Test
+    public void testArrayContainsFunction() {
+        Boolean res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContains(array, 'foo')}",
+                Boolean.class);
+        assertFalse(res);
+
+        String[] arr = new String[] { "bar" };
+        evaluatorUnderTest.bindValue(context, "array", arr);
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContains(array, 'foo')}", Boolean.class);
+        assertFalse(res);
+
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContains(array, 'bar')}", Boolean.class);
+        assertTrue(res);
+    }
+
+    /**
+     * NXP-28918
+     */
+    @Test
+    public void testArrayContainsAllFunction() {
+        Boolean res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAll(array, 'foo')}",
+                Boolean.class);
+        assertFalse(res);
+
+        String[] arr = new String[] { "foo", "bar" };
+        evaluatorUnderTest.bindValue(context, "array", arr);
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAll(array, 'foo', 'foobar')}",
+                Boolean.class);
+        assertFalse(res);
+
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAll(array, 'bar', 'foo')}",
+                Boolean.class);
+        assertTrue(res);
+
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAll(array, 'bar')}", Boolean.class);
+        assertTrue(res);
+    }
+
+    /**
+     * NXP-28918
+     */
+    @Test
+    public void testArrayContainsAnyFunction() {
+        Boolean res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAny(array, 'foo')}",
+                Boolean.class);
+        assertFalse(res);
+
+        String[] arr = new String[] { "foo", "bar" };
+        evaluatorUnderTest.bindValue(context, "array", arr);
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAny(array, 'barfoo', 'foobar')}",
+                Boolean.class);
+        assertFalse(res);
+
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAny(array, 'bar', 'foo')}",
+                Boolean.class);
+        assertTrue(res);
+
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsAny(array, 'bar')}", Boolean.class);
+        assertTrue(res);
+    }
+
+    /**
+     * NXP-28918
+     */
+    @Test
+    public void testArrayContainsNoneFunction() {
+        Boolean res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsNone(array, 'foo')}",
+                Boolean.class);
+        assertFalse(res);
+
+        String[] arr = new String[] { "foo", "bar" };
+        evaluatorUnderTest.bindValue(context, "array", arr);
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsNone(array, 'foo', 'foobar')}",
+                Boolean.class);
+        assertFalse(res);
+
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsNone(array, 'barfoo', 'foobar')}",
+                Boolean.class);
+        assertTrue(res);
+
+        res = evaluatorUnderTest.evaluateExpression(context, "${nx:arrayContainsNone(array, 'foobar')}", Boolean.class);
+        assertTrue(res);
     }
 
 }
