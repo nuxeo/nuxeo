@@ -56,6 +56,7 @@ public abstract class AbstractExplorerPage extends AbstractPage {
     }
 
     public void clickOn(WebElement element) {
+        Locator.waitUntilEnabled(element);
         Locator.scrollAndForceClick(element);
     }
 
