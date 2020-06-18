@@ -166,10 +166,11 @@ docker run -it -p 8080:8080 -v /path/to/postgresql.conf:/etc/nuxeo/conf.d/postgr
 
 ### Environment Variables
 
-Currently, there are three environment variables that are taken into account by a Nuxeo image:
+Currently, these are the environment variables that are taken into account by a Nuxeo image:
 
 - `JAVA_OPTS`
 - `NUXEO_CLID`
+- `NUXEO_CONNECT_URL`
 - `NUXEO_PACKAGES`
 
 Later on, with [NXP-28191](https://jira.nuxeo.com/browse/NXP-28191), we should be able to configure any Nuxeo property as an environment variable passed to the container.
@@ -192,6 +193,16 @@ For instance, to run a container with a registered Nuxeo instance:
 
 ```bash
 docker run -it -p 8080:8080 -e NUXEO_CLID=<NUXEO_CLID> nuxeo/slim:latest
+```
+
+#### NUXEO_CONNECT_URL
+
+`NUXEO_CONNECT_URL` allows to override the default Connect URL at startup.
+
+For instance, to run a container with another Connect URL than the default one:
+
+```bash
+docker run -it -p 8080:8080 -e NUXEO_CONNECT_URL=<NUXEO_CONNECT_URL> nuxeo/slim:latest
 ```
 
 #### NUXEO_PACKAGES
