@@ -43,6 +43,13 @@ if [[ ! -f $NUXEO_HOME/configured && ! -f $NUXEO_CONF ]]; then
     echo "JAVA_OPTS=\$JAVA_OPTS $JAVA_OPTS" | tee -a $NUXEO_CONF
   fi
 
+  # Handle NUXEO_CONNECT_URL
+  if [ -n "$NUXEO_CONNECT_URL" ]; then
+    echo "ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable"
+    echo -e "\n## ENTRYPOINT: Configure Connect URL with NUXEO_CONNECT_URL environment variable" >> $NUXEO_CONF
+    echo "org.nuxeo.connect.url=$NUXEO_CONNECT_URL" | tee -a $NUXEO_CONF
+  fi
+
   touch $NUXEO_HOME/configured
 fi
 
