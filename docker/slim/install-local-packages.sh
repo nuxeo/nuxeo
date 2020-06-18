@@ -10,7 +10,7 @@ echo '===================='
 # - The network might not be available.
 # - The Connect server might not be responding.
 noConnectProperty=org.nuxeo.connect.server.reachable=false
-echo $noConnectProperty >> $NUXEO_CONF
+echo $noConnectProperty >> $NUXEO_HOME/bin/nuxeo.conf
 
 # List and install packages
 packagesDir=$1
@@ -21,14 +21,14 @@ if [ -n "$packages" ]; then
 $packages
 EOF
   echo
-  $NUXEO_HOME/bin/nuxeoctl mp-install --accept yes --nodeps $packages
+  NUXEO_CONF=$NUXEO_HOME/bin/nuxeo.conf $NUXEO_HOME/bin/nuxeoctl mp-install --accept yes --nodeps $packages
 else
   echo 'Found no packages to install.'
 fi
 echo
 
 # Reset Connect property
-sed -i "/$noConnectProperty/d" $NUXEO_CONF
+sed -i "/$noConnectProperty/d" $NUXEO_HOME/bin/nuxeo.conf
 
 # Clean up package installation directories
 backupDir=$NUXEO_HOME/packages/backup
