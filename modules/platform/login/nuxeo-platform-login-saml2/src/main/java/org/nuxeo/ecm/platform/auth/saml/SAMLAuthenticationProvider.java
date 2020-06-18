@@ -110,23 +110,23 @@ public class SAMLAuthenticationProvider
 
     private static final Log log = LogFactory.getLog(SAMLAuthenticationProvider.class);
 
-    private static final String ERROR_PAGE = "/saml/error.jsp";
+    public static final String ERROR_PAGE = "/saml/error.jsp";
 
-    private static final String ERROR_AUTH = "error.saml.auth";
+    public static final String ERROR_AUTH = "error.saml.auth";
 
-    private static final String ERROR_USER = "error.saml.userMapping";
+    public static final String ERROR_USER = "error.saml.userMapping";
 
     // User Resolver
-    private static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
+    protected static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
 
-    private static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
+    protected static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
 
     // SAML Constants
-    static final String SAML_SESSION_KEY = "SAML_SESSION";
+    public static final String SAML_SESSION_KEY = "SAML_SESSION";
 
     // Supported SAML Bindings
     // TODO: Allow registering new bindings
-    static List<SAMLBinding> bindings = new ArrayList<>();
+    protected static List<SAMLBinding> bindings = new ArrayList<>();
 
     static {
         bindings.add(new HTTPPostBinding());
@@ -134,7 +134,7 @@ public class SAMLAuthenticationProvider
     }
 
     // Decryption key resolver
-    private static ChainingEncryptedKeyResolver encryptedKeyResolver = new ChainingEncryptedKeyResolver();
+    protected static ChainingEncryptedKeyResolver encryptedKeyResolver = new ChainingEncryptedKeyResolver();
 
     static {
         encryptedKeyResolver.getResolverChain().add(new InlineEncryptedKeyResolver());
@@ -143,17 +143,17 @@ public class SAMLAuthenticationProvider
     }
 
     // Profiles supported by the IdP
-    private Map<String, AbstractSAMLProfile> profiles = new HashMap<>();
+    protected Map<String, AbstractSAMLProfile> profiles = new HashMap<>();
 
-    private UserResolver userResolver;
+    protected UserResolver userResolver;
 
-    private KeyManager keyManager;
+    protected KeyManager keyManager;
 
-    private SignatureTrustEngine trustEngine;
+    protected SignatureTrustEngine trustEngine;
 
-    private Decrypter decrypter;
+    protected Decrypter decrypter;
 
-    private MetadataProvider metadataProvider;
+    protected MetadataProvider metadataProvider;
 
     @Override
     public void initPlugin(Map<String, String> parameters) {
@@ -247,13 +247,13 @@ public class SAMLAuthenticationProvider
         }
     }
 
-    private void addProfile(AbstractSAMLProfile profile) {
+    protected void addProfile(AbstractSAMLProfile profile) {
         profile.setTrustEngine(trustEngine);
         profile.setDecrypter(decrypter);
         profiles.put(profile.getProfileIdentifier(), profile);
     }
 
-    private void initializeMetadataProvider(Map<String, String> parameters) throws MetadataProviderException {
+    protected void initializeMetadataProvider(Map<String, String> parameters) throws MetadataProviderException {
         AbstractMetadataProvider metadataProvider;
 
         String metadataUrl = parameters.get("metadata");
@@ -276,7 +276,7 @@ public class SAMLAuthenticationProvider
         this.metadataProvider = metadataProvider;
     }
 
-    private EntityDescriptor getIdPDescriptor() throws MetadataProviderException {
+    protected EntityDescriptor getIdPDescriptor() throws MetadataProviderException {
         return (EntityDescriptor) metadataProvider.getMetadata();
     }
 
@@ -314,7 +314,7 @@ public class SAMLAuthenticationProvider
         return loginURL;
     }
 
-    private String getRequestedUrl(HttpServletRequest request) {
+    protected String getRequestedUrl(HttpServletRequest request) {
         String requestedUrl = (String) request.getAttribute(NXAuthConstants.REQUESTED_URL);
         if (requestedUrl == null) {
             HttpSession session = request.getSession(false);
@@ -502,7 +502,7 @@ public class SAMLAuthenticationProvider
         return null;
     }
 
-    private void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context, HttpServletRequest request) {
+    protected void populateLocalContext(@SuppressWarnings("rawtypes") SAMLMessageContext context, HttpServletRequest request) {
         // Set local info
         context.setLocalEntityId(SAMLConfiguration.getEntityId());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
@@ -564,7 +564,7 @@ public class SAMLAuthenticationProvider
         return logoutURL;
     }
 
-    private SAMLCredential getSamlCredential(HttpServletRequest request) {
+    protected SAMLCredential getSamlCredential(HttpServletRequest request) {
         SAMLCredential credential = null;
 
         // Retrieve the SAMLCredential credential from cookie
@@ -618,19 +618,19 @@ public class SAMLAuthenticationProvider
         return Boolean.TRUE;
     }
 
-    private void sendError(HttpServletRequest req, String key) {
+    protected void sendError(HttpServletRequest req, String key) {
         String msg = I18NUtils.getMessageString("messages", key, null, req.getLocale());
         req.setAttribute(LOGIN_ERROR, msg);
     }
 
-    private KeyManager getKeyManager() {
+    protected KeyManager getKeyManager() {
         if (keyManager == null) {
             keyManager = Framework.getService(KeyManager.class);
         }
         return keyManager;
     }
 
-    private Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
+    protected Cookie getCookie(HttpServletRequest httpRequest, String cookieName) {
         Cookie cookies[] = httpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cooky : cookies) {
@@ -642,7 +642,7 @@ public class SAMLAuthenticationProvider
         return null;
     }
 
-    private void removeCookie(HttpServletResponse httpResponse, Cookie cookie) {
+    protected void removeCookie(HttpServletResponse httpResponse, Cookie cookie) {
         log.debug(String.format("Removing cookie %s.", cookie.getName()));
         cookie.setMaxAge(0);
         cookie.setValue("");
