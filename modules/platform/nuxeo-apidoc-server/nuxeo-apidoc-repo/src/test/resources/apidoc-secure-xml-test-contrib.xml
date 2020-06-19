@@ -1,0 +1,11 @@
+<component name="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent.secure.xml.override">
+  <require>org.nuxeo.apidoc.snapshot.SnapshotManagerComponent</require>
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <property name="org.nuxeo.apidoc.secure.xml.keywords">
+      secret, apiKey
+    </property>
+    <property name="org.nuxeo.apidoc.secure.xml.keywords.whitelisted">
+      apiKeyPublic
+    </property>
+  </extension>
+</component>
