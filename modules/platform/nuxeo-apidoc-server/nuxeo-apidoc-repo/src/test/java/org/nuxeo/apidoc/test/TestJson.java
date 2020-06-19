@@ -342,7 +342,7 @@ public class TestJson extends AbstractApidocTest {
         if (legacy) {
             checkContentEquals("apidoc_snapshot/legacy-snapshot-service-framework.xml", smcomp.getXmlFileContent());
         } else {
-            checkContentEquals("OSGI-INF/snapshot-service-framework.xml", smcomp.getXmlFileContent());
+            checkContentEquals("apidoc_snapshot/processed-snapshot-service-framework.xml", smcomp.getXmlFileContent());
         }
         assertEquals(List.of(), smcomp.getRequirements());
         assertEquals(Long.valueOf(58), smcomp.getRegistrationOrder());

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component name="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent">
   <documentation>
     <p>
@@ -8,11 +8,11 @@
       It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.
     </p>
   </documentation>
-  <implementation class="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" />
+  <implementation class="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent"></implementation>
 
   <service>
-    <provide interface="org.nuxeo.apidoc.snapshot.SnapshotManager" />
-    <provide interface="org.nuxeo.apidoc.search.ArtifactSearcher" />
+    <provide interface="org.nuxeo.apidoc.snapshot.SnapshotManager"></provide>
+    <provide interface="org.nuxeo.apidoc.search.ArtifactSearcher"></provide>
   </service>
 
   <extension-point name="plugins">
@@ -23,9 +23,8 @@
       <p>
         Sample contribution:
         <code>
-          <extension target="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" point="plugins">
-            <plugin id="seam" class="org.nuxeo.apidoc.seam.plugin.SeamPlugin"
-              snapshotClass="org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot">
+          <extension point="plugins" target="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent">
+            <plugin id="seam" class="org.nuxeo.apidoc.seam.plugin.SeamPlugin" snapshotClass="org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot">
               <ui>
                 <label>Seam Components</label>
                 <viewType>seam</viewType>
@@ -50,10 +49,10 @@
         </code>
       </p>
     </documentation>
-    <object class="org.nuxeo.apidoc.plugin.PluginDescriptor" />
+    <object class="org.nuxeo.apidoc.plugin.PluginDescriptor"></object>
   </extension-point>
 
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
     <documentation>
       URL base for Javadoc Links.
     </documentation>
@@ -62,7 +61,7 @@
     </property>
   </extension>
 
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
     <documentation>
       URL base for Connect Links (for Marketplace Packages).
     </documentation>
@@ -71,7 +70,7 @@
     </property>
   </extension>
 
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
     <documentation>
       Default groups for application managers and readers.
     </documentation>
@@ -83,7 +82,7 @@
     </property>
   </extension>
 
-  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+  <extension point="configuration" target="org.nuxeo.runtime.ConfigurationService">
     <documentation>
       Properties controlling sensitive configuration exposure, when extracted from runtime contributions by
       explorer logics.
