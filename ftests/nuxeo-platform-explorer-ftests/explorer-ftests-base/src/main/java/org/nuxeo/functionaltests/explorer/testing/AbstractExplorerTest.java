@@ -208,7 +208,7 @@ public abstract class AbstractExplorerTest extends AbstractTest {
                     "configuration - org.nuxeo.runtime.cluster.ClusterService");
             listing = listing.filterOn("org.nuxeo.apidoc");
         }
-        int nb = legacy ? 5 : 8;
+        int nb = legacy ? 5 : 9;
         listing.checkListing(nb, "org.nuxeo.apidoc.adapterContrib--adapters",
                 "/viewContribution/org.nuxeo.apidoc.adapterContrib--adapters",
                 "adapters - org.nuxeo.ecm.core.api.DocumentAdapterService");
