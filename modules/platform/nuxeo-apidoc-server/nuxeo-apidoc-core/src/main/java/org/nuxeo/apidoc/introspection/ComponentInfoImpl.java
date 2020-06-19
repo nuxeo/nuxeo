@@ -42,6 +42,7 @@ import org.nuxeo.apidoc.api.ExtensionInfo;
 import org.nuxeo.apidoc.api.ExtensionPointInfo;
 import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
+import org.nuxeo.apidoc.documentation.SecureXMLHelper;
 import org.nuxeo.common.utils.Path;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -219,7 +220,7 @@ public class ComponentInfoImpl extends BaseNuxeoArtifact implements ComponentInf
                     xml = IOUtils.toString(jarArchive.getInputStream(entry), StandardCharsets.UTF_8);
                 }
             }
-            xmlFileContent = DocumentationHelper.secureXML(xml);
+            xmlFileContent = SecureXMLHelper.secure(xml);
         } catch (IOException e) {
             log.error("Error while getting XML file", e);
             xmlFileContent = "";

@@ -58,7 +58,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.PackageInfo;
-import org.nuxeo.apidoc.documentation.DocumentationHelper;
+import org.nuxeo.apidoc.documentation.SecureXMLHelper;
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.JarUtils;
 import org.nuxeo.common.utils.StringUtils;
@@ -504,7 +504,7 @@ public class ServerInfo {
                     xtinfo.setTargetComponentName(xt.getTargetComponent());
                     xtinfo.setContribution(xt.getContributions());
                     xtinfo.setDocumentation(xt.getDocumentation());
-                    xtinfo.setXml(DocumentationHelper.secureXML(xt.toXML()));
+                    xtinfo.setXml(SecureXMLHelper.secure(xt.toXML()));
 
                     contribRegistry.add(xtinfo);
 

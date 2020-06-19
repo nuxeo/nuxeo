@@ -127,22 +127,7 @@ public class DocumentationHelper {
         if (sanitizer != null) {
             html = sanitizer.sanitizeString(html, null);
         }
-        return secureXML(html);
-    }
-
-    /**
-     * Makes sure no passwords are embedded in the XML.
-     */
-    public static String secureXML(String xml) {
-        if (xml == null || !xml.contains("assword")) {
-            return xml;
-        }
-        xml = xml.replaceAll("<([a-zA-Z]*[pP])assword>[^<]*</([a-zA-Z]*)assword>", "<$1assword>********</$2assword>");
-        // attributes: nuxeo-core-auth
-        xml = xml.replaceAll("([a-zA-Z]*[pP])assword=\"[^\"]*\"", "$1assword=\"********\"");
-        // property: default-repository-config
-        xml = xml.replaceAll("([a-zA-Z]*[pP])assword\">[^<]*<", "$1assword\">********<");
-        return xml;
+        return SecureXMLHelper.secure(html);
     }
 
 }
