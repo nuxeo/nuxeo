@@ -23,6 +23,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Helper for XML secure content management.
@@ -31,11 +33,23 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SecureXMLHelper {
 
+    protected static final String KEYWORDS_PROPERTY = "org.nuxeo.apidoc.secure.xml.keywords";
+
     public static final List<String> DEFAULT_KEYWORDS = List.of("password", "Password", "secret", "apiKey");
+
+    protected static final String WHITELISTED_KEYWORDS_PROPERTY = "org.nuxeo.apidoc.secure.xml.keywords.whitelisted";
 
     public static final List<String> DEFAULT_WHITELISTED_KEYWORDS = List.of("passwordField", "passwordHashAlgorithm");
 
     protected static final String SECRET_VALUE = "********";
+
+    protected static List<String> getKeywordList(String property, List<String> defaultValue) {
+        return Framework.getService(ConfigurationService.class)
+                        .getString(property)
+                        .map(v -> v.split("\\s*,[,\\s]*"))
+                        .map(List::of)
+                        .orElse(defaultValue);
+    }
 
     /**
      * Makes sure no passwords are embedded in the XML.
@@ -45,7 +59,9 @@ public class SecureXMLHelper {
             return xml;
         }
         String res = xml;
-        for (String kw : DEFAULT_KEYWORDS) {
+        List<String> keywords = getKeywordList(KEYWORDS_PROPERTY, DEFAULT_KEYWORDS);
+        List<String> whitelist = getKeywordList(WHITELISTED_KEYWORDS_PROPERTY, DEFAULT_WHITELISTED_KEYWORDS);
+        for (String kw : keywords) {
             if (res.contains(kw)) {
                 for (String pattern : List.of(
                         // node startswith
@@ -62,7 +78,7 @@ public class SecureXMLHelper {
                     Matcher m = Pattern.compile(pattern).matcher(res);
                     while (m.find()) {
                         String replacement;
-                        if (DEFAULT_WHITELISTED_KEYWORDS.contains(m.group("key"))) {
+                        if (whitelist.contains(m.group("key"))) {
                             replacement = m.group();
                         } else {
                             replacement = m.group("start") + SECRET_VALUE + m.group("end");

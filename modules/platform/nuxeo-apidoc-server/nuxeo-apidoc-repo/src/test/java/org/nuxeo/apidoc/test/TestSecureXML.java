@@ -22,8 +22,16 @@ package org.nuxeo.apidoc.test;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.apidoc.documentation.SecureXMLHelper;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+@RunWith(FeaturesRunner.class)
+@Features(RuntimeFeature.class)
+@Deploy("org.nuxeo.apidoc.repo:OSGI-INF/snapshot-service-framework.xml")
 public class TestSecureXML {
 
     @Test
@@ -183,6 +191,24 @@ public class TestSecureXML {
                 + " <passwordField>password</passwordField>\n" //
                 + " <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>";
         assertEquals(expected, SecureXMLHelper.secure(xml));
+    }
+
+    @Test
+    @Deploy("org.nuxeo.apidoc.repo.test:apidoc-secure-xml-test-contrib.xml")
+    public void testSecureXMLOverride() throws Exception {
+        String xml = "foo <password>p1</password>\n" //
+                + " <myPassword>p2</myPassword>\n" //
+                + " <secret>${nuxeo.jwt.secret}</secret>\n" //
+                + " <secretKey>${nuxeo.aws.secretKey}</secretKey>\n" //
+                + " <option name=\"apiKey\">${metrics.datadog.apiKey}</option>\n" //
+                + " <apiKeyPublic>password</apiKeyPublic>";
+        String expected = "foo <password>p1</password>\n" //
+                + " <myPassword>p2</myPassword>\n" //
+                + " <secret>********</secret>\n" //
+                + " <secretKey>********</secretKey>\n" //
+                + " <option name=\"apiKey\">********</option>\n" //
+                + " <apiKeyPublic>password</apiKeyPublic>";
+        assertEquals(expected, SecureXMLHelper.secureXML(xml));
     }
 
 }

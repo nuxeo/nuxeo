@@ -83,4 +83,19 @@
     </property>
   </extension>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Properties controlling sensitive configuration exposure, when extracted from runtime contributions by
+      explorer logics.
+
+      @since 11.2
+    </documentation>
+    <property name="org.nuxeo.apidoc.secure.xml.keywords">
+      password, Password, secret, apiKey
+    </property>
+    <property name="org.nuxeo.apidoc.secure.xml.keywords.whitelisted">
+      passwordField, passwordHashAlgorithm
+    </property>
+  </extension>
+
 </component>
