@@ -77,6 +77,7 @@ import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
 import org.nuxeo.ecm.webengine.model.Template;
@@ -584,6 +585,15 @@ public class Distribution extends ModuleRoot {
                                    .stream()
                                    .filter(plugin -> !plugin.isHidden())
                                    .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the webapp name (usually "nuxeo")
+     *
+     * @since 11.2
+     */
+    public String getWebappName() {
+        return VirtualHostHelper.getWebAppName(getContext().getRequest());
     }
 
 }

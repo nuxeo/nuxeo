@@ -40,13 +40,13 @@
   <header role="banner">
     <@block name="header">
     <div class="top-banner">
-      <a href="/nuxeo/site/distribution">
+      <a href="${Root.path}">
         <img src="${skinPath}/images/nuxeo.png">
         <span>Platform Explorer</span>
       </a>
       <#if Root.currentDistribution != null>
       <span>
-        / <a href="/nuxeo/site/distribution/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
+        / <a href="${Root.path}/${Root.currentDistribution.key}/">${Root.currentDistribution.name} ${Root.currentDistribution.version}</a>
       </span>
       </#if>
       <div class="login">
