@@ -262,7 +262,7 @@ public class S3BlobStoreConfiguration extends CloudBlobStoreConfiguration {
         if (isBlank(value)) {
             value = "";
         } else if (!value.endsWith(DELIMITER)) {
-            log.warn(String.format("%s %s S3 bucket prefix should end with '/': added automatically.",
+            log.debug(String.format("%s %s S3 bucket prefix should end with '/': added automatically.",
                     BUCKET_PREFIX_PROPERTY, value));
             value += DELIMITER;
         }

@@ -267,7 +267,7 @@ public class S3BinaryManager extends AbstractCloudBinaryManager {
         }
 
         if (!isBlank(bucketNamePrefix) && !bucketNamePrefix.endsWith(DELIMITER)) {
-            log.warn(String.format("%s %s S3 bucket prefix should end with '/' : added automatically.",
+            log.debug(String.format("%s %s S3 bucket prefix should end with '/' : added automatically.",
                     BUCKET_PREFIX_PROPERTY, bucketNamePrefix));
             bucketNamePrefix += DELIMITER;
         }
