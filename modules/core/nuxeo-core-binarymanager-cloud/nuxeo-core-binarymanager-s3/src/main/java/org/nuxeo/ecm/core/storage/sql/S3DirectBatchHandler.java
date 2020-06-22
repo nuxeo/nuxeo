@@ -180,7 +180,7 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         amazonS3 = initializeS3Client(credentials);
 
         if (!isBlank(bucketPrefix) && !bucketPrefix.endsWith("/")) {
-            log.warn(String.format("%s %s S3 bucket prefix should end with '/': added automatically.",
+            log.debug(String.format("%s %s S3 bucket prefix should end with '/': added automatically.",
                     BUCKET_PREFIX_PROPERTY, bucketPrefix));
             bucketPrefix += "/";
         }
