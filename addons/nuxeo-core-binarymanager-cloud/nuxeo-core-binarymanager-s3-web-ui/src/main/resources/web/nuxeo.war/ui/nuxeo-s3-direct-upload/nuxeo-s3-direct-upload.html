@@ -94,14 +94,27 @@ limitations under the License.
     };
 
     S3Provider.prototype._initCredentials = function(options) {
+      var credentials = new AWS.Credentials(
+        options.awsSecretKeyId,
+        options.awsSecretAccessKey,
+        options.awsSessionToken,
+      );
+      credentials.expireTime = new Date(options.expiration);
+      credentials.refresh = function(cb) {
+        return this._resource(`upload/${this.batchId}/refreshToken`).post().then(function(response) {
+          credentials.accessKeyId = response.awsSecretKeyId;
+          credentials.secretAccessKey = response.awsSecretAccessKey;
+          credentials.sessionToken = response.awsSessionToken;
+          credentials.expireTime = new Date(response.expiration);
+          cb();
+        });
+      }.bind(this);
       AWS.config.update({
-        credentials: new AWS.Credentials(options.awsSecretKeyId, options.awsSecretAccessKey, options.awsSessionToken),
+        credentials: credentials,
         region: options.region,
         s3ForcePathStyle: options.usePathStyleAccess || false,
         useAccelerateEndpoint: options.useS3Accelerate || false
       });
-
-      AWS.config.credentials.expireTime = new Date(options.expiration);
     };
 
     S3Provider.prototype._newBatch = function() {
@@ -117,8 +130,8 @@ limitations under the License.
           computeChecksums: true,
           httpOptions: {
             timeout:
-              Number(Nuxeo && Nuxeo.UI && Nuxeo.UI.config && Nuxeo.UI.config.s3 && Nuxeo.UI.config.s3.timeout) || 0,
-          },
+              Number(Nuxeo && Nuxeo.UI && Nuxeo.UI.config && Nuxeo.UI.config.s3 && Nuxeo.UI.config.s3.timeout) || 0
+          }
         });
       }.bind(this));
     };
