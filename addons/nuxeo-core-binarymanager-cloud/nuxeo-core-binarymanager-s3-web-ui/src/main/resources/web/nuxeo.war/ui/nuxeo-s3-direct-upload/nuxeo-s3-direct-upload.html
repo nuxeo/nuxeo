@@ -201,6 +201,12 @@ limitations under the License.
     };
 
     Nuxeo.UploaderBehavior.registerProvider('s3', S3Provider);
+    // https://github.com/aws/aws-sdk-js/issues/1895
+    AWS.util.update(AWS.S3.prototype, {
+      reqRegionForNetworkingError(req, done) {
+        return done();
+      },
+    });
     Nuxeo.UploaderBehavior.defaultProvider = 's3';
   })();
 </script>
