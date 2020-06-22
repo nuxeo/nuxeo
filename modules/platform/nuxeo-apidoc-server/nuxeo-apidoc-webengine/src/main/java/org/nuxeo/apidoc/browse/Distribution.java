@@ -18,8 +18,6 @@
  */
 package org.nuxeo.apidoc.browse;
 
-import static org.nuxeo.apidoc.snapshot.DistributionSnapshot.PROP_RELEASED;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,9 +25,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +45,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +55,7 @@ import org.nuxeo.apidoc.export.ArchiveFile;
 import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.listener.AttributesExtractorStater;
 import org.nuxeo.apidoc.plugin.Plugin;
+import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshotDesc;
@@ -67,12 +64,14 @@ import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
 import org.nuxeo.apidoc.worker.ExtractXmlAttributesWorker;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -89,17 +88,22 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @Path("/distribution")
 // needed for 5.4.1
-@WebObject(type = "distribution")
+@WebObject(type = Distribution.TYPE)
 public class Distribution extends ModuleRoot {
 
     private static final Logger log = LogManager.getLogger(Distribution.class);
+
+    /** @since 11.2 */
+    public static final String TYPE = "distribution";
 
     public static final String DIST_ID = "distId";
 
     protected static final String DIST = "distribution";
 
+    /** @since 11.2 */
     public static final String VIEW_INDEX = "index";
 
+    /** @since 11.2 */
     public static final String VIEW_ADMIN = "_admin";
 
     protected static final Pattern VERSION_REGEX = Pattern.compile("^(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-.*)?$",
@@ -313,15 +317,13 @@ public class Distribution extends ModuleRoot {
         return performSave(filter);
     }
 
-    protected Map<String, Serializable> readFormData(FormData formData) {
+    protected Map<String, Serializable> readUploadFormData(FormData formData) {
         Map<String, Serializable> properties = new HashMap<>();
 
         // Release date
         String released = formData.getString("released");
         if (StringUtils.isNotBlank(released)) {
-            LocalDate date = LocalDate.parse(released);
-            Instant instant = date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant();
-            properties.put(PROP_RELEASED, java.util.Date.from(instant));
+            properties.put(DistributionSnapshot.PROP_RELEASED, RepositoryDistributionSnapshot.convertDate(released));
         }
 
         return properties;
@@ -344,7 +346,7 @@ public class Distribution extends ModuleRoot {
         String source = formData.getString("source");
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), formData.getString("name"),
-                    readFormData(formData), filter);
+                    readUploadFormData(formData), filter);
         } catch (NuxeoException e) {
             log.error("Error during storage", e);
             if (tx != null) {
@@ -416,10 +418,14 @@ public class Distribution extends ModuleRoot {
      */
     @GET
     @Path(VIEW_ADMIN)
-    public Object getForms() {
+    public Object getForms(
+            @QueryParam(ApiBrowserConstants.SUCCESS_FEEBACK_MESSAGE_VARIABLE) String successFeedbackMessage,
+            @QueryParam(ApiBrowserConstants.ERROR_FEEBACK_MESSAGE_VARIABLE) String errorFeedbackMessage) {
         NuxeoPrincipal principal = getContext().getPrincipal();
         if (SecurityHelper.canManageDistributions(principal)) {
-            return getView("forms").arg("hideNav", Boolean.TRUE);
+            return getView("forms").arg("hideNav", Boolean.TRUE)
+                                   .arg(ApiBrowserConstants.SUCCESS_FEEBACK_MESSAGE_VARIABLE, successFeedbackMessage)
+                                   .arg(ApiBrowserConstants.ERROR_FEEBACK_MESSAGE_VARIABLE, errorFeedbackMessage);
         }
         return show404();
     }
@@ -501,6 +507,66 @@ public class Distribution extends ModuleRoot {
 
         view.arg("source", formData.getString("source"));
         return view;
+    }
+
+    /**
+     * Displays the distribution edit form.
+     *
+     * @since 11.2
+     */
+    @GET
+    @Path("update/{distributionId}")
+    @Produces("text/html")
+    public Object updateDistribForm(@PathParam("distributionId") String distribId) {
+        return updateDistribForm(distribId, null, null);
+    }
+
+    protected Object updateDistribForm(String distribId, Map<String, String> updateProperties,
+            String errorFeedbackMessage) {
+        if (!showManageDistributions()) {
+            return show404();
+        }
+        DistributionSnapshot snap = getSnapshotManager().getSnapshot(distribId, getContext().getCoreSession());
+        if (snap == null || snap.isLive() || !(snap instanceof RepositoryDistributionSnapshot)) {
+            return show404();
+        }
+        RepositoryDistributionSnapshot repoSnap = (RepositoryDistributionSnapshot) snap;
+        if (updateProperties == null) {
+            updateProperties = repoSnap.getUpdateProperties();
+        }
+        return getView("updateForm").arg("distribId", distribId)
+                                    .arg("properties", updateProperties)
+                                    .arg(ApiBrowserConstants.ERROR_FEEBACK_MESSAGE_VARIABLE, errorFeedbackMessage);
+    }
+
+    /**
+     * Updates the distribution metadata.
+     *
+     * @since 11.2
+     */
+    @POST
+    @Path("doUpdate")
+    @Produces("text/html")
+    public Object updateDistrib() {
+        if (!showManageDistributions()) {
+            return show404();
+        }
+        FormData formData = getContext().getForm();
+        String distribId = formData.getFormProperty("distribId");
+        DistributionSnapshot snap = getSnapshotManager().getSnapshot(distribId, getContext().getCoreSession());
+        if (snap == null || snap.isLive() || !(snap instanceof RepositoryDistributionSnapshot)) {
+            return show404();
+        }
+        RepositoryDistributionSnapshot repoSnap = (RepositoryDistributionSnapshot) snap;
+        Map<String, String> updateProperties = repoSnap.getUpdateProperties(formData.getFormFields());
+        try {
+            repoSnap.updateDocument(getContext().getCoreSession(), updateProperties, formData.getString("comment"));
+        } catch (DocumentValidationException e) {
+            return updateDistribForm(distribId, updateProperties, e.getMessage());
+        }
+        // will trigger retrieval of distribution again
+        return redirect(URIUtils.addParametersToURIQuery(String.format("%s/%s", getPath(), VIEW_ADMIN),
+                Map.of(ApiBrowserConstants.SUCCESS_FEEBACK_MESSAGE_VARIABLE, "Update Done.")));
     }
 
     /**

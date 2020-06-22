@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests.explorer.pages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.File;
 import java.util.HashMap;
@@ -55,6 +56,12 @@ public abstract class AbstractExplorerPage extends AbstractPage {
     @FindBy(xpath = "//div[@class='top-banner']/a")
     public WebElement homeLink;
 
+    @FindBy(id = "successMessage")
+    public WebElement successMessage;
+
+    @FindBy(id = "errorMessage")
+    public WebElement errorMessage;
+
     public AbstractExplorerPage(WebDriver driver) {
         super(driver);
     }
@@ -89,6 +96,22 @@ public abstract class AbstractExplorerPage extends AbstractPage {
 
     public void checkTitle(String expected) {
         assertEquals(expected, driver.getTitle());
+    }
+
+    public void checkErrorMessage(String expected) {
+        checkTextIfExists(expected, errorMessage);
+    }
+
+    public void checkSuccessMessage(String expected) {
+        checkTextIfExists(expected, successMessage);
+    }
+
+    protected void checkTextIfExists(String expected, WebElement element) {
+        try {
+            assertEquals(expected, element.getText());
+        } catch (NoSuchElementException e) {
+            assertNull(expected);
+        }
     }
 
     /**

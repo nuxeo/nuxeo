@@ -94,14 +94,6 @@ public abstract class ArtifactPage extends AbstractExplorerPage {
         checkTextIfExists(expected, toc);
     }
 
-    protected void checkTextIfExists(String expected, WebElement element) {
-        try {
-            assertEquals(expected, element.getText());
-        } catch (NoSuchElementException e) {
-            assertNull(expected);
-        }
-    }
-
     public void checkRequirements(List<String> ids) {
         WebElement requirements = null;
         try {

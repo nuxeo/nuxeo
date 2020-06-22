@@ -197,6 +197,10 @@ pre code {
   margin-bottom: 0;
 }
 
+.required {
+  background: transparent url('../images/required.gif') top right / 7px no-repeat;
+}
+
 /* Quotes */
 blockquote {
   padding: .5rem 1rem;
@@ -259,6 +263,15 @@ th {
   background-color: #f9f9f9;
 }
 
+.message.success {
+  color: #569150;
+  background-color: #d1f5c7;
+}
+
+.message.error {
+  color: #ff0044;
+  background-color: #ffc7ca;
+}
 
 /*
  * Container
@@ -339,21 +352,6 @@ th {
  *  --------------------- */
 
 /* Global style */
-
-@font-face {
-  font-family: 'Ademi';
-  src: url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot');
-  src: url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.eot?#iefix') format('embedded-opentype'), url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.woff') format('woff'), url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-Demi.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'Ademic';
-  src: url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-DemiCn.eot');
-  src: url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-DemiCn.eot?#iefix') format('embedded-opentype'), url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-DemiCn.woff') format('woff'), url('https://www.nuxeo.com/wp-content/themes/nuxeo.com_wp/fonts/AvenirNextLTPro/AvenirNextLTPro-DemiCn.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
 html {
   font-family: 'Aregular', 'Open Sans', Arial, sans-serif;
@@ -917,6 +915,29 @@ table.content {
 
 table.content td {
   vertical-align: top; }
+
+table.dataInput {
+  background-color: transparent;
+  border: 0;
+  padding: 0.5em 0.6em 0.6em 0.5em;
+  clear: both;
+  line-height: 1.3em;
+  margin: 0 0 0.8em;
+  width: 100%;
+}
+
+table.dataInput td {
+  vertical-align: top;
+}
+
+table.dataInput td.label {
+  font-weight: bold;
+}
+
+table.dataInput tbody tr:nth-child(odd) td,
+table.dataInput tbody tr:nth-child(odd) th {
+  background-color: transparent;
+}
 
 .tablesorter {
   border-collapse: inherit;

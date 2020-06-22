@@ -21,15 +21,23 @@ package org.nuxeo.apidoc.repository;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.apidoc.adapters.BaseNuxeoArtifactDocAdapter;
@@ -54,6 +62,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.thumbnail.ThumbnailConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -89,11 +98,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
 
         doc.setPathInfo(containerPath, name);
         if (label == null) {
-            doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, distrib.getKey());
+            doc.setPropertyValue(TITLE_PROPERTY_PATH, distrib.getKey());
             doc.setPropertyValue(PROP_KEY, distrib.getKey());
             doc.setPropertyValue(PROP_NAME, distrib.getName());
         } else {
-            doc.setPropertyValue(NuxeoArtifact.TITLE_PROPERTY_PATH, label);
+            doc.setPropertyValue(TITLE_PROPERTY_PATH, label);
             doc.setPropertyValue(PROP_KEY, label + "-" + distrib.getVersion());
             doc.setPropertyValue(PROP_NAME, label);
         }
@@ -399,10 +408,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public List<String> getAliases() {
         List<String> aliases = safeGet(PROP_ALIASES);
-        if (isLatestLTS()) {
-            aliases.add("latestLTS");
-        } else if (isLatestFT()) {
-            aliases.add("latestFT");
+        if (isLatestLTS() && !aliases.contains(SnapshotManager.DISTRIBUTION_ALIAS_LATEST_LTS)) {
+            aliases.add(SnapshotManager.DISTRIBUTION_ALIAS_LATEST_LTS);
+        }
+        if (isLatestFT() && !aliases.contains(SnapshotManager.DISTRIBUTION_ALIAS_LATEST_FT)) {
+            aliases.add(SnapshotManager.DISTRIBUTION_ALIAS_LATEST_FT);
         }
         return aliases;
     }
@@ -434,4 +444,99 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
                         .stream()
                         .collect(Collectors.toMap(Plugin::getId, p -> p.getRepositorySnapshot(getDoc())));
     }
+
+    /**
+     * Returns a key/value map of properties for update.
+     *
+     * @since 11.2
+     */
+    public Map<String, String> getUpdateProperties() {
+        Map<String, String> props = new HashMap<>();
+        List.of(TITLE_PROPERTY_PATH, PROP_NAME, PROP_VERSION, PROP_KEY).forEach(p -> props.put(p, safeGet(p)));
+        if (StringUtils.isBlank(props.get(TITLE_PROPERTY_PATH))) {
+            props.put(TITLE_PROPERTY_PATH, props.get(PROP_NAME));
+        }
+        List.of(PROP_LATEST_LTS, PROP_LATEST_FT, PROP_HIDE)
+            .forEach(p -> props.put(p, String.valueOf(doc.getPropertyValue(p))));
+        Date releaseDate = getReleaseDate();
+        props.put(PROP_RELEASED, releaseDate == null ? null : new SimpleDateFormat("yyyy-MM-dd").format(releaseDate));
+        List<String> aliases = safeGet(PROP_ALIASES);
+        props.put(PROP_ALIASES, String.join("\n", aliases));
+        return props;
+    }
+
+    /**
+     * Returns a key/value map of properties for update from request properties.
+     *
+     * @since 11.2
+     */
+    public Map<String, String> getUpdateProperties(Map<String, String[]> formFields) {
+        Map<String, String> props = new HashMap<>();
+        if (formFields != null) {
+            Stream.of(TITLE_PROPERTY_PATH, PROP_NAME, PROP_VERSION, PROP_KEY, PROP_LATEST_LTS, PROP_LATEST_FT,
+                    PROP_HIDE, PROP_RELEASED, PROP_ALIASES)
+                  .filter(formFields::containsKey)
+                  .forEach(p -> props.put(p, formFields.get(p)[0]));
+            if (StringUtils.isBlank(props.get(TITLE_PROPERTY_PATH))) {
+                props.put(TITLE_PROPERTY_PATH, props.get(PROP_NAME));
+            }
+            List.of(PROP_LATEST_LTS, PROP_LATEST_FT, PROP_HIDE)
+                .forEach(p -> props.put(p, Boolean.toString(formFields.containsKey(p))));
+        }
+        return props;
+    }
+
+    /**
+     * Updates the distribution document metadata.
+     *
+     * @since 11.2
+     */
+    public DocumentModel updateDocument(CoreSession session, Map<String, String> updateProperties, String comment)
+            throws DocumentValidationException {
+        final DocumentModel doc = getDoc();
+        if (updateProperties == null) {
+            return doc;
+        }
+        if (Stream.of(TITLE_PROPERTY_PATH, PROP_NAME, PROP_VERSION, PROP_KEY)
+                  .anyMatch(p -> StringUtils.isBlank(updateProperties.get(p)))) {
+            throw new DocumentValidationException("Please fill all required fields.");
+        }
+        Stream.of(TITLE_PROPERTY_PATH, PROP_NAME, PROP_VERSION, PROP_KEY, PROP_LATEST_LTS, PROP_LATEST_FT, PROP_HIDE)
+              .filter(updateProperties::containsKey)
+              .forEach(p -> doc.setPropertyValue(p, updateProperties.get(p)));
+        List.of(PROP_LATEST_LTS, PROP_LATEST_FT, PROP_HIDE)
+            .forEach(p -> doc.setPropertyValue(p, updateProperties.get(p)));
+        if (updateProperties.containsKey(PROP_RELEASED)) {
+            doc.setPropertyValue(DistributionSnapshot.PROP_RELEASED, convertDate(updateProperties.get(PROP_RELEASED)));
+        }
+        if (updateProperties.containsKey(PROP_ALIASES)) {
+            doc.setPropertyValue(PROP_ALIASES,
+                    (Serializable) Arrays.stream(updateProperties.get(PROP_ALIASES).split("\n"))
+                                         .map(String::trim)
+                                         .filter(StringUtils::isNotBlank)
+                                         .collect(Collectors.toList()));
+        }
+        if (!StringUtils.isBlank(comment)) {
+            doc.putContextData("comment", comment);
+        }
+        doc.putContextData(ThumbnailConstants.DISABLE_THUMBNAIL_COMPUTATION, true);
+        DocumentModel updatedDoc = session.saveDocument(doc);
+        session.save();
+        return updatedDoc;
+    }
+
+    /**
+     * Converts string date from request to a date that can be stored.
+     *
+     * @since 11.2
+     */
+    public static final Date convertDate(String date) {
+        if (StringUtils.isNotBlank(date)) {
+            LocalDate ldate = LocalDate.parse(date);
+            Instant instant = ldate.atStartOfDay().atZone(ZoneOffset.UTC).toInstant();
+            return Date.from(instant);
+        }
+        return null;
+    }
+
 }

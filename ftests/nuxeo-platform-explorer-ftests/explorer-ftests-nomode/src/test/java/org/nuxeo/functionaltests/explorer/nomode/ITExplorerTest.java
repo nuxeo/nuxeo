@@ -130,6 +130,12 @@ public class ITExplorerTest extends AbstractExplorerTest {
         asPage(DistributionHomePage.class).check();
     }
 
+    @Test
+    public void testUpdateLatestDistrib() {
+        openAndCheck(DistribAdminPage.UPDATE_URL + SnapshotManager.DISTRIBUTION_ALIAS_LATEST, true);
+        openAndCheck(DistribAdminPage.UPDATE_URL + getDistribId(LIVE_NAME, liveVersion), true);
+    }
+
     /**
      * Non-regression test for NXP-29193.
      */

@@ -7,6 +7,7 @@
   <table class="tablesorter distributions">
     <tr>
       <th>Name</th>
+      <th>Aliases</th>
       <th>Version</th>
       <th>Creation date</th>
       <th>Release date</th>
@@ -17,7 +18,18 @@
     <#if Root.showRuntimeSnapshot()>
     <#assign rtSnap=Root.runtimeDistribution/>
     <tr>
-      <td><a class="button currentDistrib" href="${Root.path}/current/">${rtSnap.name}</a></td>
+      <td>
+        <a class="button currentDistrib" href="${Root.path}/current/">${rtSnap.name}</a>
+      </td>
+      <td>
+        <#if rtSnap.aliases?size gt 0>
+          <div>
+            <#list rtSnap.aliases as alias>
+              <a class="button" href="${Root.path}/${alias}/">${alias?html}</a>
+            </#list>
+          </div>
+        </#if>
+      </td>
       <td>${rtSnap.version}</td>
       <td>${rtSnap.creationDate?datetime}</td>
       <td>-</td>
@@ -98,20 +110,35 @@
 
     <#list Root.listPersistedDistributions() as distrib>
       <tr>
-        <td><a class="distrib button" href="${Root.path}/${distrib.key}/">${distrib.name}</a></td>
+        <td>
+          <a class="distrib button" href="${Root.path}/${distrib.key}/">${distrib.name}</a>
+        </td>
+        <td>
+          <#if distrib.aliases?size gt 0>
+            <div>
+              <#list distrib.aliases as alias>
+                <a class="button" href="${Root.path}/${alias}/">${alias?html}</a>
+              </#list>
+            </div>
+          </#if>
+        </td>
         <td>${distrib.version}</td>
         <td>${distrib.creationDate?datetime}</td>
         <td>${distrib.releaseDate?datetime}</td>
         <td>
           <#if distrib.latestFT >
             <span class="sticker current">Latest FT</span>
-          <#elseif distrib.latestLTS >
+          </#if>
+          <#if distrib.latestLTS >
             <span class="sticker current">Latest LTS</span>
-          <#else>
-            &nbsp;
           </#if>
         </td>
         <td>
+          <p>
+            <a class="button" href="${Root.path}/update/${distrib.key}" onclick="$.fn.clickButton(this)">
+              Update
+            </a>
+          </p>
           <p>
             <a class="button" href="${Root.path}/download/${distrib.key}" onclick="$.fn.clickButton(this)">
               Export as zip
