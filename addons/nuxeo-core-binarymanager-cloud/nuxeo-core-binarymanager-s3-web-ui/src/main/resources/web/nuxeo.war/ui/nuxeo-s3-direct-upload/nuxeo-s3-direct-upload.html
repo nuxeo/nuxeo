@@ -171,7 +171,7 @@ limitations under the License.
           callback({ type: 'batchFinished', batchId: this.batchId });
         }.bind(this));
       }.bind(this)).catch(function(error) {
-        callback({ type: 'uploadInterrupted', error });
+        callback({ type: 'batchFailed', error, batchId: this.batchId });
       }.bind(this));
     };
 
