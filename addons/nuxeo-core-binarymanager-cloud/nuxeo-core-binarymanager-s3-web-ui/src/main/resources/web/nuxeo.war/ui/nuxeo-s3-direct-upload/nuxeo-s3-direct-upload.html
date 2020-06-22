@@ -151,6 +151,16 @@ limitations under the License.
       }.bind(this));
     };
 
+
+    S3Provider.prototype._handleUploadError = function(error, callback) {
+      if (this.files.every(function(file) { return file.error; })) {
+        callback({ type: 'batchFailed', error, batchId: this.batchId });
+      } else if (this.files.every(function(file) { return file.error || file.complete; })) {
+        callback({ type: 'batchFinished', batchId: this.batchId });
+      }
+      throw error;
+    }
+
     S3Provider.prototype.accepts = Nuxeo.UploaderBehavior.getProviders()['default'].prototype.accepts;
 
     S3Provider.prototype.upload = function(files, callback) {
@@ -165,13 +175,13 @@ limitations under the License.
           var file = files[i];
           file.index = this.files.length;
           this.files.push(file);
-          promises.push(this._upload(file, callback));
+          promises.push(this._upload(file, callback).catch(function(error) {
+            this._handleUploadError(error, callback);
+          }.bind(this)));
         }
         return Promise.all(promises).then(function() {
           callback({ type: 'batchFinished', batchId: this.batchId });
         }.bind(this));
-      }.bind(this)).catch(function(error) {
-        callback({ type: 'batchFailed', error, batchId: this.batchId });
       }.bind(this));
     };
 
