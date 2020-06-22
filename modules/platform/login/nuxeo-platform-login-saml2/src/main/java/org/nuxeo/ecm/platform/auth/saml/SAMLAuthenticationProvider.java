@@ -110,10 +110,19 @@ public class SAMLAuthenticationProvider
 
     private static final Log log = LogFactory.getLog(SAMLAuthenticationProvider.class);
 
+    /*
+     * @since 11.2
+     */
     public static final String ERROR_PAGE = "/saml/error.jsp";
 
+    /*
+     * @since 11.2
+     */
     public static final String ERROR_AUTH = "error.saml.auth";
 
+    /*
+     * @since 11.2
+     */
     public static final String ERROR_USER = "error.saml.userMapping";
 
     // User Resolver
@@ -121,7 +130,10 @@ public class SAMLAuthenticationProvider
 
     protected static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
 
-    // SAML Constants
+    /*
+     * SAML Constants
+     * @since 11.2
+     */
     public static final String SAML_SESSION_KEY = "SAML_SESSION";
 
     // Supported SAML Bindings
