@@ -79,6 +79,7 @@ limitations under the License.
               resolve();
             });
           } else {
+            callback({ type: 'uploadInterrupted', file, error });
             reject(error)
           }
         }.bind(this));
