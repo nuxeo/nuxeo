@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHomePage;
+import org.nuxeo.functionaltests.explorer.pages.DistributionUpdatePage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.UploadFragment;
 
@@ -96,6 +97,7 @@ public class ITExplorerAdminSiteModeTest extends AbstractExplorerSiteModeTest {
     @Test
     public void testSampleDistribImport() throws IOException {
         String newDistribName = "apidoc-site-mode-newer";
+        String newerDistribName = newDistribName + "-updated";
         try {
             File file = createSampleZip(true);
             String newVersion = "2.0.0";
@@ -106,9 +108,32 @@ public class ITExplorerAdminSiteModeTest extends AbstractExplorerSiteModeTest {
             String newDistribId = getDistribId(newDistribName, newVersion);
             asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
             checkDistrib(newDistribId, true, SAMPLE_BUNDLE_GROUP, true);
+
+            // edit persisted distrib
+            open(DistribAdminPage.UPDATE_URL + newDistribId);
+            DistributionUpdatePage upage = asPage(DistributionUpdatePage.class);
+            upage.check();
+
+            String newerDistribId = getDistribId(newerDistribName, newVersion);
+            upage.updateString(upage.name, newerDistribName);
+            upage.updateString(upage.key, newerDistribId);
+            upage.updateString(upage.aliases, "alias");
+            upage.submit();
+
+            DistribAdminPage adminPage = asPage(DistribAdminPage.class);
+            adminPage.checkSuccessMessage("Update Done.");
+            adminPage.checkPersistedDistrib(newerDistribId);
+
+            open(ExplorerHomePage.URL);
+            asPage(ExplorerHomePage.class).checkPersistedDistrib(newerDistribId);
+            open(String.format("%s%s/", ExplorerHomePage.URL, newerDistribId));
+            asPage(DistributionHomePage.class).checkHeader(newerDistribId);
+            open(String.format("%s%s/", ExplorerHomePage.URL, "alias"));
+            asPage(DistributionHomePage.class).checkHeader(newerDistribId);
         } finally {
             // avoid conflict with testSample
             cleanupPersistedDistribution(newDistribName);
+            cleanupPersistedDistribution(newerDistribName);
         }
     }
 

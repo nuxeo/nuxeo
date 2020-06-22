@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 
+import org.nuxeo.apidoc.browse.Distribution;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.By;
@@ -42,11 +43,17 @@ import com.google.common.base.Function;
  */
 public class DistribAdminPage extends AbstractExplorerPage {
 
-    public static final String URL = "/site/distribution/_admin";
+    public static final String URL = String.format("%s%s/", ExplorerHomePage.URL, Distribution.VIEW_ADMIN);
+
+    /** @since 11.2 */
+    public static final String UPDATE_URL = String.format("%supdate/", ExplorerHomePage.URL);
 
     @Required
     @FindBy(xpath = "//h1")
     public WebElement distributionsTitle;
+
+    @FindBy(linkText = "UPDATE")
+    public WebElement firstUpdateLink;
 
     @FindBy(linkText = "EXPORT AS ZIP")
     public WebElement firstExportLink;
@@ -104,6 +111,11 @@ public class DistribAdminPage extends AbstractExplorerPage {
             }
         }));
         return export;
+    }
+
+    public DistributionUpdatePage updateFirstPersistedDistrib() {
+        clickOn(firstUpdateLink);
+        return asPage(DistributionUpdatePage.class);
     }
 
     public void checkCanSave() {

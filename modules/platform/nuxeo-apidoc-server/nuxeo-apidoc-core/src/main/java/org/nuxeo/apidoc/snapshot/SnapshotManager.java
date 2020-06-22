@@ -62,6 +62,12 @@ public interface SnapshotManager {
      */
     public static String DISTRIBUTION_ALIAS_LATEST = "latest";
 
+    /** @since 11.2 */
+    public static String DISTRIBUTION_ALIAS_LATEST_LTS = "latestLTS";
+
+    /** @since 11.2 */
+    public static String DISTRIBUTION_ALIAS_LATEST_FT = "latestFT";
+
     public static String PROPERTY_SITE_MODE = "org.nuxeo.apidoc.site.mode";
 
     /**

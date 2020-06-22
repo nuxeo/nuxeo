@@ -140,24 +140,21 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public List<DistributionSnapshot> listPersistentSnapshots(CoreSession session) {
-
         List<DistributionSnapshot> distribs = readPersistentSnapshots(session);
-
         Collections.sort(distribs,
                 reverseOrder(comparing(DistributionSnapshot::getVersion)).thenComparing(DistributionSnapshot::getName));
-
         return distribs;
     }
 
     @Override
     public Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
-
         Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<>();
-
         for (DistributionSnapshot snap : readPersistentSnapshots(session)) {
             persistentSnapshots.put(snap.getKey(), snap);
+            for (String alias : snap.getAliases()) {
+                persistentSnapshots.put(alias, snap);
+            }
         }
-
         return persistentSnapshots;
     }
 

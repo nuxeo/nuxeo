@@ -18,18 +18,25 @@
  */
 package org.nuxeo.functionaltests.explorer.nomode;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
+import org.nuxeo.functionaltests.explorer.pages.DistributionHomePage;
+import org.nuxeo.functionaltests.explorer.pages.DistributionUpdatePage;
 import org.nuxeo.functionaltests.explorer.pages.ExplorerHomePage;
 import org.nuxeo.functionaltests.explorer.pages.UploadFragment;
 import org.nuxeo.functionaltests.explorer.testing.AbstractExplorerDownloadTest;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 
 /**
  * Test Explorer pages usually handled by admins.
@@ -172,6 +179,74 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
         String newDistribId = getDistribId(newDistribName, newVersion);
         asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
         checkDistrib(newDistribId, true, SAMPLE_BUNDLE_GROUP, true);
+
+        // edit persisted distrib
+        open(DistribAdminPage.UPDATE_URL + newDistribId);
+        DistributionUpdatePage upage = asPage(DistributionUpdatePage.class);
+        upage.check();
+        upage.checkStringValue(newDistribName, upage.title);
+        upage.checkStringValue(newDistribName, upage.name);
+        upage.checkStringValue(newVersion, upage.version);
+        upage.checkStringValue(newDistribId, upage.key);
+        upage.checkStringValue(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), upage.released);
+        upage.checkStringValue("", upage.aliases);
+        upage.checkCheckBoxValue(false, upage.latestLTS);
+        upage.checkCheckBoxValue(false, upage.latestFT);
+        upage.checkCheckBoxValue(false, upage.hidden);
+
+        // check validation
+        upage.updateString(upage.name, "");
+        upage.submit();
+        upage = asPage(DistributionUpdatePage.class);
+        upage.checkErrorMessage("Constraint violation thrown: 'Please fill all required fields.'");
+
+        String newerDistribName = "apidoc-imported-updated";
+        String newerVersion = "2.1.0";
+        String newerDistribId = getDistribId(newerDistribName, newerVersion);
+        String alias1 = "alias1";
+        String alias2 = "alias2";
+
+        upage.updateString(upage.name, newerDistribName);
+        upage.updateString(upage.version, newerVersion);
+        upage.updateString(upage.key, newerDistribId);
+        upage.updateString(upage.aliases, alias1 + "\n" + alias2);
+        upage.submit();
+
+        DistribAdminPage adminPage = asPage(DistribAdminPage.class);
+        adminPage.checkSuccessMessage("Update Done.");
+        adminPage.checkPersistedDistrib(newerDistribId);
+
+        open(ExplorerHomePage.URL);
+        asPage(ExplorerHomePage.class).checkPersistedDistrib(newerDistribId);
+
+        // check aliases
+        open(String.format("%s%s/", ExplorerHomePage.URL, alias1));
+        asPage(DistributionHomePage.class).checkHeader(newerDistribId);
+        open(String.format("%s%s/", ExplorerHomePage.URL, alias2));
+        asPage(DistributionHomePage.class).checkHeader(newerDistribId);
+
+        // check hiding distrib
+        open(DistribAdminPage.UPDATE_URL + newerDistribId);
+        upage = asPage(DistributionUpdatePage.class);
+        upage.checkCheckBoxValue(false, upage.hidden);
+        upage.updateCheckBox(upage.hidden, true);
+        upage.submit();
+
+        adminPage = asPage(DistribAdminPage.class);
+        adminPage.checkSuccessMessage("Update Done.");
+        adminPage.checkPersistedDistrib(newerDistribId);
+        open(ExplorerHomePage.URL);
+        try {
+            asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
+            fail("Distrib should not be visible anymore from home page");
+        } catch (NoSuchElementException e) {
+            // ok
+        }
+        // check we can still navigate to it
+        open(String.format("%s%s/", ExplorerHomePage.URL, newerDistribId));
+        asPage(DistributionHomePage.class).checkHeader(newerDistribId);
+        open(String.format("%s%s/", ExplorerHomePage.URL, alias1));
+        asPage(DistributionHomePage.class).checkHeader(newerDistribId);
     }
 
 }

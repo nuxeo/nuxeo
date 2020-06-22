@@ -74,6 +74,16 @@
             <@googleSearchFrame This.searchCriterion />
           </@block>
         </#if>
+        <#if successFeedbackMessage??>
+          <div id="successMessage" class="message success">
+            ${successFeedbackMessage?html}
+          </div>
+        </#if>
+        <#if errorFeedbackMessage??>
+          <div id="errorMessage" class="message error">
+            ${errorFeedbackMessage?html}
+          </div>
+        </#if>
         <@block name="right">
           Content
         </@block>

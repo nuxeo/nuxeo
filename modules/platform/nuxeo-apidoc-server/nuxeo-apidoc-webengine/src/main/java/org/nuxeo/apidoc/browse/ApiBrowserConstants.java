@@ -72,6 +72,12 @@ public class ApiBrowserConstants {
 
     public static final String VIEW_DOCUMENTATION = "documentation";
 
+    /** @since 11.2 */
+    public static final String SUCCESS_FEEBACK_MESSAGE_VARIABLE = "successFeedbackMessage";
+
+    /** @since 11.2 */
+    public static final String ERROR_FEEBACK_MESSAGE_VARIABLE = "errorFeedbackMessage";
+
     public static final boolean check(String url, String view) {
         return url.contains("/" + view);
     }

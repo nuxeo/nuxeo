@@ -5,7 +5,7 @@
 <@block name="right">
 
   <h1>Distribution Snapshot persistence failed</h1>
-  <div id="details">
+  <div id="details" class="message error">
     Details: ${message}
   </div>
   <div>

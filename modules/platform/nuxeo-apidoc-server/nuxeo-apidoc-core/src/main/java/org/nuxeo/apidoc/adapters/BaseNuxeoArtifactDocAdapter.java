@@ -42,7 +42,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     private static final Logger log = LogManager.getLogger(BaseNuxeoArtifactDocAdapter.class);
 
-    protected final DocumentModel doc;
+    protected DocumentModel doc;
 
     protected static final ThreadLocal<CoreSession> localCoreSession = new ThreadLocal<>();
 
