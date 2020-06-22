@@ -141,6 +141,7 @@ limitations under the License.
 
     S3Provider.prototype.upload = function(files, callback) {
       this._ensureBatch().then(function() {
+        callback({ type: 'batchStart', batchId: this.batchId });
         if ((new Date()).getTime() >= this.extraInfo.expiration) {
           this._refreshBatchInfo();
         }
