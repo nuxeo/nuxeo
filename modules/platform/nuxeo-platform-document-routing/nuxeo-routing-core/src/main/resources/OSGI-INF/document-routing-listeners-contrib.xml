@@ -52,6 +52,11 @@
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRouteDeletedListener">
       <event>documentRemoved</event>
     </listener>
+    
+    <listener name="removeDocumentRoutesForDeletedDocument" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRouteOrphanedListener">
+      <event>documentRemoved</event>
+    </listener>
 
   </extension>
 
