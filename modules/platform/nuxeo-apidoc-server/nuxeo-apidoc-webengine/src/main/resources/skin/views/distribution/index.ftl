@@ -124,6 +124,13 @@
     </form>
   </div>
 </#if>
+<#if Root.showManageDistributions()>
+  <div class="fullspace center">
+    <a class="button primary" href="${Root.path}/_admin">
+      Manage Distributions
+    </a>
+  </div>
+</#if>
 
 </div>
 

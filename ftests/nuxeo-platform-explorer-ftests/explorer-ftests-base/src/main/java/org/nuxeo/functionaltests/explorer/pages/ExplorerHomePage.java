@@ -19,6 +19,7 @@
 package org.nuxeo.functionaltests.explorer.pages;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
@@ -61,6 +62,9 @@ public class ExplorerHomePage extends AbstractExplorerPage {
     @FindBy(linkText = "Browse Services")
     public WebElement firstServices;
 
+    @FindBy(linkText = "MANAGE DISTRIBUTIONS")
+    public WebElement manageDistribs;
+
     public ExplorerHomePage(WebDriver driver) {
         super(driver);
     }
@@ -100,6 +104,10 @@ public class ExplorerHomePage extends AbstractExplorerPage {
         } catch (NoSuchElementException e) {
             // ok
         }
+    }
+
+    public void checkManageLink() {
+        assertTrue(manageDistribs.isEnabled());
     }
 
 }

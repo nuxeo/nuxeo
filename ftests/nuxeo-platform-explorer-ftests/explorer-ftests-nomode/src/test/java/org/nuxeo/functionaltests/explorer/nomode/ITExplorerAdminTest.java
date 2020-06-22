@@ -64,6 +64,8 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
 
     @Test
     public void testDistribAdminPage() {
+        open(ExplorerHomePage.URL);
+        asPage(ExplorerHomePage.class).checkManageLink();
         open(DistribAdminPage.URL);
         DistribAdminPage page = asPage(DistribAdminPage.class);
         page.check();

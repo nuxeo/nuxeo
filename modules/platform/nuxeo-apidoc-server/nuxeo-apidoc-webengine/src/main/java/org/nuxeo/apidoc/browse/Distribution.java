@@ -562,6 +562,15 @@ public class Distribution extends ModuleRoot {
     }
 
     /**
+     * Returns true if current user can manage ditributions.
+     *
+     * @since 11.2
+     */
+    public boolean showManageDistributions() {
+        return canImportOrExportDistributions();
+    }
+
+    /**
      * Returns true if the current {@link RuntimeSnapshot} can be seen by user.
      *
      * @since 11.2
