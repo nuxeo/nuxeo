@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent">
+  <documentation>
+    <p>
+      This component handles the introspection of the current live Runtime as a distribution.
+    </p>
+    <p>
+      It can also persist this introspection as Nuxeo documents, to handle import and export of external distributions.
+    </p>
+  </documentation>
+  <implementation class="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" />
+
+  <service>
+    <provide interface="org.nuxeo.apidoc.snapshot.SnapshotManager" />
+    <provide interface="org.nuxeo.apidoc.search.ArtifactSearcher" />
+  </service>
+
+  <extension-point name="plugins">
+    <documentation>
+      <p>
+        A plugin can introspect and persist information related to the current runtime environment.
+      </p>
+      <p>
+        Sample contribution:
+        <code>
+          <extension target="org.nuxeo.apidoc.snapshot.SnapshotManagerComponent" point="plugins">
+            <plugin id="seam" class="org.nuxeo.apidoc.seam.plugin.SeamPlugin"
+              snapshotClass="org.nuxeo.apidoc.seam.introspection.SeamRuntimeSnapshot">
+              <ui>
+                <label>Seam Components</label>
+                <viewType>seam</viewType>
+                <homeView>listSeamComponents</homeView>
+                <styleClass>seam</styleClass>
+              </ui>
+            </plugin>
+          </extension>
+        </code>
+      </p>
+      <p>
+        The class should implement the
+        <b>org.nuxeo.apidoc.plugin.Plugin</b>
+        interface.
+      </p>
+      <p>
+        UI elements are used for rendering on webengine pages. The view type should match a webengine resource type,
+        and
+        the module holding this resource should be contributed to the main webengine module as a fragment using:
+        <code>
+          Fragment-Host: org.nuxeo.apidoc.webengine
+        </code>
+      </p>
+    </documentation>
+    <object class="org.nuxeo.apidoc.plugin.PluginDescriptor" />
+  </extension-point>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      URL base for Javadoc Links.
+    </documentation>
+    <property name="org.nuxeo.apidoc.javadoc.url">
+      https://community.nuxeo.com/api/
+    </property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      URL base for Connect Links (for Marketplace Packages).
+    </documentation>
+    <property name="org.nuxeo.apidoc.connect.url">
+      https://connect.nuxeo.com/nuxeo/site/
+    </property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Default groups for application managers and readers.
+    </documentation>
+    <property name="org.nuxeo.apidoc.apidocmanagers.group">
+      ApidocManagers
+    </property>
+    <property name="org.nuxeo.apidoc.apidocreaders.group">
+      Everyone
+    </property>
+  </extension>
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Properties controlling sensitive configuration exposure, when extracted from runtime contributions by
+      explorer logics.
+
+      @since 11.2
+    </documentation>
+    <property name="org.nuxeo.apidoc.secure.xml.keywords">
+      password, Password, secret, apiKey
+    </property>
+    <property name="org.nuxeo.apidoc.secure.xml.keywords.whitelisted">
+      passwordField, passwordHashAlgorithm
+    </property>
+  </extension>
+
+</component>
