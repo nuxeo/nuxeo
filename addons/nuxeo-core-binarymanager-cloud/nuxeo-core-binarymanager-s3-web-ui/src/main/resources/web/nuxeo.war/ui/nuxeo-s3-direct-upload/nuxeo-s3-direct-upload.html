@@ -44,6 +44,25 @@ limitations under the License.
       return _resource;
     }
 
+    S3Provider.prototype._startKeepAlive = function() {
+      this._keepAlive = setInterval(function() {
+        var done = this.files.every(function(f) { return f.complete || f.error; });
+        if (done) {
+          this._stopKeepAlive();
+          return;
+        }
+        this._resource(['upload', this.batchId].join('/')).get();
+      }.bind(this), 60000);
+    }
+
+    S3Provider.prototype._stopKeepAlive = function() {
+      if (this._keepAlive) {
+        clearInterval(this._keepAlive);
+        this._keepAlive = null;
+      }
+    }
+
+
     S3Provider.prototype._upload = function(file, callback) {
       return new Promise(function(resolve, reject) {
         callback({ type: 'uploadStarted', file });
@@ -52,18 +71,13 @@ limitations under the License.
           ContentType: file.type,
           Body: file
         });
-        this._keepAlive = setInterval(function() {
-          this._resource(['upload', this.batchId].join('/')).get();
-        }.bind(this), 60000);
+        this._startKeepAlive();
         file.managedUpload.on('httpUploadProgress', function(evt) {
           if (typeof callback === 'function') {
             callback({ type: 'uploadProgress', fileIdx: file.index, progress: (evt.loaded / evt.total) * 100 });
           }
         }.bind(this)).send(function(error, data) {
-          if (this._keepAlive) {
-            clearInterval(this._keepAlive);
-            this._keepAlive = null;
-          }
+          this._stopKeepAlive();
           if (error === null) {
             file.managedUpload = null;
             this._resource(['upload', this.batchId, file.index, 'complete'].join('/'), {
