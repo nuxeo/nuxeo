@@ -15,6 +15,7 @@ Setup a Basic Auth plugin for /automation paths that will always send 401 on aut
         <parameter name="RealmName">Nuxeo Automation</parameter>
         <parameter name="ExcludeBAHeader_Token">X-Authentication-Token</parameter>
         <parameter name="ExcludeBAHeader_Token">X-No-Basic-Header</parameter>
+        <parameter name="ExcludeBAHeader_COOKIE">Cookie</parameter>
       </parameters>
     </authenticationPlugin>
   </extension>
