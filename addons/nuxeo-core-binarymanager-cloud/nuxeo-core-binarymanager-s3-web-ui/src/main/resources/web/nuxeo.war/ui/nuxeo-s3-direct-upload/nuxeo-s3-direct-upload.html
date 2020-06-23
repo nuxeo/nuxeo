@@ -142,18 +142,23 @@ limitations under the License.
       }.bind(this));
     };
 
+    S3Provider.prototype.hasAbort = function() {
+      return true;
+    };
+
     S3Provider.prototype.hasProgress = function() {
       return true;
     };
 
+    S3Provider.prototype.abort = function(file) {
+      if (file.managedUpload) {
+        file.managedUpload.abort();
+      }
+    }
+
     S3Provider.prototype.cancelBatch = function() {
       if (this.uploader) {
-        for (var i = 0; i < this.files.length; ++i) {
-          var file = this.files[i];
-          if (file.managedUpload) {
-            file.managedUpload.abort();
-          }
-        }
+        this.files.forEach(this.abort);
       }
       this.uploader = null;
       this.batchId = null;
