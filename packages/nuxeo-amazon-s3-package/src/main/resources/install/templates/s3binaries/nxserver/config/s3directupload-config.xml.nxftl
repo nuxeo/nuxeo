@@ -10,8 +10,8 @@
       <property name="keyValueStore">s3DirectUploadKeyValueStore</property> <!-- not defined there, fallback on default -->
       <targetMaxSizeMB>${nuxeo.s3storage.transient.targetMaxSizeMB}</targetMaxSizeMB>
       <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
-      <firstLevelTTL>120</firstLevelTTL>
-      <secondLevelTTL>10</secondLevelTTL>
+      <firstLevelTTL>${nuxeo.s3storage.transient.ttl}</firstLevelTTL>
+      <secondLevelTTL>${nuxeo.s3storage.transient.ttl2}</secondLevelTTL>
     </store>
   </extension>
 

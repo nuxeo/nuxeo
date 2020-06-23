@@ -36,6 +36,8 @@ nuxeo.s3storage.useDirectUpload=false
 nuxeo.s3storage.transient.bucket=
 nuxeo.s3storage.transient.roleArn=
 nuxeo.s3storage.transient.targetMaxSizeMB=100
+nuxeo.s3storage.transient.ttl=4320
+nuxeo.s3storage.transient.ttl2=10
 
 # usually taken from system environement
 nuxeo.s3storage.transient.awsid=
