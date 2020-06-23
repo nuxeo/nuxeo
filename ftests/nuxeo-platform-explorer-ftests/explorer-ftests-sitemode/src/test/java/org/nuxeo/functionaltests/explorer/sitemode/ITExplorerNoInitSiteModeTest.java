@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests.explorer.sitemode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.RestHelper;
@@ -58,6 +59,8 @@ public class ITExplorerNoInitSiteModeTest extends AbstractExplorerTest {
         openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT), true);
         openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_LATEST), true);
         openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, "foo-10.10"), true);
+        openAndCheck(String.format("%s%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.LIST_COMPONENTS, "foo-10.10"),
+                true);
         checkLiveJson(true);
     }
 

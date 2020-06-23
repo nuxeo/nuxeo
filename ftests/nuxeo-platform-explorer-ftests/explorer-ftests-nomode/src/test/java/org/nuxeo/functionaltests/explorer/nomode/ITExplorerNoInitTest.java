@@ -20,6 +20,7 @@ package org.nuxeo.functionaltests.explorer.nomode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.apidoc.browse.ApiBrowserConstants;
 import org.nuxeo.apidoc.security.SecurityHelper;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.RestHelper;
@@ -59,10 +60,13 @@ public class ITExplorerNoInitTest extends AbstractExplorerTest {
             home.checkNoDistrib();
         }
         openAndCheck(LiveSimplePage.URL, !isAdmin);
-        openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT), !isAdmin);
+        openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT),
+                !isAdmin);
         // no latest distrib if not using "nuxeo platform" title
         openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, SnapshotManager.DISTRIBUTION_ALIAS_LATEST), true);
         openAndCheck(String.format("%s%s/", ExplorerHomePage.URL, "foo-10.10"), true);
+        openAndCheck(String.format("%s%s/%s", ExplorerHomePage.URL, ApiBrowserConstants.LIST_COMPONENTS, "foo-10.10"),
+                true);
         checkLiveJson(!isAdmin);
     }
 
