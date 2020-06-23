@@ -203,29 +203,23 @@ public class SecureXMLHelper {
     }
 
     protected static void replaceTagContent(XMLEventReader reader, XMLEventWriter writer) throws XMLStreamException {
-        String data = "";
         String comments = "";
         XMLEvent peek = reader.peek();
         while (peek != null
                 && (XMLEvent.CHARACTERS == peek.getEventType() || XMLEvent.COMMENT == peek.getEventType())) {
             XMLEvent nextEvent = reader.nextEvent();
-            if (XMLEvent.CHARACTERS == nextEvent.getEventType()) {
-                data += nextEvent.asCharacters().getData();
-            }
             if (XMLEvent.COMMENT == nextEvent.getEventType()) {
                 String c = nextEvent.toString();
                 comments += c.substring(4, c.length() - 3);
             }
             peek = reader.peek();
         }
-        if (StringUtils.isNotBlank(data) || StringUtils.isNotBlank(comments)) {
-            if (StringUtils.isNotBlank(comments)) {
-                writer.add(EVENT_FACTORY.createCharacters("\n  "));
-                writer.add(EVENT_FACTORY.createComment(comments));
-                writer.add(EVENT_FACTORY.createCharacters("\n  " + SECRET_VALUE + "\n"));
-            } else {
-                writer.add(EVENT_FACTORY.createCharacters(SECRET_VALUE));
-            }
+        if (StringUtils.isNotBlank(comments)) {
+            writer.add(EVENT_FACTORY.createCharacters("\n  "));
+            writer.add(EVENT_FACTORY.createComment(comments));
+            writer.add(EVENT_FACTORY.createCharacters("\n  " + SECRET_VALUE + "\n"));
+        } else {
+            writer.add(EVENT_FACTORY.createCharacters(SECRET_VALUE));
         }
     }
 

@@ -122,7 +122,7 @@ public class TestSecureXML {
     @Test
     public void testSecureXMLAttribute3() throws Exception {
         String xml = "<prop password=\"password\" foo=\"bar\" />";
-        checkStAX("<prop password=\"********\" foo=\"bar\"></prop>", xml);
+        checkStAX("<prop password=\"********\" foo=\"bar\">********</prop>", xml);
         checkRegexp("<prop password=\"********\" foo=\"bar\" />", xml);
     }
 
@@ -176,7 +176,7 @@ public class TestSecureXML {
     @Test
     public void testSecureXMLEndAttribute3() throws Exception {
         String xml = "<prop passwordExample=\"password\" foo=\"bar\" />";
-        checkStAX("<prop foo=\"bar\" passwordExample=\"********\"></prop>", xml);
+        checkStAX("<prop foo=\"bar\" passwordExample=\"********\">********</prop>", xml);
         checkRegexp("<prop passwordExample=\"********\" foo=\"bar\" />", xml);
     }
 
@@ -200,7 +200,7 @@ public class TestSecureXML {
     @Test
     public void testSecureXMLWhitelistedAttribute3() throws Exception {
         String xml = "<prop passwordField=\"password\" foo=\"bar\"/>";
-        checkStAX("<prop foo=\"********\" passwordField=\"password\"></prop>", xml);
+        checkStAX("<prop foo=\"********\" passwordField=\"password\">********</prop>", xml);
         checkRegexp("<prop passwordField=\"password\" foo=\"bar\"/>", xml);
     }
 
@@ -225,11 +225,11 @@ public class TestSecureXML {
                 + "  <!-- password3 -->\n" //
                 + "  ********\n" //
                 + "</password3>\n" //
-                + "<password4></password4>\n" //
+                + "<password4>********</password4>\n" //
                 + "<prop5 name=\"password\">********</prop5>\n" //
                 + "<prop6 name=\"password\">********</prop6>\n" //
-                + "<prop7 name=\"password\" value=\"********\"></prop7>\n" //
-                + "<prop8 name=\"password\" value=\"********\"></prop8>\n" //
+                + "<prop7 name=\"password\" value=\"********\">********</prop7>\n" //
+                + "<prop8 name=\"password\" value=\"********\">********</prop8>\n" //
                 + "</root>", xml);
         checkRegexp("<root>\n" //
                 + "<password1>********</password1>\n" //
@@ -267,8 +267,8 @@ public class TestSecureXML {
         String expected = "<root>\n" //
                 + "<password>********</password>\n" //
                 + " <myPassword>********</myPassword>\n" //
-                + " <yo password=\"********\" other=\"bla\"></yo>\n" //
-                + " <yo other=\"bla\" otherPassword=\"********\"></yo>\n" //
+                + " <yo password=\"********\" other=\"bla\">********</yo>\n" //
+                + " <yo other=\"bla\" otherPassword=\"********\">********</yo>\n" //
                 + " <prop name=\"password\">********</prop>\n" //
                 + " <prop name=\"realPassword\">********</prop>\n" //
                 + " <prop name=\"realPassword\">********</prop>\n" //
