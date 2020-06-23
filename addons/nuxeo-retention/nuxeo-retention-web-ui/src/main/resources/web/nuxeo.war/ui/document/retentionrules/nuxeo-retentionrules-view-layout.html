@@ -93,6 +93,18 @@ limitations under the License.
             <a class="title ellipsis" href$="[[urlFor('browse', item.path)]]" on-tap="_navigate">[[item.title]]</a>
           </template>
         </nuxeo-data-table-column>
+        <nuxeo-data-table-column name="[[i18n('retention.rule.label.applicationPolicy.docTypes')]]"
+                                 field="retention_rule:docTypes"
+                                 sort-by="[[_displaySort(document, 'retention_rule:docTypes')]]"
+                                 flex="50">
+          <template>
+            <template is="dom-repeat" items="[[item.properties.retention_rule:docTypes]]" as="docType">
+              <nuxeo-tag>
+                [[docType]]
+              </nuxeo-tag>
+            </template>
+          </template>
+        </nuxeo-data-table-column>
         <nuxeo-data-table-column name="[[i18n('documentContentView.datatable.header.modified')]]"
                                  field="dc:modified"
                                  hidden
