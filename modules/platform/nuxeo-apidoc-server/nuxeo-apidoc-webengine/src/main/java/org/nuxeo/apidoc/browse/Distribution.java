@@ -214,7 +214,9 @@ public class Distribution extends ModuleRoot {
     @Path(SnapshotManager.DISTRIBUTION_ALIAS_LATEST)
     public Resource getLatest() {
         return listPersistedDistributions().stream()
-                                           .filter(snap -> snap.getName().toLowerCase().startsWith("nuxeo platform"))
+                                           .filter(snap -> snap.getName().toLowerCase().startsWith("nuxeo platform")
+                                                   || snap.getAliases()
+                                                          .contains(SnapshotManager.DISTRIBUTION_ALIAS_LATEST))
                                            .findFirst()
                                            .map(distribution -> ctx.newObject(RedirectResource.TYPE,
                                                    SnapshotManager.DISTRIBUTION_ALIAS_LATEST, distribution.getKey()))
@@ -296,7 +298,7 @@ public class Distribution extends ModuleRoot {
             }
             log.info(String.format("Comparing version using String between %s - %s", o1.getVersion(), o2.getVersion()));
             return o2.getVersion().compareTo(o1.getVersion());
-        }).filter(s -> !s.isHidden()).collect(Collectors.toList());
+        }).collect(Collectors.toList());
     }
 
     public Map<String, DistributionSnapshot> getPersistedDistributions() {
@@ -473,7 +475,6 @@ public class Distribution extends ModuleRoot {
 
         try {
             getSnapshotManager().importSnapshot(getContext().getCoreSession(), blob.getStream());
-            getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
         } catch (IOException | IllegalArgumentException | NuxeoException e) {
             return getView("importKO").arg("message", e.getMessage()).arg("source", source);
         }
@@ -529,7 +530,6 @@ public class Distribution extends ModuleRoot {
         try {
             getSnapshotManager().validateImportedSnapshot(getContext().getCoreSession(), name, version, pathSegment,
                     title);
-            getSnapshotManager().readPersistentSnapshots(getContext().getCoreSession());
             view = getView("importDone");
         } catch (IllegalArgumentException | NuxeoException e) {
             view = getView("importKO").arg("message", e.getMessage());

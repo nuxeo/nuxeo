@@ -126,11 +126,14 @@
         <td>${distrib.creationDate?datetime}</td>
         <td>${distrib.releaseDate?datetime}</td>
         <td>
-          <#if distrib.latestFT >
+          <#if distrib.latestFT>
             <span class="sticker current">Latest FT</span>
           </#if>
-          <#if distrib.latestLTS >
+          <#if distrib.latestLTS>
             <span class="sticker current">Latest LTS</span>
+          </#if>
+          <#if distrib.hidden>
+            <span class="sticker current">Hidden</span>
           </#if>
         </td>
         <td>
