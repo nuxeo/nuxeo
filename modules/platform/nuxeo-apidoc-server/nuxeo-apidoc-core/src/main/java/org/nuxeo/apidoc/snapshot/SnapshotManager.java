@@ -85,8 +85,6 @@ public interface SnapshotManager {
      */
     DistributionSnapshot getRuntimeSnapshot();
 
-    void addPersistentSnapshot(String key, DistributionSnapshot snapshot);
-
     /**
      * Returns the distribution with given key or alias.
      * <p>
@@ -97,14 +95,32 @@ public interface SnapshotManager {
      */
     DistributionSnapshot getSnapshot(String key, CoreSession session);
 
-    List<DistributionSnapshot> readPersistentSnapshots(CoreSession session);
-
+    /**
+     * Returns all persistent distributions, sorted.
+     * <p>
+     * Hidden distributions are included.
+     * <p>
+     * Trashed distributions are not included.
+     */
     List<DistributionSnapshot> listPersistentSnapshots(CoreSession session);
 
+    /**
+     * Returns all persistent distributions, including aliases as keys.
+     * <p>
+     * Hidden distributions are included.
+     * <p>
+     * Trashed distributions are not included.
+     */
     Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session);
 
-    List<String> getPersistentSnapshotNames(CoreSession session);
-
+    /**
+     * Returns available distributions, for user display.
+     * <p>
+     * Hidden distributions are not included.
+     * <p>
+     * Live distribution may be included, see
+     * {@link SecurityHelper#canSnapshotLiveDistribution(org.nuxeo.ecm.core.api.NuxeoPrincipal)}
+     */
     List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session);
 
     List<String> getAvailableVersions(CoreSession session, NuxeoArtifact nxItem);

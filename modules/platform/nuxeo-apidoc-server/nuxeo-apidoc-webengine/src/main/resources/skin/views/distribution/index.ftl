@@ -37,52 +37,28 @@
 <div>
 
   <ul class="timeline">
-  <#if Root.showRuntimeSnapshot()>
-    <#assign rtSnap=Root.runtimeDistribution/>
-    <li>
+  <#list Root.getAvailableDistributions() as distrib>
+    <li class="${distrib.live?then('persistedDistrib', '')}">
       <time class="time" datetime="2013-04-10 18:30">
-        <span class="date">${rtSnap.creationDate?date}</span>
-        <span class="sticker current">Running Platform</span>
-      </time>
-      <div class="timepoint"></div>
-      <div class="timebox">
-        <div class="box-title">
-          <div>
-            <a class="currentDistrib" href="${Root.path}/current/">
-              <span class="number">${rtSnap.name}</span>
-              <span class="detail">${rtSnap.version}</span>
-            </a>
-          </div>
-        </div>
-        <div class="flex-ctn">
-          <div>
-            <a class="extensions" href="${Root.path}/current/listExtensionPoints">Contribute to an Extension</a>
-          </div>
-          <div><a class="contributions" href="${Root.path}/current/listContributions">Override a Contribution</a></div>
-          <div><a class="operations" href="${Root.path}/current/listOperations">Search Operations</a></div>
-          <div><a class="services" href="${Root.path}/current/listServices">Browse Services</a></div>
-        </div>
-      </div>
-    </li>
-  </#if>
-
-  <#list Root.listPersistedDistributions() as distrib>
-    <li class="persistedDistrib">
-      <time class="time" datetime="2013-04-10 18:30">
-        <span class="date">${distrib.releaseDate?date}</span>
-        <#if distrib.latestFT >
-          <span class="sticker current">Latest FT</span>
-        <#elseif distrib.latestLTS >
-          <span class="sticker current">Latest LTS</span>
-        <#else>
-          &nbsp;
+        <#if distrib.live>
+          <span class="date">${distrib.creationDate?date}</span>
+          <span class="sticker current">Running Platform</span>
+        </#if>
+        <#if !distrib.live>
+          <span class="date">${distrib.releaseDate?date}</span>
+          <#if distrib.latestFT>
+            <span class="sticker current">Latest FT</span>
+          </#if>
+          <#if distrib.latestLTS>
+            <span class="sticker current">Latest LTS</span>
+          </#if>
         </#if>
       </time>
       <div class="timepoint"></div>
       <div class="timebox">
         <div class="box-title">
           <div>
-            <a class="distrib" href="${Root.path}/${distrib.key}/">
+            <a class="${distrib.live?then('currentDistrib', 'distrib')}" href="${Root.path}/${distrib.live?then('current', distrib.key)}/">
               <span class="number">${distrib.name}</span>
               <span class="detail">${distrib.version}</span>
             </a>
@@ -98,8 +74,6 @@
         </div>
     </li>
   </#list>
-
-
   </ul>
 
 </div>

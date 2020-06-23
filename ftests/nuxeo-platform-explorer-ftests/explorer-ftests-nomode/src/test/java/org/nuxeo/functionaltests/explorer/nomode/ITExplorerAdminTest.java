@@ -242,6 +242,7 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
 
         adminPage = asPage(DistribAdminPage.class);
         adminPage.checkSuccessMessage("Update Done.");
+        adminPage.checkPersistedDistrib(newerDistribId);
         open(ExplorerHomePage.URL);
         try {
             asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);

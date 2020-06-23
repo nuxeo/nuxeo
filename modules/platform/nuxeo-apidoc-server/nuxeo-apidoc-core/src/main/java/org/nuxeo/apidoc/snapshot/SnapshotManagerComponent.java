@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -134,13 +135,8 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     }
 
     @Override
-    public List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
-        return RepositoryDistributionSnapshot.readPersistentSnapshots(session);
-    }
-
-    @Override
     public List<DistributionSnapshot> listPersistentSnapshots(CoreSession session) {
-        List<DistributionSnapshot> distribs = readPersistentSnapshots(session);
+        List<DistributionSnapshot> distribs = RepositoryDistributionSnapshot.readPersistentSnapshots(session);
         Collections.sort(distribs,
                 reverseOrder(comparing(DistributionSnapshot::getVersion)).thenComparing(DistributionSnapshot::getName));
         return distribs;
@@ -149,20 +145,13 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     @Override
     public Map<String, DistributionSnapshot> getPersistentSnapshots(CoreSession session) {
         Map<String, DistributionSnapshot> persistentSnapshots = new HashMap<>();
-        for (DistributionSnapshot snap : readPersistentSnapshots(session)) {
+        for (DistributionSnapshot snap : RepositoryDistributionSnapshot.readPersistentSnapshots(session)) {
             persistentSnapshots.put(snap.getKey(), snap);
             for (String alias : snap.getAliases()) {
                 persistentSnapshots.put(alias, snap);
             }
         }
         return persistentSnapshots;
-    }
-
-    @Override
-    public List<String> getPersistentSnapshotNames(CoreSession session) {
-        List<String> names = new ArrayList<>();
-        names.addAll(getPersistentSnapshots(session).keySet());
-        return names;
     }
 
     protected boolean canSeeRuntimeSnapshot(CoreSession session) {
@@ -174,12 +163,14 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public List<DistributionSnapshotDesc> getAvailableDistributions(CoreSession session) {
-        List<DistributionSnapshotDesc> names = new ArrayList<>();
-        names.addAll(getPersistentSnapshots(session).values());
+        List<DistributionSnapshotDesc> distribs = RepositoryDistributionSnapshot.readPersistentSnapshots(session)
+                                                                                .stream()
+                                                                                .filter(snap -> !snap.isHidden())
+                                                                                .collect(Collectors.toList());
         if (canSeeRuntimeSnapshot(session)) {
-            names.add(0, getRuntimeSnapshot());
+            distribs.add(0, getRuntimeSnapshot());
         }
-        return names;
+        return distribs;
     }
 
     @Override
@@ -200,9 +191,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
             throw new RuntimeServiceException("Live runtime cannot be snapshotted.");
         }
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter, properties, getPlugins());
-        addPersistentSnapshot(snap.getKey(), snap);
-        return snap;
+        return persister.persist(liveSnapshot, session, name, filter, properties, getPlugins());
     }
 
     @Override
@@ -369,11 +358,6 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
         } catch (RuntimeServiceException e) {
             log.warn("Illegal access to runtime snapshot", e);
         }
-    }
-
-    @Override
-    public void addPersistentSnapshot(String key, DistributionSnapshot snapshot) {
-        // NOP
     }
 
     /**
