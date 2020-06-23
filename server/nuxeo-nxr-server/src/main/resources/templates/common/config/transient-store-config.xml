@@ -7,8 +7,8 @@
     <store name="default" class="org.nuxeo.ecm.core.transientstore.keyvalueblob.KeyValueBlobTransientStore">
       <targetMaxSizeMB>-1</targetMaxSizeMB>
       <absoluteMaxSizeMB>-1</absoluteMaxSizeMB>
-      <firstLevelTTL>240</firstLevelTTL>
-      <secondLevelTTL>10</secondLevelTTL>
+      <firstLevelTTL>${nuxeo.transientstore.ttl}</firstLevelTTL>
+      <secondLevelTTL>${nuxeo.transientstore.ttl2}</secondLevelTTL>
     </store>
 
     <store name="authorizationRequestStore">
