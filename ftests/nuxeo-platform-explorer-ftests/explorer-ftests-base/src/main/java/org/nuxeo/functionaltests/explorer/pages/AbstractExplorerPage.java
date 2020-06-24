@@ -33,10 +33,14 @@ import org.nuxeo.functionaltests.RestHelper;
 import org.nuxeo.functionaltests.pages.AbstractPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.NotFoundException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.FluentWait;
+
+import com.google.common.base.Function;
 
 /**
  * @since 11.1
@@ -56,7 +60,18 @@ public abstract class AbstractExplorerPage extends AbstractPage {
     }
 
     public void clickOn(WebElement element) {
-        Locator.waitUntilEnabled(element);
+        FluentWait<WebDriver> wait = Locator.getFluentWait();
+        wait.ignoring(NoSuchElementException.class);
+        try {
+            wait.until(new Function<WebDriver, Boolean>() {
+                @Override
+                public Boolean apply(WebDriver driver) {
+                    return element.isEnabled();
+                }
+            });
+        } catch (TimeoutException e) {
+            throw new NotFoundException("Element not enabled after timeout: " + element);
+        }
         Locator.scrollAndForceClick(element);
     }
 
