@@ -68,6 +68,16 @@ class MarkLogicQuerySimpleBuilder {
         return this;
     }
 
+    /**
+     * @since 10.10-HF29
+     */
+    public MarkLogicQuerySimpleBuilder in(String key, Collection<?> values) {
+        if (!values.isEmpty()) {
+            queries.add(elementValueQuery(key, values.toArray()));
+        }
+        return this;
+    }
+
     public MarkLogicQuerySimpleBuilder notIn(String key, Collection<?> values) {
         if (!values.isEmpty()) {
             String query = elementValueQuery(key, values.toArray());
