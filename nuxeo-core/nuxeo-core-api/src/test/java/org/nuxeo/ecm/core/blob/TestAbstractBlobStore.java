@@ -219,10 +219,24 @@ public abstract class TestAbstractBlobStore {
         assertNoBlob(ID1);
 
         // store blob
-        String key1 = bs.writeBlob(blobContext(ID1, FOO));
+        BlobContext blobContext = blobContext(ID1, FOO);
+        String key1 = bp.writeBlob(blobContext);
         assertKey(ID1, key1);
         // check content
         assertBlob(key1, FOO);
+        // check digest fallback
+        if (useDeDuplication()) {
+            assertEquals(FOO_MD5, blobContext.blob.getDigest());
+        }
+
+        // read blob from provider, with a digest unset in the repository
+        if (useDeDuplication()) {
+            BlobInfo blobInfo = new BlobInfo();
+            blobInfo.key = key1;
+            Blob blob = bp.readBlob(blobInfo);
+            // check digest fallback
+            assertEquals(FOO_MD5, blob.getDigest());
+        }
 
         // replace
         String key2 = bs.writeBlob(blobContext(ID1, BAR));
