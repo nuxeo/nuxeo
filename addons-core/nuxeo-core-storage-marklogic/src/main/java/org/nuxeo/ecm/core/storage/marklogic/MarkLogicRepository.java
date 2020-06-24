@@ -337,6 +337,35 @@ public class MarkLogicRepository extends DBSRepositoryBase {
         }
     }
 
+    /**
+     * @since 10.10-HF29
+     */
+    @Override
+    public List<State> queryKeyValueWithOperator(String key1, Object value1, String key2, DBSQueryOperator operator,
+            Object value2, Set<String> ignored) {
+        if (!(value2 instanceof Collection)) {
+            throw new IllegalArgumentException("The second value should be a Collection");
+        }
+        Collection<?> values2 = (Collection<?>) value2;
+        
+        MarkLogicQuerySimpleBuilder builder = new MarkLogicQuerySimpleBuilder(rangeElementIndexes);
+        builder.eq(key1, value1);
+        switch (operator) {
+            case IN:
+                builder.in(key2, values2);
+                break;
+            case NOT_IN:
+                builder.notIn(key2, values2);
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("Unknown operator: %s", operator));
+        }
+        builder.notIn(KEY_ID, ignored);
+        try (Stream<State> states = findAll(builder.build())) {
+            return states.collect(Collectors.toList());
+        }
+    }
+
     @Override
     public Stream<State> getDescendants(String rootId, Set<String> keys) {
         return getDescendants(rootId, keys, 0);
