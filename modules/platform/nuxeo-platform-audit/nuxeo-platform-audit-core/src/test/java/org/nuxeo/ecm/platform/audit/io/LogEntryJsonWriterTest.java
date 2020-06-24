@@ -18,6 +18,10 @@
  */
 package org.nuxeo.ecm.platform.audit.io;
 
+import static org.nuxeo.common.utils.DateUtils.formatISODateTime;
+
+import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -45,15 +50,15 @@ import org.nuxeo.runtime.test.runner.Features;
 @Deploy("org.nuxeo.ecm.platform.audit.tests:test-pageprovider-contrib.xml")
 public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogEntryJsonWriter, LogEntry> {
 
-    public LogEntryJsonWriterTest() {
-        super(LogEntryJsonWriter.class, LogEntry.class);
-    }
-
     @Inject
     private PageProviderService pps;
 
     @Inject
     private CoreSession session;
+
+    public LogEntryJsonWriterTest() {
+        super(LogEntryJsonWriter.class, LogEntry.class);
+    }
 
     @Test
     public void test() throws Exception {
@@ -112,6 +117,48 @@ public class LogEntryJsonWriterTest extends AbstractJsonWriterTest.External<LogE
         json.has("comment").isNull();
         json.has("docLifeCycle").isNull();
         json.has("extended").properties(1).has("params").isArray().contains("a simple string");
+    }
+
+    @Test
+    public void testMapInExtendedInfo() throws Exception {
+        Map<String, ExtendedInfo> infos = new HashMap<>();
+
+        HashMap<String, Serializable> infoMap = new HashMap<>();
+        infoMap.put("String", "abcde");
+        Date now = new Date();
+        infoMap.put("Date", now);
+        infoMap.put("Boolean", false);
+        infoMap.put("Integer", 1);
+        infoMap.put("Double", 2.0);
+        infoMap.put("Blob", (Serializable) Blobs.createBlob("Some blob"));
+        infos.put("params", ExtendedInfoImpl.createExtendedInfo(infoMap));
+
+        LogEntry logEntry = new LogEntryImpl();
+        logEntry.setExtendedInfos(infos);
+
+        JsonAssert json = jsonAssert(logEntry);
+        json.properties(14);
+        json.has("entity-type").isEquals("logEntry");
+        json.has("id").isEquals(0);
+        json.has("category").isNull();
+        json.has("principalName").isNull();
+        json.has("docPath").isNull();
+        json.has("docType").isNull();
+        json.has("docUUID").isNull();
+        json.has("eventId").isNull();
+        json.has("repositoryId").isNull();
+        json.has("eventDate").isText();
+        json.has("logDate").isText();
+        json.has("comment").isNull();
+        json.has("docLifeCycle").isNull();
+
+        JsonAssert params = json.has("extended").properties(1).has("params").isObject();
+        params.has("String").isEquals("abcde");
+        params.has("Date").isEquals(formatISODateTime(now));
+        params.has("Integer").isEquals(1);
+        params.has("Double").isEquals(2.0, 0.0);
+        params.has("Boolean").isEquals(false);
+        params.hasNot("Blob");
     }
 
 }
