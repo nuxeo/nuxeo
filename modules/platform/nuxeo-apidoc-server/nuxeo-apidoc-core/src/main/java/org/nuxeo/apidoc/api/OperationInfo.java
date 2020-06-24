@@ -25,7 +25,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Information about an operation
+ * Information about an operation.
  */
 public interface OperationInfo extends NuxeoArtifact, Comparable<OperationInfo> {
 
