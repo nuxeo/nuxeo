@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class MarkLogicQuerySimpleBuilder {
 
     public MarkLogicQuerySimpleBuilder eq(String key, Object value) {
         Type type = DBSSession.getType(key);
-        // TODO check if it's enought
+        // TODO check if it's enough
         String k = key;
         if (type instanceof ListType) {
             k += MarkLogicHelper.ARRAY_ITEM_KEY_SUFFIX;

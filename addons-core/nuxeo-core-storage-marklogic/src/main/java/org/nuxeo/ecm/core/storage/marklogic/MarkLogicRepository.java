@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2016-2018 Nuxeo (http://nuxeo.com/) and others.
+ * (C) Copyright 2016-2020 Nuxeo (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -213,8 +213,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             log.trace("MarkLogic: READ " + ids);
         }
         try (Session session = xccContentSource.newSession()) {
-            String query = ids.stream().map(ID_FORMATTER).map(id -> "'" + id + "'").collect(
-                    Collectors.joining(",", "fn:doc((", "))"));
+            String query = ids.stream()
+                              .map(ID_FORMATTER)
+                              .map(id -> "'" + id + "'")
+                              .collect(Collectors.joining(",", "fn:doc((", "))"));
             AdhocQuery request = session.newAdhocQuery(query);
             // ResultSequence will be closed by Session close
             ResultSequence rs = session.submitRequest(request);
@@ -283,8 +285,10 @@ public class MarkLogicRepository extends DBSRepositoryBase {
             log.trace("MarkLogic: DELETE " + ids);
         }
         try (Session session = xccContentSource.newSession()) {
-            String query = ids.stream().map(ID_FORMATTER).map(id -> "'" + id + "'").collect(
-                    Collectors.joining(",", "xdmp:document-delete((", "))"));
+            String query = ids.stream()
+                              .map(ID_FORMATTER)
+                              .map(id -> "'" + id + "'")
+                              .collect(Collectors.joining(",", "xdmp:document-delete((", "))"));
             AdhocQuery request = session.newAdhocQuery(query);
             // ResultSequence will be closed by Session close
             session.submitRequest(request);
