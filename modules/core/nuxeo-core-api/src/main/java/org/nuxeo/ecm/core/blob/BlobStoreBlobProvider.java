@@ -92,7 +92,9 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
 
     @Override
     public String writeBlob(BlobContext blobContext) throws IOException {
-        return store.writeBlob(blobContext);
+        String key = store.writeBlob(blobContext);
+        fixupDigest(blobContext.blob, key);
+        return key;
     }
 
     @Override
@@ -186,7 +188,22 @@ public abstract class BlobStoreBlobProvider extends AbstractBlobProvider {
 
     @Override
     public Blob readBlob(BlobInfo blobInfo) throws IOException {
-        return new SimpleManagedBlob(blobProviderId, blobInfo); // calls back to #getStream
+        ManagedBlob blob = new SimpleManagedBlob(blobProviderId, blobInfo); // calls back to #getStream
+        fixupDigest(blob, blob.getKey());
+        return blob;
+    }
+
+    /**
+     * Fixup of the blob's digest, if possible.
+     *
+     * @param blob the blob
+     * @param key the key
+     * @since 11.2
+     */
+    protected void fixupDigest(Blob blob, String key) {
+        if (blob.getDigest() == null && store.getKeyStrategy().useDeDuplication()) {
+            blob.setDigest(key);
+        }
     }
 
     @Override
