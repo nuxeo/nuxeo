@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2010 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2006-2020 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Thierry Delprat
+ *     Anahide Tchertchian
  */
 package org.nuxeo.apidoc.introspection;
 
@@ -98,6 +99,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         return bundleGroup;
     }
 
+    @Override
     public void setBundleGroup(BundleGroup bundleGroup) {
         this.bundleGroup = bundleGroup;
     }
@@ -174,6 +176,7 @@ public class BundleInfoImpl extends BaseNuxeoArtifact implements BundleInfo {
         return groupId;
     }
 
+    @Override
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
