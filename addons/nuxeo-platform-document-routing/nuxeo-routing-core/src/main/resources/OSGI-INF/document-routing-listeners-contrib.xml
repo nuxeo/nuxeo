@@ -18,13 +18,13 @@
       priority="200">
       <event>documentCreated</event>
     </listener>
-    
+
     <listener name="securityListener" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingSecurityListener"
       priority="120">
       <event>beforeRouteReady</event>
     </listener>
-    
+
     <listener name="routingSecurityUpdaterForActors" async="false" postCommit="false"
       class="org.nuxeo.ecm.platform.routing.core.listener.RoutingTaskSecurityUpdaterListener"
       priority="250">
@@ -32,7 +32,7 @@
       <event>workflowTaskReassigned</event>
       <event>workflowTaskDelegated</event>
     </listener>
-    
+
     <listener name="triggerEsclationRules" async="true"
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingEscalationListener">
       <event>executeEscalationRules</event>
@@ -42,7 +42,7 @@
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRoutingWorkflowDoneListener">
       <event>afterRouteFinish</event>
     </listener>
-    
+
     <listener name="deleteRoutingTaskListener" async="true"
       class="org.nuxeo.ecm.platform.routing.core.listener.RoutingTaskDeletedListener">
       <event>aboutToRemove</event>
@@ -50,6 +50,11 @@
     
     <listener name="removeTasksForDeletedDocumentRoute" async="true" postCommit="true"
       class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRouteDeletedListener">
+      <event>documentRemoved</event>
+    </listener>
+    
+    <listener name="removeDocumentRoutesForDeletedDocument" async="true" postCommit="true"
+      class="org.nuxeo.ecm.platform.routing.core.listener.DocumentRouteOrphanedListener">
       <event>documentRemoved</event>
     </listener>
 

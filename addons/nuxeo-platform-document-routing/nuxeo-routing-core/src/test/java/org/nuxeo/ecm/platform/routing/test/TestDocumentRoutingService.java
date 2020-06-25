@@ -23,12 +23,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE;
 import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME;
 import static org.nuxeo.ecm.platform.task.TaskConstants.TASK_TYPE_NAME;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -387,6 +390,28 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         session.removeDocument(route.getRef());
         txFeature.nextTransaction();
         assertFalse(session.exists(task.getRef()));
+    }
+
+    @Test
+    public void testOrphanDocumentRoutesDeletion() {
+        DocumentModel file1 = session.createDocumentModel("/", "File1", "File");
+        file1 = session.createDocument(file1);
+        DocumentModel file2 = session.createDocumentModel("/", "File2", "File");
+        file2 = session.createDocument(file2);
+        List<String> docIds = Arrays.asList(file1.getId(), file2.getId());
+        DocumentModel route = session.createDocumentModel("/default-domain/workspaces", "dummyRoute1",
+                DOCUMENT_ROUTE_DOCUMENT_TYPE);
+        route.setPropertyValue(ATTACHED_DOCUMENTS_PROPERTY_NAME, (Serializable) docIds);
+        route = session.createDocument(route);
+
+        session.removeDocument(file1.getRef());
+        txFeature.nextTransaction();
+        // Still attached to file2
+        assertTrue(session.exists(route.getRef()));
+        session.removeDocument(file2.getRef());
+        txFeature.nextTransaction();
+        // Not attached anymore
+        assertFalse(session.exists(route.getRef()));
     }
 
     protected void setPermissionToUser(DocumentModel doc, String username, String... perms) {

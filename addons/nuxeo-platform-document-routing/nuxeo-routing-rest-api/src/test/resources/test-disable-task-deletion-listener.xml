@@ -5,6 +5,7 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <listener name="removeProcessForDeletedDocument" enabled="false" />
+    <listener name="removeDocumentRoutesForDeletedDocument" enabled="false" />
   </extension>
 
 </component>
