@@ -30,5 +30,9 @@
       </rule>
     </filter>
   </extension>
+  
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener name="removeDocumentRoutesForDeletedDocument" enabled="false" />
+  </extension>
 
 </component>
