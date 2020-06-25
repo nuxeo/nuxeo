@@ -21,10 +21,13 @@ package org.nuxeo.apidoc.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -40,12 +43,14 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.apidoc.api.PackageInfo;
+import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.connect.update.PackageException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 
 public class TestSnapshotPersist extends AbstractApidocTest {
@@ -84,6 +89,31 @@ public class TestSnapshotPersist extends AbstractApidocTest {
         DistributionSnapshot persisted = snapshotManager.getSnapshot(snapshot.getKey(), session);
         assertNotNull(persisted);
         checkDistributionSnapshot(persisted, false);
+    }
+
+    @Test
+    public void testUpdatePersisted() throws IOException {
+        DistributionSnapshot snapshot = snapshotManager.persistRuntimeSnapshot(session);
+        assertTrue(snapshot instanceof RepositoryDistributionSnapshot);
+        RepositoryDistributionSnapshot rsnap = (RepositoryDistributionSnapshot) snapshot;
+        try {
+            rsnap.updateDocument(session,
+                    Map.of(DistributionSnapshot.PROP_KEY, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT), null, null);
+            fail("should have raised a DocumentValidationException");
+        } catch (DocumentValidationException e) {
+            assertEquals("Constraint violation thrown: 'Distribution key or alias is reserved: 'current''",
+                    e.getMessage());
+        }
+        try {
+            rsnap.updateDocument(session, Map.of(DistributionSnapshot.PROP_ALIASES, "foo"), null, List.of("foo"));
+            fail("should have raised a DocumentValidationException");
+        } catch (DocumentValidationException e) {
+            assertEquals("Constraint violation thrown: 'Distribution key or alias is reserved: 'foo''", e.getMessage());
+        }
+        rsnap.updateDocument(session, Map.of(DistributionSnapshot.PROP_ALIASES, "foo"), null, null);
+        DistributionSnapshot updated = snapshotManager.getSnapshot("foo", session);
+        assertNotNull(updated);
+        checkDistributionSnapshot(updated, false);
     }
 
     @Test

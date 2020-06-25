@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -97,7 +98,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         }
 
         doc.setPathInfo(containerPath, name);
-        if (label == null) {
+        if (StringUtils.isBlank(label)) {
             doc.setPropertyValue(TITLE_PROPERTY_PATH, distrib.getKey());
             doc.setPropertyValue(PROP_KEY, distrib.getKey());
             doc.setPropertyValue(PROP_NAME, distrib.getName());
@@ -491,16 +492,29 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
      *
      * @since 11.2
      */
-    public DocumentModel updateDocument(CoreSession session, Map<String, String> updateProperties, String comment)
-            throws DocumentValidationException {
+    public DocumentModel updateDocument(CoreSession session, Map<String, String> updateProperties, String comment,
+            List<String> reservedKeys) throws DocumentValidationException {
         final DocumentModel doc = getDoc();
         if (updateProperties == null) {
             return doc;
         }
+        // validations
         if (Stream.of(TITLE_PROPERTY_PATH, PROP_NAME, PROP_VERSION, PROP_KEY)
-                  .anyMatch(p -> StringUtils.isBlank(updateProperties.get(p)))) {
+                  .anyMatch(p -> updateProperties.containsKey(p) && StringUtils.isBlank(updateProperties.get(p)))) {
             throw new DocumentValidationException("Please fill all required fields.");
         }
+        if (updateProperties.containsKey(PROP_KEY)) {
+            validateKeyOrAlias(updateProperties.get(PROP_KEY), reservedKeys);
+        }
+        List<String> aliases = null;
+        if (updateProperties.containsKey(PROP_ALIASES)) {
+            aliases = Arrays.stream(updateProperties.get(PROP_ALIASES).split("\n"))
+                            .map(String::trim)
+                            .filter(StringUtils::isNotBlank)
+                            .collect(Collectors.toList());
+            aliases.forEach(alias -> validateKeyOrAlias(alias, reservedKeys));
+        }
+        // updates
         Stream.of(TITLE_PROPERTY_PATH, PROP_NAME, PROP_VERSION, PROP_KEY, PROP_LATEST_LTS, PROP_LATEST_FT, PROP_HIDE)
               .filter(updateProperties::containsKey)
               .forEach(p -> doc.setPropertyValue(p, updateProperties.get(p)));
@@ -509,12 +523,8 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         if (updateProperties.containsKey(PROP_RELEASED)) {
             doc.setPropertyValue(DistributionSnapshot.PROP_RELEASED, convertDate(updateProperties.get(PROP_RELEASED)));
         }
-        if (updateProperties.containsKey(PROP_ALIASES)) {
-            doc.setPropertyValue(PROP_ALIASES,
-                    (Serializable) Arrays.stream(updateProperties.get(PROP_ALIASES).split("\n"))
-                                         .map(String::trim)
-                                         .filter(StringUtils::isNotBlank)
-                                         .collect(Collectors.toList()));
+        if (aliases != null) {
+            doc.setPropertyValue(PROP_ALIASES, (Serializable) aliases);
         }
         if (!StringUtils.isBlank(comment)) {
             doc.putContextData("comment", comment);
@@ -523,6 +533,21 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         DocumentModel updatedDoc = session.saveDocument(doc);
         session.save();
         return updatedDoc;
+    }
+
+    protected void validateKeyOrAlias(String keyOrAlias, List<String> reservedKeys) throws DocumentValidationException {
+        var forbidden = new ArrayList<>(List.of(
+                // reserved for live distrib
+                SnapshotManager.DISTRIBUTION_ALIAS_CURRENT, SnapshotManager.DISTRIBUTION_ALIAS_ADM,
+                // added automatically
+                SnapshotManager.DISTRIBUTION_ALIAS_LATEST_FT, SnapshotManager.DISTRIBUTION_ALIAS_LATEST_LTS));
+        if (reservedKeys != null) {
+            forbidden.addAll(reservedKeys);
+        }
+        if (forbidden.contains(keyOrAlias)) {
+            throw new DocumentValidationException(
+                    String.format("Distribution key or alias is reserved: '%s'", keyOrAlias));
+        }
     }
 
     /**

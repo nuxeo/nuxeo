@@ -101,10 +101,40 @@ public class Distribution extends ModuleRoot {
     protected static final String DIST = "distribution";
 
     /** @since 11.2 */
-    public static final String VIEW_INDEX = "index";
+    public static final String VIEW_ADMIN = "_admin";
 
     /** @since 11.2 */
-    public static final String VIEW_ADMIN = "_admin";
+    public static final String SAVE_ACTION = "save";
+
+    /** @since 11.2 */
+    public static final String SAVE_EXTENDED_ACTION = "saveExtended";
+
+    /** @since 11.2 */
+    public static final String JSON_ACTION = "json";
+
+    /** @since 11.2 */
+    public static final String DOWNLOAD_ACTION = "download";
+
+    /** @since 11.2 */
+    public static final String UPLOAD_ACTION = "uploadDistrib";
+
+    /** @since 11.2 */
+    public static final String UPLOAD_TMP_ACTION = "uploadDistribTmp";
+
+    /** @since 11.2 */
+    public static final String UPLOAD_TMP_VALID_ACTION = "uploadDistribTmpValid";
+
+    /** @since 11.2 */
+    public static final String REINDEX_ACTION = "_reindex";
+
+    /**
+     * List of subviews, used for validation of distribution names and aliases.
+     *
+     * @since 11.2
+     */
+    protected static final List<String> SUB_DISTRIBUTION_PATH_RESERVED = List.of(VIEW_ADMIN, SAVE_ACTION,
+            SAVE_EXTENDED_ACTION, JSON_ACTION, DOWNLOAD_ACTION, UPLOAD_ACTION, UPLOAD_TMP_ACTION,
+            UPLOAD_TMP_VALID_ACTION, REINDEX_ACTION);
 
     protected static final Pattern VERSION_REGEX = Pattern.compile("^(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:-.*)?$",
             Pattern.CASE_INSENSITIVE);
@@ -178,7 +208,7 @@ public class Distribution extends ModuleRoot {
     @GET
     @Produces("text/html")
     public Object doGet() {
-        return getView(VIEW_INDEX).arg("hideNav", Boolean.TRUE);
+        return getView("index").arg("hideNav", Boolean.TRUE);
     }
 
     @Path(SnapshotManager.DISTRIBUTION_ALIAS_LATEST)
@@ -278,7 +308,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path("save")
+    @Path(SAVE_ACTION)
     @Produces("text/html")
     public Object doSave() throws NamingException, NotSupportedException, SystemException, RollbackException,
             HeuristicMixedException, HeuristicRollbackException, ParseException {
@@ -286,7 +316,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path("saveExtended")
+    @Path(SAVE_EXTENDED_ACTION)
     @Produces("text/html")
     public Object doSaveExtended() throws NamingException, NotSupportedException, SystemException, SecurityException,
             RollbackException, HeuristicMixedException, HeuristicRollbackException {
@@ -367,7 +397,7 @@ public class Distribution extends ModuleRoot {
      * @since 11.1
      */
     @GET
-    @Path("json")
+    @Path(JSON_ACTION)
     @Produces("application/json")
     public Object getJson() throws IOException {
         if (!showRuntimeSnapshot()) {
@@ -391,7 +421,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @GET
-    @Path("download/{distributionId}")
+    @Path(DOWNLOAD_ACTION + "/{distributionId}")
     public Response downloadDistrib(@PathParam("distributionId") String distribId) throws IOException {
         if (!canImportOrExportDistributions()) {
             return Response.status(404).build();
@@ -431,7 +461,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path("uploadDistrib")
+    @Path(UPLOAD_ACTION)
     @Produces("text/html")
     public Object uploadDistrib() throws IOException {
         if (!canImportOrExportDistributions()) {
@@ -452,7 +482,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path("uploadDistribTmp")
+    @Path(UPLOAD_TMP_ACTION)
     @Produces("text/html")
     public Object uploadDistribTmp() {
         if (!canImportOrExportDistributions()) {
@@ -482,7 +512,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @POST
-    @Path("uploadDistribTmpValid")
+    @Path(UPLOAD_TMP_VALID_ACTION)
     @Produces("text/html")
     public Object uploadDistribTmpValid() {
         if (!canImportOrExportDistributions()) {
@@ -560,7 +590,8 @@ public class Distribution extends ModuleRoot {
         RepositoryDistributionSnapshot repoSnap = (RepositoryDistributionSnapshot) snap;
         Map<String, String> updateProperties = repoSnap.getUpdateProperties(formData.getFormFields());
         try {
-            repoSnap.updateDocument(getContext().getCoreSession(), updateProperties, formData.getString("comment"));
+            repoSnap.updateDocument(getContext().getCoreSession(), updateProperties, formData.getString("comment"),
+                    SUB_DISTRIBUTION_PATH_RESERVED);
         } catch (DocumentValidationException e) {
             return updateDistribForm(distribId, updateProperties, e.getMessage());
         }
@@ -582,7 +613,7 @@ public class Distribution extends ModuleRoot {
     }
 
     @GET
-    @Path("_reindex")
+    @Path(REINDEX_ACTION)
     @Produces("text/plain")
     public Object reindex() {
         NuxeoPrincipal nxPrincipal = getContext().getPrincipal();

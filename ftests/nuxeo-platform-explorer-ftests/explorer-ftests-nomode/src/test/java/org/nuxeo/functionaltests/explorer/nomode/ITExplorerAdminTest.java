@@ -28,6 +28,7 @@ import java.util.Date;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.apidoc.snapshot.SnapshotManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.explorer.pages.DistribAdminPage;
 import org.nuxeo.functionaltests.explorer.pages.DistributionHomePage;
@@ -194,11 +195,18 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
         upage.checkCheckBoxValue(false, upage.latestFT);
         upage.checkCheckBoxValue(false, upage.hidden);
 
-        // check validation
+        // check validation on required field
         upage.updateString(upage.name, "");
         upage.submit();
         upage = asPage(DistributionUpdatePage.class);
         upage.checkErrorMessage("Constraint violation thrown: 'Please fill all required fields.'");
+
+        // check validation on reserved alias
+        upage.updateString(upage.name, newDistribName);
+        upage.updateString(upage.aliases, SnapshotManager.DISTRIBUTION_ALIAS_CURRENT);
+        upage.submit();
+        upage = asPage(DistributionUpdatePage.class);
+        upage.checkErrorMessage("Constraint violation thrown: 'Distribution key or alias is reserved: 'current''");
 
         String newerDistribName = "apidoc-imported-updated";
         String newerVersion = "2.1.0";
@@ -234,7 +242,6 @@ public class ITExplorerAdminTest extends AbstractExplorerDownloadTest {
 
         adminPage = asPage(DistribAdminPage.class);
         adminPage.checkSuccessMessage("Update Done.");
-        adminPage.checkPersistedDistrib(newerDistribId);
         open(ExplorerHomePage.URL);
         try {
             asPage(ExplorerHomePage.class).checkPersistedDistrib(newDistribId);
