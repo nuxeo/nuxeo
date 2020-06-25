@@ -55,6 +55,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectMetadataRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.StorageClass;
+import com.amazonaws.services.s3.transfer.TransferManager;
 
 /**
  * Blob provider that stores files in S3.
@@ -63,7 +64,7 @@ import com.amazonaws.services.s3.model.StorageClass;
  *
  * @since 11.1
  */
-public class S3BlobProvider extends BlobStoreBlobProvider {
+public class S3BlobProvider extends BlobStoreBlobProvider implements S3ManagedTransfer {
 
     private static final Logger log = LogManager.getLogger(S3BlobProvider.class);
 
@@ -105,6 +106,11 @@ public class S3BlobProvider extends BlobStoreBlobProvider {
 
     protected S3BlobStoreConfiguration getConfiguration(Map<String, String> properties) throws IOException {
         return new S3BlobStoreConfiguration(properties);
+    }
+
+    @Override
+    public TransferManager getTransferManager() {
+        return config.transferManager;
     }
 
     @Override

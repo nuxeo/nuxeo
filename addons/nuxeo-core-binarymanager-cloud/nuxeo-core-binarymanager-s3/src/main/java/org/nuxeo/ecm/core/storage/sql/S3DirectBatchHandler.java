@@ -48,10 +48,12 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.Batch;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.AbstractBatchHandler;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.handler.BatchFileInfo;
+import org.nuxeo.ecm.blob.s3.S3ManagedTransfer;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.aws.NuxeoAWSRegionProvider;
 
@@ -60,7 +62,10 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.transfer.Copy;
+import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
@@ -258,27 +263,26 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
         blobInfo.filename = fileInfo.getFilename();
         blobInfo.length = metadata.getContentLength();
 
+        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(bucket, fileKey, bucket, bucketKey);
         // server-side encryption
-        String targetSSEAlgorithm;
         if (useServerSideEncryption) { // TODO KMS
-            targetSSEAlgorithm = ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION;
-        } else {
-            targetSSEAlgorithm = null;
+            // SSE-S3
+            ObjectMetadata newObjectMetadata = new ObjectMetadata();
+            newObjectMetadata.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            copyObjectRequest.setNewObjectMetadata(newObjectMetadata);
         }
 
-        ObjectMetadata newMetadata;
-        if (metadata.getContentLength() > lowerThresholdToUseMultipartCopy()) {
-            newMetadata = S3Utils.copyFileMultipart(amazonS3, metadata, bucket, fileKey, bucket, bucketKey, targetSSEAlgorithm, true);
-        } else {
-            newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, fileKey, bucket, bucketKey, targetSSEAlgorithm, true);
-            boolean isMultipartUpload = REGEX_MULTIPART_ETAG.matcher(key).find();
-            if (isMultipartUpload) {
-                key = newMetadata.getETag();
-                String previousBucketKey = bucketKey;
-                bucketKey = bucketPrefix + key;
-                newMetadata = S3Utils.copyFile(amazonS3, metadata, bucket, previousBucketKey, bucket, bucketKey, true);
-            }
+        Copy copy = getTransferManager().copy(copyObjectRequest);
+        try {
+            copy.waitForCompletion();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new NuxeoException(e);
+        } finally {
+            amazonS3.deleteObject(bucket, fileKey);
         }
+
+        ObjectMetadata newMetadata = amazonS3.getObjectMetadata(bucket, bucketKey);
 
         blobInfo.key = key;
         blobInfo.digest = defaultString(newMetadata.getContentMD5(), key);
@@ -303,6 +307,14 @@ public class S3DirectBatchHandler extends AbstractBatchHandler {
 
     protected long lowerThresholdToUseMultipartCopy() {
         return NON_MULTIPART_COPY_MAX_SIZE;
+    }
+
+    protected TransferManager getTransferManager() {
+        BlobProvider blobProvider = Framework.getService(BlobManager.class).getBlobProvider(blobProviderId);
+        if (!(blobProvider instanceof S3ManagedTransfer)) {
+            throw new NuxeoException("BlobProvider does not implement S3ManagedTransfer");
+        }
+        return ((S3ManagedTransfer) blobProvider).getTransferManager();
     }
 
     /** @since 11.1 */
