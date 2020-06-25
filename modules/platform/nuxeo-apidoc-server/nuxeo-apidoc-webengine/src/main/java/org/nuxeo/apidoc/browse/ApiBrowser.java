@@ -398,11 +398,6 @@ public class ApiBrowser extends DefaultObject {
                                                               .arg("searchFilter", sanitize(fulltext));
     }
 
-    @Path("doc")
-    public Resource viewDoc() {
-        return ctx.newObject(ApiBrowserConstants.VIEW_DOCUMENTATION);
-    }
-
     /**
      * Handles navigation to plugin view.
      *
