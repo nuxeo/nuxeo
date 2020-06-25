@@ -70,8 +70,6 @@ public class ApiBrowserConstants {
     /** @since 11.1 */
     public static final String VIEW_PACKAGE = "viewPackage";
 
-    public static final String VIEW_DOCUMENTATION = "documentation";
-
     /** @since 11.2 */
     public static final String SUCCESS_FEEBACK_MESSAGE_VARIABLE = "successFeedbackMessage";
 
