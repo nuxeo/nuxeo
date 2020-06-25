@@ -56,3 +56,6 @@ nuxeo.cache.concurrencylevel=500
 
 # boolean to switch back to former hot reload mechanism
 nuxeo.hotreload.compat.mechanism=false
+
+nuxeo.transientstore.ttl=240
+nuxeo.transientstore.ttl2=10
