@@ -6,5 +6,7 @@
   <extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
     <!-- preview document enricher -->
     <register class="org.nuxeo.ecm.platform.preview.io.PreviewJsonEnricher" enable="true" />
+    <!-- preview blob enricher -->
+    <register class="org.nuxeo.ecm.platform.preview.io.BlobPreviewJsonEnricher" enable="true" />
   </extension>
 </component>
