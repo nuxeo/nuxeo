@@ -19,6 +19,7 @@
 package org.nuxeo.runtime.migration;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +48,7 @@ import org.nuxeo.runtime.migration.MigrationDescriptor.MigrationStepDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.DefaultComponent;
+import org.nuxeo.runtime.model.Descriptor;
 import org.nuxeo.runtime.pubsub.AbstractPubSubBroker;
 import org.nuxeo.runtime.pubsub.SerializableMessage;
 
@@ -470,8 +472,7 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
                 log.error("Exception during execution of step: {} for migration: {}", step, id, t);
             }
             // after the migrator is finished, change state, except if shutdown is requested or exception
-            String state = t != null || migrationContext.isShutdownRequested()
-                    ? stepDescr.fromState
+            String state = t != null || migrationContext.isShutdownRequested() ? stepDescr.fromState
                     : stepDescr.toState;
             atomic(id, kv -> setState(id, state, progressReporter, kv));
             // allow notification of new state
@@ -527,6 +528,36 @@ public class MigrationServiceImpl extends DefaultComponent implements MigrationS
         }
         String currentLock = kv.getString(id + LOCK);
         throw new RuntimeException("Cannot lock for write migration: " + id + ", already locked: " + currentLock);
+    }
+
+    @Override
+    public Migration getMigration(String id) {
+        MigrationDescriptor descriptor = getDescriptor(XP_CONFIG, id);
+        MigrationStatus status = getStatus(id);
+        if (descriptor == null || status == null) {
+            return null;
+        }
+        return Migration.from(descriptor, status);
+    }
+
+    @Override
+    public List<Migration> getMigrations() {
+        return getDescriptors(XP_CONFIG).stream().map(Descriptor::getId).map(this::getMigration).collect(toList());
+    }
+
+    /**
+     * @implNote Runs a migration if it has exactly one available step to run.
+     */
+    @Override
+    public void probeAndRun(String id) {
+        probeAndSetState(id);
+        MigrationStatus status = getStatus(id);
+        var steps = Migration.from(getDescriptor(XP_CONFIG, id), status).getSteps();
+        if (steps.size() != 1) {
+            throw new IllegalArgumentException(String.format(
+                    "Migration: %s must have only one runnable step from state: %s", id, status.getState())); // NOSONAR
+        }
+        runStep(id, steps.get(0).getId());
     }
 
 }
